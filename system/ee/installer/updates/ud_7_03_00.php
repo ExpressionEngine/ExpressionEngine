@@ -137,7 +137,7 @@ class Updater
             ee()->smartforge->add_column(
                 'field_groups',
                 [
-                    'shortname' => [
+                    'short_name' => [
                         'type' => 'text',
                         'null' => true,
                         'default' => null
@@ -147,11 +147,13 @@ class Updater
         }
 
         // loop through all field groups and set shortname to group name
-        $field_groups = ee('Model')->get('ChannelFieldGroup')->all();
-        foreach ($field_groups as $field_group) {
-            // change all spaces to underscores
-            $field_group->shortname = str_replace(' ', '_', $field_group->group_name);
-            $field_group->save();
+        $field_groups = ee('db')->get('field_groups');
+        if ($field_groups->num_rows() > 0) {
+            foreach ($field_groups->result() as $field_group) {
+                // change all spaces to underscores
+                $short_name = preg_replace('/\s+/', '_', strtolower($field_group->group_name));
+                ee('db')->set(['short_name' => $short_name])->where('group_id', $field_group->group_id)->update('field_groups');
+            }
         }
     }
 }

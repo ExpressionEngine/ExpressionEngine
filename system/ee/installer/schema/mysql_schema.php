@@ -660,6 +660,7 @@ class EE_Schema
 			group_id int(4) unsigned NOT NULL auto_increment,
 			site_id INT(4) UNSIGNED NULL DEFAULT 1,
 			group_name varchar(50) NOT NULL,
+			short_name varchar(50) NOT NULL,
 			group_description text NULL,
 			PRIMARY KEY `group_id` (`group_id`),
 			KEY `site_id` (`site_id`)

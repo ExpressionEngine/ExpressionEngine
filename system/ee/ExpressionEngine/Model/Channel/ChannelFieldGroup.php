@@ -46,18 +46,19 @@ class ChannelFieldGroup extends Model
     );
 
     protected static $_validation_rules = array(
-        'group_name' => 'required|unique|validateName',
-        'shortname' => 'required|unique|validateShortname',
+        'group_name' => 'required|unique|maxLength[50]|validateName',
+        'short_name' => 'unique|maxLength[50]|alphaDash',
     );
 
     protected static $_events = array(
+        'beforeValidate',
         'afterUpdate',
     );
 
     protected $group_id;
     protected $site_id;
     protected $group_name;
-    protected $shortname;
+    protected $short_name;
     protected $group_description;
 
     /**
@@ -77,13 +78,16 @@ class ChannelFieldGroup extends Model
         return true;
     }
 
-    public function validateShortname($key, $value, $params, $rule)
+    /**
+     * short_name did not exist prior to EE 7.3.0
+     * we need a setter to set it automatically
+     * if if was omited from model make() call
+     */
+    public function onBeforeValidate()
     {
-        if (! preg_match("#^[a-zA-Z0-9_\-]+$#i", (string) $value)) {
-            return 'illegal_characters';
+        if (empty($this->getProperty('short_name')) && !empty($this->getProperty('group_name'))) {
+            $this->setProperty('short_name', preg_replace('/\s+/', '_', strtolower($this->getProperty('group_name'))));
         }
-
-        return true;
     }
 
     public function onAfterUpdate($previous)

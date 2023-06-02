@@ -482,7 +482,7 @@ class Fluid_field_ft extends EE_Fieldtype
 
         foreach ($field_groups as $field_group) {
             $filter_options[] = \ExpressionEngine\Addons\FluidField\Model\FluidFieldFilter::make([
-                'name' => $field_group->group_name,
+                'name' => $field_group->short_name,
                 'label' =>  $field_group->group_name,
                 'icon' => URL_THEMES . 'asset/img/' . 'default-addon-icon.svg'
             ]);
@@ -528,7 +528,7 @@ class Fluid_field_ft extends EE_Fieldtype
                                 $f->setName($this->name() . '[fields][field_' . $field->getId() . '][field_group_id_' . $field_group->getId() . '][field_id_' . $f->getId() . ']');
                                 return $f;
                             }, $field_data),
-                            'field_name' => $field_group->group_name,
+                            'field_name' => $field_group->short_name,
                         ]);
                     } else {
                         $field = $field_data[0]->getField();
@@ -629,7 +629,7 @@ class Fluid_field_ft extends EE_Fieldtype
                         'field_group_fields' => array_map(function ($field) {
                             return $field['field'];
                         }, $row),
-                        'field_name' => $field_group->group_name,
+                        'field_name' => $field_group->short_name,
                     ]);
                 } else {
                     $viewData = array_merge($viewData, [
@@ -672,7 +672,7 @@ class Fluid_field_ft extends EE_Fieldtype
                     $f->setName($this->name() . '[fields][new_field_0][field_group_id_' . $field_group->getId() . '][field_id_' . $field->getId() . ']');
                     return $f;
                 }),
-                'field_name' => $field_group->group_name,
+                'field_name' => $field_group->short_name,
                 'filters' => $filters,
                 'errors' => $this->errors,
                 'reorderable' => true,
@@ -748,7 +748,7 @@ class Fluid_field_ft extends EE_Fieldtype
                 return [
                     'label' => $group->group_name,
                     'value' => $group->getId(),
-                    'instructions' => LD . $group->group_name . RD
+                    'instructions' => LD . $group->short_name . RD
                 ];
             });
 

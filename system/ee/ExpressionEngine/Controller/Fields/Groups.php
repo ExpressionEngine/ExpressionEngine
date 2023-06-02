@@ -300,6 +300,17 @@ class Groups extends AbstractFieldsController
                     )
                 ),
                 array(
+                    'title' => 'short_name',
+                    'desc' => 'field_group_short_name_desc',
+                    'fields' => array(
+                        'short_name' => array(
+                            'type' => 'text',
+                            'value' => $field_group->short_name,
+                            'required' => true
+                        )
+                    )
+                ),
+                array(
                     'title' => 'description',
                     'desc' => '',
                     'fields' => array(
