@@ -333,13 +333,15 @@ class Fluid_field_parser
 
         $group_cond_keys = array_fill_keys(array_map(function ($name) use ($fluid_field_name) {
             return "{$fluid_field_name}:$name";
-        }, array_filter(array_unique(array_column($groups, 'name')))), null);
+        }, array_filter(array_unique(array_column($groups, 'short_name')))), null);
 
         $i = 0;
         $groups = array_values($groups);
 
         foreach ($groups as $g => $group) {
-            $cond[$fluid_field_name . ':' . $group['name']] = true;
+
+            $cond[$fluid_field_name . ':' . $group['short_name']] = true;
+
             $group_cond = array_intersect_key($cond, $group_cond_keys);
             $has_group = !empty(array_filter($group_cond));
             $group_tagdata = ee()->functions->prep_conditionals($cond_tagdata, $group_cond);
@@ -447,7 +449,7 @@ class Fluid_field_parser
                 }
             }
 
-            $cond[$fluid_field_name . ':' . $group['name']] = false; // Reset for the next group
+            $cond[$fluid_field_name . ':' . $group['short_name']] = false; // Reset for the next group
             $output .= $group_output;
         }
 
