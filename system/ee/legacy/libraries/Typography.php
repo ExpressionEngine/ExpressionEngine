@@ -349,7 +349,7 @@ class EE_Typography
             $str = preg_replace("/^(.*?)<(" . $this->block_elements . ")/i", '<p>$1</p><$2', $str);
         }
 
-        // Convert quotes, elipsis, em-dashes, non-breaking spaces, and ampersands
+        // Convert quotes, ellipsis, em-dashes, non-breaking spaces, and ampersands
         $str = $this->format_characters($str);
 
         // restore HTML comments
@@ -711,7 +711,7 @@ class EE_Typography
         $str = $this->filter_censored_words($str);
 
         // Decode {encode=...} only in the CP since the template parser handles
-        // this for page requets
+        // this for page requests
         if (REQ == 'CP' && strpos($str, '{encode=') !== false) {
             ee()->load->library('template', null, 'TMPL');
             $str = ee()->TMPL->parse_encode_email($str);

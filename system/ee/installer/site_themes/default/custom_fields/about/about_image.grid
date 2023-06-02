@@ -39,7 +39,7 @@
 			"type": "select",
 			"label": "Alignment?",
 			"name": "align",
-			"instructions": "Align this image ot the left or right?",
+			"instructions": "Align this image to the left or right?",
 			"required": "n",
 			"search": "n",
 			"settings":

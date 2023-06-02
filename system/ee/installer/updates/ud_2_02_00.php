@@ -94,7 +94,7 @@ class Updater
      *
      * Oh this is fun!  So since we're implementing a better password hashing
      * scheme, we'll bump up the `password` field in exp_members to
-     * be able to handle hashing algorithims such as sha256/sha512.
+     * be able to handle hashing algorithms such as sha256/sha512.
      * Additionally, we're adding a salt column to use for salting the
      * users passwords.
      */

@@ -412,7 +412,7 @@ class Markdown implements MarkdownInterface
         # a unique text-token which will be reverted back when calling unhash.
         #
         # The $boundary argument specify what character should be used to surround
-        # the token. By convension, "B" is used for block elements that needs not
+        # the token. By convention, "B" is used for block elements that needs not
         # to be wrapped into paragraph tags at the end, ":" is used for elements
         # that are word separators and "X" is used in the general case.
         #
