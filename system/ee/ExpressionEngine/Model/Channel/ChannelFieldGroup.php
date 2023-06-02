@@ -47,7 +47,7 @@ class ChannelFieldGroup extends Model
 
     protected static $_validation_rules = array(
         'group_name' => 'required|unique|maxLength[50]|validateName',
-        'short_name' => 'unique|maxLength[50]|alphaDash',
+        'short_name' => 'unique|maxLength[50]|alphaDash|validateNameIsNotReserved',
     );
 
     protected static $_events = array(
