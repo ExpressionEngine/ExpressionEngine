@@ -256,7 +256,7 @@ class UploadDestination extends StructureModel
     }
 
     /**
-     * Returns the propety value using the overrides if present, but WITHOUT
+     * Returns the property value using the overrides if present, but WITHOUT
      * config variable parsing
      *
      * @param str $name The name of the property to fetch

@@ -93,7 +93,7 @@ class ChannelFieldGroup extends Model
     /**
      * short_name did not exist prior to EE 7.3.0
      * we need a setter to set it automatically
-     * if if was omited from model make() call
+     * if if was omitted from model make() call
      */
     public function onBeforeValidate()
     {
