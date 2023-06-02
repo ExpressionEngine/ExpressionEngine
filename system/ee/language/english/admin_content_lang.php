@@ -246,6 +246,8 @@ $lang = array(
 
     'field_groups_uc' => 'Field Groups',
 
+    'field_group_short_name_desc' => 'Used when operating with field group inside template, e.g. in Fluid field',
+
     'field_groups_desc' => 'Used to group together related custom fields.',
 
     'field_groups_deleted_desc' => 'The following field groups were deleted',

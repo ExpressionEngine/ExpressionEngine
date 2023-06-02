@@ -468,27 +468,12 @@ UNLOCK TABLES;
 # Dump of table exp_field_groups
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `exp_field_groups`;
+TRUNCATE `exp_field_groups`;
 
-CREATE TABLE `exp_field_groups` (
-  `group_id` int(4) unsigned NOT NULL AUTO_INCREMENT,
-  `site_id` int(10) unsigned DEFAULT NULL,
-  `group_name` varchar(50) NOT NULL,
-  `group_description` text NULL,
-  PRIMARY KEY (`group_id`),
-  KEY `site_id` (`site_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-LOCK TABLES `exp_field_groups` WRITE;
-/*!40000 ALTER TABLE `exp_field_groups` DISABLE KEYS */;
-
-INSERT INTO `exp_field_groups` (`group_id`, `site_id`, `group_name`)
+INSERT INTO `exp_field_groups` (`group_id`, `site_id`, `group_name`, `short_name`)
 VALUES
-	(1,1,'News'),
-	(2,1,'About');
-
-/*!40000 ALTER TABLE `exp_field_groups` ENABLE KEYS */;
-UNLOCK TABLES;
+	(1,1,'News','news'),
+	(2,1,'About','about');
 
 
 # Dump of table exp_grid_columns

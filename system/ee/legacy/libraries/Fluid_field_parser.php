@@ -302,6 +302,7 @@ class Fluid_field_parser
             if (!isset($groups[$field->group])) {
                 $groups[$field->group] = [
                     'name' => $field->ChannelFieldGroup ? strtolower($field->ChannelFieldGroup->group_name) : '',
+                    'short_name' => $field->ChannelFieldGroup ? strtolower($field->ChannelFieldGroup->short_name) : '',
                     'fields' => []
                 ];
             }
@@ -352,8 +353,11 @@ class Fluid_field_parser
                 $fluid_field_name . ':first_group' => (int) ($g == 0),
                 $fluid_field_name . ':last_group' => (int) (($g + 1) == $total_groups),
                 $fluid_field_name . ':current_group_name' => $group['name'],
+                $fluid_field_name . ':current_group_short_name' => $group['short_name'],
                 $fluid_field_name . ':next_group_name' => (($g + 1) < $total_groups) ? $groups[$g + 1]['name'] : '',
-                $fluid_field_name . ':prev_group_name' => ($g > 0) ? $groups[$g - 1]['name'] : ''
+                $fluid_field_name . ':next_group_short_name' => (($g + 1) < $total_groups) ? $groups[$g + 1]['short_name'] : '',
+                $fluid_field_name . ':prev_group_name' => ($g > 0) ? $groups[$g - 1]['name'] : '',
+                $fluid_field_name . ':prev_group_short_name' => ($g > 0) ? $groups[$g - 1]['short_name'] : ''
             ];
 
             if ($has_group) {

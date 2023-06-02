@@ -23,6 +23,9 @@ class Fields extends AbstractFieldsController
     public function index()
     {
         $group_id = ee('Request')->get('group_id');
+        $vars = [
+            'group_tag' => ''
+        ];
 
         if (!is_null($group_id)) {
             $base_url = ee('CP/URL')->make('fields', ['group_id' => $group_id]);
@@ -88,7 +91,8 @@ class Fields extends AbstractFieldsController
         // Are we showing a specific group? If so, we need to apply filtering differently
         // because we are acting on a collection instead of a query builder
         if ($group) {
-            $vars['cp_page_title'] = $group->group_name . '&mdash;' . lang('fields');
+            $vars['cp_page_title'] = $group->group_name . ' &mdash; ' . lang('fields');
+            $vars['group_tag'] = '{' . $group->short_name . '}';
             $fields = $group->ChannelFields->sortBy('field_label')->sortBy('field_order')->asArray();
 
             if ($search = ee()->input->get_post('filter_by_keyword')) {

@@ -1,4 +1,4 @@
-<div class="fluid__item <?php if ($reorderable) : ?>fluid__item--reorderable<?php endif ?>" data-field-name="<?= $field_group->group_name ?>" data-field-type="field_group">
+<div class="fluid__item <?php if ($reorderable) : ?>fluid__item--reorderable<?php endif ?>" data-field-name="<?= $field_group->short_name ?>" data-field-type="field_group">
     <div class="fluid__item-content">
         <div class="fluid__item-fieldset ">
 

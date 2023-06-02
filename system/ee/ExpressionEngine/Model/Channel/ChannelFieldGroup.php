@@ -46,16 +46,19 @@ class ChannelFieldGroup extends Model
     );
 
     protected static $_validation_rules = array(
-        'group_name' => 'required|unique|validateName'
+        'group_name' => 'required|unique|maxLength[50]|validateName',
+        'short_name' => 'unique|maxLength[50]|alphaDash|validateNameIsNotReserved',
     );
 
     protected static $_events = array(
+        'beforeValidate',
         'afterUpdate',
     );
 
     protected $group_id;
     protected $site_id;
     protected $group_name;
+    protected $short_name;
     protected $group_description;
 
     /**
@@ -73,6 +76,30 @@ class ChannelFieldGroup extends Model
         }
 
         return true;
+    }
+
+    /**
+     * Validate the field name to avoid variable name collisions
+     */
+    public function validateNameIsNotReserved($key, $value, $params, $rule)
+    {
+        if (in_array($value, ee()->cp->invalid_custom_field_names())) {
+            return lang('reserved_word');
+        }
+
+        return true;
+    }
+
+    /**
+     * short_name did not exist prior to EE 7.3.0
+     * we need a setter to set it automatically
+     * if if was omited from model make() call
+     */
+    public function onBeforeValidate()
+    {
+        if (empty($this->getProperty('short_name')) && !empty($this->getProperty('group_name'))) {
+            $this->setProperty('short_name', preg_replace('/\s+/', '_', strtolower($this->getProperty('group_name'))));
+        }
     }
 
     public function onAfterUpdate($previous)
