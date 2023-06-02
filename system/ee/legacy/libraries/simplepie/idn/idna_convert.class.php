@@ -370,9 +370,9 @@ class idna_convert
     }
 
     /**
-     * Use this method to get the last error ocurred
+     * Use this method to get the last error occurred
      * @param    void
-     * @return   string   The last error, that occured
+     * @return   string   The last error, that occurred
      * @access   public
      */
     public function get_last_error()
