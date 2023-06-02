@@ -400,7 +400,7 @@ class FieldFacade
                 $modifiersCounter++;
                 $parse_fnc = ($modifier) ? 'replace_' . $modifier : 'replace_tag';
                 $content_param = ($checkNextModifier && isset($modifiers[$modifiersCounter]) && in_array($modifiers[$modifiersCounter], $modifiersRequireArray)) ? null : $tagdata;
-                if (method_exists($ft, $parse_fnc)) {
+                if (method_exists($ft, $parse_fnc) || ee('Variables/Modifiers')->has($modifier)) {
                     $output = $this->api->apply($parse_fnc, array($output, $params, $content_param));
                 } elseif (method_exists($ft, 'replace_tag_catchall') and $modifier !== '') {
                     // Go to catchall and include modifier
@@ -412,7 +412,7 @@ class FieldFacade
             }
         } else {
             $parse_fnc = ($specificModifier) ? 'replace_' . $specificModifier : 'replace_tag';
-            if (method_exists($ft, $parse_fnc)) {
+            if (method_exists($ft, $parse_fnc) || ee('Variables/Modifiers')->has($modifier)) {
                 $output = $this->api->apply($parse_fnc, array($data, $params, $tagdata));
             } elseif (method_exists($ft, 'replace_tag_catchall') and $specificModifier !== '') {
                 // Go to catchall and include modifier

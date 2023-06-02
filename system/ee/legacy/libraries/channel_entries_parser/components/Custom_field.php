@@ -121,7 +121,7 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
 
                             // if there is next modifier, make sure to return array
                             $content_param = ($checkNextModifier && isset($modifiers[$modifiersCounter]) && in_array($modifiers[$modifiersCounter], $modifiersRequireArray)) ? null : false;
-                            if (method_exists($obj, $parse_fnc)) {
+                            if (method_exists($obj, $parse_fnc) || ee('Variables/Modifiers')->has($modifier)) {
                                 $entry = $ft_api->apply($parse_fnc, array(
                                     $data,
                                     $params,
@@ -146,7 +146,7 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
 
                         $parse_fnc = ($modifier) ? 'replace_' . $modifier : 'replace_tag';
 
-                        if (method_exists($obj, $parse_fnc)) {
+                        if (method_exists($obj, $parse_fnc) || ee('Variables/Modifiers')->has($modifier)) {
                             $entry = (string) $ft_api->apply($parse_fnc, array(
                                 $data,
                                 $field['params'],
