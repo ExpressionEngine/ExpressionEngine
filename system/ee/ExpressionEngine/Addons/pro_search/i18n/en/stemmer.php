@@ -262,7 +262,7 @@ class Pro_search_en_stemmer
             case 'n':
                 self::replace($word, 'ant', '', 1)
                 or self::replace($word, 'ement', '', 1)
-                or self::replace($word, 'meant', '', 1)
+                or self::replace($word, 'ment', '', 1)
                 or self::replace($word, 'ent', '', 1);
 
                 break;
