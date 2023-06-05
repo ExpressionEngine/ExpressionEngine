@@ -485,7 +485,7 @@ class Fluid_field_ft extends EE_Fieldtype
                 $filter_options[] = \ExpressionEngine\Addons\FluidField\Model\FluidFieldFilter::make([
                     'name' => $field_group->short_name,
                     'label' =>  $field_group->group_name,
-                    'icon' => URL_THEMES . 'asset/img/' . 'default-addon-icon.svg'
+                    'icon' => URL_THEMES . 'asset/img/' . 'fluid_group_icon.svg'
                 ]);
             }
         }
