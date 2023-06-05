@@ -323,7 +323,7 @@ class ChannelField extends FieldModel
         if ($valid === true) {
             $unique = $this->getModelFacade()
                 ->get('ChannelFieldGroup')
-                ->filter('short_name', $value);
+                ->filter(($key == 'field_name' ? 'short_name' : $key), $value);
 
             foreach ($params as $field) {
                 $unique->filter($field, $this->getProperty($field));
