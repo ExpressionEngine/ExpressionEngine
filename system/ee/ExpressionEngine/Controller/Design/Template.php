@@ -1104,6 +1104,7 @@ class Template extends AbstractDesignController
         $templates = ee('Model')->get('Template')
             ->with('TemplateGroup')
             ->with('Site')
+            ->filter('TemplateGroup.group_id', 'IS NOT', null)
             ->order('TemplateGroup.group_name')
             ->order('Template.template_name');
 

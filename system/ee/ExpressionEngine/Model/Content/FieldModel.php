@@ -127,7 +127,7 @@ abstract class FieldModel extends Model
         }
 
         //validate assigned conditions
-        
+
 
         return $result;
     }
@@ -495,13 +495,29 @@ abstract class FieldModel extends Model
             'settings' => $settings['field_settings']
         ));
 
-        $parse_fnc = ($modifier) ? 'replace_' . $modifier : 'replace_tag';
-        if (method_exists($fieldtype, $parse_fnc)) {
-            $data = ee()->api_channel_fields->apply($parse_fnc, array(
-                $data,
-                $params,
-                false
-            ));
+        if (isset($variable_mods['all_modifiers']) && !empty($variable_mods['all_modifiers'])) {
+            foreach ($variable_mods['all_modifiers'] as $tag_modifier => $modifier_params) {
+                $parse_fnc = ($tag_modifier) ? 'replace_' . $tag_modifier : 'replace_tag';
+                if (method_exists($fieldtype, $parse_fnc) || ee('Variables/Modifiers')->has($tag_modifier)) {
+                    $data = ee()->api_channel_fields->apply($parse_fnc, array(
+                        $data,
+                        $modifier_params,
+                        false
+                    ));
+                }
+            }
+        } else {
+            $parse_fnc = ($modifier) ? 'replace_' . $modifier : 'replace_tag';
+            if (method_exists($fieldtype, $parse_fnc) || ee('Variables/Modifiers')->has($modifier)) {
+                $data = ee()->api_channel_fields->apply($parse_fnc, array(
+                    $data,
+                    $params,
+                    false
+                ));
+            }
+        }
+        if (is_null($data)) {
+            $data = '';
         }
         if (is_null($data)) {
             $data = '';

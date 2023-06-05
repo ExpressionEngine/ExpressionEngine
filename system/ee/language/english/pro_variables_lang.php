@@ -242,7 +242,7 @@ $lang = array(
     'Variable suffix',
 
     'variable_suffix_help' =>
-    'If entered, Low Variables will create a new variable for each given suffix.<br />Separate suffixes with spaces, e.g.: <em>en es nl</em>',
+    'If entered, Pro Variables will create a new variable for each given suffix.<br />Separate suffixes with spaces, e.g.: <em>en es nl</em>',
 
     'wide_field' =>
     'Display wide field',

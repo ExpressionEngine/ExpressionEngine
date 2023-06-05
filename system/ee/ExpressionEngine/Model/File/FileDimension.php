@@ -16,7 +16,7 @@ use ExpressionEngine\Service\Model\Model;
  * File Dimension Model
  *
  * A model representing one of image manipulations that can be applied on
- * images uploaded to its corresponting upload destination.
+ * images uploaded to its corresponding upload destination.
  */
 class FileDimension extends Model
 {
@@ -34,6 +34,9 @@ class FileDimension extends Model
     );
 
     protected static $_relationships = array(
+        'Site' => array(
+            'type' => 'belongsTo'
+        ),
         'UploadDestination' => array(
             'type' => 'belongsTo',
             'from_key' => 'upload_location_id'

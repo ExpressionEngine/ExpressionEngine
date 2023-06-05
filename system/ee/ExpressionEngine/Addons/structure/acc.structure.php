@@ -22,6 +22,8 @@ class Structure_acc
     public $structure;
     public $installed = false;
     public $data = array();
+    public $version;
+    public $cache;
 
     /**
      * Constructor

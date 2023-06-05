@@ -24,6 +24,9 @@ class ChannelFieldGroup extends Model
     protected static $_hook_id = 'channel_field_group';
 
     protected static $_relationships = array(
+        'Site' => array(
+            'type' => 'belongsTo'
+        ),
         'Channels' => array(
             'weak' => true,
             'type' => 'hasAndBelongsToMany',
@@ -43,16 +46,20 @@ class ChannelFieldGroup extends Model
     );
 
     protected static $_validation_rules = array(
-        'group_name' => 'required|unique|validateName'
+        'group_name' => 'required|unique|maxLength[50]|validateName',
+        'short_name' => 'unique|maxLength[50]|alphaDash|validateNameIsNotReserved',
     );
 
     protected static $_events = array(
+        'beforeValidate',
         'afterUpdate',
     );
 
     protected $group_id;
     protected $site_id;
     protected $group_name;
+    protected $short_name;
+    protected $group_description;
 
     /**
      * Convenience method to fix inflection
@@ -69,6 +76,55 @@ class ChannelFieldGroup extends Model
         }
 
         return true;
+    }
+
+    /**
+     * The group short name must not intersect with Field names
+     */
+    public function validateUnique($key, $value, array $params = array())
+    {
+        $valid = parent::validateUnique($key, $value, $params);
+        if ($valid === true) {
+            $unique = $this->getModelFacade()
+                ->get('ChannelField')
+                ->filter(($key == 'field_name' ? 'short_name' : $key), $value);
+
+            foreach ($params as $field) {
+                $unique->filter($field, $this->getProperty($field));
+            }
+
+            if ($unique->count() > 0) {
+                return 'unique'; // lang key
+            }
+
+            return true;
+        }
+
+        return $valid;
+    }
+
+    /**
+     * Validate the field name to avoid variable name collisions
+     */
+    public function validateNameIsNotReserved($key, $value, $params, $rule)
+    {
+        if (in_array($value, ee()->cp->invalid_custom_field_names())) {
+            return lang('reserved_word');
+        }
+
+        return true;
+    }
+
+    /**
+     * short_name did not exist prior to EE 7.3.0
+     * we need a setter to set it automatically
+     * if if was omitted from model make() call
+     */
+    public function onBeforeValidate()
+    {
+        if (empty($this->getProperty('short_name')) && !empty($this->getProperty('group_name'))) {
+            $this->setProperty('short_name', substr('field_group_' . preg_replace('/\s+/', '_', strtolower($this->getProperty('group_name'))), 0, 50));
+        }
     }
 
     public function onAfterUpdate($previous)

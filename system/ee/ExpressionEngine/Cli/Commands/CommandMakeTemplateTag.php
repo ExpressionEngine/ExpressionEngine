@@ -64,7 +64,7 @@ class CommandMakeTemplateTag extends Cli
             $service = ee('TemplateTagGenerator', $this->data);
             $service->build();
         } catch (\Exception $e) {
-            $this->fail($e->getMessage());
+            $this->fail(addslashes($e->getMessage()));
         }
 
         $this->info('command_make_template_tag_created_successfully');

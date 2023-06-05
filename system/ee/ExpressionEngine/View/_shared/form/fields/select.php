@@ -147,7 +147,8 @@ else:
         'jsonify' => isset($jsonify) ? $jsonify : false,
         'manageLabel' => isset($manage_label) ? $manage_label : null,
         'reorderAjaxUrl' => isset($reorder_ajax_url) ? $reorder_ajax_url : null,
-        'noResults' => isset($no_results['text']) ? lang($no_results['text']) : null
+        'noResults' => isset($no_results['text']) ? lang($no_results['text']) : null,
+        'splitForTwo' => isset($split_for_two) ? $split_for_two : null
     ];
     ?>
 	<div data-select-react="<?=base64_encode(json_encode($component))?>" data-input-value="<?=$field_name?>" class="<?=$class?>">

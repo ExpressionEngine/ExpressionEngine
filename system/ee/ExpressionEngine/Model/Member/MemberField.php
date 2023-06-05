@@ -87,6 +87,12 @@ class MemberField extends FieldModel
 
     public function set(array $data = array())
     {
+        // getField() requires that we have a fieldtype, but we might be trying
+        // to set it! So, if we are, we'll do that first.
+        if (isset($data['m_field_type'])) {
+            $this->setProperty('m_field_type', $data['m_field_type']);
+        }
+
         parent::set($data);
 
         $field = $this->getField($this->getSettingsValues());
@@ -193,6 +199,23 @@ class MemberField extends FieldModel
         $valid = parent::validateUnique($key, $value, $params);
         if ($valid === true) {
             $key = (strpos($key, 'm_') === 0) ? substr($key, 2) : $key;
+            // check channel field groups
+            $unique = $this->getModelFacade()
+                ->get('ChannelFieldGroup')
+                ->filter(($key == 'field_name' ? 'short_name' : $key), $value);
+
+            foreach ($params as $field) {
+                $unique->filter(
+                    ((strpos($field, 'm_') === 0) ? substr($field, 2) : $field),
+                    $this->getProperty($field)
+                );
+            }
+
+            if ($unique->count() > 0) {
+                return 'unique'; // lang key
+            }
+
+            // check channel fields
             $unique = $this->getModelFacade()
                 ->get('ChannelField')
                 ->filter($key, $value);

@@ -260,6 +260,10 @@ $lang = array(
 
     'update' => 'Update',
 
+    'clone_to_new' => 'Clone to New %s',
+
+    'copy_of' => 'Copy of',
+
     /* Log */
     'action' => 'Action',
 
@@ -464,7 +468,7 @@ $lang = array(
 
     'ee_screencasts' => 'EE Screencasts',
 
-    'ee_seach_bookmarklet' => 'ExpressionEngine Search Bookmarklet',
+    'ee_search_bookmarklet' => 'ExpressionEngine Search Bookmarklet',
 
     'installing_ee' => 'Installing ExpressionEngine',
 

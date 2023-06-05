@@ -476,7 +476,7 @@ class EE_Image_lib
         // Preserve alpha
         $this->image_preserve_alpha($dst_img, $src_img);
 
-        $copy($dst_img, $src_img, 0, 0, $this->x_axis, $this->y_axis, $this->width, $this->height, $this->orig_width, $this->orig_height);
+        $copy($dst_img, $src_img, 0, 0, (int) $this->x_axis, (int) $this->y_axis, (int) $this->width, (int) $this->height, (int) $this->orig_width, (int) $this->orig_height);
 
         //if we are converting, change image type
         if ($action == 'webp') {

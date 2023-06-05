@@ -40,6 +40,9 @@ class ChannelField extends FieldModel
     );
 
     protected static $_relationships = array(
+        'Site' => array(
+            'type' => 'belongsTo'
+        ),
         'ChannelFieldGroups' => array(
             'type' => 'hasAndBelongsToMany',
             'model' => 'ChannelFieldGroup',
@@ -81,6 +84,12 @@ class ChannelField extends FieldModel
             'model' => 'FieldCondition',
             'from_key' => 'field_id',
             'to_key' => 'condition_field_id'
+        ),
+        'GridColumns' => array(
+            'type' => 'hasMany',
+            'model' => 'grid:GridColumn',
+            'from_key' => 'field_id',
+            'to_key' => 'field_id'
         )
     );
 
@@ -179,13 +188,18 @@ class ChannelField extends FieldModel
 
     public function onBeforeInsert()
     {
-        if ($this->field_order) {
-            return;
+        if ($this->getProperty('field_list_items') == null) {
+            $this->setProperty('field_list_items', '');
         }
 
-        $this->field_order = $this->getModelFacade()->get('ChannelField')
-            ->filter('site_id', 'IN', array(0, $this->site_id))
-            ->count() + 1;
+        $field_order = $this->getProperty('field_order');
+
+        if (empty($field_order)) {
+            $field_order = $this->getModelFacade()->get('ChannelField')
+                ->filter('site_id', 'IN', array(0, $this->site_id))
+                ->count() + 1;
+            $this->setProperty('field_order', $field_order);
+        }
     }
 
     public function onAfterInsert()
@@ -302,11 +316,26 @@ class ChannelField extends FieldModel
 
     /**
      * The field name must be also unique across Member Fields
+     * The field name must not intersect witch Field Group short names
      */
     public function validateUnique($key, $value, array $params = array())
     {
         $valid = parent::validateUnique($key, $value, $params);
         if ($valid === true) {
+            // check field groups
+            $unique = $this->getModelFacade()
+                ->get('ChannelFieldGroup')
+                ->filter(($key == 'short_name' ? 'field_name' : $key), $value);
+
+            foreach ($params as $field) {
+                $unique->filter($field, $this->getProperty($field));
+            }
+
+            if ($unique->count() > 0) {
+                return 'unique'; // lang key
+            }
+
+            // check member fields
             $unique = $this->getModelFacade()
                 ->get('MemberField')
                 ->filter('m_' . $key, $value);

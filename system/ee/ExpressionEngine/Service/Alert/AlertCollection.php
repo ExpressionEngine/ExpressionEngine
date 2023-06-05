@@ -330,7 +330,7 @@ class AlertCollection
                 $lang_key = ($count == 1) ? 'developer_one_log' : 'developer_logs';
 
                 $this->lang->loadfile('admin');
-                $url = ee('CP/URL', 'logs/developer');
+                $url = ee('CP/URL', 'logs/developer')->compile();
                 $alert->withTitle(lang('deprecation_notice'))
                     ->addToBody(sprintf(lang($lang_key), $count, $url));
             }

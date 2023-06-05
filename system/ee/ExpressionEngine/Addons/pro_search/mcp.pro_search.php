@@ -668,13 +668,13 @@ class Pro_search_mcp
                         // make more clear that languages required for these tools. People thought they were missing
                         $items['glossary'] = array(
                             'href'       => '#',
-                            'title'      => lang('set_langauge_to_use_tool'),
+                            'title'      => lang('set_language_to_use_tool'),
                             'disabled' => 'true'
                         );
 
                         $items['sync'] = array(
                             'href'       => '#',
-                            'title'      => lang('set_langauge_to_use_tool'),
+                            'title'      => lang('set_language_to_use_tool'),
                             'disabled' => 'true'
                         );
                     }
@@ -2963,7 +2963,7 @@ class Pro_search_mcp
                     $r = array($row['keywords']);
 
                     // Num results
-                    $r[] = number_format($row['num_results']);
+                    $r[] = !empty($row['num_results']) ? number_format($row['num_results']) : 0;
 
                     // Member
                     $r[] = isset($members[$row['member_id']])

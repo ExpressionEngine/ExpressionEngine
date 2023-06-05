@@ -23,6 +23,8 @@ class NavigationListItem extends ListItem
      */
     protected $addlink;
 
+    protected $addlinkAttibutes;
+
     /**
      * @var bool $divider Whether to display divider element below item
      */
@@ -52,9 +54,11 @@ class NavigationListItem extends ListItem
      *   URL for the item.
      * @return self This returns a reference to itself
      */
-    public function withAddLink($url)
+    public function withAddLink($url, $attrs = '')
     {
         $this->addlink = $url;
+
+        $this->addlinkAttibutes = $attrs;
 
         return $this;
     }
@@ -92,6 +96,7 @@ class NavigationListItem extends ListItem
             'text' => $this->text,
             'url' => $this->url,
             'addlink' => $this->addlink,
+            'addlinkAttibutes' => $this->addlinkAttibutes,
             'divider' => $this->divider,
             'attrs' => $attrs,
             'class' => $class,

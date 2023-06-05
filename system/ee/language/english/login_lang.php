@@ -3,7 +3,7 @@
 $lang = array(
 
     /* Log-in */
-    'credential_missmatch' => 'That is the wrong username or password',
+    'credential_mismatch' => 'That is the wrong username or password',
 
     'locked' => 'Locked',
 
@@ -38,6 +38,8 @@ $lang = array(
     'log_into' => 'Log into',
 
     'login' => 'Log In',
+
+    'multi_auth_redirect_site_not_found' => 'The site was not found in multi login configuration.',
 
     'new_password' => 'New password',
 

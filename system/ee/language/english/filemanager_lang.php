@@ -206,7 +206,7 @@ $lang = array(
 
     'constraints' => 'Constraints',
 
-    'coordiantes_desc' => 'x (horizontal) and y (vertical) axis coordinates to start the crop from.',
+    'coordinates_desc' => 'x (horizontal) and y (vertical) axis coordinates to start the crop from.',
 
     'coordinates' => 'Coordinates',
 
@@ -468,6 +468,10 @@ $lang = array(
     'type_other' => 'Other',
 
     'type_directory' => 'Folder',
+
+    'share_directory_on_all_sites' => 'Share Upload Directory on all sites?',
+
+    'share_directory_on_all_sites_desc' => 'Make files in this directory accessible through all MSM sites.<br><b>Note:</b> this can only be set on creation and cannot be changed.',
 
     'upload_btn_edit' => 'edit',
 
@@ -1052,7 +1056,7 @@ $lang = array(
 
     'error_renaming_already_exists' => 'Could not rename because file or folder with that name already exists',
 
-    'rename_success' => 'Successully renamed',
+    'rename_success' => 'Successfully renamed',
 
     'rename_success_desc' => '<code>%s</code> has been renamed to <code>%s</code>',
 

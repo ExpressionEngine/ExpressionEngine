@@ -517,6 +517,53 @@ context('Publish Page - Create', () => {
         })
       }
 
+      it('adds field groups', () => {
+
+        cy.authVisit('/admin.php?/cp/fields&group_id=0');
+        cy.get('.list-item__content').contains('Corpse').click()
+
+        cy.wait(5000)
+        cy.get('[data-input-value="field_channel_field_groups"] input[type=checkbox][value=1]').check();
+
+        cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+        cy.visit(Cypress._.replace(page.url, '{channel_id}', 3))
+        page.get('title').type("Fluid Field Test the First")
+        page.get('url_title').clear().type("fluid-field-test-first")
+        cy.hasNoErrors();
+
+        cy.get('.fluid__footer a').contains('Add News').click();
+
+        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-fieldset:visible').contains('News')
+        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').should('have.length', 4);
+        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').eq(0).should('contain', 'Body')
+        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').eq(1).should('contain', 'Extended text')
+        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').eq(2).should('contain', 'Image')
+        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').eq(3).should('contain', 'Item')
+
+        page.get('save').click()
+        //cy.screenshot({capture: 'fullPage'});
+        page.get('alert').contains('Entry Created')
+
+        // Make sure the fields stuck around after save
+        cy.log('Make sure the fields stuck around after save')
+        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-fieldset:visible').contains('News')
+        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').should('have.length', 4);
+        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').eq(0).should('contain', 'Body')
+        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').eq(1).should('contain', 'Extended text')
+        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').eq(2).should('contain', 'Image')
+        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').eq(3).should('contain', 'Item')
+
+        page.get('save').click()
+
+        //cy.screenshot({capture: 'fullPage'});
+
+        page.get('alert').contains('Entry Updated')
+
+        cy.visit('index.php/entries/complex-w-fluid')
+        cy.hasNoErrors();
+      })
+
       it('adds a field', () => {
 
         available_fields.forEach(function(field, index) {
@@ -548,6 +595,7 @@ context('Publish Page - Create', () => {
         cy.logCPPerformance()
 
         cy.visit('index.php/entries/complex-w-fluid')
+        cy.hasNoErrors();
       })
 
       it('adds repeat fields', () => {

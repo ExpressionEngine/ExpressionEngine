@@ -22,11 +22,11 @@ class EE_Messages_send extends EE_Messages
         /**  Check the paths
         /** -------------------------------------*/
         if ($this->upload_path == '') {
-            return ee()->lang->line('unable_to_recieve_attach');
+            return ee()->lang->line('unable_to_receive_attach');
         }
 
         if (! @is_dir($this->upload_path) or ! is_really_writable($this->upload_path)) {
-            return ee()->lang->line('unable_to_recieve_attach');
+            return ee()->lang->line('unable_to_receive_attach');
         }
 
         /** -------------------------------------
@@ -169,11 +169,11 @@ class EE_Messages_send extends EE_Messages
         /**  Check the paths
         /** -------------------------------------*/
         if ($this->upload_path == '') {
-            return ee()->lang->line('unable_to_recieve_attach');
+            return ee()->lang->line('unable_to_receive_attach');
         }
 
         if (! @is_dir($this->upload_path) or ! is_really_writable($this->upload_path)) {
-            return ee()->lang->line('unable_to_recieve_attach');
+            return ee()->lang->line('unable_to_receive_attach');
         }
 
         /** -------------------------------------
@@ -349,7 +349,7 @@ class EE_Messages_send extends EE_Messages
             $query = ee()->db->query("SELECT message_status FROM exp_message_data WHERE message_id = '" . ee()->db->escape_str(ee()->input->get_post('message_id')) . "'");
 
             if ($query->num_rows() > 0 && $query->row('message_status') == 'sent') {
-                return $this->_error_page(ee()->lang->line('messsage_already_sent'));
+                return $this->_error_page(ee()->lang->line('message_already_sent'));
             }
         }
 
@@ -475,7 +475,7 @@ class EE_Messages_send extends EE_Messages
         /**  Upload Path Set?
         /** -------------------------------------*/
         if ($this->upload_path == '' && (isset($_POST['remove']) or (isset($_FILES['userfile']['name']) && $_FILES['userfile']['name'] != ''))) {
-            $submission_error[] = ee()->lang->line('unable_to_recieve_attach');
+            $submission_error[] = ee()->lang->line('unable_to_receive_attach');
         }
 
         /** -------------------------------------

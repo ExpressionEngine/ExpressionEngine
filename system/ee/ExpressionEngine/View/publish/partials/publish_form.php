@@ -44,7 +44,7 @@
             ?>
             <button type="button" class="tab-bar__tab js-tab-button <?=$class?>" rel="t-<?=$index?>"><?=lang($tab->title)?></button>
             <?php endforeach; ?>
-            <?php if ($entry->getAutosaves()->count()): ?>
+            <?php if ($entry->getAutosaves()->filter('channel_id', $entry->channel_id)->count()): ?>
                 <button type="button" class="tab-bar__tab js-tab-button" rel="t-autosaves"><?=lang('autosaves')?></button>
             <?php endif; ?>
             </div>

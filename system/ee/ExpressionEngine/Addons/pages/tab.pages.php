@@ -145,8 +145,9 @@ class Pages_tab
         //ensure leading slash is present
         $value = '/' . trim($values['pages_uri'], '/');
 
+        $word_separator = ee()->config->item('word_separator') != "dash" ? '_' : '-';
         while (in_array($value, $uris)) {
-            $value = 'copy_' . $value;
+            $value = 'copy' . $word_separator . $value;
         }
         $_POST['pages__pages_uri'] = $values['pages_uri'] = $value;
 
@@ -238,6 +239,9 @@ class Pages_tab
     private function makeValidURIRule()
     {
         return function ($field, $value) {
+            if (empty($value)) {
+                return true;
+            }
             $c_page_uri = preg_replace(
                 "#[^a-zA-Z0-9_\-/\.]+$#i",
                 '',
@@ -261,6 +265,9 @@ class Pages_tab
     private function makeValidSegmentCountRule()
     {
         return function ($field, $value) {
+            if (empty($value)) {
+                return true;
+            }
             $value_segs = substr_count(trim($value, '/'), '/');
 
             // More than 9 pages URI segs?  goodbye
@@ -281,6 +288,9 @@ class Pages_tab
     private function makeNotDuplicatedRule($entry)
     {
         return function ($field, $value) use ($entry) {
+            if (empty($value)) {
+                return true;
+            }
             $static_pages = ee()->config->item('site_pages');
             $uris = $static_pages[ee()->config->item('site_id')]['uris'];
 
@@ -393,6 +403,24 @@ class Pages_tab
         $site = ee('Model')->get('Site', $site_id)->first();
         $site->site_pages = $site_pages;
         $site->save();
+    }
+
+    public function renderTableCell($data, $field_id, $entry)
+    {
+        $site_pages = ee()->config->item('site_pages');
+        $site_id = ee()->config->item('site_id');
+        $uri = array_key_exists($entry->entry_id, $site_pages[$site_id]['uris']) ? $site_pages[$site_id]['uris'][$entry->entry_id] : '';
+        if (!empty($uri)) {
+            return '<a href="' . str_replace('//', '/', ee()->functions->fetch_site_index(0, 0) . $uri) . '" target="_blank"><i class="fal fa-link"></i></a>';
+        }
+        return '';
+    }
+
+    public function getTableColumnConfig()
+    {
+        return [
+            'encode' => false
+        ];
     }
 }
 

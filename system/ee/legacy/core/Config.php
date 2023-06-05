@@ -48,8 +48,8 @@ class EE_Config
     /**
      * Load the EE config file and set the initial values
      *
-     * @access	private
-     * @return	void
+     * @access  private
+     * @return  void
      */
     public function _initialize()
     {
@@ -115,12 +115,12 @@ class EE_Config
     /**
      * Set configuration overrides
      *
-     * 	These are configuration exceptions.  In some cases a user might want
-     * 	to manually override a config file setting by adding a variable in
-     * 	the index.php file.  This loop permits this to happen.
+     *  These are configuration exceptions.  In some cases a user might want
+     *  to manually override a config file setting by adding a variable in
+     *  the index.php file.  This loop permits this to happen.
      *
-     * @access	private
-     * @return	void
+     * @access  private
+     * @return  void
      */
     public function _set_overrides($params = array())
     {
@@ -151,8 +151,8 @@ class EE_Config
     /**
      * Load Config File
      *
-     * @param	string	the config file name
-     * @return	boolean	if the file was loaded correctly
+     * @param   string  the config file name
+     * @return  boolean if the file was loaded correctly
      */
     public function load($file = '', $use_sections = false, $fail_gracefully = false)
     {
@@ -245,13 +245,13 @@ class EE_Config
      * This function lets us retrieve Multi-site Manager configuration
      * items from the database
      *
-     * @access	public
-     * @param	string	Name of the site
-     * @param	int		ID of the site
-     * @param	boolean	Whether or not this method should mutate the current
+     * @access  public
+     * @param   string  Name of the site
+     * @param   int     ID of the site
+     * @param   boolean Whether or not this method should mutate the current
      *   global config; when false, will just return the config for the
      *   specified site
-     * @return	void
+     * @return  void
      */
     public function site_prefs($site_name, $site_id = 1, $mutating = true)
     {
@@ -369,9 +369,9 @@ class EE_Config
      * Get config for another site, but do not mutate the active global config
      * and cache the config for accessing later as well
      *
-     * @access	public
-     * @param	int		Site ID to get the config for
-     * @return	array	Associative array of site config data
+     * @access  public
+     * @param   int     Site ID to get the config for
+     * @return  array   Associative array of site config data
      */
     public function get_cached_site_prefs($site_id)
     {
@@ -393,11 +393,11 @@ class EE_Config
      * Fetch a config file item
      *
      *
-     * @access	public
-     * @param	string	the config item name
-     * @param	string	the index name
-     * @param	boolean	Whether or not to return the raw value with unparsed variables
-     * @return	string
+     * @access  public
+     * @param   string  the config item name
+     * @param   string  the index name
+     * @param   boolean Whether or not to return the raw value with unparsed variables
+     * @return  string
      */
     public function item($item, $index = '', $raw_value = false)
     {
@@ -427,11 +427,11 @@ class EE_Config
     /**
      * Decodes and returns Pages information for sites
      *
-     * @param int $site_id	Site ID of to get Pages data for; if left blank,
-     *		Pages data from all sites will be returned
-     * @param string $data	Base64-encoded Pages data; if left blank, this
-     *		information will be queried from the database
-     * @return array	Pages information
+     * @param int $site_id  Site ID of to get Pages data for; if left blank,
+     *      Pages data from all sites will be returned
+     * @param string $data  Base64-encoded Pages data; if left blank, this
+     *      information will be queried from the database
+     * @return array    Pages information
      */
     public function site_pages($site_id = null, $data = null)
     {
@@ -490,8 +490,8 @@ class EE_Config
      *
      * Used on the fly by certain methods
      *
-     * @access	public
-     * @return	void
+     * @access  public
+     * @return  void
      */
     public function disable_tracking()
     {
@@ -506,9 +506,9 @@ class EE_Config
      * This function permits EE to ascertain the location of a specific
      * preference being requested.
      *
-     * @access	public
-     * @param	string	Name of the site
-     * @return	array
+     * @access  public
+     * @param   string  Name of the site
+     * @return  array
      */
     public function divination($which)
     {
@@ -563,6 +563,7 @@ class EE_Config
             'default_site_timezone',
             'date_format',
             'time_format',
+            'week_start',
             'mail_protocol',
             'email_newline',
             'smtp_server',
@@ -738,10 +739,10 @@ class EE_Config
      * site. Anything left over is shipped over to the _update_config() and
      * _update_dbconfig() methods for storage in the config files
      *
-     * @access	private
-     * @param	array
-     * @param	array
-     * @return	bool
+     * @access  private
+     * @param   array
+     * @param   array
+     * @return  bool
      */
     public function update_site_prefs($new_values = array(), $site_ids = array(), $find = '', $replace = '')
     {
@@ -866,12 +867,12 @@ class EE_Config
 
     /**
      * Check that reserved_category_word isn't the same thing as a template_name
-     * @param  int 		$site_id    ID of the site to upate
-     * @param  Array 	$site_prefs Site preferences sent to update_site_prefs
+     * @param  int      $site_id    ID of the site to upate
+     * @param  Array    $site_prefs Site preferences sent to update_site_prefs
      */
     private function _category_trigger_check($site_id, $site_prefs)
     {
-        // Category trigger matches template != biscuit	 (biscuits, Robin? Okay! --Derek)
+        // Category trigger matches template != biscuit  (biscuits, Robin? Okay! --Derek)
         if (isset($new_values['reserved_category_word']) and $new_values['reserved_category_word'] != $this->item('reserved_category_word')) {
             $escaped_word = ee()->db->escape_str($new_values['reserved_category_word']);
 
@@ -891,7 +892,7 @@ class EE_Config
 
     /**
      * Check paths in site preference array
-     * @param  Array 	$site_prefs Site preferences sent to update_site_prefs
+     * @param  Array    $site_prefs Site preferences sent to update_site_prefs
      */
     private function _check_paths($site_prefs)
     {
@@ -921,10 +922,10 @@ class EE_Config
 
     /**
      * Rename the site if MSM is not on
-     * @param  int 		$site_id    ID of the site to upate
-     * @param  Array 	$site_prefs Site preferences sent to update_site_prefs
-     * @param  String 	$find       String to find in site_name
-     * @param  String 	$replace    String to replace with in site_name
+     * @param  int      $site_id    ID of the site to upate
+     * @param  Array    $site_prefs Site preferences sent to update_site_prefs
+     * @param  String   $find       String to find in site_name
+     * @param  String   $replace    String to replace with in site_name
      * @return Array of update site preferences
      */
     private function _rename_non_msm_site($site_id, $site_prefs, $find, $replace)
@@ -945,9 +946,9 @@ class EE_Config
 
     /**
      * Update Pages for individual site
-     * @param  int 		$site_id    ID of the site to update
-     * @param  Array 	$site_prefs Site preferences sent to update_site_prefs
-     * @param  Object 	$query      Query object of row in exp_sites
+     * @param  int      $site_id    ID of the site to update
+     * @param  Array    $site_prefs Site preferences sent to update_site_prefs
+     * @param  Object   $query      Query object of row in exp_sites
      * @return [type]
      */
     private function _update_pages($site_id, $site_prefs, $query)
@@ -973,11 +974,11 @@ class EE_Config
 
     /**
      * Updates preference columns in exp_sites
-     * @param  int 		$site_id    ID of the site to update
-     * @param  Array 	$site_prefs Site preferences sent to update_site_prefs
-     * @param  Object 	$query      Query object of row in exp_sites
-     * @param  String 	$find       String to find in site_name
-     * @param  String 	$replace    String to replace with in site_name
+     * @param  int      $site_id    ID of the site to update
+     * @param  Array    $site_prefs Site preferences sent to update_site_prefs
+     * @param  Object   $query      Query object of row in exp_sites
+     * @param  String   $find       String to find in site_name
+     * @param  String   $replace    String to replace with in site_name
      * @return Array of update site preferences
      */
     private function _update_preferences($site_id, $site_prefs, $query, $find, $replace)
@@ -1022,7 +1023,7 @@ class EE_Config
     /**
      * Validates config values when updating site preferences and adds them to
      * the config file
-     * @param  Array 	$site_prefs Site preferences sent to update_site_prefs
+     * @param  Array    $site_prefs Site preferences sent to update_site_prefs
      */
     private function _remaining_config_values($site_prefs)
     {
@@ -1055,10 +1056,10 @@ class EE_Config
      * this lets us use this function instead of the "append" function used
      * previously
      *
-     * @access	private
-     * @param	array
-     * @param	array
-     * @return	bool
+     * @access  private
+     * @param   array
+     * @param   array
+     * @return  bool
      */
     public function _update_config($new_values = array(), $remove_values = array())
     {
@@ -1106,6 +1107,12 @@ class EE_Config
             //hack for CLI updater to write to config file on early steps
             $divineAll = [];
         }
+
+        // Allow the update:config command to write to the config file
+        if (REQ == 'CLI' && ee()->cache->get('cli/update-config-settings')) {
+            $divineAll = [];
+        }
+
         if (is_array($new_values)) {
             foreach ($new_values as $key => $val) {
                 if (is_array($val)) {
@@ -1310,9 +1317,9 @@ class EE_Config
      *
      * Fetches the config/preference fields, their types, and their default values
      *
-     * @access	public
-     * @param	string	$type	The type of config fields to be prepared
-     * @return	array	The array of config fields
+     * @access  public
+     * @param   string  $type   The type of config fields to be prepared
+     * @return  array   The array of config fields
      */
     public function get_config_fields($type)
     {
@@ -1524,11 +1531,11 @@ class EE_Config
      * Populates form elements with the initial value, or the submitted
      * value in case of a form validation error
      *
-     * @access	public
-     * @param	string	$type	The type of config fields to be prepared
-     * @param	mixed[]	$values	An optional associative array of values to use
-     *  	e.g. 'is_system_on' => 'y'
-     * @return	array	The prepared array for use in views
+     * @access  public
+     * @param   string  $type   The type of config fields to be prepared
+     * @param   mixed[] $values An optional associative array of values to use
+     *      e.g. 'is_system_on' => 'y'
+     * @return  array   The prepared array for use in views
      */
     public function prep_view_vars($type, $values = array())
     {
@@ -1755,9 +1762,9 @@ class EE_Config
     /**
      * Site URL
      *
-     * @access	public
-     * @param	string	the URI string
-     * @return	string
+     * @access  public
+     * @param   string  the URI string
+     * @return  string
      */
     public function site_url($uri = '')
     {
@@ -1838,8 +1845,8 @@ class EE_Config
     /**
      * System URL
      *
-     * @access	public
-     * @return	string
+     * @access  public
+     * @return  string
      */
     public function system_url()
     {
@@ -1851,10 +1858,10 @@ class EE_Config
     /**
      * Set a config file item
      *
-     * @access	public
-     * @param	string	the config item key
-     * @param	string	the config item value
-     * @return	void
+     * @access  public
+     * @param   string  the config item key
+     * @param   string  the config item value
+     * @return  void
      */
     public function set_item($item, $value)
     {
@@ -1868,9 +1875,9 @@ class EE_Config
      * after the Config class is instantiated.  It permits config items
      * to be assigned or overriden by variables contained in the index.php file
      *
-     * @access	private
-     * @param	array
-     * @return	void
+     * @access  private
+     * @param   array
+     * @return  void
      */
     public function _assign_to_config($items = array())
     {
