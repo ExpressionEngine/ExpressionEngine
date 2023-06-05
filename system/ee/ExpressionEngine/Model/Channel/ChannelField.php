@@ -315,15 +315,28 @@ class ChannelField extends FieldModel
     }
 
     /**
-     * Validate the field name to avoid variable name collisions
+     * The field name must not intersect witch Field Group short names
      */
-    public function validateNameIsNotReserved($key, $value, $params, $rule)
+    public function validateUnique($key, $value, array $params = array())
     {
-        if (in_array($value, ee()->cp->invalid_custom_field_names())) {
-            return lang('reserved_word');
+        $valid = parent::validateUnique($key, $value, $params);
+        if ($valid === true) {
+            $unique = $this->getModelFacade()
+                ->get('ChannelFieldGroup')
+                ->filter('short_name', $value);
+
+            foreach ($params as $field) {
+                $unique->filter($field, $this->getProperty($field));
+            }
+
+            if ($unique->count() > 0) {
+                return 'unique'; // lang key
+            }
+
+            return true;
         }
 
-        return true;
+        return $valid;
     }
 
     /**

@@ -79,6 +79,31 @@ class ChannelFieldGroup extends Model
     }
 
     /**
+     * The group short name must not intersect with Field names
+     */
+    public function validateUnique($key, $value, array $params = array())
+    {
+        $valid = parent::validateUnique($key, $value, $params);
+        if ($valid === true) {
+            $unique = $this->getModelFacade()
+                ->get('ChannelField')
+                ->filter('field_name', $value);
+
+            foreach ($params as $field) {
+                $unique->filter($field, $this->getProperty($field));
+            }
+
+            if ($unique->count() > 0) {
+                return 'unique'; // lang key
+            }
+
+            return true;
+        }
+
+        return $valid;
+    }
+
+    /**
      * Validate the field name to avoid variable name collisions
      */
     public function validateNameIsNotReserved($key, $value, $params, $rule)
@@ -98,7 +123,7 @@ class ChannelFieldGroup extends Model
     public function onBeforeValidate()
     {
         if (empty($this->getProperty('short_name')) && !empty($this->getProperty('group_name'))) {
-            $this->setProperty('short_name', preg_replace('/\s+/', '_', strtolower($this->getProperty('group_name'))));
+            $this->setProperty('short_name', substr('field_group_' . preg_replace('/\s+/', '_', strtolower($this->getProperty('group_name'))), 0, 50));
         }
     }
 

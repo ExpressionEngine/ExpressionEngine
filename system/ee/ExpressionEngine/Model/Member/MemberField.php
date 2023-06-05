@@ -190,18 +190,6 @@ class MemberField extends FieldModel
 
         return $key;
     }
-
-    /**
-     * Validate the field name to avoid variable name collisions
-     */
-    public function validateNameIsNotReserved($key, $value, $params, $rule)
-    {
-        if (in_array($value, ee()->cp->invalid_custom_field_names())) {
-            return lang('reserved_word');
-        }
-
-        return true;
-    }
 }
 
 // EOF
