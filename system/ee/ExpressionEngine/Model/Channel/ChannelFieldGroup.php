@@ -85,12 +85,29 @@ class ChannelFieldGroup extends Model
     {
         $valid = parent::validateUnique($key, $value, $params);
         if ($valid === true) {
+            if ($key == 'short_name') {
+                $key = 'field_name';
+            }
+            // check channel fields
             $unique = $this->getModelFacade()
                 ->get('ChannelField')
-                ->filter(($key == 'field_name' ? 'short_name' : $key), $value);
+                ->filter($key, $value);
 
             foreach ($params as $field) {
                 $unique->filter($field, $this->getProperty($field));
+            }
+
+            if ($unique->count() > 0) {
+                return 'unique'; // lang key
+            }
+
+            // check member fields
+            $unique = $this->getModelFacade()
+                ->get('MemberField')
+                ->filter('m_' . $key, $value);
+
+            foreach ($params as $field) {
+                $unique->filter('m_' . $field, $this->getProperty($field));
             }
 
             if ($unique->count() > 0) {
