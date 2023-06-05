@@ -47,7 +47,7 @@ class ChannelFieldGroup extends Model
 
     protected static $_validation_rules = array(
         'group_name' => 'required|unique|maxLength[50]|validateName',
-        'short_name' => 'unique|maxLength[50]|alphaDash|validateNameIsNotReserved',
+        'short_name' => 'unique|maxLength[50]|alphaDash|validateNameIsNotReserved|validateUniqueAmongFields',
     );
 
     protected static $_events = array(
@@ -81,26 +81,24 @@ class ChannelFieldGroup extends Model
     /**
      * The group short name must not intersect with Field names
      */
-    public function validateUnique($key, $value, array $params = array())
+    public function validateUniqueAmongFields($key, $value, array $params = array())
     {
-        $valid = parent::validateUnique($key, $value, $params);
-        if ($valid === true && $key == 'short_name') {
-            $unique = $this->getModelFacade()
-                ->get('ChannelField')
-                ->filter('field_name', $value);
+        // Check to see if we can find a channel field that matches the short name
+        $channelFields = $this->getModelFacade()
+            ->get('ChannelField')
+            ->filter('field_name', $value);
 
-            foreach ($params as $field) {
-                $unique->filter($field, $this->getProperty($field));
-            }
-
-            if ($unique->count() > 0) {
-                return 'unique'; // lang key
-            }
-
-            return true;
+        // Make sure group short name is unique among channel fields
+        foreach ($params as $field) {
+            $channelFields->filter($field, $this->getProperty($field));
         }
 
-        return $valid;
+        // If there are any matches, return the lang key of the error
+        if ($channelFields->count() > 0) {
+            return 'unique_among_channel_fields';
+        }
+
+        return true;
     }
 
     /**
