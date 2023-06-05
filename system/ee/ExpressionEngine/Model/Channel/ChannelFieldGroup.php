@@ -84,10 +84,9 @@ class ChannelFieldGroup extends Model
     public function validateUnique($key, $value, array $params = array())
     {
         $valid = parent::validateUnique($key, $value, $params);
-        if ($valid === true) {
-            if ($key == 'short_name') {
-                $key = 'field_name';
-            }
+        if ($valid === true && $key == 'short_name') {
+            $key = 'field_name';
+
             // check channel fields
             $unique = $this->getModelFacade()
                 ->get('ChannelField')

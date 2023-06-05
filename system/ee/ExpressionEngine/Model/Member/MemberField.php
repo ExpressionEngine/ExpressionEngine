@@ -197,12 +197,12 @@ class MemberField extends FieldModel
     public function validateUnique($key, $value, array $params = array())
     {
         $valid = parent::validateUnique($key, $value, $params);
-        if ($valid === true) {
-            $key = (strpos($key, 'm_') === 0) ? substr($key, 2) : $key;
+        $key = (strpos($key, 'm_') === 0) ? substr($key, 2) : $key;
+        if ($valid === true && $key == 'field_name') {
             // check channel field groups
             $unique = $this->getModelFacade()
                 ->get('ChannelFieldGroup')
-                ->filter(($key == 'field_name' ? 'short_name' : $key), $value);
+                ->filter('short_name', $value);
 
             foreach ($params as $field) {
                 $unique->filter(
