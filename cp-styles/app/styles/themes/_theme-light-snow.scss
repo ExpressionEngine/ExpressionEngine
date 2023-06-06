@@ -5,7 +5,7 @@
 
 // Base Colors - Snow Light Theme
 $brand-primary: #5D63F1;
-$brand-success: #00C571;
+$brand-success: #008739;
 $brand-warning: #FFB40B;
 $brand-danger: #FA5252;
 
@@ -24,8 +24,8 @@ $gray-70: darken($gray-0, 90);
 // Base Text - Snow Light Theme
 $text-primary: $gray-70;
 $text-normal: $gray-70;
-$text-secondary: $gray-40;
-$text-tertiary: $gray-50;
+$text-secondary: #686988;
+$text-tertiary: #4D4E71;
 $text-placeholder: $gray-30;
 $text-selection: inherit;
 $text-selection-bg: lighten($brand-primary, 25%);
@@ -43,7 +43,7 @@ $snow-theme: (
   accent: $brand-primary,
   accent-dark: darken($brand-primary, 15%),
 	accent-medium: lighten($brand-primary, 20%),
-	accent-light: lighten($brand-primary, 30%),
+	accent-light: #FFFBFF,
 
   // Grays
   gray-blank: $gray-blank,
@@ -65,10 +65,10 @@ $snow-theme: (
   warning: $brand-warning,
 	warning-light: lighten($brand-warning, 42%),
   error-dark: darken($brand-danger, 15%),
-	error: $brand-danger,
-	error-light: lighten($brand-danger, 30%),
+	error: #CC2331,
+	error-light: #FEE7E7,
 	security-caution: $brand-warning,
-	danger: $brand-danger,
+	danger: #DA333B,
 	keyboard-focus: lighten($brand-primary, 20%),
 	notification: #fa5252,
   notification-generic: lighten($brand-primary, 30%),
@@ -81,7 +81,7 @@ $snow-theme: (
   text-placeholder: $text-placeholder,
   text-selection: $text-selection,
   text-selection-bg: $text-selection-bg,
-  link: $link,
+  link: #515AE7,
   link-hover: $link-hover,
 
 	// Background
@@ -180,14 +180,14 @@ $snow-theme: (
   input-jump-bg: $gray-blank,
 
   // Sidebar
-  sidebar-text: desaturate(darken($gray-0, 40), 15),
+  sidebar-text: #707294,
   sidebar-text-primary: $text-normal,
   sidebar-text-faded: $text-secondary,
-  sidebar-text-active: $link,
-  sidebar-icon-active: $link,
-  sidebar-bg-active: $gray-0,
+  sidebar-text-active: #575FEC,
+  sidebar-icon-active: #575FEC,
+  sidebar-bg-active: #f7f7fb,
   sidebar-bg: $gray-blank,
-  sidebar-title-text: desaturate(darken($gray-0, 40), 15),
+  sidebar-title-text: #707294,
   sidebar-title-bg: $gray-blank,
   sidebar-title-border-bottom: $gray-10,
   sidebar-bottom-bg: $gray-blank,
