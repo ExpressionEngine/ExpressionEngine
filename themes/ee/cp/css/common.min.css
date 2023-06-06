@@ -34435,13 +34435,15 @@ a.ck.ck-button.ck-on {
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  padding: 2px 5px 4px;
-  border: 1px solid;
-  border-radius: 15px;
+  padding: 3px 10px 5px;
+  border: 1px solid transparent;
+  border-radius: 1000px;
   line-height: 1;
   text-transform: capitalize;
-  margin-left: 5px;
-  font-size: 11px;
+  margin-left: 8px;
+  font-size: 12px;
+  background: var(--ee-bg-blank);
+  white-space: nowrap;
 }
 
 .list-item__content .list-item__secondary {
