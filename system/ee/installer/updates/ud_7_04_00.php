@@ -29,6 +29,7 @@ class Updater
             [
                 'modifyMemberFieldTypeColumn',
                 'addMemberManagerViewsTable',
+                'addEditMemberFieldsPermission'
             ]
         );
 
@@ -95,6 +96,22 @@ class Updater
             ee()->dbforge->add_key(['role_id', 'member_id']);
             ee()->smartforge->create_table('member_manager_views');
         }
+    }
+
+    private function addEditMemberFieldsPermission()
+    {
+        $permissions = ee('db')->where('permission', 'can_admin_roles')->get('permissions');
+        if ($permissions->num_rows() > 0) {
+            foreach ($permissions->result_array() as $row) {
+                $insert = [
+                    'role_id' => $row['role_id'],
+                    'site_id' => $row['site_id'],
+                    'permission' => 'can_edit_member_fields'
+                ];
+                ee('db')->insert('permissions', $insert)
+            }
+        }
+
     }
 }
 

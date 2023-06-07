@@ -856,6 +856,8 @@ $lang = array(
 
     'edit_channel_fields' => 'Edit channel fields',
 
+    'edit_member_fields' => 'Edit member fields',
+
     'edit_files' => 'Edit files',
 
     'edit_member_field' => 'Edit Field',
@@ -1008,6 +1010,10 @@ $lang = array(
 
     'upload_new_toolsets' => 'Upload new toolsets',
 
+    'column_member_id' => 'ID#',
+
+    'column_username' => 'Name',
+
     /* Roles */
 
     'roles_manager' => 'Member Roles',
@@ -1155,6 +1161,8 @@ $lang = array(
     'access_overview_can_create_channel_fields' => 'Create fields',
 
     'access_overview_can_edit_channel_fields' => 'Edit fields',
+
+    'access_overview_can_edit_member_fields' => 'Edit member fields',
 
     'access_overview_can_delete_channel_fields' => 'Delete fields',
 

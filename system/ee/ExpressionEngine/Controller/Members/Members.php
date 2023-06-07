@@ -99,8 +99,6 @@ class Members extends CP_Controller
             ee()->functions->redirect($this->base_url);
         }
 
-        $this->generateSidebar('all_members');
-
         /*$members = ee('Model')->get('Member')->with('PrimaryRole', 'Roles');
 
         $filters = $this->makeAndApplyFilters($members, true);
@@ -154,17 +152,27 @@ class Members extends CP_Controller
         $vars['can_delete_members'] = ee('Permission')->can('delete_members');
 
         $vars['cp_heading'] = lang('all_members');
-        $vars['toolbar_items'] = [
-            'settings' => [
+        $vars['toolbar_items'] = [];
+        if (ee('Permission')->can('edit_member_fields')) {
+            $vars['toolbar_items']['fields'] = [
+                'href' => ee('CP/URL')->make('members/fields'),
+                'class' => 'button--secondary fal fa-pen-field',
+                'title' => lang('custom_member_fields')
+            ];
+        }
+        if (ee('Permission')->can('access_sys_prefs')) {
+            $vars['toolbar_items']['settings'] = [
                 'href' => ee('CP/URL')->make('settings/members'),
+                'class' => 'button--secondary icon--settings',
                 'title' => lang('member_settings')
-            ],
-            'action_button' => ee('Permission')->can('create_members') ? [
-                'text' => lang('new_member'),
+            ];
+        }
+        if (ee('Permission')->can('create_members')) {
+            $vars['toolbar_items']['action_button'] = [
+                'content' => lang('new_member'),
                 'href' => ee('CP/URL')->make('members/create')
-            ] : null
-        ];
-        
+            ];
+        }
 
         ee()->view->base_url = $this->base_url;
         ee()->view->ajax_validate = true;

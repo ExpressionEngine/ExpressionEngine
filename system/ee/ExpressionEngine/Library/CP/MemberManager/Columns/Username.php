@@ -18,11 +18,9 @@ use ExpressionEngine\Library\CP\Table;
  */
 class Username extends EntryManager\Columns\Title
 {
-    public function getTableColumnConfig()
+    public function getTableColumnLabel()
     {
-        return [
-            'encode' => false,
-        ];
+        return 'column_username';
     }
 
     public function renderTableCell($data, $field_id, $member, $viewtype = 'list', $pickerMode = false, $addQueryString = [])

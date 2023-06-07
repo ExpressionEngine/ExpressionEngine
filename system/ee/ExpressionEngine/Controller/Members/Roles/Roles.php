@@ -1740,6 +1740,7 @@ class Roles extends AbstractRolesController
                     'can_edit_members' => lang('edit_members'),
                     'can_delete_members' => lang('can_delete_members'),
                     'can_ban_users' => lang('can_ban_users'),
+                    'can_edit_member_fields' => lang('edit_member_fields'),
                     'can_email_from_profile' => lang('can_email_from_profile'),
                     'can_edit_html_buttons' => lang('can_edit_html_buttons')
                 ],

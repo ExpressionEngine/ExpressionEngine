@@ -31,7 +31,7 @@ class ColumnFactory
         'checkbox' => Columns\Checkbox::class
     ];
 
-    private static $instances = [];
+    protected static $instances = [];
 
     /**
      * Returns an instance of a column given its identifier. This factory uses
@@ -176,7 +176,7 @@ class ColumnFactory
      *
      * @return array[string]
      */
-    private static function getCompatibleFieldtypes()
+    protected static function getCompatibleFieldtypes()
     {
         static $fieldtypes = false;
         if ($fieldtypes === false) {
