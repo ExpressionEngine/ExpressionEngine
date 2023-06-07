@@ -28,6 +28,7 @@ class Updater
         $steps = new \ProgressIterator(
             [
                 'modifyMemberFieldTypeColumn',
+                'addMemberManagerViewsTable',
             ]
         );
 
@@ -52,6 +53,48 @@ class Updater
                 ]
             ]
         );
+    }
+
+    private function addMemberManagerViewsTable()
+    {
+        if (! ee()->db->table_exists('member_manager_views')) {
+            ee()->dbforge->add_field(
+                [
+                    'view_id' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'unsigned' => true,
+                        'null' => false,
+                        'auto_increment' => true
+                    ],
+                    'role_id' => [
+                        'type' => 'int',
+                        'constraint' => 6,
+                        'unsigned' => true,
+                        'null' => false,
+                    ],
+                    'member_id' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'unsigned' => true,
+                        'null' => false,
+                    ],
+                    'name' => [
+                        'type' => 'varchar',
+                        'constraint' => 128,
+                        'null' => false,
+                        'default' => '',
+                    ],
+                    'columns' => [
+                        'type' => 'text',
+                        'null' => false
+                    ]
+                ]
+            );
+            ee()->dbforge->add_key('view_id', true);
+            ee()->dbforge->add_key(['role_id', 'member_id']);
+            ee()->smartforge->create_table('member_manager_views');
+        }
     }
 }
 

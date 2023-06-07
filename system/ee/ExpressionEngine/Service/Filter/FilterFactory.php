@@ -360,6 +360,16 @@ class FilterFactory
     }
 
     /**
+     * This will instantiate and return a default MemberManagerColumns filter
+     *
+     * @return Filter\MemberManagerColumns a MemberManagerColumns Filter object
+     */
+    protected function createDefaultMemberManagerColumns($columns, $primaryRole = null, $view_id = null)
+    {
+        return new Filter\MemberManagerColumns($columns, $primaryRole, $view_id);
+    }
+
+    /**
      * This will instantiate and return a default Sort filter
      *
      * @return Filter\Sort a Sort Filter object

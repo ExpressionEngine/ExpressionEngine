@@ -1,21 +1,35 @@
 <?php $this->extend('_templates/default-nav', array(), 'outer_box'); ?>
 
-<div class="box snap mb panel">
-	<div class="tbl-ctrls">
-	<?=form_open($table['base_url'])?>
-  <div class="panel-heading">
-    <div class="app-notice-wrap">
-      <?=ee('CP/Alert')->get('view-members')?>
-    </div>
-    <div class="form-btns form-btns-top">
-      <div class="title-bar js-filters-collapsible title-bar--large">
-  			<h3 class="title-bar__title"><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h3>
-  			<?php if (isset($filters)) {
-    echo $filters;
-} ?>
-  		</div>
-    </div>
-  </div>
+<div class="box panel">
+    <div class="tbl-ctrls">
+        <?=form_open($table['base_url'], ['data-save-default-url' => ee('CP/URL')->make('members/views/save-default', ['role_id' => $role_id])->compile()])?>
+            <div class="panel-heading">
+                <div class="title-bar">
+                    <h3 class="title-bar__title title-bar--large"><?=$cp_heading?></h3>
+
+                    <?php $this->embed('ee:_shared/title-toolbar', $toolbar_items); ?>
+
+                </div>
+            </div>
+
+            <div class="entry-pannel-notice-wrap">
+                <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
+            </div>
+
+            <div class="filter-search-bar">
+                <!-- All filters (not including search input) are contained within 'filter-search-bar__filter-row' -->
+                <div class="filter-search-bar__filter-row">
+                    <?php if (isset($filters)) echo $filters; ?>
+					<div class="filter-search-bar__search-row">
+                    <?php if (isset($filters_search)) echo $filters_search; ?>
+                </div>
+                </div>
+
+
+            </div>
+
+
+
 
 		<?php $this->embed('_shared/table', $table); ?>
 

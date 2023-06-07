@@ -178,8 +178,6 @@ $lang = array(
 
     'login_as_user' => 'SuperAdmin Logging In as User',
 
-    'manage_bans' => 'Ban Settings',
-
     'maximum_members_reached' => 'You have reached the maximum number of Members allowed.',
 
     'mbr_email_address' => 'Email',

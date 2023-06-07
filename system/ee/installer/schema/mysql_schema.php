@@ -1549,6 +1549,17 @@ class EE_Schema
 			KEY `viewtype_upload_id_member_id` (`viewtype`, `upload_id`, `member_id`)
 		);";
 
+        // member manager
+        $Q[] = "CREATE TABLE `exp_member_manager_views` (
+			`view_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`role_id` int(6) unsigned NOT NULL,
+			`member_id` int(10) unsigned NOT NULL,
+			`name` varchar(128) NOT NULL DEFAULT '',
+			`columns` text NOT NULL,
+			PRIMARY KEY (`view_id`),
+			KEY `role_id_member_id` (`role_id`, `member_id`)
+		);";
+
         // Default menu set
         $Q[] = "INSERT INTO exp_menu_sets(name) VALUES ('Default')";
 

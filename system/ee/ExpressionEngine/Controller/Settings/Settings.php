@@ -104,6 +104,7 @@ class Settings extends CP_Controller
                 ->addBasicList();
 
             $list->addItem(lang('member_settings'), ee('CP/URL')->make('settings/members'));
+            $list->addItem(lang('manage_bans'), ee('CP/URL')->make('settings/ban'));
             $list->addItem(lang('messages'), ee('CP/URL')->make('settings/messages'));
             $list->addItem(lang('avatars'), ee('CP/URL')->make('settings/avatars'));
         }
