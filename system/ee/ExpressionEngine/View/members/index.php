@@ -16,7 +16,7 @@
                 <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
             </div>
 
-            <div class="filter-search-bar">
+            <div class="filter-search-bar members--filter-search-bar">
                 <!-- All filters (not including search input) are contained within 'filter-search-bar__filter-row' -->
                 <div class="filter-search-bar__filter-row">
                     <?php if (isset($filters)) echo $filters; ?>
