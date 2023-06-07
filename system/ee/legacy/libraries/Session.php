@@ -109,8 +109,8 @@ class EE_Session
             $this->user_session_len = ee()->config->item('user_session_length');
         }
 
-        if (ee()->config->item('control_panel_session_length')) {
-            $this->cpan_session_len = ee()->config->item('control_panel_session_length');
+        if (ee()->config->item('cp_session_length')) {
+            $this->cpan_session_len = ee()->config->item('cp_session_length');
         }
 
         $this->session_length = $this->_setup_session_length();
