@@ -294,7 +294,7 @@ class CI_DB_utility extends CI_DB_forge
         if (($prefs['format'] == 'gzip' and ! @function_exists('gzencode'))
         or ($prefs['format'] == 'zip' and ! @function_exists('gzcompress'))) {
             if ($this->db->db_debug) {
-                return $this->db->display_error('db_unsupported_compression');
+                return $this->db->display_error('db_unsuported_compression');
             }
 
             $prefs['format'] = 'txt';

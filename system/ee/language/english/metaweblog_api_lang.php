@@ -76,7 +76,7 @@ $lang = array(
 
     'metaweblog_keywords_field_desc' => 'Field used for keywords.',
 
-    'metaweblog_missing_fields' => 'A Field was Left Blank',
+    'metaweblog_mising_fields' => 'A Field was Left Blank',
 
     'metaweblog_more_field' => 'More',
 

@@ -319,7 +319,7 @@ $lang = array(
 
     'members_deleted' => 'Members Deleted',
 
-    'mismatched_passwords' => 'The password and password confirmation do not match',
+    'missmatched_passwords' => 'The password and password confirmation do not match',
 
     'moderation_actions' => 'Moderation actions',
 

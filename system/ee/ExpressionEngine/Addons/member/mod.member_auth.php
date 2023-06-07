@@ -121,7 +121,7 @@ class Member_auth extends Member
         }
 
         if (strlen($password) > PASSWORD_MAX_LENGTH) {
-            return ee()->output->show_user_error('general', lang('credential_mismatch'));
+            return ee()->output->show_user_error('general', lang('credential_missmatch'));
         }
 
         // This should go in the auth lib.
