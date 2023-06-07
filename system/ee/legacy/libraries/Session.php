@@ -105,8 +105,8 @@ class EE_Session
         ee()->load->library('remember');
         ee()->load->library('localize');
 
-        if (ee()->config->item('user_session_length')) {
-            $this->user_session_len = ee()->config->item('user_session_length');
+        if (ee()->config->item('website_session_length')) {
+            $this->user_session_len = ee()->config->item('website_session_length');
         }
 
         if (ee()->config->item('cp_session_length')) {
