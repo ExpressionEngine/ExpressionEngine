@@ -6,7 +6,7 @@
     <!-- Change number of blurb columns via inline grid style below IF less than 3 blurbs: -->
     <div class="upgrade-success-banner__blurb-wrapper" style="grid-template-columns: repeat(4, 1fr);">
 
-        <a href="https://expressionengine.com/blog/expressionengine-7-official-release" class="upgrade-success-banner__blurb" target="_blank">
+        <a href="https://expressionengine.com/blog/expressionengine-7.3" class="upgrade-success-banner__blurb" target="_blank">
             <i class="fal fa-newspaper fa-fw"></i>
             <h6>ExpressionEngine 7.3.0</h6>
             <p>Packed with the features targeted to improve and speed up your content management process. <span class="upgrade-success-banner__blurb-learn">Read the blog post&hellip;</span></p>
