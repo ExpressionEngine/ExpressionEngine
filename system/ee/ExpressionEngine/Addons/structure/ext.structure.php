@@ -460,7 +460,7 @@ class Structure_ext
             $this->top_id = array_search($this->segment_1 . $trailing_slash, $this->site_pages['uris']);
 
             // -------------------------------------------
-            //  Create all Structure global variabes
+            //  Create all Structure global variables
             // -------------------------------------------
 
             $this->_create_global_vars();

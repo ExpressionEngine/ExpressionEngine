@@ -93,7 +93,7 @@ class LexerTest extends TestCase
 
     /**
      * In the event that a comment (commonly an annotation) immemdiately
-     * preceeds a '}' in a TEMPLATE_STRING context, that '}' should not
+     * precedes a '}' in a TEMPLATE_STRING context, that '}' should not
      * be an 'RD' token, but rather a TEMPLATE_STRING token. This test
      * confirms that.
      *
@@ -2361,7 +2361,7 @@ class LexerTest extends TestCase
             }
         }
 
-        // Sepcial case: negative numbers
+        // Special case: negative numbers
         foreach ($operators as $operator) {
             $value = '-5';
 
@@ -2377,7 +2377,7 @@ class LexerTest extends TestCase
             );
         }
 
-        // Sepcial case: bigfloat numbers
+        // Special case: bigfloat numbers
         foreach ($operators as $operator) {
             $value = '5.1';
 

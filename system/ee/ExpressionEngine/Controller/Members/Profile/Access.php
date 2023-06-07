@@ -343,7 +343,7 @@ class Access extends Profile
             ],
         ];
 
-        // Per-Channel Permissons
+        // Per-Channel Permissions
         $channels = ee('Model')->get('Channel')
             ->fields('channel_id', 'channel_title')
             ->filter('site_id', ee()->config->item('site_id'))

@@ -747,7 +747,7 @@ class JumpMenu extends AbstractJumpMenu
                         'command' => 'email_charset outgoing_email',
                         'command_title' => 'email_charset'
                     ),
-                    // Email Protocal
+                    // Email Protocol
                     'fieldset-mail_protocol' => array(
                         'trail' => [
                             //'settings',
@@ -865,7 +865,7 @@ class JumpMenu extends AbstractJumpMenu
                         'command' => 'caching_driver',
                         'command_title' => 'caching_driver'
                     ),
-                    // Cachable URIs
+                    // Cacheable URIs
                     'fieldset-max_caches' => array(
                         'trail' => [
                             //'settings',
@@ -2216,7 +2216,7 @@ class JumpMenu extends AbstractJumpMenu
         //take out anchors and make them separate items
         foreach ($items[1] as $key => $item) {
             if (isset($item['anchors'])) {
-                foreach ($item['anchors'] as $achor_key => $anchor) {
+                foreach ($item['anchors'] as $anchor_key => $anchor) {
                     if (empty($anchor)) {
                         continue;
                     }
@@ -2230,13 +2230,13 @@ class JumpMenu extends AbstractJumpMenu
                             $trail = lang($anchor['trail']) . ' &raquo; ';
                         }
                     }
-                    $items[1][$key . '_' . $achor_key] = array(
+                    $items[1][$key . '_' . $anchor_key] = array(
                         'icon' => $item['icon'],
                         'command' => $anchor['command'],
                         'command_title' => $trail . (isset($anchor['command_title']) ? lang($anchor['command_title']) : lang($anchor['command'])),
                         'dynamic' => isset($item['dynamic']) ? $item['dynamic'] : false,
                         'addon' => isset($item['addon']) ? $item['addon'] : false,
-                        'target' => ee('CP/URL')->make($item['target'])->compile() . '#' . $achor_key,
+                        'target' => ee('CP/URL')->make($item['target'])->compile() . '#' . $anchor_key,
                         'permission' => isset($item['permission']) ? $item['permission'] : null
                     );
                 }

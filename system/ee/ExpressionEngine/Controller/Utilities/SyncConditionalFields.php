@@ -237,7 +237,7 @@ class SyncConditionalFields extends Utilities
             'message_type' => 'success',
             'channel_id' => $channel_id,
             'entries' => $entries->pluck('entry_id'),
-            'entries_proccessed' => $entries->count()
+            'entries_processed' => $entries->count()
         ]);
     }
 

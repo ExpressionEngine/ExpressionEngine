@@ -619,7 +619,7 @@ class Grid_lib
             $fieldtype = $ft_api->setup_handler($field_short_name, true);
 
             // Check to see if the fieldtype accepts Grid as a content type;
-            // also, temporarily exlcude Relationships for content types
+            // also, temporarily exclude Relationships for content types
             // other than channel
             if (empty($fieldtype) ||
                 ! method_exists($fieldtype, 'accepts_content_type') ||
@@ -1072,7 +1072,7 @@ class Grid_lib
     }
 
     /**
-     * Performes find and replace for input names in order to namespace them
+     * Performs find and replace for input names in order to namespace them
      * for a POST array
      *
      * @param	string	String to search

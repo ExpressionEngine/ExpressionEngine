@@ -36,7 +36,7 @@ if (! isset($alerts_name)) {
                     </div>
                 </div>
             </div>
-            <div class="entry-pannel-notice-wrap">
+            <div class="entry-panel-notice-wrap">
                 <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
 
                 <div class="alert alert--success f_manager-alert">

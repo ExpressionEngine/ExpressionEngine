@@ -201,7 +201,7 @@ class EE_Cache_redis extends CI_Driver
             return false;
         }
 
-        // Redis will return FALSE sometimes instead of throwing an exeption
+        // Redis will return FALSE sometimes instead of throwing an exception
         if (! $result) {
             log_message('debug', 'Redis connection failed.');
             $this->_redis = false;

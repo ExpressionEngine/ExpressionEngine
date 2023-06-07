@@ -227,7 +227,7 @@ class Addon
     }
 
     /**
-     * Gets the 'name' of the add-on, prefering to use the module's lang() key
+     * Gets the 'name' of the add-on, preferring to use the module's lang() key
      * if it is defined, otherwise using the 'name' key in the provider file.
      *
      * @return string product name
@@ -566,7 +566,7 @@ class Addon
                 }
             }
         } catch (\Exception $e) {
-            //if add-on does not properly implement jumps, we don't want to take resposibility, so just skip that
+            //if add-on does not properly implement jumps, we don't want to take responsibility, so just skip that
         }
 
         return $items;

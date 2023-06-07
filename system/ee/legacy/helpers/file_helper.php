@@ -20,7 +20,7 @@ if (! defined('BASEPATH')) {
 /**
  * Read File
  *
- * Opens the file specfied in the path and returns it as a string.
+ * Opens the file specified in the path and returns it as a string.
  *
  * @access  public
  * @param   string  path to file

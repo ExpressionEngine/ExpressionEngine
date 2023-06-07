@@ -55,12 +55,12 @@ require_once APPPATH . 'libraries/relationship_parser/Tree_builder.php';
  * 				{games:away:players:number} {games:away:players:first_name} {games:away:players:last_name}
  * 			{games:away:players}
  * 		{/games}
- * 	{/exp:channel:entires}
+ * 	{/exp:channel:entries}
  *
  *
  * We're only interested in the relationship fields, but we want to maintain
  * the parent child relationships of the tags, so we turn it into a tree
- * hierachy such as this:
+ * hierarchy such as this:
  *
  *					{games}
  *		{games:home}		{games:away}

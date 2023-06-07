@@ -716,7 +716,7 @@ class MemberImport extends Utilities
             return false;
         }
 
-        //  Retreive Valid fields from database
+        //  Retrieve Valid fields from database
         $query = ee()->db->query("SHOW COLUMNS FROM exp_members");
         $existing_fields['birthday'] = '';
 

@@ -56,7 +56,7 @@ class Submenu extends Menu
     /**
      * Add filter box
      *
-     * @param String $placholder Search box placeholder text
+     * @param String $placeholder Search box placeholder text
      * @return $this
      */
     public function withFilter($placeholder)

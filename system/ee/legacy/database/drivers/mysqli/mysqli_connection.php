@@ -29,7 +29,7 @@ class CI_DB_mysqli_connection
     protected $mysqlnd;
 
     /**
-     * Create a conneciton
+     * Create a connection
      *
      * @param Array $config Config values
      */

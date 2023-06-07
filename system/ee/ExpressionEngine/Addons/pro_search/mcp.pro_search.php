@@ -1312,7 +1312,7 @@ class Pro_search_mcp
         ee()->load->library('pro_search_words');
 
         // --------------------------------------
-        // Get word count per languate
+        // Get word count per language
         // --------------------------------------
 
         $counts = ee()->pro_search_word_model->get_lang_count();
@@ -2046,7 +2046,7 @@ class Pro_search_mcp
     }
 
     /**
-     * Delete shotcut
+     * Delete shortcut
      */
     public function delete_shortcut()
     {
@@ -2394,7 +2394,7 @@ class Pro_search_mcp
         $this->data['form_action'] = $this->mcp_url('replace');
 
         // --------------------------------------
-        // If Ajax request, load parial view and exit
+        // If Ajax request, load partial view and exit
         // --------------------------------------
 
         if (is_ajax()) {

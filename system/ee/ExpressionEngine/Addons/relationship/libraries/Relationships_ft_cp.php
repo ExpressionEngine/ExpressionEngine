@@ -198,7 +198,7 @@ class Relationships_ft_cp
 
         $authors = array();
 
-        // Reoder by groups with subitems for authors
+        // Reorder by groups with subitems for authors
         foreach ($roles as $role) {
             $authors['g_' . $role->role_id] = array(
                 'name' => $role->name,

@@ -23,7 +23,7 @@ class LanguageKeysTest extends TestCase
      * @param  array $files Array from directory_map()
      * @param  string $path Path where files are located
      * @param  Callable $callback Method to call with the list of files,
-     *  expectes a callable with ($filename, $language_array)
+     *  expects a callable with ($filename, $language_array)
      * @return void
      */
     private function recurseFiles($files, $path, $callback)

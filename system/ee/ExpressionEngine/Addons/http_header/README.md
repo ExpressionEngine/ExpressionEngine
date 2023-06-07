@@ -24,7 +24,7 @@ This is a single tag that will set a 410 "Gone" status on the request.
 - `access_control_max_age=` - Sets the `Access-Control-Max-Age` HTTP Header.
 - `alt_svc=` - Sets the `Alt-Svc` HTTP Header.
 - `cache_control=` - Sets the `Cache-Control` HTTP Header.
-- `charset=` - Sets the charset to use with the `content_type` paramter.
+- `charset=` - Sets the charset to use with the `content_type` parameter.
 - `content_disposition=` - Sets the `Content-Disposition` HTTP Header. You can manually write out the full header value (i.e. `attachment; filename="example.txt"`), or just use a value of "attachmenet" and use the `filename=` parameter.
 - `content_encoding=` - Sets the `Content-Encoding` HTTP Header.
 - `content_language=` - Sets the `Content-Language` HTTP Header.

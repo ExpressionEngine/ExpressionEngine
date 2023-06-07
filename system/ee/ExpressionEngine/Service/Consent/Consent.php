@@ -381,7 +381,7 @@ class Consent
     }
 
     /**
-     * Checks to make sure the caller has write access premission to a Consent Request
+     * Checks to make sure the caller has write access permission to a Consent Request
      *
      * @param  object $request ExpressionEngine\Model\Consent\ConsentRequest
      * @return bool whether or not the caller has permission to modify the user's consent

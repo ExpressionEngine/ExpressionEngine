@@ -867,7 +867,7 @@ class EE_Config
 
     /**
      * Check that reserved_category_word isn't the same thing as a template_name
-     * @param  int      $site_id    ID of the site to upate
+     * @param  int      $site_id    ID of the site to update
      * @param  Array    $site_prefs Site preferences sent to update_site_prefs
      */
     private function _category_trigger_check($site_id, $site_prefs)
@@ -922,7 +922,7 @@ class EE_Config
 
     /**
      * Rename the site if MSM is not on
-     * @param  int      $site_id    ID of the site to upate
+     * @param  int      $site_id    ID of the site to update
      * @param  Array    $site_prefs Site preferences sent to update_site_prefs
      * @param  String   $find       String to find in site_name
      * @param  String   $replace    String to replace with in site_name
@@ -1137,7 +1137,7 @@ class EE_Config
                     $base_regex = '#(\$config\[(\042|\047)' . $key . '\\2\]\s*=\s*)';
 
                     // Here we need to determine which regex to use for matching
-                    // the config varable's value; if we're replacing an array,
+                    // the config variable's value; if we're replacing an array,
                     // use regex that spans multiple lines until hitting a
                     // semicolon
                     if (is_array($new_values[$key])) {
@@ -1873,7 +1873,7 @@ class EE_Config
      *
      * This function is called by the front controller (boot.php)
      * after the Config class is instantiated.  It permits config items
-     * to be assigned or overriden by variables contained in the index.php file
+     * to be assigned or overridden by variables contained in the index.php file
      *
      * @access  private
      * @param   array

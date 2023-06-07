@@ -112,7 +112,7 @@ class DashboardWidget extends Model
     }
 
     /**
-     * genereate html for this widget
+     * generate html for this widget
      */
     public function generateHtml($edit_mode = false, $enabled = true)
     {
@@ -145,7 +145,7 @@ class DashboardWidget extends Model
                 return $html;
             }
             $html = $template->template_data;
-        } elseif ($this->widget_source == 'pro') { //first pary
+        } elseif ($this->widget_source == 'pro') { // first party
             $file_path = PATH_ADDONS . 'pro/widgets/' . $this->widget_file . '.' . $this->widget_type;
         } else { //third party add-ons
             //do they have permission for it? we only have system for module permissions in place
@@ -176,7 +176,7 @@ class DashboardWidget extends Model
                     return $html;
                 }
                 try {
-                    $widget = new $widgetClass($this, $edit_mode, $enabled);// we will load the widget instance into contructor
+                    $widget = new $widgetClass($this, $edit_mode, $enabled);// we will load the widget instance into constructor
                     $html = $widget->getHtml();
                 } catch (\Throwable $e) {
                 }

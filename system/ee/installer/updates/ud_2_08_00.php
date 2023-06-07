@@ -253,7 +253,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
     /**
      * Update Config to Add cookie_httponly
      *
-     * Update the config.php file to add the new cookie_httponly paramter and
+     * Update the config.php file to add the new cookie_httponly parameter and
      * set it to default to 'y'.
      */
     private function _update_config_add_cookie_httponly()

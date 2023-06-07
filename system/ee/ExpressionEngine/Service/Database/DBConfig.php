@@ -106,7 +106,7 @@ class DBConfig extends ConfigWithDefaults
      *
      * @throws Exception If the $group specified or the active_group specified
      * in the config does not have related configuration details
-     * @throws Exception If the $group specfiied or the active_group specified
+     * @throws Exception If the $group specified or the active_group specified
      * in the config does not contain a username, hostname, and database
      *
      * @return array         The database configuration information consumable

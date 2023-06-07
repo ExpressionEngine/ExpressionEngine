@@ -56,7 +56,7 @@ class EE_Input
      * Delete a Cookie
      *
      * Delete a cookie with the given name.  Prefix will be automatically set
-     * from the configuation file, as will domain and path.  Httponly must be
+     * from the configuration file, as will domain and path.  Httponly must be
      * must be equal to the value used when setting the cookie.
      *
      * @param	string	The name of the cookie to be deleted.
@@ -137,7 +137,7 @@ class EE_Input
 
         if ($data['domain'] !== '' || $data['path'] !== '/' || $data['prefix'] !== '') {
             ee()->load->library('logger');
-            ee()->logger->developer('Warning: domain, path and prefix must be set in EE\'s configuration files and cannot be overriden in set_cookie.');
+            ee()->logger->developer('Warning: domain, path and prefix must be set in EE\'s configuration files and cannot be overridden in set_cookie.');
         }
 
         // Clean up the value.
@@ -181,7 +181,7 @@ class EE_Input
      * EE_Input::delete_cookie(). Handles the common config file logic, calls
      * the set_cookie_end hook and sets the cookie.
      *
-     * Must recieve name, value, and expire in the parameter array or
+     * Must receive name, value, and expire in the parameter array or
      * will throw an exception.
      *
      * @param	mixed[]	The array of data containing name, value, expire and
@@ -833,7 +833,7 @@ class EE_Input
             'system_folder', 'application_folder', 'BM', 'EXT',
             'CFG', 'URI', 'RTR', 'OUT', 'IN');
 
-        // Unset globals for securiy.
+        // Unset globals for security.
         // This is effectively the same as register_globals = off
         foreach (array($_GET, $_POST, $_COOKIE) as $global) {
             if (! is_array($global)) {

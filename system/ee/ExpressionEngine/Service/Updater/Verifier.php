@@ -40,7 +40,7 @@ class Verifier
      * @param	string	$path		Path to directory to check
      * @param	string	$hash_path	Path to location of hash manifest file
      * @param	string	$subpath	Optional subpath inside hashmap to limit verification to that path
-     * @param	array	$exclusions	Array of any paths to exlude when verifying
+     * @param	array	$exclusions	Array of any paths to exclude when verifying
      */
     public function verifyPath($path, $hash_path, $subpath = '', array $exclusions = [])
     {

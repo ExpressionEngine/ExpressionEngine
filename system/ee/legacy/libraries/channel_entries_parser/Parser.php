@@ -125,7 +125,7 @@ class EE_Channel_data_parser
     /**
      * Run the main parsing loop.
      *
-     * Takes the data row, the preparsed tagdata, and any additonal
+     * Takes the data row, the preparsed tagdata, and any additional
      * options and delegates to the proper parsing components.
      *
      * @param	array	The data row.

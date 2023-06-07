@@ -54,10 +54,10 @@ trait FileUsageTrait
                 $uploadLocation = ee('Model')->get('UploadDestination', $dir_id)->first(true);
                 // Make sure UploadLocation still exists, would be better if we could filter out these files earlier
                 if (!is_null($uploadLocation)) {
-                    foreach ($file_names as $i => $fileRealtivePath) {
-                        $file = $uploadLocation->getFileByPath($fileRealtivePath);
+                    foreach ($file_names as $i => $fileRelativePath) {
+                        $file = $uploadLocation->getFileByPath($fileRelativePath);
                         if (!empty($file)) {
-                            $fileUsageReplacements[$file->getId()] = ['{filedir_' . $file->upload_location_id . '}' . $fileRealtivePath => '{file:' . $file->file_id . ':url}'];
+                            $fileUsageReplacements[$file->getId()] = ['{filedir_' . $file->upload_location_id . '}' . $fileRelativePath => '{file:' . $file->file_id . ':url}'];
                         }
                     }
                 }

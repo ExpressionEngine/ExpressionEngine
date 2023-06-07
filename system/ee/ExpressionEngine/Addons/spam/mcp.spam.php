@@ -351,7 +351,7 @@ class Spam_mcp
      * This method is used when content in the spam trap is marked as a false
      * positive. It grabs the stored callback from the spam trap, runs it,
      * and then clears that entry from the spam trap. Everywhere that uses the
-     * spam module is reponsible for providing it's own callback when it calls
+     * spam module is responsible for providing it's own callback when it calls
      * the moderate method.
      *
      * @param mixed $trapped
@@ -554,7 +554,7 @@ class Spam_mcp
         }
 
         if ($processing === true) {
-            $status = 'proccessing';
+            $status = 'processing';
         } else {
             $status = 'finished';
         }
@@ -724,7 +724,7 @@ class Spam_mcp
      *
      * @param array $training Multi-dimensional array of training data:
      * 						  $class => array(
-     * 						  	  array($feature0, $feauture1, ...),
+     * 						  	  array($feature0, $feature1, ...),
      * 						  	  ...
      * 						  )
      * @param string $kernel

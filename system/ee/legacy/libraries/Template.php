@@ -469,7 +469,7 @@ class EE_Template
             $layout = $this->_find_layout();
         }
 
-        // Parse error conditinal tags
+        // Parse error conditional tags
         $errors = isset(ee()->session) ? ee()->session->flashdata('errors') : [];
 
         // Make sure to age the flashdata so it doesn't appear on the next request accidentally.
@@ -736,7 +736,7 @@ class EE_Template
                     $value = (isset($layout_vars[$match[1]][$match[3]])) ? $layout_vars[$match[1]][$match[3]] : '';
                     $str = str_replace($match[0], $value, $str);
                 } elseif (($prefix_pos = strpos($match[1], ':')) !== false) {
-                    // check for :modifers
+                    // check for :modifiers
                     $var = substr($match[1], 0, $prefix_pos);
 
                     if (isset($layout_vars[$var])) {
@@ -898,7 +898,7 @@ class EE_Template
      *
      * @param   string  $template  Template string
      * @param   array   $layout    {layout tag match information from ``_find_layout``
-     * @return  string  Layout with embeded template string
+     * @return  string  Layout with embedded template string
      */
     protected function process_layout_template($template, array $layout = null)
     {
@@ -1236,7 +1236,7 @@ class EE_Template
 
             $this->fl_tmpl = $this->template;
 
-            // Identify the string position of the first occurence of a matched tag
+            // Identify the string position of the first occurrence of a matched tag
 
             $this->in_point = strpos($this->fl_tmpl, LD . 'exp:');
 
@@ -1402,7 +1402,7 @@ class EE_Template
                 // Strip the "chunk" from the template, replacing it with a unique marker.
 
                 // If part of the tag name is 'random', we treat it as a unique tag and only
-                // replace the first occurence so they are all processed individually. This
+                // replace the first occurrence so they are all processed individually. This
                 // means that tags with parameters such as orderby="random" behave as expected
                 // even if they are identical to other tags on the page.
 
@@ -1417,7 +1417,7 @@ class EE_Template
                 }
 
                 // Removing the comments from the chunk, because annotations
-                // are comments and are unique thus alwasy generating a new
+                // are comments and are unique thus always generating a new
                 // md5 hash. So remove them when computing the hash.
                 $cfile = md5($this->remove_ee_comments($chunk)); // This becomes the name of the cache file
 
@@ -1749,7 +1749,7 @@ class EE_Template
                 // This gives proper PHP5 __construct() support in
                 // plugins and modules with only a single __construct()
                 // and allows them to be named __construct() instead of a
-                // PHP4-style contructor.
+                // PHP4-style constructor.
                 if ($meth_name === false && isset($EE)) {
                     if (method_exists($EE, $class_name)) {
                         $meth_name = $class_name;
@@ -1851,7 +1851,7 @@ class EE_Template
     /**
      * Fetch Parameter for Tag
      *
-     * Used by Modules to fetch a paramter for the tag currently be processed.  We also have code
+     * Used by Modules to fetch a parameter for the tag currently be processed.  We also have code
      * in here to convert legacy values like 'y' and 'on' to their more respectable full values.
      * Further, if one assigns the second argument, it will be returned as the value if a
      * parameter of the $which name does not exist for this tag.  Handy for default values!
@@ -2700,7 +2700,7 @@ class EE_Template
             }
         }
 
-        // Retreive cache
+        // Retrieve cache
         $this->cache_hash = md5($site_id . '-' . $template_group . '-' . $template);
 
         if ($row['cache'] == 'y') {
@@ -4401,7 +4401,7 @@ class EE_Template
                     if (substr($template, 0, 2) == '._') {
                         continue;
                     }
-                    // If the last occurance is the first position?  We skip that too.
+                    // If the last occurrence is the first position?  We skip that too.
                     if (strrpos($template, '.') == false) {
                         continue;
                     }

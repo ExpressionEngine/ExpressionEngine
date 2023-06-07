@@ -66,7 +66,7 @@ class DragAndDropUpload extends React.Component {
   getDirectoryName(directory) {
     if (directory == 'all') return null;
 
-    var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+    var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDestinations, directory);
 
     return directory.label
   }
@@ -79,7 +79,7 @@ class DragAndDropUpload extends React.Component {
         directory_id: 0
       }
     } else {
-      var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+      var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDestinations, directory);
       if (directory.value == directory.upload_location_id) {
         directory.directory_id = 0
       } else {
@@ -339,7 +339,7 @@ class DragAndDropUpload extends React.Component {
       directory = parseInt(directory.substr(directory.indexOf('.') + 1))
     }
 
-    var item = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+    var item = this.checkChildDirectory(EE.dragAndDrop.uploadDestinations, directory);
     var directory_id;
     if (directory == item.upload_location_id) {
       directory_id = 0;
@@ -370,7 +370,7 @@ class DragAndDropUpload extends React.Component {
       directory = parseInt(directory.substr(directory.indexOf('.') + 1))
     }
 
-    var item = that.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+    var item = that.checkChildDirectory(EE.dragAndDrop.uploadDestinations, directory);
     var directory_id;
 
     if (directory == item.upload_location_id) {
@@ -410,7 +410,7 @@ class DragAndDropUpload extends React.Component {
       directory = directory_id;
     }
 
-    var item = that.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+    var item = that.checkChildDirectory(EE.dragAndDrop.uploadDestinations, directory);
 
     that.setState({
       directory_id: directory_id,
@@ -524,7 +524,7 @@ class DragAndDropUpload extends React.Component {
 
   directoryHasChild = (directory) => {
     if (directory == 'all') return null;
-    directory = EE.dragAndDrop.uploadDesinations.find(
+    directory = EE.dragAndDrop.uploadDestinations.find(
       thisDirectory => thisDirectory.value == directory
     )
     return directory
@@ -545,11 +545,11 @@ class DragAndDropUpload extends React.Component {
     }
 
     let checkChildren = this.directoryHasChild(this.props.allowedDirectory);
-    let uploadDirectoriesForDropdown = EE.dragAndDrop.uploadDesinations;
+    let uploadDirectoriesForDropdown = EE.dragAndDrop.uploadDestinations;
     if (typeof(this.props.roleAllowedDirectoryIds) !== 'undefined' && this.props.roleAllowedDirectoryIds.length > 0) {
       uploadDirectoriesForDropdown = [];
       let roleAllowedDirectoryIds = this.props.roleAllowedDirectoryIds;
-      Object.values(EE.dragAndDrop.uploadDesinations).forEach(function (uploadDesination) {
+      Object.values(EE.dragAndDrop.uploadDestinations).forEach(function (uploadDesination) {
         if (roleAllowedDirectoryIds.includes(uploadDesination.value)) {
           uploadDirectoriesForDropdown.push(uploadDesination);
         }
@@ -637,7 +637,7 @@ class DragAndDropUpload extends React.Component {
         </div>
 
         <div className="file-field__buttons">
-        {this.props.showActionButtons && this.props.allowedDirectory != 'all' && 
+        {this.props.showActionButtons && this.props.allowedDirectory != 'all' &&
           checkChildren && checkChildren.children.length > 0 && (
             <div className="button-segment">
             <DropDownButton key={EE.lang.file_dnd_choose_existing}
@@ -670,7 +670,7 @@ class DragAndDropUpload extends React.Component {
           </div>
           )
         }
-        {this.props.showActionButtons && this.props.allowedDirectory != 'all' && 
+        {this.props.showActionButtons && this.props.allowedDirectory != 'all' &&
           (!checkChildren || checkChildren.children.length <= 0) && (
           <React.Fragment>
             <div className="button-segment">

@@ -1328,7 +1328,7 @@ class Members extends CP_Controller
                 }
             }
 
-            // This member does not belong to a Role with email notifcations
+            // This member does not belong to a Role with email notifications
             if (empty($notify_address)) {
                 continue;
             }

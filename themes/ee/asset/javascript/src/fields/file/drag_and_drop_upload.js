@@ -112,7 +112,7 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
         directory = parseInt(directory.substr(directory.indexOf('.') + 1));
       }
 
-      var item = _this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+      var item = _this.checkChildDirectory(EE.dragAndDrop.uploadDestinations, directory);
 
       var directory_id;
 
@@ -147,7 +147,7 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
         directory = parseInt(directory.substr(directory.indexOf('.') + 1));
       }
 
-      var item = that.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+      var item = that.checkChildDirectory(EE.dragAndDrop.uploadDestinations, directory);
       var directory_id;
 
       if (directory == item.upload_location_id) {
@@ -188,7 +188,7 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
         directory = directory_id;
       }
 
-      var item = that.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+      var item = that.checkChildDirectory(EE.dragAndDrop.uploadDestinations, directory);
       that.setState({
         directory_id: directory_id,
         path: item.path || '',
@@ -231,7 +231,7 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
 
     _defineProperty(_assertThisInitialized(_this), "directoryHasChild", function (directory) {
       if (directory == 'all') return null;
-      directory = EE.dragAndDrop.uploadDesinations.find(function (thisDirectory) {
+      directory = EE.dragAndDrop.uploadDestinations.find(function (thisDirectory) {
         return thisDirectory.value == directory;
       });
       return directory;
@@ -294,7 +294,7 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
     key: "getDirectoryName",
     value: function getDirectoryName(directory) {
       if (directory == 'all') return null;
-      var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+      var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDestinations, directory);
       return directory.label;
     }
   }, {
@@ -307,7 +307,7 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
           directory_id: 0
         };
       } else {
-        var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+        var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDestinations, directory);
 
         if (directory.value == directory.upload_location_id) {
           directory.directory_id = 0;
@@ -629,12 +629,12 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
       }
 
       var checkChildren = this.directoryHasChild(this.props.allowedDirectory);
-      var uploadDirectoriesForDropdown = EE.dragAndDrop.uploadDesinations;
+      var uploadDirectoriesForDropdown = EE.dragAndDrop.uploadDestinations;
 
       if (typeof this.props.roleAllowedDirectoryIds !== 'undefined' && this.props.roleAllowedDirectoryIds.length > 0) {
         uploadDirectoriesForDropdown = [];
         var roleAllowedDirectoryIds = this.props.roleAllowedDirectoryIds;
-        Object.values(EE.dragAndDrop.uploadDesinations).forEach(function (uploadDesination) {
+        Object.values(EE.dragAndDrop.uploadDestinations).forEach(function (uploadDesination) {
           if (roleAllowedDirectoryIds.includes(uploadDesination.value)) {
             uploadDirectoriesForDropdown.push(uploadDesination);
           }

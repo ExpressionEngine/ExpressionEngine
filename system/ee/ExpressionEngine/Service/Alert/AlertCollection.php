@@ -167,7 +167,7 @@ class AlertCollection
     }
 
     /**
-     * Saves the alert it may be renedered and displayed this request via the
+     * Saves the alert it may be rendered and displayed this request via the
      * various get methods.
      *
      * @param Alert $alert The alert to defer

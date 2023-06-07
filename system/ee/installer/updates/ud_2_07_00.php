@@ -243,7 +243,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
             ->result_array();
 
         foreach ($fields as $row) {
-            if (empty($exlude) or ! in_array($row['field_id'], $exclude)) {
+            if (empty($exclude) or ! in_array($row['field_id'], $exclude)) {
                 $ids[] = $row['field_id'];
             }
         }

@@ -95,7 +95,7 @@ class CI_DB_mysqli_result extends CI_DB_result
             $column_data[$table . '.' . $name] = $field;
         }
 
-        // Now desribe the involved tables and grab the mysql type and default
+        // Now describe the involved tables and grab the mysql type and default
         $tables = array_unique($tables);
 
         foreach ($tables as $table) {

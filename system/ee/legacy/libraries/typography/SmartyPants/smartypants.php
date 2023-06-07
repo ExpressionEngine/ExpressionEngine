@@ -740,7 +740,7 @@ Version History
 1.5.1a (30 Jun 2004)
 
 *	PHP Markdown and PHP Smartypants now share the same `_TokenizeHTML`
-    function when loaded simultanously.
+    function when loaded simultaneously.
 
 *	Changed the internals of `_TokenizeHTML` to lower the PHP version
     requirement to PHP 4.0.5.
@@ -771,7 +771,7 @@ Brad Choate is a fine hacker indeed. (<http://bradchoate.com/>)
 
 Jeremy Hedley (<http://antipixel.com/>) and Charles Wiltgen
 (<http://playbacktime.com/>) deserve mention for exemplary beta testing of
-the orignal SmartyPants.
+the original SmartyPants.
 
 
 Copyright and License

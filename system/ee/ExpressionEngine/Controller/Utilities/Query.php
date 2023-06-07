@@ -195,7 +195,7 @@ class Query extends Utilities
             }
         }
 
-        // Get the total results on the orignal query before we paginate it
+        // Get the total results on the original query before we paginate it
         $query = (isset($new_sql)) ? ee()->db->query($new_sql) : $query;
         $total_results = (is_object($query)) ? $query->num_rows() : 0;
 

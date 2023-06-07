@@ -66,7 +66,7 @@ class DebugTools extends Utilities
         $vars = [];
         $vars['tags'] = $templateAdvisor->getAllTags();
 
-        // Loop through the tamplate tags to generate table data
+        // Loop through the template tags to generate table data
         $data = [];
         foreach ($vars['tags'] as $tag_name => $tag) {
             $modal_name = str_replace(':', '', trim($tag_name, "{}"));

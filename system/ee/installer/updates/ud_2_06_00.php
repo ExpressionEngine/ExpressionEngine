@@ -362,7 +362,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
         // alter table exp_relationships ADD KEY `field_id` (`field_id`);
         ee()->smartforge->add_key('relationships', 'field_id');
 
-        // Wipe out the old, unsed relationship data.
+        // Wipe out the old, unused relationship data.
         foreach (array('field_related_to', 'field_related_id', 'field_related_max',
             'field_related_orderby', 'field_related_sort') as $column) {
             ee()->smartforge->drop_column('channel_fields', $column);

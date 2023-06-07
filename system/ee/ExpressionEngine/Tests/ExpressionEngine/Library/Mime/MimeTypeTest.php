@@ -83,7 +83,7 @@ class MimeTypeTest extends TestCase
         $exception_class = (PHP_VERSION_ID < 70000) ? 'PHPUnit_Framework_Error' : 'TypeError';
 
         return array(
-            array('Boolen Argument',          true,                             null,                             $exception_class),
+            array('Boolean Argument',          true,                             null,                             $exception_class),
             array('Integer Argument',         1,                                null,                             $exception_class),
             array('Float Argument',           1.1,                              null,                             $exception_class),
             array('String Argument',          "text/plain",                     null,                             $exception_class),
@@ -118,7 +118,7 @@ class MimeTypeTest extends TestCase
     public function mimeDataProvider()
     {
         return array(
-            array('Boolen Argument',         true,                        null,                true),
+            array('Boolean Argument',         true,                        null,                true),
             array('Integer Argument',        1,                           null,                true),
             array('Float Argument',          1.1,                         null,                true),
             array('Invalid String Argument', "text",                      null,                true),
@@ -236,7 +236,7 @@ class MimeTypeTest extends TestCase
             array('HTML MIME Type', 'text/html',       false),
             array('PDF MIME Type',  'application/pdf', false),
 
-            array('Boolen Argument',         true,                        false),
+            array('Boolean Argument',         true,                        false),
             array('Integer Argument',        1,                           false),
             array('Float Argument',          1.1,                         false),
             array('Invalid String Argument', "text",                      false),
@@ -266,7 +266,7 @@ class MimeTypeTest extends TestCase
             array('HTML MIME Type', 'text/html',       false),
             array('PDF MIME Type',  'application/pdf', true),
 
-            array('Boolen Argument',         true,                        false),
+            array('Boolean Argument',         true,                        false),
             array('Integer Argument',        1,                           false),
             array('Float Argument',          1.1,                         false),
             array('Invalid String Argument', "text",                      false),
@@ -302,7 +302,7 @@ class MimeTypeTest extends TestCase
             array('Empty Data',   '',                                         'application/x-empty'),
             array('Random Bytes', pack('l', openssl_random_pseudo_bytes(42)), $random_mime),
 
-            array('Boolen Argument',         true,                        'application/octet-stream'),
+            array('Boolean Argument',         true,                        'application/octet-stream'),
             array('Integer Argument',        1,                           'application/octet-stream'),
             array('Float Argument',          1.1,                         'text/plain'),
             array('Empty Array Argument',    array(),                     'application/octet-stream'),

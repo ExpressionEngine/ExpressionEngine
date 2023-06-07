@@ -110,7 +110,7 @@
                         break;
                     }
 
-                    // Clear emtpy ul's/ol's
+                    // Clear empty ul's/ol's
                     this._clearEmpty(itemElement);
 
                     this._trigger("change", event, this._uiHash());

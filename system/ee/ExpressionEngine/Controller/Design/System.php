@@ -155,7 +155,7 @@ class System extends AbstractDesignController
         ee()->view->save_btn_text = lang('save');
         ee()->view->save_btn_text_working = 'btn_saving';
 
-        // Supress browser XSS check that could cause obscure bug after saving
+        // Suppress browser XSS check that could cause obscure bug after saving
         ee()->output->set_header("X-XSS-Protection: 0");
 
         ee()->view->cp_breadcrumbs = array(

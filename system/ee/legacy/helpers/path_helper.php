@@ -26,7 +26,7 @@ if (! defined('BASEPATH')) {
  * @return	string
  */
 if (! function_exists('set_realpath')) {
-    function set_realpath($path, $check_existance = false)
+    function set_realpath($path, $check_existence = false)
     {
         // Security check to make sure the path is NOT a URL.  No remote file inclusion!
         if (preg_match("#^(http:\/\/|https:\/\/|www\.|ftp|[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})#i", $path)) {
@@ -42,7 +42,7 @@ if (! function_exists('set_realpath')) {
         $path = preg_replace("#([^/])/*$#", "\\1/", $path);
 
         // Make sure the path exists
-        if ($check_existance == true) {
+        if ($check_existence == true) {
             if (! is_dir($path)) {
                 show_error('Not a valid path: ' . $path);
             }

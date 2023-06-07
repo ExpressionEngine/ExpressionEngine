@@ -21,7 +21,7 @@ use ExpressionEngine\Library\CP\URL;
 class FilterFactory
 {
     /**
-     * @var InjectionContainer A referrence to a InjectionContainer
+     * @var InjectionContainer A reference to a InjectionContainer
      */
     protected $container;
 
@@ -125,7 +125,7 @@ class FilterFactory
     public function withName($name)
     {
         if (empty($this->filters)) {
-            throw new \Exception('No filters have been addded. Cannot rename a filter.');
+            throw new \Exception('No filters have been added. Cannot rename a filter.');
         }
 
         $filter = end($this->filters);

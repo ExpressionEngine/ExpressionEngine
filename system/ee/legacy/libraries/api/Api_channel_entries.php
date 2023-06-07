@@ -1174,7 +1174,7 @@ class Api_channel_entries extends Api
             return $autosave_entry_id;
         }
 
-        // If the original auther changed, update member entry stats
+        // If the original author changed, update member entry stats
         // for old author and new author
         if (! $this->autosave && $old_author != $meta['author_id']) {
             $old_author_member = ee('Model')->get('Member', $old_author)->first();
@@ -1245,7 +1245,7 @@ class Api_channel_entries extends Api
         // Save revisions if needed
 
         if ($this->c_prefs['enable_versioning'] == 'y') {
-            // If a revision was saved before a submit new entry had ever occured?
+            // If a revision was saved before a submit new entry had ever occurred?
             // $data['revision_post'] will not have a correct entry_id at this point
             // so let's overwrite it now
             $data['revision_post']['entry_id'] = $this->entry_id;

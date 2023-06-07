@@ -236,7 +236,7 @@ class EE_relationship_tree_builder
      * Turn the tagdata hierarchy into a tree
      *
      * Looks through the tagdata string to find all of the relationship
-     * tags that we might use and constructs a tree hierachy from them.
+     * tags that we might use and constructs a tree hierarchy from them.
      *
      * @param	array	Entry ids
      * @return	object	Root node of the final tree
@@ -481,7 +481,7 @@ class EE_relationship_tree_builder
                 $field_ids = $this->relationship_field_ids[$node->field_name];
             }
 
-            // propogate the ids
+            // propagate the ids
             foreach ($field_ids as $field_id) {
                 if (isset($leaves[$depth][$field_id])) {
                     foreach ($leaves[$depth][$field_id] as $parent => $children) {

@@ -138,7 +138,7 @@ class Fluid_field_parser
      *
      * @param array $entry_id A list of entry ids
      * @param array $fluid_field_ids A list of fluid field ids
-     * @return Collection A Colletion of FluidField model entities
+     * @return Collection A Collection of FluidField model entities
      */
     private function fetchFluidFields(array $entry_ids, array $fluid_field_ids)
     {
@@ -201,7 +201,7 @@ class Fluid_field_parser
      *
      * @param obj Fluid field Collection
      * @param array An array of fluid field ids
-     * @return Collection A Colletion of FluidField model entities
+     * @return Collection A Collection of FluidField model entities
      */
     public function overrideWithPreviewData(Collection $fluid_field_data, array $fluid_field_ids)
     {
@@ -481,7 +481,7 @@ class Fluid_field_parser
      * @param string The variable tag
      * @param obj  A collection of FluidField model entities
      * @param obj  The current field in the Fluid being processed
-     * @return int  The evaulated value
+     * @return int  The evaluated value
      */
     private function evaluateSingleVariable($var, Collection $fluid_field_data, FluidField $current_field)
     {

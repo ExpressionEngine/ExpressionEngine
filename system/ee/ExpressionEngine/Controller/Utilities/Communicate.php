@@ -554,7 +554,7 @@ class Communicate extends Utilities
      * @param	obj		$email	An EmailCache object
      * @param	str		$to		An email address to send to
      * @param	bool	$delete	Delete email attachments after send?
-     * @return	str				A response messge as a result of sending the email
+     * @return	str				A response message as a result of sending the email
      */
     private function deliverOneEmail(EmailCache $email, $to, $delete = true)
     {

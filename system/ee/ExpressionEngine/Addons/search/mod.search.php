@@ -52,7 +52,7 @@ class Search
 
         // This is an exception to the normal search routine.
         // It permits us to search for all posts by a particular user's screen name
-        // We look for the "mbr" $_GET variable.  If it exsists it will
+        // We look for the "mbr" $_GET variable.  If it exists it will
         // trigger our exception
 
         if (ee()->input->get_post('mbr')) {
@@ -604,9 +604,9 @@ class Search
                 $status = trim(substr($status, 3));
             }
 
-            $stati = explode('|', $status);
+            $statuses = explode('|', $status);
 
-            if (! in_array('closed', $stati)) {
+            if (! in_array('closed', $statuses)) {
                 $sql .= "\nAND exp_channel_titles.status != 'closed' ";
             }
         } else {
@@ -1710,7 +1710,7 @@ function changemenu(index)
                             $last_group = $v['0'];
                         }
 
-                        // Note: this kludgy indentation is so that the JavaScript will look nice when it's renedered on the page?>
+                        // Note: this kludgy indentation is so that the JavaScript will look nice when it's rendered on the page?>
 			categories[i] = new Option("<?php echo addslashes($v['2']); ?>", "<?php echo $v['1']; ?>"); i++; <?php echo "\n";
                     }
                 }

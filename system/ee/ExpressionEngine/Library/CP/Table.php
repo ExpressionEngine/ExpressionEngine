@@ -292,7 +292,7 @@ class Table
      * columns require an array of settings to populate.
      *
      * COL_TOOLBAR: Needs an array of toolbar_items where it's the name of
-     * the toolbar icon assocated to the URL it should go to upon click
+     * the toolbar icon associated to the URL it should go to upon click
      *
      * COL_CHECKBOX: Needs the name and value of the checkbox
      *

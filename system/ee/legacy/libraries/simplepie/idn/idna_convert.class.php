@@ -43,7 +43,7 @@
  *
  * Unicode input might be given as either UTF-8 string, UCS-4 string or UCS-4
  * array. Unicode output is available in the same formats.
- * You can select your preferred format via {@link set_paramter()}.
+ * You can select your preferred format via {@link set_parameter()}.
  *
  * ACE input and output is always expected to be ASCII.
  *
@@ -55,7 +55,7 @@
 class idna_convert
 {
     /**
-     * Holds all relevant mapping tables, loaded from a seperate file on construct
+     * Holds all relevant mapping tables, loaded from a separate file on construct
      * See RFC3454 for details
      *
      * @var array
@@ -88,7 +88,7 @@ class idna_convert
 
     protected $slast;
 
-    // See {@link set_paramter()} for details of how to change the following
+    // See {@link set_parameter()} for details of how to change the following
     // settings from within your script / application
     public $_api_encoding = 'utf8'; // Default input charset is UTF-8
     public $_allow_overlong = false;  // Overlong UTF-8 encodings are forbidden
@@ -370,9 +370,9 @@ class idna_convert
     }
 
     /**
-     * Use this method to get the last error ocurred
+     * Use this method to get the last error occurred
      * @param    void
-     * @return   string   The last error, that occured
+     * @return   string   The last error, that occurred
      * @access   public
      */
     public function get_last_error()
@@ -399,7 +399,7 @@ class idna_convert
 
             return false;
         }
-        // Find last occurence of the delimiter
+        // Find last occurrence of the delimiter
         $delim_pos = strrpos($encoded, '-');
         if ($delim_pos > strlen($this->_punycode_prefix)) {
             for ($k = strlen($this->_punycode_prefix); $k < $delim_pos; ++$k) {
@@ -617,7 +617,7 @@ class idna_convert
         // Mapping
         // Walking through the input array, performing the required steps on each of
         // the input chars and putting the result into the output array
-        // While mapping required chars we apply the cannonical ordering
+        // While mapping required chars we apply the canonical ordering
         foreach ($input as $v) {
             // Map to nothing == skip that code point
             if (in_array($v, $this->NP['map_nothing'])) {
@@ -645,7 +645,7 @@ class idna_convert
                 }
                 // There's a decomposition mapping for that code point
             } elseif (isset($this->NP['replacemaps'][$v])) {
-                foreach ($this->_apply_cannonical_ordering($this->NP['replacemaps'][$v]) as $out) {
+                foreach ($this->_apply_canonical_ordering($this->NP['replacemaps'][$v]) as $out) {
                     $output[] = (int) $out;
                 }
             } else {
@@ -779,12 +779,12 @@ class idna_convert
     }
 
     /**
-     * Apllies the cannonical ordering of a decomposed UCS4 sequence
+     * Applies the canonical ordering of a decomposed UCS4 sequence
      * @param    array      Decomposed UCS4 sequence
      * @return   array      Ordered USC4 sequence
      * @access   private
      */
-    public function _apply_cannonical_ordering($input)
+    public function _apply_canonical_ordering($input)
     {
         $swap = true;
         $size = count($input);
@@ -852,7 +852,7 @@ class idna_convert
      * This converts an UTF-8 encoded string to its UCS-4 representation
      * By talking about UCS-4 "strings" we mean arrays of 32bit integers representing
      * each of the "chars". This is due to PHP not being able to handle strings with
-     * bit depth different from 8. This apllies to the reverse method _ucs4_to_utf8(), too.
+     * bit depth different from 8. This applies to the reverse method _ucs4_to_utf8(), too.
      * The following UTF-8 encodings are supported:
      * bytes bits  representation
      * 1        7  0xxxxxxx
@@ -875,7 +875,7 @@ class idna_convert
         for ($k = 0; $k < $inp_len; ++$k) {
             $v = ord($input[$k]); // Extract byte from input string
 
-            if ($v < 128) { // We found an ASCII char - put into stirng as is
+            if ($v < 128) { // We found an ASCII char - put into string as is
                 $output[$out_len] = $v;
                 ++$out_len;
                 if ('add' == $mode) {

@@ -264,7 +264,7 @@ class Set
     }
 
     /**
-     * Saves the Channel -> FieldGroups relationshp
+     * Saves the Channel -> FieldGroups relationships
      */
     private function assignFieldGroupsToChannels()
     {
@@ -293,7 +293,7 @@ class Set
     }
 
     /**
-     * Saves the Channel -> CustomFields relationshp
+     * Saves the Channel -> CustomFields relationships
      */
     private function assignFieldsToChannels()
     {
@@ -312,7 +312,7 @@ class Set
     }
 
     /**
-     * Saves the FieldGroup -> CustomFields relationshp
+     * Saves the FieldGroup -> CustomFields relationships
      */
     private function assignFieldsToFieldGroups()
     {
@@ -331,7 +331,7 @@ class Set
     }
 
     /**
-     * Saves the Channel -> Statuses relationshp
+     * Saves the Channel -> Statuses relationships
      */
     private function assignStatusesToChannels()
     {

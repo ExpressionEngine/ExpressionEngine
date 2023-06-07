@@ -109,7 +109,7 @@ abstract class ListItem
     /**
      * Sets extra HTML attributes
      *
-     * @param string $attributes Atrributes string
+     * @param string $attributes Attributes string
      * @return self This returns a reference to itself
      */
     public function withAttributes($attributes)

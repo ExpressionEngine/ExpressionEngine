@@ -135,7 +135,7 @@ class EE_FTP
      * @param	bool
      * @return	bool
      */
-    public function changedir($path = '', $supress_debug = false)
+    public function changedir($path = '', $suppress_debug = false)
     {
         if ($path == '' or ! $this->_is_conn()) {
             return false;
@@ -144,7 +144,7 @@ class EE_FTP
         $result = @ftp_chdir($this->conn_id, $path);
 
         if ($result === false) {
-            if ($this->debug == true and $supress_debug == false) {
+            if ($this->debug == true and $suppress_debug == false) {
                 $this->_error('ftp_unable_to_changedir');
             }
 
@@ -341,7 +341,7 @@ class EE_FTP
 
     /**
      * Delete a folder and recursively delete everything (including sub-folders)
-     * containted within it.
+     * contained within it.
      *
      * @access	public
      * @param	string
@@ -364,7 +364,7 @@ class EE_FTP
                     continue;
                 }
 
-                // If we can't delete the item it's probaly a folder so
+                // If we can't delete the item it's probably a folder so
                 // we'll recursively call delete_dir()
                 if (! @ftp_delete($this->conn_id, $item)) {
                     $this->delete_dir($item);
@@ -458,7 +458,7 @@ class EE_FTP
         if ($fp = @opendir($locpath)) {
             // Attempt to open the remote file path.
             if (! $this->changedir($rempath, true)) {
-                // If it doesn't exist we'll attempt to create the direcotory
+                // If it doesn't exist we'll attempt to create the directory
                 if (! $this->mkdir($rempath) or ! $this->changedir($rempath)) {
                     return false;
                 }

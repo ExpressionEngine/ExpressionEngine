@@ -279,7 +279,7 @@ class EE_URI
             $str = str_replace(array('"', "'", ' ', '='), '', $str);
         }
 
-        // Convert programatic characters to entities
+        // Convert programmatic characters to entities
         $bad = array('$',        '(',        ')',        '%28',      '%29');
         $good = array('&#36;',    '&#40;',    '&#41;',    '&#40;',    '&#41;');
 
@@ -291,7 +291,7 @@ class EE_URI
      *
      * @access  private
      * @param   string  $old   Old ugly cp url
-     * @param   string  $base  Current base url, to make hte login redirect work
+     * @param   string  $base  Current base url, to make the login redirect work
      * @return  string  New pretty cp url
      */
     public function reformat($old, $base = null)

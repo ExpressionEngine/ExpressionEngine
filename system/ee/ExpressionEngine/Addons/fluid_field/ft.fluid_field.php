@@ -973,7 +973,7 @@ class Fluid_field_ft extends EE_Fieldtype
     }
 
     /**
-     * Sets the data, format, and timzeone for a field
+     * Sets the data, format, and timezone for a field
      *
      * @param FieldFacade $field The field
      * @param array $data An associative array containing the data to set

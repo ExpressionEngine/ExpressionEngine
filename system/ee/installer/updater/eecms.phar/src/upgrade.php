@@ -110,7 +110,7 @@ class Command
             return;
         }
 
-        $message = "We could not complete the update because an error has occured:\n\033[0m";
+        $message = "We could not complete the update because an error has occurred:\n\033[0m";
         $message .= strip_tags($error);
 
         if ($file && $line) {

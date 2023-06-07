@@ -802,7 +802,7 @@ class EE_Jquery extends EE_Javascript
      * Compile
      *
      * As events are specified, they are stored in an array
-     * This funciton compiles them all for output on a page
+     * This function compiles them all for output on a page
      *
      * @access	private
      * @return	string

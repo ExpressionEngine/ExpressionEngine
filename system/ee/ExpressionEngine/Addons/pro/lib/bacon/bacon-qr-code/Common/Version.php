@@ -226,7 +226,7 @@ final class Version
 
             for ($y = 0; $y < $max; ++$y) {
                 if (($x === 0 && ($y === 0 || $y === $max - 1)) || ($x === $max - 1 && $y === 0)) {
-                    // No alignment patterns near the three finder paterns
+                    // No alignment patterns near the three finder patterns
                     continue;
                 }
 

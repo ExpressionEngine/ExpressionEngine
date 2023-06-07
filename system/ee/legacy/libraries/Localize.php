@@ -163,7 +163,7 @@ class Localize
 
                     break;
                     // Q was our replacement for P because P wasn't available < PHP 5.1.3,
-                    // so keep it around for backwards compatability
+                    // so keep it around for backwards compatibility
                 case 'Q':
                     $date_var = 'P';
 

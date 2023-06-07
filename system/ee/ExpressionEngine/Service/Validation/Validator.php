@@ -23,7 +23,7 @@ use InvalidArgumentException;
  * 	$validator = new Validator($rules);
  *  $result = $validator->validate($_POST);
  *
- *  // Or shorter using chaing. Given here with the DI notation:
+ *  // Or shorter using chain. Given here with the DI notation:
  *
  *  $result = ee('Validation')->make($rules)->validate($_POST);
  */

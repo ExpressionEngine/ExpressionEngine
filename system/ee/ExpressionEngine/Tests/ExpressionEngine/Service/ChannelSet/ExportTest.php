@@ -66,7 +66,7 @@ class ExportTest extends TestCase
 
     public function testExportFileFieldSettingsWithSpecifiedDirectories()
     {
-        $this->markTestSkipped('exportFielFieldSettings is not testable with allowed_directories.');
+        $this->markTestSkipped('exportFileFieldSettings is not testable with allowed_directories.');
 
         $channel_field = new \StdClass();
         $channel_field->field_settings = array(

@@ -32,7 +32,7 @@ class Restore
      * Constructor
      *
      * @param	Database\Query	$query		Database query object
-     * @param	Filesystem		$filesystem	Filesytem library object
+     * @param	Filesystem		$filesystem	Filesystem library object
      */
     public function __construct(Database\Query $query, Filesystem $filesystem)
     {

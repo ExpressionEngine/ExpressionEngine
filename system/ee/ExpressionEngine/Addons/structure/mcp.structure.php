@@ -1045,7 +1045,7 @@ class Structure_mcp
                 ee()->db->where('site_id', $nav_to_rollback_to->site_id)->update('sites', array('site_pages' => $nav_to_rollback_to->site_pages));
 
                 // ok, now lets restore the structure table for this site id...
-                // second paramater of true forces the decode to an array for our insert_batch
+                // second parameter of true forces the decode to an array for our insert_batch
                 $structure_table_data = json_decode($nav_to_rollback_to->structure, true);
 
                 // ok remove old stuff for this site_id from the structure table

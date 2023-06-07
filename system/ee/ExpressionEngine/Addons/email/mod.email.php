@@ -266,7 +266,7 @@ class Email
 
         // Remove "N"
         // The recent comments feature uses "N" as the URL indicator
-        // It needs to be removed if presenst
+        // It needs to be removed if presets
         if (preg_match("#/N(\d+)#", $qstring, $match)) {
             $qstring = reduce_double_slashes(str_replace($match[0], '', $qstring));
         }
@@ -287,7 +287,7 @@ class Email
             // If there is a slash in the entry ID we'll kill everything after it.
             $entry_id = preg_replace("#/.+#", "", $entry_id);
 
-            //  Do we have a vaild channel and ID number?
+            //  Do we have a valid channel and ID number?
             $timestamp = (ee()->TMPL->cache_timestamp != '') ? ee()->TMPL->cache_timestamp : ee()->localize->now;
             $channel = ee()->TMPL->fetch_param('channel', '');
 

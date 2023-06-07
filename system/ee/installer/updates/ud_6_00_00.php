@@ -26,7 +26,7 @@ class Updater
     public function do_update()
     {
         $steps = new \ProgressIterator([
-            'removeExtraPubishControlSetting',
+            'removeExtraPublishControlSetting',
             'addPostInstallMessageTemplate',
         ]);
 
@@ -37,7 +37,7 @@ class Updater
         return true;
     }
 
-    private function removeExtraPubishControlSetting()
+    private function removeExtraPublishControlSetting()
     {
         ee()->smartforge->drop_column('channels', 'extra_publish_controls');
     }

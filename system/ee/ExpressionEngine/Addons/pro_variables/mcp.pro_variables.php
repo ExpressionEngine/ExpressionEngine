@@ -209,7 +209,7 @@ class Pro_variables_mcp
                 // Get variable type object from var row
                 $obj = $this->types->get($var);
 
-                // Split by 3 newlines to seperate var header from description
+                // Split by 3 newlines to separate var header from description
                 $tmp = explode("\n\n\n", $var['variable_notes'], 2);
 
                 // If we have a header, overwrite $section var

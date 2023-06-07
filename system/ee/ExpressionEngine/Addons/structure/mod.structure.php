@@ -211,7 +211,7 @@ class Structure extends Channel
         $include_status_list = explode('|', $include_status);
         $exclude_status_list = explode('|', $exclude_status);
 
-        // Remove the default "open" status if explicitely set
+        // Remove the default "open" status if explicitly set
         if (in_array('open', $exclude_status_list)) {
             $status = array_filter($status, create_function('$v', 'return $v != "open";'));
         }
@@ -1183,7 +1183,7 @@ class Structure extends Channel
         $pages = $this->sql->get_data();
         $entries = "";
 
-        // Check if any data before preceeding
+        // Check if any data before preceding
         if (isset($pages)) {
             foreach ($pages as $key => $entry_data) {
                 // Add entries in order
@@ -1738,7 +1738,7 @@ class Structure extends Channel
     /**
      * Get all data from the exp_structure_channels table
      * @param $type|unmanaged|page|listing|asset
-     * @param $channel_id you can pass a channel_id to retreive it's data
+     * @param $channel_id you can pass a channel_id to retrieve it's data
      * @param $order pass it 'alpha' to order by channel title
      * @return array An array of channel_ids and it's associated template_id, type and channel_title
      */
@@ -2007,9 +2007,9 @@ class Structure extends Channel
         $pid = $result->row('entry_id');
 
         // cache pid for later use // Uh, why? This causes issues.
-        // ee()->session->cache['structure']['lising_entry_pid'] = $pid;
+        // ee()->session->cache['structure']['listing_entry_pid'] = $pid;
 
-        // return ee()->session->cache['structure']['lising_entry_pid'];
+        // return ee()->session->cache['structure']['listing_entry_pid'];
         return $pid;
     }
 

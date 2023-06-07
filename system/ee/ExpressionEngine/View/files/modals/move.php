@@ -8,7 +8,7 @@
         </div>
 
         <div class="dialog__body">
-            <?=isset($alert) ? $alert : lang('select_new_destinatin_for')?>
+            <?=isset($alert) ? $alert : lang('select_new_destination_for')?>
 
             <ul class="checklist" style="margin-bottom: 20px;">
                 <?php if (isset($checklist)):

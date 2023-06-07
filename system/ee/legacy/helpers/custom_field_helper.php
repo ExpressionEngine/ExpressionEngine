@@ -39,7 +39,7 @@ function encode_multi_field($data = array())
             : str_replace(array('\\', '|'), array('\\\\', '\|'), (string) $val);
     }
 
-    // Implode on seperator
+    // Implode on separator
     return implode('|', $data);
 }
 

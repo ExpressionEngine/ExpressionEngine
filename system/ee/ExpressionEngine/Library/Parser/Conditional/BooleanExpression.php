@@ -207,7 +207,7 @@ class BooleanExpression
     }
 
     /**
-     * Precendence check
+     * Precedence check
      */
     private function precedence($first, $second)
     {

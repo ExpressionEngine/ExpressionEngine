@@ -93,7 +93,7 @@ class File extends AbstractFilesController
             $info = $file->actLocally(function ($path) {
                 return ee()->image_lib->get_image_properties($path, true);
             });
-            ee()->image_lib->error_msg = array(); // Reset any erorrs
+            ee()->image_lib->error_msg = array(); // Reset any errors
 
             $tabs['crop'] = $this->renderCropForm($file, $info);
             $tabs['rotate'] = $this->renderRotateForm($file);
@@ -196,7 +196,7 @@ class File extends AbstractFilesController
             $info = $file->actLocally(function ($path) {
                 return ee()->image_lib->get_image_properties($path, true);
             });
-            ee()->image_lib->error_msg = array(); // Reset any erorrs
+            ee()->image_lib->error_msg = array(); // Reset any errors
         }
 
         $active_tab = 0;
@@ -249,7 +249,7 @@ class File extends AbstractFilesController
                     break;
 
                 case 'resize':
-                    // Preserve proportions if either dimention was omitted
+                    // Preserve proportions if either dimension was omitted
                     if (empty($_POST['resize_width']) or empty($_POST['resize_height'])) {
                         $size = explode(" ", $file->file_hw_original);
                         // If either h/w unspecified, calculate the other here

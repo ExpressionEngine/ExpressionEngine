@@ -282,7 +282,7 @@ class Member_group_model extends CI_Model
         // We'll need this later when we call $this->_update_permissions()
         // We'll have to unpack them and it's klutzy, but for now, this is the best I got. -Daniel
         $permissions = array('channel' => $data['channel'],'module' => $data['module'],'template' => $data['template']);
-        // And we don't want them hanging around in the data arround to be stuck into the database.
+        // And we don't want them hanging around in the data around to be stuck into the database.
         unset($data['channel']);
         unset($data['module']);
         unset($data['template']);
@@ -318,7 +318,7 @@ class Member_group_model extends CI_Model
             $created_group = true;
         }
 
-        // This doesn't use site_id, only group_id.  The ids recieved
+        // This doesn't use site_id, only group_id.  The ids received
         // in the form for permissions will either be specific to the
         // site the form is submitted for, or they'll be common across
         // all sites (in the case of modules).  So this can happen
@@ -388,7 +388,7 @@ class Member_group_model extends CI_Model
         // We'll need this later when we call $this->_update_permissions()
         // We'll have to unpack them and it's klutzy, but for now, this is the best I got.
         $permissions = array('channel' => $data['channel'], 'module' => $data['module'], 'template' => $data['template']);
-        // And we don't want them hanging around in the data arround to be stuck into the database.
+        // And we don't want them hanging around in the data around to be stuck into the database.
         unset($data['channel']);
         unset($data['module']);
         unset($data['template']);
@@ -471,9 +471,9 @@ class Member_group_model extends CI_Model
     /**
      * Apply the update to all groups with with the given group_id.
      *
-     * NOTE: Made this a seperate method instead of making site_id
+     * NOTE: Made this a separate method instead of making site_id
      * optional in update, because leaving out the site_id is not
-     * something we want to happen accidentially.  If we're going
+     * something we want to happen accidentally.  If we're going
      * to be updating all member groups, it should be done with
      * intention.
      *

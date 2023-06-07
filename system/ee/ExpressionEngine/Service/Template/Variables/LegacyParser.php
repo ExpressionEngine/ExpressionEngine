@@ -88,10 +88,10 @@ class LegacyParser
         if (trim($param_string) && ! $props['invalid_modifier']) {
             $props['params'] = $params = $this->parseTagParameters($param_string);
             $prefix = $props['modifier'] . ':';
-            $prefix_legnth = strlen($prefix);
+            $prefix_length = strlen($prefix);
             foreach ($props['params'] as $param => $value) {
                 if (strpos($param, $prefix) === 0) {
-                    $props['params'][substr($param, $prefix_legnth)] = $value;
+                    $props['params'][substr($param, $prefix_length)] = $value;
                 }
             }
         } else {
@@ -104,10 +104,10 @@ class LegacyParser
             foreach ($all_modifiers as $modifier) {
                 $modifier_params = $params;
                 $prefix = $modifier . ':';
-                $prefix_legnth = strlen($prefix);
+                $prefix_length = strlen($prefix);
                 foreach ($modifier_params as $param => $value) {
                     if (strpos($param, $prefix) === 0) {
-                        $modifier_params[substr($param, $prefix_legnth)] = $value;
+                        $modifier_params[substr($param, $prefix_length)] = $value;
                     }
                 }
                 $props['all_modifiers'][$modifier] = $modifier_params;

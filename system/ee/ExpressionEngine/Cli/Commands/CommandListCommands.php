@@ -13,7 +13,7 @@ namespace ExpressionEngine\Cli\Commands;
 use ExpressionEngine\Cli\Cli;
 
 /**
- * List all availabe commands
+ * List all available commands
  */
 class CommandListCommands extends Cli
 {

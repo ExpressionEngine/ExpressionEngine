@@ -61,7 +61,7 @@ class Update extends Query
     }
 
     /**
-     * Distribute the data amongs the gateways and save it
+     * Distribute the data among the gateways and save it
      */
     protected function doWork($object)
     {

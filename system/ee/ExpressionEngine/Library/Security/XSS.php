@@ -48,7 +48,7 @@ class XSS
     );
 
     /* html5 entities we need to manually decode pre PHP 5.4 */
-    protected $_html5_entites = array(
+    protected $_html5_entities = array(
         '&Tab;' => '&#x00009;',
         '&NewLine;' => '&#x0000A;',
         '&excl;' => '&#x00021;',
@@ -620,8 +620,8 @@ class XSS
             // ENT_HTML5 is PHP 5.4+ only
             if (! defined('ENT_HTML5')) {
                 $str = str_replace(
-                    array_keys($this->_html5_entites),
-                    array_values($this->_html5_entites),
+                    array_keys($this->_html5_entities),
+                    array_values($this->_html5_entities),
                     $str
                 );
                 $str = html_entity_decode($str, ENT_COMPAT | ENT_QUOTES, $charset);

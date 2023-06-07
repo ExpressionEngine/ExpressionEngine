@@ -18,7 +18,7 @@ class Filepicker_rtefb extends AbstractRteFilebrowser
     public function addJs($uploadDir)
     {
         // load the file browser
-        // pass in the uploadDir to limit the directory to the one choosen
+        // pass in the uploadDir to limit the directory to the one chosen
         $modal_vars = array('name' => 'modal-file', 'contents' => '');
         $modal = ee('View')->make('ee:_shared/modal')->render($modal_vars);
         ee('CP/Modal')->addModal('modal-file', $modal);

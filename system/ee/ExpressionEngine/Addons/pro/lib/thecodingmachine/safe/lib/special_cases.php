@@ -39,7 +39,7 @@ function json_decode(string $json, bool $assoc = false, int $depth = 512, int $o
 
 
 /**
- * Fetchs a stored variable from the cache.
+ * Fetches a stored variable from the cache.
  *
  * @param mixed $key The key used to store the value (with
  * apc_store). If an array is passed then each
@@ -59,7 +59,7 @@ function apc_fetch($key)
 }
 
 /**
- * Fetchs an entry from the cache.
+ * Fetches an entry from the cache.
  *
  * @param string|string[] $key The key used to store the value (with
  * apcu_store). If an array is passed then each

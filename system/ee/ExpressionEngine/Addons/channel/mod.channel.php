@@ -253,7 +253,7 @@ class Channel
             }
         }
 
-        //only fetch catgories if those are enabled and called in template
+        //only fetch categories if those are enabled and called in template
         if ($this->enable['categories'] == true && (empty(ee()->TMPL->tagdata) || strpos(ee()->TMPL->tagdata, 'categories') !== false)) {
             $this->fetch_categories();
         }
@@ -648,7 +648,7 @@ class Channel
 
             $sites = ($site_ids ? $site_ids : array(ee()->config->item('site_id')));
             foreach ($sites as $site_name => $site_id) {
-                // We're goign to repeat the search on each site
+                // We're going to repeat the search on each site
                 // so store the terms in a temp.  FIXME Necessary?
                 $terms = $search_terms;
                 if (in_array($field_name, ['title', 'url_title'])) {
@@ -872,7 +872,7 @@ class Channel
                 if (is_numeric($cat_id) and $cat_id !== false) {
                     $this->cat_request = true;
                 } else {
-                    // parse_category did not return a numberic ID, blow away $cat_id
+                    // parse_category did not return a numeric ID, blow away $cat_id
                     $cat_id = false;
                 }
 
@@ -881,7 +881,7 @@ class Channel
                 /** --------------------------------------*/
 
                 // The recent comments feature uses "N" as the URL indicator
-                // It needs to be removed if presenst
+                // It needs to be removed if presets
 
                 if ($uri_has_digit && preg_match("#^N(\d+)|/N(\d+)#", $qstring, $match)) {
                     $this->uristr = reduce_double_slashes(str_replace($match[0], '', $this->uristr));
@@ -3549,8 +3549,8 @@ class Channel
         // we need to run a couple queries and run a recursive function that
         // figures out whether any given category has a parent.
         // If we don't do this we will run into a problem in which parent categories
-        // that are not assigned to a channel will be supressed, and therefore, any of its
-        // children will be supressed also - even if they are assigned to entries.
+        // that are not assigned to a channel will be suppressed, and therefore, any of its
+        // children will be suppressed also - even if they are assigned to entries.
         // So... we will first fetch all the category IDs, then only the ones that are assigned
         // to entries, and lastly we'll recursively run up the tree and fetch all parents.
         // Follow that?  No?  Me neither...
@@ -4361,7 +4361,7 @@ class Channel
 
             ee()->db->where_in('w.site_id', ee()->TMPL->site_ids);
 
-            // Channel paremter
+            // Channel parameter
             if ($channel_name = ee()->TMPL->fetch_param('channel')) {
                 ee()->functions->ar_andor_string($channel_name, 'channel_name', 'w');
             }

@@ -426,7 +426,7 @@ class EE_Router
      *  Set the directory name
      *
      * @param	string	$dir	Directory name
-     * @param	bool	$appent Whether we're appending rather then setting the full value
+     * @param	bool	$append Whether we're appending rather then setting the full value
      * @return	void
      */
     public function set_directory($dir, $append = false)

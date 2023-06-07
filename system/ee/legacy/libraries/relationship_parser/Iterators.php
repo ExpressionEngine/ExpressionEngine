@@ -9,7 +9,7 @@
  */
 
 /**
- * Parse Node Iteratior
+ * Parse Node Iterator
  *
  * Does not go the into query node's children.
  */
@@ -63,7 +63,7 @@ class ParseNodeIterator extends EE_TreeIterator
 // END CLASS
 
 /**
- * ExpressionEngine Query Node Iteratior
+ * ExpressionEngine Query Node Iterator
  *
  * Iterates all of the tree's query nodes even if there are parse
  * nodes in between.

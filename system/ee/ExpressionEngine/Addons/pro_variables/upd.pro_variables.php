@@ -505,7 +505,7 @@ class Pro_variables_upd
 
             // If there are IDs, show/hide them
             if ($ids = pro_flatten_results($query->result_array(), 'variable_id')) {
-                // Hide wich vars
+                // Hide which vars
                 $sql_in = (@$settings['with_prefixed'] == 'show') ? 'where_not_in' : 'where_in';
 
                 // Execute query

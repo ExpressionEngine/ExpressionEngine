@@ -109,7 +109,7 @@ class Installer_Template
                     if (! in_array($variable, $channel_single_variables) && ! in_array($variable, $channel_custom_fields)) {
                         continue;
                     }
-                    // Just replace the front of the tag.  This way any paramters are left where they are.
+                    // Just replace the front of the tag.  This way any parameters are left where they are.
                     $new_var = '{' . $relationship_tag['field_name'] . ':' . $variable;
                     $tagdata = str_replace('{' . $variable, $new_var, $tagdata);
                 }
@@ -195,7 +195,7 @@ class Installer_Template
      * 		$related_data, $reverse_related_data,
      *		$related_id, $related_markers
      *
-     * @param	string The template chunk to be chekd for relationship tags.
+     * @param	string The template chunk to be checked for relationship tags.
      *
      * @return	string The parsed template chunk, with relationship tags removed.
      */

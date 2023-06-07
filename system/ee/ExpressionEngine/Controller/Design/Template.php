@@ -338,7 +338,7 @@ class Template extends AbstractDesignController
             '' => lang('edit_template_title')
         );
 
-        // Supress browser XSS check that could cause obscure bug after saving
+        // Suppress browser XSS check that could cause obscure bug after saving
         ee()->output->set_header("X-XSS-Protection: 0");
 
         ee()->cp->render('settings/form', $vars);
@@ -761,7 +761,7 @@ class Template extends AbstractDesignController
      *
      * @param TemplateModel $template A Template entity
      * @param bool|ValidationResult $errors FALSE (if nothing was submitted) or
-     *   a ValidationResult object. This is needed to render any inline erorrs
+     *   a ValidationResult object. This is needed to render any inline errors
      *   on the form.
      * @return string HTML
      */
@@ -794,7 +794,7 @@ class Template extends AbstractDesignController
      *
      * @param TemplateModel $template A Template entity
      * @param bool|ValidationResult $errors FALSE (if nothing was submitted) or
-     *   a ValidationResult object. This is needed to render any inline erorrs
+     *   a ValidationResult object. This is needed to render any inline errors
      *   on the form.
      * @return string HTML
      */
@@ -825,7 +825,7 @@ class Template extends AbstractDesignController
      *
      * @param TemplateModel $template A Template entity
      * @param bool|ValidationResult $errors FALSE (if nothing was submitted) or
-     *   a ValidationResult object. This is needed to render any inline erorrs
+     *   a ValidationResult object. This is needed to render any inline errors
      *   on the form.
      * @return string HTML
      */
@@ -978,7 +978,7 @@ class Template extends AbstractDesignController
      *
      * @param TemplateModel $template A Template entity
      * @param bool|ValidationResult $errors FALSE (if nothing was submitted) or
-     *   a ValidationResult object. This is needed to render any inline erorrs
+     *   a ValidationResult object. This is needed to render any inline errors
      *   on the form.
      * @return string HTML
      */

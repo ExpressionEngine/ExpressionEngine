@@ -85,7 +85,7 @@ final class ReedSolomonCodec
     private $generatorPoly;
 
     /**
-     * @throws InvalidArgumentException if symbol size ist not between 0 and 8
+     * @throws InvalidArgumentException if symbol size is not between 0 and 8
      * @throws InvalidArgumentException if first root is invalid
      * @throws InvalidArgumentException if num roots is invalid
      * @throws InvalidArgumentException if padding is invalid

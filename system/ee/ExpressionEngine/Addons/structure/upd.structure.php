@@ -356,7 +356,7 @@ class Structure_upd
     }
 
     /**
-     * Function creats the Structure Listings table
+     * Function creates the Structure Listings table
      *
      * @method create_table_structure_listings
      * @return [type] [description]
@@ -422,7 +422,7 @@ class Structure_upd
     }
 
     /**
-     * Update funciton updates the module
+     * Update function updates the module
      *
      * @method update
      * @param  string $current current Structure version
@@ -745,7 +745,7 @@ class Structure_upd
         |--------------------------------------------------------------------------
         |
         | We need to remap any references to weblogs or "wid"s to their proper
-        | channel equivelants.
+        | channel equivalents.
         |
         */
 

@@ -27,7 +27,7 @@ class EE_Core
     public $cache = array();
 
     /**
-     * Sets constants, sets paths contants to appropriate directories, loads
+     * Sets constants, sets paths constants to appropriate directories, loads
      * the database and generally prepares the system to run.
      */
     public function bootstrap()
@@ -590,7 +590,7 @@ class EE_Core
         // Load the Super Model
         ee()->load->model('super_model');
 
-        // Laod Menu library
+        // Load Menu library
         ee()->load->library('menu');
 
         $this->set_newrelic_transaction(function () use ($get) {

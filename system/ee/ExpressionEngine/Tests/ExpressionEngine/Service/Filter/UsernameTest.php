@@ -187,12 +187,12 @@ class UsernameTest extends TestCase
         $_POST['filter_by_username'] = 4;
         $filter = $this->makeFilterWithQuery();
         $this->assertEquals(4, $filter->value(), 'The value reflects the submitted value');
-        $this->assertFalse($filter->isValid(), 'Submitting non-existant user id is invalid');
+        $this->assertFalse($filter->isValid(), 'Submitting non-existent user id is invalid');
     }
 
     public function testSetQueryWithNonNumericInputAndUserPresent()
     {
-        $this->markTestSkipped('Skipping becase filter::first is reported as not defined - which is not true');
+        $this->markTestSkipped('Skipping because filter::first is reported as not defined - which is not true');
 
         $_POST['filter_by_username'] = 'admin';
         $filter = $this->makeFilterWithQuery();
@@ -208,7 +208,7 @@ class UsernameTest extends TestCase
 
     public function testSetQueryWithNonNumericInputAndUserNotPresent()
     {
-        $this->markTestSkipped('Skipping becase filter::first is reported as not defined - which is not true');
+        $this->markTestSkipped('Skipping because filter::first is reported as not defined - which is not true');
 
         $_POST['filter_by_username'] = 'ferdinand.von.zeppelin';
         $filter = $this->makeFilterWithQuery();

@@ -188,7 +188,7 @@ class BulkEdit extends AbstractBulkEdit
 
         if (! empty($group_ids)) {
             foreach ($entries as $entry) {
-                // Fiter out the groups marked to override
+                // Filter out the groups marked to override
                 $existing_categories = $entry->Categories->filter('group_id', 'NOT IN', $group_ids);
                 $new_categories = array_merge($existing_categories->getIds(), $category_ids);
 

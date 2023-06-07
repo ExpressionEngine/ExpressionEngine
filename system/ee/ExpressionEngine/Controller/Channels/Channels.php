@@ -416,7 +416,7 @@ class Channels extends AbstractChannelsController
      *
      * @param Channel $channel A Channel entity
      * @param null|ValidationResult $errors NULL (if nothing was submitted) or
-     *   a ValidationResult object. This is needed to render any inline erorrs
+     *   a ValidationResult object. This is needed to render any inline errors
      *   on the form.
      * @return string HTML
      */
@@ -494,7 +494,7 @@ class Channels extends AbstractChannelsController
      *
      * @param Channel $channel A Channel entity
      * @param null|ValidationResult $errors NULL (if nothing was submitted) or
-     *   a ValidationResult object. This is needed to render any inline erorrs
+     *   a ValidationResult object. This is needed to render any inline errors
      *   on the form.
      * @return string HTML
      */
@@ -664,7 +664,7 @@ class Channels extends AbstractChannelsController
      *
      * @param Channel $channel A Channel entity
      * @param null|ValidationResult $errors NULL (if nothing was submitted) or
-     *   a ValidationResult object. This is needed to render any inline erorrs
+     *   a ValidationResult object. This is needed to render any inline errors
      *   on the form.
      * @return string HTML
      */
@@ -742,7 +742,7 @@ class Channels extends AbstractChannelsController
      *
      * @param Channel $channel A Channel entity
      * @param null|ValidationResult $errors NULL (if nothing was submitted) or
-     *   a ValidationResult object. This is needed to render any inline erorrs
+     *   a ValidationResult object. This is needed to render any inline errors
      *   on the form.
      * @return string HTML
      */
@@ -832,7 +832,7 @@ class Channels extends AbstractChannelsController
      *
      * @param Channel $channel A Channel entity
      * @param null|ValidationResult $errors NULL (if nothing was submitted) or
-     *   a ValidationResult object. This is needed to render any inline erorrs
+     *   a ValidationResult object. This is needed to render any inline errors
      *   on the form.
      * @return string HTML
      */
@@ -1399,7 +1399,7 @@ class Channels extends AbstractChannelsController
      *
      * @param Channel $channel A Channel entity
      * @param null|ValidationResult $errors NULL (if nothing was submitted) or
-     *   a ValidationResult object. This is needed to render any inline erorrs
+     *   a ValidationResult object. This is needed to render any inline errors
      *   on the form.
      * @return string HTML
      */
@@ -1500,7 +1500,7 @@ class Channels extends AbstractChannelsController
      * Sets channel object data with normalized POST values
      *
      * @param Channel $channel A Channel entity
-     * @return Modifed Channel entity
+     * @return Modified Channel entity
      */
     private function setWithPost($channel)
     {

@@ -630,7 +630,7 @@ class Pro_search_index
             }
 
             // --------------------------------------
-            // Get the value for this field and force arry
+            // Get the value for this field and force array
             // --------------------------------------
 
             $val = (array) $entry[$field_name];
