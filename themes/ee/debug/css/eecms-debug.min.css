@@ -109,7 +109,7 @@ html.color-theme-in-transition *:after {
   --ee-button-warning-hover-bg: #d79500;
   --ee-button-warning-hover-border: #d79500;
   --ee-button-danger-color: #ffffff;
-  --ee-button-danger-bg: #FA5252;
+  --ee-button-danger-bg: #DF3035;
   --ee-button-danger-border: #FA5252;
   --ee-button-danger-hover-bg: #f92020;
   --ee-button-danger-hover-border: #f92020;
@@ -607,7 +607,7 @@ body[data-theme=dark] .inverted-theme {
   --ee-button-warning-hover-bg: #d79500;
   --ee-button-warning-hover-border: #d79500;
   --ee-button-danger-color: #ffffff;
-  --ee-button-danger-bg: #FA5252;
+  --ee-button-danger-bg: #DF3035;
   --ee-button-danger-border: #FA5252;
   --ee-button-danger-hover-bg: #f92020;
   --ee-button-danger-hover-border: #f92020;
