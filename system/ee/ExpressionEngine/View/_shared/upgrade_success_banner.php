@@ -18,7 +18,7 @@
         </a>
         <a href="https://docs.expressionengine.com/latest/templates/variable-modifiers.html" class="upgrade-success-banner__blurb" target="_blank">
             <i class="fal fa-key-skeleton-left-right fa-fw"></i>
-            <h6>Chained Variables Modifiers</h6>
+            <h6>Chained Variable Modifiers</h6>
             <p><code>{image:resize:rotate:webp}</code> is now easy. Apply multiple modifiers to fields and variables with a single template tag.</p>
         </a>
         <a href="https://docs.expressionengine.com/latest/cli/intro.html" class="upgrade-success-banner__blurb" target="_blank">
