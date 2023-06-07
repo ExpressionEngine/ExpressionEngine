@@ -515,9 +515,10 @@ var Relationship = /*#__PURE__*/function (_React$Component) {
         }, " (#", item.value, ")"), props.display_status && React.createElement("span", {
           className: "dropdown__link-status-indicator",
           style: {
+            borderColor: '#' + EE.statuses[item.status],
             color: '#' + EE.statuses[item.status]
           }
-        }, "(", item.status, ")"), " ", React.createElement("span", {
+        }, item.status), " ", React.createElement("span", {
           className: "dropdown__link-right"
         }, item.instructions));
       }), dropdownItems.length == 0 && React.createElement("div", {
