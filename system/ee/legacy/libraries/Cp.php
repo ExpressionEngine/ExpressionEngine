@@ -302,21 +302,21 @@ class Cp
 
         $pro_status = !ee('pro:Access')->requiresValidLicense() ? 'skip' : (string) ee('Addon')->get('pro')->checkCachedLicenseResponse();
         switch ($pro_status) {
-                case 'update_available':
-                    ee()->view->pro_license_status = 'valid';
+            case 'update_available':
+                ee()->view->pro_license_status = 'valid';
 
-                    break;
+                break;
 
-                case '':
-                    ee()->view->pro_license_status = 'na';
+            case '':
+                ee()->view->pro_license_status = 'na';
 
-                    break;
+                break;
 
-                default:
-                    ee()->view->pro_license_status = $pro_status;
+            default:
+                ee()->view->pro_license_status = $pro_status;
 
-                    break;
-            }
+                break;
+        }
 
         $this->_notices();
 

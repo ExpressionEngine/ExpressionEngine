@@ -420,6 +420,15 @@ class EE_Template
         for ($i = 1; $i < 10; $i++) {
             $this->template = str_replace(LD . 'segment_' . $i . RD, ee()->uri->segment($i), $this->template);
             $this->segment_vars['segment_' . $i] = ee()->uri->segment($i);
+
+            // apply modifiers to segments
+            if (strpos($this->template, LD . 'segment_' . $i . ':') !== false) {
+                if (preg_match_all('/{(segment_' . $i . ':(.*?))}/', $this->template, $matches, PREG_SET_ORDER)) {
+                    foreach ($matches as $match) {
+                        $this->segment_vars[$match[1]] = ee()->uri->segment($i);
+                    }
+                }
+            }
         }
 
         // Parse template route segments
@@ -3741,7 +3750,7 @@ class EE_Template
 
             // is the modifier valid?
             $method = 'replace_' . $var['modifier'];
-            if (!method_exists($this, $method)) {
+            if (!method_exists($this, $method) && ! ee('Variables/Modifiers')->has($var['modifier'])) {
                 continue;
             }
 
@@ -3763,8 +3772,21 @@ class EE_Template
             } else {
                 $raw = $original;
             }
-            $content = ($method == 'replace_raw_content') ? $raw : $content;
-            $content = $this->$method($content, $var['params']);
+
+            if (isset($var['all_modifiers']) && !empty($var['all_modifiers'])) {
+                foreach ($var['all_modifiers'] as $modifier => $params) {
+                    $method = 'replace_' . $modifier;
+                    if (!method_exists($this, $method) && ! ee('Variables/Modifiers')->has($modifier)) {
+                        continue;
+                    }
+                    $content = ($method == 'replace_raw_content') ? $raw : $content;
+                    $content = $this->$method($content, $params);
+                }
+            } else {
+                $content = ($method == 'replace_raw_content') ? $raw : $content;
+                $content = $this->$method($content, $var['params']);
+            }
+
             $this->conditional_vars[$tagname] = $content;
 
             $tagdata = $this->_parse_var_single($tag, $content, $tagdata);

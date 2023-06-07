@@ -68,6 +68,10 @@ $lang = array(
 
     'date_time_settings' => 'Date &amp; Time Settings',
 
+    'week_start' => 'Week start',
+
+    'week_start_desc' => 'The day on which the new week starts',
+
     'defaults' => 'Defaults',
 
     'enable_msm' => 'Enable Site Manager (MSM)?',
@@ -265,7 +269,7 @@ $lang = array(
 
     'gzip_output_desc' => 'When enabled, your website will be compressed using GZIP compression, this will decrease page load times.',
 
-    'max_caches' => 'Cachable <abbr title="Uniform Resource Identifier">URI</abbr>s',
+    'max_caches' => 'Cacheable <abbr title="Uniform Resource Identifier">URI</abbr>s',
 
     'max_caches_desc' => 'If you cache your pages or database, this limits the number of cache instances. We recommend 150 for small sites and 300 for large sites. The allowed maximum is 1000.',
 

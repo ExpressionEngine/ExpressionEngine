@@ -23,6 +23,9 @@ class Fields extends AbstractFieldsController
     public function index()
     {
         $group_id = ee('Request')->get('group_id');
+        $vars = [
+            'group_tag' => ''
+        ];
 
         if (!is_null($group_id)) {
             $base_url = ee('CP/URL')->make('fields', ['group_id' => $group_id]);
@@ -88,8 +91,9 @@ class Fields extends AbstractFieldsController
         // Are we showing a specific group? If so, we need to apply filtering differently
         // because we are acting on a collection instead of a query builder
         if ($group) {
-            $vars['cp_page_title'] = $group->group_name . '&mdash;' . lang('fields');
-            $fields = $group->ChannelFields->sortBy('field_label')->asArray();
+            $vars['cp_page_title'] = $group->group_name . ' &mdash; ' . lang('fields');
+            $vars['group_tag'] = '{' . $group->short_name . '}';
+            $fields = $group->ChannelFields->sortBy('field_label')->sortBy('field_order')->asArray();
 
             if ($search = ee()->input->get_post('filter_by_keyword')) {
                 $fields = array_filter($fields, function ($field) use ($search) {
@@ -164,6 +168,7 @@ class Fields extends AbstractFieldsController
                 'href' => $edit_url,
                 'extra' => LD . $field->field_name . RD,
                 'selected' => ($field_id && $field->getId() == $field_id),
+                'reorderable' => $group,
                 'toolbar_items' => null,
                 'selection' => ee('Permission')->can('delete_channel_fields') ? [
                     'name' => 'selection[]',
@@ -173,6 +178,19 @@ class Fields extends AbstractFieldsController
                     ]
                 ] : null
             ];
+        }
+
+        if ($group) {
+            ee()->cp->add_js_script('plugin', 'ee_table_reorder');
+            ee()->cp->add_js_script('file', 'cp/channel/fields_reorder');
+            $reorder_ajax_fail = ee('CP/Alert')->makeBanner('reorder-ajax-fail')
+                ->asIssue()
+                ->canClose()
+                ->withTitle(lang('fields_ajax_reorder_fail'))
+                ->addToBody(lang('fields_ajax_reorder_fail_desc'));
+
+            ee()->javascript->set_global('fields.reorder_url', ee('CP/URL')->make('fields/reorder/' . $group_id)->compile());
+            ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());
         }
 
         if (ee('Permission')->can('delete_channel_fields')) {
@@ -207,6 +225,25 @@ class Fields extends AbstractFieldsController
         }
 
         ee()->cp->render('fields/index', $vars);
+    }
+
+    /**
+     * AJAX endpoint for reordering fields
+     */
+    public function reorder($group_id)
+    {
+        if (! ee('Permission')->can('edit_channel_fields')) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
+        $fields = ee('Model')->get('ChannelField')->with('ChannelFieldGroups')->filter('ChannelFieldGroups.group_id', $group_id)->all()->indexBy('field_id');
+
+        foreach (ee('Request')->post('order') as $order => $field_id) {
+            $fields[$field_id]->field_order = $order + 1;
+            $fields[$field_id]->save();
+        }
+
+        return ['success'];
     }
 
     public function create($group_id = null)
@@ -390,6 +427,18 @@ class Fields extends AbstractFieldsController
 
         $field_groups = $field->ChannelFieldGroups;
         $active_groups = $field_groups->pluck('group_id');
+
+        if (defined('CLONING_MODE') && CLONING_MODE === true) {
+            $field->setId(null);
+            while (true !== $field->validateUnique('field_name', $_POST['field_name'])) {
+                $_POST['field_name'] = 'copy_' . $_POST['field_name'];
+            }
+            if ($_POST['field_label'] == $field->field_label) {
+                $_POST['field_label'] = lang('copy_of') . ' ' . $_POST['field_label'];
+            }
+            return $this->create(!empty($active_groups) ? $active_groups[0] : null);
+        }
+
         $this->generateSidebar($active_groups);
 
         $errors = null;
@@ -545,6 +594,22 @@ class Fields extends AbstractFieldsController
                 'field_id' => $id,
             ),
         );
+
+        // can the field be cloned?
+        $f = $field->getField();
+        $ft_instance = $f->getNativeField();
+
+        if (! isset($ft_instance->has_array_data)
+            || $ft_instance->has_array_data == false
+            || (isset($ft_instance->can_be_cloned) && $ft_instance->can_be_cloned)) {
+            $vars['buttons'][] = [
+                'name' => 'submit',
+                'type' => 'submit',
+                'value' => 'save_as_new_entry',
+                'text' => sprintf(lang('clone_to_new'), lang('field')),
+                'working' => 'btn_saving'
+            ];
+        }
 
         ee()->view->cp_page_title = lang('edit_field');
         ee()->view->extra_alerts = array('search-reindex');

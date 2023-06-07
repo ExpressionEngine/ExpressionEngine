@@ -182,14 +182,14 @@ class Uploads extends AbstractFilesController
         $adapter_groups = [];
         $adapter_choices = [];
         $adapter_settings = [];
-        foreach($adapters as $key => $adapter) {
+        foreach ($adapters as $key => $adapter) {
             $adapter_choices[$key] = lang('adapter_' . $key);
             $adapter_groups[$key] = "adapter_{$key}";
             $adapterFields = ee('Filesystem/Adapter')->createSettingsFields($key, ($upload_destination->adapter == $key) ? $settingsValues : []);
-            if(!empty($adapterFields)) {
-                foreach($adapterFields as $field) {
+            if (!empty($adapterFields)) {
+                foreach ($adapterFields as $field) {
                     // Prefix all field names for the adapter
-                    foreach($field['fields'] as $input_name => $input) {
+                    foreach ($field['fields'] as $input_name => $input) {
                         $prefixed_name = implode('', [
                             "_for_adapter[{$key}]",
                             (strpos($input_name, '[') !== false) ? '['. str_replace('[', '][', $input_name) : "[{$input_name}]"
@@ -246,13 +246,28 @@ class Uploads extends AbstractFilesController
                                     'children' => $allowed_types,
                                 ]
                             ],
-                            'value' => $upload_destination->allowed_types ? (in_array('all', $upload_destination->allowed_types) ? ['--'] : $upload_destination->allowed_types): ['img'],
+                            'value' => $upload_destination->allowed_types ? (in_array('all', $upload_destination->allowed_types) ? ['--'] : $upload_destination->allowed_types) : ['img'],
                             'toggle_all' => false,
                         ),
                     )
                 ),
             )
         );
+
+        if (bool_config_item('multiple_sites_enabled')) {
+            $vars['sections'][0][] = array(
+                'title' => 'share_directory_on_all_sites',
+                'desc' => 'share_directory_on_all_sites_desc',
+                'fields' => array(
+                    'share_directory' => array(
+                        'type' => 'yes_no',
+                        'value' => $upload_destination->site_id === 0,
+                        'disabled' => ! $upload_destination->isNew()
+                    )
+                )
+            );
+        }
+
         $vars['sections'] = array_merge($vars['sections'], array(
             'browser_behavior' => array(
                 array(
@@ -621,6 +636,11 @@ class Uploads extends AbstractFilesController
     private function validateUploadPreferences($upload_destination)
     {
         $upload_destination->set($_POST);
+
+        if ($upload_destination->isNew() && ee('Request')->post('share_directory') == 'y') {
+            $upload_destination->site_id = 0;
+        }
+
         // Pull adapter specific configuration
         if (isset($_POST['_for_adapter']) && isset($_POST['_for_adapter'][$_POST['adapter']])) {
             $adapterSettings = $_POST['_for_adapter'][$_POST['adapter']];
@@ -727,7 +747,7 @@ class Uploads extends AbstractFilesController
 
         foreach ($new_sizes as $row_id => $columns) {
             $model = ee('Model')->make('FileDimension', $columns);
-            $model->site_id = ee()->config->item('site_id');
+            $model->site_id = $upload_destination->site_id;
             $upload_destination->FileDimensions[] = $model;
 
             $validate[$row_id] = $model;
@@ -790,7 +810,7 @@ class Uploads extends AbstractFilesController
 
         if (ee('Permission')->isSuperAdmin()) {
             $upload_destination = ee('Model')->get('UploadDestination', $upload_id)
-                ->filter('site_id', ee()->config->item('site_id'))
+                ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
                 ->first();
         } else {
             $member = ee()->session->getMember();

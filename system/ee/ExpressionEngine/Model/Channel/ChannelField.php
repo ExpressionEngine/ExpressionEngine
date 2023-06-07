@@ -95,7 +95,7 @@ class ChannelField extends FieldModel
 
     protected static $_validation_rules = array(
         'site_id' => 'required|integer',
-        'field_name' => 'required|alphaDash|unique|validateNameIsNotReserved|maxLength[32]',
+        'field_name' => 'required|alphaDash|unique|validateNameIsNotReserved|maxLength[32]|validateUniqueAmongFieldGroups',
         'field_label' => 'required|maxLength[50]',
         'field_type' => 'validateIsCompatibleWithPreviousValue',
         //	'field_list_items'     => 'required',
@@ -315,12 +315,24 @@ class ChannelField extends FieldModel
     }
 
     /**
-     * Validate the field name to avoid variable name collisions
+     * The field name must not intersect witch Field Group short names
+     *
      */
-    public function validateNameIsNotReserved($key, $value, $params, $rule)
+    public function validateUniqueAmongFieldGroups($key, $value, array $params = array())
     {
-        if (in_array($value, ee()->cp->invalid_custom_field_names())) {
-            return lang('reserved_word');
+        // Check to see if we can find a channel field that matches the short name
+        $channelFieldGroups = $this->getModelFacade()
+            ->get('ChannelFieldGroup')
+            ->filter('short_name', $value);
+
+        // Make sure group short name is unique among channel fields
+        foreach ($params as $field) {
+            $channelFieldGroups->filter($field, $this->getProperty($field));
+        }
+
+        // If there are any matches, return the lang key of the error
+        if ($channelFieldGroups->count() > 0) {
+            return 'unique_among_field_groups';
         }
 
         return true;

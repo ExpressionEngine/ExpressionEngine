@@ -366,7 +366,7 @@ class FieldFacade
         return $this->api->apply('get_field_status', array($field_value));
     }
 
-    public function replaceTag($tagdata, $params = array(), $modifier = '', $full_modifier = '')
+    public function replaceTag($tagdata, $params = array(), $specificModifier = '', $full_modifier = '', $all_modifiers = [])
     {
         $ft = $this->getNativeField();
 
@@ -384,17 +384,41 @@ class FieldFacade
             $data['field_id_' . $this->getId()]
         ));
 
-        $parse_fnc = ($modifier) ? 'replace_' . $modifier : 'replace_tag';
-
         $output = '';
 
-        if (method_exists($ft, $parse_fnc)) {
-            $output = $this->api->apply($parse_fnc, array($data, $params, $tagdata));
+        $checkNextModifier = method_exists($ft, 'getChainableModifiersThatRequireArray');
+        if ($checkNextModifier) {
+            $modifiersRequireArray = $ft->getChainableModifiersThatRequireArray($data);
         }
-        // Go to catchall and include modifier
-        elseif (method_exists($ft, 'replace_tag_catchall') and $modifier !== '') {
-            $modifier = $full_modifier ?: $modifier;
-            $output = $this->api->apply('replace_tag_catchall', array($data, $params, $tagdata, $modifier));
+
+        if (!empty($all_modifiers)) {
+            $modifiers = array_keys($all_modifiers);
+            $modifiersCounter = 0;
+            $output = $data; // set initial value
+            foreach ($all_modifiers as $modifier => $params) {
+                unset($modifiers[$modifiersCounter]);
+                $modifiersCounter++;
+                $parse_fnc = ($modifier) ? 'replace_' . $modifier : 'replace_tag';
+                $content_param = ($checkNextModifier && isset($modifiers[$modifiersCounter]) && in_array($modifiers[$modifiersCounter], $modifiersRequireArray)) ? null : $tagdata;
+                if (method_exists($ft, $parse_fnc) || ee('Variables/Modifiers')->has($modifier)) {
+                    $output = $this->api->apply($parse_fnc, array($output, $params, $content_param));
+                } elseif (method_exists($ft, 'replace_tag_catchall') and $modifier !== '') {
+                    // Go to catchall and include modifier
+                    $modifier = $full_modifier && !is_null($content_param) ? $full_modifier : $modifier;
+                    $output = $this->api->apply('replace_tag_catchall', array($output, $params, $content_param, $modifier));
+                } else {
+                    $output = '';
+                }
+            }
+        } else {
+            $parse_fnc = ($specificModifier) ? 'replace_' . $specificModifier : 'replace_tag';
+            if (method_exists($ft, $parse_fnc) || ee('Variables/Modifiers')->has($modifier)) {
+                $output = $this->api->apply($parse_fnc, array($data, $params, $tagdata));
+            } elseif (method_exists($ft, 'replace_tag_catchall') and $specificModifier !== '') {
+                // Go to catchall and include modifier
+                $modifier = $full_modifier ?: $specificModifier;
+                $output = $this->api->apply('replace_tag_catchall', array($data, $params, $tagdata, $modifier));
+            }
         }
 
         return $output;
@@ -469,8 +493,8 @@ class FieldFacade
         if (! $this->getItem('field_is_conditional')) {
             return [];
         }
-        
-        if($this->conditionSets) {
+
+        if ($this->conditionSets) {
             return $this->conditionSets;
         }
 
