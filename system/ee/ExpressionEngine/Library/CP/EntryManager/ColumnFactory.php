@@ -215,7 +215,7 @@ class ColumnFactory
                 }
                 foreach (ee()->cp->installed_modules as $module_name) {
                     $module = ee('Addon')->get($module_name);
-                    if ($module->hasTab()) {
+                    if (!is_null($module) && $module->hasTab()) {
                         include_once($module->getPath() . '/tab.' . $module_name . '.php');
                         $class_name = ucfirst($module_name) . '_tab';
                         $OBJ = new $class_name();
