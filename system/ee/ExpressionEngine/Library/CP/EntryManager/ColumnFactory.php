@@ -215,13 +215,18 @@ class ColumnFactory
                 }
                 foreach (ee()->cp->installed_modules as $module_name) {
                     $module = ee('Addon')->get($module_name);
-                    if ($module->hasTab()) {
-                        include_once($module->getPath() . '/tab.' . $module_name . '.php');
-                        $class_name = ucfirst($module_name) . '_tab';
-                        $OBJ = new $class_name();
-                        if (method_exists($OBJ, 'renderTableCell') === true) {
-                            $tabs[] = 'tab_' . $module_name;
+                    if (!is_null($module)) {
+                        $modulePath = $module->getPath();
+                        ee()->load->add_package_path($modulePath);
+                        if ($module->hasTab()) {
+                            include_once($modulePath . '/tab.' . $module_name . '.php');
+                            $class_name = ucfirst($module_name) . '_tab';
+                            $OBJ = new $class_name();
+                            if (method_exists($OBJ, 'renderTableCell') === true) {
+                                $tabs[] = 'tab_' . $module_name;
+                            }
                         }
+                        ee()->load->remove_package_path($modulePath);
                     }
                 }
                 ee()->cache->save($cache_key, $tabs);
