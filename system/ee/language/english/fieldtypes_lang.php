@@ -81,6 +81,10 @@ $lang = array(
 
     'rel_ft_display_entry_id_desc' => 'When enabled, entry IDs will be displayed together with entry title inside the field.',
 
+    'rel_ft_display_status' => 'Display Status?',
+
+    'rel_ft_display_status_desc' => 'When enabled, colored status badge will be displayed together with entry title inside the field.',
+
     'rel_ft_deferred' => 'Defer field initialization?',
 
     'rel_ft_deferred_desc' => 'When enabled, this field won’t initialize until the Edit Relationships button is clicked on. This can result in faster control panel page load times.',
@@ -258,7 +262,7 @@ $lang = array(
 
     'grid_min_rows' => 'Minimum rows',
 
-    'grid_min_rows_desc' => 'Sets the minumum amount of data rows this grid will accept',
+    'grid_min_rows_desc' => 'Sets the minimum amount of data rows this grid will accept',
 
     'grid_order_by' => 'Order by',
 
@@ -346,6 +350,16 @@ $lang = array(
     /* Notes */
     'notes_note_content' => 'Note Content',
     'notes_note_content_desc' => 'This content will appear as a note on the publish form. Markdown formatting is supported.',
+
+    /* Date */
+
+    'date_localization' => 'Date Localization',
+    'date_localization_desc' => 'Choose how the field data should be localized. <a href="' . DOC_URL . 'fieldtypes/date.html">More info</a>',
+    'always_localized' => 'Always localized',
+    'always_fixed' => 'Always fixed',
+    'ask_each_time' => 'Ask each time',
+    'show_time' => 'Include time?',
+    'show_time_desc' => 'When turned off, only date will be displayed',
 );
 
 // EOF

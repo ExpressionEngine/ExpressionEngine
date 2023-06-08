@@ -27,6 +27,8 @@ class Grid_ft extends EE_Fieldtype
 
     public $settings_form_field_name = 'grid';
 
+    public $can_be_cloned = true;
+
     private $errors;
 
     /**
@@ -177,8 +179,8 @@ class Grid_ft extends EE_Fieldtype
         $grid = ee('CP/GridInput', array(
             'field_name' => $this->name(),
             'lang_cols' => false,
-            'grid_min_rows' => $this->settings['grid_min_rows'],
-            'grid_max_rows' => $this->settings['grid_max_rows'],
+            'grid_min_rows' => isset($this->settings['grid_min_rows']) ? $this->settings['grid_min_rows'] : 0,
+            'grid_max_rows' => isset($this->settings['grid_max_rows']) ? $this->settings['grid_max_rows'] : '',
             'reorder' => isset($this->settings['allow_reorder'])
                 ? get_bool_from_string($this->settings['allow_reorder'])
                 : true,

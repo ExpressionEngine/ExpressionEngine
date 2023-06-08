@@ -57,7 +57,7 @@ class file_grid_ft extends Grid_ft
     {
         $directory_choices = ['all' => lang('all')] + ee('Model')->get('UploadDestination')
             ->fields('id', 'name')
-            ->filter('site_id', ee()->config->item('site_id'))
+            ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
             ->filter('module_id', 0)
             ->order('name', 'asc')
             ->all(true)

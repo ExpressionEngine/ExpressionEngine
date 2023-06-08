@@ -390,22 +390,49 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
                 $tagdata = str_replace(LD . $val . RD, $data[$raw_val], $tagdata);
             } else {
                 $field = ee('Variables/Parser')->parseVariableProperties($key, $prefix);
-                $method = 'replace_' . $field['modifier'];
-
-                if (! method_exists($this, $method)) {
-                    return $tagdata;
-                }
 
                 // some variables like {channel_short_name} don't directly map to the schema, so we can define
                 // methods here like getChannelShortName() to provide the correct content
                 $mismatch_getter = 'get' . str_replace(' ', '', ucwords(str_replace('_', ' ', $field['field_name'])));
 
-                if (array_key_exists($field['field_name'], $data)) {
-                    $content = $this->$method($data[$field['field_name']], $field['params']);
-                } elseif (method_exists($this, $mismatch_getter)) {
-                    $content = $this->$method($this->$mismatch_getter($data), $field['params']);
+                if (isset($field['all_modifiers']) && !empty($field['all_modifiers'])) {
+                    foreach ($field['all_modifiers'] as $modifier => $params) {
+                        $method = 'replace_' . $modifier;
+
+                        if (! method_exists($this, $method) && ! ee('Variables/Modifiers')->has($modifier)) {
+                            continue;
+                        }
+
+                        if (isset($content)) {
+                            // subsequental runs
+                            $content = $this->$method($content, $params);
+                        } elseif (array_key_exists($field['field_name'], $data)) {
+                            // first run
+                            $content = $this->$method($data[$field['field_name']], $params);
+                        } elseif (method_exists($this, $mismatch_getter)) {
+                            // first run on variable with mismatched name
+                            $content = $this->$method($this->$mismatch_getter($data), $params);
+                        }
+                    }
                 } else {
-                    // variable must not exist
+                    $method = 'replace_' . $field['modifier'];
+
+                    if (! method_exists($this, $method) && ! ee('Variables/Modifiers')->has($field['modifier'])) {
+                        return $tagdata;
+                    }
+
+                    if (array_key_exists($field['field_name'], $data)) {
+                        $content = $this->$method($data[$field['field_name']], $field['params']);
+                    } elseif (method_exists($this, $mismatch_getter)) {
+                        $content = $this->$method($this->$mismatch_getter($data), $field['params']);
+                    } else {
+                        // variable must not exist
+                        return $tagdata;
+                    }
+                }
+
+                // no matches, return unparsed
+                if (!isset($content)) {
                     return $tagdata;
                 }
 
@@ -416,6 +443,11 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
         }
 
         return $tagdata;
+    }
+
+    private function _apply_modifiers($data, $tagdata, $modifier, $field_name, $params)
+    {
+
     }
 
     /**

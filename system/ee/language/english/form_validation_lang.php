@@ -62,6 +62,10 @@ $lang = array(
 
     'unique' => 'This field must be unique.',
 
+    'unique_among_channel_fields' => 'This field must be unique and can not match a channel field short name.',
+
+    'unique_among_field_groups' => 'This field must be unique and can not match a field group short name.',
+
     'unique_email' => 'This field must contain a unique email address.',
 
     'valid_base64' => 'This field may only contain characters in the base64 character set (alpha-numeric, slash, plus, and equals).',
