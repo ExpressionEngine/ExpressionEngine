@@ -502,11 +502,16 @@ class Fluid_field_ft extends EE_Fieldtype
                 $fluid_field_data_groups = [];
 
                 $fluid_field_data->each(function ($field) use (&$fluid_field_data_groups) {
-                    if (!array_key_exists($field->group, $fluid_field_data_groups)) {
-                        $fluid_field_data_groups[$field->group] = [];
+                    $groupKey = $field->group;
+                    if (is_null($groupKey)) {
+                        $groupKey = uniqid();
+                    }
+                    if (!array_key_exists($groupKey, $fluid_field_data_groups)) {
+                        $fluid_field_data_groups[$groupKey] = [];
                     }
 
-                    $fluid_field_data_groups[$field->group][] = $field;
+                    $fluid_field_data_groups[$groupKey][] = $field;
+
                 });
 
                 foreach ($fluid_field_data_groups as $field_data) {
