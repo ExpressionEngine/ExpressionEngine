@@ -175,9 +175,11 @@ class EntryListing
     {
         static $channel = null;
 
-        if (is_null($channel)
+        if (
+            is_null($channel)
             && $this->channel_filter
-            && $this->channel_filter->value()) {
+            && $this->channel_filter->value()
+        ) {
             $channel = ee('Model')->get('Channel', $this->channel_filter->value())
                 ->first();
         }
@@ -285,10 +287,9 @@ class EntryListing
             } else {
                 show_error(lang('unauthorized_access'), 403);
             }
-        }
-        // If we have no selected channel filter, and we are not an admin, we
-        // need to filter via WHERE IN
-        else {
+        } else {
+            // If we have no selected channel filter, and we are not an admin, we
+            // need to filter via WHERE IN
             if (! $this->is_admin) {
                 if (empty($this->allowed_channels)) {
                     show_error(lang('no_channels'));
@@ -350,7 +351,7 @@ class EntryListing
                         break;
                 }
 
-                $entries->search($search_fields, $this->search_value);
+                $entries->search(array_unique($search_fields), $this->search_value);
             }
         }
 
