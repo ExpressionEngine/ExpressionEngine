@@ -483,7 +483,7 @@ class File extends AbstractFilesController
             ],
             [
                 'title' => 'coordinates',
-                'desc' => 'coordinates_desc',
+                'desc' => 'coordiantes_desc',
                 'fields' => [
                     'crop_x' => [
                         'type' => 'short-text',

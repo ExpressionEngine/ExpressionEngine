@@ -563,7 +563,7 @@ class Search
 
         // do we need to limit to categories?
         if (!empty($this->_meta['category']) or !empty($_POST['cat_id'])) {
-            $sql .= "LEFT JOIN exp_category_posts ON exp_channel_titles.entry_id = exp_category_posts.entry_id 
+            $sql .= "LEFT JOIN exp_category_posts ON exp_channel_titles.entry_id = exp_category_posts.entry_id
                 LEFT JOIN exp_categories ON exp_category_posts.cat_id = exp_categories.cat_id ";
         }
 
@@ -984,9 +984,13 @@ class Search
         $sort = (! isset($_POST['sort'])) ? $sort : $_POST['sort'];
         $order = (! isset($_POST['sort_order'])) ? $sort : $_POST['sort_order'];
 
-        if (strtolower($order) != 'asc' and strtolower($order) != 'desc') {
+        if (strtolower($order) !== 'asc' and strtolower($order) !== 'desc') {
             $order = 'desc';
         }
+
+        // Saniitize order fields
+        $order = ee()->db->escape_str($order);
+        $orderby = ee()->db->escape_str($orderby);
 
         switch ($orderby) {
             case 'most_comments':

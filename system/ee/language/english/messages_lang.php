@@ -168,7 +168,7 @@ $lang = array(
 
     'messages_reply_all' => 'Reply All',
 
-    'message_already_sent' => 'Your Message Has Already Been Sent',
+    'messsage_already_sent' => 'Your Message Has Already Been Sent',
 
     'missing_required_field' => 'Missing Required Field',
 
@@ -228,7 +228,7 @@ $lang = array(
 
     'track_messages' => 'Track Messages',
 
-    'unable_to_receive_attach' => 'Unable to Receive Attachment',
+    'unable_to_recieve_attach' => 'Unable to Receive Attachment',
 
     'unlimited_messages' => 'Unlimited',
 

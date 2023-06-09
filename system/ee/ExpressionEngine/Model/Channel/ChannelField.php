@@ -95,7 +95,7 @@ class ChannelField extends FieldModel
 
     protected static $_validation_rules = array(
         'site_id' => 'required|integer',
-        'field_name' => 'required|alphaDash|unique|validateNameIsNotReserved|maxLength[32]',
+        'field_name' => 'required|alphaDash|unique|validateNameIsNotReserved|maxLength[32]|validateUniqueAmongFieldGroups',
         'field_label' => 'required|maxLength[50]',
         'field_type' => 'validateIsCompatibleWithPreviousValue',
         //	'field_list_items'     => 'required',
@@ -315,43 +315,66 @@ class ChannelField extends FieldModel
     }
 
     /**
-     * The field name must be also unique across Member Fields
      * The field name must not intersect witch Field Group short names
+     *
      */
-    public function validateUnique($key, $value, array $params = array())
+    public function validateUniqueAmongFieldGroups($key, $value, array $params = array())
     {
-        $valid = parent::validateUnique($key, $value, $params);
-        if ($valid === true && $key == 'field_name') {
-            // check field groups
-            $unique = $this->getModelFacade()
-                ->get('ChannelFieldGroup')
-                ->filter('short_name', $value);
+        // Check to see if we can find a channel field that matches the short name
+        $channelFieldGroups = $this->getModelFacade()
+            ->get('ChannelFieldGroup')
+            ->filter('short_name', $value);
 
-            foreach ($params as $field) {
-                $unique->filter($field, $this->getProperty($field));
-            }
-
-            if ($unique->count() > 0) {
-                return 'unique'; // lang key
-            }
-
-            // check member fields
-            $unique = $this->getModelFacade()
-                ->get('MemberField')
-                ->filter('m_' . $key, $value);
-
-            foreach ($params as $field) {
-                $unique->filter('m_' . $field, $this->getProperty($field));
-            }
-
-            if ($unique->count() > 0) {
-                return 'unique'; // lang key
-            }
-
-            return true;
+        // Make sure group short name is unique among channel fields
+        foreach ($params as $field) {
+            $channelFieldGroups->filter($field, $this->getProperty($field));
         }
 
-        return $valid;
+        // If there are any matches, return the lang key of the error
+        if ($channelFieldGroups->count() > 0) {
+            return 'unique_among_field_groups';
+        }
+
+        // check member fields
+        $unique = $this->getModelFacade()
+            ->get('MemberField')
+            ->filter('m_' . $key, $value);
+
+        foreach ($params as $field) {
+            $unique->filter('m_' . $field, $this->getProperty($field));
+        }
+
+        if ($unique->count() > 0) {
+            return 'unique_among_member_fields'; // lang key
+        }
+
+        return true;
+    }
+
+    /**
+     * If this entity is not new (an edit) then we cannot change this entity's
+     * type to something incompatible with its initial type.
+     */
+    public function validateIsCompatibleWithPreviousValue($key, $value, $params, $rule)
+    {
+        if (! $this->isNew()) {
+            $previous_value = $this->getBackup('field_type');
+
+            if ($previous_value) {
+                $compatibility = $this->getCompatibleFieldtypes();
+
+                // If what we are set to now is not compatible to what we were
+                // set to before the change, then we are invalid.
+                if (! isset($compatibility[$previous_value])) {
+                    // Reset it and return an error.
+                    $this->field_type = $previous_value;
+
+                    return lang('invalid_field_type');
+                }
+            }
+        }
+
+        return true;
     }
 }
 

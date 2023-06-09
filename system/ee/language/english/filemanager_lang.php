@@ -206,7 +206,7 @@ $lang = array(
 
     'constraints' => 'Constraints',
 
-    'coordinates_desc' => 'x (horizontal) and y (vertical) axis coordinates to start the crop from.',
+    'coordiantes_desc' => 'x (horizontal) and y (vertical) axis coordinates to start the crop from.',
 
     'coordinates' => 'Coordinates',
 

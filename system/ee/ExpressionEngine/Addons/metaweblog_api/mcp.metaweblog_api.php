@@ -454,7 +454,7 @@ class Metaweblog_api_mcp
 
             foreach ($fields as $var) {
                 if (! isset($_POST[$var]) or $_POST[$var] == '') {
-                    return ee()->output->show_user_error('submission', lang('metaweblog_missing_fields'));
+                    return ee()->output->show_user_error('submission', lang('metaweblog_mising_fields'));
                 }
 
                 $data[$var] = $_POST[$var];

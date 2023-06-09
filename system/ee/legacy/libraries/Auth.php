@@ -241,7 +241,7 @@ class Auth
 
         // Ensure password is not too long
         if (strlen($password) > PASSWORD_MAX_LENGTH) {
-            $this->errors[] = 'credential_mismatch';
+            $this->errors[] = 'credential_missmatch';
 
             return false;
         }
@@ -259,7 +259,7 @@ class Auth
         // Not even close
         if (! $incoming) {
             ee()->session->save_password_lockout($username);
-            $this->errors[] = 'credential_mismatch';
+            $this->errors[] = 'credential_missmatch';
 
             return false;
         }

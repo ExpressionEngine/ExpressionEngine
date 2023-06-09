@@ -216,7 +216,7 @@ class EE_Validate
                 $this->errors[] = $error;
             }
             foreach ($result->getErrors('password_confirm') as $key => $error) {
-                $this->errors[] = lang('mismatched_passwords');
+                $this->errors[] = lang('missmatched_passwords');
             }
             return $this->errors;
         }

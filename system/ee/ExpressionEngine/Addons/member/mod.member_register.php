@@ -483,7 +483,7 @@ class Member_register extends Member
             foreach ($passwordValidation->getAllErrors() as $errors) {
                 foreach ($errors as $key => $error) {
                     if ($key == 'matches') {
-                        $error = lang('mismatched_passwords');
+                        $error = lang('missmatched_passwords');
                     }
                     $cust_errors['error:password'] = $error;
                 }

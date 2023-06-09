@@ -65,7 +65,11 @@ class RequirementsChecker
                     throw new Exception('Could not connect to the database using the credentials provided.', 12);
                 }
 
-                return (version_compare($pdo->getAttribute(PDO::ATTR_SERVER_VERSION), $this->minimum_mysql, '>=') === true);
+                // Get current MySQL version:
+                $mysqlVersion = $pdo->query('SELECT version()')->fetch();
+                $mysqlVersion = $mysqlVersion[0];
+
+                return (version_compare($mysqlVersion, $this->minimum_mysql, '>=') === true);
             }
         );
 

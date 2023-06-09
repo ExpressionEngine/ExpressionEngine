@@ -614,11 +614,19 @@ JSC;
         $destination_url = $data['model_object']->getAbsoluteManipulationURL($function);
         $data['model_object']->file_name = $fileNameOnModel;
 
+        if (!$props) {
+            $tmp = $data['filesystem']->copyToTempFile($destination_path);
+            $props = ee()->image_lib->get_image_properties($tmp['path'], true);
+            fclose($tmp['file']);
+        }
+
         if ($tagdata === null) {
             // called when chaining modifiers
             $vars = array_merge($data, [
                 'url' => $destination_url,
-                'source_image' => $destination_path
+                'source_image' => $destination_path,
+                'width' => $props['width'],
+                'height' => $props['height']
             ]);
 
             return $vars;
@@ -631,11 +639,6 @@ JSC;
             return ($return_as_path ? $destination_path : $destination_url);
         } else {
             // tag pair
-            if (!$props) {
-                $tmp = $data['filesystem']->copyToTempFile($destination_path);
-                $props = ee()->image_lib->get_image_properties($tmp['path'], true);
-                fclose($tmp['file']);
-            }
             $vars = [
                 'url' => $destination_url,
                 'width' => $props['width'],

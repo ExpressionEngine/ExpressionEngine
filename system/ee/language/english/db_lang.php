@@ -44,9 +44,9 @@ $lang = array(
 
     'db_unable_to_set_charset' => 'Unable to set client connection character set: %s',
 
-    'db_unsupported_compression' => 'The file compression format you chose is not supported by your server.',
+    'db_unsuported_compression' => 'The file compression format you chose is not supported by your server.',
 
-    'db_unsupported_feature' => 'Unsupported feature of the database platform you are using.',
+    'db_unsuported_feature' => 'Unsupported feature of the database platform you are using.',
 
     'db_unsupported_function' => 'This feature is not available for the database you are using.',
 
