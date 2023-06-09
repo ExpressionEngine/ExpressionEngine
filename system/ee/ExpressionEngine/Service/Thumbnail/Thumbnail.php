@@ -68,7 +68,7 @@ class Thumbnail
             } elseif ($file->isEditableImage() || $file->isSVG()) {
                 $this->url = $file->getAbsoluteThumbnailURL();
                 $this->path = $file->getAbsoluteThumbnailPath();
-                $this->tag = '<img src="' . $this->url . '" alt="' . $file->description . '" title="' . $file->title .'" class="thumbnail_img" />';
+                $this->tag = '<img src="' . $this->url . '" alt="' . $file->title . '" title="' . $file->title .'" class="thumbnail_img" />';
             } else {
                 switch ($file->file_type) {
                     case 'doc':
@@ -76,7 +76,7 @@ class Thumbnail
                         if (strpos($file->mime_type, 'pdf') !== false) {
                             $this->tag = '<span class="sr-only">' . lang('pdf_file_icon') . '</span><i class="fal fa-file-pdf fa-3x"></i>';
                         } elseif (strpos($file->mime_type, 'html') !== false || strpos($file->mime_type, 'css') !== false || strpos($file->mime_type, 'xml') !== false) {
-                            $this->tag = '<span class="sr-only">file icon</span><i class="fal fa-file-code fa-3x"></i>';
+                            $this->tag = '<span class="sr-only">' . lang('file_icon') . '</span><i class="fal fa-file-code fa-3x"></i>';
                         } elseif (strpos($file->mime_type, 'excel') !== false || strpos($file->mime_type, 'spreadsheet') !== false || strpos($file->mime_type, 'csv') !== false) {
                             $this->tag = '<span class="sr-only">' . lang('spreadsheet_file_icon') . '</span><i class="fal fa-file-spreadsheet fa-3x"></i>';
                         } elseif (strpos($file->mime_type, 'word') !== false || strpos($file->mime_type, 'document.text') !== false || strpos($file->mime_type, 'richtext') !== false || strpos($file->mime_type, 'rtf') !== false) {
