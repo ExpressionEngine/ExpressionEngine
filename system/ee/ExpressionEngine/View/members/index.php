@@ -1,4 +1,8 @@
-<?php $this->extend('_templates/default-nav', array(), 'outer_box'); ?>
+<?php
+if (! AJAX_REQUEST) {
+    $this->extend('_templates/default-nav', array(), 'outer_box');
+}
+?>
 
 <div class="box panel">
     <div class="tbl-ctrls">

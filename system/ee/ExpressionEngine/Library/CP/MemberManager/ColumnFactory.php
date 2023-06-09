@@ -24,6 +24,7 @@ class ColumnFactory extends EntryManager\ColumnFactory
         'join_date' => Columns\JoinDate::class,
         'last_visit' => Columns\LastVisit::class,
         'checkbox' => Columns\Checkbox::class,
+        'manage' => Columns\Manage::class,
     ];
 
     /**

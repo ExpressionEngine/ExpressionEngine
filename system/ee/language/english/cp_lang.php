@@ -368,6 +368,8 @@ $lang = array(
 
     'search_titles_only' => 'Search Titles Only',
 
+    'names_and_email_only' => 'Names & email only',
+
     'columns_filter' => 'Columns',
 
     'perpage_filter' => 'show',
