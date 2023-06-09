@@ -24,6 +24,7 @@ class Date extends Settings
      */
     public function index()
     {
+        ee()->lang->loadfile('calendar');
         $this->base_url = ee('CP/URL')->make($this->base_url, $this->query_string);
         $fields = ee()->config->prep_view_vars('localization_cfg');
         $fields = $fields['fields'];
@@ -71,6 +72,22 @@ class Date extends Settings
                     )
                 ),
                 array(
+                    'title' => 'week_start',
+                    'desc' => 'week_start_desc',
+                    'fields' => array(
+                        'week_start' => array(
+                            'type' => 'radio',
+                            'choices' => array(
+                                'friday' => lang('cal_friday'),
+                                'saturday' => lang('cal_saturday'),
+                                'sunday' => lang('cal_sunday'),
+                                'monday' => lang('cal_monday')
+                            ),
+                            'value' => !empty($this->member->week_start) ? $this->member->week_start : (!empty(ee()->config->item('week_start')) ? ee()->config->item('week_start') : 'sunday')
+                        )
+                    )
+                ),
+                array(
                     'title' => 'include_seconds',
                     'desc' => 'include_seconds_desc',
                     'group' => 'localize',
@@ -108,6 +125,7 @@ class Date extends Settings
                 ee()->db->set('timezone', null);
                 ee()->db->set('date_format', null);
                 ee()->db->set('time_format', null);
+                ee()->db->set('week_start', null);
                 ee()->db->set('include_seconds', null);
                 ee()->db->where('member_id', $this->member->member_id);
                 ee()->db->update('members');

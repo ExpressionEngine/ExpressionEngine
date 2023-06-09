@@ -43,7 +43,6 @@
 			fluidField.attr('data-field-count', fieldCount);
 
 			// Enable inputs
-
 			fieldClone.find(':input').removeAttr('disabled');
 
 			// Insert it
@@ -67,6 +66,13 @@
 			// Hide the add item menu
 			$('.js-dropdown-toggle.dropdown-open').trigger('click');
 
+            // If we cloned a field group fire 'add' events on all of its fields
+            if ($(fieldClone).data('field-type') == 'field_group') {
+                $(fieldClone).find('.fluid__item-field').each(function(index, element) {
+                    FluidField.fireEvent($(element).data('field-type'), 'add', [$(element)]);
+                });
+            }
+
 			FluidField.fireEvent($(fieldClone).data('field-type'), 'add', [fieldClone]);
 			$(document).trigger('entry:preview');
 	    };
@@ -76,6 +82,13 @@
 		$('.fluid').on('click', 'a.js-fluid-remove', function(e) {
 			var el = $(this).closest('.fluid__item');
 			var fluidCount = $(this).parents('.fluid').attr('data-field-count');
+
+            // If we removed a field group fire 'remove' events on all of its fields
+            if ($(el).data('field-type') == 'field_group') {
+                $(el).find('.fluid__item-field').each(function (index, element) {
+                    FluidField.fireEvent($(element).data('field-type'), 'remove', [element]);
+                });
+            }
 
 			FluidField.fireEvent($(el).data('field-type'), 'remove', el);
 			$(document).trigger('entry:preview');

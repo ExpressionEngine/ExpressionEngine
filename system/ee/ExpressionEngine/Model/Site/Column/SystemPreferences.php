@@ -64,6 +64,7 @@ class SystemPreferences extends CustomType
     protected $default_site_timezone;
     protected $date_format;
     protected $time_format;
+    protected $week_start;
     protected $mail_protocol;
     protected $email_newline;
     protected $smtp_server;

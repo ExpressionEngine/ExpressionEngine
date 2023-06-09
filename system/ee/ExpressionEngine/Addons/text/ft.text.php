@@ -15,7 +15,6 @@ use ExpressionEngine\Addons\FilePicker\FilePicker;
  */
 class Text_ft extends EE_Fieldtype
 {
-
     public $info = array(
         'name' => 'Text Input',
         'version' => '1.0.0'
@@ -115,6 +114,10 @@ class Text_ft extends EE_Fieldtype
             'dir' => $this->settings['field_text_direction'],
             'field_content_type' => $type
         );
+
+        if ($this->get_setting('readonly')) {
+            $field['readonly'] = true;
+        }
 
         if ($this->get_setting('field_disabled')) {
             $field['disabled'] = 'disabled';
@@ -298,7 +301,7 @@ class Text_ft extends EE_Fieldtype
     /**
      * Returns allowed content types for the text fieldtype
      *
-     * @return	array
+     * @return  array
      */
     private function _get_content_options()
     {
@@ -370,11 +373,10 @@ class Text_ft extends EE_Fieldtype
     /**
      * Returns database column setting for a particular text field configuration
      *
-     * @param	string	Type of data to be stored in this text field
-     * @param	int		Field/column ID to map settings to
-     * @param	bool	Whether or not we're preparing these settings for
-     * 					a Grid field
-     * @return	array	Database column settings for this text field
+     * @param   string  Type of data to be stored in this text field
+     * @param   int     Field/column ID to map settings to
+     * @param   bool    Whether or not we're preparing these settings for a Grid field
+     * @return  array   Database column settings for this text field
      */
     private function _get_column_settings($data_type, $field_id, $grid = false)
     {
@@ -420,24 +422,23 @@ class Text_ft extends EE_Fieldtype
         }
 
         switch ($type) {
-            case 'numeric':	$data = rtrim(rtrim(sprintf('%F', $data), '0'), '.'); // remove trailing zeros up to decimal point and kill decimal point if no trailing zeros
-
+            case 'numeric':
+                $data = rtrim(rtrim(sprintf('%F', $data), '0'), '.'); // remove trailing zeros up to decimal point and kill decimal point if no trailing zeros
                 break;
-            case 'integer': $data = sprintf('%d', $data);
-
+            case 'integer':
+                $data = sprintf('%d', $data);
                 break;
             case 'decimal':
                 $parts = explode('.', sprintf('%F', $data));
                 $parts[1] = isset($parts[1]) ? rtrim($parts[1], '0') : '';
-
                 $decimals = ($decimals === false) ? 2 : $decimals;
                 $data = $parts[0] . '.' . str_pad($parts[1], $decimals, '0');
-
                 break;
             default:
                 if ($decimals && ctype_digit(str_replace('.', '', $data))) {
                     $data = number_format($data, $decimals);
                 }
+                break;
         }
 
         return $data;

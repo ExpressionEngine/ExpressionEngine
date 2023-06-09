@@ -23,6 +23,8 @@ class Selectable_buttons_ft extends Multi_select_ft
 
     public $has_array_data = true;
 
+    public $can_be_cloned = true;
+
     public $entry_manager_compatible = true;
 
     /**

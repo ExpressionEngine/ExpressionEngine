@@ -90,8 +90,6 @@ $lang = array(
 
     'create_entry_error' => 'Cannot Create Entry',
 
-    'copy_of' => 'Copy of',
-
     'create_entry_error_desc' => 'We were unable to create this entry, please review and fix errors below.',
 
     'create_entry_success' => 'Entry Created',
@@ -552,6 +550,8 @@ $lang = array(
     'no_entries_exist' => 'No <b>Entries</b> found.',
 
     'no_entries_matching_that_criteria' => 'There are no entries matching the criteria you selected.',
+
+    'no_entries_on_this_site' => 'The entry belongs to different site.',
 
     'no_glossary' => 'A glossary does not exist',
 

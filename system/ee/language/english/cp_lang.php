@@ -260,6 +260,10 @@ $lang = array(
 
     'update' => 'Update',
 
+    'clone_to_new' => 'Clone to New %s',
+
+    'copy_of' => 'Copy of',
+
     /* Log */
     'action' => 'Action',
 

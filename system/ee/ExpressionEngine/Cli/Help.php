@@ -98,7 +98,7 @@ class Help
      *
      * @param array $options The option definitions.
      *
-     * @return null
+     * @return object
      *
      */
     public function setOptions(array $options)
@@ -126,7 +126,7 @@ class Help
      *
      * @param string $summary The single-line summary.
      *
-     * @return null
+     * @return object
      *
      */
     public function setSummary($summary)
@@ -154,7 +154,7 @@ class Help
      *
      * @param string|array $usage The usage line(s).
      *
-     * @return null
+     * @return object
      *
      */
     public function setUsage($usage)
@@ -170,7 +170,7 @@ class Help
      *
      * @param string $descr The long-form description.
      *
-     * @return null
+     * @return object
      *
      */
     public function setDescr($descr)
@@ -376,6 +376,40 @@ class Help
         foreach ($this->options as $string => $descr) {
             $option = $this->option_factory->newInstance($string, $descr);
             $text .= $this->getHelpOption($option);
+        }
+
+        return $text;
+    }
+
+    /**
+     *
+     * Gets the simple options output.
+     *
+     * @return string
+     *
+     */
+    public function getHelpOptionsSimple()
+    {
+        if (! $this->options) {
+            return;
+        }
+        $text = '';
+        foreach ($this->options as $option => $descr) {
+            // check if $option contains a colon
+            $needsValue = (strpos($option, ':') !== false);
+
+            // Remove the ':' from the option
+            $option = str_replace(':', '', $option);
+            $option = explode(',', $option);
+            $option = '--' . $option[0];
+
+            // If the command needs a value, we need to add an '='
+            if ($needsValue) {
+                $option .= '=';
+            }
+
+            // Concat all option lines together with their descriptions
+            $text .= $option . '[' . $descr . "]\n";
         }
 
         return $text;

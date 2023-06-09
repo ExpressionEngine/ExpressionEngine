@@ -18,6 +18,8 @@ class File
     public $categories = array();
     public $catfields = array();
     public $valid_thumbs = array();
+    public $enable = array();
+    public $query;
     public $return_data = '';
 
     /**
