@@ -299,14 +299,18 @@ class Fluid_field_parser
 
         $groups = [];
         foreach ($fluid_field_data as $field) {
-            if (!isset($groups[$field->group])) {
-                $groups[$field->group] = [
+            $groupKey = $field->group;
+            if (is_null($groupKey)) {
+                $groupKey = $field->order;
+            }
+            if (!isset($groups[$groupKey])) {
+                $groups[$groupKey] = [
                     'name' => $field->ChannelFieldGroup ? strtolower($field->ChannelFieldGroup->group_name) : '',
                     'short_name' => $field->ChannelFieldGroup ? strtolower($field->ChannelFieldGroup->short_name) : '',
                     'fields' => []
                 ];
             }
-            $groups[$field->group]['fields'][] = $field;
+            $groups[$groupKey]['fields'][] = $field;
         }
 
         $vars = ee('Variables/Parser')->extractVariables($tagdata);
