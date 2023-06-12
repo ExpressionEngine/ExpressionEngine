@@ -73,8 +73,6 @@ $lang = array(
 
     'addons_uninstalled_desc' => 'The following add-on(s) have been uninstalled: ',
 
-    'addons_not_updated' => 'Add-Ons Updated',
-
     'addons_updated' => 'Add-Ons Updated',
 
     'addons_updated_desc' => 'The following add-on(s) have been updated: ',
