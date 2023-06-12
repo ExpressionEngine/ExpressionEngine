@@ -748,6 +748,19 @@ class Roles extends AbstractRolesController
                     ]
                 ]
             ]);
+
+            $section = array_merge($section, [
+                [
+                    'title' => 'show_field_names',
+                    'desc' => 'show_field_names_desc',
+                    'fields' => [
+                        'show_field_names' => [
+                            'type' => 'yes_no',
+                            'value' => $role->isNew() ? 'y' : $role->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->show_field_names,
+                        ]
+                    ]
+                ],
+            ]);
         }
 
         return ee('View')->make('_shared/form/section')
@@ -1131,6 +1144,16 @@ class Roles extends AbstractRolesController
                             'auto_select_parents' => true,
                             'choices' => $channel_access['choices'],
                             'value' => $channel_access['values'],
+                        ]
+                    ]
+                ],
+                [
+                    'title' => 'show_field_names',
+                    'desc' => 'show_field_names_desc',
+                    'fields' => [
+                        'show_field_names' => [
+                            'type' => 'yes_no',
+                            'value' => $role->isNew() ? 'y' : $role->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->show_field_names,
                         ]
                     ]
                 ],

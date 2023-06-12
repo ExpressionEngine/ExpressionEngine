@@ -384,9 +384,11 @@ else: ?>
                                 $column_desc = lang($columns[$key]['desc']);
                             }
 
-                            $column_label = "<div class=\"grid-field__column-label\"  role=\"rowheader\">
+                            $column_badge = isset($columns[$key]['badge']) ? $columns[$key]['badge'] : '';
+
+                            $column_label = "<div class=\"grid-field__column-label1\"  role=\"rowheader\">
                                 <div class=\"grid-field__column-label__instraction\">
-                                    <label>$column_name</label>";
+                                    <label>$column_name</label>" . $column_badge;
                             if (!empty($column_desc)) {
                                 $column_label .= "
                                     <em>$column_desc</em>
