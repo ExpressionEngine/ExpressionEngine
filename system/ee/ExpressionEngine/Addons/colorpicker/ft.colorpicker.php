@@ -95,6 +95,10 @@ class Colorpicker_ft extends EE_Fieldtype
     {
         ee()->cp->add_js_script('file', array('library/simplecolor', 'components/colorpicker'));
 
+        ee()->javascript->set_global([
+            'lang.colorpicker_input' => lang('colorpicker_input'),
+        ]);
+
         return $this->create_colorpicker([
             'allowedColors' => $this->get_setting('allowed_colors'),
             'inputId' => $this->field_id,

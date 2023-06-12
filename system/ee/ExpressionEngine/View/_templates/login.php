@@ -35,6 +35,9 @@
 				PATH_CP_GBL_IMG: "<?=PATH_CP_GBL_IMG?>",
 				cp: {
 					validatePasswordUrl: "<?=ee('CP/URL', 'login/validate_password')->compile()?>"
+				},
+				lang: {
+					password_icon: "<?=lang('password_icon')?>"
 				}
 			}
 			$(document).ready(function()

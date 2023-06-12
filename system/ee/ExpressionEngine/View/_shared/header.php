@@ -3,7 +3,7 @@
 	<head>
 		<?=ee()->view->head_title($cp_page_title)?>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8">
-		<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"  name="viewport">
+		<meta content="width=device-width, initial-scale=1.0"  name="viewport">
 		<?php if (IS_PRO && ee('pro:Access')->hasValidLicense() && ee()->config->item('favicon')) : ?>
 		<link rel="icon" type="image/x-icon" href="<?=ee()->config->item('favicon')?>" />
 		<?php endif; ?>
@@ -65,7 +65,7 @@ $current_page = ee()->uri->segment(2);
 			<?php if (!isset($hide_sidebar) || $hide_sidebar != true) :
                 $this->embed('ee:_shared/sidebar/navigation/navigation');
             endif; ?>
-			<div class="ee-main">
+			<div class="ee-main" role="main">
 		
 		<?php if (!isset($hide_topbar) || $hide_topbar != true) : ?>
         <div class="ee-main-header <?php if (!empty($head['class']) ): echo $head['class']; endif ?>">
@@ -79,7 +79,7 @@ $current_page = ee()->uri->segment(2);
           <?php if (count($cp_breadcrumbs)): ?>
             <div class="breadcrumb-wrapper">
               <ul class="breadcrumb">
-					<li><a href="<?=ee('CP/URL')->make('/')->compile()?>"><i class="fas fa-home"></i></a></li>
+					<li><a href="<?=ee('CP/URL')->make('/')->compile()?>"><span class="sr-only"><?=ee()->config->item('site_name')?></span><i class="fas fa-home"></i></a></li>
 						<?php
                         $i = 0;
                         foreach ($cp_breadcrumbs as $link => $title):

@@ -22,6 +22,6 @@
                 <p>We're pleased to announce the release of ExpressionEngine version 7. The largest ExpressionEngine release ever. <span class="upgrade-success-banner__blurb-learn">Find out more&hellip;</span></p>
             </a>
         </div>
-        <a href="<?= ee('CP/URL')->make('homepage/dismissBanner')->compile(); ?>" class="banner-dismiss"></a>
+        <a href="<?= ee('CP/URL')->make('homepage/dismissBanner')->compile(); ?>" class="banner-dismiss"><span class="sr-only"><?=lang('close_banner')?></span></a>
     </div>
 <?php endif; ?>
