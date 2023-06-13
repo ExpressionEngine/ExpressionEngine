@@ -820,23 +820,6 @@ $lang = array(
 
     'image_alt' => 'Image for',
 
-    'file_icon' => 'File icon',
-
-    'pdf_file_icon' => 'PDF file icon',
-
-    'spreadsheet_file_icon' => 'Spreadsheet file icon',
-
-    'word_icon' => 'Word text file icon',
-
-    'powerpoint_icon' => 'Powerpoint file icon',
-
-    'archive_icon' => 'Archive file icon',
-
-    'audio_icon' => 'Audio file icon',
-    'video_icon' => 'Video file icon',
-
-    'text_icon' => 'Text file iconn',
-
     'clear_filter' => 'Clear filter button',
 
     'search_for' => 'Search for',
@@ -870,8 +853,6 @@ $lang = array(
     'remove_btn' => 'Remove button',
 
     'password_icon' => 'Show or hide password icon',
-
-    'hidden_input' => 'Hidden input for file upload',
 
     'button' => 'button',
 
