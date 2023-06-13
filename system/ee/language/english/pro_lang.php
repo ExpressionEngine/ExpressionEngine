@@ -68,7 +68,7 @@ $lang = array(
 
     'mfa' => 'Multi-Factor Authentication',
     'enable_mfa' => 'Enable Multi-Factor Authentication?',
-    'enable_mfa_desc' => 'Enables confirmation of user authencity using app on mobile device',
+    'enable_mfa_desc' => 'Enables confirmation of user authenticity using app on mobile device',
     'jump_mfa' => 'My Profile &raquo; <b>Multi-Factor Authentication</b>',
     'disable' => 'Disable',
     'disable_mfa' => 'Disable Multi-Factor Authentication?',

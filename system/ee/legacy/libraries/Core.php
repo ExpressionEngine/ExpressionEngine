@@ -74,8 +74,8 @@ class EE_Core
 
         // application constants
         define('APP_NAME', 'ExpressionEngine');
-        define('APP_BUILD', '20230425');
-        define('APP_VER', '7.2.17');
+        define('APP_BUILD', '20230612');
+        define('APP_VER', '7.3.3');
         define('APP_VER_ID', '');
         define('SLASH', '&#47;');
         define('LD', '{');
@@ -138,6 +138,7 @@ class EE_Core
                 $provider->registerCookiesSettings();
             }
             $provider->registerFilesystemAdapters();
+            $provider->registerVariableModifiers();
         }
         if (REQ != 'CLI') {
             ee('CookieRegistry')->loadCookiesSettings();
@@ -503,7 +504,7 @@ class EE_Core
             ee()->router->fetch_class() == ''/* OR
             ! isset($_GET['S'])*/
         ) {
-            ee()->functions->redirect(BASE . AMP . 'C=homepage');
+            ee()->functions->redirect(ee('CP/URL')->make('homepage')->compile());
         }
 
         if (ee()->uri->segment(1) == 'cp') {
@@ -544,9 +545,9 @@ class EE_Core
             // has their session Timed out and they are requesting a page?
             // Grab the URL, base64_encode it and send them to the login screen.
             $safe_refresh = ee()->cp->get_safe_refresh();
-            $return_url = ($safe_refresh == 'C=homepage') ? '' : AMP . 'return=' . urlencode(ee('Encrypt')->encode($safe_refresh));
+            $return = (empty($safe_refresh) || $safe_refresh == 'C=homepage') ? [] : ['return' => ee('Encrypt')->encode($safe_refresh)];
 
-            ee()->functions->redirect(BASE . AMP . 'C=login' . $return_url);
+            ee()->functions->redirect(ee('CP/URL')->make('login', $return)->compile());
         }
 
         if ((ee()->config->item('enable_mfa') === false || ee()->config->item('enable_mfa') === 'y') && ee()->session->userdata('mfa_flag') != 'skip') {
@@ -567,7 +568,7 @@ class EE_Core
         }
 
         //is member role forced to use MFA?
-        if (ee()->session->userdata('member_id') !== 0 && ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa === true && ee()->session->getMember()->enable_mfa !== true) {
+        if (ee()->session->userdata('member_id') !== 0 && ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa == 'y' && ee()->session->getMember()->enable_mfa !== true) {
             if (!(ee()->uri->segment(2) == 'login' && ee()->uri->segment(3) == 'logout') && !(ee()->uri->segment(2) == 'members' && ee()->uri->segment(3) == 'profile' && ee()->uri->segment(4) == 'pro' && ee()->uri->segment(5) == 'mfa')) {
                 ee()->lang->load('pro');
                 ee('CP/Alert')->makeInline('shared-form')
@@ -645,7 +646,12 @@ class EE_Core
      */
     private function somebody_set_us_up_the_base()
     {
-        define('BASE', EESELF . '?S=' . ee()->session->session_id() . '&amp;D=cp'); // cp url
+        $base = EESELF . '?/cp';
+        $session_id = ee()->session->session_id();
+        if (!empty($session_id)) {
+            $base .= '&amp;S=' . $session_id;
+        }
+        define('BASE', $base); // cp url
     }
 
     /**

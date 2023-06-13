@@ -441,6 +441,9 @@ class Set
             $destination = ee('Model')->make('UploadDestination');
             $destination->site_id = $this->site_id;
             $destination->name = $upload_data->name;
+            $destination->adapter = isset($upload_data->adapter) ? $upload_data->adapter : 'local';
+            $destination->url = isset($upload_data->url) ? $upload_data->url : '{base_url}';
+            $destination->server_path = isset($upload_data->server_path) ? $upload_data->server_path : null;
 
             $this->applyOverrides($destination, $upload_data->name);
 
@@ -799,7 +802,7 @@ class Set
 
         foreach ($data as $key => $value) {
             if (($type == 'grid' || $type == 'file_grid') && $key == 'columns') {
-                $this->importGrid($field, $value);
+                $this->importGrid($field, $value, $type);
 
                 continue;
             }
@@ -888,11 +891,11 @@ class Set
      * @param Array $columns The columns defined in the field.type file
      * @return void
      */
-    private function importGrid($field, $columns)
+    private function importGrid($field, $columns, $type = 'grid')
     {
         $that = $this;
-        $fn = function () use ($columns, $that) {
-            unset($_POST['grid']);
+        $fn = function () use ($columns, $that, $type) {
+            unset($_POST[$type]);
 
             // grid[cols][new_0][col_label]
             foreach ($columns as $i => $column) {
@@ -904,7 +907,7 @@ class Set
                 }
 
                 foreach ($column as $col_label => $col_value) {
-                    $_POST['grid']['cols']["new_{$i}"]['col_' . $col_label] = $col_value;
+                    $_POST[$type]['cols']["new_{$i}"]['col_' . $col_label] = $col_value;
                 }
             }
         };

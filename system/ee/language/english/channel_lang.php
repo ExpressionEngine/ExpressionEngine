@@ -74,11 +74,15 @@ $lang = array(
 
     'create_layout_error' => 'Cannot Create Publish Layout',
 
-    'create_layout_error_desc' => 'We were unable to update this group, please review and fix errors below.',
+    'create_layout_error_desc' => 'We were unable to update this publish layout, please review and fix errors below.',
 
     'create_layout_success' => 'Publish Layout Created',
 
     'create_layout_success_desc' => 'The publish layout <b>%s</b> has been created.',
+
+    'clone_settings_success' => 'Publish Layout Settings Successfully Cloned',
+
+    'clone_layout_role_error' => 'A different role needs to be selected before you can save a cloned publish layout',
 
     'custom_fields' => 'Custom Fields',
 
@@ -218,6 +222,8 @@ $lang = array(
     'custom_field_groups_not_found' => 'No <b>custom field groups</b> found',
 
     'custom_fields_desc' => 'Choose the fields you would like to include in this field group.',
+
+    'nested_fluid_will_be_hidden' => 'Nested fluid fields will not be shown',
 
     'edit_channel' => 'Edit Channel',
 
@@ -406,6 +412,10 @@ $lang = array(
 
     'url_title_prefix_desc' => '<abbr title="Unified Resource Locator">URL</abbr> title prefix assigned to all <b>new</b> entries in this channel.',
 
+    'enforce_auto_url_title' => 'Enforce automatic URL title',
+
+    'enforce_auto_url_title_desc' => 'Make the URL title field read-only and generate unique value for it automatically.',
+
     'versioning' => 'Versioning',
 
     'xml_language' => '<abbr title="Extensible Markup Language">XML</abbr> language',
@@ -568,6 +578,10 @@ $lang = array(
     'text_input' => 'Text Input',
 
     'textarea' => 'Textarea',
+
+    'fields_ajax_reorder_fail' => 'Failed to save fields order',
+
+    'fields_ajax_reorder_fail_desc' => 'We failed to save your new fields order. You may try to refresh the page and try again.',
 
     /* Statuses */
     'create_status' => 'New Status',

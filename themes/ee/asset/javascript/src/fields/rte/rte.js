@@ -123,7 +123,7 @@ window.Rte;
         }
     }
 
-    if (typeof FluidField !== 'undefined') {
+    if (typeof FluidField === "object") {
         FluidField.on('rte', 'add', function(row) {
             var field_id = row.find('.rte-textarea').attr('id');
             var config_handle = $('#'+field_id).data('config');
