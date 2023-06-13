@@ -18,8 +18,8 @@
             </a>
             <a href="https://expressionengine.com/blog/expressionengine-7-official-release" class="upgrade-success-banner__blurb" target="_blank">
                 <i class="fas fa-star fa-fw"></i>
-                <h6>ExpressionEngine 7</h6>
-                <p>We're pleased to announce the release of ExpressionEngine version 7. The largest ExpressionEngine release ever. <span class="upgrade-success-banner__blurb-learn">Find out more&hellip;</span></p>
+                <h6>ExpressionEngine 7.3 is Available</h6>
+                <p>Along with the new File Manager, the latest ExpressionEngine 7 release allows Field Groups in Fluid fields, chaining variable modifiers in templates, and new CLI commands. <span class="upgrade-success-banner__blurb-learn">Find out more&hellip;</span></p>
             </a>
         </div>
         <a href="<?= ee('CP/URL')->make('homepage/dismissBanner')->compile(); ?>" class="banner-dismiss"></a>
