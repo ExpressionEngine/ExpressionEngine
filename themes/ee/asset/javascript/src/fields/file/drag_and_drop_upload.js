@@ -641,7 +641,22 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
         subheading = EE.lang.file_dnd_choose_directory_before_uploading;
       }
 
-      if (EE.dragAndDrop.uploadDesinations.length == 0 && this.state.directory != 'all') {
+      var selectedDirectoryNotInList = false;
+
+      if (this.state.directory != 'all') {
+        dir = this.state.directory;
+
+        if (EE.dragAndDrop.uploadDesinations.length != 0) {
+          selectedDirectoryNotInList = true;
+          Object.values(EE.dragAndDrop.uploadDesinations).forEach(function (uploadDesination) {
+            if (uploadDesination.value == dir) {
+              selectedDirectoryNotInList = false;
+            }
+          });
+        }
+      }
+
+      if (EE.dragAndDrop.uploadDesinations.length == 0 || selectedDirectoryNotInList) {
         heading = EE.lang.file_dnd_no_directories;
         subheading = EE.lang.file_dnd_no_directories_desc;
         this.props.showActionButtons = false;
@@ -678,7 +693,7 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
         className: "file-field__dropzone-title"
       }, heading), React.createElement("div", {
         "class": "file-field__dropzone-button"
-      }, subheading, this.state.directory == 'all' && ':', this.state.directory != 'all' && React.createElement("b", null, this.getDirectoryName(this.state.directory)), "\xA0", this.state.directory != 'all' && this.props.allowedDirectory != 'all' && checkChildren && checkChildren.children.length > 0 && React.createElement(DropDownButton, {
+      }, subheading, this.state.directory == 'all' && uploadDirectoriesForDropdown.length > 0 && ':', this.state.directory != 'all' && React.createElement("b", null, this.getDirectoryName(this.state.directory)), "\xA0", this.state.directory != 'all' && this.props.allowedDirectory != 'all' && checkChildren && checkChildren.children.length > 0 && React.createElement(DropDownButton, {
         key: EE.lang.file_dnd_choose_existing,
         action: this.state.directory == 'all',
         center: true,
@@ -693,7 +708,7 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
         createNewDirectory: this.props.createNewDirectory,
         ignoreChild: false,
         addInput: false
-      }), this.state.files.length == 0 && this.props.allowedDirectory == 'all' && React.createElement(DropDownButton, {
+      }), this.state.files.length == 0 && this.props.allowedDirectory == 'all' && uploadDirectoriesForDropdown.length > 0 && React.createElement(DropDownButton, {
         key: EE.lang.file_dnd_choose_existing,
         action: this.state.directory == 'all',
         center: true,
