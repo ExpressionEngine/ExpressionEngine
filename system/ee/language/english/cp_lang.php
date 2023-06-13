@@ -907,6 +907,8 @@ $lang = array(
     'hidden_input' => 'Hidden input for file upload',
 
     'button' => 'button',
+
+    'checkbox' => 'checkbox'
 );
 
 // EOF
