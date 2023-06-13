@@ -16,10 +16,10 @@
                 <h6>Conditional Fields</h6>
                 <p>Conditional fields bring the ExpressionEngine content administration experience to the next level. It does this on the fly by changing the fields that are available and required based on content input into the entry in real-time. <span class="upgrade-success-banner__blurb-learn">Find out more&hellip;</span></p>
             </a>
-            <a href="https://expressionengine.com/blog/expressionengine-7.3" class="upgrade-success-banner__blurb" target="_blank">
+            <a href="https://expressionengine.com/blog/expressionengine-7-official-release" class="upgrade-success-banner__blurb" target="_blank">
                 <i class="fas fa-star fa-fw"></i>
                 <h6>ExpressionEngine 7.3 is Available</h6>
-                <p>New version of ExpressionEngine 7 has been released. Apart from new File Manager, it now offers using Field Groups in Fluid, chaining variable modifiers in templates and new CLI commands. <span class="upgrade-success-banner__blurb-learn">Find out more&hellip;</span></p>
+                <p>Along with the new File Manager, the latest ExpressionEngine 7 release allows Field Groups in Fluid fields, chaining variable modifiers in templates and new CLI commands. <span class="upgrade-success-banner__blurb-learn">Find out more&hellip;</span></p>
             </a>
         </div>
         <a href="<?= ee('CP/URL')->make('homepage/dismissBanner')->compile(); ?>" class="banner-dismiss"></a>
