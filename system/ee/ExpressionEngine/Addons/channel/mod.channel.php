@@ -1214,7 +1214,9 @@ class Channel
             }
 
             if (empty($channel_ids)) {
-                return '';
+                if ($channelInOperator == 'IN') {
+                    return '';
+                }
             } else {
                 $sql .= "AND t.channel_id " . $channelInOperator . " (" . implode(',', $channel_ids) . ") ";
             }

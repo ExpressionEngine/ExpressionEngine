@@ -104,6 +104,14 @@ $link-padding: 6px 12px;
 			border-radius: $border-radius-base;
 		}
 	}
+
+	@include m-tablet-down {
+		display: flex;
+
+		a {
+			display: inline-block;
+		}
+	}
 }
 
 .ui-sortable .sidebar__link .ui-sortable-handle i {

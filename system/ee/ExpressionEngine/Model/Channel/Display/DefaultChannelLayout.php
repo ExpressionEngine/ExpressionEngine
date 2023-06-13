@@ -214,6 +214,7 @@ class DefaultChannelLayout extends DefaultLayout
     {
         $display = parent::transform($fields);
 
+        // show message if there are no category groups assigned
         $tab = $display->getTab('categories');
         $fields = $tab->getFields();
         if (count($fields) == 0) {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -8,20 +9,24 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+namespace ExpressionEngine\Updater\Version_6_4_12;
+
 /**
- * Template Router Integer Converter
+ * Update
  */
-class EE_Template_router_min_length_converter implements EE_Template_router_converter
+class Updater
 {
-    protected $length;
+    public $version_suffix = '';
 
-    public function __construct($length)
+    /**
+     * Do Update
+     *
+     * @return TRUE
+     */
+    public function do_update()
     {
-        $this->length = $length;
-    }
-
-    public function validator()
-    {
-        return "(.{{$this->length},})";
+        return true;
     }
 }
+
+// EOF

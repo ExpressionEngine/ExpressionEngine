@@ -1,7 +1,7 @@
 <?php if ((empty(ee()->uri->segment(2)) || ee()->uri->segment(2) == 'homepage') && ee()->session->getMember()->dismissed_banner != 'y') : ?>
     <div class="upgrade-success-banner__wrapper" style="background-image: url('<?= URL_THEMES ?>asset/img/ee-pro-promo-banner-bg@2x.png');">
-        <a href="<?= DOC_URL . 'installation/changelog.html#version-640' ?>" class="upgrade-success-banner__title" target="_blank">&#127881; ExpressionEngine <strong>6.4.0</strong></a>
-        <a href="<?= DOC_URL . 'installation/changelog.html#version-640' ?>" class="upgrade-success-banner__title-link" target="_blank"><i class="fas fa-clipboard"></i> Release Notes&hellip;</a>
+        <a href="<?= DOC_URL . 'installation/changelog.html#version-' . str_replace('.', '', APP_VER) ?>" class="upgrade-success-banner__title" target="_blank">&#127881; ExpressionEngine <strong><?=APP_VER?></strong></a>
+        <a href="<?= DOC_URL . 'installation/changelog.html#version-' . str_replace('.', '', APP_VER) ?>" class="upgrade-success-banner__title-link" target="_blank"><i class="fas fa-clipboard"></i> Release Notes&hellip;</a>
 
         <!-- Change number of blurb columns via inline grid style below IF less than 3 blurbs: -->
         <div class="upgrade-success-banner__blurb-wrapper" style="grid-template-columns: repeat(3, 1fr);">
@@ -18,8 +18,8 @@
             </a>
             <a href="https://expressionengine.com/blog/expressionengine-7-official-release" class="upgrade-success-banner__blurb" target="_blank">
                 <i class="fas fa-star fa-fw"></i>
-                <h6>ExpressionEngine 7</h6>
-                <p>We're pleased to announce the release of ExpressionEngine version 7. The largest ExpressionEngine release ever. <span class="upgrade-success-banner__blurb-learn">Find out more&hellip;</span></p>
+                <h6>ExpressionEngine 7.3 is Available</h6>
+                <p>Along with the new File Manager, the latest ExpressionEngine 7 release allows Field Groups in Fluid fields, chaining variable modifiers in templates, and new CLI commands. <span class="upgrade-success-banner__blurb-learn">Find out more&hellip;</span></p>
             </a>
         </div>
         <a href="<?= ee('CP/URL')->make('homepage/dismissBanner')->compile(); ?>" class="banner-dismiss"></a>
