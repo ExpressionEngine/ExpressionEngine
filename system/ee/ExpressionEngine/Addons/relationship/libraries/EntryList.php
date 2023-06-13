@@ -209,8 +209,6 @@ class EntryList
             show_error(lang('unauthorized_access'), 403);
         }
 
-        $statuses = ee('Model')->get('Status')->all('true')->indexBy('status');
-
         $response = array();
         foreach ($this->query($settings) as $entry) {
             $response[] = [
@@ -218,7 +216,7 @@ class EntryList
                 'label' => $entry->title,
                 'instructions' => $entry->Channel->channel_title,
                 'channel_id' => $entry->Channel->channel_id,
-                'highlight' => isset($statuses[$entry->status]) ? $statuses[$entry->status]->highlight : ''
+                'status' => $entry->status
             ];
         }
 

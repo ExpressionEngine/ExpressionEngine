@@ -1231,7 +1231,9 @@ class Channel
             }
 
             if (empty($channel_ids)) {
-                return '';
+                if ($channelInOperator == 'IN') {
+                    return '';
+                }
             } else {
                 $sql .= "AND t.channel_id " . $channelInOperator . " (" . implode(',', $channel_ids) . ") ";
             }
@@ -3965,7 +3967,6 @@ class Channel
                 $content = $data[$field_name];
 
                 if (! empty($var_props['modifier'])) {
-                    $parse_fnc = 'replace_' . $var_props['modifier'];
 
                     if ($field_name == 'category_image') {
                         $class = $file_fieldtype;
@@ -3977,19 +3978,40 @@ class Channel
                         $class = $fieldtype;
                     }
 
-                    if (method_exists($class, $parse_fnc)) {
-                        $content = ee()->api_channel_fields->apply($parse_fnc, array(
-                            $content,
-                            $var_props['params'],
-                            false
-                        ));
-                    } elseif (method_exists($class, 'replace_tag_catchall')) {
-                        $content = ee()->api_channel_fields->apply('replace_tag_catchall', array(
-                            $content,
-                            $var_props['params'],
-                            false,
-                            $var_props['modifier']
-                        ));
+                    if (isset($var_props['all_modifiers']) && !empty($var_props['all_modifiers'])) {
+                        foreach ($var_props['all_modifiers'] as $modifier => $params) {
+                            $parse_fnc = 'replace_' . $modifier;
+                            if (method_exists($class, $parse_fnc)) {
+                                $content = ee()->api_channel_fields->apply($parse_fnc, array(
+                                    $content,
+                                    $params,
+                                    false
+                                ));
+                            } elseif (method_exists($class, 'replace_tag_catchall')) {
+                                $content = ee()->api_channel_fields->apply('replace_tag_catchall', array(
+                                    $content,
+                                    $params,
+                                    false,
+                                    $modifier
+                                ));
+                            }
+                        }
+                    } else {
+                        $parse_fnc = 'replace_' . $var_props['modifier'];
+                        if (method_exists($class, $parse_fnc)) {
+                            $content = ee()->api_channel_fields->apply($parse_fnc, array(
+                                $content,
+                                $var_props['params'],
+                                false
+                            ));
+                        } elseif (method_exists($class, 'replace_tag_catchall')) {
+                            $content = ee()->api_channel_fields->apply('replace_tag_catchall', array(
+                                $content,
+                                $var_props['params'],
+                                false,
+                                $var_props['modifier']
+                            ));
+                        }
                     }
                 }
 

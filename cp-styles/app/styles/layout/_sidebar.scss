@@ -8,6 +8,9 @@
 	min-width: 0;
 	// padding-right: 50px;
 	// padding-left: 20px;
+  @include m-tablet-down {
+    width: 100%;
+  }
 
 	h2 {
 		// padding-left: 20px;
@@ -53,6 +56,7 @@
 		padding: 0;
 		padding-top: 20px;
     max-width: 100%;
+    width: 100%;
 	}
 
 	.sidebar {

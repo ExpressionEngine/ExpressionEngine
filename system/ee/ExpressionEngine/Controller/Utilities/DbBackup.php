@@ -92,7 +92,7 @@ class DbBackup extends Utilities
 
         // Create a filename with the database name and timestamp
         if (empty($file_path)) {
-            $date = ee()->localize->format_date('%Y-%m-%d_%Hh%im%T');
+            $date = ee()->localize->format_date('%Y-%m-%d_%Hh%im%ss%T');
             $file_path = PATH_CACHE . ee()->db->database . '_' . $date . '.sql';
         } else {
             // The path we get from POST will be truncated for security,
