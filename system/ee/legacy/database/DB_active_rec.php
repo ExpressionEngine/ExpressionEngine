@@ -32,6 +32,7 @@ class CI_DB_active_record extends CI_DB_driver
     public $ar_wherein = array();
     public $ar_aliased_tables = array();
     public $ar_store_array = array();
+    public $ar_straight = false;
 
     protected $ar_group_count = 0;
     protected $ar_empty_group = true;
@@ -230,6 +231,22 @@ class CI_DB_active_record extends CI_DB_driver
 
         return $this;
     }
+	
+    /**
+     * STRAIGHT
+     *
+     * Sets a flag which tells the query string compiler to add STRAIGHT_JOIN
+     *
+     * @access	public
+     * @param	bool $val Set to FALSE to remove STRAIGHT from a query
+     * @return	CI_DB_active_record The active record object
+     */
+    public function straight($val = true)
+    {
+        $this->ar_straight = (bool) $val;
+
+        return $this;
+    }
 
     /**
      * From
@@ -291,7 +308,7 @@ class CI_DB_active_record extends CI_DB_driver
         if ($type != '') {
             $type = strtoupper(trim($type));
 
-            if (! in_array($type, array('LEFT', 'RIGHT', 'OUTER', 'INNER', 'LEFT OUTER', 'RIGHT OUTER'))) {
+            if (! in_array($type, array('LEFT', 'RIGHT', 'OUTER', 'INNER', 'LEFT OUTER', 'RIGHT OUTER', 'STRAIGHT'))) {
                 $type = '';
             } else {
                 $type .= ' ';
@@ -315,9 +332,14 @@ class CI_DB_active_record extends CI_DB_driver
         if (! empty($alias)) {
             $join_alias = ' ' . $alias . ' ';
         }
-
+		
+		if (trim($type) == 'STRAIGHT') {
+			$join = 'STRAIGHT_JOIN ' . $this->_protect_identifiers($table, true, null, false) . $join_alias . ' ON ' . $cond;
+		}
+		else {
         // Assemble the JOIN statement
         $join = $type . 'JOIN ' . $this->_protect_identifiers($table, true, null, false) . $join_alias . ' ON ' . $cond;
+		}
 
         $this->ar_join[] = $join;
         if ($this->ar_caching === true) {
@@ -1730,6 +1752,9 @@ class CI_DB_active_record extends CI_DB_driver
             $sql = $select_override;
         } else {
             $sql = (! $this->ar_distinct) ? 'SELECT ' : 'SELECT DISTINCT ';
+			if ($this->ar_straight) {
+				$sql .= 'STRAIGHT_JOIN ';
+			}
 
             if (count($this->ar_select) == 0) {
                 $sql .= '*';
