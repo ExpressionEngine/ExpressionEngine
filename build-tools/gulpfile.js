@@ -373,6 +373,8 @@ gulp.task('_delete_files', function (cb) {
 		'system/ee/EllisLab/Tests/',
 		'system/ee/ExpressionEngine/Tests/',
 
+		'.php-cs-fixer.dist.php',
+
 		'src',
 		'vue.config.js',
 		'npm-shrinkwrap.json',
