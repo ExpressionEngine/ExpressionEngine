@@ -418,6 +418,19 @@ class LegacyParser
                     $content = $value;
                     $var_props = $this->parseVariableProperties($modified_var, $prefix);
 
+                    // Is pro variables installed?
+                    if (ee('Addon')->get('pro_variables')->isInstalled()) {
+                        // Get early parsed pro variables
+                        $early = ee()->pro_variables_variable_model->get_early();
+                        $early = pro_flatten_results($early, 'variable_data', 'variable_name');
+
+                        // If this is an early parsed pro variable, we skip it for now
+                        // and let it get parsed later
+                        if (array_key_exists($var_props['field_name'], $early)) {
+                            continue;
+                        }
+                    }
+
                     // in order to support multiple modifiers, we'll do this in a loop
                     if (isset($var_props['all_modifiers']) && !empty($var_props['all_modifiers'])) {
                         foreach ($var_props['all_modifiers'] as $modifier => $params) {
