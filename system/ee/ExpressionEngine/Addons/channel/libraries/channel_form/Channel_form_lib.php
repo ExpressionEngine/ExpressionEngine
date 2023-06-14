@@ -1211,7 +1211,11 @@ GRID_FALLBACK;
         //just to prevent any errors
         if (! defined('BASE')) {
             $s = (ee()->config->item('cp_session_type') != 'c') ? ee()->session->userdata('session_id') : 0;
-            define('BASE', EESELF . '?S=' . $s . '&amp;D=cp');
+            $base = EESELF . '?/cp';
+            if (!empty($s)) {
+                $base .= '&amp;S=' . $s;
+            }
+            define('BASE', $base); // cp url
         }
 
         $this->json = $this->_meta['json'];

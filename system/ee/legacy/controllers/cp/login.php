@@ -37,9 +37,9 @@ class Login extends CP_Controller
         // has their session Timed out and they are requesting a page?
         // Grab the URL, base64_encode it and send them to the login screen.
         $safe_refresh = ee()->cp->get_safe_refresh();
-        $return_url = ($safe_refresh == 'C=homepage') ? '' : AMP . 'return=' . urlencode(ee('Encrypt')->encode($safe_refresh));
+        $return = (empty($safe_refresh) || $safe_refresh == 'C=homepage') ? [] : ['return' => ee('Encrypt')->encode($safe_refresh)];
 
-        ee()->functions->redirect(BASE . AMP . 'C=login' . $return_url);
+        ee()->functions->redirect(ee('CP/URL')->make('login', $return)->compile());
     }
 
     public function mfa()
@@ -284,7 +284,6 @@ class Login extends CP_Controller
 
         // If an ajax request ends up here the user is probably logged out
         if (AJAX_REQUEST) {
-            //header('X-EERedirect: C=login');
             header('X-EE-Broadcast: modal');
             die('Logged out');
         }
@@ -486,7 +485,8 @@ class Login extends CP_Controller
             } else {
                 $return_path = ee()->uri->reformat($base . AMP . $return_path, $base);
             }
-        } else {
+        }
+        if (!isset($return_path) || empty($return_path)) {
             $return_path = ee()->session->getMember()->getCPHomepageURL();
         }
 
@@ -673,7 +673,7 @@ class Login extends CP_Controller
         if ($updated) {
             $this->session->set_flashdata('message', lang('unpw_updated'));
         }
-        $this->functions->redirect(BASE . AMP . 'C=login');
+        $this->functions->redirect(ee('CP/URL', 'login')->compile());
     }
 
     /**
@@ -688,7 +688,7 @@ class Login extends CP_Controller
         ee()->session->lock_cp();
 
         if (! AJAX_REQUEST) {
-            $this->functions->redirect(BASE . AMP . 'C=login');
+            $this->functions->redirect(ee('CP/URL', 'login')->compile());
         }
 
         $this->output->send_ajax_response(array(
@@ -705,7 +705,7 @@ class Login extends CP_Controller
     public function logout()
     {
         if ($this->session->userdata('group_id') == 3) {
-            $this->functions->redirect(BASE . AMP . 'C=login');
+            $this->functions->redirect(ee('CP/URL', 'login')->compile());
         }
 
         $this->db->where('ip_address', $this->input->ip_address());
@@ -719,7 +719,7 @@ class Login extends CP_Controller
         $this->logger->log_action(lang('member_logged_out'));
 
         if ($this->input->get('auto_expire')) {
-            $this->functions->redirect(BASE . AMP . 'C=login&auto_expire=true');
+            $this->functions->redirect(ee('CP/URL')->make('login', ['auto_expire' => 'true'])->compile());
         }
 
         /* -------------------------------------------
@@ -734,7 +734,7 @@ class Login extends CP_Controller
         /*
         /* -------------------------------------------*/
 
-        $this->functions->redirect(BASE . AMP . 'C=login');
+        $this->functions->redirect(ee('CP/URL', 'login')->compile());
     }
 
     /**
@@ -779,7 +779,7 @@ class Login extends CP_Controller
         }
 
         if (! $address = $this->input->post('email')) {
-            $this->functions->redirect(BASE . AMP . 'C=login' . AMP . 'M=forgotten_password_form');
+            $this->functions->redirect(ee('CP/URL')->make('login/forgotten_password_form')->compile());
         }
 
         $address = strip_tags($address);
@@ -829,7 +829,7 @@ class Login extends CP_Controller
         $swap = array(
             'name' => $name,
             'username' => $username,
-            'reset_url' => reduce_double_slashes($this->config->item('cp_url') . "?S=0&D=cp&C=login&M=reset_password&resetcode=" . $rand),
+            'reset_url' => reduce_double_slashes($this->config->item('cp_url') . "?/cp/login/reset_password&resetcode=" . $rand),
             'site_name' => stripslashes($this->config->item('site_name')),
             'site_url' => $this->config->item('site_url')
         );
@@ -897,7 +897,7 @@ class Login extends CP_Controller
         // In any case, the resetcode could be in either post or get, so
         // check both.  If we don't find it, send them away, quietly.
         if (! ($resetcode = $this->input->get_post('resetcode'))) {
-            return $this->functions->redirect(BASE . AMP . 'c=login');
+            return $this->functions->redirect(ee('CP/URL')->make('login')->compile());
         }
 
         // Validate their reset code.  Make sure it matches a valid
@@ -1047,16 +1047,16 @@ class Login extends CP_Controller
 
         $this->session->set_flashdata('message', lang($lang_key));
 
-        $redirect = 'C=login';
+        $redirect = [];
 
         // If we have a return argument, keep it
         if (ee()->input->post('return_path')) {
-            $redirect .= AMP . 'return=' . ee()->input->post('return_path');
+            $redirect = ['return' => ee()->input->post('return_path')];
         } elseif (ee()->input->get('return')) {
-            $redirect .= AMP . 'return=' . ee('Encrypt')->encode(ee()->input->get('return'));
+            $redirect = ['return' => ee('Encrypt')->encode(ee()->input->get('return'))];
         }
 
-        $this->functions->redirect(BASE . AMP . $redirect);
+        $this->functions->redirect(ee('CP/URL')->make('login', $redirect)->compile());
     }
 
     /**

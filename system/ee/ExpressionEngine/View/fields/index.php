@@ -2,38 +2,44 @@
 
 <div class="panel">
   <div class="tbl-ctrls">
-		<?=form_open($base_url)?>
+        <?=form_open($base_url)?>
     <div class="panel-heading">
 
       <div class="form-btns form-btns-top">
         <div class="title-bar title-bar--large">
-          <h3 class="title-bar__title"><?=$cp_page_title?></h3>
+          <h3 class="title-bar__title">
+            <?=$cp_page_title?>
+            <br>
+            <i><?=$group_tag?></i>
+          </h3>
         </div>
+
+        
       </div>
     </div>
     <div class="panel-body">
     <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
-			<?php $this->embed('_shared/table-list', ['data' => $fields]); ?>
-			<?php if (isset($pagination)) {
+            <?php $this->embed('_shared/table-list', ['data' => $fields]); ?>
+            <?php if (isset($pagination)) {
     echo $pagination;
 } ?>
-			<?php $this->embed('ee:_shared/form/bulk-action-bar', [
-			    'options' => [
-			        [
-			            'value' => "",
-			            'text' => '-- ' . lang('with_selected') . ' --'
-			        ],
-			        [
-			            'value' => "remove",
-			            'text' => lang('delete'),
-			            'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete"'
-			        ]
-			    ],
-			    'modal' => true
-			]); ?>
+            <?php $this->embed('ee:_shared/form/bulk-action-bar', [
+                'options' => [
+                    [
+                        'value' => "",
+                        'text' => '-- ' . lang('with_selected') . ' --'
+                    ],
+                    [
+                        'value' => "remove",
+                        'text' => lang('delete'),
+                        'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete"'
+                    ]
+                ],
+                'modal' => true
+            ]); ?>
     </div>
-		</form>
-	</div>
+        </form>
+    </div>
 </div>
 
 <?php

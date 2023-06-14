@@ -551,9 +551,9 @@ DELETE FROM `exp_entry_versioning`;
 -- Dumping data for table ee-test.exp_field_groups: ~2 rows (approximately)
 DELETE FROM `exp_field_groups`;
 /*!40000 ALTER TABLE `exp_field_groups` DISABLE KEYS */;
-INSERT INTO `exp_field_groups` (`group_id`, `site_id`, `group_name`) VALUES
-	(1, 1, 'News'),
-	(2, 1, 'About');
+INSERT INTO `exp_field_groups` (`group_id`, `site_id`, `group_name`, `short_name`) VALUES
+	(1, 1, 'News', 'news'),
+	(2, 1, 'About', 'about');
 /*!40000 ALTER TABLE `exp_field_groups` ENABLE KEYS */;
 
 -- Dumping data for table ee-test.exp_files: ~10 rows (approximately)

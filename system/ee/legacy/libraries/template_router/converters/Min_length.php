@@ -13,6 +13,8 @@
  */
 class EE_Template_router_min_length_converter implements EE_Template_router_converter
 {
+    protected $length;
+
     public function __construct($length)
     {
         $this->length = $length;

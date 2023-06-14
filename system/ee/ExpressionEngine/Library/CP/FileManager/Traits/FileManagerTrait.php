@@ -57,10 +57,10 @@ trait FileManagerTrait
 
         $files = ee('Model')->get($model)
             // ->fields($model . '.*', 'UploadDestination.server_path', 'UploadDestination.url');
-            ->with('UploadDestination');
+            ->with('UploadDestination')
+            ->filter('site_id', 'IN', [0, ee()->config->item('site_id')]);
         if (empty($upload_location_id)) {
-            $files->filter('UploadDestination.module_id', 0)
-                ->filter('site_id', ee()->config->item('site_id'));
+            $files->filter('UploadDestination.module_id', 0);
             if (! ee('Permission')->isSuperAdmin()) {
                 $assigned_dirs = $member->getAssignedUploadDestinations()->pluck('id');
                 $files->filter('upload_location_id', 'IN', $assigned_dirs);
@@ -211,7 +211,7 @@ trait FileManagerTrait
                         }
                     }
                 }
-                if (!empty($column->getEntryManagerColumnFields())) {
+                /*if (!empty($column->getEntryManagerColumnFields())) {
                     foreach ($column->getEntryManagerColumnFields() as $field) {
                         if (!empty($field)) {
                             // $files->fields($field);
@@ -219,7 +219,7 @@ trait FileManagerTrait
                     }
                 } else {
                     // $files->fields($column->getTableColumnIdentifier());
-                }
+                }*/
             }
         }
 
@@ -409,7 +409,7 @@ trait FileManagerTrait
     private function createUploadLocationFilter($uploadLocation = null)
     {
         $upload_destinations = ee('Model')->get('UploadDestination')
-            ->filter('site_id', ee()->config->item('site_id'))
+            ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
             ->filter('module_id', 0)
             ->order('name', 'asc');
 
@@ -548,7 +548,7 @@ trait FileManagerTrait
         if (ee('Permission')->can('upload_new_files')) {
             $upload_destinations = ee('Model')->get('UploadDestination')
                 ->fields('id', 'name', 'adapter')
-                ->filter('site_id', ee()->config->item('site_id'))
+                ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
                 ->filter('module_id', 0)
                 ->order('name', 'asc')
                 ->all();

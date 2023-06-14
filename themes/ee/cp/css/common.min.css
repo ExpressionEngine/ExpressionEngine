@@ -27812,6 +27812,14 @@ input[type=button].btn-block {
   outline: none;
   box-shadow: none;
 }
+@media (max-width: 767px) {
+  .sidebar__link--parent {
+    display: flex;
+  }
+  .sidebar__link--parent a {
+    display: inline-block;
+  }
+}
 
 .ui-sortable .sidebar__link .ui-sortable-handle i, .ui-sortable .add-on-layout .secondary-sidebar .sidebar__section-title a:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link) .ui-sortable-handle i, .add-on-layout .secondary-sidebar .sidebar__section-title .ui-sortable a:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link) .ui-sortable-handle i {
   cursor: move;
@@ -29004,6 +29012,19 @@ input[type=button].btn-block {
   color: var(--ee-text-secondary);
   font-size: 80%;
   margin-left: 3px;
+}
+
+.dropdown__link-status-indicator {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 5px;
+  text-transform: capitalize;
+  font-size: 70%;
+  border: 1px solid transparent;
+  background: var(--ee-bg-blank);
+  padding: 0 5px;
+  border-radius: 1000px;
 }
 
 .dropdown__link-right {
@@ -30756,6 +30777,9 @@ fieldset.hide-block {
 .fieldset-invalid > .field-control > em {
   color: var(--ee-error);
   font-style: normal;
+}
+.fieldset-invalid > .field-control .fields-select {
+  padding: 0 8px;
 }
 .fieldset-invalid .WysiHat-editor,
 .fieldset-invalid .WysiHat-editor:focus {
@@ -34418,6 +34442,20 @@ a.ck.ck-button.ck-on {
   position: absolute;
   top: 34px;
   left: 15px;
+}
+.list-item__secondary .status-indicator {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2px 8px 3px;
+  border: 1px solid transparent;
+  border-radius: 1000px;
+  line-height: 1;
+  text-transform: capitalize;
+  margin-left: 5px;
+  font-size: 11px;
+  background: var(--ee-bg-blank);
+  white-space: nowrap;
 }
 
 .list-item__content .list-item__secondary {
@@ -38139,6 +38177,11 @@ body[data-theme="dark"] {
   flex: 1 1 80%;
   min-width: 0;
 }
+@media (max-width: 767px) {
+  .container {
+    width: 100%;
+  }
+}
 .secondary-sidebar-container {
   display: flex;
   padding-top: 0;
@@ -38164,6 +38207,7 @@ body[data-theme="dark"] {
     padding: 0;
     padding-top: 20px;
     max-width: 100%;
+    width: 100%;
   }
 }
 .secondary-sidebar.secondary-sidebar__collapsed {

@@ -378,7 +378,7 @@ class Edit extends AbstractPublishController
                 ee()->cp->switch_site($entry->site_id, $base_url);
             } else {
                 //but we only auto-switch if we're saving
-                show_error(lang('no_entries_matching_that_criteria'));
+                show_error(lang('no_entries_on_this_site'));
             }
         }
 
