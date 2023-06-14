@@ -35,3 +35,49 @@
 	color: color(accent);
 	background: #fff;
 }
+
+.label-app-badge {
+	display: inline-flex;
+	color: var(--ee-text-normal);
+	font-size: 0.9rem;
+	justify-content: center;
+	align-items: center;
+	font-style: italic;
+	margin-left: 5px;
+	padding: 2px 10px;
+	font-size: 0.8rem;
+	border-radius: 4px;
+	border: 1px solid var(--ee-button-default-border);
+	line-height: 1.5;
+	cursor: pointer;
+	background: var(--ee-button-default-bg);
+	-webkit-transition: background-color 0.15s ease-in-out;
+	-moz-transition: background-color 0.15s ease-in-out;
+	-o-transition: background-color 0.15s ease-in-out;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+
+	i {
+		margin-left: 5px;
+	}
+
+	&:hover {
+		color: var(--ee-button-secondary-color);
+		border-color: var(--ee-button-secondary-color);
+
+		i {
+			color: var(--ee-button-secondary-color);
+		}
+	}
+
+	&.success {
+		color: var(--ee-button-success-border);
+		border-color: var(--ee-button-success-border);
+
+		i {
+			color: var(--ee-button-success-border);
+		}
+	}
+}

@@ -1,3 +1,5 @@
-<span class="app-badge ml-s button-group-xsmall">
-    <span class="txt-only button button--default">{<?=$name?>}</span>
+<span class="app-badge label-app-badge js-app-badge">
+    <span class="txt-only">{<?=$name?>}</span>
+    <i class="fa-light fa-copy"></i>
+    <i class="fa-sharp fa-solid fa-circle-check hidden"></i>
 </span>
