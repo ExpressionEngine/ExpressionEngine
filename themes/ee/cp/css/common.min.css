@@ -28519,49 +28519,23 @@ input[type=button].btn-block {
   .members--filter-search-bar .filter-search-bar__filter-row {
     flex-wrap: wrap;
   }
-  .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__search-row .filter-search-bar__item {
-    margin-bottom: 0;
-  }
-}
-@media (max-width: 767px) {
-  .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__search-row {
-    max-width: 100%;
-  }
-  .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__search-row .filter-search-bar__item {
-    margin-bottom: 5px;
-  }
-  .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__search-row .filter-search-bar__item:last-child {
-    margin-bottom: 0;
-  }
 }
 .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item {
   flex: auto;
   margin-bottom: 0;
 }
-.members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item button[data-filter-label=columns] {
-  min-width: 60px;
+.members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item:last-child {
+  margin-right: 0;
 }
-@media (max-width: 1350px) {
-  .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item input.search-input__input {
-    max-width: 120px;
-  }
-  .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item span.input-group-addon {
-    max-width: 70px;
-  }
-  .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item span.input-group-addon .checkbox-label__text > div {
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+.members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item-no-search {
+  flex-grow: 0;
 }
 @media (max-width: 1080px) {
   .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item {
     margin-bottom: 10px;
   }
-  .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item span.input-group-addon {
-    max-width: inherit;
-  }
-  .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item input.search-input__input {
-    max-width: inherit;
+  .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item:last-child {
+    margin-bottom: 0;
   }
 }
 @media (max-width: 767px) {

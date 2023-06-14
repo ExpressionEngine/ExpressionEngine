@@ -24,12 +24,8 @@ if (! AJAX_REQUEST) {
                 <!-- All filters (not including search input) are contained within 'filter-search-bar__filter-row' -->
                 <div class="filter-search-bar__filter-row">
                     <?php if (isset($filters)) echo $filters; ?>
-					<div class="filter-search-bar__search-row">
                     <?php if (isset($filters_search)) echo $filters_search; ?>
                 </div>
-                </div>
-
-
             </div>
 
 

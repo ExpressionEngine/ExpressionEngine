@@ -108,10 +108,9 @@ class Updater
                     'site_id' => $row['site_id'],
                     'permission' => 'can_edit_member_fields'
                 ];
-                ee('db')->insert('permissions', $insert)
+                ee('db')->insert('permissions', $insert);
             }
         }
-
     }
 }
 
