@@ -1248,7 +1248,6 @@ $(document).ready(function(){
 			var el = $(this);
 			// copy asset link to clipboard
 			var copyText = el.find('.txt-only').text();
-			copyText = copyText.substring(copyText.indexOf('{') + 1, copyText.indexOf('}'))
 
 			document.addEventListener('copy', function(e) {
 				e.clipboardData.setData('text/plain', copyText);

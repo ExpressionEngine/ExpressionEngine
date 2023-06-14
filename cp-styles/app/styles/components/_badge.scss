@@ -38,22 +38,17 @@
 
 .label-app-badge {
 	display: inline-flex;
-	color: var(--ee-text-normal);
-	font-size: 0.9rem;
+	color: var(--ee-text-secondary);
 	justify-content: center;
 	align-items: center;
 	font-style: italic;
 	margin-left: 5px;
-	padding: 2px 10px;
 	font-size: 0.8rem;
 	border-radius: 4px;
-	border: 1px solid var(--ee-button-default-border);
-	line-height: 1.5;
 	cursor: pointer;
-	background: var(--ee-button-default-bg);
-	-webkit-transition: background-color 0.15s ease-in-out;
-	-moz-transition: background-color 0.15s ease-in-out;
-	-o-transition: background-color 0.15s ease-in-out;
+	-webkit-transition: opacity 0.15s ease-in-out;
+	-moz-transition: opacity 0.15s ease-in-out;
+	-o-transition: opacity 0.15s ease-in-out;
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
@@ -61,14 +56,12 @@
 
 	i {
 		margin-left: 5px;
+		opacity: 0;
 	}
 
 	&:hover {
-		color: var(--ee-button-secondary-color);
-		border-color: var(--ee-button-secondary-color);
-
 		i {
-			color: var(--ee-button-secondary-color);
+			opacity: 1;
 		}
 	}
 

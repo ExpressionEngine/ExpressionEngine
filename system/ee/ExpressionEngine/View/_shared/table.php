@@ -386,7 +386,7 @@ else: ?>
 
                             $column_badge = isset($columns[$key]['badge']) ? $columns[$key]['badge'] : '';
 
-                            $column_label = "<div class=\"grid-field__column-label1\"  role=\"rowheader\">
+                            $column_label = "<div class=\"grid-field__column-label\"  role=\"rowheader\">
                                 <div class=\"grid-field__column-label__instraction\">
                                     <label>$column_name</label>" . $column_badge;
                             if (!empty($column_desc)) {

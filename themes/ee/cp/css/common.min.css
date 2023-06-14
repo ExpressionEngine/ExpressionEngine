@@ -31932,7 +31932,7 @@ fieldset .field-control #eye {
   display: none;
 }
 .grid-field__column-label label {
-  display: block;
+  display: inline-block;
   color: var(--ee-text-normal);
   margin-bottom: 5px;
   font-weight: 500;
@@ -34879,22 +34879,17 @@ table .field-no-results {
 
 .label-app-badge {
   display: inline-flex;
-  color: var(--ee-text-normal);
-  font-size: 0.9rem;
+  color: var(--ee-text-secondary);
   justify-content: center;
   align-items: center;
   font-style: italic;
   margin-left: 5px;
-  padding: 2px 10px;
   font-size: 0.8rem;
   border-radius: 4px;
-  border: 1px solid var(--ee-button-default-border);
-  line-height: 1.5;
   cursor: pointer;
-  background: var(--ee-button-default-bg);
-  -webkit-transition: background-color 0.15s ease-in-out;
-  -moz-transition: background-color 0.15s ease-in-out;
-  -o-transition: background-color 0.15s ease-in-out;
+  -webkit-transition: opacity 0.15s ease-in-out;
+  -moz-transition: opacity 0.15s ease-in-out;
+  -o-transition: opacity 0.15s ease-in-out;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -34902,13 +34897,10 @@ table .field-no-results {
 }
 .label-app-badge i {
   margin-left: 5px;
-}
-.label-app-badge:hover {
-  color: var(--ee-button-secondary-color);
-  border-color: var(--ee-button-secondary-color);
+  opacity: 0;
 }
 .label-app-badge:hover i {
-  color: var(--ee-button-secondary-color);
+  opacity: 1;
 }
 .label-app-badge.success {
   color: var(--ee-button-success-border);
