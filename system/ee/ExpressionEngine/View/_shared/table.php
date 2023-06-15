@@ -298,6 +298,7 @@ else: ?>
 
                             <?php if (isset($settings['required']) && $settings['required']): ?><span class="required"><?php endif; ?>
                             <?=($lang_cols) ? lang($label) : $label ?>
+                            <?php if (isset($settings['badge'])) echo $settings['badge']; ?>
                             <?php if (isset($settings['required']) && $settings['required']): ?></span><?php endif; ?>
                             <?php if (isset($settings['desc']) && ! empty($settings['desc'])): ?>
                                 <span class="grid-instruct"><?=lang($settings['desc'])?></span>

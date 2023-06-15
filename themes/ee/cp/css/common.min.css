@@ -34885,6 +34885,7 @@ table .field-no-results {
   font-style: italic;
   margin-left: 5px;
   font-size: 0.8rem;
+  font-weight: normal;
   border-radius: 4px;
   cursor: pointer;
   -webkit-transition: opacity 0.15s ease-in-out;

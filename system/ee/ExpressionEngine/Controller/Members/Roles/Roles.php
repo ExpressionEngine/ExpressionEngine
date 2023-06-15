@@ -756,7 +756,7 @@ class Roles extends AbstractRolesController
                     'fields' => [
                         'show_field_names' => [
                             'type' => 'yes_no',
-                            'value' => $role->isNew() ? 'y' : $role->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->show_field_names,
+                            'value' => $role->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->show_field_names,
                         ]
                     ]
                 ],
@@ -1153,7 +1153,7 @@ class Roles extends AbstractRolesController
                     'fields' => [
                         'show_field_names' => [
                             'type' => 'yes_no',
-                            'value' => $role->isNew() ? 'y' : $role->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->show_field_names,
+                            'value' => $role->isNew() ? 'n' : $role->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->show_field_names,
                         ]
                     ]
                 ],
