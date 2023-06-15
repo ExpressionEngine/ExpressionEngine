@@ -738,6 +738,11 @@ class Channels extends AbstractChannelsController
                 ->pluck('group_id');
         }
 
+        ee()->javascript->set_global([
+            'lang.cat_allow_multiple' => lang('cat_allow_multiple'),
+            'lang.cat_required' => lang('cat_required') 
+        ]);
+
         return ee('View')->make('ee:_shared/form/fields/select')->render([
             'field_name' => 'cat_group',
             'choices' => $cat_group_options,

@@ -20,6 +20,10 @@ $lang = array(
 
     'category_groups_desc' => 'Assign one or more category groups to this channel.',
 
+    'cat_required' => 'Required?',
+
+    'cat_allow_multiple' => 'Allow multiple?',
+
     'channel' => 'Channel',
 
     'channel_form_layouts' => '%s &ndash; Publish Layouts',
