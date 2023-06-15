@@ -685,6 +685,7 @@ $setup = [
         // ..\Category
         'Category' => 'Model\Category\Category',
         'CategoryGroup' => 'Model\Category\CategoryGroup',
+        'CategoryGroupSettings' => 'Model\Category\CategoryGroupSettings',
         'CategoryField' => 'Model\Category\CategoryField',
 
         // ..\File

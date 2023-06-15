@@ -339,6 +339,8 @@ class Channels extends AbstractChannelsController
             'channelManager.fields.fieldUrl' => ee('CP/URL')->make('channels/render-fields-field')->compile(),
 
             'channelManager.catGroup.createUrl' => ee('CP/URL')->make('categories/groups/create')->compile(),
+            'channelManager.catGroup.editUrl' => ee('CP/URL')->make('categories/groups/edit/###')->compile(),
+            'channelManager.catGroup.toggleUrl' => ee('CP/URL')->make('channels/groups/edit/###')->compile(),
             'channelManager.catGroup.fieldUrl' => ee('CP/URL')->make('channels/render-category-groups-field')->compile(),
 
             'channelManager.statuses.createUrl' => ee('CP/URL')->make('channels/status/create')->compile(),
@@ -457,9 +459,7 @@ class Channels extends AbstractChannelsController
         );
 
         // Only show duplicate channel option for new channels and if channels exist
-        if ($channel->isNew() && ee('Model')->get('Channel')
-            ->filter('site_id', ee()->config->item('site_id'))
-            ->count()) {
+        if ($channel->isNew() && ee('Model')->get('Channel')->filter('site_id', ee()->config->item('site_id'))->count()) {
             // Channel duplicate preferences menu
             $channels = ee('Model')->get('Channel')
                 ->filter('site_id', ee()->config->item('site_id'))
@@ -683,6 +683,9 @@ class Channels extends AbstractChannelsController
             array(
                 'title' => 'category_groups',
                 'desc' => 'category_groups_desc',
+                'attrs' => array(
+                    'class' => 'channel-statuses'
+                ),
                 'button' => $add_groups_button,
                 'fields' => array(
                     'cat_group' => array(
@@ -714,26 +717,41 @@ class Channels extends AbstractChannelsController
             ->getDictionary('group_id', 'group_name');
 
         $selected = ee('Request')->post('cat_group') ?: [];
+        $cat_allow_multiple = ee('Request')->post('cat_allow_multiple') ?: [];
+        $cat_required = ee('Request')->post('cat_required') ?: [];
 
-        if ($channel && ! is_null($channel->CategoryGroups)) {
-            $selected = ee('Request')->isPost() ? ee('Request')->post('cat_group') : ($channel ? $channel->CategoryGroups->pluck('group_id') : []);
-        }
-
-        $no_results = [
-            'text' => sprintf(lang('no_found'), lang('category_groups'))
-        ];
-
-        if (ee('Permission')->can('create_categories')) {
-            $no_results['link_text'] = 'add_new';
-            $no_results['link_href'] = ee('CP/URL')->make('categories/groups/create');
+        if (!ee('Request')->isPost() && !is_null($channel) && ! is_null($channel->CategoryGroups)) {
+            $selected =  $channel->CategoryGroups->pluck('group_id');
+            $cat_required = ee('Model')
+                ->get('CategoryGroupSettings')
+                ->filter('channel_id', $channel->getId())
+                ->filter('group_id', 'IN', $selected)
+                ->filter('cat_required', 'y')
+                ->all()
+                ->pluck('group_id');
+            $cat_allow_multiple = ee('Model')
+                ->get('CategoryGroupSettings')
+                ->filter('channel_id', $channel->getId())
+                ->filter('group_id', 'IN', $selected)
+                ->filter('cat_allow_multiple', 'y')
+                ->all()
+                ->pluck('group_id');
         }
 
         return ee('View')->make('ee:_shared/form/fields/select')->render([
             'field_name' => 'cat_group',
             'choices' => $cat_group_options,
+            'encode' => false,
             'value' => $selected,
             'multi' => true,
-            'no_results' => $no_results
+            'force_react' => true,
+            'reorderable' => false,
+            'removable' => false,
+            'editable' => true,
+            'toggles' => [
+                'cat_allow_multiple' => $cat_allow_multiple,
+                'cat_required' => $cat_required
+            ]
         ]);
     }
 
@@ -1524,8 +1542,7 @@ class Channels extends AbstractChannelsController
         // Make sure these are the correct NULL value if they are not set.
         $channel->Statuses = ee('Model')->get('Status', ee()->input->post('statuses'))->all();
 
-        foreach (['max_entries', 'max_revisions', 'comment_max_chars',
-            'comment_timelock'] as $field) {
+        foreach (['max_entries', 'max_revisions', 'comment_max_chars', 'comment_timelock'] as $field) {
             if ($channel->$field == '') {
                 $channel->$field = 0;
             }

@@ -29,6 +29,7 @@ class Updater
             [
                 'normalizeUploadDirectoryCategoryGroups',
                 'normalizeChannelCategoryGroups',
+                'addCategoryGroupSettings',
             ]
         );
 
@@ -117,6 +118,58 @@ class Updater
                 }
             }
         }
+    }
+
+    private function addCategoryGroupSettings()
+    {
+        if (ee()->db->table_exists('category_group_settings')) {
+            return;
+        }
+
+        ee()->dbforge->add_field(
+            [
+                'category_group_settings_id' => [
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'null' => false,
+                    'auto_increment' => true
+                ],
+                'site_id' => [
+                    'type' => 'int',
+                    'constraint' => 4,
+                    'unsigned' => true,
+                    'null' => false
+                ],
+                'channel_id' => [
+                    'type' => 'int',
+                    'constraint' => 4,
+                    'unsigned' => true,
+                    'null' => false
+                ],
+                'group_id' => [
+                    'type' => 'int',
+                    'constraint' => 6,
+                    'unsigned' => true,
+                    'null' => false
+                ],
+                'cat_required' => [
+                    'type' => 'CHAR(1)',
+                    'null' => false,
+                    'default' => 'n'
+                ],
+                'cat_allow_multiple' => [
+                    'type' => 'CHAR(1)',
+                    'null' => false,
+                    'default' => 'n'
+                ]
+            ]
+        );
+        ee()->dbforge->add_key('category_group_settings_id', true);
+        ee()->dbforge->add_key(['channel_id', 'group_id'], true);
+        ee()->dbforge->add_key('group_id');
+        ee()->dbforge->add_key('site_id');
+        ee()->smartforge->create_table('category_group_settings');
     }
 
 }

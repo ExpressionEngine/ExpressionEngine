@@ -71,6 +71,9 @@ class Channel extends StructureModel
                 'right' => 'group_id'
             )
         ),
+        'CategoryGroupSettings' => array(
+            'type' => 'hasMany'
+        ),
         'CustomFields' => array(
             'type' => 'hasAndBelongsToMany',
             'model' => 'ChannelField',

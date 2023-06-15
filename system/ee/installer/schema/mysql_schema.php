@@ -804,6 +804,21 @@ class EE_Schema
 			KEY `site_id` (`site_id`)
 		)";
 
+        // Category Group Settings
+
+        $Q[] = "CREATE TABLE exp_category_group_settings (
+			category_group_settings_id int(10) unsigned NOT NULL auto_increment,
+			site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
+			channel_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
+			group_id INT(6) UNSIGNED NOT NULL DEFAULT 1,
+			cat_required char(1) NOT NULL default 'n',
+			allow_multiple char(1) NOT NULL default 'n',
+			PRIMARY KEY `category_group_settings_id` (`category_group_settings_id`),
+			KEY `channel_id_group_id` (`channel_id`, `group_id`)
+			KEY `site_id` (`site_id`),
+			KEY `group_id` (`group_id`)
+		)";
+
         // Category data
 
         $Q[] = "CREATE TABLE exp_categories (

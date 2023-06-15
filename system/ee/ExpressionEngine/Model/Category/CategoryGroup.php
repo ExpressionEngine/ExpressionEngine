@@ -27,6 +27,9 @@ class CategoryGroup extends StructureModel
         'Site' => array(
             'type' => 'belongsTo'
         ),
+        'CategoryGroupSettings' => array(
+            'type' => 'hasMany'
+        ),
         'CategoryFields' => array(
             'type' => 'hasMany',
             'model' => 'CategoryField'
