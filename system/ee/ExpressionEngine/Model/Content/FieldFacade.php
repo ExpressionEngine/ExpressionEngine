@@ -72,7 +72,11 @@ class FieldFacade
             return '';
         }
         if (ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->show_field_names == 'y') {
-            return ee('View')->make('publish/partials/field_name_badge')->render(['name' => $field_name_prefix . $this->getShortName()]);
+            $field_name = $this->getShortName();
+            if (strpos($field_name, 'categories[cat_group_id_') === 0) {
+                $field_name = "categories show_group=\"" . rtrim(substr($field_name, 24), ']') . "\"";
+            }
+            return ee('View')->make('publish/partials/field_name_badge')->render(['name' => $field_name_prefix . $field_name]);
         }
         return '';
     }
