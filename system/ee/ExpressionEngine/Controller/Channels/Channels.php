@@ -740,7 +740,7 @@ class Channels extends AbstractChannelsController
 
         ee()->javascript->set_global([
             'lang.cat_allow_multiple' => lang('cat_allow_multiple'),
-            'lang.cat_required' => lang('cat_required') 
+            'lang.cat_required' => lang('cat_required')
         ]);
 
         return ee('View')->make('ee:_shared/form/fields/select')->render([

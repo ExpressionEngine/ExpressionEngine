@@ -126,7 +126,7 @@ abstract class AbstractPublish extends CP_Controller
             'fileManager.fileDirectory.createUrl' => ee('CP/URL')->make('files/uploads/create')->compile(),
         ));
 
-        ee('Category')->addCategoryJS();
+        ee('Category')->addCategoryJS($channel_id);
 
         // -------------------------------------------
         //  Publish Page Title Focus - makes the title field gain focus when the page is loaded

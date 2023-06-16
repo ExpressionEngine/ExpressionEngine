@@ -17,6 +17,7 @@ use ExpressionEngine\Model\Content\Display\FieldDisplay;
 use ExpressionEngine\Model\Content\Display\LayoutInterface;
 use ExpressionEngine\Service\Validation\Result as ValidationResult;
 use ExpressionEngine\Library\CP\FileManager\Traits\FileUsageTrait;
+use ExpressionEngine\Service\Validation\Rule;
 
 /**
  * Channel Entry
@@ -244,6 +245,24 @@ class ChannelEntry extends ContentModel
     public function validate()
     {
         $result = parent::validate();
+
+        //validate categories, if necessary
+        $cat_groups = $this->Channel->CategoryGroups->pluck('group_id');
+        $categoryGroupsRequired = ee('Model')
+                ->get('CategoryGroupSettings')
+                ->filter('channel_id', $this->Channel->getId())
+                ->filter('group_id', 'IN', $cat_groups)
+                ->filter('cat_required', 'y')
+                ->all()
+                ->pluck('group_id');
+        if (!empty($categoryGroupsRequired)) {
+            $requiredRule = new Rule\Required();
+            foreach ($categoryGroupsRequired as $groupId) {
+                if (empty($this->getProperty('cat_group_id_' . $groupId))) {
+                    $result->addFailed('categories[cat_group_id_' . $groupId . ']', $requiredRule);
+                }
+            }
+        }
 
         // Some Tabs might call ee()->api_channel_fields
         ee()->load->library('api');
@@ -1014,12 +1033,7 @@ class ChannelEntry extends ContentModel
      */
     public function set__categories($categories)
     {
-        // Currently cannot get multiple category groups through relationships
-        $cat_groups = array();
-
-        if ($this->Channel->cat_group) {
-            $cat_groups = explode('|', (string) $this->Channel->cat_group);
-        }
+        $cat_groups = $this->Channel->CategoryGroups->pluck('group_id');
 
         if ($this->isNew() or empty($categories)) {
             $this->Categories = null;
@@ -1046,7 +1060,7 @@ class ChannelEntry extends ContentModel
 
         // Set the data on the fields in case we come back from a validation error
         foreach ($cat_groups as $cat_group) {
-            $group_cats = $categories['cat_group_id_' . $cat_group];
+            $group_cats = (array) $categories['cat_group_id_' . $cat_group];
 
             $category_ids = array_merge($category_ids, $group_cats);
 
@@ -1062,9 +1076,18 @@ class ChannelEntry extends ContentModel
 
         $set_cats = $cat_objects->asArray();
 
+        // set the category parent, but only if multiple selection is enabled
         if (ee()->config->item('auto_assign_cat_parents') == 'y') {
+            $categoryGroupSettings = $this->getModelFacade()
+                    ->get('CategoryGroupSettings')
+                    ->filter('channel_id', $this->getId())
+                    ->all(true)
+                    ->indexBy('group_id');
             $category_ids = $cat_objects->pluck('cat_id');
             foreach ($set_cats as $cat) {
+                if (isset($categoryGroupSettings[$cat->group_id]) && $categoryGroupSettings[$cat->group_id]->cat_allow_multiple === false) {
+                    continue;
+                }
                 while ($cat->Parent !== null) {
                     $cat = $cat->Parent;
                     if (! in_array($cat->getId(), $category_ids)) {
@@ -1233,13 +1256,31 @@ class ChannelEntry extends ContentModel
             }
 
             if ($this->Channel) {
+                $group_ids = $this->Channel->CategoryGroups->pluck('group_id');
                 $cat_groups = $this->getModelFacade()->get('CategoryGroup')
-                    ->filter('group_id', 'IN', explode('|', (string) $this->Channel->cat_group))
+                    ->filter('group_id', 'IN', $group_ids)
                     ->all(true);
+
+                $categoryGroupSettings = $this->getModelFacade()
+                    ->get('CategoryGroupSettings')
+                    ->filter('channel_id', $this->Channel->getId())
+                    ->filter('group_id', 'IN', $group_ids)
+                    ->all();
+                $cat_required = $categoryGroupSettings->getDictionary('group_id', 'cat_required');
+                $cat_allow_multiple = $categoryGroupSettings->getDictionary('group_id', 'cat_allow_multiple');
 
                 foreach ($cat_groups as $cat_group) {
                     $metadata = $cat_group->getFieldMetadata();
                     $metadata['categorized_object'] = $this;
+
+                    // is category from this group required? (default no)
+                    if (isset($cat_required[$cat_group->getId()]) && $cat_required[$cat_group->getId()] === true) {
+                        $metadata['field_required'] = 'y';
+                    }
+                    // can multiple categories from this group be selected? (default yes)
+                    if (isset($cat_allow_multiple[$cat_group->getId()]) && $cat_allow_multiple[$cat_group->getId()] === false) {
+                        $metadata['field_type'] = 'radio';
+                    }
 
                     if ($cat_groups->count() == 1) {
                         $metadata['field_label'] = lang('categories');
