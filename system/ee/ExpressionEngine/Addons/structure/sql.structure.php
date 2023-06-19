@@ -748,7 +748,7 @@ class Sql_structure
             // }
 
             // Build class string if any exist
-            $classes = count($tree[$i]['classes']) > 0 ? ' class="' . implode(' ', $tree[$i]['classes']) . '"' : null;
+            $classes = count($tree[$i]['classes']) > 0 ? ' class="' . implode(' ', $tree[$i]['classes']) . '"' : '';
 
             if ($show_overview) {
                 $classes = str_replace("first", "", $classes);
