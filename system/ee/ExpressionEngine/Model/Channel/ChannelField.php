@@ -96,7 +96,7 @@ class ChannelField extends FieldModel
     protected static $_validation_rules = array(
         'site_id' => 'required|integer',
         'field_name' => 'required|alphaDash|unique|validateNameIsNotReserved|maxLength[32]|validateUniqueAmongFieldGroups',
-        'field_label' => 'required|maxLength[50]',
+        'field_label' => 'required|xss|noHtml|maxLength[50]',
         'field_type' => 'validateIsCompatibleWithPreviousValue',
         //	'field_list_items'     => 'required',
         'field_pre_populate' => 'enum[y,n,v]',
