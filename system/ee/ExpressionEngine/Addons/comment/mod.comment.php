@@ -1511,8 +1511,21 @@ class Comment
         /**  Assign data
         /** ----------------------------------------*/
         $channel_id = $query->row('channel_id') ;
-        $require_membership = $query->row('comment_require_membership') ;
-        $comment_moderate = (ee('Permission')->isSuperAdmin() or ee()->session->userdata['exclude_from_moderation'] == 'y') ? 'n' : $force_moderation;
+        $require_membership = $query->row('comment_require_membership');
+        $comment_moderate = ee('Permission')->isSuperAdmin() ? 'n' : $force_moderation;
+        if ($comment_moderate == 'y' && ee()->session->userdata('member_id') != 0) {
+            // do we need to skip moderation based on ANY of member roles?
+            $roleIds = ee()->session->getMember()->getAllRoles()->pluck('role_id');
+            $excludeFromModeration = ee('Model')
+                ->get('RoleSetting')
+                ->filter('role_id', 'IN', $roleIds)
+                ->filter('exclude_from_moderation', 'y')
+                ->filter('site_id', ee()->config->item('site_id'))
+                ->count();
+            if ($excludeFromModeration > 0) {
+                $comment_moderate = 'n';
+            }
+        }
         $entry_id = $query->row('entry_id');
         $comment_site_id = $query->row('site_id');
 

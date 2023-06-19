@@ -69,6 +69,13 @@ class Pro_variables_ft extends EE_Fieldtype
     //  METHODS
     // --------------------------------------------------------------------
 
+    public function __construct()
+    {
+        parent::__construct();
+        ee()->load->helper($this->package);
+        ee()->load->model(array('pro_variables_group_model', 'pro_variables_variable_model'));
+    }
+
     /**
      * Display field settings
      *
