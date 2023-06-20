@@ -708,27 +708,20 @@ class Channels extends AbstractChannelsController
      */
     public function renderCategoryGroupsField($channel = null)
     {
-        $cat_group_options = ee('Model')->get('CategoryGroup')
-            ->fields('group_name')
+        $categoryGroups = ee('Model')->get('CategoryGroup')
             ->filter('site_id', ee()->config->item('site_id'))
             ->filter('exclude_group', '!=', 1)
             ->order('group_name')
-            ->all()
-            ->getDictionary('group_id', 'group_name');
+            ->all();
+
+        $cat_group_options = [];
 
         $selected = ee('Request')->post('cat_group') ?: [];
-        $cat_allow_multiple = ee('Request')->post('cat_allow_multiple') ?: [];
+        $cat_allow_multiple = ee('Request')->post('cat_allow_multiple') ?: $categoryGroups->pluck('group_id');
         $cat_required = ee('Request')->post('cat_required') ?: [];
 
         if (!ee('Request')->isPost() && !is_null($channel) && ! is_null($channel->CategoryGroups)) {
             $selected =  $channel->CategoryGroups->pluck('group_id');
-            $cat_required = ee('Model')
-                ->get('CategoryGroupSettings')
-                ->filter('channel_id', $channel->getId())
-                ->filter('group_id', 'IN', $selected)
-                ->filter('cat_required', 'y')
-                ->all()
-                ->pluck('group_id');
             $cat_allow_multiple = ee('Model')
                 ->get('CategoryGroupSettings')
                 ->filter('channel_id', $channel->getId())
@@ -736,6 +729,23 @@ class Channels extends AbstractChannelsController
                 ->filter('cat_allow_multiple', 'y')
                 ->all()
                 ->pluck('group_id');
+            $cat_required = ee('Model')
+                ->get('CategoryGroupSettings')
+                ->filter('channel_id', $channel->getId())
+                ->filter('group_id', 'IN', $selected)
+                ->filter('cat_required', 'y')
+                ->all()
+                ->pluck('group_id');
+        }
+
+        foreach ($categoryGroups as $categoryGroup) {
+            $cat_group_options[$categoryGroup->group_id] = [
+                'label' => $categoryGroup->group_name,
+                'toggles' => [
+                    'cat_allow_multiple' => in_array($categoryGroup->group_id, $cat_allow_multiple),
+                    'cat_required' => in_array($categoryGroup->group_id, $cat_required)
+                ]
+            ];
         }
 
         ee()->javascript->set_global([
@@ -754,8 +764,8 @@ class Channels extends AbstractChannelsController
             'removable' => false,
             'editable' => true,
             'toggles' => [
-                'cat_allow_multiple' => $selected,
-                'cat_required' => $cat_required
+                'cat_allow_multiple',
+                'cat_required'
             ]
         ]);
     }
