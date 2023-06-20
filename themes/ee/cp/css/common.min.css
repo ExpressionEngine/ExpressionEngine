@@ -30622,6 +30622,15 @@ div[data-input-value=category_fields] .checkbox-label:hover .checkbox-label__tex
   border-radius: 5px;
 }
 
+.flyout-cat_allow_multiple,
+.flyout-cat_required {
+  pointer-events: auto;
+}
+.flyout-cat_allow_multiple[disabled],
+.flyout-cat_required[disabled] {
+  pointer-events: none;
+}
+
 .fieldset-group {
   display: flex;
 }

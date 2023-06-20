@@ -496,3 +496,12 @@ div[data-input-value="category_fields"] {
 		}
 	}
 }
+
+.flyout-cat_allow_multiple,
+.flyout-cat_required {
+	pointer-events: auto;
+
+	&[disabled] {
+		pointer-events: none;
+	}
+}

@@ -374,6 +374,11 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
       var values = props.selected.length ? props.selected.map(function (item) {
         return item.value;
       }) : [];
+
+      if (props.name == 'cat_group' || props.name == 'statuses') {
+        console.log('SelectList', props);
+      }
+
       return React.createElement("div", {
         className: props.tooMany ? ' lots-of-checkboxes' : '',
         ref: function ref(container) {
@@ -435,7 +440,9 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
           handleRemove: function handleRemove(e, item) {
             return props.handleRemove(e, item);
           },
-          groupToggle: props.groupToggle
+          groupToggle: props.groupToggle,
+          catRequired: props.cat_required,
+          catMultiple: props.cat_allow_multiple
         });
       })), !props.multi && props.tooMany && props.selected[0] && React.createElement(SelectedItem, {
         item: this.getFullItem(props.selected[0]),
@@ -453,6 +460,28 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
           type: "hidden",
           key: item.value,
           name: props.multi ? props.name + '[]' : props.name,
+          value: item.value,
+          ref: function ref(input) {
+            _this8.input = input;
+          }
+        });
+      }), !props.jsonify && props.cat_allow_multiple && props.selected.map(function (item) {
+        return React.createElement("input", {
+          type: "hidden",
+          className: "cat_allow_multiple",
+          key: item.value,
+          name: props.multi ? 'cat_allow_multiple[]' : 'cat_allow_multiple',
+          value: item.value,
+          ref: function ref(input) {
+            _this8.input = input;
+          }
+        });
+      }), !props.jsonify && props.cat_required && props.selected.map(function (item) {
+        return React.createElement("input", {
+          type: "hidden",
+          className: "cat_required",
+          key: item.value,
+          name: props.multi ? 'cat_required[]' : 'cat_required',
           value: item.value,
           ref: function ref(input) {
             _this8.input = input;
@@ -497,7 +526,9 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
             sectionLabel: currentSection,
             entry_id: items[key].entry_id ? items[key].entry_id : '',
             upload_location_id: items[key].upload_location_id ? items[key].upload_location_id : '',
-            path: items[key].path ? items[key].path : ''
+            path: items[key].path ? items[key].path : '',
+            cat_required: items[key].cat_required ? items[key].cat_required : null,
+            cat_allow_multiple: items[key].cat_allow_multiple ? items[key].cat_allow_multiple : null
           };
 
           if (items[key].children) {
@@ -595,8 +626,25 @@ var SelectItem = /*#__PURE__*/function (_React$Component2) {
       });
     }
   }, {
+    key: "bindMakeRequired",
+    value: function bindMakeRequired(e, value) {
+      e.preventDefault();
+      $(e.target).toggleClass('active');
+      $(e.target).find('i').toggleClass('fa-toggle-on fa-toggle-off');
+      console.log('value', value);
+    }
+  }, {
+    key: "bindAllowMultiple",
+    value: function bindAllowMultiple(e, value) {
+      e.preventDefault();
+      $(e.target).toggleClass('active');
+      $(e.target).find('i').toggleClass('fa-toggle-on fa-toggle-off');
+    }
+  }, {
     key: "render",
     value: function render() {
+      var _this9 = this;
+
       var props = this.props;
       var checked = this.checked(props.item.value);
       var label = props.item.label;
@@ -639,7 +687,27 @@ var SelectItem = /*#__PURE__*/function (_React$Component2) {
         className: "meta-info"
       }, props.item.instructions), React.createElement("div", {
         "class": "button-group button-group-xsmall button-group-flyout-right"
-      }, props.editable && React.createElement("a", {
+      }, props.catMultiple && React.createElement("a", {
+        href: "",
+        className: "button button--default flyout-cat_allow_multiple active",
+        onClick: function onClick(e) {
+          return _this9.bindAllowMultiple(e, props.item);
+        },
+        "data-cat_allow_multiple": true,
+        disabled: checked ? false : true
+      }, EE.lang.cat_allow_multiple, " ", React.createElement("i", {
+        "class": "fa-solid fa-toggle-on"
+      })), props.catRequired && React.createElement("a", {
+        href: "",
+        className: "button button--default flyout-cat_required",
+        onClick: function onClick(e) {
+          return _this9.bindMakeRequired(e, props.item);
+        },
+        "data-cat_required": true,
+        disabled: checked ? false : true
+      }, EE.lang.cat_required, " ", React.createElement("i", {
+        "class": "fa-solid fa-toggle-off"
+      })), props.editable && React.createElement("a", {
         href: "",
         className: "button button--default flyout-edit flyout-edit-icon"
       }, React.createElement("i", {
