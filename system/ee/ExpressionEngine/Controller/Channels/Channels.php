@@ -754,7 +754,7 @@ class Channels extends AbstractChannelsController
             'removable' => false,
             'editable' => true,
             'toggles' => [
-                'cat_allow_multiple' => $cat_allow_multiple,
+                'cat_allow_multiple' => $selected,
                 'cat_required' => $cat_required
             ]
         ]);
