@@ -72,34 +72,34 @@ cypress/integration/addons/search.ee6.js
     └─ exclude multiple channels
 
 cypress/integration/addons/structure.ee6.js
-└─ ❌Structure Add-on
-  ├─ ❌show the Structure Settings screen
-  └─ ❌save new Structure settings
-  └─ ❌add new Structure page and check that it displays
-  └─ ❌set up Structure listing and check it displays
-  └─ ❌check Structure nav tag
+└─ Structure Add-on
+  ├─ show the Structure Settings screen
+  └─ save new Structure settings
+  └─ add new Structure page and check that it displays
+  └─ set up Structure listing and check it displays
+  └─ check Structure nav tag
 
 cypress/integration/addons/pro_variables.ee6.js
-└─ ❌Pro Variables Add-on
-  ├─ ❌show the Pro Variables Settings screen
-  └─ ❌create new variable (of different types)
-  └─ ❌list variables in CP
-  └─ ❌display variables in frontend
-  └─ ❌check variables in templates
+└─ Pro Variables Add-on
+  ├─ show the Pro Variables Settings screen
+  └─ create new variable (of different types)
+  └─ list variables in CP
+  └─ display variables in frontend
+  └─ check variables in templates
 
 cypress/integration/addons/pro_search.ee6.js
-└─ ❌Pro Search Add-on
-  ├─ ❌show the Pro Search Settings screen
-  └─ ❌build search index
-  └─ ❌search on front-end
+└─ Pro Search Add-on
+  ├─ show the Pro Search Settings screen
+  └─ build search index
+  └─ search on front-end
 
 cypress/integration/addons/structure.ee6.js
-└─ ❌Structure Add-on
-  ├─ ❌show the Structure Settings screen
-  └─ ❌save new Structure settings
-  └─ ❌add new Structure page and check that it displays
-  └─ ❌set up Structure listing and check it displays
-  └─ ❌check Structure nav tag
+└─ Structure Add-on
+  ├─ show the Structure Settings screen
+  └─ save new Structure settings
+  └─ add new Structure page and check that it displays
+  └─ set up Structure listing and check it displays
+  └─ check Structure nav tag
 
 
 cypress/integration/channel/categories.ee6.js
@@ -363,7 +363,7 @@ cypress/integration/design/template_partials.ee6.js
   ├─ Validate the form
   ├─ Create a new partial
   └─ Remove a partial
-  └─ ❌Display partial on front-end
+  └─ Display partial on front-end
 
 cypress/integration/design/template_routes.ee6.js
 └─ Template Routes
@@ -372,7 +372,7 @@ cypress/integration/design/template_routes.ee6.js
   ├─ Edit a route
   ├─ Reorder routes
   └─ Remove a route
-  └─ ❌Check that pages on front-end are properly routes
+  └─ Check that pages on front-end are properly routes
 
 cypress/integration/design/template_variables.ee6.js
 └─ Template Variables
@@ -383,7 +383,7 @@ cypress/integration/design/template_variables.ee6.js
   ├─ Validate variable form
   ├─ Create new variable
   └─ Remove a variable
-  └─ ❌Display variable on front-end
+  └─ Display variable on front-end
 
 cypress/integration/entry_filters/filter.ee6.js
 └─ Entry Manager
@@ -1274,7 +1274,7 @@ cypress/integration/z_installer/updater.ee6.js
   ├─ turns system off if system was off before updating
   ├─ turns system on if system was on before updating
   ├─ updates and creates a mailing list export when updating from 2.x to 6.x with the mailing list module
-  ├─ ❌check that content from 2.x stays the same in 7.x
+  ├─ check that content from 2.x stays the same in 7.x
   ├─ updates successfully when updating from 2.1.3 to 6.x
   ├─ updates a core installation successfully and installs the member module
   ├─ updates without notices going straight to login page
