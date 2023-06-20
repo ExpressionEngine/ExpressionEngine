@@ -90,7 +90,7 @@ context('Templates', () => {
             cy.hasNoErrors()
         })
 
-        it('should validate the form', function() {
+        it('validate template form', function() {
             createPage.get('name').clear().type('lots of neat stuff')
             createPage.get('name').trigger('blur')
 
@@ -135,7 +135,7 @@ context('Templates', () => {
             editPage.hasError(editPage.get('name'), 'This field may only contain alpha-numeric characters, underscores, dashes, periods, and emojis.')
         })
 
-        it('can change settings', function() {
+        it('Change template settings', function() {
             editPage.get('settings_tab').click()
             editPage.get('name').clear().type('cypress-edited')
             editPage.get('type').check('feed')
@@ -211,7 +211,7 @@ context('Templates', () => {
             cy.hasNoErrors()
         })
 
-        it('not enabling PHP if not enabled globally', function() {
+        it('can not enable PHP if not enabled globally', function() {
             cy.eeConfig({ item: 'allow_php', value: 'n' }).then((config) => {
 
                 cy.eeConfig({ item: 'allow_php' }).then((config2) => {

@@ -26,7 +26,7 @@ context('SQL manager', () => {
 
 	})
 
-	it('should list tables present in the install', () =>{
+	it('List tables present in the install', () =>{
 		cy.get('tbody > :nth-child(1) > :nth-child(1)').contains('exp_actions')
 		cy.get('.typography > :nth-child(1)').contains('Total Records')
 
@@ -48,7 +48,7 @@ context('SQL manager', () => {
 
 	})
 
-	it('should sort the table' ,() =>{
+	it('Sort the table' ,() =>{
 		page.get('table').find('th.column-sort-header--active').contains('Table Name')
 		page.get('sort_links').eq(0).click()
 
@@ -63,7 +63,7 @@ context('SQL manager', () => {
 		page.get('table').find('th.column-sort-header--active').contains('Table Name')
 	})
 
-	it('should search the table names', () => {
+	it('Search the table names', () => {
 
 		page.get_tables().then(function(groups){
 			let tables = [...page.$('tables').map(function(index, el){
@@ -77,7 +77,7 @@ context('SQL manager', () => {
 	    cy.get('h2 > i').contains('Found 8 results for "data"')
     })
 
-    it('should sort search results', () =>{
+    it('Sort search results', () =>{
 		page.get_tables().then(function(groups){
 			let tables = [...page.$('tables').map(function(index, el){
 				return $(el).text();
@@ -94,7 +94,7 @@ context('SQL manager', () => {
 	    cy.get('tbody > :nth-child(1) > :nth-child(1)').contains('exp_message_data')
 	})
 
-	it('should validate the table operations submission', () =>{
+	it('Validate the table operations submission', () =>{
 		//page.get('select_all').click()
 		cy.get('th input[type="checkbox"]').first().click()
 		cy.wait(500)
@@ -103,7 +103,7 @@ context('SQL manager', () => {
 
 	})
 
-	it('should repair the tables and sort and search the results', () =>{
+	it('Repair the tables and sort and search the results', () =>{
 		//page.get('select_all').click()
 		cy.get('th input[type="checkbox"]').first().click()
 		page.get('op_select').select('Repair')
@@ -130,7 +130,7 @@ context('SQL manager', () => {
 
 	})
 
-	it('should optimize the tables and sort and search the results', () =>{
+	it('Optimize the tables and sort and search the results', () =>{
 		//page.get('select_all').click()
 		cy.get('th input[type="checkbox"]').first().click()
 		page.get('op_select').select('Optimize')
@@ -158,7 +158,7 @@ context('SQL manager', () => {
 
 	})
 
-	it('should allow viewing of table contents', () =>{
+	it('View table contents', () =>{
 
 
 		//page.get('manage_links').eq(0).click()AJ

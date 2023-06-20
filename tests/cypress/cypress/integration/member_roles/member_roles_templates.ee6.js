@@ -4,7 +4,7 @@ const page = new MemberGroups;
 const member = new MemberCreate;
 
 
-context('Test Templates roles ', () => {
+context('Member Roles / Template Permissions', () => {
 
 	before(function(){
 		cy.task('db:seed')
@@ -200,37 +200,4 @@ context('Test Templates roles ', () => {
 	   cy.get('.box').contains('Template Variables')
 	})
 
-	it.skip('cleans for reruns', () => {
-		cy.visit('admin.php?/cp/login');
-	   cy.get('#username').type('admin');
-	   cy.get('#password').type('password');
-	   cy.get('.button').click();
-
-	   cy.visit('admin.php?/cp/members/roles')
-
-	   cy.get('.list-item:nth-child(6) input').click();
-
-
-	   cy.get('select').select('Delete')
-    	cy.get('.bulk-action-bar > .button').click()
-    	cy.get('.modal-confirm-delete > .modal > form > .dialog__actions > .dialog__buttons > .button-group > .button').click()
-    	cy.visit('admin.php?/cp/members')
-
-
-	    cy.get('tr:nth-child(1) > td > input').click();
-
-	    cy.get('select').select('Delete');
-
-	    cy.get('.button--primary').click();
-
-	    cy.get("body").then($body => {
-	          if ($body.find("#fieldset-verify_password > .field-control > input").length > 0) {   //evaluates as true if verify is needed
-	              cy.get("#fieldset-verify_password > .field-control > input").type('password');
-	          }
-	    });
-	    //Sometimes it asks for password to delete users and sometimes it does not.
-
-	    cy.get('.button--danger').click();
-	    cy.get('.modal-confirm-delete form').submit();
-	})
 })
