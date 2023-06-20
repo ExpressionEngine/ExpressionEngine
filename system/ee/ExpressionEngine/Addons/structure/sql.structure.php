@@ -755,7 +755,7 @@ class Sql_structure
             }
 
             // Build id string if any exist
-            $ids = count($tree[$i]['ids']) > 0 ? ' id="' . implode(' ', $tree[$i]['ids']) . '"' : null;
+            $ids = count($tree[$i]['ids']) > 0 ? ' id="' . implode(' ', $tree[$i]['ids']) . '"' : '';
 
             // Title field: custom|title
             $title = $custom_title_fields !== false ? $custom_title_fields[$tree[$i]['entry_id']] : $tree[$i]['title'];
