@@ -142,6 +142,7 @@ class Cli
         // Sync
         'sync:conditional-fields' => Commands\CommandSyncConditionalFieldLogic::class,
         'sync:file-usage' => Commands\CommandSyncFileUsage::class,
+        'sync:reindex' => Commands\CommandReindex::class,
 
         // Update
         'update' => Commands\CommandUpdate::class,

@@ -1859,7 +1859,7 @@ class JumpMenu extends AbstractJumpMenu
                 'target' => 'utilities/query',
                 'permission' => 'can_access_sql_manager'
             ),
-            'systemUtilitiesSearchReindex' => array(
+            'systemUtilitiesContentReindex' => array(
                 'icon' => 'fa-hammer',
                 'command' => 'system_utilities search_reindex',
                 'dynamic' => false,

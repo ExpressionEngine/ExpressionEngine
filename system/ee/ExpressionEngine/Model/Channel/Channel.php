@@ -433,10 +433,8 @@ class Channel extends StructureModel
                         // Is it already accounted for?
                         if (in_array($field_name, array_keys($cat_groups))) {
                             unset($cat_groups[$field_name]);
-                        }
-
-                        // If not, it was removed and needs to be deleted
-                        else {
+                        } else {
+                            // If not, it was removed and needs to be deleted
                             unset($field_layout[$i]['fields'][$j]);
 
                             // Re-index to ensure flat, zero-indexed array
@@ -584,7 +582,7 @@ class Channel extends StructureModel
     public function getAllCustomFields()
     {
         $cache_key = "ChannelCustomFields/{$this->getId()}/";
-        if (($fields = ee()->session->cache(__CLASS__, $cache_key, false)) === false) {
+        if (!isset(ee()->session) || ($fields = ee()->session->cache(__CLASS__, $cache_key, false)) === false) {
             $fields = $this->CustomFields->indexBy('field_name');
             $field_groups = $this->FieldGroups;
 
@@ -596,7 +594,9 @@ class Channel extends StructureModel
 
             $fields = new Collection($fields);
 
-            ee()->session->set_cache(__CLASS__, $cache_key, $fields);
+            if (isset(ee()->session)) {
+                ee()->session->set_cache(__CLASS__, $cache_key, $fields);
+            }
         }
         return $fields;
     }
