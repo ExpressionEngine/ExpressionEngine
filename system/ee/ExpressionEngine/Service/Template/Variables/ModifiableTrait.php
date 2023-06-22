@@ -29,6 +29,11 @@ trait ModifiableTrait
      */
     public function __call($name, $arguments)
     {
+        if (REQ == 'CP') {
+            // Control Panel requests should never end here
+            throw new \BadMethodCallException('Call to undefined method ' . $name . '()');
+        }
+
         if (count($arguments) == 0) {
             throw new \InvalidArgumentException('No data provided to modifier');
         }

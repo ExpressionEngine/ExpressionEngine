@@ -15,10 +15,10 @@ class File
 {
     public $reserved_cat_segment = '';
     public $use_category_names = false;
+    public $enable = array();
     public $categories = array();
     public $catfields = array();
     public $valid_thumbs = array();
-    public $enable = array();
     public $query;
     public $return_data = '';
 

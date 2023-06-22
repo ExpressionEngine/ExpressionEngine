@@ -34,6 +34,8 @@ $lang = array(
 
     'is_natural_no_zero' => 'This field must contain a number greater than zero.',
 
+    'is_not_numeric' => 'This field can not be a number.',
+
     'is_numeric' => 'This field must contain only numeric characters.',
 
     'less_than' => 'This field must be less than: %s',
