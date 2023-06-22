@@ -253,6 +253,22 @@ jobs:
                 CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+            - name: Run Cypress Tests (Electron)
+              uses: cypress-io/github-action@v5
+              if: "${{ env.CYPRESS_RECORD_KEY != '' }}"
+              with:
+                browser: electron
+                working-directory: tests/cypress
+                config-file: electron.cypress.json
+                record: true
+                parallel: true
+                group: PHP${{ matrix.php }}
+              env:
+                CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+                CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
+
             - name: Archive screenshots
               uses: actions/upload-artifact@v3
               if: failure()
