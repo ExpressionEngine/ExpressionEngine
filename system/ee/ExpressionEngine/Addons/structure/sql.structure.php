@@ -1,8 +1,5 @@
 <?php
 
-require_once PATH_ADDONS . 'structure/helper.php';
-require_once PATH_ADDONS . 'structure/addon.setup.php';
-
 use ExpressionEngine\Structure\Conduit\StaticCache;
 use ExpressionEngine\Structure\Conduit\PersistentCache;
 
@@ -21,6 +18,9 @@ class Sql_structure
     public $cids = array();
     public $lcids = array();
     public $cache;
+	
+	require_once PATH_ADDONS . 'structure/helper.php';
+	require_once PATH_ADDONS . 'structure/addon.setup.php';	
 
     public function __construct()
     {
