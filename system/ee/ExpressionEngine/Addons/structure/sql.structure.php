@@ -18,12 +18,12 @@ class Sql_structure
     public $cids = array();
     public $lcids = array();
     public $cache;
-	
+
     public function __construct()
     {
         require_once PATH_ADDONS . 'structure/helper.php';
-        require_once PATH_ADDONS . 'structure/addon.setup.php';	
-		
+        require_once PATH_ADDONS . 'structure/addon.setup.php';
+
         ee()->load->add_package_path(PATH_ADDONS . 'structure/');
         ee()->load->library('sql_helper');
         ee()->load->library('general_helper');
