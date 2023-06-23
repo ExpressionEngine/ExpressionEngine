@@ -13,6 +13,8 @@
  */
 class EE_Template_router_regex_converter implements EE_Template_router_converter
 {
+    protected $regex;
+
     public function __construct($regex)
     {
         $this->regex = $regex;

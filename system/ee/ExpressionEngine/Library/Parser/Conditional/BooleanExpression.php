@@ -50,6 +50,11 @@ class BooleanExpression
      */
     public function evaluate()
     {
+        if (empty($this->tokens)) {
+            // none of tokens is defined, null === null
+            return true;
+        }
+
         $rpn = $this->convertToRPN($this->tokens);
 
         return $this->bool($this->evaluateRPN($rpn));

@@ -52,11 +52,11 @@ class Localize
      * Converts a human-readable date (and possibly time) to a Unix timestamp
      * using the current member's locale
      *
-     * @param	string	$human_string	Human-readable date
-     * @param	bool	$localized		Is the human date prelocalized?
-     * @param	string	$date_format	(optional) The date format to use when
-     *									parsing $human_string
-     * @return	mixed	int if successful, otherwise FALSE
+     * @param   string  $human_string   Human-readable date
+     * @param   bool    $localized      Is the human date prelocalized?
+     * @param   string  $date_format    (optional) The date format to use when
+     *                                  parsing $human_string
+     * @return  mixed   int if successful, otherwise FALSE
      */
     public function string_to_timestamp($human_string, $localized = true, $date_format = null)
     {
@@ -80,10 +80,10 @@ class Localize
      * Given an EE date format and a Unix timestamp, returns the human-readable
      * date in the specified timezone or member's current timezone.
      *
-     * @param	string	Date format, like "%D, %F %d, %Y - %g:%i:%s"
-     * @param	int		Unix timestamp
-     * @param	bool	Return date localized or not
-     * @return	string	Formatted date
+     * @param   string  Date format, like "%D, %F %d, %Y - %g:%i:%s"
+     * @param   int     Unix timestamp
+     * @param   bool    Return date localized or not
+     * @return  string  Formatted date
      */
     public function format_date($format, $timestamp = null, $localize = true)
     {
@@ -109,9 +109,9 @@ class Localize
      * Given an date variable and a DateTime object, returns the associated
      * formatting for the date variable and DateTime object
      *
-     * @param	string		Date variable with percent sign prefix, like "%D"
-     * @param	datetime	DateTime object on which to call format()
-     * @return	string		Value of variable in DateTime object, translated
+     * @param   string      Date variable with percent sign prefix, like "%D"
+     * @param   datetime    DateTime object on which to call format()
+     * @return  string      Value of variable in DateTime object, translated
      */
     private function _date_string_for_variable($var, $dt)
     {
@@ -150,20 +150,20 @@ class Localize
                     }
 
                     break;
-                // Concatenate the RFC 2822 format with translations
+                    // Concatenate the RFC 2822 format with translations
                 case 'r':
                     if ($translate) {
-                        $rfc = lang($dt->format('D'));		// Thu
-                        $rfc .= $dt->format(', d ');						// , 21
-                        $rfc .= lang($dt->format('M'));	// Dec
-                        $rfc .= $dt->format(' Y H:i:s O'); 					// 2000 16:01:07 +0200
+                        $rfc = lang($dt->format('D'));      // Thu
+                        $rfc .= $dt->format(', d ');                        // , 21
+                        $rfc .= lang($dt->format('M')); // Dec
+                        $rfc .= $dt->format(' Y H:i:s O');                  // 2000 16:01:07 +0200
 
                         return $rfc;
                     }
 
                     break;
-                // Q was our replacement for P because P wasn't available < PHP 5.1.3,
-                // so keep it around for backwards compatability
+                    // Q was our replacement for P because P wasn't available < PHP 5.1.3,
+                    // so keep it around for backwards compatability
                 case 'Q':
                     $date_var = 'P';
 
@@ -188,12 +188,12 @@ class Localize
      *
      * Example: 2015-10-21 06:30 PM
      *
-     * @param	int		Unix timestamp
-     * @param	bool	Localize to member's timezone or leave as GMT
-     * @param	bool	Include seconds in returned string or not
-     * @return	string	Formatted string
+     * @param   int     Unix timestamp
+     * @param   bool    Localize to member's timezone or leave as GMT
+     * @param   bool    Include seconds in returned string or not
+     * @return  string  Formatted string
      */
-    public function human_time($timestamp = null, $localize = true, $seconds = false)
+    public function human_time($timestamp = null, $localize = true, $seconds = false, $include_time = true)
     {
         // Override the userdata/config with the parameter only if it was provided
         $include_seconds = ee()->session->userdata('include_seconds', ee()->config->item('include_seconds'));
@@ -201,7 +201,7 @@ class Localize
             $seconds = true;
         }
 
-        $format_string = $this->get_date_format($seconds);
+        $format_string = $this->get_date_format($seconds, $include_time);
 
         return $this->format_date($format_string, $timestamp, $localize);
     }
@@ -209,14 +209,18 @@ class Localize
     /**
      * Provides the date format to use for calculating time (both input and output)
      *
-     * @param	bool	Include seconds in the date format string or not
-     * @return	string	Date format string
+     * @param   bool    Include seconds in the date format string or not
+     * @return  string  Date format string
      */
-    public function get_date_format($seconds = false)
+    public function get_date_format($seconds = false, $include_time = true)
     {
         $include_seconds = ee()->session->userdata('include_seconds', ee()->config->item('include_seconds'));
         $date_format = ee()->session->userdata('date_format', ee()->config->item('date_format'));
         $time_format = ee()->session->userdata('time_format', ee()->config->item('time_format'));
+
+        if (! $include_time) {
+            return $date_format;
+        }
 
         // Override the userdata/config with the parameter only if it was provided
         if (func_num_args() != 1 && $include_seconds == 'y') {
@@ -239,11 +243,11 @@ class Localize
      * Returns a DateTime object for the current time and member timezone
      * OR a specified time and timezone
      *
-     * @param	string		Date string or Unix timestamp, current time used if NULL
-     * @param	mixed		Bool: whether or not to localize to current member's
+     * @param   string      Date string or Unix timestamp, current time used if NULL
+     * @param   mixed       Bool: whether or not to localize to current member's
      *                      timezone, or string of timezone to convert to
-     * @return	datetime	DateTime object set to the given time and altered
-     * 						for server offset
+     * @return  datetime    DateTime object set to the given time and altered
+     *                      for server offset
      */
     private function _datetime($date_string = null, $timezone = true, $date_format = null)
     {
@@ -257,7 +261,11 @@ class Localize
 
         // Localize to member's timezone or leave as GMT
         if (is_bool($timezone)) {
-            $timezone = ($timezone) ? ee()->session->userdata('timezone', ee()->config->item('default_site_timezone')) : 'UTC';
+            if (isset(ee()->session)) {
+                $timezone = ($timezone) ? ee()->session->userdata('timezone', ee()->config->item('default_site_timezone')) : 'UTC';
+            } else {
+                $timezone = ($timezone) ? ee()->config->item('default_site_timezone') : 'UTC';
+            }
         }
 
         // If timezone isn't known by PHP, it may be our legacy timezone
@@ -338,9 +346,9 @@ class Localize
     /**
      * Generates an HTML menu of timezones
      *
-     * @param	string	Default timezone selection
-     * @param	string	Name of dropdown form field element
-     * @return	string	HTML for dropdown list
+     * @param   string  Default timezone selection
+     * @param   string  Name of dropdown form field element
+     * @return  string  HTML for dropdown list
      */
     public function timezone_menu($default = null, $name = 'default_site_timezone')
     {
@@ -401,34 +409,34 @@ class Localize
         // dropdown population based on the country dropdown
         $output = <<<EOF
 
-			<script type="text/javascript">
+            <script type="text/javascript">
 
-				var timezones = $timezone_json
+                var timezones = $timezone_json
 
-				function ee_tz_change(countryselect)
-				{
-					var timezoneselect = document.getElementById('timezone_select');
-					var countrycode = countryselect.options[countryselect.selectedIndex].value;
+                function ee_tz_change(countryselect)
+                {
+                    var timezoneselect = document.getElementById('timezone_select');
+                    var countrycode = countryselect.options[countryselect.selectedIndex].value;
 
-					timezoneselect.options.length = 0;
+                    timezoneselect.options.length = 0;
 
-					if (timezones[countrycode] == '' || timezones[countrycode] == undefined)
-					{
-						timezoneselect.add(new Option('$no_timezones_lang', ''));
+                    if (timezones[countrycode] == '' || timezones[countrycode] == undefined)
+                    {
+                        timezoneselect.add(new Option('$no_timezones_lang', ''));
 
-						return;
-					}
+                        return;
+                    }
 
-					for (var key in timezones[countrycode])
-					{
-						if (timezones[countrycode].hasOwnProperty(key))
-						{
-							timezoneselect.add(new Option(timezones[countrycode][key], key));
-						}
-					}
-				}
+                    for (var key in timezones[countrycode])
+                    {
+                        if (timezones[countrycode].hasOwnProperty(key))
+                        {
+                            timezoneselect.add(new Option(timezones[countrycode][key], key));
+                        }
+                    }
+                }
 
-			</script>
+            </script>
 EOF;
 
         // Prepend to the top of countries dropdown with common country selections
@@ -481,10 +489,10 @@ EOF;
      * Loads countries config file and creates localized array of country
      * codes corresponding to country names
      *
-     * @access	private
-     * @param	boolean	Whether or not to return timezones mapped to
-     *				countries instead
-     * @return	string
+     * @access  private
+     * @param   boolean Whether or not to return timezones mapped to
+     *              countries instead
+     * @return  string
      */
     private function _get_countries($return_timezones = false)
     {
@@ -512,8 +520,8 @@ EOF;
     /**
      * Creates and returns a cached array of timezones by country.
      *
-     * @access	private
-     * @return	array 	Array of timezones by country code
+     * @access  private
+     * @return  array   Array of timezones by country code
      */
     private function _get_timezones_by_country()
     {
@@ -541,9 +549,9 @@ EOF;
     /**
      * Returns the country code for a given PHP timezone
      *
-     * @access	private
-     * @param	string	PHP timezone
-     * @return	string	Two-letter country code for timezone
+     * @access  private
+     * @param   string  PHP timezone
+     * @return  string  Two-letter country code for timezone
      */
     private function _get_country_for_php_timezone($timezone)
     {
@@ -561,53 +569,53 @@ EOF;
      * store timezones with which was based on offsets; for example, given
      * "UM5", it returns "America/New_York"
      *
-     * @access	public
-     * @param	string
-     * @return	string
+     * @access  public
+     * @param   string
+     * @return  string
      */
     public function get_php_timezone($zone = 'UTC')
     {
         $zones = array(
-            'UM12' => 'Kwajalein', 					// -12
-            'UM11' => 'Pacific/Midway', 				// -11
-            'UM10' => 'Pacific/Honolulu', 				// -10
-            'UM95' => 'Pacific/Marquesas',				// -9.5
-            'UM9' => 'America/Anchorage', 			// -9
-            'UM8' => 'America/Los_Angeles', 			// -8
-            'UM7' => 'America/Denver', 				// -7
-            'UM6' => 'America/Chicago', 				// -6
-            'UM5' => 'America/New_York', 				// -5
-            'UM45' => 'America/Caracas',				// -4.5
-            'UM4' => 'America/Halifax', 				// -4
-            'UM35' => 'America/St_Johns', 				// -3.5
+            'UM12' => 'Kwajalein',                  // -12
+            'UM11' => 'Pacific/Midway',                 // -11
+            'UM10' => 'Pacific/Honolulu',               // -10
+            'UM95' => 'Pacific/Marquesas',              // -9.5
+            'UM9' => 'America/Anchorage',           // -9
+            'UM8' => 'America/Los_Angeles',             // -8
+            'UM7' => 'America/Denver',              // -7
+            'UM6' => 'America/Chicago',                 // -6
+            'UM5' => 'America/New_York',                // -5
+            'UM45' => 'America/Caracas',                // -4.5
+            'UM4' => 'America/Halifax',                 // -4
+            'UM35' => 'America/St_Johns',               // -3.5
             'UM3' => 'America/Argentina/Buenos_Aires',// -3
-            'UM2' => 'Atlantic/South_Georgia', 		// -2
-            'UM1' => 'Atlantic/Azores', 				// -1
-            'UTC' => 'Europe/Dublin', 				// 0
-            'UP1' => 'Europe/Belgrade', 				// +1
-            'UP2' => 'Europe/Minsk', 					// +2
-            'UP3' => 'Asia/Kuwait', 					// +3
-            'UP35' => 'Asia/Tehran', 					// +3.5
-            'UP4' => 'Asia/Muscat', 					// +4
-            'UP45' => 'Asia/Kabul', 					// +4.5
-            'UP5' => 'Asia/Yekaterinburg', 			// +5
-            'UP55' => 'Asia/Kolkata',		 			// +5.5
-            'UP575' => 'Asia/Katmandu', 				// +5.75
-            'UP6' => 'Asia/Dhaka', 					// +6
-            'UP65' => 'Asia/Rangoon', 					// +6.5
-            'UP7' => 'Asia/Krasnoyarsk', 				// +7
-            'UP8' => 'Asia/Brunei', 					// 8
-            'UP875' => 'Australia/Eucla',				// +8.75
-            'UP9' => 'Asia/Seoul', 					// +9
-            'UP95' => 'Australia/Darwin', 				// +9.5
-            'UP10' => 'Australia/Canberra', 			// +10
-            'UP105' => 'Australia/Lord_Howe',			// +10.5
-            'UP11' => 'Asia/Magadan', 					// +11
-            'UP115' => 'Pacific/Norfolk',				// +11.5
-            'UP12' => 'Pacific/Fiji', 					// +12
-            'UP1275' => 'Pacific/Chatham',				// +12.75
-            'UP13' => 'Pacific/Tongatapu', 			// +13
-            'UP14' => 'Pacific/Kiritimati'				// +14
+            'UM2' => 'Atlantic/South_Georgia',      // -2
+            'UM1' => 'Atlantic/Azores',                 // -1
+            'UTC' => 'Europe/Dublin',               // 0
+            'UP1' => 'Europe/Belgrade',                 // +1
+            'UP2' => 'Europe/Minsk',                    // +2
+            'UP3' => 'Asia/Kuwait',                     // +3
+            'UP35' => 'Asia/Tehran',                    // +3.5
+            'UP4' => 'Asia/Muscat',                     // +4
+            'UP45' => 'Asia/Kabul',                     // +4.5
+            'UP5' => 'Asia/Yekaterinburg',          // +5
+            'UP55' => 'Asia/Kolkata',                   // +5.5
+            'UP575' => 'Asia/Katmandu',                 // +5.75
+            'UP6' => 'Asia/Dhaka',                  // +6
+            'UP65' => 'Asia/Rangoon',                   // +6.5
+            'UP7' => 'Asia/Krasnoyarsk',                // +7
+            'UP8' => 'Asia/Brunei',                     // 8
+            'UP875' => 'Australia/Eucla',               // +8.75
+            'UP9' => 'Asia/Seoul',                  // +9
+            'UP95' => 'Australia/Darwin',               // +9.5
+            'UP10' => 'Australia/Canberra',             // +10
+            'UP105' => 'Australia/Lord_Howe',           // +10.5
+            'UP11' => 'Asia/Magadan',                   // +11
+            'UP115' => 'Pacific/Norfolk',               // +11.5
+            'UP12' => 'Pacific/Fiji',                   // +12
+            'UP1275' => 'Pacific/Chatham',              // +12.75
+            'UP13' => 'Pacific/Tongatapu',          // +13
+            'UP14' => 'Pacific/Kiritimati'              // +14
         );
 
         // Fall back to UTC if something went wrong
@@ -623,9 +631,9 @@ EOF;
      *
      * Helper function used to translate month names.
      *
-     * @access	public
-     * @param	string
-     * @return	string
+     * @access  public
+     * @param   string
+     * @return  string
      */
     public function localize_month($month = '')
     {

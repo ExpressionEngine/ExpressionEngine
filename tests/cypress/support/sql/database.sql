@@ -598,6 +598,7 @@ CREATE TABLE `exp_field_groups` (
   `group_id` int(4) unsigned NOT NULL AUTO_INCREMENT,
   `site_id` int(10) unsigned DEFAULT NULL,
   `group_name` varchar(50) NOT NULL,
+  `group_description` text NULL,
   PRIMARY KEY (`group_id`),
   KEY `site_id` (`site_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;

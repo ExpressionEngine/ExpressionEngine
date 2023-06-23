@@ -6,6 +6,7 @@ on:
     branches:
       - '*.dev'
       - '[0-9]+.[0-9]+.[0-9]+'
+      - 'release/[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
 
@@ -75,7 +76,8 @@ jobs:
             with:
               path: build-tools/builds/ExpressionEngine
               key: cache-ee-build-${{ github.sha }}
-          
+              enableCrossOsArchive: true
+
           - name: Directory Listing on Failure
             if: failure()
             run: |
@@ -99,11 +101,6 @@ jobs:
         name: PHPUnit, php${{ matrix.php }} - ${{ matrix.os }}
 
         steps:
-            - name: "Use GNU tar instead BSD tar"
-              if: matrix.os == 'windows-latest'
-              shell: cmd
-              run: echo C:\Program Files\Git\usr\bin>>"%GITHUB_PATH%"
-
             - name: Install locales
               if: runner.os != 'Windows'
               run: |
@@ -121,6 +118,7 @@ jobs:
               with:
                 path: build-tools/builds/ExpressionEngine
                 key: cache-ee-build-${{ github.sha }}
+                fail-on-cache-miss: true
                 enableCrossOsArchive: true
 
             - name: Move vendor files (Linux)
@@ -150,7 +148,7 @@ jobs:
                 composer require overtrue/phplint --dev --no-progress --no-suggest --prefer-dist
 
             - name: Run PHPLint
-              run: ./system/ee/ExpressionEngine/Tests/vendor/bin/phplint ./ --exclude=system/ee/ExpressionEngine/Tests/vendor --exclude=system/ee/installer/config/config_tmpl.php --exclude=system/ee/ExpressionEngine/Service/Generator/stubs
+              run: ./system/ee/ExpressionEngine/Tests/vendor/bin/phplint --no-configuration ./ --exclude=system/ee/ExpressionEngine/Tests/vendor --exclude=system/ee/installer/config/config_tmpl.php --exclude=system/ee/ExpressionEngine/Service/Generator/stubs
 
             - name: Configure matchers
               uses: mheap/phpunit-matcher-action@v1

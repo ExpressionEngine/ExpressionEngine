@@ -87,7 +87,7 @@ class CommandMakeProlet extends Cli
             $service = ee('ProletGenerator', $this->data);
             $service->build();
         } catch (\Exception $e) {
-            $this->fail($e->getMessage());
+            $this->fail(addslashes($e->getMessage()));
         }
 
         $this->info('command_make_prolet_created_successfully');
@@ -101,7 +101,7 @@ class CommandMakeProlet extends Cli
                 $service = ee('WidgetGenerator', $widgetData);
                 $service->build();
             } catch (\Exception $e) {
-                $this->fail($e->getMessage());
+                $this->fail(addslashes($e->getMessage()));
             }
 
             $this->info('command_make_prolet_widget_created_successfully');

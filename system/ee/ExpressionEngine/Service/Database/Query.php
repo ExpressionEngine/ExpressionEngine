@@ -25,6 +25,7 @@ require_once BASEPATH . "database/drivers/mysqli/mysqli_driver.php";
 class Query extends \CI_DB_mysqli_driver
 {
     protected $connection;
+    public $save_queries;
 
     public function __construct(Connection $connection)
     {

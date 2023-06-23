@@ -38,6 +38,26 @@
     <p>Image tag as pair (outside img, single quotes)</p>
     {news_image}<img src='{url}'>{/news_image}
 </div>
+<div id="img-modifiers-pair-1">
+    <p>Image info as pair with modifier used twice, no tag</p>
+    <div>{news_image}src="{news_image:thumb}" data-src="{news_image:thumb}"{/news_image}</div>
+</div>
+<div id="img-modifiers-pair-2">
+    <p>Image info as pair with modifier used twice, with other attributes</p>
+    <div>{news_image}alt="{description}" src="{news_image:thumb}" data-src="{news_image:thumb}"{/news_image}</div>
+</div>
+<div id="img-modifiers-pair-3">
+    <p>Image tag as pair with modifier used twice, with other attributes</p>
+    <div>{news_image}<IMG alt="{description}" data-something="{news_image:thumb}" src="{url}" data-src="{news_image:thumb}" />{/news_image}</div>
+</div>
+<div id="img-modifiers-pair-4">
+    <p>Image tag as pair with modifier used twice, with other attributes, multi line</p>
+    <div>{news_image}
+        <IMG alt="{description}" data-something="{news_image:thumb}" 
+        src="{url}" data-src="{news_image:thumb}" />
+        {/news_image}
+    </div>
+</div>
 <div id="attr-tag-bg">
     <p>CSS background, single tag</p>
     <div id="top" class="hero-container valign-middle" style="height: 100px; background-image:url('{news_image}')"></div>
@@ -54,5 +74,30 @@
 <div id="attr-tag-pair-bg-3">
     <p>CSS background, tag pair wrapped around attribute</p>
     <div id="top" class="hero-container valign-middle"{news_image} style="height: 100px; background-image:url('{url}')"{/news_image}></div>
+</div>
+{/exp:channel:entries}
+
+<hr>
+
+{exp:channel:entries dynamic="no" entry_id="2" limit="1"}
+<div id="img-modifiers-pair-11">
+    <p>Image info as pair with modifier used twice, no tag</p>
+    <div>{news_image}src="{news_image:thumb}" data-src="{news_image:thumb}"{/news_image}</div>
+</div>
+<div id="img-modifiers-pair-12">
+    <p>Image info as pair with modifier used twice, with other attributes</p>
+    <div>{news_image}alt="{description}" src="{news_image:thumb}" data-src="{news_image:thumb}"{/news_image}</div>
+</div>
+<div id="img-modifiers-pair-13">
+    <p>Image tag as pair with modifier used twice, with other attributes</p>
+    <div>{news_image}<IMG alt="{description}" data-something="{news_image:thumb}" src="{url}" data-src="{news_image:thumb}" />{/news_image}</div>
+</div>
+<div id="img-modifiers-pair-14">
+    <p>Image tag as pair with modifier used twice, with other attributes, multi line</p>
+    <div>{news_image}
+        <IMG alt="{description}" data-something="{news_image:thumb}" 
+        src="{url}" data-src="{news_image:thumb}" />
+        {/news_image}
+    </div>
 </div>
 {/exp:channel:entries}

@@ -176,7 +176,8 @@ var Dropdown = /*#__PURE__*/function (_React$Component) {
         },
         name: this.props.name,
         value: this.state.selected ? this.state.selected.value : '',
-        "data-group-toggle": this.props.groupToggle ? JSON.stringify(this.props.groupToggle) : '[]'
+        "data-group-toggle": this.props.groupToggle ? JSON.stringify(this.props.groupToggle) : '[]',
+        disabled: this.props.disabledInput ? 'disabled' : null
       })), selected && this.props.name.includes('[condition_field_id]') && React.createElement("span", {
         className: "tooltiptext"
       }, "".concat(selected.label.replace(/<.*/g, ""), " ").concat(selected.label.match(/(?:\{).+?(?:\})/g)))), React.createElement("div", {
@@ -209,6 +210,10 @@ var Dropdown = /*#__PURE__*/function (_React$Component) {
 
         if (window.selectedFolder) {
           props.selected = window.selectedFolder;
+        }
+
+        if ($(this).parents('tr.hidden').length) {
+          props.disabledInput = true;
         }
 
         ReactDOM.render(React.createElement(FilterableDropdown, props, null), this);

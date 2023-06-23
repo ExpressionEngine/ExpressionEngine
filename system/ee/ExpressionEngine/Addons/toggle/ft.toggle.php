@@ -196,6 +196,16 @@ class Toggle_ft extends EE_Fieldtype
     {
         $all = array_merge($this->settings_vars, $data);
 
+        if (is_null($this->field_id)) {
+            ee('CP/Alert')->makeInline('search-reindex')
+                ->asImportant()
+                ->withTitle(lang('search_reindex_tip'))
+                ->addToBody(sprintf(lang('search_reindex_tip_desc'), ee('CP/URL')->make('utilities/reindex')->compile()))
+                ->defer();
+
+            ee()->config->update_site_prefs(['search_reindex_needed' => ee()->localize->now], 0);
+        }
+
         return array_intersect_key($all, $this->settings_vars);
     }
 

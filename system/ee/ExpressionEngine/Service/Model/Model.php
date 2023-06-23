@@ -858,8 +858,8 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
         $events = array_flip($events);
 
         if (isset($events[$event])) {
-            $method = 'on' . ucfirst($event);
-            forward_static_call_array('static::' . $method, $args);
+            $method = '::on' . ucfirst($event);
+            forward_static_call_array(static::class . $method, $args);
         }
 
         // Extension hook

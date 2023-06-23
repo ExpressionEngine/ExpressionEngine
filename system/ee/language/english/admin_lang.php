@@ -500,7 +500,7 @@ $lang = array(
 
     'manual_close' => 'Manual',
 
-    'max_caches' => 'Maximum Number of Cachable URIs',
+    'max_caches' => 'Maximum Number of Cacheable URIs',
 
     'max_caches_explanation' => 'If you cache your pages or database, this limits the number of cache instances. We recommend 150 for small sites and 300 for large sites. The allowed maximum is 1000.',
 
