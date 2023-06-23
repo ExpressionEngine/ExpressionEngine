@@ -1092,29 +1092,23 @@ class Members extends CP_Controller
      */
     public function heirFilter($group_ids = null, $selected = null)
     {
-        $search_term = ee('Request')->get('search') ?: '';
-        $group_ids = $group_ids ?: explode('|', ee('Request')->get('group_ids'));
         $selected = $selected ?: explode('|', ee('Request')->get('selected'));
 
-        $members = ee('Model')->get('Member')
-            ->fields('screen_name', 'username')
-            ->search(
-                ['screen_name', 'username', 'email', 'member_id'],
-                $search_term
-            )
-            ->filter('role_id', 'IN', $group_ids)
-            ->filter('member_id', 'NOT IN', $selected)
-            ->order('screen_name')
-            ->limit(100)
-            ->all();
+        $search = null;
+        if (!empty(ee('Request')->get('search'))) {
+            $search = ee('Request')->get('search');
+        }
+        $authors = ee('Member')->getAuthors($search);
 
-        $heirs = [];
-        foreach ($members as $heir) {
-            $name = ($heir->screen_name != '') ? 'screen_name' : 'username';
-            $heirs[$heir->getId()] = $heir->$name;
+        if (!empty($selected)) {
+            foreach ($selected as $selectedMemberId) {
+                if (array_key_exists($selectedMemberId, $authors)) {
+                    unset($authors[$selectedMemberId]);
+                }
+            }
         }
 
-        return ee('View/Helpers')->normalizedChoices($heirs);
+        return ee('View/Helpers')->normalizedChoices($authors);
     }
 
     /**

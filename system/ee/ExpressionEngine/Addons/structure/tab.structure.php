@@ -52,6 +52,23 @@ class Structure_tab
         return $settings;
     }
 
+    public function renderTableCell($data, $field_id, $entry)
+    {
+        $site_pages = $this->sql->get_site_pages(true);
+        $uri = array_key_exists($entry->entry_id, $site_pages['uris']) ? $site_pages['uris'][$entry->entry_id] : '';
+        if (!empty($uri)) {
+            return '<a href="' . Structure_Helper::remove_double_slashes(ee()->functions->fetch_site_index(0, 0) . $uri) . '" target="_blank"><i class="fal fa-link"></i></a>';
+        }
+        return '';
+    }
+
+    public function getTableColumnConfig()
+    {
+        return [
+            'encode' => false
+        ];
+    }
+
     public function display($channel_id, $entry_id = '')
     {
         return $this->publish_tabs($channel_id, $entry_id);

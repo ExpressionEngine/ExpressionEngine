@@ -13,6 +13,10 @@
  */
 class EE_Route_segment_part
 {
+    public $name = '';
+    public $rules = array();
+    public $value;
+
     public function __construct($name, $rules = array())
     {
         $this->name = $name;

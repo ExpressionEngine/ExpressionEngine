@@ -180,6 +180,12 @@ class Settings extends CP_Controller
             }
         }
 
+        // Any values that are strictly a false boolean should be ignored as this
+        // is only possible as output from ee()->input->post() when a value wasn't sent
+        $fields = array_filter($fields, function ($value) {
+            return $value !== false;
+        });
+
         $config_update = ee()->config->update_site_prefs($fields);
 
         if (! empty($config_update)) {

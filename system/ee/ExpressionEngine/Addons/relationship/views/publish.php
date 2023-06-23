@@ -19,6 +19,7 @@ $component = [
     'channels' => $channels,
     'channelsForNewEntries' => isset($channelsForNewEntries) ? $channelsForNewEntries : [],
     'display_entry_id' => $display_entry_id,
+    'display_status' => $display_status,
     'rel_min' => $rel_min,
     'rel_max' => $rel_max,
 ];
@@ -41,10 +42,19 @@ $placeholder = '<label class="field-loading">' . lang('loading') . '<span></span
 if ($deferred) {
     echo '<div class="react-deferred-loading--relationship">';
 
+    $instructionsTemplate = '<div class="list-item__secondary">';
+    if ($display_entry_id) {
+        $instructionsTemplate .= '<span> #%d / </span>';
+    }
+    $instructionsTemplate .= '%s';
+    if ($display_status) {
+        $instructionsTemplate .= '<span class="status-indicator" style="border-color: #%s; color: #%s;">%s</span>';
+    }
+    $instructionsTemplate .= '</div>';
     $template = '<li class="list-item">
             <div class="list-item__content">
                 <div class="list-item__title">%s</div>
-                <div class="list-item__secondary">%s</div>
+                %s
             </div>
             <input type="hidden" name="%s" value="%d">
         </li>';
@@ -53,10 +63,24 @@ if ($deferred) {
     $placeholder = '';
 
     foreach ($selected as $relatedEntry) {
+        $instructionParams = [];
+        if ($display_entry_id) {
+            $instructionParams[] = $relatedEntry['value'];
+        }
+        $instructionParams[] = $relatedEntry['instructions'];
+        if ($display_status) {
+            $instructionParams[] = array_key_exists($relatedEntry['status'], $statuses) ? $statuses[$relatedEntry['status']] : '';
+            $instructionParams[] = array_key_exists($relatedEntry['status'], $statuses) ? $statuses[$relatedEntry['status']] : '';
+            $instructionParams[] = $relatedEntry['status'];
+        }
+        $instructionsRow = vsprintf(
+            $instructionsTemplate,
+            $instructionParams
+        );
         $items[] = sprintf(
             $template,
             $relatedEntry['label'],
-            $relatedEntry['instructions'],
+            $instructionsRow,
             $field_name . ($multi ? '[]' : ''),
             $relatedEntry['value']
         );

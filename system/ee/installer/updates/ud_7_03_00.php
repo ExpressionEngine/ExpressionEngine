@@ -27,8 +27,13 @@ class Updater
     {
         $steps = new \ProgressIterator(
             [
-                'addMemberRelationshipTable',
-                'addMembeFieldtype',
+                'addChannelProlet',
+                'addEnforceAutoUrlTitle',
+                'addWeekStartColForMembers',
+                'setWeekStartPreference',
+                'addFluidFieldGroups',
+                'addFieldGroupDescription',
+                'addFieldGroupShortname'
             ]
         );
 
@@ -39,102 +44,118 @@ class Updater
         return true;
     }
 
-    private function addMemberRelationshipTable()
+    private function addChannelProlet()
     {
-        if (ee()->db->table_exists('member_relationships')) {
-            return;
-        }
-
-        $fields = array(
-            'relationship_id' => array(
-                'type' => 'int',
-                'constraint' => 6,
-                'unsigned' => true,
-                'auto_increment' => true
-            ),
-            'parent_id' => array(
-                'type' => 'int',
-                'constraint' => 10,
-                'unsigned' => true,
-                'default' => 0
-            ),
-            'child_id' => array(
-                'type' => 'int',
-                'constraint' => 10,
-                'unsigned' => true,
-                'default' => 0
-            ),
-            'field_id' => array(
-                'type' => 'int',
-                'constraint' => 10,
-                'unsigned' => true,
-                'default' => 0
-            ),
-            'fluid_field_data_id' => array(
-                'type' => 'int',
-                'constraint' => 10,
-                'unsigned' => true,
-                'default' => 0
-            ),
-            'grid_field_id' => array(
-                'type' => 'int',
-                'constraint' => 10,
-                'unsigned' => true,
-                'default' => 0,
-                'null' => false
-            ),
-            'grid_col_id' => array(
-                'type' => 'int',
-                'constraint' => 10,
-                'unsigned' => true,
-                'default' => 0,
-                'null' => false
-            ),
-            'grid_row_id' => array(
-                'type' => 'int',
-                'constraint' => 10,
-                'unsigned' => true,
-                'default' => 0,
-                'null' => false
-            ),
-            'order' => array(
-                'type' => 'int',
-                'constraint' => 10,
-                'unsigned' => true,
-                'default' => 0
-            )
-        );
-
-        ee()->dbforge->add_field($fields);
-
-        // Worthless primary key
-        ee()->dbforge->add_key('relationship_id', true);
-
-        // Keyed table is keyed
-        ee()->dbforge->add_key('parent_id');
-        ee()->dbforge->add_key('child_id');
-        ee()->dbforge->add_key('field_id');
-        ee()->dbforge->add_key('fluid_field_data_id');
-        ee()->dbforge->add_key('grid_row_id');
-
-        ee()->dbforge->create_table('member_relationships');
+        $channelModule = ee('pro:Addon')->get('channel');
+        $channelModule->updateProlets();
     }
 
-    private function addMembeFieldtype()
+    private function addEnforceAutoUrlTitle()
     {
-        if (ee()->db->where('name', 'member')->get('fieldtypes')->num_rows() > 0) {
-            return;
+        if (!ee()->db->field_exists('enforce_auto_url_title', 'channels')) {
+            ee()->smartforge->add_column(
+                'channels',
+                array(
+                    'enforce_auto_url_title' => array(
+                        'type' => 'CHAR(1)',
+                        'null' => false,
+                        'default' => 'n'
+                    )
+                )
+            );
+        }
+    }
+
+    private function addWeekStartColForMembers()
+    {
+        if (! ee()->db->field_exists('week_start', 'members')) {
+            ee()->smartforge->add_column(
+                'members',
+                [
+                    'week_start' => [
+                        'type' => 'varchar',
+                        'constraint' => 8,
+                        'null' => true
+                    ]
+                ],
+                'date_format'
+            );
+        }
+    }
+
+    private function addFluidFieldGroups()
+    {
+        if (!ee()->db->field_exists('field_group_id', 'fluid_field_data')) {
+            ee()->smartforge->add_column(
+                'fluid_field_data',
+                array(
+                    'field_group_id' => [
+                        'type' => 'int',
+                        'unsigned' => true,
+                        'null' => true,
+                        'default' => null
+                    ],
+                    'group' => [
+                        'type' => 'int',
+                        'unsigned' => true,
+                        'null' => true,
+                        'default' => null
+                    ]
+                )
+            );
+        }
+    }
+
+    private function setWeekStartPreference()
+    {
+        ee('Model')->make('Config', [
+            'site_id' => 0,
+            'key' => 'week_start',
+            'value' => 'sunday'
+        ])->save();
+    }
+
+    private function addFieldGroupDescription()
+    {
+        if (!ee()->db->field_exists('group_description', 'field_groups')) {
+            ee()->smartforge->add_column(
+                'field_groups',
+                [
+                    'group_description' => [
+                        'type' => 'text',
+                        'null' => true,
+                        'default' => null
+                    ]
+                ]
+            );
+        }
+    }
+
+    private function addFieldGroupShortname()
+    {
+        if (!ee()->db->field_exists('short_name', 'field_groups')) {
+            ee()->smartforge->add_column(
+                'field_groups',
+                [
+                    'short_name' => [
+                        'type' => 'text',
+                        'null' => false,
+                    ]
+                ]
+            );
         }
 
-        ee()->db->insert(
-            'fieldtypes',
-            array(
-                'name' => 'member',
-                'version' => '2.4.0',
-                'settings' => base64_encode(serialize(array())),
-                'has_global_settings' => 'n'
-            )
-        );
+        // loop through all field groups and set shortname to group name
+        $field_groups = ee('db')->get('field_groups');
+        if ($field_groups->num_rows() > 0) {
+            foreach ($field_groups->result() as $field_group) {
+                if (empty($field_group->short_name)) {
+                    // change all spaces to underscores
+                    $short_name = substr('field_group_' . preg_replace('/\s+/', '_', strtolower($field_group->group_name)), 0, 50);
+                    ee('db')->set(['short_name' => $short_name])->where('group_id', $field_group->group_id)->update('field_groups');
+                }
+            }
+        }
     }
 }
 

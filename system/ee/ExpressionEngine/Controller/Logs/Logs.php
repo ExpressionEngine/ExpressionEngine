@@ -112,7 +112,7 @@ class Logs extends CP_Controller
         $query = ee('Model')->get($model, $id);
 
         $count = $query->count();
-        $query->all()->delete();
+        $query->delete();
 
         $message = sprintf(lang('logs_deleted_desc'), $count, lang($log_type));
 
