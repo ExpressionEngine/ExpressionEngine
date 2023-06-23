@@ -258,10 +258,12 @@ class Member_memberlist extends Member
 
         // Find out if we have sub-tag data for our `member_rows` tag. If not, use the legacy speciality template.
         if (strpos($template, '{/member_rows}') !== false) {
-            $member_rows_tag_length = strlen(LD . 'member_rows' . RD);
+
+            $member_rows_opening = ee('Variables/Parser')->getFullTag($template, 'member_rows');
+            $member_rows_tag_length = strlen(LD . $member_rows_opening);
 
             // Find the starting and ending position of our subtag and calculate the difference so we can grab it.
-            $member_rows_start = strpos($template, LD . 'member_rows' . RD) + $member_rows_tag_length;
+            $member_rows_start = strpos($template, LD . $member_rows_opening) + $member_rows_tag_length;
             $member_rows_end = strpos($template, LD . '/member_rows' . RD);
             $member_rows_diff = $member_rows_end - $member_rows_start;
 
@@ -887,12 +889,12 @@ class Member_memberlist extends Member
             $template = str_replace(LD . "form:form_declaration:do_member_search" . RD, $form_open_member_search, $template);
         }
 
-        if (! empty($member_rows_diff)) {
-            $member_rows_start = strpos($template, LD . 'member_rows' . RD);
-            $member_rows_end = strpos($template, LD . '/member_rows' . RD) + $member_rows_tag_length + 1;
-            $member_rows_diff = $member_rows_end - $member_rows_start;
-
-            $template = substr_replace($template, $str, $member_rows_start, $member_rows_diff);
+        if (isset($member_rows_diff) && ! empty($member_rows_diff)) {
+            $params = ee('Variables/Parser')->parseTagParameters($member_rows_opening);
+            if (isset($params['backspace']) && is_numeric($params['backspace'])) {
+                $str = substr($str, 0, - $params['backspace']);
+            }
+            $template = str_replace(LD . $member_rows_opening . $memberlist_rows . LD . '/member_rows' . RD, $str, $template);
         } else {
             $template = str_replace(LD . "member_rows" . RD, $str, $template);
         }
