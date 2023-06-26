@@ -24,7 +24,7 @@ class Csrf
 
     public function __construct()
     {
-        $session_id = ee()->session->userdata('session_id');
+        $session_id = isset(ee()->session) ? ee()->session->userdata('session_id') : 0;
         $backend = ($session_id === 0) ? 'cookie' : 'database';
 
         require_once APPPATH . 'libraries/csrf/Storage_backend_interface.php';

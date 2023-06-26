@@ -342,7 +342,7 @@ class EE_Template
             'template_id' => $this->template_id,
             'template_type' => $this->embed_type ?: $this->template_type,
             'is_ajax_request' => AJAX_REQUEST,
-            'is_live_preview_request' => ee('LivePreview')->hasEntryData(),
+            'is_live_preview_request' => isset(ee()->session) ? ee('LivePreview')->hasEntryData() : false,
         ];
 
         //Pro conditionals
@@ -449,7 +449,7 @@ class EE_Template
         }
 
         // Parse error conditinal tags
-        $errors = ee()->session->flashdata('errors');
+        $errors = isset(ee()->session) ? ee()->session->flashdata('errors') : [];
 
         // Make sure to age the flashdata so it doesn't appear on the next request accidentally.
         // ee()->session->_age_flashdata();
@@ -2239,10 +2239,10 @@ class EE_Template
         else {
             if ($query->num_rows() > 1) {
                 $duplicate = true;
-                $log_message = "Duplicate Template Group: " . ee()->uri->segment(1);
+                $this->log_item("Duplicate Template Group: " . ee()->uri->segment(1));
             } else {
                 $duplicate = false;
-                $log_message = "Template group and template not found, showing 404 page";
+                $this->log_item("Template group and template not found, showing 404 page");
             }
 
             // If we are enforcing strict URLs we need to show a 404
@@ -3064,7 +3064,9 @@ class EE_Template
         // Restore XML declaration if it was encoded
         $str = $this->restore_xml_declaration($str);
 
-        ee()->session->userdata['member_group'] = ee()->session->userdata['role_id'];
+        if (isset(ee()->session)) {
+            ee()->session->userdata['member_group'] = ee()->session->userdata['role_id'];
+        }
         $this->user_vars[] = 'member_group';
 
         // parse all standard global variables
@@ -4398,9 +4400,9 @@ class EE_Template
 
     protected function getMemberVariables()
     {
-        static $vars;
+        static $vars = [];
 
-        if (empty($vars)) {
+        if (empty($vars) && isset(ee()->session)) {
             foreach ($this->user_vars as $user_var) {
                 $vars['logged_in_' . $user_var] = ee()->session->userdata[$user_var];
             }
