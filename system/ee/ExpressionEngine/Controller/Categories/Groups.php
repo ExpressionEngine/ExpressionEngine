@@ -195,7 +195,7 @@ class Groups extends AbstractCategoriesController
             unset($vars['buttons'][2]);
         }
 
-        if (! $cat_group->isNew()) {
+        if (! $cat_group->isNew() && !AJAX_REQUEST) {
             $vars['tabs']['fields'] = $this->renderFieldsTab($cat_group, $errors);
 
             ee()->javascript->set_global([

@@ -577,7 +577,7 @@ class SelectItem extends React.Component {
           <a href="" className={'button button--default flyout-' + item} onClick={(e) => this.bindToggleChange(e, props.item)} disabled = {checked ? false : true}>{EE.lang[item]} <i class="fa-solid fa-toggle-on"></i></a>
         )}
         {props.editable && (
-          <a href="" className="button button--default flyout-edit flyout-edit-icon"><i class="fal fa-pencil-alt"></i></a>
+          <a href="" className="button button--default flyout-edit flyout-edit-icon" data-id={props.item.value}><i class="fal fa-pencil-alt"></i></a>
         )}
         {props.removable && (
             <a href="" className="button button--default js-button-delete" onClick={(e) => props.handleRemove(e, props.item)}><i class="fal fa-fw fa-trash-alt"></i></a>

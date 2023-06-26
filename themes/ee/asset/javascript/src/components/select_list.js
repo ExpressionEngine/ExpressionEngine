@@ -671,7 +671,8 @@ var SelectItem = /*#__PURE__*/function (_React$Component2) {
         }));
       }), props.editable && React.createElement("a", {
         href: "",
-        className: "button button--default flyout-edit flyout-edit-icon"
+        className: "button button--default flyout-edit flyout-edit-icon",
+        "data-id": props.item.value
       }, React.createElement("i", {
         "class": "fal fa-pencil-alt"
       })), props.removable && React.createElement("a", {
