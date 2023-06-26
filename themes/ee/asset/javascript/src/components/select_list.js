@@ -441,8 +441,7 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
             return props.handleRemove(e, item);
           },
           groupToggle: props.groupToggle,
-          catRequired: props.cat_required,
-          catMultiple: props.cat_allow_multiple
+          toggles: props.toggles
         });
       })), !props.multi && props.tooMany && props.selected[0] && React.createElement(SelectedItem, {
         item: this.getFullItem(props.selected[0]),
@@ -460,28 +459,6 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
           type: "hidden",
           key: item.value,
           name: props.multi ? props.name + '[]' : props.name,
-          value: item.value,
-          ref: function ref(input) {
-            _this8.input = input;
-          }
-        });
-      }), !props.jsonify && props.cat_allow_multiple && props.selected.map(function (item) {
-        return React.createElement("input", {
-          type: "hidden",
-          className: "cat_allow_multiple",
-          key: item.value,
-          name: props.multi ? 'cat_allow_multiple[]' : 'cat_allow_multiple',
-          value: item.value,
-          ref: function ref(input) {
-            _this8.input = input;
-          }
-        });
-      }), !props.jsonify && props.cat_required && props.selected.map(function (item) {
-        return React.createElement("input", {
-          type: "hidden",
-          className: "cat_required",
-          key: item.value,
-          name: props.multi ? 'cat_required[]' : 'cat_required',
           value: item.value,
           ref: function ref(input) {
             _this8.input = input;
@@ -513,8 +490,10 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
             label: ''
           });
         } else {
-          // When formatting selected items lists, selections will likely be a flat
+          console.log(items[key]);
+          console.log(items[key].toggles); // When formatting selected items lists, selections will likely be a flat
           // array of values for multi select
+
           var value = multi ? items[key] : key;
           var newItem = {
             value: items[key].value || items[key].value === '' ? items[key].value : value,
@@ -527,8 +506,7 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
             entry_id: items[key].entry_id ? items[key].entry_id : '',
             upload_location_id: items[key].upload_location_id ? items[key].upload_location_id : '',
             path: items[key].path ? items[key].path : '',
-            cat_required: items[key].cat_required ? items[key].cat_required : null,
-            cat_allow_multiple: items[key].cat_allow_multiple ? items[key].cat_allow_multiple : null
+            cat_toggles: items[key].toggles ? items[key].toggles : null
           };
 
           if (items[key].children) {
@@ -626,19 +604,12 @@ var SelectItem = /*#__PURE__*/function (_React$Component2) {
       });
     }
   }, {
-    key: "bindMakeRequired",
-    value: function bindMakeRequired(e, value) {
+    key: "bindToggleChange",
+    value: function bindToggleChange(e, value) {
       e.preventDefault();
       $(e.target).toggleClass('active');
       $(e.target).find('i').toggleClass('fa-toggle-on fa-toggle-off');
       console.log('value', value);
-    }
-  }, {
-    key: "bindAllowMultiple",
-    value: function bindAllowMultiple(e, value) {
-      e.preventDefault();
-      $(e.target).toggleClass('active');
-      $(e.target).find('i').toggleClass('fa-toggle-on fa-toggle-off');
     }
   }, {
     key: "render",
@@ -687,27 +658,18 @@ var SelectItem = /*#__PURE__*/function (_React$Component2) {
         className: "meta-info"
       }, props.item.instructions), React.createElement("div", {
         "class": "button-group button-group-xsmall button-group-flyout-right"
-      }, props.catMultiple && React.createElement("a", {
-        href: "",
-        className: "button button--default flyout-cat_allow_multiple active",
-        onClick: function onClick(e) {
-          return _this9.bindAllowMultiple(e, props.item);
-        },
-        "data-cat_allow_multiple": true,
-        disabled: checked ? false : true
-      }, EE.lang.cat_allow_multiple, " ", React.createElement("i", {
-        "class": "fa-solid fa-toggle-on"
-      })), props.catRequired && React.createElement("a", {
-        href: "",
-        className: "button button--default flyout-cat_required",
-        onClick: function onClick(e) {
-          return _this9.bindMakeRequired(e, props.item);
-        },
-        "data-cat_required": true,
-        disabled: checked ? false : true
-      }, EE.lang.cat_required, " ", React.createElement("i", {
-        "class": "fa-solid fa-toggle-off"
-      })), props.editable && React.createElement("a", {
+      }, props.toggles && props.toggles.length != 0 && props.toggles.map(function (item, index) {
+        return React.createElement("a", {
+          href: "",
+          className: 'button button--default flyout-' + item,
+          onClick: function onClick(e) {
+            return _this9.bindToggleChange(e, props.item);
+          },
+          disabled: checked ? false : true
+        }, EE.lang[item], " ", React.createElement("i", {
+          "class": "fa-solid fa-toggle-on"
+        }));
+      }), props.editable && React.createElement("a", {
         href: "",
         className: "button button--default flyout-edit flyout-edit-icon"
       }, React.createElement("i", {

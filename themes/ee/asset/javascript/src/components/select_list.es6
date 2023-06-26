@@ -43,6 +43,8 @@ class SelectList extends React.Component {
           label: ''
         })
       } else {
+        console.log(items[key]);
+        console.log(items[key].toggles);
         // When formatting selected items lists, selections will likely be a flat
         // array of values for multi select
         var value = (multi) ? items[key] : key
@@ -57,8 +59,7 @@ class SelectList extends React.Component {
           entry_id: items[key].entry_id ? items[key].entry_id : '',
           upload_location_id: items[key].upload_location_id ? items[key].upload_location_id : '',
           path: items[key].path ? items[key].path : '',
-          // cat_required: items[key].cat_required ? items[key].cat_required : null,
-          // cat_allow_multiple: items[key].cat_allow_multiple ? items[key].cat_allow_multiple : null,
+          cat_toggles: items[key].toggles ? items[key].toggles : null
         }
 
         if (items[key].children) {
@@ -424,8 +425,7 @@ class SelectList extends React.Component {
               handleSelect={this.handleSelect}
               handleRemove={(e, item) => props.handleRemove(e, item)}
               groupToggle={props.groupToggle}
-              catRequired = {props.cat_required}
-              catMultiple = {props.cat_allow_multiple}
+              toggles = {props.toggles}
             />
           )}
         </FieldInputs>
@@ -446,18 +446,23 @@ class SelectList extends React.Component {
               ref={(input) => { this.input = input }} />
           )
         }
+
+
+        {/* CHANGE THIS CODE BASED ON TOOGLE PROPS*/}
         {/* Added allow_multiple hidden input for Channel Category page*/}
-        { ! props.jsonify && props.cat_allow_multiple && props.selected.map(item => 
+{/*        { ! props.jsonify && props.cat_allow_multiple && props.selected.map(item => 
           <input type="hidden" className="cat_allow_multiple"  key={item.value} name={props.multi ? 'cat_allow_multiple[]' : 'cat_allow_multiple'} value={item.value}
               ref={(input) => { this.input = input }} />
             )
-        }        
+        }   */}     
         {/* Added cat_required hidden input for Channel Category page*/}
-        { ! props.jsonify && props.cat_required && props.selected.map(item => 
+{/*        { ! props.jsonify && props.cat_required && props.selected.map(item => 
           <input type="hidden" className="cat_required"  key={item.value} name={props.multi ? 'cat_required[]' : 'cat_required'} value={item.value}
               ref={(input) => { this.input = input }} />
             )
-        }
+        }*/}
+
+
         {/* JSONified fields are using joined input */}
         { props.jsonify && props.selectable &&
           <input type="hidden"  name={props.name} value={JSON.stringify(values)}
@@ -522,17 +527,11 @@ class SelectItem extends React.Component {
     })
   }
 
-  bindMakeRequired (e, value) {
+  bindToggleChange (e, value) {
       e.preventDefault();
       $(e.target).toggleClass('active');
       $(e.target).find('i').toggleClass('fa-toggle-on fa-toggle-off');
       console.log('value', value);
-  }
-
-  bindAllowMultiple (e, value) {
-      e.preventDefault();
-      $(e.target).toggleClass('active');
-      $(e.target).find('i').toggleClass('fa-toggle-on fa-toggle-off');
   }
 
   render() {
@@ -574,11 +573,8 @@ class SelectItem extends React.Component {
           <span className="meta-info">{props.item.instructions}</span>
         )}
         <div class="button-group button-group-xsmall button-group-flyout-right">
-        {props.catMultiple && (
-          <a href="" className="button button--default flyout-cat_allow_multiple active" onClick={(e) => this.bindAllowMultiple(e, props.item)} data-cat_allow_multiple disabled = {checked ? false : true}>{EE.lang.cat_allow_multiple} <i class="fa-solid fa-toggle-on"></i></a>
-        )}
-        {props.catRequired && (
-          <a href="" className="button button--default flyout-cat_required" onClick={(e) => this.bindMakeRequired(e, props.item)} data-cat_required disabled = {checked ? false : true}>{EE.lang.cat_required} <i class="fa-solid fa-toggle-off"></i></a>
+        {props.toggles && props.toggles.length != 0 && props.toggles.map((item, index) =>
+          <a href="" className={'button button--default flyout-' + item} onClick={(e) => this.bindToggleChange(e, props.item)} disabled = {checked ? false : true}>{EE.lang[item]} <i class="fa-solid fa-toggle-on"></i></a>
         )}
         {props.editable && (
           <a href="" className="button button--default flyout-edit flyout-edit-icon"><i class="fal fa-pencil-alt"></i></a>
