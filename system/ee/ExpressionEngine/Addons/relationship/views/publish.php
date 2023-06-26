@@ -3,6 +3,9 @@
 if (empty($choices)) {
     return $this->embed('ee:_shared/form/no_results', $no_results);
 }
+if (!isset($display_status)) {
+    $display_status = false;
+}
 $component = [
     'items' => $choices,
     'selected' => $selected,

@@ -43,11 +43,17 @@ context('Member field', () => {
         cy.eeConfig({ item: 'show_profiler', value: 'n' })
     })
 
+    afterEach(function() {
+        cy.task('db:query', 'DELETE FROM exp_member_relationships;')
+    })
+
     context('regular member field', () => {
 
         // default, display_entry_id is Off, items haven't been added 
         it('saves member field', () => {
             cy.visit('admin.php?/cp/publish/edit/entry/1')
+
+            cy.hasNoErrors()
 
             // save relationship field together with member field
             cy.get('button:contains("Relate Entry")').first().click()
@@ -169,7 +175,6 @@ context('Member field', () => {
             cy.get('.app-notice---success').contains('Entry Updated');
             cy.get('button:contains("Relate Member")').should('not.be.visible')
             cy.hasNoErrors()
-
         })
 
         it('add button is visible when rel max is empty', () => {
@@ -183,6 +188,14 @@ context('Member field', () => {
             cy.hasNoErrors()
 
             cy.visit('admin.php?/cp/publish/edit/entry/1')
+            cy.get('button:contains("Relate Member")').should('be.visible')
+            cy.get('body').type('{ctrl}', {release: false}).type('s')
+            cy.get('.app-notice---success').contains('Entry Updated');
+            cy.get('button:contains("Relate Member")').should('be.visible')
+            cy.hasNoErrors()
+
+            cy.get('button:contains("Relate Member")').first().click()
+            cy.get('a.dropdown__link:contains("Member 1")').first().click();
             cy.get('button:contains("Relate Member")').should('be.visible')
             cy.get('body').type('{ctrl}', {release: false}).type('s')
             cy.get('.app-notice---success').contains('Entry Updated');
@@ -203,18 +216,17 @@ context('Member field', () => {
             cy.get('button:contains("Relate Member")').should('be.visible')
             cy.hasNoErrors()
 
-            cy.get('button:contains("Relate Member")').first().click()
-            cy.get('a.dropdown__link:contains("Member 1")').first().click();
-            cy.get('button:contains("Relate Member")').should('be.visible')
-            cy.get('body').type('{ctrl}', {release: false}).type('s')
-            cy.get('.app-notice---success').contains('Entry Updated');
-            cy.get('button:contains("Relate Member")').should('be.visible')
-            cy.hasNoErrors()
-
         })
 
         //  display_entry_id On, items have been added
         it('saves field with display member id', () => {
+            cy.visit('admin.php?/cp/publish/edit/entry/1')
+            cy.get('button:contains("Relate Member")').first().click()
+            cy.get('a.dropdown__link:contains("Member 1")').first().click();
+            cy.get('a.dropdown__link:contains("Member 2")').first().click();
+            cy.get('body').type('{ctrl}', {release: false}).type('s')
+            cy.get('.app-notice---success').contains('Entry Updated');
+
             cy.visit(field_url);
             cy.get('[data-toggle-for="display_member_id"]').click()
             cy.get('[data-toggle-for="allow_multiple"]').should('have.class', 'on')
@@ -293,6 +305,13 @@ context('Member field', () => {
 
         //  display_entry_id Off, items have been added
         it('saves member field without display member id', () => {
+            cy.visit('admin.php?/cp/publish/edit/entry/1')
+            cy.get('button:contains("Relate Member")').first().click()
+            cy.get('a.dropdown__link:contains("Member 1")').first().click();
+            cy.get('a.dropdown__link:contains("Member 2")').first().click();
+            cy.get('body').type('{ctrl}', {release: false}).type('s')
+            cy.get('.app-notice---success').contains('Entry Updated');
+
             cy.visit(field_url);
             cy.get('[data-toggle-for="display_member_id"]').click()
             cy.get('[data-toggle-for="display_member_id"]').should('have.class', 'on')
@@ -313,13 +332,6 @@ context('Member field', () => {
 
         // default, defer field initialization Off
         it('defer field initialization off', () => {
-            cy.visit('admin.php?/cp/publish/edit/entry/1')
-            cy.get('[data-relationship-react] .list-item__title:contains("Member 2")').should('exist')
-            cy.get('[data-relationship-react] .list-item__title:contains("Member 2")').closest('.list-item').find('[title="Remove"]').click()
-            cy.get('[data-relationship-react] .list-item__title:contains("Member 1")').should('exist')
-            cy.get('[data-relationship-react] .list-item__title:contains("Member 1")').closest('.list-item').find('[title="Remove"]').click()
-            cy.get('body').type('{ctrl}', {release: false}).type('s')
-
             cy.visit(field_url);
             cy.get('[data-toggle-for="allow_multiple"]').should('have.class', 'on')
             cy.get('[name="rel_min"]').should('be.visible');
@@ -438,13 +450,16 @@ context('Member field', () => {
             cy.visit('admin.php?/cp/fields/groups/edit/1')
             cy.get('.lots-of-checkboxes .checkbox-label__text div:contains("Stupid Grid")').first().click()
             cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+            cy.visit('admin.php?/cp/publish/edit/entry/1')
+            cy.get('.grid-field a:contains("Add new row")').first().click()
+            cy.get('body').type('{ctrl}', {release: false}).type('s')
         })
 
         // default, display_entry_id is Off, items haven't been added 
         it('check relationship field in grid', () => {
 
             cy.visit('admin.php?/cp/publish/edit/entry/1')
-            cy.get('.grid-field a:contains("Add new row")').first().click()
             cy.get('.grid-field tr:not(.hidden) button:contains("Relate Member")').first().click()
 
             cy.get('.grid-field tr:not(.hidden) a.dropdown__link:contains("Pending")').should('not.exist')
@@ -474,17 +489,7 @@ context('Member field', () => {
             cy.get('body').type('{ctrl}', {release: false}).type('s')
 
             cy.visit('admin.php?/cp/publish/edit/entry/1')
-            cy.get('.grid-field tr:not(.hidden) [data-relationship-react] .list-item__title:contains("Member 1")').closest('.list-item').find('[title="Remove"]').click()
-            cy.get('.grid-field tr:not(.hidden) .list-item__title:contains("Member 2")').closest('.list-item').find('[title="Remove"]').click()
-
-            cy.get('.grid-field [data-relationship-react] .list-item__title:contains("Member 2")').should('not.exist')
-            cy.get('.grid-field [data-relationship-react] .list-item__title:contains("Member 1!")').should('not.exist')
             cy.get('.grid-field tr:not(.hidden) button:contains("Relate Member")').should('be.visible')
-            cy.get('body').type('{ctrl}', {release: false}).type('s')
-            cy.get('.app-notice---success').contains('Entry Updated');
-            cy.get('.grid-field tr:not(.hidden) button:contains("Relate Member")').should('be.visible')
-            cy.hasNoErrors()
-
             cy.get('.grid-field tr:not(.hidden) a.dropdown__link:contains("Member 2")').first().click({force: true});
             cy.get('.grid-field tr:not(.hidden) a.dropdown__link:contains("Member 1")').first().click({force: true});
             cy.get('.grid-field tr:not(.hidden) button:contains("Relate Member")').should('not.be.visible')
@@ -523,17 +528,7 @@ context('Member field', () => {
             cy.get('body').type('{ctrl}', {release: false}).type('s')
 
             cy.visit('admin.php?/cp/publish/edit/entry/1')
-            cy.get('.grid-field tr:not(.hidden) [data-relationship-react] .list-item__title:contains("Member 1")').closest('.list-item').find('[title="Remove"]').click()
-            cy.get('.grid-field tr:not(.hidden) .list-item__title:contains("Member 2")').closest('.list-item').find('[title="Remove"]').click()
-
-            cy.get('.grid-field [data-relationship-react] .list-item__title:contains("Member 2")').should('not.exist')
-            cy.get('.grid-field [data-relationship-react] .list-item__title:contains("Member 1!")').should('not.exist')
             cy.get('.grid-field tr:not(.hidden) button:contains("Relate Member")').should('be.visible')
-            cy.get('body').type('{ctrl}', {release: false}).type('s')
-            cy.get('.app-notice---success').contains('Entry Updated');
-            cy.get('.grid-field tr:not(.hidden) button:contains("Relate Member")').should('be.visible')
-            cy.hasNoErrors()
-
             cy.get('.grid-field tr:not(.hidden) a.dropdown__link:contains("Member 2")').first().click({force: true});
             cy.get('.grid-field tr:not(.hidden) a.dropdown__link:contains("Member 1")').first().click({force: true});
             cy.get('.grid-field tr:not(.hidden) button:contains("Relate Member")').should('be.visible')
@@ -572,6 +567,13 @@ context('Member field', () => {
 
         //	display_entry_id On, items have been added
         it('check field with display member id in grid', () => {
+            cy.visit('admin.php?/cp/publish/edit/entry/1')
+            cy.get('.grid-field tr:not(.hidden) button:contains("Relate Member")').first().click({force: true})
+            cy.get('.grid-field tr:not(.hidden) a.dropdown__link:contains("Member 1")').first().click({force: true});
+            cy.get('.grid-field tr:not(.hidden) a.dropdown__link:contains("Member 2")').first().click({force: true});
+            cy.get('body').type('{ctrl}', {release: false}).type('s')
+            cy.get('.app-notice---success').contains('Entry Updated');
+
             cy.visit('admin.php?/cp/fields/edit/19');
             cy.get('.fields-grid-item:last-child .fields-grid-tool-expand').first().click()
             cy.get('[data-toggle-for="display_member_id"]').first().click()
@@ -592,6 +594,13 @@ context('Member field', () => {
 
         //  display_entry_id Off, items have been added
         it('check field without display member id in grid', () => {
+            cy.visit('admin.php?/cp/publish/edit/entry/1')
+            cy.get('.grid-field tr:not(.hidden) button:contains("Relate Member")').first().click({force: true})
+            cy.get('.grid-field tr:not(.hidden) a.dropdown__link:contains("Member 1")').first().click({force: true});
+            cy.get('.grid-field tr:not(.hidden) a.dropdown__link:contains("Member 2")').first().click({force: true});
+            cy.get('body').type('{ctrl}', {release: false}).type('s')
+            cy.get('.app-notice---success').contains('Entry Updated');
+
             cy.visit('admin.php?/cp/fields/edit/19');
             cy.get('.fields-grid-item:last-child .fields-grid-tool-expand').first().click()
             cy.get('[data-toggle-for="display_member_id"]').first().click()
@@ -621,14 +630,6 @@ context('Member field', () => {
             cy.get('body').type('{ctrl}', {release: false}).type('s')
 
             cy.visit('admin.php?/cp/publish/edit/entry/1')
-            cy.get('.grid-field tr:not(.hidden) [data-relationship-react] button:contains("Edit Relationships")').should('be.visible')
-            cy.get('.grid-field tr:not(.hidden) [data-relationship-react] button:contains("Edit Relationships")').first().click()
-            cy.get('.grid-field tr:not(.hidden) [data-relationship-react] .list-item__title:contains("Member 2")').closest('.list-item').find('[title="Remove"]').click()
-            cy.get('.grid-field tr:not(.hidden) [data-relationship-react] .list-item__title:contains("Member 2")').should('not.exist')
-            cy.get('.grid-field tr:not(.hidden) [data-relationship-react] .list-item__title:contains("Member 1")').closest('.list-item').find('[title="Remove"]').click()
-            cy.get('.grid-field tr:not(.hidden) [data-relationship-react] .list-item__title:contains("Member 1")').should('not.exist')
-            cy.get('body').type('{ctrl}', {release: false}).type('s')
-            cy.get('.app-notice---success').contains('Entry Updated');
             cy.get('[name=title]').invoke('val').should('eq', "Getting to Know ExpressionEngine")
             cy.get('[name=field_id_1]').invoke('val').should('contain', "Thank you for choosing ExpressionEngine!")
             cy.get('[name=field_id_3]').invoke('val').should('eq', "{filedir_2}ee_banner_120_240.gif");
