@@ -207,7 +207,7 @@ $lang = array(
 
     'toolset_builder_instructions' => 'Select one or more tools and drag them to the desired location.',
 
-    'toolset_builder_label' => 'Which tools should be availble in this Tool set?',
+    'toolset_builder_label' => 'Which tools should be available in this Tool set?',
 
     'toolset_name' => 'Tool set Name',
 

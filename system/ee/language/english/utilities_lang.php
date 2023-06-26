@@ -106,7 +106,9 @@ $lang = array(
     'view_email_cache' => 'Sent Emails',
 
     /* CP Translation */
-    'cannot_access' => 'Language files cannot be accessed. Please <a href="' . DOC_URL . '/control-panel/utilities.html#language-files" rel="external">consult documentation</a> on placing the files into right folder.',
+    'cannot_access' => 'Language files cannot be accessed.',
+
+    'cannot_access_translation_desc' => 'Translation files need to be placed in <code>system/user/language/%s</code> folder and need to have write permissions.',
 
     'cannot_create_zip' => 'Cannot create a .zip file',
 
@@ -147,7 +149,7 @@ $lang = array(
 
     'field_conditions_sync_existing_entries' => 'Existing entries',
 
-    'field_conditions_sync_desc' => 'Syncing <b>%d</b> entries from channnels: %s',
+    'field_conditions_sync_desc' => 'Syncing <b>%d</b> entries from channels: %s',
 
     'field_conditions_syncing_conditional_logic' => 'Syncing Conditional Logic',
 
@@ -502,7 +504,7 @@ $lang = array(
 
     'update_file_usage' => 'Update File Usage',
 
-    'update_file_usage_explained_desc' => 'Run this utility to convert all files stored in the database from sites previous to ExpressionEngine 7 to the new ExpressionEngine 7 file format. This must be completed before newer File Manager features may be used. <a href="%s">Read more on Compatiblity Mode in the docs</a> <br /><br />
+    'update_file_usage_explained_desc' => 'Run this utility to convert all files stored in the database from sites previous to ExpressionEngine 7 to the new ExpressionEngine 7 file format. This must be completed before newer File Manager features may be used. <a href="%s">Read more on Compatibility Mode in the docs</a> <br /><br />
 
     It is recommended that you make sure all installed add-ons are compatible with ExpressionEngine 7 and newer, and that you have made a <a href="%s">backup of your database</a> first.<br /><br />
     
@@ -524,7 +526,7 @@ $lang = array(
 
     'file_manager_compatibility_mode_warning_desc' => 'ExpressionEngine 7.0 changes the way data is stored for files. These changes can cause issues with third-party add-ons that are incompatible the new File Manager.<br /><br />
 
-    To prevent unexpected issues, we have disabled some features by setting File Manager to run in Compatibility Mode. <a href="%s">Read more on Compatiblity Mode in the docs</a><br /><br />
+    To prevent unexpected issues, we have disabled some features by setting File Manager to run in Compatibility Mode. <a href="%s">Read more on Compatibility Mode in the docs</a><br /><br />
 
 Once you are ready to experience the new File Manager features, please run the <a href="%s">Update File Usage</a> Utility and then visit <a href="%s">Content & Design Settings</a> to disable Compatibility Mode.',
 

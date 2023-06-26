@@ -94,10 +94,6 @@ class Edit extends AbstractPublishController
         }
         $columns = array_filter($columns);
 
-        if (! ee('Permission')->hasAny($this->permissions['others'])) {
-            $entries->filter('author_id', ee()->session->userdata('member_id'));
-        }
-
         $count = $entry_listing->getEntryCount();
 
         // if no entries check to see if we have any channels
@@ -378,7 +374,7 @@ class Edit extends AbstractPublishController
                 ee()->cp->switch_site($entry->site_id, $base_url);
             } else {
                 //but we only auto-switch if we're saving
-                show_error(lang('no_entries_matching_that_criteria'));
+                show_error(lang('no_entries_on_this_site'));
             }
         }
 
