@@ -72,6 +72,7 @@
 
 			// Fill in formatted caption
 			name.html('<p><b>'+data.title+'</b></p>');
+			name.attr('data-id', data.file_id);
 
 			// Show the image
 			input.siblings('.fields-upload-chosen').removeClass('hidden');

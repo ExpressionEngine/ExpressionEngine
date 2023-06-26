@@ -379,6 +379,43 @@ context('Publish Page - Create', () => {
           cy.get('.grid-field__table tbody tr:visible').contains('README.md')
           cy.get('.grid-field__table tbody tr:visible').contains('LICENSE.txt')
           cy.get('.grid-field__table tbody tr:visible').should('not.contain', 'script.sh')
+
+          // edit file metadata, only one row is updated
+          cy.get('.grid-field__table tbody tr:contains(README)').find('.edit-meta').should('be.visible').click()
+
+          cy.get('.app-modal--side').should('be.visible');
+          cy.get('.app-modal--side .title-bar__title').should('contain', 'README.md')
+
+          cy.get('.app-modal--side [name=title]').invoke('val').then((value) => { expect(value).to.eq('README.md') })
+          cy.get('.app-modal--side [name=description]').invoke('val').then((value) => { expect(value).to.be.empty })
+          cy.get('.app-modal--side [name=credit]').invoke('val').then((value) => { expect(value).to.be.empty })
+          cy.get('.app-modal--side [name=location]').invoke('val').then((value) => { expect(value).to.be.empty })
+
+          cy.get('.app-modal--side [name=title]').clear().type('Cypress README')
+          cy.get('.app-modal--side [name=description]').clear().type('README Description')
+          cy.get('.app-modal--side [name=credit]').clear().type('README Credits')
+          cy.get('.app-modal--side [name=location]').clear().type('README Location')
+
+          cy.get('.app-modal--side [value=save]').click()
+          cy.get('.app-modal--side').should('not.be.visible');
+          cy.wait(5000)
+
+          cy.get('.grid-field__table tbody tr:visible').eq(0).find('.fields-upload-chosen-name').invoke('text').then((text) => {
+            expect(text).to.eq('Cypress README')
+          })
+          cy.get('.grid-field__table tbody tr:visible').eq(1).find('.fields-upload-chosen-name').invoke('text').then((text) => {
+            expect(text).to.contain('LICENSE.txt')
+          })
+
+          cy.get('.grid-field__table tbody tr:contains(README)').find('.edit-meta').should('be.visible').click()
+
+          cy.get('.app-modal--side').should('be.visible');
+          cy.get('.app-modal--side .title-bar__title').should('contain', 'Cypress README')
+
+          cy.get('.app-modal--side [name=title]').invoke('val').then((value) => { expect(value).to.eq('Cypress README') })
+          cy.get('.app-modal--side [name=description]').invoke('val').then((value) => { expect(value).to.eq('README Description') })
+          cy.get('.app-modal--side [name=credit]').invoke('val').then((value) => { expect(value).to.eq('README Credits') })
+          cy.get('.app-modal--side [name=location]').invoke('val').then((value) => { expect(value).to.eq('README Location') })
       })
   })
 
