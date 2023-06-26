@@ -12,6 +12,8 @@ const edit = new EntryManager;
 const fluid_field = new FluidField;
 let file_modal = new FileModal;
 
+const { _, $ } = Cypress
+
 context('Publish Page - Create', () => {
 
     before(function(){
@@ -163,6 +165,60 @@ context('Publish Page - Create', () => {
                     expect(value).eq( '{file:' + selectedFileIds[i] + ':url}')
                 })
             })
+        })
+
+        it('File metadata can be edited in a modal', () => {
+          cy.intercept('/admin.php?/cp/addons/settings/filepicker/modal*').as('filepicker')
+          var field = page.get('file_fields').eq(0);
+          let dd_link = field.find("a:contains('Choose Existing')")
+          dd_link.click()
+          if ($(dd_link).hasClass('has-sub')) {
+            let dir_link = link.next('.dropdown').find("a:contains('About')")
+            cy.get(dir_link).click()
+          }
+          cy.wait('@filepicker')
+          file_modal.get('files').should('be.visible')
+          cy.get('.modal-file table tbody tr:contains(staff_jane.png)').click()
+          cy.wait(5000)
+
+          field = page.get('file_fields').eq(0);
+          field.parents('.field-control').find('.fields-upload-chosen-name').should('be.visible')
+          field.parents('.field-control').find('.fields-upload-chosen-name').invoke('text').then((text) => {
+            expect(text).to.eq('staff_jane.png')
+          })
+
+          page.get('file_fields').eq(0).parents('.field-control').find('.edit-meta').should('be.visible').click()
+
+          cy.get('.app-modal--side').should('be.visible');
+          cy.get('.app-modal--side .title-bar__title').should('contain', 'staff_jane.png')
+
+          cy.get('.app-modal--side [name=title]').invoke('val').then((value) => { expect(value).to.eq('staff_jane.png') })
+          cy.get('.app-modal--side [name=description]').invoke('val').then((value) => { expect(value).to.be.empty })
+          cy.get('.app-modal--side [name=credit]').invoke('val').then((value) => { expect(value).to.be.empty })
+          cy.get('.app-modal--side [name=location]').invoke('val').then((value) => { expect(value).to.be.empty })
+
+          cy.get('.app-modal--side [name=title]').clear().type('Cypress Jane')
+          cy.get('.app-modal--side [name=description]').clear().type('Cypress Description')
+          cy.get('.app-modal--side [name=credit]').clear().type('Cypress Credits')
+          cy.get('.app-modal--side [name=location]').clear().type('Cypress Location')
+
+          cy.get('.app-modal--side [value=save]').click()
+          cy.get('.app-modal--side').should('not.be.visible');
+          cy.wait(5000)
+
+          page.get('file_fields').eq(0).parents('.field-control').find('.fields-upload-chosen-name').invoke('text').then((text) => {
+            expect(text).to.eq('Cypress Jane')
+          })
+
+          page.get('file_fields').eq(0).parents('.field-control').find('.edit-meta').should('be.visible').click()
+
+          cy.get('.app-modal--side').should('be.visible');
+          cy.get('.app-modal--side .title-bar__title').should('contain', 'Cypress Jane')
+
+          cy.get('.app-modal--side [name=title]').invoke('val').then((value) => { expect(value).to.eq('Cypress Jane') })
+          cy.get('.app-modal--side [name=description]').invoke('val').then((value) => { expect(value).to.eq('Cypress Description') })
+          cy.get('.app-modal--side [name=credit]').invoke('val').then((value) => { expect(value).to.eq('Cypress Credits') })
+          cy.get('.app-modal--side [name=location]').invoke('val').then((value) => { expect(value).to.eq('Cypress Location') })
         })
 
         it('if the file field is limited to directory, it is only available', () => {
