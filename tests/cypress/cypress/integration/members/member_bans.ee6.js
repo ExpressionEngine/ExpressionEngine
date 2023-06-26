@@ -15,11 +15,7 @@ context('Ban Settings', () => {
     cy.hasNoErrors()
   })
 
-  it('shows the Ban Settings page', () => {
-    //page.all_there?.should('eq', true
-  })
-
-  it('should load current settings into form fields', () => {
+  it('Show current ban settings form', () => {
     cy.eeConfig({item: 'banned_ips'}) .then((config) => {
       page.get('banned_ips').invoke('text').then((val) => {
         expect(val.trim()).to.be.equal(config)
@@ -67,8 +63,6 @@ context('Ban Settings', () => {
     page.get('banned_emails').blur()
     page.hasError(page.get('banned_emails'), page.messages.xss_error)
     page.hasError(page.get('banned_ips'), page.messages.xss_error)
-    
-//should_have_form_errors(page)
 
     page.get('banned_usernames').clear().type(page.messages.xss_vector)
     page.get('banned_usernames').blur()
@@ -76,8 +70,6 @@ context('Ban Settings', () => {
     page.hasError(page.get('banned_usernames'), page.messages.xss_error)
     page.hasError(page.get('banned_emails'), page.messages.xss_error)
     page.hasError(page.get('banned_ips'), page.messages.xss_error)
-   
-//should_have_form_errors(page)
 
     page.get('banned_screen_names').clear().type(page.messages.xss_vector)
     page.get('banned_screen_names').blur()
@@ -86,10 +78,9 @@ context('Ban Settings', () => {
     page.hasError(page.get('banned_emails'), page.messages.xss_error)
     page.hasError(page.get('banned_ips'), page.messages.xss_error)
 
-//should_have_form_errors(page)
   })
 
-  it('should save and load the settings', () => {
+  it('Save and load ban settings', () => {
     page.get('banned_ips').clear().type('Dummy IPs')
     page.get('banned_emails').clear().type('Dummy Emails')
     page.get('banned_usernames').clear().type('Dummy Usernames')
@@ -98,7 +89,6 @@ context('Ban Settings', () => {
     page.get('ban_message').clear().type('Dummy Message')
     page.get('ban_destination').clear().type('Dummy Destination')
     
-    //page.submit() AJ
     cy.get('button').contains('Save Settings').first().click()
 
     page.get('wrap').contains('Ban Settings updated')

@@ -12,7 +12,7 @@ const edit = new EntryManager;
 const fluid_field = new FluidField;
 let file_modal = new FileModal;
 
-context('Publish Page - Create', () => {
+context('Publish Entry', () => {
 
     before(function(){
       cy.task('db:seed')
@@ -75,7 +75,7 @@ context('Publish Page - Create', () => {
         page.get('wrap').find('input[type="checkbox"][value=2]').should('be.checked')
     })
 
-    context('when using file fields', () => {
+    context('Create entry with file fields', () => {
 
         beforeEach(function(){
             cy.visit(Cypress._.replace(page.url, '{channel_id}', 1))
@@ -259,7 +259,7 @@ context('Publish Page - Create', () => {
         })
     })
 
-    context('file grid', () => {
+    context('Create entry with file grid', () => {
 
       beforeEach(function(){
           cy.visit(Cypress._.replace(page.url, '{channel_id}', 1))
@@ -283,7 +283,7 @@ context('Publish Page - Create', () => {
           page.get('url_title').should('exist')
       })
 
-      it('uploads several files', () => {
+      it('uploads several files into same field', () => {
           cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
           cy.intercept('POST', '**/publish/create/**'). as('validation')
           cy.get('.js-file-grid').eq(0).find('.file-field__dropzone:visible').attachFile(['../../support/file/README.md', '../../../../LICENSE.txt', '../../support/file/script.sh'], { subjectType: 'drag-n-drop' })
@@ -326,7 +326,7 @@ context('Publish Page - Create', () => {
       })
   })
 
-    context('when using fluid fields', () => {
+    context('Create entry with fluid fields', () => {
 
       const available_fields = [
         "A Date",
@@ -562,7 +562,7 @@ context('Publish Page - Create', () => {
         cy.hasNoErrors();
       })
 
-      it('adds a field', () => {
+      it('adds a field to Fluid', () => {
 
         available_fields.forEach(function(field, index) {
           fluid_field.get('actions_menu.fields').eq(index).click()
@@ -596,7 +596,7 @@ context('Publish Page - Create', () => {
         cy.hasNoErrors();
       })
 
-      it('adds repeat fields', () => {
+      it('adds repeat fields to Fluid', () => {
         const number_of_fields = available_fields.length
 
         available_fields.forEach(function(field, index) {
@@ -630,7 +630,7 @@ context('Publish Page - Create', () => {
       // it('s fields', () => {
       // }
 
-      it('removes fields', () => {
+      it('removes fields from Fluid', () => {
         // First: without saving
         available_fields.forEach(function(field, index) {
           fluid_field.get('actions_menu.fields').eq(index).click()
@@ -674,7 +674,7 @@ context('Publish Page - Create', () => {
         fluid_field.get('items').should('have.length', 0)
       })
 
-      it('keeps data when the entry is invalid', () => {
+      it('keeps data in Fluid when the entry is invalid', () => {
         available_fields.forEach(function(field, index) {
           fluid_field.get('actions_menu.fields').eq(index).click()
           fluid_field.add_content(index)
@@ -694,7 +694,7 @@ context('Publish Page - Create', () => {
 
     })
 
-    context('various Grids', () => {
+    context('Create entry with various Grids', () => {
       it('Grid with Buttons', () => {
         cy.authVisit('admin.php?/cp/fields/create/1')
         cy.get('[data-input-value=field_type] .select__button.js-dropdown-toggle').should('exist')
