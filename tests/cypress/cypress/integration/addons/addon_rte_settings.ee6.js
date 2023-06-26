@@ -4,16 +4,16 @@ import RteSettings from '../../elements/pages/addons/RteSettings';
 const page = new RteSettings;
 const { _, $ } = Cypress
 
-context('RTE Settings', () => {
+context('Rich Text Editor', () => {
 
     before(function() {
         cy.task('db:seed')
         cy.task('db:load', '../../support/sql/rte-settings/tool_sets.sql')
     })
 
-    describe('Settings', function() {
+    describe('RTE Settings', function() {
 
-        it('shows the RTE Settings page', function() {
+        it('Shows the RTE Settings page', function() {
             cy.intercept('**/check').as('check')
             cy.intercept('**/license/handleAccessResponse').as('license')
             cy.authVisit(page.url);
@@ -33,7 +33,7 @@ context('RTE Settings', () => {
             cy.title().should('include', 'Add-Ons')
         })
 
-        it('cannot set a default tool set to an nonexistent tool set', function() {
+        it('Cannot set a default tool set to an nonexistent tool set', function() {
             cy.authVisit(page.url);
             page.get('default_tool_set').eq(0).invoke('attr', 'value', '99999')
             page.get('default_tool_set').eq(0).check()
@@ -44,7 +44,7 @@ context('RTE Settings', () => {
         })
 
 
-        it('displays an itemized modal when trying to remove 5 or less tool sets', function() {
+        it('Displays an itemized modal when trying to remove 5 or less tool sets', function() {
             cy.authVisit(page.url);
             let tool_set_name = page.$('tool_set_names').eq(1).text()
 
@@ -59,7 +59,7 @@ context('RTE Settings', () => {
             page.get('modal').find('.checklist li').its('length').should('eq', 1)
         })
 
-        it('displays a bulk confirmation modal when trying to remove more than 5 tool sets', function() {
+        it('Displays a bulk confirmation modal when trying to remove more than 5 tool sets', function() {
             cy.authVisit(page.url);
             page.get('checkbox_header').find('input[type="checkbox"]:enabled').check()
             page.get('bulk_action').select("Delete")
@@ -70,7 +70,7 @@ context('RTE Settings', () => {
             page.get('modal').contains("Tool Set: 6 Tool Sets")
         })
 
-        it('cannot remove the default tool set', function() {
+        it('Cannot remove the default tool set', function() {
             cy.authVisit(page.url);
             let tool_set_name = page.$('tool_set_names').eq(0).text()
 
@@ -94,7 +94,7 @@ context('RTE Settings', () => {
             page.get('tool_set_names').eq(0).contains(tool_set_name)
         })
 
-        it('can reverse sort tool sets by name', function() {
+        it('Can reverse sort tool sets by name', function() {
             cy.authVisit(page.url);
             page.get('tool_set_names').should('exist').then(() => {
                 let toolsets = [...page.$('tool_set_names').map(function(index, el) { return $(el).text(); })];
@@ -110,7 +110,7 @@ context('RTE Settings', () => {
             })
         })
 
-        it('can change the default tool set', function() {
+        it('Can change the default tool set', function() {
             cy.authVisit(page.url);
             page.get('default_tool_set').last().check()
             page.get('save_settings_button').eq(0).click()
@@ -125,7 +125,7 @@ context('RTE Settings', () => {
             page.get('default_tool_set').first().should('be.checked')
         })
 
-        it('can edit a tool set', function() {
+        it('Can edit a tool set', function() {
             cy.authVisit(page.url);
             page.get('tool_sets').eq(1).find('a').first().click()
 
@@ -139,7 +139,7 @@ context('RTE Settings', () => {
             page.get('alert').contains("Tool set updated")
         })
 
-        it('can remove a tool set', function() {
+        it('Can remove a tool set', function() {
             cy.authVisit(page.url);
             page.get('tool_sets').eq(3).find('input[type="checkbox"]').check()
             page.get('bulk_action').select("remove")
@@ -155,7 +155,7 @@ context('RTE Settings', () => {
 
         })
 
-        it('can bulk remove tool sets', function() {
+        it('Can bulk remove tool sets', function() {
             cy.authVisit(page.url);
             page.get('checkbox_header').find('input[type="checkbox"]').check()
 
@@ -180,7 +180,7 @@ context('RTE Settings', () => {
         })
     })
 
-    describe('Toolsets', function() {
+    describe('RTE Toolsets', function() {
         beforeEach(function() {
             cy.authVisit(page.url);
             page.get('title').contains('Rich Text Editor')
@@ -194,7 +194,7 @@ context('RTE Settings', () => {
             page.confirmSettings()
         })
 
-        it('can create a new tool set', function() {
+        it('Can create a new tool set', function() {
             page.get('tool_set_name').type('Empty')
             page.get('tool_set_save_button').click()
 
@@ -207,7 +207,7 @@ context('RTE Settings', () => {
             page.get('tool_sets').contains("Empty")
         })
 
-        it('ensures tool set names are unique', function() {
+        it('Ensures tool set names are unique', function() {
             page.get('tool_set_name').type('Empty')
             page.get('tool_set_save_button').click()
 
@@ -221,7 +221,7 @@ context('RTE Settings', () => {
             cy.contains('This field must be unique.')
         })
 
-        it('requires a tool set name', function() {
+        it('Requires a tool set name', function() {
             page.get('tool_set_save_button').click()
 
             cy.hasNoErrors()
@@ -235,7 +235,7 @@ context('RTE Settings', () => {
             page.get('tool_sets').contains("Untitled")
         })
 
-        it('disallows XSS strings as a tool set name', function() {
+        it('Disallows XSS strings as a tool set name', function() {
             page.get('tool_set_name').type('<script>Haha')
             page.get('tool_set_save_button').click()
 
@@ -250,7 +250,7 @@ context('RTE Settings', () => {
             cy.contains('The data you submitted did not pass our security check.')
         })
 
-        it('persists tool checkboxes on validation errors', function() {
+        it('Persists tool checkboxes on validation errors', function() {
             
 
             cy.get('.cke_button__blockquote').click()
