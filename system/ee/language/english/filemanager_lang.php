@@ -469,6 +469,10 @@ $lang = array(
 
     'type_directory' => 'Folder',
 
+    'share_directory_on_all_sites' => 'Share Upload Directory on all sites?',
+
+    'share_directory_on_all_sites_desc' => 'Make files in this directory accessible through all MSM sites.<br><b>Note:</b> this can only be set on creation and cannot be changed.',
+
     'upload_btn_edit' => 'edit',
 
     'upload_btn_sync' => 'sync',
@@ -1052,7 +1056,7 @@ $lang = array(
 
     'error_renaming_already_exists' => 'Could not rename because file or folder with that name already exists',
 
-    'rename_success' => 'Successully renamed',
+    'rename_success' => 'Successfully renamed',
 
     'rename_success_desc' => '<code>%s</code> has been renamed to <code>%s</code>',
 

@@ -1023,6 +1023,16 @@ class Channels extends AbstractChannelsController
                     )
                 ),
                 array(
+                    'title' => 'enforce_auto_url_title',
+                    'desc' => 'enforce_auto_url_title_desc',
+                    'fields' => array(
+                        'enforce_auto_url_title' => array(
+                            'type' => 'yes_no',
+                            'value' => $channel->enforce_auto_url_title
+                        )
+                    )
+                ),
+                array(
                     'title' => 'default_status',
                     'desc' => 'default_status_desc',
                     'fields' => array(

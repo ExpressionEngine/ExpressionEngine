@@ -200,9 +200,9 @@ class EE_Route
      * @param string $route
      * @access public
      * @return array
-     *			- variable : Segment's variable name
-     *			- rules : Segment's list of validators
-     *			- static : Bare segment string, only set if segment is static text
+     *      - variable : Segment's variable name
+     *      - rules : Segment's list of validators
+     *      - static : Bare segment string, only set if segment is static text
      */
     public function parse_segments($route)
     {
@@ -284,7 +284,7 @@ class EE_Route
      * Parse a URL segment for a list of validators and convert to a regular expression
      *
      * @param $rules string  An EE formatted validation string e.g.:
-     *						   "rule1[arg1,arg2...]|rule2|..."
+     *        "rule1[arg1,arg2...]|rule2|..."
      * @access public
      * @return EE_Template_router_converter[]  An array of initialized validation rules
      */
@@ -310,11 +310,11 @@ class EE_Route
             if ($matches['rule'] == 'regex') {
                 $index = $pos + 7;
                 $regex = substr($matches[0], 6, 1);
-                $valid = @preg_match("/$regex/", null);
+                $valid = @preg_match("/$regex/", '');
 
                 while ($valid === false) {
                     $regex .= substr($rules, $index, 1);
-                    $valid = @preg_match("/$regex/", null);
+                    $valid = @preg_match("/$regex/", '');
                     $index++;
 
                     if ($end < $index) {

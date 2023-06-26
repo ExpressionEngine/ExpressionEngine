@@ -21,7 +21,7 @@ context('Outgoing Email Settings', () => {
     cy.hasNoErrors()
   })
 
-  context('when validating with page loads', () => {
+  context('validating Email Settings with page loads', () => {
 
     it('should load current email settings into form fields', () => {
 
@@ -100,7 +100,7 @@ context('Outgoing Email Settings', () => {
     })
   })
 
-  context('when validating using Ajax', () => {
+  context('validating Email Settings using Ajax', () => {
     it('validates mail protocol', () => {
       page.get('mail_protocol').filter('[value=smtp]').check()
 

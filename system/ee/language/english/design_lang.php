@@ -450,7 +450,7 @@ $lang = array(
 
     'enable_template_routes' => 'Enable Template Routes',
 
-    'enable_template_routes_exp' => 'Disabling template routes will remove the route options from the access panel and templates will only be accesible from the default group/template URL.',
+    'enable_template_routes_exp' => 'Disabling template routes will remove the route options from the access panel and templates will only be accessible from the default group/template URL.',
 
     'export_as' => 'Export files as',
 

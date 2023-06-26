@@ -13,7 +13,5 @@ context('Member Field List', () => {
     cy.hasNoErrors()
   })
 
-  it('shows the Member Field List page', () => {
-    //page.all_there?.should('eq', true
-  })
+
 })

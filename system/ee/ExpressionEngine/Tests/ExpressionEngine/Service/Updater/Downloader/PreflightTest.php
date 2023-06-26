@@ -130,6 +130,7 @@ class PreflightTest extends TestCase
             ->andReturn(true)
             ->once();
 
+        $this->filesystem->shouldReceive('exists')->andReturn(true);
         $this->preflight->checkPermissions();
 
         $this->filesystem->shouldReceive('isWritable')
