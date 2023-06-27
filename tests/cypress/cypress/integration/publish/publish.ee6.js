@@ -207,7 +207,7 @@ context('Publish Entry', () => {
           cy.wait(5000)
 
           page.get('file_fields').eq(0).parents('.field-control').find('.fields-upload-chosen-name').invoke('text').then((text) => {
-            expect(text).to.eq('Cypress Jane')
+            expect(text).to.eq('Cypress Randell')
           })
 
           page.get('file_fields').eq(0).parents('.field-control').find('.edit-meta').should('be.visible').click()
