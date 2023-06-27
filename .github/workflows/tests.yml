@@ -261,7 +261,6 @@ jobs:
                 working-directory: tests/cypress
                 config-file: electron.cypress.json
                 record: true
-                parallel: true
                 group: PHP${{ matrix.php }}
               env:
                 CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
