@@ -596,10 +596,14 @@ class EE_Functions
                 // Ignore the parameter if $key is defined in $deft (and so already being processed by function)
                 // or if the parameter is not in the list of approved attributes
                 // or if the parameter begins with either aria- or data-
-                if (! array_key_exists($key, $deft) && in_array($key, $valid_form_attributes)) {
+                if (! array_key_exists(strtolower($key), $deft) && in_array(strtolower($key), $valid_form_attributes)) {
                     // Append the key to end of the $_pass_thru variable
                     // If the attribute has a value set then add this value to the key enclosed within an ="" construct
                     $_pass_thru[$key] = (strlen($val) > 0) ? '="' . htmlentities(ee('Security/XSS')->clean($val), ENT_QUOTES, 'UTF-8') . '"' : '';
+                }
+                // data- and aria- attributes can also be passed through
+                if (strpos($key, 'data-') === 0 || strpos($key, 'aria-') === 0) {
+                    $data['data_attributes'] .= ee('Security/XSS')->clean(strip_tags($key)) . '="' . htmlentities(ee('Security/XSS')->clean($val), ENT_QUOTES, 'UTF-8') . '" ';
                 }
             }
         }
