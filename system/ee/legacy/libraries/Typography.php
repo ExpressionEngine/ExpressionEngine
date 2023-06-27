@@ -1388,7 +1388,7 @@ class EE_Typography
         $this->html_format = $existing_format;
 
         // hit emoji shortands
-        if (bool_config_item('disable_emoji_shorthand') === false) {
+        if (bool_config_item('disable_emoji_shorthand') === false && isset(ee()->session)) {
             $title = ee('Format')->make('Text', $title)->emojiShorthand();
         }
 
