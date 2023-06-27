@@ -2122,3 +2122,52 @@ body[data-ee-version^="7."] #tree-ootb ul li.ootb-page-types:before {
     font-size: 0.9rem;
     padding: 5px 10px!important;
 }
+
+body[data-ee-version^="6."] #structure-ui .page-ui div.page-controls span i,
+body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls span i {
+    display: none;
+}
+
+@media screen and (max-width: 767px) {
+    body[data-ee-version^="6."] #structure-ui .page-ui div.page-controls span a,
+    body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls span a {
+        font-size: 0;
+    }
+
+    body[data-ee-version^="6."] #structure-ui .page-ui div.page-controls span i,
+    body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls span i {
+        width: 20px;
+        height: 20px;
+        position: relative;
+        display: block;
+        font-style: normal;
+    }
+
+    body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls span i:before {
+        position: absolute;
+        display: inline-block;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        font-family: "Font Awesome 6 Pro";
+        font-weight: 900;
+        color: var(--ee-button-primary-color);
+        text-indent: 0;
+        font-size: 12px;
+    }
+
+    body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls span i.view_icon:before {
+        content: '\f06e';
+    }
+    body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls span i.add-icon:before {
+        content: '\f067';
+    }
+    body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls span i.delete-icon:before {
+        content: "\f1f8";
+    }
+
+    body[data-ee-version^="6."] #structure-ui .page-ui div.page-controls,
+    body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls {
+        display: flex;
+    }
+}

@@ -18,11 +18,11 @@ context('Template Partials', () => {
         cy.authVisit(page.url);
     })
 
-    it('displays', function() {
+    it('List template partials', function() {
         page.get('partials').its('length').should('eq', 13)
     })
 
-    it('can filter by keyword', function() {
+    it('Filter template partials by keyword', function() {
         page.get('keyword_search').first().clear().type('global').type('{enter}')
 
         cy.hasNoErrors()
@@ -30,7 +30,7 @@ context('Template Partials', () => {
         page.get('partials').its('length').should('eq', 8)
     })
 
-    it('can find templates that use a partial', function() {
+    it('Find templates that use a partial', function() {
         page.get('partials').eq(6).find('a[title="find"]').click()
 
         cy.hasNoErrors()
@@ -40,13 +40,13 @@ context('Template Partials', () => {
         page.get('partials').its('length').should('eq', 9)
     })
 
-    it('can navigate to edit form', function() {
+    it('Navigate to partials edit form', function() {
         
         page.get('partials').eq(6).find('a[title="Edit"]').click()
         cy.hasNoErrors()
     })
 
-    it('should validate the form', function() {
+    it('Validate the form', function() {
         //page.get('create_new_button').click()
         cy.get('a').contains('Create New').first().click()
 
@@ -56,7 +56,7 @@ context('Template Partials', () => {
        
     })
 
-    it('can create a new partial', function() {
+    it('Create a new partial', function() {
         // skip 'Cannot figure out how to populate a codemirror form element', () => {
 
         //page.get('create_new_button').click()
@@ -82,7 +82,7 @@ context('Template Partials', () => {
         page.get('alert').contains('rspec-test')
     })
 
-    it('can remove a partial', function() {
+    it('Remove a partial', function() {
         page.get('partials').its('length').then((length) => {
             page.get('partials').eq(1).find('td:last-child input').click()
 

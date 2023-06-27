@@ -8,7 +8,7 @@ const { _, $ } = Cypress
 
 var userCount = 0;
 
-context('Member Registration', () => {
+context('Member Registration on Front-end', () => {
 
     before(function() {
         cy.task('db:seed')

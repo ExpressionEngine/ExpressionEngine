@@ -354,7 +354,7 @@ class EE_Template
             'template_id' => $this->template_id,
             'template_type' => $this->embed_type ?: $this->template_type,
             'is_ajax_request' => AJAX_REQUEST,
-            'is_live_preview_request' => isset(ee()->session) && ee('LivePreview')->hasEntryData(),
+            'is_live_preview_request' => isset(ee()->session) ? ee('LivePreview')->hasEntryData() : false,
         ];
 
         //Pro conditionals
@@ -2280,10 +2280,10 @@ class EE_Template
             // The first segment in the URL does NOT correlate to a valid template group.  Oh my!
             if ($query->num_rows() > 1) {
                 $duplicate = true;
-                $log_message = "Duplicate Template Group: " . ee()->uri->segment(1);
+                $this->log_item("Duplicate Template Group: " . ee()->uri->segment(1));
             } else {
                 $duplicate = false;
-                $log_message = "Template group and template not found, showing 404 page";
+                $this->log_item("Template group and template not found, showing 404 page");
             }
 
             // If we are enforcing strict URLs we need to show a 404
@@ -4480,7 +4480,7 @@ class EE_Template
 
     protected function getMemberVariables()
     {
-        static $vars;
+        static $vars = [];
 
         if (!isset(ee()->session)) {
             //early parsing, e.g. called from code and not web request

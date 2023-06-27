@@ -15,7 +15,7 @@ context('Login Page', () => {
     })
 
     
-    context('when cp session is idle', () => {
+    context('show modal when cp session is idle', () => {
         beforeEach(function() {
             // Log in
             cy.login({ email: 'admin', password: 'password' });

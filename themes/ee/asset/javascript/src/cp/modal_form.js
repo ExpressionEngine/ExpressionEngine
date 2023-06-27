@@ -73,12 +73,12 @@ EE.cp.ModalForm = {
 				options.load(that.modalContentsContainer)
 			})
 
-			var timer = setInterval(function() {
-				if ($('.app-modal .grid-field').length) {
-					new Grid.Publish($('.app-modal .grid-field'))
-					clearInterval(timer);
-				}
-			},50);
+			// var timer = setInterval(function() {
+			// 	if ($('.app-modal .grid-field').length) {
+			// 		new Grid.Publish($('.app-modal .grid-field'))
+			// 		clearInterval(timer);
+			// 	}
+			// },50);
 		}
 	},
 

@@ -6,7 +6,7 @@ import AddonManager from '../../elements/pages/addons/AddonManager';
 const page = new PagesSettings
 const addon_manager = new AddonManager;
 
-context('Pages Settings', () => {
+context('Pages Add-on', () => {
 
   before(function(){
     cy.task('db:seed')

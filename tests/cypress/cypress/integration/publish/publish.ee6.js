@@ -14,7 +14,7 @@ let file_modal = new FileModal;
 
 const { _, $ } = Cypress
 
-context('Publish Page - Create', () => {
+context('Publish Entry', () => {
 
     before(function(){
       cy.task('db:seed')
@@ -77,7 +77,7 @@ context('Publish Page - Create', () => {
         page.get('wrap').find('input[type="checkbox"][value=2]').should('be.checked')
     })
 
-    context('when using file fields', () => {
+    context('Create entry with file fields', () => {
 
         beforeEach(function(){
             cy.visit(Cypress._.replace(page.url, '{channel_id}', 1))
@@ -178,26 +178,26 @@ context('Publish Page - Create', () => {
           }
           cy.wait('@filepicker')
           file_modal.get('files').should('be.visible')
-          cy.get('.modal-file table tbody tr:contains(staff_jane.png)').click()
+          cy.get('.modal-file table tbody tr:contains(staff_randell.png)').click()
           cy.wait(5000)
 
           field = page.get('file_fields').eq(0);
           field.parents('.field-control').find('.fields-upload-chosen-name').should('be.visible')
           field.parents('.field-control').find('.fields-upload-chosen-name').invoke('text').then((text) => {
-            expect(text).to.eq('staff_jane.png')
+            expect(text).to.eq('staff_randell.png')
           })
 
           page.get('file_fields').eq(0).parents('.field-control').find('.edit-meta').should('be.visible').click()
 
           cy.get('.app-modal--side').should('be.visible');
-          cy.get('.app-modal--side .title-bar__title').should('contain', 'staff_jane.png')
+          cy.get('.app-modal--side .title-bar__title').should('contain', 'staff_randell.png')
 
-          cy.get('.app-modal--side [name=title]').invoke('val').then((value) => { expect(value).to.eq('staff_jane.png') })
+          cy.get('.app-modal--side [name=title]').invoke('val').then((value) => { expect(value).to.eq('staff_randell.png') })
           cy.get('.app-modal--side [name=description]').invoke('val').then((value) => { expect(value).to.be.empty })
           cy.get('.app-modal--side [name=credit]').invoke('val').then((value) => { expect(value).to.be.empty })
           cy.get('.app-modal--side [name=location]').invoke('val').then((value) => { expect(value).to.be.empty })
 
-          cy.get('.app-modal--side [name=title]').clear().type('Cypress Jane')
+          cy.get('.app-modal--side [name=title]').clear().type('Cypress Randell')
           cy.get('.app-modal--side [name=description]').clear().type('Cypress Description')
           cy.get('.app-modal--side [name=credit]').clear().type('Cypress Credits')
           cy.get('.app-modal--side [name=location]').clear().type('Cypress Location')
@@ -213,9 +213,9 @@ context('Publish Page - Create', () => {
           page.get('file_fields').eq(0).parents('.field-control').find('.edit-meta').should('be.visible').click()
 
           cy.get('.app-modal--side').should('be.visible');
-          cy.get('.app-modal--side .title-bar__title').should('contain', 'Cypress Jane')
+          cy.get('.app-modal--side .title-bar__title').should('contain', 'Cypress Randell')
 
-          cy.get('.app-modal--side [name=title]').invoke('val').then((value) => { expect(value).to.eq('Cypress Jane') })
+          cy.get('.app-modal--side [name=title]').invoke('val').then((value) => { expect(value).to.eq('Cypress Randell') })
           cy.get('.app-modal--side [name=description]').invoke('val').then((value) => { expect(value).to.eq('Cypress Description') })
           cy.get('.app-modal--side [name=credit]').invoke('val').then((value) => { expect(value).to.eq('Cypress Credits') })
           cy.get('.app-modal--side [name=location]').invoke('val').then((value) => { expect(value).to.eq('Cypress Location') })
@@ -315,7 +315,7 @@ context('Publish Page - Create', () => {
         })
     })
 
-    context('file grid', () => {
+    context('Create entry with file grid', () => {
 
       beforeEach(function(){
           cy.visit(Cypress._.replace(page.url, '{channel_id}', 1))
@@ -339,7 +339,7 @@ context('Publish Page - Create', () => {
           page.get('url_title').should('exist')
       })
 
-      it('uploads several files', () => {
+      it('uploads several files into same field', () => {
           cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
           cy.intercept('POST', '**/publish/create/**'). as('validation')
           cy.get('.js-file-grid').eq(0).find('.file-field__dropzone:visible').attachFile(['../../support/file/README.md', '../../../../LICENSE.txt', '../../support/file/script.sh'], { subjectType: 'drag-n-drop' })
@@ -419,7 +419,7 @@ context('Publish Page - Create', () => {
       })
   })
 
-    context('when using fluid fields', () => {
+    context('Create entry with fluid fields', () => {
 
       const available_fields = [
         "A Date",
@@ -655,7 +655,7 @@ context('Publish Page - Create', () => {
         cy.hasNoErrors();
       })
 
-      it('adds a field', () => {
+      it('adds a field to Fluid', () => {
 
         available_fields.forEach(function(field, index) {
           fluid_field.get('actions_menu.fields').eq(index).click()
@@ -689,7 +689,7 @@ context('Publish Page - Create', () => {
         cy.hasNoErrors();
       })
 
-      it('adds repeat fields', () => {
+      it('adds repeat fields to Fluid', () => {
         const number_of_fields = available_fields.length
 
         available_fields.forEach(function(field, index) {
@@ -723,7 +723,7 @@ context('Publish Page - Create', () => {
       // it('s fields', () => {
       // }
 
-      it('removes fields', () => {
+      it('removes fields from Fluid', () => {
         // First: without saving
         available_fields.forEach(function(field, index) {
           fluid_field.get('actions_menu.fields').eq(index).click()
@@ -767,7 +767,7 @@ context('Publish Page - Create', () => {
         fluid_field.get('items').should('have.length', 0)
       })
 
-      it('keeps data when the entry is invalid', () => {
+      it('keeps data in Fluid when the entry is invalid', () => {
         available_fields.forEach(function(field, index) {
           fluid_field.get('actions_menu.fields').eq(index).click()
           fluid_field.add_content(index)
@@ -787,7 +787,7 @@ context('Publish Page - Create', () => {
 
     })
 
-    context('various Grids', () => {
+    context('Create entry with various Grids', () => {
       it('Grid with Buttons', () => {
         cy.authVisit('admin.php?/cp/fields/create/1')
         cy.get('[data-input-value=field_type] .select__button.js-dropdown-toggle').should('exist')
