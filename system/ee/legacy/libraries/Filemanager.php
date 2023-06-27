@@ -368,20 +368,27 @@ class Filemanager
                 return $this->_save_file_response(false, lang('gd_not_installed'));
             }
 
-            // Check and fix orientation
-            $orientation = $this->orientation_check($image_path, $prefs);
+            if(!($prefs['image_processed'] ?? false)) {
+                // Check and fix orientation
+                $orientation = $this->orientation_check($image_path, $prefs);
 
-            if (! empty($orientation)) {
-                $prefs = $orientation;
+                if (! empty($orientation)) {
+                    $prefs = $orientation;
+                }
+
+                $prefs = $this->max_hw_check($image_path, array_merge($prefs, [
+                    // If we're using a temp image we need to pass along a null filesystem in some cases
+                    'filesystem' => isset($prefs['temp_file']) && !empty($prefs['temp_file']) ? null : $directory['upload_destination']->getFilesystem()
+                ]));
             }
-
-            $prefs = $this->max_hw_check($image_path, array_merge($prefs, [
-                // If we're using a temp image we need to pass along a null filesystem in some cases
-                'filesystem' => isset($prefs['temp_file']) && !empty($prefs['temp_file']) ? null : $directory['upload_destination']->getFilesystem()
-            ]));
 
             if (! $prefs) {
                 return $this->_save_file_response(false, lang('image_exceeds_max_size'));
+            }
+
+            // Write $image_path to $file_path
+            if($image_path !== $file_path) {
+                $directory['upload_destination']->getFilesystem()->write($file_path, file_get_contents($image_path), true);
             }
 
             // It is important to use the same upload destination object because of filesystem caching
@@ -2009,6 +2016,8 @@ class Filemanager
                     )
                 );
             }
+
+            $file_data['image_processed'] = true;
         }
 
         // Save file to database
