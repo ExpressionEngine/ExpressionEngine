@@ -95,7 +95,12 @@ function makeFilterableComponent(WrappedComponent) {
         }, 300);
       });
 
-      _this.initialItems = SelectList.formatItems(props.items);
+      if (props.name == 'cat_group') {
+        _this.initialItems = props.items;
+      } else {
+        _this.initialItems = SelectList.formatItems(props.items);
+      }
+
       _this.state = {
         items: _this.initialItems,
         initialCount: _this.initialItems.length,

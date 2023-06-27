@@ -11,7 +11,12 @@ function makeFilterableComponent(WrappedComponent) {
   return class extends React.Component {
     constructor(props) {
       super(props)
-      this.initialItems = SelectList.formatItems(props.items)
+
+      if(props.name == 'cat_group') {
+        this.initialItems = props.items
+      } else {
+        this.initialItems = SelectList.formatItems(props.items)
+      }
       this.state = {
         items: this.initialItems,
         initialCount: this.initialItems.length,

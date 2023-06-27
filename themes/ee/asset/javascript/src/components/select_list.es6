@@ -43,8 +43,6 @@ class SelectList extends React.Component {
           label: ''
         })
       } else {
-        console.log(items[key]);
-        console.log(items[key].toggles);
         // When formatting selected items lists, selections will likely be a flat
         // array of values for multi select
         var value = (multi) ? items[key] : key
@@ -365,13 +363,26 @@ class SelectList extends React.Component {
     return item
   }
 
+  showToggleName (item, mainInput) {
+    var catToggleArr = Object.keys(item.cat_toggles).map(key => {
+      return {
+        name: key,
+        value: item.cat_toggles[key],
+        id: item.value
+      }
+    })
+
+    return catToggleArr;
+  }
+
   render () {
     let props = this.props
     let shouldShowToggleAll = (props.multi || ! props.selectable) && props.toggleAll !== null
     var values = props.selected.length ? props.selected.map(item => item.value) : [];
 
-    if (props.name == 'cat_group' || props.name == 'statuses') {
-      console.log('SelectList', props);
+    // if (props.name == 'cat_group' || props.name == 'statuses') {
+    if (props.name == 'cat_group') {
+      console.log('SelectList', this.props);
     }
 
     return (
@@ -449,18 +460,16 @@ class SelectList extends React.Component {
 
 
         {/* CHANGE THIS CODE BASED ON TOOGLE PROPS*/}
-        {/* Added allow_multiple hidden input for Channel Category page*/}
-{/*        { ! props.jsonify && props.cat_allow_multiple && props.selected.map(item => 
-          <input type="hidden" className="cat_allow_multiple"  key={item.value} name={props.multi ? 'cat_allow_multiple[]' : 'cat_allow_multiple'} value={item.value}
-              ref={(input) => { this.input = input }} />
+        {/* Added toggle elements hidden input for Channel Category page*/}
+        {/* Can't understand how to print these inputs on the screen */}
+        { ! props.jsonify && props.toggles && props.toggles.length != 0 && props.selected.filter(item => {
+            var arr = this.showToggleName(item);
+            var newArr = arr.map(el => 
+              <input type="hidden" key={el.id} name={el.name + '[]'} value={el.id} ref={(input) => { this.input = input }} />
             )
-        }   */}     
-        {/* Added cat_required hidden input for Channel Category page*/}
-{/*        { ! props.jsonify && props.cat_required && props.selected.map(item => 
-          <input type="hidden" className="cat_required"  key={item.value} name={props.multi ? 'cat_required[]' : 'cat_required'} value={item.value}
-              ref={(input) => { this.input = input }} />
-            )
-        }*/}
+            console.log('newArr', newArr);
+          })
+        }
 
 
         {/* JSONified fields are using joined input */}
@@ -531,7 +540,6 @@ class SelectItem extends React.Component {
       e.preventDefault();
       $(e.target).toggleClass('active');
       $(e.target).find('i').toggleClass('fa-toggle-on fa-toggle-off');
-      console.log('value', value);
   }
 
   render() {

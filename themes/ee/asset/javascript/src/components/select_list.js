@@ -365,6 +365,18 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
       return item;
     }
   }, {
+    key: "showToggleName",
+    value: function showToggleName(item, mainInput) {
+      var catToggleArr = Object.keys(item.cat_toggles).map(function (key) {
+        return {
+          name: key,
+          value: item.cat_toggles[key],
+          id: item.value
+        };
+      });
+      return catToggleArr;
+    }
+  }, {
     key: "render",
     value: function render() {
       var _this8 = this;
@@ -373,10 +385,10 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
       var shouldShowToggleAll = (props.multi || !props.selectable) && props.toggleAll !== null;
       var values = props.selected.length ? props.selected.map(function (item) {
         return item.value;
-      }) : [];
+      }) : []; // if (props.name == 'cat_group' || props.name == 'statuses') {
 
-      if (props.name == 'cat_group' || props.name == 'statuses') {
-        console.log('SelectList', props);
+      if (props.name == 'cat_group') {
+        console.log('SelectList', this.props);
       }
 
       return React.createElement("div", {
@@ -464,6 +476,21 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
             _this8.input = input;
           }
         });
+      }), !props.jsonify && props.toggles && props.toggles.length != 0 && props.selected.filter(function (item) {
+        var arr = _this8.showToggleName(item);
+
+        var newArr = arr.map(function (el) {
+          return React.createElement("input", {
+            type: "hidden",
+            key: el.id,
+            name: el.name + '[]',
+            value: el.id,
+            ref: function ref(input) {
+              _this8.input = input;
+            }
+          });
+        });
+        console.log('newArr', newArr);
       }), props.jsonify && props.selectable && React.createElement("input", {
         type: "hidden",
         name: props.name,
@@ -490,10 +517,8 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
             label: ''
           });
         } else {
-          console.log(items[key]);
-          console.log(items[key].toggles); // When formatting selected items lists, selections will likely be a flat
+          // When formatting selected items lists, selections will likely be a flat
           // array of values for multi select
-
           var value = multi ? items[key] : key;
           var newItem = {
             value: items[key].value || items[key].value === '' ? items[key].value : value,
@@ -609,7 +634,6 @@ var SelectItem = /*#__PURE__*/function (_React$Component2) {
       e.preventDefault();
       $(e.target).toggleClass('active');
       $(e.target).find('i').toggleClass('fa-toggle-on fa-toggle-off');
-      console.log('value', value);
     }
   }, {
     key: "render",

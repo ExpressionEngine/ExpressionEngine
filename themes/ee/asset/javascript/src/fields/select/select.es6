@@ -13,6 +13,11 @@ class SelectField extends React.Component {
   constructor (props) {
     super(props)
 
+    // This code is for the page channels->edit->Category
+    if (this.props.name == 'cat_group') {
+      props.selected = this.categorySelected(props.selected, props.items)
+    }
+
     this.props.items = SelectList.formatItems(props.items)
     this.state = {
       selected: SelectList.formatItems(props.selected, null, props.multi),
@@ -26,6 +31,20 @@ class SelectField extends React.Component {
       props.name = $(this).data('inputValue')
       ReactDOM.render(React.createElement(SelectField, props, null), this)
     })
+  }
+
+  // Check and update selected items to get cat_toggles elements
+  // we are using cat_toggles on the select_list.js
+  categorySelected(selected, items) {
+    var catArr = [];
+    items.filter(item => {
+      selected.map(el => {
+        if (el == item.value) {
+          catArr.push(item);
+        }
+      })
+    })
+    return catArr;
   }
 
   selectionChanged = (selected) => {
