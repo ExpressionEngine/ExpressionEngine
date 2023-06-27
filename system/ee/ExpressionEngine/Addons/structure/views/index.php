@@ -161,14 +161,14 @@ if ($cp_asset_data or count($tabs) > 1) {
                 $specific_channel_rule = (! empty($vars['channel_rules'])) ? $vars['channel_rules'][$page['channel_id']] : 'y';
 
                 if (isset($permissions['view_view_page']) && $permissions['view_view_page'] == 'y' && isset($specific_channel_rule) && $specific_channel_rule == 'y') {
-                    echo str_repeat("\t", $indentDepth) . "\t\t\t", '<span class="control-view"><a href="', ee('CP/URL')->make('addons/settings/structure/link', array('entry_id' => $page['entry_id'])), '">', lang('view_page'), '</a></span>', "\n";
+                    echo str_repeat("\t", $indentDepth) . "\t\t\t", '<span class="control-view"><a href="', ee('CP/URL')->make('addons/settings/structure/link', array('entry_id' => $page['entry_id'])), '">', lang('view_page'), '<i class="view_icon"></i></a></span>', "\n";
                 }
 
                 if ($permissions['view_add_page'] && $settings['show_picker'] == 'y') {
                     if (count($page_choices) > 1 && $page_count > 0) {
                         echo str_repeat("\t", $indentDepth) . "\t\t\t", '<span class="control-add"><a href="#" class="pop" data-parent_id="', $eid, '">', lang('ui_add_child_page'), '</a></span>', "\n";
                     } else {
-                        echo str_repeat("\t", $indentDepth) . "\t\t\t", '<span><a href="', $add_page_url, '&parent_id=', $eid, '">', lang('ui_add_child_page'), '</a></span>', "\n";
+                        echo str_repeat("\t", $indentDepth) . "\t\t\t", '<span class="control-add-page"><a href="', $add_page_url, '&parent_id=', $eid, '">', lang('ui_add_child_page'), '<i class="add-icon"></i></a></span>', "\n";
                     }
                 }
 
@@ -177,7 +177,7 @@ if ($cp_asset_data or count($tabs) > 1) {
                 }
 
                 if (isset($permissions['delete']) && ($permissions['delete'] == 'all' || (is_numeric($level_lock_delete)) && ($page['depth'] + 1) > $level_lock_delete)) {
-                    echo str_repeat("\t", $indentDepth) . "\t\t\t", '<span class="control-del"><a href="', ee('CP/URL')->make('addons/settings/structure/delete', array('toggle' => $page['entry_id'])), '">', lang('delete'), '</a></span>', "\n";
+                    echo str_repeat("\t", $indentDepth) . "\t\t\t", '<span class="control-del"><a href="', ee('CP/URL')->make('addons/settings/structure/delete', array('toggle' => $page['entry_id'])), '">', lang('delete'), '<i class="delete-icon"></i></a></span>', "\n";
                 }
 
                 echo str_repeat("\t", $indentDepth) . "\t\t\t", '<input type="hidden" class="structurePid" value="', $page['parent_id'], '" />', "\n";

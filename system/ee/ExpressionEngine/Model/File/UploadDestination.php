@@ -207,7 +207,7 @@ class UploadDestination extends StructureModel
     {
         $overrides = array();
 
-        if ($this->getProperty('site_id') != ee()->config->item('site_id')) {
+        if ($this->getProperty('site_id') != 0 && $this->getProperty('site_id') != ee()->config->item('site_id')) {
             $overrides = ee()->config->get_cached_site_prefs($this->getProperty('site_id'));
         }
 
@@ -256,7 +256,7 @@ class UploadDestination extends StructureModel
     }
 
     /**
-     * Returns the propety value using the overrides if present, but WITHOUT
+     * Returns the property value using the overrides if present, but WITHOUT
      * config variable parsing
      *
      * @param str $name The name of the property to fetch
@@ -553,7 +553,7 @@ class UploadDestination extends StructureModel
         if (! is_null($this->_exists)) {
             return $this->_exists;
         }
-    
+
         try {
             return $this->_exists = $this->getFilesystem()->exists('');
         } catch (\Exception $e) {
@@ -620,7 +620,7 @@ class UploadDestination extends StructureModel
         $basename = ($renamer === false) ? $basename : substr($basename, 0, -strlen($renamer));
 
         foreach ($manipulations as $manipulation) {
-            if($filesystem->exists("{$dirname}/_{$manipulation}/")) {
+            if ($filesystem->exists("{$dirname}/_{$manipulation}/")) {
                 $files = $filesystem->getDirectoryContents("{$dirname}/_{$manipulation}/");
                 $files = array_filter($files, function ($file) use ($basename) {
                     return (strpos($file, "{$basename}_") === 0);

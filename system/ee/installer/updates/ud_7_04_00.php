@@ -38,7 +38,7 @@ class Updater
         return true;
     }
 
-    // in some very p;d EE versions is was possible to delete built-in member groups
+    // in some very old EE versions is was possible to delete built-in member groups
     // here we make sure the required roles are in place
     private function ensureBuiltinRoles()
     {

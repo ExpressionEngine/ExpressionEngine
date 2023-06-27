@@ -4,7 +4,7 @@ import Members from '../../elements/pages/members/Members';
 
 const page = new Members
 
-context('Member List', () => {
+context('Member List in CP', () => {
 
   before(function(){
     cy.task('db:seed')
@@ -24,7 +24,7 @@ context('Member List', () => {
   })
 
   // Confirming phrase search
-  it('searches by phrases', () => {
+  it('search members by keyword', () => {
     page.get('keyword_search').clear().type('banned1{enter}')
     cy.hasNoErrors()
 
@@ -74,7 +74,7 @@ context('Member List frontend', () => {
     
   })
 
-  it('can access memberlist', () => {
+  it('check access memberlist permissions', () => {
     cy.visit('index.php/members/memberlist', {failOnStatusCode: false});
     cy.hasNoErrors()
     cy.get('body').should('contain', 'You are not allowed to view member profiles')

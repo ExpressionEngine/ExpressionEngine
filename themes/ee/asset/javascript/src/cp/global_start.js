@@ -468,7 +468,7 @@ EE.cp.refreshSessionData = function(event, base) {
 
 	// running the request will return the x-csrf-header, which will trigger
 	// our prefilter. We still need to replace the base though.
-	$.getJSON(EE.BASE + '&C=login&M=refresh_csrf_token', function(result) {
+	$.getJSON(EE.BASE + '/login/refresh_csrf_token', function(result) {
 		EE.cp.setBasePath(result.base);
 	});
 
@@ -706,7 +706,7 @@ EE.cp.broadcastEvents = (function() {
 			if (this.modalThresholdReached()) {
 				Events.modal();
 				$(window).trigger('broadcast.idleState', 'modal');
-				$.get(EE.BASE + '&C=login&M=lock_cp'); // lock them out of the cp in the background to prevent tampering
+				$.get(EE.BASE + '/login/lock_cp'); // lock them out of the cp in the background to prevent tampering
 			}
 			else if (this.hasFocus && this.pingReceived === false) {
 				$(window).trigger('broadcast.idleState', 'active');
@@ -781,7 +781,7 @@ EE.cp.broadcastEvents = (function() {
 
 		// received another window's logout event, leave page
 		logout: function() {
-			window.location = EE.BASE + '&C=login&M=logout';
+			window.location = EE.BASE + '/login/logout';
 		}
 	};
 
