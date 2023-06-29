@@ -14,12 +14,12 @@ context('Channel Settings', () => {
         cy.authVisit(page.url);
     })
 
-    it('shows the Channel Settings page', function() {
+    it('Shows the Channel Settings page', function() {
         page.load_edit_for_channel(1)
         cy.hasNoErrors()
     })
 
-    it('should validate the form and reject XSS', function() {
+    it('Validate channel setting form and reject XSS', function() {
         page.load_edit_for_channel(2)
         cy.hasNoErrors()
 
@@ -155,7 +155,7 @@ context('Channel Settings', () => {
         cy.contains('Channel Updated')
     })
 
-    it('should save and load the settings', function() {
+    it('Save and load channel settings', function() {
         page.load_edit_for_channel(2)
         cy.hasNoErrors()
 
@@ -260,7 +260,7 @@ context('Channel Settings', () => {
         page.get('comment_auto_link_urls').should('have.class', "off")
     })
 
-    context('enabling versions', function() {
+    context('Enabling versions', function() {
         it('saves the versioning setting', function() {
             cy.visit('admin.php?/cp/channels/edit/2')
             cy.hasNoErrors()

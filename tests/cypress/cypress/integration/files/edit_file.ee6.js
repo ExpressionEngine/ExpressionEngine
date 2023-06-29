@@ -87,7 +87,7 @@ context('File Manager / Edit File', () => {
     })
   })
 
-  context.only('editing non-image', function() {
+  context('editing non-image', function() {
 
     before(function() {
       cy.auth();

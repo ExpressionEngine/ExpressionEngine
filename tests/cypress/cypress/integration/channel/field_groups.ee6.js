@@ -14,12 +14,12 @@ context('Field Groups', () => {
         cy.authVisit(page.url);
     })
 
-    it('has two field groups', function() {
+    it('In test install, two field groups present', function() {
         page.get('field_groups').its('length').should('eq', 2)
     })
 
 
-    it('creates a field group', function() {
+    it('Create new field group', function() {
         page.get('create_new').click()
 
 
@@ -36,7 +36,7 @@ context('Field Groups', () => {
         page.get('field_groups').contains('Test Group 1')
     })
 
-    it('saves the field group name', function() {
+    it('Change field group name', function() {
         page.get('field_groups_edit').eq(0).click({force: true})
         page.change('Test Group 2')
 

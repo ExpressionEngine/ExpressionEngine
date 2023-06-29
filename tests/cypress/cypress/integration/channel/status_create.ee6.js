@@ -17,7 +17,7 @@ context('Status Create/Edit', () => {
     })
 
 
-    it('shows the Status Create/Edit page', function() {
+    it('Show Status Create/Edit form', function() {
         page.load_create_for_status_group(1)
         page.get('status').should('exist')
         page.get('highlight').should('exist')
@@ -25,7 +25,7 @@ context('Status Create/Edit', () => {
         cy.contains('New Status')
     })
 
-    it('should validate fields', function() {
+    it('Validate status fields', function() {
         page.load_create_for_status_group(1)
 
         //page.submit()
@@ -100,7 +100,7 @@ context('Status Create/Edit', () => {
         page.get('highlight').should('have.value', '#FFFFFF')
     })
 
-    it('should reject XSS', function() {
+    it('Reject XSS in status name and color', function() {
         page.load_create_for_status_group(1)
 
         page.get('status').clear().type(page.messages.xss_vector)
@@ -112,7 +112,7 @@ context('Status Create/Edit', () => {
         page.get('highlight').should('have.value', '')
     })
 
-    it('should repopulate the form on validation error', function() {
+    it('Repopulate the form on validation error', function() {
         page.load_create_for_status_group(1)
 
         page.get('status_access').eq(0).click()
@@ -126,7 +126,7 @@ context('Status Create/Edit', () => {
         page.get('status').should('have.value', 'Open')
     })
 
-    it('should save a new status group and load edit form', function() {
+    it('Save new status and load edit form', function() {
         cy.task('db:seed')
         cy.authVisit(page.url);
         page.load_view_for_status_group(1)
@@ -136,7 +136,6 @@ context('Status Create/Edit', () => {
         page.get('highlight').clear().type('333')
         page.get('status').trigger('mousedown')
         page.get('status_access').first().click()
-        //page.submit()AJ
         cy.get('.app-modal button[value="save"]').filter(':visible').first().click({force:true})
 
         cy.hasNoErrors()
@@ -151,17 +150,6 @@ context('Status Create/Edit', () => {
         //page.get('status_access').eq(0).should('not.be.checked')
         cy.get('input[data-group-toggle="[]"][value = "3"]').should('not.be.checked')
 
-        // Make sure we can edit ||| New CP has a different way to do this.
-        // page.get('status').clear().type('Test2')
-        // page.get('status').trigger('change')
-        // page.get('status_access').click()
-        // cy.get('button[value="save"]').filter(':visible').first().click({force:true}) //AJ
-        // cy.hasNoErrors()
-        //cy.contains('Status Updated')
-        //cy.authVisit(page.url);
-        // page.get('status').should('have.value', 'Test2')
-        // page.get('status_access').eq(0).should('be.checked')
-
         //New edit
         cy.get('span').contains('Featured').click()
         cy.wait(300)
@@ -175,7 +163,7 @@ context('Status Create/Edit', () => {
 
     })
 
-    it('should not allow open and closed status names to be edited', function() {
+    it('Do not allow open and closed status names to be edited', function() {
         page.load_view_for_status_group(1)
         page.load_edit_for_status(1)
         page.get('status').should('be.disabled')
