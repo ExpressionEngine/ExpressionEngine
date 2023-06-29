@@ -764,10 +764,10 @@ class Channel_form_lib
         $button_js = array();
 
         foreach ($html_buttons->result() as $button) {
-            if (strpos($button->classname, 'btn_img') !== false) {
+            if (!empty($button->classname) && strpos($button->classname, 'btn_img') !== false) {
                 // no filebrowser -> no img field
                 continue;
-            } elseif (strpos($button->classname, 'markItUpSeparator') !== false) {
+            } elseif (!empty($button->classname) && strpos($button->classname, 'markItUpSeparator') !== false) {
                 // separators are purely presentational
                 $button_js[] = array('separator' => '---');
             } else {
@@ -1211,7 +1211,11 @@ GRID_FALLBACK;
         //just to prevent any errors
         if (! defined('BASE')) {
             $s = (ee()->config->item('cp_session_type') != 'c') ? ee()->session->userdata('session_id') : 0;
-            define('BASE', EESELF . '?S=' . $s . '&amp;D=cp');
+            $base = EESELF . '?/cp';
+            if (!empty($s)) {
+                $base .= '&amp;S=' . $s;
+            }
+            define('BASE', $base); // cp url
         }
 
         $this->json = $this->_meta['json'];

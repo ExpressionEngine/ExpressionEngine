@@ -16,12 +16,12 @@ namespace ExpressionEngine\Service\Member;
 class Member
 {
     /* Member role constants */
-    const SUPERADMIN = 1;
-    const BANNED = 2;
-    const GUESTS = 3;
-    const PENDING = 4;
-    const MEMBERS = 5;
-    
+    public const SUPERADMIN = 1;
+    public const BANNED = 2;
+    public const GUESTS = 3;
+    public const PENDING = 4;
+    public const MEMBERS = 5;
+
     /**
      * Gets array of members who can be authors
      *
@@ -86,14 +86,18 @@ class Member
     public function calculatePasswordComplexity($password)
     {
         $rank = 0;
+        if (empty($password)) {
+            return $rank;
+        }
         $length = strlen($password);
+        $passwordArray = str_split($password);
         $charsCount = [
             'upper' => 0,
             'lower' => 0,
             'number' => 0,
             'special' => 0
         ];
-        $repeatChars = 0;
+        $repeatChars = 0; // number of repeated characters
         $repeatIncrement = 0;
         $usedChars = [];
         $currentCharType = null;
@@ -117,13 +121,13 @@ class Member
         $orderedStrings = range('a', 'z');
         $orderedKeyboard = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm'];
         for ($i = 0; $i < $length; $i++) {
-            if ($password[$i] >= 'A' && $password[$i] <= 'Z') {
+            if ($passwordArray[$i] >= 'A' && $passwordArray[$i] <= 'Z') {
                 $currentCharType = 'upper';
                 $currentCharTypeNocase = 'string';
-            } elseif ($password[$i] >= 'a' && $password[$i] <= 'z') {
+            } elseif ($passwordArray[$i] >= 'a' && $passwordArray[$i] <= 'z') {
                 $currentCharType = 'lower';
                 $currentCharTypeNocase = 'string';
-            } elseif ($password[$i] >= '0' && $password[$i] <= '9') {
+            } elseif ($passwordArray[$i] >= '0' && $passwordArray[$i] <= '9') {
                 if ($i > 0 && $i < ($length - 1)) {
                     //Middle Numbers or Symbols
                     $rank += 2;
@@ -137,7 +141,7 @@ class Member
                 $currentCharType = $currentCharTypeNocase = 'special';
             }
             $charsCount[$currentCharType]++;
-            $idx = strtolower($password[$i]);
+            $idx = strtolower($passwordArray[$i]);
             if (!isset($usedChars[$idx])) {
                 $usedChars[$idx] = 0;
             }
@@ -146,7 +150,7 @@ class Member
             // Repeat Characters (Case Insensitive)
             $repeated = false;
             for ($j = 0; $j < $length; $j++) {
-                if ($i != $j && strtolower($password[$i]) == strtolower($password[$j])) {
+                if ($i != $j && strtolower($passwordArray[$i]) == strtolower($passwordArray[$j])) {
                     $repeatIncrement += abs($length / ($j - $i));
                     $repeated = true;
                 }
@@ -160,23 +164,23 @@ class Member
             }
             if ($currentCharTypeNocase == $prevCharTypeNocase && $prevCharTypeNocase == $prePrevCharTypeNocase && $i > 1) {
                 if ($currentCharTypeNocase == 'string') {
-                    $idx = array_search($password[$i], $orderedStrings);
-                    if (array_search($password[$i - 1], $orderedStrings) == ($idx - 1) && array_search($password[$i - 2], $orderedStrings) == ($idx - 2)) {
+                    $idx = array_search($passwordArray[$i], $orderedStrings);
+                    if (array_search($passwordArray[$i - 1], $orderedStrings) == ($idx - 1) && array_search($passwordArray[$i - 2], $orderedStrings) == ($idx - 2)) {
                         $sequenceCount['string']++;
                     } else {
-                        $idx = array_search($password[$i], $orderedKeyboard);
-                        if (array_search($password[$i - 1], $orderedKeyboard) == ($idx - 1) && array_search($password[$i - 2], $orderedKeyboard) == ($idx - 2)) {
+                        $idx = array_search($passwordArray[$i], $orderedKeyboard);
+                        if (array_search($passwordArray[$i - 1], $orderedKeyboard) == ($idx - 1) && array_search($passwordArray[$i - 2], $orderedKeyboard) == ($idx - 2)) {
                             $sequenceCount['string']++;
                         }
                     }
                 } elseif ($currentCharTypeNocase == 'number') {
-                    $idx = array_search($password[$i], $orderedNumbers);
-                    if (array_search($password[$i - 1], $orderedNumbers) == ($idx - 1) && array_search($password[$i - 2], $orderedNumbers) == ($idx - 2)) {
+                    $idx = array_search($passwordArray[$i], $orderedNumbers);
+                    if (array_search($passwordArray[$i - 1], $orderedNumbers) == ($idx - 1) && array_search($passwordArray[$i - 2], $orderedNumbers) == ($idx - 2)) {
                         $sequenceCount['number']++;
                     }
                 } elseif ($currentCharTypeNocase == 'special') {
-                    $idx = array_search($password[$i], $orderedSpecials);
-                    if (array_search($password[$i - 1], $orderedSpecials) == ($idx - 1) && array_search($password[$i - 2], $orderedSpecials) == ($idx - 2)) {
+                    $idx = array_search($passwordArray[$i], $orderedSpecials);
+                    if (array_search($passwordArray[$i - 1], $orderedSpecials) == ($idx - 1) && array_search($passwordArray[$i - 2], $orderedSpecials) == ($idx - 2)) {
                         $sequenceCount['special']++;
                     }
                 }
@@ -240,6 +244,30 @@ class Member
         $rank -= $sequenceCount['number'] * 3;
         // Sequential Symbols (3+)
         $rank -= $sequenceCount['special'] * 3;
+        // If dictionary passwords are disallowed, that should influence the rank too
+        if (ee()->config->item('allow_dictionary_pw') != 'y') {
+            $file = !empty(ee()->config->item('name_of_dictionary_file')) ? ee()->config->item('name_of_dictionary_file') : 'dictionary.txt';
+            $path = reduce_double_slashes(PATH_DICT . $file);
+            if (file_exists($path)) {
+                $word_file = file($path);
+                $foundDictionaryWord = '';
+                foreach ($word_file as $word) {
+                    $word = trim($word);
+                    if (stripos($password, $word) !== false && strlen($word) > strlen($foundDictionaryWord)) {
+                        $foundDictionaryWord = $word;
+                    }
+                }
+                if ($foundDictionaryWord) {
+                    $dictRepeatIncrement = 0;
+                    $dictWordLength = strlen($foundDictionaryWord);
+                    for ($i = 1; $i < $dictWordLength; $i++) {
+                        $dictRepeatIncrement += abs($length / ($dictWordLength - $i));
+                    }
+                    $dictRank = ($length > $dictWordLength) ? ceil($dictRepeatIncrement / ($length - $dictWordLength)) : ceil($dictRepeatIncrement);
+                    $rank -= $dictRank;
+                }
+            }
+        }
 
         // if we're using former "secure password" EE algo and the rank is low
         // see if it's satisfactory at least, then return 'good'

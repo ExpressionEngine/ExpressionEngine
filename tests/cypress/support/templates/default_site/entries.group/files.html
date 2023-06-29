@@ -1,0 +1,18 @@
+{layout="cypress/layout"}
+{exp:channel:entries entry_id="1"}
+<h1>{title}</h1>
+
+<section class=" w-12">
+    {news_body}
+</section>
+
+<figure class="left">
+    <img src="{news_image:cropped}">
+</figure>
+
+<figure class="right">
+    <img src="{news_image}{url}{/news_image}">
+</figure>
+
+
+{/exp:channel:entries}

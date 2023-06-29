@@ -3,7 +3,7 @@
 $lang = array(
 
     'fatal_error_caught' =>
-    'We\'ve encountered an unxpected error. Below is the raw text of the error which you can provide to ExpressionEngine support.',
+    'We\'ve encountered an unexpected error. Below is the raw text of the error which you can provide to ExpressionEngine support.',
 
     'could_not_complete' =>
     'Oops, looks like the updater couldn\'t&nbsp;complete.',

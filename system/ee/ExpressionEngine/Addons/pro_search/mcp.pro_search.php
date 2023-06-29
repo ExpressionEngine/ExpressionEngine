@@ -2963,7 +2963,7 @@ class Pro_search_mcp
                     $r = array($row['keywords']);
 
                     // Num results
-                    $r[] = number_format($row['num_results']);
+                    $r[] = !empty($row['num_results']) ? number_format($row['num_results']) : 0;
 
                     // Member
                     $r[] = isset($members[$row['member_id']])

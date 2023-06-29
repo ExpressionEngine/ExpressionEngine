@@ -4,7 +4,7 @@ import MemberCreate from '../../elements/pages/members/MemberCreate';
 
 const page = new MemberCreate
 
-context('Member Registration', () => {
+context('Member Registration in CP', () => {
 
   before(function(){
     cy.task('db:seed')
@@ -15,10 +15,6 @@ context('Member Registration', () => {
     page.load()
     cy.hasNoErrors()
   })
-
-  /*it('loads', () => {
-    page.all_there?.should('eq', true
-  }*/
 
   it('prevents duplicate gmail email addresses', () => {
     cy.eeConfig({ item: 'password_security_policy', value: 'none' })

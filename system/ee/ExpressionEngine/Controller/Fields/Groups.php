@@ -115,6 +115,33 @@ class Groups extends AbstractFieldsController
 
         ee()->view->cp_page_title = lang('create_field_group');
 
+        // Only auto-complete channel short name for new channels
+        ee()->cp->add_js_script('plugin', 'ee_url_title');
+
+        //	Create Foreign Character Conversion JS
+        $foreign_characters = ee()->config->loadFile('foreign_chars');
+
+        /* -------------------------------------
+        /*  'foreign_character_conversion_array' hook.
+        /*  - Allows you to use your own foreign character conversion array
+        */
+        if (ee()->extensions->active_hook('foreign_character_conversion_array') === true) {
+            $foreign_characters = ee()->extensions->call('foreign_character_conversion_array');
+        }
+        /*
+        /* -------------------------------------*/
+
+        ee()->javascript->set_global(array(
+            'publish.foreignChars' => $foreign_characters,
+            'publish.word_separator' => '_'
+        ));
+
+        ee()->javascript->output('
+            $("input[name=group_name]").bind("keyup keydown", function() {
+                $(this).ee_url_title("input[name=short_name]");
+            });
+        ');
+
         if (AJAX_REQUEST) {
             return ee()->cp->render('_shared/form', $vars);
         }
@@ -299,6 +326,27 @@ class Groups extends AbstractFieldsController
                         )
                     )
                 ),
+                array(
+                    'title' => 'short_name',
+                    'desc' => 'field_group_short_name_desc',
+                    'fields' => array(
+                        'short_name' => array(
+                            'type' => 'text',
+                            'value' => $field_group->short_name,
+                            'required' => true
+                        )
+                    )
+                ),
+                array(
+                    'title' => 'description',
+                    'desc' => '',
+                    'fields' => array(
+                        'group_description' => array(
+                            'type' => 'textarea',
+                            'value' => $field_group->group_description
+                        )
+                    )
+                        ),
                 array(
                     'title' => 'fields',
                     'desc' => 'fields_assign_to_group',

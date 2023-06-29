@@ -39,6 +39,8 @@ $lang = array(
 
     'login' => 'Log In',
 
+    'multi_auth_redirect_site_not_found' => 'The site was not found in multi login configuration.',
+
     'new_password' => 'New password',
 
     'new_password_confirm' => 'Confirm new password',

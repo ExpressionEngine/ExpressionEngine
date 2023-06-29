@@ -97,15 +97,16 @@ class NavigationSidebar extends AbstractSidebar
             }
         }
 
-        if (ee('Permission')->hasAny('can_access_members', 'can_create_roles', 'can_edit_roles', 'can_delete_roles')) {
+        if (ee('Permission')->has('can_access_members')) {
             $section = $this->addSection(lang('members'));
-            if (ee('Permission')->has('can_access_members')) {
-                $item = $section->addItem(lang('members'), ee('CP/URL', 'members'))->withIcon('users');
-                if (ee()->uri->segment(3) == 'roles') {
-                    $item->isInactive();
-                }
+
+            $item = $section->addItem(lang('members'), ee('CP/URL', 'members'))->withIcon('users');
+
+            if (ee()->uri->segment(3) == 'roles') {
+                $item->isInactive();
             }
-            if (ee('Permission')->hasAny('can_create_roles', 'can_edit_roles', 'can_delete_roles')) {
+
+            if (ee('Permission')->has('can_admin_roles') && ee('Permission')->hasAny('can_create_roles', 'can_edit_roles', 'can_delete_roles')) {
                 $section->addItem(lang('roles'), ee('CP/URL', 'members/roles'))->withIcon('user-tag');
             }
         }

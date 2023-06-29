@@ -23,7 +23,7 @@ context('Cache Manager', () => {
     page.get('wrap').should('not.contain', 'An error occurred')
   })
 
-  it('should successfully submit with one cache type selected', () => {
+  it('Submits form to clear cache', () => {
     cy.get('[value="Clear Caches"]').click()
     cy.hasNoErrors()
 

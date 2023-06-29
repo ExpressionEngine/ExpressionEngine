@@ -185,7 +185,7 @@ class Pro_variables_type
         $fn = array_shift($args);
 
         // Fieldtype isn't setup or not callable, bail
-        if (! is_object($this->_ft) || ! is_callable(array($this->_ft, $fn))) {
+        if (! is_object($this->_ft) || ! method_exists($this->_ft, $fn)) {
             return;
         }
 

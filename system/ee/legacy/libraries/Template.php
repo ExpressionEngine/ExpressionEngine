@@ -354,7 +354,7 @@ class EE_Template
             'template_id' => $this->template_id,
             'template_type' => $this->embed_type ?: $this->template_type,
             'is_ajax_request' => AJAX_REQUEST,
-            'is_live_preview_request' => isset(ee()->session) && ee('LivePreview')->hasEntryData(),
+            'is_live_preview_request' => isset(ee()->session) ? ee('LivePreview')->hasEntryData() : false,
         ];
 
         //Pro conditionals
@@ -420,6 +420,15 @@ class EE_Template
         for ($i = 1; $i < 10; $i++) {
             $this->template = str_replace(LD . 'segment_' . $i . RD, ee()->uri->segment($i), $this->template);
             $this->segment_vars['segment_' . $i] = ee()->uri->segment($i);
+
+            // apply modifiers to segments
+            if (strpos($this->template, LD . 'segment_' . $i . ':') !== false) {
+                if (preg_match_all('/{(segment_' . $i . ':(.*?))}/', $this->template, $matches, PREG_SET_ORDER)) {
+                    foreach ($matches as $match) {
+                        $this->segment_vars[$match[1]] = ee()->uri->segment($i);
+                    }
+                }
+            }
         }
 
         // Parse template route segments
@@ -2271,10 +2280,10 @@ class EE_Template
             // The first segment in the URL does NOT correlate to a valid template group.  Oh my!
             if ($query->num_rows() > 1) {
                 $duplicate = true;
-                $log_message = "Duplicate Template Group: " . ee()->uri->segment(1);
+                $this->log_item("Duplicate Template Group: " . ee()->uri->segment(1));
             } else {
                 $duplicate = false;
-                $log_message = "Template group and template not found, showing 404 page";
+                $this->log_item("Template group and template not found, showing 404 page");
             }
 
             // If we are enforcing strict URLs we need to show a 404
@@ -3037,7 +3046,8 @@ class EE_Template
                 if ($info->isInstalled()) {
                     $this->module_data[ucfirst($name)] = $name;
                 }
-            } elseif ($info->hasPlugin() && $info->isInstalled()) {
+            }
+            if ($info->hasPlugin() && $info->isInstalled()) {
                 $this->plugins[] = $name;
             }
         }
@@ -3740,7 +3750,7 @@ class EE_Template
 
             // is the modifier valid?
             $method = 'replace_' . $var['modifier'];
-            if (!method_exists($this, $method)) {
+            if (!method_exists($this, $method) && ! ee('Variables/Modifiers')->has($var['modifier'])) {
                 continue;
             }
 
@@ -3762,8 +3772,21 @@ class EE_Template
             } else {
                 $raw = $original;
             }
-            $content = ($method == 'replace_raw_content') ? $raw : $content;
-            $content = $this->$method($content, $var['params']);
+
+            if (isset($var['all_modifiers']) && !empty($var['all_modifiers'])) {
+                foreach ($var['all_modifiers'] as $modifier => $params) {
+                    $method = 'replace_' . $modifier;
+                    if (!method_exists($this, $method) && ! ee('Variables/Modifiers')->has($modifier)) {
+                        continue;
+                    }
+                    $content = ($method == 'replace_raw_content') ? $raw : $content;
+                    $content = $this->$method($content, $params);
+                }
+            } else {
+                $content = ($method == 'replace_raw_content') ? $raw : $content;
+                $content = $this->$method($content, $var['params']);
+            }
+
             $this->conditional_vars[$tagname] = $content;
 
             $tagdata = $this->_parse_var_single($tag, $content, $tagdata);
@@ -4293,6 +4316,11 @@ class EE_Template
             return false;
         }
 
+        // if we don't know site short name, we can't proceed
+        if (empty(ee()->config->item('site_short_name'))) {
+            return false;
+        }
+
         ee()->load->library('api');
         ee()->legacy_api->instantiate('template_structure');
 
@@ -4452,7 +4480,7 @@ class EE_Template
 
     protected function getMemberVariables()
     {
-        static $vars;
+        static $vars = [];
 
         if (!isset(ee()->session)) {
             //early parsing, e.g. called from code and not web request

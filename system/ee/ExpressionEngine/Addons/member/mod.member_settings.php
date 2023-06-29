@@ -985,7 +985,7 @@ class Member_settings extends Member
                     $member->language = ee()->security->sanitize_filename($_POST['language']);
                 }
                 if (!empty($_POST['timezone'])) {
-                    foreach (array('timezone', 'date_format', 'time_format', 'include_seconds') as $key) {
+                    foreach (array('timezone', 'date_format', 'time_format', 'week_start', 'include_seconds') as $key) {
                         if (ee()->input->post('site_default') == 'y') {
                             $member->{$key} = null;
                         } else {
@@ -1471,7 +1471,7 @@ class Member_settings extends Member
 
         $data['language'] = ee()->security->sanitize_filename($_POST['language']);
 
-        foreach (array('timezone', 'date_format', 'time_format', 'include_seconds') as $key) {
+        foreach (array('timezone', 'date_format', 'time_format', 'week_start', 'include_seconds') as $key) {
             if (ee()->input->post('site_default') == 'y') {
                 $data[$key] = null;
             } else {

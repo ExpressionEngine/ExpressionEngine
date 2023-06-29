@@ -46,10 +46,17 @@ class Evaluator
         }
 
         // Get the conditional field
-        $evaluationRule = ee('ConditionalFields')->make($condition->evaluation_rule, $this->channelFields[$condition->condition_field_id]->getType());
+        $fieldTypeName = $this->channelFields[$condition->condition_field_id]->getType();
+        $fieldSettings = $this->channelFields[$condition->condition_field_id]->getSettings();
+        $evaluationRule = ee('ConditionalFields')->make($condition->evaluation_rule, $fieldTypeName);
+
+        // Radio field is special, we need to get options
+        if ($fieldTypeName == 'radio') {
+            $fieldSettings['options'] = $this->channelFields[$condition->condition_field_id]->getPossibleValuesForEvaluation();
+        }
 
         // Now lets evaluate the condition_field value and the rule value
-        return $evaluationRule->evaluate($this->channelFields[$condition->condition_field_id]->getData(), $condition->value, $this->channelFields[$condition->condition_field_id]->getSettings());
+        return $evaluationRule->evaluate($this->channelFields[$condition->condition_field_id]->getData(), $condition->value, $fieldSettings);
     }
 
     public function evaluateConditionSet(ConditionalFields\FieldConditionSet $set)

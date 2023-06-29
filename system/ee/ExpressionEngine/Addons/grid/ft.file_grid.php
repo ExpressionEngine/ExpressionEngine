@@ -48,7 +48,7 @@ class file_grid_ft extends Grid_ft
             'content_type' => $this->get_setting('field_content_type', 'all'),
             'grid_max_rows' => $this->get_setting('grid_max_rows'),
             'vertical_layout' => isset($this->settings['vertical_layout'])
-                ? $this->settings['vertical_layout']
+                ? ($this->settings['vertical_layout'] == 'horizontal_layout' ? 'horizontal' : $this->settings['vertical_layout'])
                 : 'n',
         ]);
     }
@@ -57,7 +57,7 @@ class file_grid_ft extends Grid_ft
     {
         $directory_choices = ['all' => lang('all')] + ee('Model')->get('UploadDestination')
             ->fields('id', 'name')
-            ->filter('site_id', ee()->config->item('site_id'))
+            ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
             ->filter('module_id', 0)
             ->order('name', 'asc')
             ->all(true)
@@ -141,7 +141,7 @@ class file_grid_ft extends Grid_ft
                                     'y' => lang('grid_vertical_layout'),
                                     'horizontal' => lang('grid_horizontal_layout'),
                                 ],
-                                'value' => isset($data['vertical_layout']) ? $data['vertical_layout'] : 'n'
+                                'value' => isset($data['vertical_layout']) ? ($data['vertical_layout'] == 'horizontal_layout' ? 'horizontal' : $data['vertical_layout']) : 'n'
                             ]
                         ]
                     ]
@@ -228,6 +228,16 @@ class file_grid_ft extends Grid_ft
         }
 
         parent::post_save_settings($data);
+    }
+
+    // for File Grid, we need to validate grid_min_rows
+    public function validate($data)
+    {
+        if (!ee('Request')->isAjax() && !empty($this->settings['grid_min_rows']) && (empty($data) || count($data) < $this->settings['grid_min_rows'])) {
+            return sprintf(lang('grid_min_rows_required'), $this->settings['grid_min_rows']);
+        }
+
+        return parent::validate($data);
     }
 }
 

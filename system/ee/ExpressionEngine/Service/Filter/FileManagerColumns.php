@@ -28,12 +28,18 @@ class FileManagerColumns extends Columns
     }
 
     // get columns from view
-    // 
     public function value()
     {
         $value = '';
 
-        $upload_id = !empty(ee()->uri->segment(4)) ? (int) ee()->uri->segment(4) : 0;
+        $upload_id = 0;
+        if (!empty(ee()->uri->segment(4)) && is_numeric(ee()->uri->segment(4))) {
+            $upload_id = (int) ee()->uri->segment(4);
+        } elseif (!empty(ee()->input->get('requested_directory')) && is_numeric(ee()->input->get('requested_directory'))) {
+            $upload_id = (int) ee()->input->get('requested_directory');
+        } elseif (!empty(ee()->input->get('directories')) && is_numeric(ee()->input->get('directories'))) {
+            $upload_id = (int) ee()->input->get('directories');
+        }
         $viewtype = in_array($this->view_id, ['thumb', 'list']) ? $this->view_id : 'list';
 
         $query = ee('Model')->get('FileManagerView')

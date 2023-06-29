@@ -94,9 +94,9 @@ export default class FileManagerCommand extends Command {
 			} else if (file.file_id) {
 				const file_url = EE.Rte.filedirUrls[file.upload_location_id] + file.file_name;
 				if (!file.isImage && !file.isSVG) {
-					editor.execute( 'link', file_url );
+					editor.execute( 'link', file.path );
 				} else {
-					insertImages( editor, [file_url] );
+					insertImages( editor, [file.path] );
 				}
 			}
 			window.document.removeEventListener( 'filepicker:pick', pickFile );

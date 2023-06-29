@@ -119,11 +119,13 @@ class Document implements Iterator
         $this->position = 0;
     }
 
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->frequency[$this->words[$this->position]];
     }
 
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->words[$this->position];
