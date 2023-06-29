@@ -15,7 +15,7 @@ class Member
 {
     public $trigger = 'member';
     public $member_template = true;
-    public $member_fields;
+    public $member_fields = [];
     public $theme_class = 'profile_theme';
     public $request = 'public_profile';
     public $no_menu = array(
@@ -44,8 +44,6 @@ class Member
     public $simple_page = array(
         'email_console', 'send_email', 'smileys', 'member_mini_search', 'do_member_mini_search'
     );
-
-    public $member_fields = [];
 
     public $page_title = '';
     public $basepath = '';
