@@ -149,7 +149,7 @@ class EE_Image_lib
             return false;
         }
 
-        $this->image_library = strtolower($this->image_library);
+        $this->image_library = ($this->image_library) ? strtolower($this->image_library) : 'gd2';
 
         /*
          * Set the full server path

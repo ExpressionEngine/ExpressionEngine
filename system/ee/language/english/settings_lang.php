@@ -188,6 +188,10 @@ $lang = array(
 
     'email_smtp_crypto_desc' => 'Refer to your SMTP provider for instructions.',
 
+    'tls_version' => 'TLS version',
+
+    'tls_version_desc' => 'When using TLS, select the version used by your SMTP provider.',
+
     'empty_stmp_fields' => 'This field is required for SMTP.',
 
     'html' => 'HTML',

@@ -2,7 +2,7 @@
 const { _, $ } = Cypress
 
 
-context('Member Registration', () => {
+context('Front-end login', () => {
 
     before(function() {
         cy.task('db:seed')
