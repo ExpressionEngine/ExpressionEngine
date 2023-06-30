@@ -187,6 +187,11 @@ context('Member Field List', () => {
     cy.get('[data-toggle-for="m_field_public"]').click()
     cy.get('body').type('{ctrl}', {release: false}).type('s')
 
+    cy.visit('admin.php?/cp/members/fields')
+    cy.get('a:contains("Member Text")').first().click()
+    cy.get('[data-toggle-for="m_field_public"]').click()
+    cy.get('body').type('{ctrl}', {release: false}).type('s')
+
     // try again
     cy.clearCookies()
     cy.visit('index.php/members/login')
@@ -213,7 +218,7 @@ context('Member Field List', () => {
     cy.get('fieldset[class="m_field_id_5"] .field_data').invoke('text').should('eq', 'https://packettide.com/')
 
     cy.get('fieldset[class="m_field_id_6"] label').invoke('text').should('eq', 'Member Text')
-    cy.get('fieldset[class="m_field_id_6"]').invoke('attr', 'title').then((attr) => {
+    cy.get('fieldset[class="m_field_id_6"] label').invoke('attr', 'title').then((attr) => {
       expect(attr).to.eq("Member Text")
     })
     cy.get('fieldset[class="m_field_id_6"] .text_direction').invoke('text').should('eq', 'ltr')

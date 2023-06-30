@@ -817,8 +817,8 @@ class Member_settings extends Member
                         $field->get('field_description'),
                         $field->getForm(),
                         $result_row[$field->getName()],
-                        $field->get('text_direction'),
-                        $field->get('maxlength'),
+                        $field->get('field_text_direction'),
+                        $field->get('field_maxl'),
                         $field->isRequired(),
                         $field->getType()
                     ],
