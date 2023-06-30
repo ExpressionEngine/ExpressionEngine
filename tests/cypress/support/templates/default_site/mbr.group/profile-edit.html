@@ -33,11 +33,18 @@
 
 
     {custom_profile_fields}
-        <fieldset>
-            <label>{lang:profile_field}</label><br>
-            <small>{lang:profile_field_description}</small><br>
 
-            {form:custom_profile_field}
+        <fieldset class="{field_name}" aria-label="{field_label}" data-id="{field_id}" data-type="{field_type}">
+            <label title="{field_label}">{lang:profile_field}</label><br>
+            <small class="profile_field_description">{lang:profile_field_description}</small><br>
+            <small class="field_instructions">{field_instructions}</small>
+
+            {display_field}
+
+            <div class="field_data">{field_data}</div>
+            <div class="text_direction">{text_direction}</div>
+            <div class="maxlength">{maxlength}</div>
+            {if field_required}<div class="required">*</div>{/if}
 
         </fieldset>
      {/custom_profile_fields}

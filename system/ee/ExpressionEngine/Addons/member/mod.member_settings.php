@@ -791,9 +791,39 @@ class Member_settings extends Member
 
                 $required = $field->isRequired() ? "<span class='alert'>*</span>&nbsp;" : '';
 
-                $temp = str_replace('{lang:profile_field}', $required . $field->getLabel(), $temp);
-                $temp = str_replace('{lang:profile_field_description}', $field->get('field_description'), $temp);
-                $temp = str_replace('{form:custom_profile_field}', $field->getForm(), $temp);
+                $temp = str_replace(
+                    [
+                        '{lang:profile_field}',
+                        '{lang:profile_field_description}',
+                        '{form:custom_profile_field}',
+                        '{field_name}',
+                        '{field_label}',
+                        '{field_id}',
+                        '{field_instructions}',
+                        '{display_field}',
+                        '{field_data}',
+                        '{text_direction}',
+                        '{maxlength}',
+                        '{field_required}',
+                        '{field_type}',
+                    ],
+                    [
+                        $required . $field->getLabel(),
+                        $field->get('field_description'),
+                        $field->getForm(),
+                        $field->getName(),
+                        $field->getLabel(),
+                        $field->getId(),
+                        $field->get('field_description'),
+                        $field->getForm(),
+                        $result_row[$field->getName()],
+                        $field->get('text_direction'),
+                        $field->get('maxlength'),
+                        $field->isRequired(),
+                        $field->getType()
+                    ],
+                    $temp
+                );
 
                 /** ----------------------------------------
                 /**  Render textarea fields

@@ -19,9 +19,67 @@ context('Member Field List', () => {
     cy.eeConfig({ item: 'allow_member_registration', value: 'y' })
     cy.eeConfig({ item: 'req_mbr_activation', value: 'none' })
 
+    cy.auth();
+    page.load()
+    cy.log('create text field')
+    cy.dismissLicenseAlert()
+    page.get('member_fields_create').click()
+    form.createField({
+        type: 'Text Input',
+        label: 'Shipping Method'
+    })
+    page.hasAlert('success')
+    cy.visit('admin.php?/cp/members/fields')
+    page.get('member_fields_table').should('contain', 'Shipping Method')
+    
+    page.load()
+    cy.log('create file field')
+    cy.visit('admin.php?/cp/members/fields/create')
+    form.createField({
+        type: 'File',
+        label: 'Member Image',
+        fields: { allowed_directories: 2 }
+    })
+    page.hasAlert('success')
+    
+    page.load()
+    cy.log('buttons field, visible on registration')
+    page.get('member_fields_create').click()
+    cy.get('[data-toggle-for="m_field_reg"]').click()
+    form.createField({
+        type: 'Selectable Buttons',
+        label: 'My Buttons',
+        fields: {
+          field_pre_populate: 'n',
+          field_list_items: "one\ntwo\nthree"
+        }
+    })
+    page.hasAlert('success')
+
+    page.load()
+    cy.log('URL field, visible on registration')
+    page.get('member_fields_create').click()
+    cy.get('[data-toggle-for="m_field_reg"]').click()
+    form.createField({
+        type: 'URL',
+        label: 'Member URL',
+        description: 'URL field, visible on registration'
+    })
+    page.hasAlert('success')
+    
+    page.load()
+    cy.log('Text field, visible on registration')
+    page.get('member_fields_create').click()
+    cy.get('[data-toggle-for="m_field_reg"]').click()
+    form.createField({
+        type: 'Text Input',
+        label: 'Member Text'
+    })
+    page.hasAlert('success')
+
     //copy templates
     cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' }).then(() => {
-        cy.authVisit('admin.php?/cp/design')
+      cy.authVisit('admin.php?/cp/design')
     })
   })
 
@@ -39,17 +97,6 @@ context('Member Field List', () => {
     cy.get('.title-bar__title').contains('Custom Member Fields')
   })
 
-  it('create text field', () => {
-    page.get('member_fields_create').click()
-    form.createField({
-        type: 'Text Input',
-        label: 'Shipping Method'
-    })
-    page.hasAlert('success')
-    cy.visit('admin.php?/cp/members/fields')
-    page.get('member_fields_table').should('contain', 'Shipping Method')
-  })
-
   it('can not create field with duplicate name', () => {
     cy.visit('admin.php?/cp/members/fields/create')
     form.createField({
@@ -60,39 +107,6 @@ context('Member Field List', () => {
     page.hasError(cy.get('input[name="m_field_name"]'), 'This field must be unique')
   })
 
-  it('create file field', () => {
-    cy.visit('admin.php?/cp/members/fields/create')
-    form.createField({
-        type: 'File',
-        label: 'Member Image',
-        fields: { allowed_directories: 2 }
-    })
-    page.hasAlert('success')
-  })
-
-  it('buttons field, visible on registration', () => {
-    page.get('member_fields_create').click()
-    cy.get('[data-toggle-for="m_field_reg"]').click()
-    form.createField({
-        type: 'Selectable Buttons',
-        label: 'My Buttons',
-        fields: {
-          field_pre_populate: 'n',
-          field_list_items: "one\ntwo\nthree"
-        }
-    })
-    page.hasAlert('success')
-  })
-
-  it('URL field, visible on registration', () => {
-    page.get('member_fields_create').click()
-    cy.get('[data-toggle-for="m_field_reg"]').click()
-    form.createField({
-        type: 'URL',
-        label: 'Member URL'
-    })
-    page.hasAlert('success')
-  })
 
   it('register member in CP and set custom fields', () => {
     cy.visit('admin.php?/cp/members/create');
@@ -134,7 +148,7 @@ context('Member Field List', () => {
     cy.get('#accept_terms').check();
 
     cy.get('label:contains("My Buttons")').parents('fieldset').find('select').select('two')
-    cy.get('label:contains("Member URL")').parents('fieldset').find('input[type=text]').clear().type('https://expressionengine.com/')
+    cy.get('label:contains("Member URL")').parents('fieldset').find('input[type=text]').clear().type('https://google.com/')
 
     cy.get('#submit').click();
 
@@ -147,7 +161,7 @@ context('Member Field List', () => {
     // the fields shown on frontend
     cy.visit('index.php/mbr/profile/fe-member');
     cy.get('.my_buttons span').invoke('text').should('eq', 'two')
-    cy.get('.member_url span').invoke('text').should('eq', 'https://expressionengine.com/')
+    cy.get('.member_url span').invoke('text').should('eq', 'https://google.com/')
   })
 
   it('edit profile on front-end', () => {
@@ -181,9 +195,29 @@ context('Member Field List', () => {
     cy.get('input[name="submit"').click()
     cy.visit('index.php/mbr/profile-edit');
     cy.get('label:contains("My Buttons")').parents('fieldset').find('select').select('three')
-    cy.get('label:contains("Member URL")').parents('fieldset').find('input[type=text]').clear().type('https://expressionengine.com/some-page')
-
+    cy.get('label:contains("Member URL")').parents('fieldset').find('input[type=text]').clear().type('https://packettide.com/')
     cy.get('#submit').click();
+
+    // check variables
+    cy.get('fieldset[class="m_field_id_5"]').invoke('attr', 'aria-label').then((attr) => {
+      expect(attr).to.eq("Member URL")
+    })
+    cy.get('fieldset[class="m_field_id_5"]').invoke('attr', 'data-id').then((attr) => {
+      expect(attr).to.eq("5")
+    })
+    cy.get('fieldset[class="m_field_id_5"]').invoke('attr', 'data-type').then((attr) => {
+      expect(attr).to.eq("url")
+    })
+    cy.get('fieldset[class="m_field_id_5"] .profile_field_description').invoke('text').should('eq', 'URL field, visible on registration')
+    cy.get('fieldset[class="m_field_id_5"] .field_instructions').invoke('text').should('eq', 'URL field, visible on registration')
+    cy.get('fieldset[class="m_field_id_5"] .field_data').invoke('text').should('eq', 'https://packettide.com/')
+
+    cy.get('fieldset[class="m_field_id_6"] label').invoke('text').should('eq', 'Member Text')
+    cy.get('fieldset[class="m_field_id_6"]').invoke('attr', 'title').then((attr) => {
+      expect(attr).to.eq("Member Text")
+    })
+    cy.get('fieldset[class="m_field_id_6"] .text_direction').invoke('text').should('eq', 'ltr')
+    cy.get('fieldset[class="m_field_id_6"] .maxlength').invoke('text').should('eq', '256')
 
     cy.hasNoErrors()
 
@@ -191,10 +225,10 @@ context('Member Field List', () => {
     cy.visit('index.php/mbr/profile/fe-member');
     cy.hasNoErrors()
     cy.get('.my_buttons span').invoke('text').should('eq', 'three')
-    cy.get('.member_url span').invoke('text').should('eq', 'https://expressionengine.com/some-page')
+    cy.get('.member_url span').invoke('text').should('eq', 'https://packettide.com/')
 
     cy.visit('index.php/mbr/profile-edit');
     cy.get('label:contains("My Buttons")').parents('fieldset').find('select option[value=three]').should('be.selected')
-    cy.get('label:contains("Member URL")').parents('fieldset').find('input[type=text]').should('have.value', 'https://expressionengine.com/some-page')
+    cy.get('label:contains("Member URL")').parents('fieldset').find('input[type=text]').should('have.value', 'https://packettide.com/')
   })
 })

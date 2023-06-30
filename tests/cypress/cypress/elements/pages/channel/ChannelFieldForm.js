@@ -13,6 +13,8 @@ class ChannelFieldForm extends ControlPanel {
             "field_type_choices": 'div[data-input-value*="field_type"] .field-drop-choices label',
             "field_label": 'input[type!=hidden][name*=field_label]',
             "field_name": 'input[type!=hidden][name*=field_name]',
+            "field_instructions": 'textarea[name*=field_instructions]',
+            "field_description": 'textarea[name*=field_description]',
             "form": 'form[action*="admin.php?/cp/fields"]'
         })
     }
@@ -45,6 +47,12 @@ class ChannelFieldForm extends ControlPanel {
         this.get('field_label').type(options.label)
         if (options.name) {
             this.get('field_name').type(options.name)
+        }
+        if (options.instructions) {
+            this.get('field_instructions').type(options.instructions)
+        }
+        if (options.description) {
+            this.get('field_description').type(options.description)
         }
 
         for (const field in options.fields) {
