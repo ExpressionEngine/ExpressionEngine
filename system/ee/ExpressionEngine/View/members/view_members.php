@@ -8,7 +8,7 @@
       <?=ee('CP/Alert')->get('view-members')?>
     </div>
     <div class="form-btns form-btns-top">
-      <div class="title-bar js-filters-collapsable title-bar--large">
+      <div class="title-bar js-filters-collapsible title-bar--large">
   			<h3 class="title-bar__title"><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h3>
   			<?php if (isset($filters)) {
     echo $filters;

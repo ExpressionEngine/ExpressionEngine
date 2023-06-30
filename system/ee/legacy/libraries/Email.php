@@ -16,138 +16,143 @@ class EE_Email
     /**
      * Used as the User-Agent and X-Mailer headers' value.
      *
-     * @var	string
+     * @var string
      */
     public $useragent = APP_NAME;
 
     /**
      * Path to the Sendmail binary.
      *
-     * @var	string
+     * @var string
      */
-    public $mailpath = '/usr/sbin/sendmail';	// Sendmail path
+    public $mailpath = '/usr/sbin/sendmail'; // Sendmail path
 
     /**
      * Which method to use for sending e-mails.
      *
-     * @var	string	'mail', 'sendmail' or 'smtp'
+     * @var string  'mail', 'sendmail' or 'smtp'
      */
-    public $protocol = 'mail';		// mail/sendmail/smtp
+    public $protocol = 'mail'; // mail/sendmail/smtp
 
     /**
      * STMP Server host
      *
-     * @var	string
+     * @var string
      */
     public $smtp_host = '';
 
     /**
      * SMTP Username
      *
-     * @var	string
+     * @var string
      */
     public $smtp_user = '';
 
     /**
      * SMTP Password
      *
-     * @var	string
+     * @var string
      */
     public $smtp_pass = '';
 
     /**
      * SMTP Server port
      *
-     * @var	int
+     * @var int
      */
     public $smtp_port = 25;
 
     /**
      * SMTP connection timeout in seconds
      *
-     * @var	int
+     * @var int
      */
     public $smtp_timeout = 5;
 
     /**
      * SMTP persistent connection
      *
-     * @var	bool
+     * @var bool
      */
     public $smtp_keepalive = false;
 
     /**
      * SMTP Encryption
      *
-     * @var	string	empty, 'tls' or 'ssl'
+     * @var string empty, 'tls' or 'ssl'
      */
     public $smtp_crypto = '';
 
     /**
+     * TLS Crypto Method
+     */
+    public $tls_crypto_method = STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
+
+    /**
      * Whether to apply word-wrapping to the message body.
      *
-     * @var	bool
+     * @var bool
      */
     public $wordwrap = true;
 
     /**
      * Number of characters to wrap at.
      *
-     * @see	CI_Email::$wordwrap
-     * @var	int
+     * @see CI_Email::$wordwrap
+     * @var int
      */
     public $wrapchars = 76;
 
     /**
      * Message format.
      *
-     * @var	string	'text' or 'html'
+     * @var string 'text' or 'html'
      */
     public $mailtype = 'text';
 
     /**
      * Character set (default: utf-8)
      *
-     * @var	string
+     * @var string
      */
     public $charset = 'utf-8';
 
     /**
      * Multipart message
      *
-     * @var	string	'mixed' (in the body) or 'related' (separate)
+     * @var string 'mixed' (in the body) or 'related' (separate)
      */
-    public $multipart = 'mixed';		// "mixed" (in the body) or "related" (separate)
+    public $multipart = 'mixed'; // "mixed" (in the body) or "related" (separate)
 
     /**
      * Alternative message (for HTML messages only)
      *
-     * @var	string
+     * @var string
      */
     public $alt_message = '';
 
     /**
      * Whether to validate e-mail addresses.
      *
-     * @var	bool
+     * @var bool
      */
     public $validate = false;
 
     /**
      * X-Priority header value.
      *
-     * @var	int	1-5
+     * @var int 1-5
      */
-    public $priority = 3;			// Default priority (1 - 5)
+    public $priority = 3; // Default priority (1 - 5)
 
     /**
      * Newline character sequence.
      * Use "\r\n" to comply with RFC 822.
      *
-     * @link	http://www.ietf.org/rfc/rfc822.txt
-     * @var	string	"\r\n" or "\n"
+     * @link http://www.ietf.org/rfc/rfc822.txt
+     * @var string "\r\n" or "\n"
      */
-    public $newline = "\n";			// Default newline. "\r\n" or "\n" (Use "\r\n" to comply with RFC 822)
+    public $newline = "\n"; // Default newline. "\r\n" or "\n" (Use "\r\n" to comply with RFC 822)
 
     /**
      * CRLF character sequence
@@ -158,15 +163,15 @@ class EE_Email
      * switching to "\n", while improper, is the only solution
      * that seems to work for all environments.
      *
-     * @link	http://www.ietf.org/rfc/rfc822.txt
-     * @var	string
+     * @link http://www.ietf.org/rfc/rfc822.txt
+     * @var string
      */
     public $crlf = "\n";
 
     /**
      * Whether to use Delivery Status Notification.
      *
-     * @var	bool
+     * @var bool
      */
     public $dsn = false;
 
@@ -174,143 +179,143 @@ class EE_Email
      * Whether to send multipart alternatives.
      * Yahoo! doesn't seem to like these.
      *
-     * @var	bool
+     * @var bool
      */
     public $send_multipart = true;
 
     /**
      * Whether to send messages to BCC recipients in batches.
      *
-     * @var	bool
+     * @var bool
      */
     public $bcc_batch_mode = false;
 
     /**
      * BCC Batch max number size.
      *
-     * @see	CI_Email::$bcc_batch_mode
-     * @var	int
+     * @see CI_Email::$bcc_batch_mode
+     * @var int
      */
     public $bcc_batch_size = 200;
 
     /**
      * Subject header
      *
-     * @var	string
+     * @var string
      */
     protected $_subject = '';
 
     /**
      * Message body
      *
-     * @var	string
+     * @var string
      */
     protected $_body = '';
 
     /**
      * Final message body to be sent.
      *
-     * @var	string
+     * @var string
      */
     protected $_finalbody = '';
 
     /**
      * multipart/alternative boundary
      *
-     * @var	string
+     * @var string
      */
     protected $_alt_boundary = '';
 
     /**
      * Attachment boundary
      *
-     * @var	string
+     * @var string
      */
     protected $_atc_boundary = '';
 
     /**
      * Final headers to send
      *
-     * @var	string
+     * @var string
      */
     protected $_header_str = '';
 
     /**
      * SMTP Connection socket placeholder
      *
-     * @var	resource
+     * @var resource
      */
     protected $_smtp_connect = '';
 
     /**
      * Mail encoding
      *
-     * @var	string	'8bit' or '7bit'
+     * @var string '8bit' or '7bit'
      */
     protected $_encoding = '8bit';
 
     /**
      * Whether to perform SMTP authentication
      *
-     * @var	bool
+     * @var bool
      */
     protected $_smtp_auth = false;
 
     /**
      * Whether to send a Reply-To header
      *
-     * @var	bool
+     * @var bool
      */
     protected $_replyto_flag = false;
 
     /**
      * Debug messages
      *
-     * @see	CI_Email::print_debugger()
-     * @var	string
+     * @see CI_Email::print_debugger()
+     * @var array
      */
     protected $_debug_msg = array();
 
     /**
      * Recipients
      *
-     * @var	string[]
+     * @var string[]
      */
     protected $_recipients = array();
 
     /**
      * CC Recipients
      *
-     * @var	string[]
+     * @var string[]
      */
     protected $_cc_array = array();
 
     /**
      * BCC Recipients
      *
-     * @var	string[]
+     * @var string[]
      */
     protected $_bcc_array = array();
 
     /**
      * Message headers
      *
-     * @var	string[]
+     * @var string[]
      */
     protected $_headers = array();
 
     /**
      * Attachment data
      *
-     * @var	array
+     * @var array
      */
     protected $_attachments = array();
 
     /**
      * Valid $protocol values
      *
-     * @see	CI_Email::$protocol
-     * @var	string[]
+     * @see CI_Email::$protocol
+     * @var string[]
      */
     protected $_protocols = array('dummy', 'mail', 'sendmail', 'smtp');
 
@@ -320,7 +325,7 @@ class EE_Email
      * Character sets valid for 7-bit encoding,
      * excluding language suffix.
      *
-     * @var	string[]
+     * @var string[]
      */
     protected $_base_charsets = array('us-ascii', 'iso-2022-');
 
@@ -329,8 +334,8 @@ class EE_Email
      *
      * Valid mail encodings
      *
-     * @see	CI_Email::$_encoding
-     * @var	string[]
+     * @see CI_Email::$_encoding
+     * @var string[]
      */
     protected $_bit_depths = array('7bit', '8bit');
 
@@ -339,7 +344,7 @@ class EE_Email
      *
      * Actual values to send with the X-Priority header
      *
-     * @var	string[]
+     * @var string[]
      */
     protected $_priorities = array('1 (Highest)', '2 (High)', '3 (Normal)', '4 (Low)', '5 (Lowest)');
 
@@ -360,7 +365,7 @@ class EE_Email
     /**
      * Destructor - Releases Resources
      *
-     * @return	void
+     * @return void
      */
     public function __destruct()
     {
@@ -372,8 +377,8 @@ class EE_Email
     /**
      * Initialize preferences
      *
-     * @param	array
-     * @return	CI_Email
+     * @param array
+     * @return CI_Email
      */
     public function initialize($config = array())
     {
@@ -398,8 +403,8 @@ class EE_Email
     /**
      * Set config values
      *
-     * @access	private
-     * @return	void
+     * @access private
+     * @return void
      */
     public function EE_initialize()
     {
@@ -413,10 +418,10 @@ class EE_Email
         );
 
         /* -------------------------------------------
-        /*	Hidden Configuration Variables
-        /*	- email_newline => Default newline.
-        /*  - email_crlf => CRLF used in quoted-printable encoding
-        /*  - email_smtp_crypto => Cryptographic protocol (Secure Sockets Layer or Transport Layer Security allowed)
+        /* Hidden Configuration Variables
+        /* - email_newline => Default newline.
+        /* - email_crlf => CRLF used in quoted-printable encoding
+        /* - email_smtp_crypto => Cryptographic protocol (Secure Sockets Layer or Transport Layer Security allowed)
         /* -------------------------------------------*/
 
         if (ee()->config->item('email_newline') !== false) {
@@ -429,6 +434,9 @@ class EE_Email
 
         if (ee()->config->item('email_smtp_crypto') == 'tls' or ee()->config->item('email_smtp_crypto') == 'ssl') {
             $config['smtp_crypto'] = ee()->config->item('email_smtp_crypto');
+            if (ee()->config->item('tls_crypto_method') !== false) {
+                $config['tls_crypto_method'] = ee()->config->item('tls_crypto_method');
+            }
         }
 
         $this->initialize($config);
@@ -437,8 +445,8 @@ class EE_Email
     /**
      * Initialize the Email Data
      *
-     * @param	bool
-     * @return	CI_Email
+     * @param bool
+     * @return CI_Email
      */
     public function clear($clear_attachments = false)
     {
@@ -466,10 +474,10 @@ class EE_Email
     /**
      * Set FROM
      *
-     * @param	string	$from
-     * @param	string	$name
-     * @param	string	$return_path = NULL	Return-Path
-     * @return	CI_Email
+     * @param string $from
+     * @param string $name
+     * @param string $return_path = NULL Return-Path
+     * @return CI_Email
      */
     public function from($from, $name = '', $return_path = null)
     {
@@ -506,9 +514,9 @@ class EE_Email
     /**
      * Set Reply-to
      *
-     * @param	string
-     * @param	string
-     * @return	CI_Email
+     * @param string
+     * @param string
+     * @return CI_Email
      */
     public function reply_to($replyto, $name = '')
     {
@@ -537,8 +545,8 @@ class EE_Email
     /**
      * Set Recipients
      *
-     * @param	string
-     * @return	CI_Email
+     * @param string
+     * @return CI_Email
      */
     public function to($to)
     {
@@ -563,8 +571,8 @@ class EE_Email
     /**
      * Set CC
      *
-     * @param	string
-     * @return	CI_Email
+     * @param string
+     * @return CI_Email
      */
     public function cc($cc)
     {
@@ -588,9 +596,9 @@ class EE_Email
     /**
      * Set BCC
      *
-     * @param	string
-     * @param	string
-     * @return	CI_Email
+     * @param string
+     * @param string
+     * @return CI_Email
      */
     public function bcc($bcc, $limit = '')
     {
@@ -619,8 +627,8 @@ class EE_Email
     /**
      * Set Email Subject
      *
-     * @param	string
-     * @return	CI_Email
+     * @param string
+     * @return CI_Email
      */
     public function subject($subject)
     {
@@ -636,11 +644,11 @@ class EE_Email
     /**
      * Assign file attachments
      *
-     * @param	string	$filename
-     * @param	string	$disposition = 'attachment'
-     * @param	string	$newname = NULL
-     * @param	string	$mime = ''
-     * @return	CI_Email
+     * @param string $filename
+     * @param string $disposition = 'attachment'
+     * @param string $newname = NULL
+     * @param string $mime = ''
+     * @return CI_Email
      */
     public function attach($filename, $disposition = '', $newname = null, $mime = '')
     {
@@ -656,9 +664,9 @@ class EE_Email
     /**
      * Add a Header Item
      *
-     * @param	string
-     * @param	string
-     * @return	void
+     * @param string
+     * @param string
+     * @return void
      */
     public function set_header($header, $value)
     {
@@ -668,8 +676,8 @@ class EE_Email
     /**
      * Convert a String to an Array
      *
-     * @param	string
-     * @return	array
+     * @param string
+     * @return array
      */
     protected function _str_to_array($email)
     {
@@ -685,8 +693,8 @@ class EE_Email
     /**
      * Set Multipart Value
      *
-     * @param	string
-     * @return	CI_Email
+     * @param string
+     * @return CI_Email
      */
     public function set_alt_message($str = '')
     {
@@ -698,8 +706,8 @@ class EE_Email
     /**
      * Set Mailtype
      *
-     * @param	string
-     * @return	CI_Email
+     * @param string
+     * @return CI_Email
      */
     public function set_mailtype($type = 'text')
     {
@@ -711,8 +719,8 @@ class EE_Email
     /**
      * Set Wordwrap
      *
-     * @param	bool
-     * @return	CI_Email
+     * @param bool
+     * @return CI_Email
      */
     public function set_wordwrap($wordwrap = true)
     {
@@ -724,8 +732,8 @@ class EE_Email
     /**
      * Set Protocol
      *
-     * @param	string
-     * @return	CI_Email
+     * @param string
+     * @return CI_Email
      */
     public function set_protocol($protocol = 'mail')
     {
@@ -737,8 +745,8 @@ class EE_Email
     /**
      * Set Priority
      *
-     * @param	int
-     * @return	CI_Email
+     * @param int
+     * @return CI_Email
      */
     public function set_priority($n = 3)
     {
@@ -750,8 +758,8 @@ class EE_Email
     /**
      * Set Newline Character
      *
-     * @param	string
-     * @return	CI_Email
+     * @param string
+     * @return CI_Email
      */
     public function set_newline($newline = "\n")
     {
@@ -763,8 +771,8 @@ class EE_Email
     /**
      * Set CRLF
      *
-     * @param	string
-     * @return	CI_Email
+     * @param string
+     * @return CI_Email
      */
     public function set_crlf($crlf = "\n")
     {
@@ -776,7 +784,7 @@ class EE_Email
     /**
      * Set Message Boundary
      *
-     * @return	void
+     * @return void
      */
     protected function _set_boundaries()
     {
@@ -787,7 +795,7 @@ class EE_Email
     /**
      * Get the Message ID
      *
-     * @return	string
+     * @return string
      */
     protected function _get_message_id()
     {
@@ -799,8 +807,8 @@ class EE_Email
     /**
      * Get Mail Protocol
      *
-     * @param	bool
-     * @return	mixed
+     * @param bool
+     * @return mixed
      */
     protected function _get_protocol($return = true)
     {
@@ -815,8 +823,8 @@ class EE_Email
     /**
      * Get Mail Encoding
      *
-     * @param	bool
-     * @return	string
+     * @param bool
+     * @return string
      */
     protected function _get_encoding($return = true)
     {
@@ -836,7 +844,7 @@ class EE_Email
     /**
      * Get content type (text/html/attachment)
      *
-     * @return	string
+     * @return string
      */
     protected function _get_content_type()
     {
@@ -852,7 +860,7 @@ class EE_Email
     /**
      * Set RFC 822 Date
      *
-     * @return	string
+     * @return string
      */
     protected function _set_date()
     {
@@ -867,7 +875,7 @@ class EE_Email
     /**
      * Mime message
      *
-     * @return	string
+     * @return string
      */
     protected function _get_mime_message()
     {
@@ -877,8 +885,8 @@ class EE_Email
     /**
      * Validate Email Address
      *
-     * @param	string
-     * @return	bool
+     * @param string
+     * @return bool
      */
     public function validate_email($email)
     {
@@ -902,8 +910,8 @@ class EE_Email
     /**
      * Email Validation
      *
-     * @param	string
-     * @return	bool
+     * @param string
+     * @return bool
      */
     public function valid_email($email)
     {
@@ -913,8 +921,8 @@ class EE_Email
     /**
      * Clean Extended Email Address: Joe Smith <joe@smith.com>
      *
-     * @param	string
-     * @return	string
+     * @param string|array
+     * @return array
      */
     public function clean_email($email)
     {
@@ -939,7 +947,7 @@ class EE_Email
      * If the user hasn't specified his own alternative message
      * it creates one by stripping the HTML
      *
-     * @return	string
+     * @return string
      */
     protected function _get_alt_message()
     {
@@ -967,9 +975,9 @@ class EE_Email
     /**
      * Word Wrap
      *
-     * @param	string
-     * @param	int	line-length limit
-     * @return	string
+     * @param string
+     * @param int line-length limit
+     * @return string
      */
     public function word_wrap($str, $charlim = null)
     {
@@ -1046,7 +1054,7 @@ class EE_Email
     /**
      * Build final headers
      *
-     * @return	string
+     * @return string
      */
     protected function _build_headers()
     {
@@ -1060,7 +1068,7 @@ class EE_Email
     /**
      * Write Headers as a string
      *
-     * @return	void
+     * @return void
      */
     protected function _write_headers()
     {
@@ -1092,7 +1100,7 @@ class EE_Email
      * send_email extension hook, as the message and headers would need
      * to be rebuilt.
      *
-     * @return	void
+     * @return void
      */
     public function build_message()
     {
@@ -1102,7 +1110,7 @@ class EE_Email
     /**
      * Build Final Body and attachments
      *
-     * @return	void
+     * @return void
      */
     protected function _build_message()
     {
@@ -1118,7 +1126,6 @@ class EE_Email
 
         switch ($this->_get_content_type()) {
             case 'plain':
-
                 $hdr .= 'Content-Type: text/plain; charset=' . $this->charset . $this->newline
                     . 'Content-Transfer-Encoding: ' . $this->_get_encoding();
 
@@ -1132,7 +1139,6 @@ class EE_Email
                 return;
 
             case 'html':
-
                 if ($this->send_multipart === false) {
                     $hdr .= 'Content-Type: text/html; charset=' . $this->charset . $this->newline
                         . 'Content-Transfer-Encoding: quoted-printable';
@@ -1165,7 +1171,6 @@ class EE_Email
                 return;
 
             case 'plain-attach':
-
                 $hdr .= 'Content-Type: multipart/' . $this->multipart . '; boundary="' . $this->_atc_boundary . '"' . $this->newline . $this->newline;
 
                 if ($this->_get_protocol() === 'mail') {
@@ -1180,9 +1185,9 @@ class EE_Email
 
                     . $this->_body . $this->newline . $this->newline;
 
-            break;
-            case 'html-attach':
+                break;
 
+            case 'html-attach':
                 $hdr .= 'Content-Type: multipart/' . $this->multipart . '; boundary="' . $this->_atc_boundary . '"' . $this->newline . $this->newline;
 
                 if ($this->_get_protocol() === 'mail') {
@@ -1205,7 +1210,7 @@ class EE_Email
                     . $this->_prep_quoted_printable($this->_body) . $this->newline . $this->newline
                     . '--' . $this->_alt_boundary . '--' . $this->newline . $this->newline;
 
-            break;
+                break;
         }
 
         $attachment = array();
@@ -1259,8 +1264,8 @@ class EE_Email
      * Prepares string for Quoted-Printable Content-Transfer-Encoding
      * Refer to RFC 2045 http://www.ietf.org/rfc/rfc2045.txt
      *
-     * @param	string
-     * @return	string
+     * @param string
+     * @return string
      */
     protected function _prep_quoted_printable($str)
     {
@@ -1332,8 +1337,8 @@ class EE_Email
      * It's related but not identical to quoted-printable, so it has its
      * own method.
      *
-     * @param	string
-     * @return	string
+     * @param string
+     * @return string
      */
     protected function _prep_q_encoding($str)
     {
@@ -1395,8 +1400,8 @@ class EE_Email
     /**
      * Send Email
      *
-     * @param	bool	$auto_clear = TRUE
-     * @return	bool
+     * @param bool $auto_clear = TRUE
+     * @return bool
      */
     public function send($auto_clear = true)
     {
@@ -1404,9 +1409,11 @@ class EE_Email
             $this->reply_to($this->_headers['From']);
         }
 
-        if (! isset($this->_recipients) && ! isset($this->_headers['To'])
+        if (
+            ! isset($this->_recipients) && ! isset($this->_headers['To'])
             && ! isset($this->_bcc_array) && ! isset($this->_headers['Bcc'])
-            && ! isset($this->_headers['Cc'])) {
+            && ! isset($this->_headers['Cc'])
+        ) {
             $this->_set_error_message('lang:email_no_recipients');
 
             return false;
@@ -1437,7 +1444,7 @@ class EE_Email
     /**
      * Batch Bcc Send. Sends groups of BCCs in batches
      *
-     * @return	void
+     * @return void
      */
     public function batch_bcc_send()
     {
@@ -1480,7 +1487,7 @@ class EE_Email
     /**
      * Unwrap special elements
      *
-     * @return	void
+     * @return void
      */
     protected function _unwrap_specials()
     {
@@ -1490,8 +1497,8 @@ class EE_Email
     /**
      * Strip line-breaks via callback
      *
-     * @param	string	$matches
-     * @return	string
+     * @param string $matches
+     * @return string
      */
     protected function _remove_nl_callback($matches)
     {
@@ -1505,7 +1512,7 @@ class EE_Email
     /**
      * Send using mail()
      *
-     * @return	bool
+     * @return bool
      */
     protected function _send_with_mail()
     {
@@ -1529,7 +1536,7 @@ class EE_Email
     /**
      * Send using Sendmail
      *
-     * @return	bool
+     * @return bool
      */
     protected function _send_with_sendmail()
     {
@@ -1602,7 +1609,7 @@ class EE_Email
     /**
      * Send using SMTP
      *
-     * @return	bool
+     * @return bool
      */
     protected function _send_with_smtp()
     {
@@ -1673,7 +1680,7 @@ class EE_Email
     /**
      * SMTP Connect
      *
-     * @return	string
+     * @return string
      */
     protected function _smtp_connect()
     {
@@ -1704,7 +1711,7 @@ class EE_Email
             $this->_send_command('hello');
             $this->_send_command('starttls');
 
-            $crypto = stream_socket_enable_crypto($this->_smtp_connect, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
+            $crypto = stream_socket_enable_crypto($this->_smtp_connect, true, $this->tls_crypto_method);
 
             if ($crypto !== true) {
                 $this->_set_error_message('lang:email_smtp_error', $this->_get_smtp_data());
@@ -1719,65 +1726,49 @@ class EE_Email
     /**
      * Send SMTP command
      *
-     * @param	string
-     * @param	string
-     * @return	string
+     * @param string
+     * @param string
+     * @return string
      */
     protected function _send_command($cmd, $data = '')
     {
         switch ($cmd) {
             case 'hello':
-
-                        if ($this->_smtp_auth or $this->_get_encoding() === '8bit') {
-                            $this->_send_data('EHLO ' . $this->_get_hostname());
-                        } else {
-                            $this->_send_data('HELO ' . $this->_get_hostname());
-                        }
-
-                        $resp = 250;
-
-            break;
+                if ($this->_smtp_auth or $this->_get_encoding() === '8bit') {
+                    $this->_send_data('EHLO ' . $this->_get_hostname());
+                } else {
+                    $this->_send_data('HELO ' . $this->_get_hostname());
+                }
+                $resp = 250;
+                break;
             case 'starttls':
-
-                        $this->_send_data('STARTTLS');
-                        $resp = 220;
-
-            break;
+                $this->_send_data('STARTTLS');
+                $resp = 220;
+                break;
             case 'from':
-
-                        $this->_send_data('MAIL FROM:<' . $data . '>');
-                        $resp = 250;
-
-            break;
+                $this->_send_data('MAIL FROM:<' . $data . '>');
+                $resp = 250;
+                break;
             case 'to':
-
-                        if ($this->dsn) {
-                            $this->_send_data('RCPT TO:<' . $data . '> NOTIFY=SUCCESS,DELAY,FAILURE ORCPT=rfc822;' . $data);
-                        } else {
-                            $this->_send_data('RCPT TO:<' . $data . '>');
-                        }
-
-                        $resp = 250;
-
-            break;
+                if ($this->dsn) {
+                    $this->_send_data('RCPT TO:<' . $data . '> NOTIFY=SUCCESS,DELAY,FAILURE ORCPT=rfc822;' . $data);
+                } else {
+                    $this->_send_data('RCPT TO:<' . $data . '>');
+                }
+                $resp = 250;
+                break;
             case 'data':
-
-                        $this->_send_data('DATA');
-                        $resp = 354;
-
-            break;
+                $this->_send_data('DATA');
+                $resp = 354;
+                break;
             case 'reset':
-
-                        $this->_send_data('RSET');
-                        $resp = 250;
-
-            break;
+                $this->_send_data('RSET');
+                $resp = 250;
+                break;
             case 'quit':
-
-                        $this->_send_data('QUIT');
-                        $resp = 221;
-
-            break;
+                $this->_send_data('QUIT');
+                $resp = 221;
+                break;
         }
 
         $reply = $this->_get_smtp_data();
@@ -1800,7 +1791,7 @@ class EE_Email
     /**
      * SMTP Authenticate
      *
-     * @return	bool
+     * @return bool
      */
     protected function _smtp_authenticate()
     {
@@ -1818,7 +1809,7 @@ class EE_Email
 
         $reply = $this->_get_smtp_data();
 
-        if (strpos($reply, '503') === 0) {	// Already authenticated
+        if (strpos($reply, '503') === 0) { // Already authenticated
             return true;
         } elseif (strpos($reply, '334') !== 0) {
             $this->_set_error_message('lang:email_failed_smtp_login', $reply);
@@ -1852,8 +1843,8 @@ class EE_Email
     /**
      * Send SMTP data
      *
-     * @param	string	$data
-     * @return	bool
+     * @param string $data
+     * @return bool
      */
     protected function _send_data($data)
     {
@@ -1869,7 +1860,7 @@ class EE_Email
     /**
      * Get SMTP data
      *
-     * @return	string
+     * @return string
      */
     protected function _get_smtp_data()
     {
@@ -1889,7 +1880,7 @@ class EE_Email
     /**
      * Get Hostname
      *
-     * @return	string
+     * @return string
      */
     protected function _get_hostname()
     {
@@ -1899,9 +1890,9 @@ class EE_Email
     /**
      * Get Debug Message
      *
-     * @param	array	$include	List of raw data chunks to include in the output
-     *					Valid options are: 'headers', 'subject', 'body'
-     * @return	string
+     * @param array $include List of raw data chunks to include in the output
+     *  Valid options are: 'headers', 'subject', 'body'
+     * @return string
      */
     public function print_debugger($include = array('headers', 'subject', 'body'))
     {
@@ -1935,9 +1926,9 @@ class EE_Email
     /**
      * Set Message
      *
-     * @param	string	$msg
-     * @param	string	$val = ''
-     * @return	void
+     * @param string $msg
+     * @param string $val = ''
+     * @return void
      */
     protected function _set_error_message($msg, $val = '')
     {
@@ -1953,7 +1944,7 @@ class EE_Email
     /**
      * Set the email message
      *
-     * @return	this
+     * @return this
      */
     public function message($body, $alt = '')
     {
@@ -1971,7 +1962,7 @@ class EE_Email
     /**
      * Spool mail to the mail server
      *
-     * @return	bool
+     * @return bool
      */
     public function _spool_email()
     {
@@ -2017,7 +2008,7 @@ class EE_Email
     /**
      * Dummy protocol: write the message out to disk (this is helpful for testing)
      *
-     * @return	bool
+     * @return bool
      */
     protected function _send_with_dummy()
     {

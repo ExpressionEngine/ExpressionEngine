@@ -17,6 +17,8 @@ class Fluid_field_ft extends EE_Fieldtype
 
     public $has_array_data = true;
 
+    public $can_be_cloned = true;
+
     public $complex_data_structure = true;
 
     public $size = 'large';
@@ -52,68 +54,92 @@ class Fluid_field_ft extends EE_Fieldtype
             return true;
         }
 
-        $field_templates = ee('Model')->get('ChannelField', $this->settings['field_channel_fields'])
+        $field_channel_field_groups = isset($this->settings['field_channel_field_groups']) ? $this->settings['field_channel_field_groups'] : [];
+
+        $field_templates = ee('Model')->get('ChannelField')
+            ->with('ChannelFieldGroups')
+            ->filter('field_id', 'IN', $this->settings['field_channel_fields'])
+            ->orFilter('ChannelFieldGroups.group_id', 'IN', $field_channel_field_groups)
             ->order('field_label')
             ->all()
             ->indexByIds();
 
-        foreach ($data['fields'] as $key => $data) {
+        foreach ($data['fields'] as $key => $field_data) {
             $field_id = null;
+            $new_field = '';
+            $field_group_id = null;
             $fluid_field_data_id = null;
-
-            foreach (array_keys($data) as $datum) {
-                if (strpos($datum, 'field_id_') === 0) {
-                    $field_id = str_replace('field_id_', '', $datum);
-
-                    break;
-                }
-            }
-
-            $field_name = $this->name() . '[fields][' . $key . '][field_id_' . $field_id . ']';
-
-            // Is this AJAX validation? If so, just return the result for the field
-            // we're validating by skipping the others
-            if (ee()->input->is_ajax_request() && strpos(ee()->input->post('ee_fv_field'), $field_name) === false) {
-                continue;
-            }
 
             if (strpos($key, 'field_') === 0) {
                 $fluid_field_data_id = (int) str_replace('field_', '', $key);
-            }
-            if (strpos($key, 'new_field_') === 0) {
-                $fluid_field_data_id = (int) str_replace('new_field_', '', $key);
-            }
-
-            $field = clone $field_templates[$field_id];
-
-            $f = $field->getField();
-            $ft_instance = $f->getNativeField();
-
-            if (isset($ft_instance->has_array_data) && 
-                $ft_instance->has_array_data
-                && ! is_array($data['field_id_' . $field_id])
-               ) {
-                $data['field_id_' . $field_id] = array();
+            } elseif (strpos($key, 'new_field_') === 0) {
+                $new_field = "[$key]";
             }
 
-            $f->setName($field_name);
-            $f = $this->setupFieldInstance($f, $data, $fluid_field_data_id);
+            foreach ($field_data as $id => $datum) {
+                if (strpos($id, 'field_group_id_') === 0) {
+                    $field_group_id = (int) str_replace('field_group_id_', '', $id);
+                }
 
-            $validator = ee('Validation')->make();
-            $validator->defineRule('validateField', function ($key, $value, $parameters, $rule) use ($f) {
-                return $f->validate($value);
-            });
+                $group_name = (!is_null($field_group_id)) ? '[field_group_id_' . $field_group_id . ']' : '';
 
-            $validator->setRules(array(
-                $f->getName() => 'validateField'
-            ));
+                foreach ($datum as $fieldId => $fieldValue) {
+                    if (strpos($fieldId, 'field_id_') === 0) {
+                        $field_id = str_replace('field_id_', '', $fieldId);
+                    }
 
-            $result = $validator->validate(array($f->getName() => $f->getData()));
+                    if (empty($field_id)) {
+                        continue;
+                    }
 
-            if ($result->isNotValid()) {
-                foreach ($result->getFailed() as $field_name => $rules) {
-                    foreach ($rules as $rule) {
-                        $this->errors->addFailed($field_name, $rule);
+                    $field_name = implode('', array_filter([
+                        $this->name(),
+                        '[fields]',
+                        $new_field,
+                        ($fluid_field_data_id) ? "[field_{$fluid_field_data_id}]" : null,
+                        $group_name,
+                        "[field_id_{$field_id}]",
+                    ]));
+
+                    // Is this AJAX validation? If so, just return the result for the field
+                    // we're validating by skipping the others
+                    if (ee()->input->is_ajax_request() && strpos(ee()->input->post('ee_fv_field'), $field_name) === false) {
+                        continue;
+                    }
+
+                    $field = clone $field_templates[$field_id];
+
+                    $f = $field->getField();
+                    $ft_instance = $f->getNativeField();
+
+                    if (
+                        isset($ft_instance->has_array_data)
+                        && $ft_instance->has_array_data
+                        && !is_array($datum['field_id_' . $field_id])
+                    ) {
+                        $datum['field_id_' . $field_id] = array();
+                    }
+
+                    $f->setName($field_name);
+                    $f = $this->setupFieldInstance($f, $datum, !is_null($fluid_field_data_id) ? $fluid_field_data_id : $key);
+
+                    $validator = ee('Validation')->make();
+                    $validator->defineRule('validateField', function ($key, $value, $parameters, $rule) use ($f) {
+                        return $f->validate($value);
+                    });
+
+                    $validator->setRules(array(
+                        $f->getName() => 'validateField'
+                    ));
+
+                    $result = $validator->validate(array($f->getName() => $f->getData()));
+
+                    if ($result->isNotValid()) {
+                        foreach ($result->getFailed() as $field_name => $rules) {
+                            foreach ($rules as $rule) {
+                                $this->errors->addFailed($field_name, $rule);
+                            }
+                        }
                     }
                 }
             }
@@ -153,39 +179,57 @@ class Fluid_field_ft extends EE_Fieldtype
             if ($key == 'new_field_0') {
                 continue;
             }
-
+            $create = false;
             $fluid_field_data_id = 0;
 
-            // Existing field
-            if (strpos($key, 'field_') === 0) {
-                $id = str_replace('field_', '', $key);
-                $field = $fluid_field_data[$id]->getField();
-                $fluid_field_data_id = $fluid_field_data[$id]->getId();
-            // New field
-            } elseif (strpos($key, 'new_field_') === 0) {
-                foreach (array_keys($value) as $k) {
-                    if (strpos($k, 'field_id_') === 0) {
-                        $field_id = str_replace('field_id_', '', $k);
-
-                        $fluid_field = ee('Model')->make('fluid_field:FluidField');
-                        $fluid_field->fluid_field_id = $this->field_id;
-                        $fluid_field->field_id = $field_id;
-
-                        $field = $fluid_field->getField();
-                        $fluid_field_data_id = $key;
-
-                        break;
-                    }
-                }
+            if (strpos(key($value), 'field_group_id_') === 0) {
+                $field_group_id = (int) str_replace('field_group_id_', '', key($value));
+                $field_group_id = ($field_group_id > 0) ? $field_group_id : null;
+                $value = current($value);
             }
 
-            $field->setItem('field_search', true);
-            $field->setItem('fluid_field_data_id', $fluid_field_data_id);
+            // Existing field - field_id_3[fields][field_3][field_group_0][field_id_2] = value
+            if (strpos($key, 'field_') === 0) {
+                $fluid_field_id = (int) str_replace('field_', '', $key);
+            // New field - field_id_3[fields][new_field_1][field_group_1][field_id_2] = value
+            } elseif (strpos($key, 'new_field_') === 0) {
+                $create = true;
+            }
 
-            foreach ($value as $field_data) {
-                $field->setData($field_data);
-                $field->validate($field_data);
-                $compiled_data_for_search[] = $field->save($field_data);
+            // Loop through all field_id => field_value pairs
+            foreach ($value as $fieldKey => $fieldValue) {
+                if (strpos($fieldKey, 'field_id_') === 0) {
+                    $field_id = (int) str_replace('field_id_', '', $fieldKey);
+                }
+
+                if (empty($field_id)) {
+                    continue;
+                }
+
+                if ($create) {
+                    $fluid_field = ee('Model')->make('fluid_field:FluidField');
+                    $fluid_field->fluid_field_id = $this->field_id;
+                    $fluid_field->field_group_id = $field_group_id;
+                    $fluid_field->field_id = $field_id;
+
+                    $field = $fluid_field->getField();
+                    $fluid_field_data_id = $fieldKey;
+                } else {
+                    $fluid_field = $fluid_field_data[$fluid_field_id];
+                    $fluid_field->field_group_id = $field_group_id;
+
+                    $field = $fluid_field->getField();
+                    $fluid_field_data_id = $fluid_field_data[$fluid_field_id]->getId();
+                }
+
+                $field->setItem('fluid_field_data_id', $fluid_field_data_id);
+
+                $field->setData($fieldValue);
+                $field->validate($fieldValue);
+                $subfield = $field->save($fieldValue);
+                if ($field->getItem('field_search')) {
+                    $compiled_data_for_search[] = $subfield;
+                }
             }
         }
 
@@ -201,31 +245,71 @@ class Fluid_field_ft extends EE_Fieldtype
         }
 
         $fluid_field_data = $this->getFieldData()->indexBy('id');
+        $previous_field_group_id = null;
+        $previous_group_key = null;
 
         $i = 1;
+        $g = 0;
+        // [field_3][field_group_0][field_id_2]
+        // [new_field_1][field_group_1][field_id_2]
         foreach ($data['fields'] as $key => $value) {
             if ($key == 'new_field_0') {
                 continue;
             }
 
-            // Existing field
-            if (strpos($key, 'field_') === 0 && (!defined('CLONING_MODE') || CLONING_MODE !== true)) {
-                $id = str_replace('field_', '', $key);
-                $this->updateField($fluid_field_data[$id], $i, $value);
-                unset($fluid_field_data[$id]);
-            // New field
-            } elseif (strpos($key, 'new_field_') === 0 || (defined('CLONING_MODE') && CLONING_MODE === true)) {
-                foreach (array_keys($value) as $k) {
-                    if (strpos($k, 'field_id_') === 0) {
-                        $field_id = str_replace('field_id_', '', $k);
-                        $this->addField($i, $field_id, $value);
-
-                        break;
-                    }
-                }
+            if (strpos(key($value), 'field_group_id_') === 0) {
+                $field_group_id = (int) str_replace('field_group_id_', '', key($value));
+                $field_group_id = ($field_group_id > 0) ? $field_group_id : null;
+                $value = current($value);
             }
 
-            $i++;
+            $group_key = $key;
+
+            foreach ($value as $fieldKey => $fieldValue) {
+                if (strpos($fieldKey, 'field_id_') !== 0) {
+                    continue;
+                }
+                $id = null;
+                $field_id = null;
+
+                // Existing field
+                if (strpos($key, 'field_') === 0 && (!defined('CLONING_MODE') || CLONING_MODE !== true)) {
+                    $id = str_replace('field_', '', $key);
+                    $group_key = 'group_' . $fluid_field_data[$id]->group;
+                // New field
+                } elseif (strpos($key, 'new_field_') === 0 || (defined('CLONING_MODE') && CLONING_MODE === true)) {
+                    $field_id = str_replace('field_id_', '', $fieldKey);
+                }
+
+                // If the field_group is null we do not have a group and are always incrementing
+                // If the field_group is not the previous_field_group then we increment the group
+                // If the field_group is the previous_field_group but the key has changed
+                if (
+                    $field_group_id == null
+                    || (is_null($field_group_id) && is_null($previous_field_group_id))
+                    || ($field_group_id !== $previous_field_group_id)
+                    || ($field_group_id === $previous_field_group_id && $group_key !== $previous_group_key)
+                ) {
+                    $g++;
+                }
+
+                $previous_group_key = $group_key;
+                $group = ['id' => $field_group_id, 'order' => $g];
+
+                if ($field_id) {
+                    $thisFieldValue = array_filter($value, function ($k) use ($field_id) {
+                        return strrpos($k, '_' . $field_id) === strlen($k) - strlen('_' . $field_id);
+                    }, ARRAY_FILTER_USE_KEY);
+                    $this->addField($i, $group, $field_id, $thisFieldValue);
+                } else {
+                    $this->updateField($fluid_field_data[$id], $i, $group, $value);
+                    unset($fluid_field_data[$id]);
+                }
+
+                $i++;
+
+                $previous_field_group_id = $field_group_id;
+            }
         }
 
         // Remove fields
@@ -281,7 +365,7 @@ class Fluid_field_ft extends EE_Fieldtype
         return $values;
     }
 
-    private function updateField($fluid_field, $order, array $values)
+    private function updateField($fluid_field, $order, $group, array $values)
     {
         $values = $this->prepareData($fluid_field, $values);
 
@@ -294,6 +378,8 @@ class Fluid_field_ft extends EE_Fieldtype
             );
         }
 
+        $fluid_field->field_group_id = array_key_exists('id', $group) ? $group['id'] : null;
+        $fluid_field->group = array_key_exists('order', $group) ? $group['order'] : null;
         $fluid_field->order = $order;
         $fluid_field->save();
 
@@ -303,13 +389,15 @@ class Fluid_field_ft extends EE_Fieldtype
         $query->update($fluid_field->ChannelField->getTableName());
     }
 
-    private function addField($order, $field_id, array $values)
+    private function addField($order, $group, $field_id, array $values)
     {
         $fluid_field = ee('Model')->make('fluid_field:FluidField');
         $fluid_field->fluid_field_id = $this->field_id;
         $fluid_field->entry_id = $this->content_id;
+        $fluid_field->field_group_id = array_key_exists('id', $group) ? $group['id'] : null;
         $fluid_field->field_id = $field_id;
         $fluid_field->order = $order;
+        $fluid_field->group = array_key_exists('order', $group) ? $group['order'] : null;
         $fluid_field->field_data_id = 0;
         $fluid_field->save();
 
@@ -361,15 +449,48 @@ class Fluid_field_ft extends EE_Fieldtype
     {
         $fields = '';
 
+        $field_channel_field_groups = isset($this->settings['field_channel_field_groups']) ? $this->settings['field_channel_field_groups'] : [];
+
         $field_templates = ee('Model')->get('ChannelField', $this->settings['field_channel_fields'])
             ->order('field_label')
             ->all();
 
+        $all_fields = ee('Model')->get('ChannelField')
+            ->with('ChannelFieldGroups')
+            ->filter('field_id', 'IN', $this->settings['field_channel_fields'])
+            ->orFilter('ChannelFieldGroups.group_id', 'IN', $field_channel_field_groups)
+            ->order('field_label')
+            ->all()
+            ->filter(function ($field) {
+                return $field->getField()->acceptsContentType('fluid_field');
+            })
+            ->indexByIds();
+
+        $field_groups = ee('Model')->get('ChannelFieldGroup', $field_channel_field_groups)
+            ->with('ChannelFields')
+            ->order('group_name')
+            ->all();
+
         $filter_options = $field_templates->map(function ($field) {
-            return $field->getField();
+            $field = $field->getField();
+            return \ExpressionEngine\Addons\FluidField\Model\FluidFieldFilter::make([
+                'name' => $field->getShortName(),
+                'label' => $field->getItem('field_label'),
+                'icon' => $field->getIcon()
+            ]);
         });
 
-        $filters = ee('View')->make('fluid_field:filters')->render(array('fields' => $filter_options));
+        foreach ($field_groups as $field_group) {
+            if ($field_group->ChannelFields->count() > 0) {
+                $filter_options[] = \ExpressionEngine\Addons\FluidField\Model\FluidFieldFilter::make([
+                    'name' => $field_group->short_name,
+                    'label' =>  $field_group->group_name,
+                    'icon' => URL_THEMES . 'asset/img/' . 'fluid_group_icon.svg'
+                ]);
+            }
+        }
+
+        $filters = ee('View')->make('fluid_field:filters')->render(array('filters' => $filter_options));
 
         $field_templates = $field_templates->indexByIds();
 
@@ -377,58 +498,154 @@ class Fluid_field_ft extends EE_Fieldtype
             if ($this->content_id) {
                 $fluid_field_data = $this->getFieldData();
 
-                foreach ($fluid_field_data as $data) {
-                    $field = $data->getField();
+                // group items
+                $fluid_field_data_groups = [];
 
-                    $field->setName($this->name() . '[fields][field_' . $data->getId() . '][field_id_' . $field->getId() . ']');
+                $fluid_field_data->each(function ($field) use (&$fluid_field_data_groups) {
+                    $groupKey = $field->group;
+                    if (is_null($groupKey)) {
+                        $groupKey = $field->order;
+                    }
+                    if (!array_key_exists($groupKey, $fluid_field_data_groups)) {
+                        $fluid_field_data_groups[$groupKey] = [];
+                    }
 
-                    $fields .= ee('View')->make('fluid_field:field')->render([
-                        'field' => $field,
-                        'field_name' => $data->ChannelField->field_name,
+                    $fluid_field_data_groups[$groupKey][] = $field;
+
+                });
+
+                foreach ($fluid_field_data_groups as $field_data) {
+                    $is_group = !is_null($field_data[0]->ChannelFieldGroup);
+                    $view = ($is_group) ? 'fluid_field:fieldgroup' : 'fluid_field:field';
+
+                    $viewData = [
                         'filters' => $filters,
                         'errors' => $this->errors,
                         'reorderable' => true,
                         'show_field_type' => false,
-                        'fields' => $filter_options
-                    ]);
+                        'field_filters' => $filter_options
+                    ];
+
+                    if ($is_group) {
+                        $field_group = $field_data[0]->ChannelFieldGroup; // might want to eager load this
+                        $viewData = array_merge($viewData, [
+                            'field_group' => $field_group,
+                            'field_group_fields' => array_map(function ($field) use ($field_group) {
+                                $f = $field->getField();
+                                $f->setName($this->name() . '[fields][field_' . $field->getId() . '][field_group_id_' . $field_group->getId() . '][field_id_' . $f->getId() . ']');
+                                return $f;
+                            }, $field_data),
+                            'field_name' => $field_group->short_name,
+                        ]);
+                    } else {
+                        $field = $field_data[0]->getField();
+
+                        $field->setName($this->name() . '[fields][field_' . $field_data[0]->getId() . '][field_group_id_0][field_id_' . $field->getId() . ']');
+                        $viewData = array_merge($viewData, [
+                            'field' => $field,
+                            'field_name' => $field_data[0]->ChannelField->field_name,
+                        ]);
+                    }
+
+                    $fields .= ee('View')->make($view)->render($viewData);
                 }
             }
+        // This happens when we have a validation issue and data was not saved
         } else {
-            foreach ($data['fields'] as $key => $data) {
+            $field_group_map = $this->getFieldData()->indexBy('id');
+            $field_groups = $field_groups->indexByIds();
+            $rows = [];
+            $fields = '';
+
+            foreach ($data['fields'] as $key => $field_data) {
+                $field_group_id = 0;
                 $field_id = null;
-
-                foreach (array_keys($data) as $datum) {
-                    if (strpos($datum, 'field_id_') === 0) {
-                        $field_id = str_replace('field_id_', '', $datum);
-
-                        break;
-                    }
-                }
-
-                $field = clone $field_templates[$field_id];
-
-                $f = $field->getField();
-
-                $f->setName($this->name() . '[fields][' . $key . '][field_id_' . $field->getId() . ']');
+                $field_group_id = null;
+                $fluid_field_data_id = null;
 
                 if (strpos($key, 'field_') === 0) {
                     $fluid_field_data_id = (int) str_replace('field_', '', $key);
                 }
-                if (strpos($key, 'new_field_') === 0) {
-                    $fluid_field_data_id = (int) str_replace('new_field_', '', $key);
+
+                foreach ($field_data as $id => $datum) {
+                    if (strpos($id, 'field_group_id_') === 0) {
+                        $field_group_id = (int) str_replace('field_group_id_', '', $id);
+                    }
+
+                    $group_name = (!is_null($field_group_id)) ? '[field_group_id_' . $field_group_id . ']' : '';
+
+                    foreach ($datum as $fieldId => $fieldValue) {
+                        if (strpos($fieldId, 'field_id_') === 0) {
+                            $field_id = str_replace('field_id_', '', $fieldId);
+                        } else {
+                            continue;
+                        }
+
+                        $field_name = implode('', array_filter([
+                            $this->name(),
+                            '[fields]',
+                            ($fluid_field_data_id) ? "[field_{$fluid_field_data_id}]" : "[$key]",
+                            $group_name,
+                            "[field_id_{$field_id}]",
+                        ]));
+
+                        $field = clone $all_fields[$field_id];
+
+                        $f = clone $field->getField();
+                        $f->setName($field_name);
+
+                        $f = $this->setupFieldInstance($f, $datum, $fluid_field_data_id);
+
+                        $group_key = $key;
+
+                        if (array_key_exists($fluid_field_data_id, $field_group_map)) {
+                            $group = $field_group_map[$fluid_field_data_id]->ChannelFieldGroup;
+                            $group_key = $field_group_map[$fluid_field_data_id]->group;
+                        } else {
+                            $group = ($field_group_id > 0) ? $field_groups[$field_group_id] : null;
+                        }
+
+                        if (!array_key_exists($group_key, $rows)) {
+                            $rows[$group_key] = [];
+                        }
+                        $rows[$group_key][] = [
+                            'field' => $f,
+                            'field_name' => $field->field_name,
+                            'field_group' => $group,
+                        ];
+                    }
                 }
+            }
 
-                $f = $this->setupFieldInstance($f, $data, $fluid_field_data_id);
+            foreach ($rows as $row) {
+                $is_group = (count($data) > 1 || !is_null($row[0]['field_group']));
+                $view = ($is_group) ? 'fluid_field:fieldgroup' : 'fluid_field:field';
 
-                $fields .= ee('View')->make('fluid_field:field')->render([
-                    'field' => $f,
-                    'field_name' => $field->field_name,
+                $viewData = [
                     'filters' => $filters,
                     'errors' => $this->errors,
                     'reorderable' => true,
                     'show_field_type' => false,
-                    'fields' => $filter_options
-                ]);
+                    'field_filters' => $filter_options
+                ];
+
+                if ($is_group) {
+                    $field_group = $row[0]['field_group'];
+                    $viewData = array_merge($viewData, [
+                        'field_group' => $field_group,
+                        'field_group_fields' => array_map(function ($field) {
+                            return $field['field'];
+                        }, $row),
+                        'field_name' => $field_group->short_name,
+                    ]);
+                } else {
+                    $viewData = array_merge($viewData, [
+                        'field' => $row[0]['field'],
+                        'field_name' => $row[0]['field_name']
+                    ]);
+                }
+
+                $fields .= ee('View')->make($view)->render($viewData);
             }
         }
 
@@ -437,7 +654,7 @@ class Fluid_field_ft extends EE_Fieldtype
         foreach ($field_templates as $field) {
             $f = $field->getField();
             $f->setItem('fluid_field_data_id', null);
-            $f->setName($this->name() . '[fields][new_field_0][field_id_' . $field->getId() . ']');
+            $f->setName($this->name() . '[fields][new_field_0][field_group_id_0][field_id_' . $field->getId() . ']');
 
             $templates .= ee('View')->make('fluid_field:field')->render([
                 'field' => $f,
@@ -446,7 +663,28 @@ class Fluid_field_ft extends EE_Fieldtype
                 'errors' => $this->errors,
                 'reorderable' => true,
                 'show_field_type' => false,
-                'fields' => $filter_options
+                'field_filters' => $filter_options
+            ]);
+        }
+
+        foreach ($field_groups as $field_group) {
+            $field_group_fields = $field_group->ChannelFields->sortBy('field_label')->sortBy('field_order')->filter(function ($field) {
+                return $field->getField()->acceptsContentType('fluid_field');
+            });
+            $templates .= ee('View')->make('fluid_field:fieldgroup')->render([
+                'field_group' => $field_group,
+                'field_group_fields' => $field_group_fields->map(function ($field) use ($field_group) {
+                    $f = $field->getField();
+                    $f->setItem('fluid_field_data_id', null);
+                    $f->setName($this->name() . '[fields][new_field_0][field_group_id_' . $field_group->getId() . '][field_id_' . $field->getId() . ']');
+                    return $f;
+                }),
+                'field_name' => $field_group->short_name,
+                'filters' => $filters,
+                'errors' => $this->errors,
+                'reorderable' => true,
+                'show_field_type' => false,
+                'field_filters' => $filter_options
             ]);
         }
 
@@ -508,9 +746,41 @@ class Fluid_field_ft extends EE_Fieldtype
             ),
         );
 
+        $custom_field_group_options = ee('Model')->get('ChannelFieldGroup')
+            ->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
+            ->order('group_name')
+            ->with('ChannelFields')
+            ->all()
+            ->map(function ($group) {
+                return [
+                    'label' => $group->group_name,
+                    'value' => $group->getId(),
+                    'instructions' => LD . $group->short_name . RD
+                ];
+            });
+
+        $settings[] = array(
+            'title' => 'custom_field_groups',
+            'desc' => 'nested_fluid_will_be_hidden',
+            'fields' => array(
+                'field_channel_field_groups' => array(
+                    'type' => 'checkbox',
+                    'force_react' => true,
+                    'choices' => $custom_field_group_options,
+                    'value' => isset($data['field_channel_field_groups']) ? $data['field_channel_field_groups'] : array(),
+                    'no_results' => [
+                        'text' => sprintf(lang('no_found'), lang('field_groups')),
+                        'link_text' => 'add_new',
+                        'link_href' => ee('CP/URL')->make('fields/groups/create')
+                    ]
+                )
+            )
+        );
+
         if (! $this->isNew()) {
             ee()->javascript->set_global(array(
-                'fields.fluid_field.fields' => $data['field_channel_fields']
+                'fields.fluid_field.fields' => $data['field_channel_fields'],
+                'fields.fluid_field.groups' => isset($data['field_channel_field_groups']) ? $data['field_channel_field_groups'] : []
             ));
 
             ee()->cp->add_js_script(array(
@@ -532,6 +802,7 @@ class Fluid_field_ft extends EE_Fieldtype
     {
         $defaults = array(
             'field_channel_fields' => array(),
+            'field_channel_field_groups' => array(),
         );
 
         $all = array_merge($defaults, $data);
@@ -544,27 +815,43 @@ class Fluid_field_ft extends EE_Fieldtype
             $field->createTable();
         }
 
+        // Need to handle table creation for legacy fields belonging to selected field groups
+        $field_groups = ee('Model')->get('ChannelFieldGroup', $all['field_channel_field_groups'])
+            ->with('ChannelFields')
+            ->filter('ChannelFields.legacy_field_data', 'y')
+            ->filter('ChannelFields.field_id', 'NOT IN', $all['field_channel_fields'])
+            ->all();
+
+        $field_groups->each(function ($group) {
+            $group->ChannelFields->each(function ($field) {
+                $field->createTable();
+            });
+        });
+
+        $reindexNeeded = false;
+
         if (isset($this->settings['field_channel_fields'])) {
             $this->settings['field_channel_fields'] = array_filter((array) $this->settings['field_channel_fields'], function ($value) {
                 return is_numeric($value);
             });
 
+            // Sometimes a fluid field with no fields attached to it gets saved as an empty string
+            //   rather than an empty array. In this case, we need to convert it to an array to
+            //   perform array operations on it
+            if(is_string($all['field_channel_fields']) && empty($all['field_channel_fields'])){
+                $all['field_channel_fields'] = [];
+            }
+
             $removed_fields = (array_diff($this->settings['field_channel_fields'], $all['field_channel_fields']));
 
-            if (! empty($removed_fields) && ! isset($_POST['ee_fv_field'])) {
-                $fluid_field_data = ee('Model')->get('fluid_field:FluidField')
+            if (! empty($removed_fields)) {
+                ee('Model')->get('fluid_field:FluidField')
                     ->filter('fluid_field_id', $this->field_id)
                     ->filter('field_id', 'IN', $removed_fields)
                     ->all()
                     ->delete();
 
-                ee('CP/Alert')->makeInline('search-reindex')
-                    ->asImportant()
-                    ->withTitle(lang('search_reindex_tip'))
-                    ->addToBody(sprintf(lang('search_reindex_tip_desc'), ee('CP/URL')->make('utilities/reindex')->compile()))
-                    ->defer();
-
-                ee()->config->update_site_prefs(['search_reindex_needed' => ee()->localize->now], 0);
+                $reindexNeeded = true;
 
                 $fields = ee('Model')->get('ChannelField', $removed_fields)
                     ->fields('field_label')
@@ -575,6 +862,32 @@ class Fluid_field_ft extends EE_Fieldtype
                     ee()->logger->log_action(sprintf(lang('removed_fields_from_fluid_field'), $this->settings['field_label'], '<b>' . implode('</b>, <b>', $fields) . '</b>'));
                 }
             }
+        }
+
+        if (isset($this->settings['field_channel_field_groups'])) {
+            $this->settings['field_channel_field_groups'] = array_filter($this->settings['field_channel_fields'], function ($value) {
+                return is_numeric($value);
+            });
+
+            $removed_groups = (array_diff($this->settings['field_channel_field_groups'], $all['field_channel_field_groups']));
+
+            ee('Model')->get('fluid_field:FluidField')
+                    ->filter('fluid_field_id', $this->field_id)
+                    ->filter('field_group_id', 'IN', $removed_groups)
+                    ->all()
+                    ->delete();
+
+            $reindexNeeded = true;
+        }
+
+        if ($reindexNeeded) {
+            ee('CP/Alert')->makeInline('search-reindex')
+                    ->asImportant()
+                    ->withTitle(lang('search_reindex_tip'))
+                    ->addToBody(sprintf(lang('search_reindex_tip_desc'), ee('CP/URL')->make('utilities/reindex')->compile()))
+                    ->defer();
+
+            ee()->config->update_site_prefs(['search_reindex_needed' => ee()->localize->now], 0);
         }
 
         return array_intersect_key($all, $defaults);
@@ -654,6 +967,7 @@ class Fluid_field_ft extends EE_Fieldtype
                 ->with('ChannelField')
                 ->filter('fluid_field_id', $fluid_field_id)
                 ->filter('entry_id', $entry_id)
+                ->order('group')
                 ->order('order')
                 ->all();
 
@@ -734,9 +1048,10 @@ class Fluid_field_ft extends EE_Fieldtype
                     [$this->id()]
                 );
 
-                if (! isset($data["field_id_{$this->id()}"]) || 
-                    ! isset($data["field_id_{$this->id()}"]['fields'])
-                   ) {
+                if (
+                    ! isset($data["field_id_{$this->id()}"])
+                    || ! isset($data["field_id_{$this->id()}"]['fields'])
+                ) {
                     return 0;
                 }
             }

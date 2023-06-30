@@ -16,11 +16,7 @@ context('Access Throttling Settings', () => {
     cy.hasNoErrors()
   })
 
-  it('shows the Access Throttling Settings page', () => {
-    //page.all_there?.should == true
-  })
-
-  it('should load current settings into form fields', () => {
+  it('Load current Access Throttling Settings into form fields', () => {
     cy.eeConfig({item: 'enable_throttling'}) .then((config) => {
       page.get('enable_throttling').invoke('val').then((val) => {
         expect(val).to.be.equal(config)
@@ -61,16 +57,14 @@ context('Access Throttling Settings', () => {
     })
   })
 
-  it('should validate the form', () => {
+  it('Validate Access Throttling Settings form', () => {
     const integer_error = 'This field must contain an integer.'
 
     page.get('lockout_time').clear().type('sdfsdfsd')
-    //page.submit()
     cy.get('button').contains('Save Settings').first().click()
 
     cy.hasNoErrors()
 
-//should_have_form_errors(page)
     page.get('wrap').contains('Attention: Settings not saved')
     page.hasError(page.get('lockout_time'), integer_error)
 
@@ -80,37 +74,27 @@ context('Access Throttling Settings', () => {
     page.get('lockout_time').blur()
     //page.hasErrorsCount(1)
     page.hasError(page.get('lockout_time'), integer_error)
-   // page.hasErrors()
-//should_have_form_errors(page)
 
     page.get('max_page_loads').clear().type('sdfsdfsd')
     page.get('max_page_loads').blur()
 
     page.hasError(page.get('max_page_loads'), integer_error)
-    //page.hasErrors()
-//should_have_form_errors(page)
 
     page.get('time_interval').clear().type('sdfsdfsd')
     page.get('time_interval').blur()
     //page.hasErrorsCount(3)
     page.hasError(page.get('time_interval'), integer_error)
-    //page.hasErrors()
-//should_have_form_errors(page)
 
     // Fix everything
     page.get('lockout_time').clear().type('5')
     page.get('lockout_time').blur()
    // page.hasErrorsCount(2)
     page.hasNoError(page.get('lockout_time'))
-    //page.hasErrors()
-//should_have_form_errors(page)
 
     page.get('max_page_loads').clear().type('15')
     page.get('max_page_loads').blur()
     //page.hasErrorsCount(1)
     page.hasNoError(page.get('max_page_loads'))
-   // page.hasErrors()
-//should_have_form_errors(page)
 
     page.get('time_interval').clear().type('8')
     page.get('time_interval').blur()
@@ -124,19 +108,16 @@ context('Access Throttling Settings', () => {
     page.get('banishment_url').blur()
     //page.hasErrorsCount(1)
     page.hasError(page.get('banishment_url'), page.messages.xss_error)
-    //page.hasErrors()
-//should_have_form_errors(page)
 
     page.get('banishment_message').clear().type(page.messages.xss_vector)
     page.get('banishment_message').blur()
     //page.hasErrorsCount(2)
     page.hasError(page.get('banishment_url'), page.messages.xss_error)
     page.hasError(page.get('banishment_message'), page.messages.xss_error)
-    //page.hasErrors()
-//should_have_form_errors(page)
+
   })
 
-  it('should save and load the settings', () => {
+  it('Save and load Access Throttling Settings', () => {
     page.get('enable_throttling_toggle').click()
     page.get('banish_masked_ips_toggle').click()
     page.get('lockout_time').clear().type('60')

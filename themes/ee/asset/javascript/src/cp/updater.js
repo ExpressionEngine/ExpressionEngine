@@ -68,7 +68,7 @@ var Updater = {
 							that._updaterInPlace = true;
 						}
 					} else {
-						window.location = EE.BASE;
+						window.location = EE.BASE + '&after=update';
 					}
 				} else {
 					that._showError(result);

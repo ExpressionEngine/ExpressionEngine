@@ -11,6 +11,7 @@ class Pro_variables_pro extends AbstractProlet implements InitializableProletInt
     protected $name = 'Pro Variables';
 
     protected $buttons = []; // No buttons will be shown
+    protected $vars;
 
     public function index()
     {

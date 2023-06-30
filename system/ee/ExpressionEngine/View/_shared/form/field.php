@@ -23,6 +23,9 @@ $attrs = (isset($field['attrs'])) ? $field['attrs'] : '';
 if (isset($field['disabled']) && $field['disabled'] == true) {
     $attrs .= ' disabled="disabled"';
 }
+if (isset($field['readonly']) && $field['readonly'] == true) {
+    $attrs .= ' readonly="readonly"';
+}
 // This is to handle showing and hiding certain parts
 // of the form when a form element changes
 if (isset($field['group_toggle'])) {
@@ -108,7 +111,7 @@ if ($field['type'] == 'checkbox' && ! $value) {
         'field_name' => $field_name,
         'choices' => $field['choices'],
         'disabled_choices' => isset($field['disabled_choices']) ? $field['disabled_choices'] : null,
-        'value' => $value,
+        'value' => is_array($value) ? array_unique($value) : $value,
         'scalar' => isset($field['scalar']) ? $field['scalar'] : null,
         'multi' => ($field['type'] == 'checkbox'),
         'nested' => isset($field['nested']) ? $field['nested'] : false,

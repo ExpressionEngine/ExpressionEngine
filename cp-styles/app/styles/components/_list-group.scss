@@ -199,17 +199,6 @@
 .list-item__title {
 	//font-size: 1.1em;
 	font-weight: 500;
-	position: relative;
-
-	.status-indicator {
-		position: absolute;
-		display: inline-block;
-		width: 4px;
-		height: 4px;
-		border-radius: 50%;
-		top: 10px;
-		left: -8px
-	}
 }
 
 .list-item__secondary {
@@ -218,6 +207,21 @@
   position: absolute;
   top: 34px;
   left: 15px;
+
+.status-indicator {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2px 8px 3px;
+    border: 1px solid transparent;
+    border-radius: 1000px;
+    line-height: 1;
+    text-transform: capitalize;
+    margin-left: 5px;
+    font-size: 11px;
+    background: var(--ee-bg-blank);
+    white-space: nowrap;
+  }
 }
 
 .list-item__content .list-item__secondary {

@@ -435,7 +435,7 @@ class Grid_model extends CI_Model
 
             if ($fluid_field_data_id && ! is_int($fluid_field_data_id)) {
                 list($fluid_field, $sub_field_id) = explode(',', $fluid_field_data_id);
-                $data = $data[$fluid_field]['fields'][$sub_field_id];
+                $data = reset($data[$fluid_field]['fields'][$sub_field_id]);
             }
 
             if (array_key_exists($entry_id, $entry_data)
