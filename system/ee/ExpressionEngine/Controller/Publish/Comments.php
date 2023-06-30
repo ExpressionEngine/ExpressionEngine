@@ -493,7 +493,7 @@ class Comments extends AbstractPublishController
 
                 //changing status to spam?
                 if ($origStatus != ee()->input->post('status') && ee()->input->post('status') == 's') {
-                    ee('Spam')->moderate('comment', $comment, $comment->comment, '', $comment->author_id);
+                    ee('Spam')->moderate('comment', $comment, $comment->comment, [], $comment->author_id);
                 }
             }
 
