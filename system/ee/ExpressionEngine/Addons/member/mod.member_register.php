@@ -82,64 +82,76 @@ class Member_register extends Member
             ee()->router->set_class('cp');
             ee()->load->library('cp');
             ee()->load->library('javascript');
+            ee()->load->helper('form');
 
-            foreach ($query->result_array() as $row) {
-                $field = '';
-                $temp = $field_chunk;
+            if (!empty($field_chunk)) {
+                foreach ($query->result_array() as $row) {
+                    $field = '';
+                    $temp = $field_chunk;
 
-                // Replace {required} pair
-                if ($row['m_field_required'] == 'y') {
-                    $temp = preg_replace("/" . LD . "required" . RD . ".*?" . LD . "\/required" . RD . "/s", $req_chunk, $temp);
-                } else {
-                    $temp = preg_replace("/" . LD . "required" . RD . ".*?" . LD . "\/required" . RD . "/s", '', $temp);
+                    // Replace {required} pair
+                    if ($row['m_field_required'] == 'y') {
+                        $temp = preg_replace("/" . LD . "required" . RD . ".*?" . LD . "\/required" . RD . "/s", $req_chunk, $temp);
+                    } else {
+                        $temp = preg_replace("/" . LD . "required" . RD . ".*?" . LD . "\/required" . RD . "/s", '', $temp);
+                    }
+
+                    // Parse input fields
+                    $field = $member_fields[$row['m_field_id']]->getField();
+                    $field->setName('m_field_id_' . $row['m_field_id']);
+                    $field = $field->getForm();
+
+                    if (! empty($tagdata)) {
+                        $field_vars = [
+                            'field_name' => $row['m_field_label'],
+                            'lang:profile_field' => $row['m_field_label'],
+                            'field_description' => $row['m_field_description'],
+                            'lang:profile_field_description' => $row['m_field_description'],
+                            'required' => get_bool_from_string($row['m_field_required']),
+                            'field' => $field,
+                            'form:custom_profile_field' => $field
+                        ];
+                        $str .= ee()->TMPL->parse_variables_row($temp, $field_vars);
+                        continue;
+                    }
+
+                    $temp = str_replace("{field}", $field, $temp);
+
+                    // Replace {field_name}
+                    $temp = str_replace("{field_name}", $row['m_field_label'], $temp);
+
+                    if ($row['m_field_description'] == '') {
+                        $temp = preg_replace("/{if field_description}.+?{\/if}/s", "", $temp);
+                    } else {
+                        $temp = preg_replace("/{if field_description}(.+?){\/if}/s", "\\1", $temp);
+                    }
+
+                    $temp = str_replace("{field_description}", $row['m_field_description'], $temp);
+
+                    $str .= $temp;
                 }
 
-                // Parse input fields
-                ee()->load->helper('form');
-                $field = $member_fields[$row['m_field_id']]->getField();
-                $field->setName('m_field_id_' . $row['m_field_id']);
-                $field = $field->getForm();
-
-                if (! empty($tagdata)) {
-                    $field_vars = [
-                        'field_name' => $row['m_field_label'],
-                        'lang:profile_field' => $row['m_field_label'],
-                        'field_description' => $row['m_field_description'],
-                        'lang:profile_field_description' => $row['m_field_description'],
-                        'required' => get_bool_from_string($row['m_field_required']),
-                        'field' => $field,
-                        'form:custom_profile_field' => $field
-                    ];
-                    $str .= ee()->TMPL->parse_variables_row($temp, $field_vars);
-                    continue;
+                // since $str may have sequences that look like PCRE backreferences,
+                // the two choices are to escape them and use preg_replace() or to
+                // match the pattern and use str_replace().  This way happens
+                // to be faster in this case.
+                if (preg_match(
+                    "/" . LD . "custom_fields" . RD . ".*?" . LD . "\/custom_fields" . RD . "/s",
+                    $reg_form,
+                    $match
+                )) {
+                    $reg_form = str_replace($match[0], $str, $reg_form);
                 }
-
-                $temp = str_replace("{field}", $field, $temp);
-
-                // Replace {field_name}
-                $temp = str_replace("{field_name}", $row['m_field_label'], $temp);
-
-                if ($row['m_field_description'] == '') {
-                    $temp = preg_replace("/{if field_description}.+?{\/if}/s", "", $temp);
-                } else {
-                    $temp = preg_replace("/{if field_description}(.+?){\/if}/s", "\\1", $temp);
-                }
-
-                $temp = str_replace("{field_description}", $row['m_field_description'], $temp);
-
-                $str .= $temp;
             }
 
-            // since $str may have sequences that look like PCRE backreferences,
-            // the two choices are to escape them and use preg_replace() or to
-            // match the pattern and use str_replace().  This way happens
-            // to be faster in this case.
-            if (preg_match(
-                "/" . LD . "custom_fields" . RD . ".*?" . LD . "\/custom_fields" . RD . "/s",
-                $reg_form,
-                $match
-            )) {
-                $reg_form = str_replace($match[0], $str, $reg_form);
+            if (strpos($reg_form, LD . 'field:') !== false) {
+                foreach ($member_fields as $field) {
+                    if ($field->m_field_reg === 'y') {
+                        $formField = $field->getField();
+                        $formField->setName('m_field_id_' . $field->m_field_id);
+                        $reg_form = str_replace(LD . 'field:' . $field->m_field_name . RD, $formField->getForm(), $reg_form);
+                    }
+                }
             }
         }
 

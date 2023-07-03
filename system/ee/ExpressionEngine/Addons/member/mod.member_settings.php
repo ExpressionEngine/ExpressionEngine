@@ -776,63 +776,67 @@ class Member_settings extends Member
         // we need to reset this, because might have already been populated by channel:entries tag
         ee()->api_channel_fields->custom_fields = array();
 
-        if ($query->num_rows() > 0) {
-            foreach ($this->member->getDisplay()->getFields() as $field) {
-                if (! ee('Permission')->isSuperAdmin() && $field->get('field_public') != 'y') {
-                    continue;
+        if (strpos($template, '{/custom_profile_fields}') !== false) {
+            if ($query->num_rows() > 0) {
+                foreach ($this->member->getDisplay()->getFields() as $field) {
+                    if (! ee('Permission')->isSuperAdmin() && $field->get('field_public') != 'y') {
+                        continue;
+                    }
+
+                    $temp = $profile_fields_template;
+
+                    /** ----------------------------------------
+                    /**  Assign the data to the field
+                    /** ----------------------------------------*/
+                    $temp = str_replace('{field_id}', $field->getId(), $temp);
+
+                    $required = $field->isRequired() ? "<span class='alert'>*</span>&nbsp;" : '';
+
+                    $fieldForm = $field->getForm();
+
+                    $temp = str_replace(
+                        [
+                            '{lang:profile_field}',
+                            '{lang:profile_field_description}',
+                            '{form:custom_profile_field}',
+                            '{field_name}',
+                            '{field_label}',
+                            '{field_id}',
+                            '{field_instructions}',
+                            '{display_field}',
+                            '{field_data}',
+                            '{text_direction}',
+                            '{maxlength}',
+                            '{field_required}',
+                            '{field_type}',
+                        ],
+                        [
+                            $required . $field->getLabel(),
+                            $field->get('field_description'),
+                            $fieldForm,
+                            $field->getName(),
+                            $field->getLabel(),
+                            $field->getId(),
+                            $field->get('field_description'),
+                            $fieldForm,
+                            $result_row[$field->getName()],
+                            $field->get('field_text_direction'),
+                            $field->get('field_maxl'),
+                            $field->isRequired(),
+                            $field->getType()
+                        ],
+                        $temp
+                    );
+
+                    /** ----------------------------------------
+                    /**  Render textarea fields
+                    /** ----------------------------------------*/
+                    if ($field->getTypeName() == 'textarea') {
+                        $temp = str_replace('<td ', "<td valign='top' ", $temp);
+                    }
+
+                    $r .= $temp;
                 }
-
-                $temp = $profile_fields_template;
-
-                /** ----------------------------------------
-                /**  Assign the data to the field
-                /** ----------------------------------------*/
-                $temp = str_replace('{field_id}', $field->getId(), $temp);
-
-                $required = $field->isRequired() ? "<span class='alert'>*</span>&nbsp;" : '';
-
-                $temp = str_replace(
-                    [
-                        '{lang:profile_field}',
-                        '{lang:profile_field_description}',
-                        '{form:custom_profile_field}',
-                        '{field_name}',
-                        '{field_label}',
-                        '{field_id}',
-                        '{field_instructions}',
-                        '{display_field}',
-                        '{field_data}',
-                        '{text_direction}',
-                        '{maxlength}',
-                        '{field_required}',
-                        '{field_type}',
-                    ],
-                    [
-                        $required . $field->getLabel(),
-                        $field->get('field_description'),
-                        $field->getForm(),
-                        $field->getName(),
-                        $field->getLabel(),
-                        $field->getId(),
-                        $field->get('field_description'),
-                        $field->getForm(),
-                        $result_row[$field->getName()],
-                        $field->get('field_text_direction'),
-                        $field->get('field_maxl'),
-                        $field->isRequired(),
-                        $field->getType()
-                    ],
-                    $temp
-                );
-
-                /** ----------------------------------------
-                /**  Render textarea fields
-                /** ----------------------------------------*/
-                if ($field->getTypeName() == 'textarea') {
-                    $temp = str_replace('<td ', "<td valign='top' ", $temp);
-                }
-
-                $r .= $temp;
             }
         }
 
@@ -865,6 +869,14 @@ class Member_settings extends Member
             $template = substr_replace($template, $r, $custom_profile_fields_start, $custom_profile_fields_diff);
         } else {
             $template = str_replace(LD . "custom_profile_fields" . RD, $r, $template);
+        }
+
+        if (strpos($template, LD . 'field:') !== false) {
+            foreach ($this->member->getDisplay()->getFields() as $field) {
+                if (ee('Permission')->isSuperAdmin() || $field->get('field_public') == 'y') {
+                    $template = str_replace(LD . 'field:' . $field->get('field_name') . RD, $field->getForm(), $template);
+                }
+            }
         }
 
         //if we run EE template parser, do some things differently
@@ -991,6 +1003,7 @@ class Member_settings extends Member
                 } else {
                     if ($post !== false) {
                         $member->$fname = ee('Security/XSS')->clean($post);
+                        dump($member->$fname);
                     }
                 }
 
