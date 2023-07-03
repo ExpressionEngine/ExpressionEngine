@@ -14,6 +14,8 @@
  */
 class Member_settings extends Member
 {
+    public $member;
+
     /** ----------------------------------------
     /**  Member Profile - Menu
     /** ----------------------------------------*/
@@ -892,7 +894,8 @@ class Member_settings extends Member
             }
 
             $data['id'] = 'cform';
-            $data['class'] = ee()->TMPL->form_class;
+            $data['class'] = (get_bool_from_string(ee()->TMPL->fetch_param('include_assets', 'n') || strpos($template, LD . 'form_assets' . RD) !== false) ? 'ee-cform ' : '');
+            $data['class'] .= ee()->TMPL->form_class;
 
             $data['hidden_fields'] = array(
                 'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->functions->create_url(ee()->TMPL->fetch_param('return')) : ee()->functions->fetch_current_uri(),
@@ -906,9 +909,9 @@ class Member_settings extends Member
 
             $return = ee()->functions->form_declaration($data) . $template . '</form>';
             //make head appear by default
-            if (preg_match('/' . LD . 'form_assets' . RD . '/', $return)) {
+            if (strpos($return, LD . 'form_assets' . RD) !== false) {
                 $return = ee()->TMPL->swap_var_single('form_assets', ee()->channel_form_lib->head, $return);
-            } elseif (get_bool_from_string(ee()->TMPL->fetch_param('include_assets'), 'y')) {
+            } elseif (get_bool_from_string(ee()->TMPL->fetch_param('include_assets'), 'n')) {
                 // Head should only be there if the param is there
                 $return .= ee()->channel_form_lib->head;
             }
@@ -997,7 +1000,7 @@ class Member_settings extends Member
                     }
                 } elseif ($row['m_field_type'] == 'checkbox') {
                     // Handle arrays of checkboxes as a special case;
-                    foreach ($row['choices']  as $property => $label) {
+                    foreach ($row['choices'] as $property => $label) {
                         $member->$fname = in_array($property, $post) ? 'y' : 'n';
                     }
                 } else {
@@ -1023,7 +1026,6 @@ class Member_settings extends Member
 
         //if this request initiated from regular EE template, we'll process some additional stuff here
         if (REQ === 'ACTION') {
-
             //email update
             if (ee()->input->post('email') != '' && ee()->input->post('email') != $member->email) {
                 $validator = ee('Validation')->make();
@@ -1739,9 +1741,7 @@ class Member_settings extends Member
         /** -------------------------------------
         /**  Parse the $_POST data
         /** -------------------------------------*/
-        if (ee('Request')->post('screen_name') == '' &&
-            ee('Request')->post('email') == ''
-            ) {
+        if (ee('Request')->post('screen_name') == '' && ee('Request')->post('email') == '') {
             ee()->functions->redirect($redirect_url);
             exit;
         }
