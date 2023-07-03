@@ -101,7 +101,7 @@ class ChannelFieldGroup extends Model
         // check member fields
         $unique = $this->getModelFacade()
             ->get('MemberField')
-            ->filter('m_' . $key, $value);
+            ->filter('m_field_name', $value);
 
         foreach ($params as $field) {
             $unique->filter('m_' . $field, $this->getProperty($field));

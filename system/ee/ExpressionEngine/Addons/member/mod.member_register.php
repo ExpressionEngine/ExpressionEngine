@@ -51,6 +51,11 @@ class Member_register extends Member
             ->order_by('m_field_order')
             ->get('member_fields');
 
+        ee()->router->set_class('cp');
+        ee()->load->library('cp');
+        ee()->load->library('javascript');
+        ee()->load->helper('form');
+
         // If not, we'll kill the custom field variables from the template
         if ($query->num_rows() == 0) {
             $reg_form = preg_replace("/{custom_fields}.*?{\/custom_fields}/s", "", $reg_form);
@@ -78,11 +83,6 @@ class Member_register extends Member
             $member_fields = ee('Model')->get('MemberField', $member_field_ids)
                 ->all()
                 ->indexBy('m_field_id');
-
-            ee()->router->set_class('cp');
-            ee()->load->library('cp');
-            ee()->load->library('javascript');
-            ee()->load->helper('form');
 
             if (!empty($field_chunk)) {
                 foreach ($query->result_array() as $row) {
