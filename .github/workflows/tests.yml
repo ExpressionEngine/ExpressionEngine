@@ -255,13 +255,11 @@ jobs:
 
             - name: Run Cypress Tests (Electron)
               uses: cypress-io/github-action@v5
-              if: "${{ env.CYPRESS_RECORD_KEY != '' }}"
+              if: matrix.php == '8.1'
               with:
                 browser: electron
                 working-directory: tests/cypress
                 config-file: electron.cypress.json
-                record: true
-                group: PHP${{ matrix.php }}
               env:
                 CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
                 CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
