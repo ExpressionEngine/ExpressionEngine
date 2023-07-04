@@ -486,14 +486,10 @@ class Spam_upd extends Installer
     /** Add comments with SPAM status to the trap */
     private function trapSpamComments()
     {
-        // get the comments so we can save a serialized entity model to the spam trap
-        $spam_comments = ee('Model')->get('Comment')
-            ->filter('status', 's');
-        if ($spam_comments->count() == 0) {
-            return;
-        }
+        $offset = 0;
 
         $trapped_comments = ee('Model')->get('spam:SpamTrap')
+            ->fields('comment_id')
             ->filter('content_type', 'comment');
 
         $trappedCommentIds = array();
@@ -503,17 +499,25 @@ class Spam_upd extends Installer
             }
         }
 
-        if (!empty($trappedCommentIds)) {
-            $spam_comments->filter('comment_id', 'NOT IN', $trappedCommentIds);
-        }
+        // get the comments so we can save a serialized entity model to the spam trap
+        do {
+            $spam_comments = ee('Model')->get('Comment')
+                ->filter('status', 's')
+                ->limit(100)
+                ->offset($offset);
+            if (!empty($trappedCommentIds)) {
+                $spam_comments->filter('comment_id', 'NOT IN', $trappedCommentIds);
+            }
 
-        if ($spam_comments->count() == 0) {
-            return;
-        }
-
-        foreach ($spam_comments->all() as $comment) {
-            ee('Spam')->moderate('comment', $comment, $comment->comment);
-        }
+            $total = $spam_comments->count();
+            if ($total == 0) {
+                return;
+            }
+            foreach ($spam_comments->all() as $comment) {
+                ee('Spam')->moderate('comment', $comment, $comment->comment);
+            }
+            $offset += 100;
+        } while ($total > 0);
     }
 }
 
