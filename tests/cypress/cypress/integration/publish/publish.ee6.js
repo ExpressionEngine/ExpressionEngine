@@ -11,6 +11,7 @@ const page = new Publish;
 const edit = new EntryManager;
 const fluid_field = new FluidField;
 let file_modal = new FileModal;
+const channel_field_form = new ChannelFieldForm
 
 context('Publish Entry', () => {
 
@@ -86,7 +87,6 @@ context('Publish Entry', () => {
 
         before(function() {
             cy.auth();
-            const channel_field_form = new ChannelFieldForm
             channel_field_form.createField({
                 group_id: 1,
                 type: 'File',
@@ -270,7 +270,6 @@ context('Publish Entry', () => {
 
       before(function() {
           cy.auth();
-          const channel_field_form = new ChannelFieldForm
           channel_field_form.createField({
               group_id: 1,
               type: 'File Grid',
@@ -757,5 +756,103 @@ context('Publish Entry', () => {
         })
         cy.logCPPerformance()
       })
+    })
+
+    context('Date field', () => {
+      it.only('Date picker shows as it should', () => {
+        var date_val, grid_date_val, entry_date_val;
+        cy.auth();
+        cy.log('create date field, no time shown')
+        channel_field_form.createField({
+            group_id: 1,
+            type: 'Date',
+            label: 'My Date',
+            fields: {
+              show_time: 'n'
+            }
+        })
+        cy.log('create grid field with date, time shown')
+
+        cy.authVisit('admin.php?/cp/fields/create/1')
+        cy.get('[data-input-value=field_type] .select__button.js-dropdown-toggle').should('exist')
+        cy.get('[data-input-value=field_type] .select__button').click()
+        cy.get('[data-input-value=field_type] .select__dropdown-item:contains("Grid")').last().click()
+        cy.get('input[type="text"][name = "field_label"]').type("Grid with Date")
+        cy.get('[data-input-value="grid[cols][new_0][col_type]"]:visible .select__button').click()
+        cy.get('[data-input-value="grid[cols][new_0][col_type]"]:visible .select__dropdown-item').contains("Date").last().click()
+        cy.get('[name="grid[cols][new_0][col_label]"]:visible').type("datetime")
+        cy.get('body').type('{ctrl}', {release: false}).type('s')
+        cy.get('p').contains('has been created')
+
+        cy.visit('admin.php?/cp/publish/edit/entry/1')
+
+        cy.get('button:contains("Relate Entry")').should('be.visible');
+
+        cy.log('check date field')
+        cy.get('label:contains("My Date")').parents('fieldset').find('input[type=text]').focus();
+        cy.get('.date-picker-wrap').should('be.visible');
+        cy.get('.date-picker-wrap #date-picker-time-block input[type=time]').type('13:00')
+        cy.get('.date-picker-wrap td:visible a:contains(13)').click();
+        cy.get('label:contains("My Date")').parents('fieldset').find('input[type=text]').invoke('val').should('contain' ,'/13/').should('not.contain', ':')
+        cy.get('label:contains("My Date")').parents('fieldset').find('input[type=text]').invoke('val').then((value) => {
+          date_val = value
+        })
+
+        cy.log('check Grid')
+        cy.get('label:contains("My Date")').parents('fieldset').find('.grid-field tbody [rel=add_row]').should('be.visible');
+        cy.get('label:contains("My Date")').parents('fieldset').find('.grid-field [rel=add_row]:visible').click();
+        cy.get('label:contains("My Date")').parents('fieldset').find('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(0).find('input').focus();
+        cy.get('.date-picker-wrap').should('be.visible');
+        cy.get('.date-picker-wrap #date-picker-time-block input[type=time]').type('15:11')
+        cy.get('.date-picker-wrap td:visible a:contains(26)').click();
+        cy.get('label:contains("My Date")').parents('fieldset').find('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(0).find('input[type=text]').should('contain' ,'/26/').should('contain', ' 3:11 PM')
+        cy.get('label:contains("My Date")').parents('fieldset').find('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(0).find('input[type=text]').invoke('val').then((value) => {
+          grid_date_val = value
+        })
+
+        cy.log('check entry date')
+        cy.get('.tab-bar__tab[rel="t-1"]').click();
+        cy.get('input[name=entry_date]').focus();
+        cy.get('.date-picker-wrap').should('be.visible');
+        cy.get('.date-picker-wrap #date-picker-time-block input[type=time]').type('6:16')
+        cy.get('.date-picker-wrap td:visible a:contains(20)').click();
+        cy.get('input[name=entry_date]').should('contain' ,'/20/').should('contain', ' 6:16 AM')
+        cy.get('input[name=entry_date]').invoke('val').then((value) => {
+          entry_date_val = value
+        })
+
+        cy.get('body').type('{ctrl}', {release: false}).type('s')
+        cy.get('p').contains('has been updated')
+        
+        cy.get('label:contains("My Date")').parents('fieldset').find('input[type=text]').focus();
+        cy.get('.date-picker-wrap').should('be.visible');
+        cy.get('.date-picker-wrap td:contains(13)').should('have.class', 'act');
+        cy.get('label:contains("My Date")').parents('fieldset').find('input[type=text]').invoke('val').should('contain' ,'/13/').should('not.contain', ':')
+        cy.get('label:contains("My Date")').parents('fieldset').find('input[type=text]').invoke('val').then((value) => {
+          expect(value).to('contain', '12:00')
+        })
+
+        cy.log('check Grid')
+        cy.get('label:contains("My Date")').parents('fieldset').find('.grid-field td:visible').eq(0).find('input[type=text]').focus();
+        cy.get('.date-picker-wrap').should('be.visible');
+        cy.get('.date-picker-wrap td:contains(26)').should('have.class', 'act');
+        cy.get('label:contains("My Date")').parents('fieldset').find('.grid-field td:visible').eq(0).find('input[type=text]').invoke('val').should('contain' ,'/26/').should('contain', ' 3:11 PM')
+        cy.get('label:contains("My Date")').parents('fieldset').find('.grid-field td:visible').eq(0).find('input[type=text]').invoke('val').then((value) => {
+          expect(value).to('contain', ':11')
+        })
+
+        cy.log('check entry date')
+        cy.get('.tab-bar__tab[rel="t-1"]').click();
+        cy.get('input[name=entry_date]').focus();
+        cy.get('.date-picker-wrap').should('be.visible');
+        cy.get('.date-picker-wrap td:contains(20)').should('have.class', 'act');
+        cy.get('input[name=entry_date]').invoke('val').should('contain' ,'/20/').should('contain', ' 6:16 AM')
+        cy.get('input[name=entry_date]').invoke('val').then((value) => {
+          expect(value).to('contain', ':16')
+        })
+
+        cy.logCPPerformance()
+      })
+
     })
 })

@@ -156,7 +156,7 @@ EE.cp.datePicker = {
 				} else {
 					timeBlock = '<input type="time" value="12:00">';
 				}
-				var _picker = $('<div class="date-picker-wrap"><div class="date-picker-clip"><div class="date-picker-clip-inner"></div></div><div class="date-picker-footer"><button class="button date-picker-today-button">Today</button><div id="date-picker-time-block">'+timeBlock+'</div></div></div>');
+				var _picker = $('<div class="date-picker-wrap"><div class="date-picker-clip"><div class="date-picker-clip-inner"></div></div><div class="date-picker-footer"><button class="button date-picker-today-button">' + EE.lang.date.today + '</button><div id="date-picker-time-block">' + timeBlock + '</div></div></div>');
 
 				_picker.appendTo(parent);
 				var _pickerWidth = _picker.width();
@@ -393,7 +393,9 @@ EE.cp.datePicker = {
 							$(this).addClass('act');
 						}
 					});
-					$('.date-picker-wrap .date-picker-footer input[type="time"]').val(timevalue);
+					if (timevalue != ':') {
+						$('.date-picker-wrap .date-picker-footer input[type="time"]').val(timevalue);
+					}
 				}
 			}
 		},
