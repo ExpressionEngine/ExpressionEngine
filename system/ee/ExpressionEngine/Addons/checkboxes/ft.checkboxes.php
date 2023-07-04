@@ -25,6 +25,8 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
 
     public $has_array_data = true;
 
+    public $can_be_cloned = true;
+
     public $size = 'small';
 
     // used in display_field() below to set
@@ -143,7 +145,8 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
                 'manage_label' => $this->get_setting('manage_toggle_label', lang('manage')),
                 'reorder_ajax_url' => $this->get_setting('reorder_ajax_url', null),
                 'auto_select_parents' => $this->get_setting('auto_select_parents', false),
-                'no_results' => $this->get_setting('no_results', ['text' => sprintf(lang('no_found'), lang('choices'))])
+                'no_results' => $this->get_setting('no_results', ['text' => sprintf(lang('no_found'), lang('choices'))]),
+                'split_for_two' => $this->get_setting('split_for_two', null)
             ]);
         }
 

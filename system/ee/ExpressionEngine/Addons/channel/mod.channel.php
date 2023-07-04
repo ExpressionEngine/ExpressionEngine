@@ -654,7 +654,7 @@ class Channel
                 if (in_array($field_name, ['title', 'url_title'])) {
                     $table = 't';
                     $search_column_name = $table . '.' . $field_name;
-                } else if (! isset($this->cfields[$site_id][$field_name])) {
+                } elseif (! isset($this->cfields[$site_id][$field_name])) {
                     continue;
                 }
 
@@ -668,6 +668,15 @@ class Channel
                     $field_id = $this->cfields[$site_id][$field_name];
                     $table = (isset($legacy_fields[$field_id])) ? "wd" : "exp_channel_data_field_{$field_id}";
                     $search_column_name = $table . '.field_id_' . $this->cfields[$site_id][$field_name];
+                    if (ee()->config->item('show_profiler') === 'y') {
+                        if (isset($this->rfields[$site_id][$field_name])) {
+                            ee()->TMPL->log_item('WARNING: Using Relationship fields in `search` parameter is not supported.');
+                        } elseif (isset($this->gfields[$site_id][$field_name])) {
+                            ee()->TMPL->log_item('NOTE: Using Grid fields in `search` parameter requires the field to be marked as searchable.');
+                        } elseif (isset($this->ffields[$site_id][$field_name])) {
+                            ee()->TMPL->log_item('NOTE: Using Fluid fields in `search` parameter requires the field to be marked as searchable.');
+                        }
+                    }
                 }
 
                 $fields_sql .= ee()->channel_model->field_search_sql($terms, $search_column_name, $site_id);
@@ -1222,7 +1231,9 @@ class Channel
             }
 
             if (empty($channel_ids)) {
-                return '';
+                if ($channelInOperator == 'IN') {
+                    return '';
+                }
             } else {
                 $sql .= "AND t.channel_id " . $channelInOperator . " (" . implode(',', $channel_ids) . ") ";
             }
@@ -1989,7 +2000,7 @@ class Channel
         /**  Add Limits to query
         /**------*/
 
-        if (ee('LivePreview')->hasEntryData()) {
+        if (isset(ee()->session) && ee('LivePreview')->hasEntryData()) {
             $parts = explode(' WHERE ', $sql);
             $this->preview_conditions = explode(' AND ', $parts[1]);
         }
@@ -2070,8 +2081,10 @@ class Channel
         $this->sql .= $this->generateSQLForEntries($entries, $channel_ids);
 
         //cache the entry_id
-        ee()->session->cache['channel']['entry_ids'] = $entries;
-        ee()->session->cache['channel']['channel_ids'] = $channel_ids;
+        if (isset(ee()->session)) {
+            ee()->session->cache['channel']['entry_ids'] = $entries;
+            ee()->session->cache['channel']['channel_ids'] = $channel_ids;
+        }
 
         $end = "ORDER BY FIELD(t.entry_id, " . implode(',', $entries) . ")";
 
@@ -2156,8 +2169,8 @@ class Channel
 
             if (!empty($legacy_fields)) {
                 foreach ($legacy_fields as $lField) {
-                    $sql .=', wd.field_ft_'.$lField->field_id;
-                    $sql .=', wd.field_id_'.$lField->field_id;
+                    $sql .= ', wd.field_ft_' . $lField->field_id;
+                    $sql .= ', wd.field_id_' . $lField->field_id;
                 }
             }
         }
@@ -2225,6 +2238,10 @@ class Channel
     {
         $return = false;
 
+        if (!isset(ee()->session)) {
+            return $return;
+        }
+
         if (ee('LivePreview')->hasEntryData()) {
             $data = ee('LivePreview')->getEntryData();
             if (in_array($this->query_string, [$data['entry_id'], $data['url_title']])) {
@@ -2246,6 +2263,10 @@ class Channel
 
     private function overrideWithPreviewData($result_array)
     {
+        if (!isset(ee()->session)) {
+            return $result_array;
+        }
+
         if (ee('LivePreview')->hasEntryData()) {
             $found = false;
             $show_closed = false;
@@ -2501,7 +2522,9 @@ class Channel
 
         $this->cacheCategoryFieldModels();
 
-        ee()->session->set_cache('mod_channel', 'active', $this);
+        if (isset(ee()->session)) {
+            ee()->session->set_cache('mod_channel', 'active', $this);
+        }
         $this->return_data = $parser->parse($this, $data, $config);
 
         unset($parser, $entries, $data);
@@ -3956,7 +3979,6 @@ class Channel
                 $content = $data[$field_name];
 
                 if (! empty($var_props['modifier'])) {
-                    $parse_fnc = 'replace_' . $var_props['modifier'];
 
                     if ($field_name == 'category_image') {
                         $class = $file_fieldtype;
@@ -3968,19 +3990,40 @@ class Channel
                         $class = $fieldtype;
                     }
 
-                    if (method_exists($class, $parse_fnc)) {
-                        $content = ee()->api_channel_fields->apply($parse_fnc, array(
-                            $content,
-                            $var_props['params'],
-                            false
-                        ));
-                    } elseif (method_exists($class, 'replace_tag_catchall')) {
-                        $content = ee()->api_channel_fields->apply('replace_tag_catchall', array(
-                            $content,
-                            $var_props['params'],
-                            false,
-                            $var_props['modifier']
-                        ));
+                    if (isset($var_props['all_modifiers']) && !empty($var_props['all_modifiers'])) {
+                        foreach ($var_props['all_modifiers'] as $modifier => $params) {
+                            $parse_fnc = 'replace_' . $modifier;
+                            if (method_exists($class, $parse_fnc)) {
+                                $content = ee()->api_channel_fields->apply($parse_fnc, array(
+                                    $content,
+                                    $params,
+                                    false
+                                ));
+                            } elseif (method_exists($class, 'replace_tag_catchall')) {
+                                $content = ee()->api_channel_fields->apply('replace_tag_catchall', array(
+                                    $content,
+                                    $params,
+                                    false,
+                                    $modifier
+                                ));
+                            }
+                        }
+                    } else {
+                        $parse_fnc = 'replace_' . $var_props['modifier'];
+                        if (method_exists($class, $parse_fnc)) {
+                            $content = ee()->api_channel_fields->apply($parse_fnc, array(
+                                $content,
+                                $var_props['params'],
+                                false
+                            ));
+                        } elseif (method_exists($class, 'replace_tag_catchall')) {
+                            $content = ee()->api_channel_fields->apply('replace_tag_catchall', array(
+                                $content,
+                                $var_props['params'],
+                                false,
+                                $var_props['modifier']
+                            ));
+                        }
                     }
                 }
 
@@ -4002,7 +4045,11 @@ class Channel
      */
     private function cacheCategoryFieldModels()
     {
-        $this->cat_field_models = ee()->session->cache(__CLASS__, 'cat_field_models') ?: array();
+        if (isset(ee()->session)) {
+            $this->cat_field_models = ee()->session->cache(__CLASS__, 'cat_field_models') ?: array();
+        } else {
+            $this->cat_field_models = [];
+        }
 
         ee()->load->library('api');
         ee()->legacy_api->instantiate('channel_fields');
@@ -4033,7 +4080,9 @@ class Channel
             ->all()
             ->indexBy('field_id');
 
-        ee()->session->set_cache(__CLASS__, 'cat_field_models', $this->cat_field_models);
+        if (isset(ee()->session)) {
+            ee()->session->set_cache(__CLASS__, 'cat_field_models', $this->cat_field_models);
+        }
     }
 
     /**

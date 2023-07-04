@@ -20,7 +20,7 @@ context('Upload Destination Create/Edit', () => {
     cy.server()
   })
 
-  it('shows the Upload Destination Create/Edit page', () => {
+  it('Shows the Upload Destination Create/Edit page', () => {
     page.get('name').should('exist')
     page.get('adapter').should('exist')
     page.get('allowed_types').should('exist')
@@ -53,7 +53,7 @@ context('Upload Destination Create/Edit', () => {
       page.hasErrors()
   })
 
-  it('Not writable path', () => {
+  it('Validate not writable path', () => {
       // Not writable path:
       page.load()
 
@@ -72,7 +72,7 @@ context('Upload Destination Create/Edit', () => {
       page.hasErrors()
   })
 
-  it('should validate regular fields', () => {
+  it('Validate regular fields', () => {
     const url_error = 'This field must contain a valid URL.'
     page.submit()
     cy.hasNoErrors()
@@ -246,7 +246,7 @@ context('Upload Destination Create/Edit', () => {
     cy.hasNoErrors()
   })
 
-  it('should validate image manipulation data', () => {
+  it('Validate image manipulation data', () => {
 
     watermark.load()
     watermark.get('wm_name').clear().type('Test')
@@ -434,7 +434,7 @@ context('Upload Destination Create/Edit', () => {
     page.hasNoErrors()
   })
 
-  it('should repopulate the form on validation error, and save', () => {
+  it('Repopulate the form on validation error, and save', () => {
     page.get('url').should('not.be.visible')
     cy.get('[data-input-value=adapter] .select__button').click()
     cy.get('[data-input-value=adapter] .select__dropdown .select__dropdown-item').contains('Local').click()
@@ -573,7 +573,7 @@ context('Upload Destination Create/Edit', () => {
 
   })
 
-  it('should save a new upload directory', () => {
+  it('Save a new upload directory', () => {
     page.get('url').should('not.be.visible')
     cy.get('[data-input-value=adapter] .select__button').click()
     cy.get('[data-input-value=adapter] .select__dropdown .select__dropdown-item').contains('Local').click()
@@ -714,7 +714,7 @@ context('Upload Destination Create/Edit', () => {
     })
   })
 
-  it('should edit an existing upload directory', () => {
+  it('Edit an existing upload directory', () => {
     page.load_edit_for_dir(1)
     cy.hasNoErrors()
 
@@ -726,7 +726,7 @@ context('Upload Destination Create/Edit', () => {
     // page.get('name').invoke('val').then((val) => { expect(val).to.be.equal('New name upload dir'
   })
 
-  it('should reject XSS', () => {
+  it('Reject XSS in name', () => {
 
     page.get('name').clear().type(page.messages.xss_vector)
     cy.route("POST", "**/files/uploads/**").as("ajax39");

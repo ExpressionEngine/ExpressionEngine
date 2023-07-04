@@ -65,9 +65,6 @@ class Pro_search_index_model extends Pro_search_model
         // Call parent install
         parent::install();
 
-        // Force MyISAM
-        ee()->db->query("ALTER TABLE {$this->table()} ENGINE = MYISAM");
-
         // Add indexes to table
         ee()->db->query("ALTER TABLE {$this->table()} ADD INDEX (`collection_id`)");
         ee()->db->query("ALTER TABLE {$this->table()} ADD INDEX (`site_id`)");

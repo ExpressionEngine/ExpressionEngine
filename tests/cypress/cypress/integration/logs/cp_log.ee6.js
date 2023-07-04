@@ -4,8 +4,6 @@ const page = new CPLogs;
 
 context('CP Log', () => {
 
-	describe('Pregen == true', function() {
-
     var JoeId =0;
 
     before(function(){
@@ -35,7 +33,7 @@ context('CP Log', () => {
       cy.get('h1').contains('System Logs')
    })
 
-    it('searches by phrases', () => {
+    it('searches log by phrases', () => {
       cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1,1,'admin',1,UNIX_TIMESTAMP(),'Cypress Entry to Search For')")
       cy.wait(5000);
       page.get('search').type('Cypress Entry to Search For{enter}')
@@ -44,7 +42,7 @@ context('CP Log', () => {
       page.get('empty').should('not.exist')
     })
 
-		it('shows no results on a failed search', () => {
+		it('shows no results on a failed log search', () => {
       page.get('search').type('NotFoundHere{enter}')
       cy.get('i').contains('Found 0 results for "NotFoundHere"')
       page.get('empty').should('exist')
@@ -59,7 +57,7 @@ context('CP Log', () => {
      cy.get('button').contains('Save').first().click()
   })
 
-  it('can remove everything', () =>{
+  it('can remove all logs', () =>{
       for (var i = 0; i < 2; i++) {
         cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId.toString() + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
       }
@@ -74,7 +72,7 @@ context('CP Log', () => {
 
 
 
-		it('filters by username',() => {
+		it('filter log records by username',() => {
 
         cy.task('db:query', "TRUNCATE `exp_cp_log`").then(() => {
         for (var i = 0; i < 15; i++) {
@@ -92,7 +90,7 @@ context('CP Log', () => {
     })
 
     //this uses search bar test above uses the username filter
-    it('can search by username',() => {
+    it('search log by username',() => {
       cy.task('db:query', "TRUNCATE `exp_cp_log`").then(() => {
       for (var i = 0; i < 15; i++) {
         cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId.toString() + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
@@ -107,7 +105,7 @@ context('CP Log', () => {
     })
 
 
-    it('can filter by date' , () => {
+    it('filter log by date' , () => {
       cy.task('db:query', "TRUNCATE `exp_cp_log`").then(() => {
       for (var i = 0; i < 3; i++) {
         cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId.toString() + ",'johndoe1',1,UNIX_TIMESTAMP(),'Today')")
@@ -128,7 +126,7 @@ context('CP Log', () => {
 
     })
 
-    it('can change page size', () => {
+    it('change page size', () => {
       cy.task('db:query', "TRUNCATE `exp_cp_log`").then(() => {
 
       var i = 0;
@@ -148,7 +146,7 @@ context('CP Log', () => {
       })
     })
 
-    it('can set custom page size', () => {
+    it('set custom page size', () => {
       page.get('delete_all').click()
       page.get('confirm').filter(':visible').first().click()
 
@@ -229,7 +227,7 @@ context('CP Log', () => {
         page.get('confirm').filter(':visible').first().click()
     })
 
-    it('can remove a single entry', () => {
+    it('remove a single log entry', () => {
       cy.get('i[class="fal fa-trash-alt"]').first().click()
       page.get('confirm').filter(':visible').first().click()
       cy.get('body').contains('1 log(s) deleted')
@@ -289,6 +287,5 @@ context('CP Log', () => {
          cy.get('a').filter(':visible').contains('johndoe1')
         cy.get('a').filter(':visible').contains('admin').should('not.exist')
     })
-})
 
 }) //EOF

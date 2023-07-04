@@ -196,6 +196,13 @@ em label input[type='checkbox'] {
 }
 
 
+input[type=text][dir=rtl][field_content_type=numeric],
+input[type=text][dir=rtl][field_content_type=integer],
+input[type=text][dir=rtl][field_content_type=decimal]{
+  direction: ltr;
+  text-align: right;
+}
+
 
 
 // $input-padding: 8px;

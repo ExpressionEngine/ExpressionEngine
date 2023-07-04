@@ -286,7 +286,7 @@ context('Upload Destination Subfolders', () => {
         managerPage.hasAlert('success').contains('deleted')
     })
 
-    context('sync the subfolders', () => {
+    context('Sync the subfolders', () => {
         before(() => {
             cy.task('db:seed')
             cy.task('filesystem:delete', '../../images/uploads/*').then(() => {
@@ -300,7 +300,7 @@ context('Upload Destination Subfolders', () => {
             })
         })
 
-        it('adding subfolder on filesystem', function() {
+        it('Added subfolder on filesystem, after sync shows in CP', function() {
 
             page.load_edit_for_dir(2)
             page.get('name').should('exist')

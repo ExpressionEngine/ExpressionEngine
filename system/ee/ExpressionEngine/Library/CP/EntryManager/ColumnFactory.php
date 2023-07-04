@@ -51,6 +51,8 @@ class ColumnFactory
             self::$instances[$identifier] = new $class($identifier);
         } elseif (strpos($identifier, 'field_id_') === 0 && $field = self::getCompatibleField($identifier)) {
             self::$instances[$identifier] = new Columns\CustomField($identifier, $field);
+        } elseif (strpos($identifier, 'tab_') === 0) {
+            self::$instances[$identifier] = new Columns\ModuleTab($identifier);
         } else {
             return null;
         }
@@ -68,7 +70,8 @@ class ColumnFactory
     {
         $columns = array_merge(
             static::getStandardColumns(),
-            static::getCustomFieldColumns($channel)
+            static::getCustomFieldColumns($channel),
+            static::getTabColumns()
         );
         $availableColumns = [];
         foreach ($columns as $column) {
@@ -134,6 +137,21 @@ class ColumnFactory
     }
 
     /**
+     * Returns Column objects for modules with tabs
+     *
+     * @return array[Column]
+     */
+    protected static function getTabColumns()
+    {
+        return array_map(function ($tab) {
+            if (strpos($tab, 'tab_') !== 0) {
+                $tab = 'tab_' . $tab;
+            }
+            return self::getColumn($tab);
+        }, self::getCompatibleTabs());
+    }
+
+    /**
      * Returns a ChannelField object given a field_id_x identifier
      *
      * @return ChannelField
@@ -160,11 +178,11 @@ class ColumnFactory
      */
     private static function getCompatibleFieldtypes()
     {
-        static $fieldtypes;
-        if (empty($fieldtypes)) {
+        static $fieldtypes = false;
+        if ($fieldtypes === false) {
             $cache_key = '/EntryManager/CompatibleFieldtypes';
             $fieldtypes = ee()->cache->get($cache_key);
-            if (empty($fieldtypes)) {
+            if ($fieldtypes === false) {
                 $fieldtypes = ee('Model')->get('Fieldtype')->all()->pluck('name');
                 ee()->legacy_api->instantiate('channel_fields');
                 $fieldtypes = array_filter($fieldtypes, function ($fieldtype) {
@@ -177,6 +195,45 @@ class ColumnFactory
         }
 
         return $fieldtypes;
+    }
+
+    /**
+     * Return list of tab files that implement ColumnInterface
+     *
+     * @return array[string]
+     */
+    private static function getCompatibleTabs()
+    {
+        static $tabs = false;
+        if ($tabs === false) {
+            $cache_key = '/EntryManager/CompatibleTabs';
+            $tabs = ee()->cache->get($cache_key);
+            if ($tabs === false) {
+                $tabs = [];
+                if (empty(ee()->cp->installed_modules)) {
+                    ee()->cp->get_installed_modules();
+                }
+                foreach (ee()->cp->installed_modules as $module_name) {
+                    $module = ee('Addon')->get($module_name);
+                    if (!is_null($module)) {
+                        $modulePath = $module->getPath();
+                        ee()->load->add_package_path($modulePath);
+                        if ($module->hasTab()) {
+                            include_once($modulePath . '/tab.' . $module_name . '.php');
+                            $class_name = ucfirst($module_name) . '_tab';
+                            $OBJ = new $class_name();
+                            if (method_exists($OBJ, 'renderTableCell') === true) {
+                                $tabs[] = 'tab_' . $module_name;
+                            }
+                        }
+                        ee()->load->remove_package_path($modulePath);
+                    }
+                }
+                ee()->cache->save($cache_key, $tabs);
+            }
+        }
+
+        return $tabs;
     }
 
     /**

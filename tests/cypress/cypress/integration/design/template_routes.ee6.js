@@ -16,14 +16,14 @@ context('Template Routes', () => {
         cy.authVisit(page.url);
     })
 
-    it('displays', function() {
+    it('Load routes form with no routes yet', function() {
         //page.get('new_route_button').should('exist')
         cy.get('a').contains('New route').should('exist')
         page.get('update_button').should('exist')
         page.get('no_results').should('exist')
     })
 
-    it('can add a new route', function() {
+    it('Add a new route', function() {
         cy.viewport(1280, 660)
 
         page.add_route({
@@ -47,7 +47,7 @@ context('Template Routes', () => {
         page.get('routes').eq(0).find('td:nth-child(4) [data-toggle-for=required]').should('have.class', 'off')
     })
 
-    it('can edit a route', function() {
+    it('Edit a route', function() {
 
         page.get('routes').eq(0).find('td:nth-child(3) input').clear().type('cypress/edited')
 
@@ -56,7 +56,7 @@ context('Template Routes', () => {
         page.get('routes').eq(0).find('td:nth-child(3) input').should('have.value', 'cypress/edited')
     })
 
-    it('can reorder routes', function() {
+    it('Reorder routes', function() {
         page.add_route({
             template: 'about/404',
             route: 'boo/far'
@@ -80,7 +80,7 @@ context('Template Routes', () => {
         })
     })
 
-    it('can remove a route', function() {
+    it('Remove a route', function() {
 
         page.get('update_button').filter(':visible').first().click()
 

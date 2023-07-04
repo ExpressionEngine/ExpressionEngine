@@ -76,7 +76,7 @@ gulp.task('app', ['_preflight'], function (cb) {
 		'build-tools/',
 		'frontedit/',
 		'js-src/',
-		
+
 		'images/*/*',
 		'images/about',
 		'!images/*/index.html',
@@ -173,12 +173,12 @@ gulp.task('_archive_pro', function (cb) {
 	console.log(paths.app);
 
 	var files = [
-		properties.local_repositories.app + 'images/**/*', 
-		properties.local_repositories.app + 'system/**/*', 
-		properties.local_repositories.app + 'themes/**/*', 
-		properties.local_repositories.app + 'admin.php', 
-		properties.local_repositories.app + 'index.php', 
-		properties.local_repositories.app + 'favicon.ico', 
+		properties.local_repositories.app + 'images/**/*',
+		properties.local_repositories.app + 'system/**/*',
+		properties.local_repositories.app + 'themes/**/*',
+		properties.local_repositories.app + 'admin.php',
+		properties.local_repositories.app + 'index.php',
+		properties.local_repositories.app + 'favicon.ico',
 		properties.local_repositories.app + 'LICENSE.txt'
 	];
 
@@ -223,7 +223,7 @@ gulp.task('_set_debug', function (cb) {
  */
 var copyrightDate = function (path) {
 	path = (typeof path !== 'undefined') ? path : properties.local_repositories.app + '/';
-	
+
 	var currentYear = new Date().getFullYear();
 	var pastYear = currentYear - 1;
 
@@ -251,7 +251,7 @@ gulp.task('_replace_jira_collector', function (cb) {
 		paths.app + 'system/ee/legacy/errors/error_exception.php',
 		paths.app + 'system/ee/legacy/errors/error_general.php'
 	];
-	
+
 	files.forEach(function(item, index) {
 		var dest = item.substring(0, item.lastIndexOf('/'));
 		gulp.src(item)
@@ -340,6 +340,7 @@ gulp.task('_delete_files', function (cb) {
 		'.git',
 		'.github',
 		'.gitignore',
+		'.git-blame-ignore-revs',
 		'.languagebabel',
 		'.mailmap',
 		'.php_cs.dist',
@@ -381,6 +382,7 @@ gulp.task('_delete_files', function (cb) {
 
 		'system/ee/EllisLab/Tests/',
 		'system/ee/ExpressionEngine/Tests/',
+		'system/ee/installer/updater/ExpressionEngine/Tests/',
 
 		'src',
 		'vue.config.js',

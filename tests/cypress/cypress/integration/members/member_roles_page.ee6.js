@@ -6,7 +6,7 @@ import SiteManager from '../../elements/pages/site/SiteManager';
 
 const page = new MemberGroups
 
-context('Member Group List', () => {
+context('Member Roles List', () => {
 
   before(function(){
     cy.task('db:seed')
@@ -19,7 +19,7 @@ context('Member Group List', () => {
     cy.hasNoErrors()
   })
 
-  it('shows the Member Group List page', () => {
+  it('Shows the Member Group Roles page', () => {
     //page.all_there?.should('eq', true
     page.get('list.groups_table').should('exist')
     page.get('list.groups').should('exist')
@@ -53,7 +53,7 @@ context('Member Group List', () => {
     page.get('pagination').should('not.exist')
   })
 
-  it('cannot delete built-in groups', () => {
+  it('cannot delete built-in roles', () => {
     let opts = ['Super Admin', 'Banned', 'Guests', 'Pending', 'Members']
     opts.forEach(function(group) {
       page.get('list.groups').contains(group).parent().find('input[type="checkbox"]').check();
@@ -69,7 +69,7 @@ context('Member Group List', () => {
   }) 
 
 
-    it('creates a group successfully', () => {
+    it('creates a role', () => {
       create_member_group()
       
       page.get('edit.name').invoke('val').then((val) => { expect(val).to.be.equal('Moderators')})
@@ -106,7 +106,7 @@ context('Member Group List', () => {
       page.get('edit.access_tools_options').each(function(el){ expect(el).to.be.checked })
     })
 
-    it('can delete new member group', () => {
+    it('can delete new member role', () => {
       
       cy.addMembers('Moderators', 1)
 
@@ -125,7 +125,7 @@ context('Member Group List', () => {
       
     }) 
 
-  it('when editing a member group', () => {
+  it('editing member role', () => {
 
       create_member_group()
 
@@ -135,7 +135,7 @@ context('Member Group List', () => {
 
       page.get('edit.save_dropdown').click()
       cy.wait(1000)
-      page.get('edit.submit').last().click({waitForAnimations: false})
+      page.get('edit.submit').eq(2).click({waitForAnimations: false})
 
       page.get('list.groups').find('a:contains("Editors")').click()
 
@@ -284,7 +284,7 @@ context('Member Group List', () => {
     page.get('edit.can_access_sys_prefs_toggle').click()
     page.get('edit.save_dropdown').click()
     cy.wait(1000)
-    page.get('edit.submit').last().click({waitForAnimations: false})
+    page.get('edit.submit').eq(2).click({waitForAnimations: false})
 
     page.get('list.groups').find('a:contains("Moderators")').click()
 
