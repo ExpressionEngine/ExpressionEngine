@@ -213,12 +213,12 @@ class EE_Channel_data_parser
             $row['absolute_reverse_count'] = $row['absolute_results'] - $row['absolute_count'] + 1;
             $row['comment_subscriber_total'] = (isset($subscriber_totals[$row['entry_id']])) ? $subscriber_totals[$row['entry_id']] : 0;
             $row['has_categories'] = ! empty($data['categories'][$row['entry_id']]);
-            $row['cp_edit_entry_url'] = ee('CP/URL')
+            $row['cp_edit_entry_url'] = isset(ee()->session) ? ee('CP/URL')
                 ->make(
                     'publish/edit/entry/' . $row['entry_id'],
                     array('site_id' => $row['site_id']),
                     ee()->config->item('cp_url')
-                );
+                ) : '';
 
             if ($site_pages !== false && isset($site_pages[$row['site_id']]['uris'][$row['entry_id']])) {
                 $row['page_uri'] = $site_pages[$row['site_id']]['uris'][$row['entry_id']];
@@ -473,8 +473,8 @@ class EE_Channel_data_parser
         $pre = $this->_preparser;
 
         $cond = $row;
-        $cond['logged_in'] = (ee()->session->userdata('member_id') == 0) ? false : true;
-        $cond['logged_out'] = (ee()->session->userdata('member_id') != 0) ? false : true;
+        $cond['logged_in'] = (isset(ee()->session) && ee()->session->userdata('member_id') == 0) ? false : true;
+        $cond['logged_out'] = (isset(ee()->session) && ee()->session->userdata('member_id') != 0) ? false : true;
 
         foreach (array('avatar_filename', 'photo_filename', 'sig_img_filename') as $pv) {
             if (! isset($row[$pv])) {
@@ -547,20 +547,14 @@ class EE_Channel_data_parser
 
                             $cond[$key . ':' . $modifier] = $result;
 
-                            // If this key also happens to be a Grid field with the modifier
+                            // If this key also happens to be a Grid / Fluid field with the modifier
                             // "total_rows", make it the default value for evaluating
                             // conditionals
-                            if (isset($channel->gfields[$row['site_id']][$key]) &&
-                                $modifier == 'total_rows') {
-                                $cond[$key] = (int) $result;
-                            }
-
-                            // If this key also happens to be a Fluid field with the modifier
-                            // "total_fields", make it the default value for evaluating
-                            // conditionals
-                            if (isset($channel->ffields[$row['site_id']][$key]) &&
-                                $modifier == 'total_fields') {
-                                $cond[$key] = (int) $result;
+                            if (
+                                (isset($channel->gfields[$row['site_id']][$key]) && $modifier == 'total_rows') ||
+                                (isset($channel->ffields[$row['site_id']][$key]) && $modifier == 'total_fields')
+                            ) {
+                                $cond[$key] = $result !== 0 ? $result : '';
                             }
                         }
                     }

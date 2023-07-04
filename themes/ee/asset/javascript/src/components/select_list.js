@@ -1,8 +1,8 @@
 "use strict";
 
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -30,9 +30,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-var SelectList =
-/*#__PURE__*/
-function (_React$Component) {
+var SelectList = /*#__PURE__*/function (_React$Component) {
   _inherits(SelectList, _React$Component);
 
   function SelectList(props) {
@@ -411,7 +409,11 @@ function (_React$Component) {
         }
       }))), React.createElement(FieldInputs, {
         nested: props.nested,
-        tooMany: props.tooMany
+        tooMany: props.tooMany,
+        splitForTwo: props.splitForTwo,
+        list: props.items,
+        selectedItems: props.selected,
+        handle: this.handleSelect
       }, !props.loading && props.items.length == 0 && React.createElement(NoResults, {
         text: props.noResults
       }), props.loading && React.createElement(Loading, {
@@ -539,6 +541,32 @@ _defineProperty(SelectList, "defaultProps", {
 function FieldInputs(props) {
   var divClass = props.tooMany ? ' lots-of-checkboxes__items--too-many' : '';
 
+  if (props.tooMany && props.splitForTwo && props.nested) {
+    return React.createElement(React.Fragment, null, React.createElement("ul", {
+      className: 'field-inputs lots-of-checkboxes__items field-nested splitForTwo' + divClass
+    }, props.children), React.createElement("ul", {
+      className: 'field-inputs lots-of-checkboxes__items field-nested splitForTwo second-list' + divClass
+    }, React.createElement("h3", null, EE.lang.extra_title), props.list.map(function (item, index) {
+      return React.createElement(ListOfSelectedCategories, {
+        key: item.value,
+        item: item,
+        name: props.name,
+        selected: props.selectedItems,
+        disabledChoices: props.disabledChoices,
+        nested: props.nested,
+        selectable: true,
+        reorderable: false,
+        removable: false,
+        editable: false,
+        handleSelect: props.handle,
+        handleRemove: function handleRemove(e, item) {
+          return props.handleRemove(e, item);
+        },
+        groupToggle: props.groupToggle
+      });
+    })));
+  }
+
   if (props.nested) {
     return React.createElement("ul", {
       className: 'field-inputs lots-of-checkboxes__items field-nested' + divClass
@@ -550,9 +578,7 @@ function FieldInputs(props) {
   }, props.children);
 }
 
-var SelectItem =
-/*#__PURE__*/
-function (_React$Component2) {
+var SelectItem = /*#__PURE__*/function (_React$Component2) {
   _inherits(SelectItem, _React$Component2);
 
   function SelectItem() {
@@ -652,9 +678,7 @@ function (_React$Component2) {
   return SelectItem;
 }(React.Component);
 
-var SelectedItem =
-/*#__PURE__*/
-function (_React$Component3) {
+var SelectedItem = /*#__PURE__*/function (_React$Component3) {
   _inherits(SelectedItem, _React$Component3);
 
   function SelectedItem() {
@@ -683,4 +707,74 @@ function (_React$Component3) {
   }]);
 
   return SelectedItem;
+}(React.Component); // This class we will use only for Entry page
+// Category tab, to show selected category as a single list
+// add don't break the main category order
+
+
+var ListOfSelectedCategories = /*#__PURE__*/function (_React$Component4) {
+  _inherits(ListOfSelectedCategories, _React$Component4);
+
+  function ListOfSelectedCategories() {
+    _classCallCheck(this, ListOfSelectedCategories);
+
+    return _possibleConstructorReturn(this, _getPrototypeOf(ListOfSelectedCategories).apply(this, arguments));
+  }
+
+  _createClass(ListOfSelectedCategories, [{
+    key: "checked",
+    value: function checked(value) {
+      return this.props.selected.find(function (item) {
+        return item.value == value;
+      });
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var props = this.props;
+      var checked = this.checked(props.item.value);
+      var label = props.item.label;
+      var disabled = props.disabledChoices && props.disabledChoices.includes(props.item.value);
+      var listItem;
+
+      if (checked) {
+        listItem = React.createElement("label", {
+          className: 'checkbox-label',
+          "data-id": props.item.value
+        }, props.selectable && checked && React.createElement("input", {
+          type: "checkbox",
+          value: props.item.value,
+          checked: 'checked',
+          onChange: function onChange(e) {
+            return props.handleSelect(e, props.item);
+          },
+          "data-group-toggle": props.groupToggle ? JSON.stringify(props.groupToggle) : '[]'
+        }), React.createElement("div", {
+          className: props.editable ? "checkbox-label__text checkbox-label__text-editable" : "checkbox-label__text"
+        }, !props.editable && React.createElement("div", {
+          dangerouslySetInnerHTML: {
+            __html: label
+          }
+        }), " "));
+      }
+
+      if (props.nested) {
+        return React.createElement("li", {
+          className: "nestable-item",
+          "data-id": props.item.value
+        }, listItem, props.item.children && React.createElement("ul", {
+          className: "field-nested"
+        }, props.item.children.map(function (item, index) {
+          return React.createElement(ListOfSelectedCategories, _extends({}, props, {
+            key: item.value,
+            item: item
+          }));
+        })));
+      }
+
+      return listItem;
+    }
+  }]);
+
+  return ListOfSelectedCategories;
 }(React.Component);

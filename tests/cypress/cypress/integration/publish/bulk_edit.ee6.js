@@ -29,7 +29,7 @@ context('Bulk Edit', () => {
 
   })
 
-  it('should load the bulk edit modal', () => {
+  it('Load the bulk edit modal', () => {
     entry_manager.check_entry('Band Title')
     entry_manager.check_entry('Getting to Know ExpressionEngine')
     entry_manager.check_entry('Welcome to the Example Site!')
@@ -99,7 +99,7 @@ context('Bulk Edit', () => {
     })
   })
 
-  it('should filter and manage the selected entries', () => {
+  it('Filter and manage the selected entries on bulk edit', () => {
     cy.server()
 
     entry_manager.check_entry('About the Label')
@@ -143,7 +143,7 @@ context('Bulk Edit', () => {
     entry_manager.get('center_modal').should('not.be.visible')
   })
 
-  it('should manage the fields dropdown based on chosen fields and filter', () => {
+  it('Manage the fields dropdown based on chosen fields and filter', () => {
     entry_manager.check_entry('About the Label')
     entry_manager.get('bulk_action').select('Bulk Edit')
     entry_manager.get('action_submit_button').click()
@@ -181,7 +181,7 @@ context('Bulk Edit', () => {
     })*/
   })
 
-  it('should change the status on the selected entries', () => {
+  it('Change the status on the selected entries', () => {
     entry_manager.get_row_for_title('About the Label').should('not.contain', 'Closed')
     entry_manager.get_row_for_title('Band Title').should('not.contain', 'Closed')
     entry_manager.get_row_for_title('Chloe').should('not.contain', 'Closed')
@@ -302,7 +302,7 @@ context('Bulk Edit', () => {
 
   })
 
-  it('should allow setting sticky on enabled channels', () => {
+  it('Allow setting sticky on enabled channels', () => {
     channel.load_edit_for_channel(1)
     channel.get('settings_tab').click()
     channel.get('sticky_enabled').click()

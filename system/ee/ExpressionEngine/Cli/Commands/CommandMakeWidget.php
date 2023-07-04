@@ -70,7 +70,7 @@ class CommandMakeWidget extends Cli
             $service = ee('WidgetGenerator', $this->data);
             $service->build();
         } catch (\Exception $e) {
-            $this->fail($e->getMessage());
+            $this->fail(addslashes($e->getMessage()));
         }
 
         $this->info('command_make_widget_created_successfully');

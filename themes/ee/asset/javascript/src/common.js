@@ -278,9 +278,12 @@ $(document).ready(function(){
 
 	var updateMainSidebar = debounce(function() {
 		if (window.innerWidth < 1000) {
-			$('.ee-wrapper').addClass('sidebar-hidden-no-anim is-mobile');
-			$('.main-nav__mobile-menu').removeClass('hidden');
-			$('.ee-wrapper-overflow').addClass('is-mobile');
+			let isMobile = $('.ee-wrapper').hasClass('is-mobile');
+			if (!isMobile) {
+				$('.ee-wrapper').addClass('sidebar-hidden-no-anim is-mobile');
+				$('.main-nav__mobile-menu').removeClass('hidden');
+				$('.ee-wrapper-overflow').addClass('is-mobile');
+			}
 		} else {
 			$('.ee-wrapper').removeClass('sidebar-hidden-no-anim sidebar-hidden is-mobile');
 			$('.main-nav__mobile-menu').addClass('hidden');

@@ -105,6 +105,14 @@ class EE_Session
         ee()->load->library('remember');
         ee()->load->library('localize');
 
+        if (ee()->config->item('website_session_length')) {
+            $this->user_session_len = ee()->config->item('website_session_length');
+        }
+
+        if (ee()->config->item('cp_session_length')) {
+            $this->cpan_session_len = ee()->config->item('cp_session_length');
+        }
+
         $this->session_length = $this->_setup_session_length();
 
         $this->cookie_ttl = $this->_setup_cookie_ttl();
@@ -589,7 +597,7 @@ class EE_Session
 
         // Turn the query rows into array values
         foreach ($member_query->row_array() as $key => $val) {
-            if (in_array($key, ['timezone', 'date_format', 'time_format', 'include_seconds']) && $val === '') {
+            if (in_array($key, ['timezone', 'date_format', 'time_format', 'week_start', 'include_seconds']) && $val === '') {
                 $val = null;
             }
 
@@ -652,6 +660,7 @@ class EE_Session
             $this->userdata['timezone'] = ee()->config->item('default_site_timezone');
             $this->userdata['date_format'] = ee()->config->item('date_format') ? ee()->config->item('date_format') : '%n/%j/%Y';
             $this->userdata['time_format'] = ee()->config->item('time_format') ? ee()->config->item('time_format') : '12';
+            $this->userdata['week_start'] = ee()->config->item('week_start') ? ee()->config->item('week_start') : 'sunday';
             $this->userdata['include_seconds'] = ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n';
         }
 
@@ -1259,6 +1268,7 @@ class EE_Session
             'timezone' => ee()->config->item('default_site_timezone'),
             'date_format' => ee()->config->item('date_format') ? ee()->config->item('date_format') : '%n/%j/%Y',
             'time_format' => ee()->config->item('time_format') ? ee()->config->item('time_format') : '12',
+            'week_start' => ee()->config->item('week_start') ? ee()->config->item('week_start') : 'sunday',
             'include_seconds' => ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n',
             'role_id' => '3',
             'access_cp' => 0,

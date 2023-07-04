@@ -26,6 +26,8 @@ trait FileManagerTrait
         $controller = $filepickerMode ? 'addons/settings/filepicker/modal' : (empty($uploadLocation) ? 'files' : 'files/directory/' . $upload_location_id);
         $base_url = ee('CP/URL')->make($controller);
 
+        $member = ee()->session->getMember();
+
         if (empty($uploadLocation)) {
             $model = 'File';
         } else {
@@ -55,10 +57,14 @@ trait FileManagerTrait
 
         $files = ee('Model')->get($model)
             // ->fields($model . '.*', 'UploadDestination.server_path', 'UploadDestination.url');
-            ->with('UploadDestination');
+            ->with('UploadDestination')
+            ->filter('site_id', 'IN', [0, ee()->config->item('site_id')]);
         if (empty($upload_location_id)) {
-            $files->filter('UploadDestination.module_id', 0)
-                ->filter('site_id', ee()->config->item('site_id'));
+            $files->filter('UploadDestination.module_id', 0);
+            if (! ee('Permission')->isSuperAdmin()) {
+                $assigned_dirs = $member->getAssignedUploadDestinations()->pluck('id');
+                $files->filter('upload_location_id', 'IN', $assigned_dirs);
+            }
         } else {
             $files->filter('upload_location_id', $upload_location_id);
         }
@@ -205,7 +211,7 @@ trait FileManagerTrait
                         }
                     }
                 }
-                if (!empty($column->getEntryManagerColumnFields())) {
+                /*if (!empty($column->getEntryManagerColumnFields())) {
                     foreach ($column->getEntryManagerColumnFields() as $field) {
                         if (!empty($field)) {
                             // $files->fields($field);
@@ -213,7 +219,7 @@ trait FileManagerTrait
                     }
                 } else {
                     // $files->fields($column->getTableColumnIdentifier());
-                }
+                }*/
             }
         }
 
@@ -265,7 +271,7 @@ trait FileManagerTrait
             $files = $files->order('FIELD( file_id, ' . $preselectedFileId . ' )', 'DESC', false);
         }
 
-        if (! ($table->sort_dir == 'desc' && $table->sort_col != 'date_added')) {
+        if (! ($table->sort_dir == 'desc' && $table->sort_col == 'date_added')) {
             $base_url->addQueryStringVariables(
                 array(
                     'sort_dir' => $table->sort_dir,
@@ -286,8 +292,6 @@ trait FileManagerTrait
 
         $data = array();
         $missing_files = false;
-
-        $member = ee()->session->getMember();
 
         $destinationsToEagerLoad = [];
 
@@ -405,7 +409,7 @@ trait FileManagerTrait
     private function createUploadLocationFilter($uploadLocation = null)
     {
         $upload_destinations = ee('Model')->get('UploadDestination')
-            ->filter('site_id', ee()->config->item('site_id'))
+            ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
             ->filter('module_id', 0)
             ->order('name', 'asc');
 
@@ -544,7 +548,7 @@ trait FileManagerTrait
         if (ee('Permission')->can('upload_new_files')) {
             $upload_destinations = ee('Model')->get('UploadDestination')
                 ->fields('id', 'name', 'adapter')
-                ->filter('site_id', ee()->config->item('site_id'))
+                ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
                 ->filter('module_id', 0)
                 ->order('name', 'asc')
                 ->all();

@@ -18,7 +18,7 @@ context('Statuses', () => {
 
 
 
-    it('should list the statuses', function() {
+    it('List the statuses for channel', function() {
         page.get_statuses_for_group(1).then(function(statuses){
             let statusNames = [...page.$('status_names').map(function(index, el) {
                 return $(el).text().toLowerCase();
@@ -33,7 +33,7 @@ context('Statuses', () => {
         })
     })
 
-    it('should delete a status', function() {
+    it('Delete a status', function() {
         cy.server()
         page.get_statuses_for_group(1).then(function(statuses){
 

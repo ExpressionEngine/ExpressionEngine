@@ -24,6 +24,9 @@ class CategoryGroup extends StructureModel
     protected static $_hook_id = 'category_group';
 
     protected static $_relationships = array(
+        'Site' => array(
+            'type' => 'belongsTo'
+        ),
         'CategoryFields' => array(
             'type' => 'hasMany',
             'model' => 'CategoryField'
@@ -182,7 +185,8 @@ class CategoryGroup extends StructureModel
                 ? ee('CP/URL')->make('categories/reorder/' . $this->getId())->compile()
                 : '',
             'auto_select_parents' => ee()->config->item('auto_assign_cat_parents') == 'y',
-            'no_results' => $no_results
+            'no_results' => $no_results,
+            'split_for_two' => true
         );
 
         return $metadata;

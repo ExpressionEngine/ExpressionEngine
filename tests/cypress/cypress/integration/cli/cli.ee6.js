@@ -54,7 +54,7 @@ context('CLI', () => {
             // turn the caching on
             cy.authVisit('admin.php')
             cy.wait(1000)
-            cy.authVisit('admin.php?/cp/design/manager/cli', {failOnStatusCode: false})
+            cy.visit('admin.php?/cp/design/manager/cli', {failOnStatusCode: false})
             cy.get('.app-listing__row a').contains('index').click()
             cy.get('.js-tab-button.tab-bar__tab').contains('Settings').click()
             cy.get('[data-toggle-for="cache"]').click()
@@ -207,6 +207,93 @@ context('CLI', () => {
                     
                                     cy.visit('index.php/cli/field')
                                     cy.get('.field_tag').should('contain', 'Magic!')
+
+                                    cy.log('list the add-ons')
+                                    cy.exec('php ../../system/ee/eecli.php addons:list').then((result) => {
+                                        expect(result.code).to.eq(0)
+                                        expect(result.stderr).to.be.empty
+                                        expect(result.stdout).to.not.contain('on line')
+                                        expect(result.stdout).to.not.contain('caught:')
+                                        expect(result.stdout).to.contain('cypress_addon')
+
+                                        cy.exec('php ../../system/ee/eecli.php addons:list update-available', {failOnNonZeroExit: false}).then((result) => {
+                                            expect(result.code).to.not.eq(0) // error expected
+                                            expect(result.stdout).to.not.contain('on line')
+                                            expect(result.stdout).to.not.contain('caught:')
+                                            expect(result.stdout).to.not.contain('cypress_addon')
+
+                                            cy.log('update add-ons version')
+
+                                            cy.readFile('../../system/user/addons/cypress_addon/addon.setup.php', (err, data) => {
+                                                if (err) {
+                                                return console.error(err);
+                                                };
+                                            }).then((data) => {
+                                                data = data.replace('0.1.0', '0.1.1');
+                                                cy.writeFile('../../system/user/addons/cypress_addon/addon.setup.php', data);
+
+                                                cy.log('list the add-ons, again')
+                                                cy.exec('php ../../system/ee/eecli.php addons:list update-available').then((result) => {
+                                                    expect(result.code).to.eq(0)
+                                                    expect(result.stderr).to.be.empty
+                                                    expect(result.stdout).to.not.contain('on line')
+                                                    expect(result.stdout).to.not.contain('caught:')
+                                                    expect(result.stdout).to.contain('cypress_addon')
+
+                                                    cy.log('update add-on')
+                                                    cy.exec('php ../../system/ee/eecli.php addons:update --addon cypress_addon').then((result) => {
+                                                        expect(result.code).to.eq(0)
+                                                        expect(result.stderr).to.be.empty
+                                                        expect(result.stdout).to.not.contain('on line')
+                                                        expect(result.stdout).to.not.contain('caught:')
+
+                                                        cy.exec('php ../../system/ee/eecli.php addons:list update-available', {failOnNonZeroExit: false}).then((result) => {
+                                                            expect(result.stdout).to.not.contain('on line')
+                                                            expect(result.stdout).to.not.contain('caught:')
+                                                            expect(result.stdout).to.not.contain('cypress_addon')
+
+                                                            cy.log('check add-on version in the CP')
+
+                                                            cy.authVisit('admin.php?/cp/addons')
+                                                            addonsPage.get('first_party_section').find('.add-on-card:contains("Cypress Addon")').find('.add-on-card__title-version').contains('0.1.1')
+
+                                                            cy.log('uninstall')
+
+                                                            cy.exec('php ../../system/ee/eecli.php addons:uninstall --addon cypress_addon').then((result) => {
+                                                                expect(result.code).to.eq(0)
+                                                                expect(result.stderr).to.be.empty
+                                                                expect(result.stdout).to.not.contain('on line')
+                                                                expect(result.stdout).to.not.contain('caught:')
+    
+                                                                cy.log('check add-on is not installed in the CP')
+    
+                                                                cy.authVisit('admin.php?/cp/addons')
+                                                                cy.get('.add-on-card-list').first().find('.add-on-card:contains("Cypress Addon")').should('not.exist')
+                                                                cy.get('.add-on-card-list:visible').last().find('.add-on-card:contains("Cypress Addon")').should('exist')
+
+                                                                cy.log('install back again')
+
+                                                                cy.exec('php ../../system/ee/eecli.php addons:install --addon cypress_addon').then((result) => {
+                                                                    expect(result.code).to.eq(0)
+                                                                    expect(result.stderr).to.be.empty
+                                                                    expect(result.stdout).to.not.contain('on line')
+                                                                    expect(result.stdout).to.not.contain('caught:')
+        
+                                                                    cy.log('check add-on is installed in the CP')
+        
+                                                                    cy.authVisit('admin.php?/cp/addons')
+                                                                    cy.get('.add-on-card-list').first().find('.add-on-card:contains("Cypress Addon")').should('exist')
+                                                                    cy.get('.add-on-card-list:visible').last().find('.add-on-card:contains("Cypress Addon")').should('not.exist')
+                                                                })
+                                                            })
+                                                        })
+                                                    })
+                                                })
+                                            })
+                                        })
+                                    })
+
+
                                 })
                             })
                         })

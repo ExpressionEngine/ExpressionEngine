@@ -31,6 +31,15 @@ class Email extends Settings
      */
     public function index()
     {
+        $tls_options = array(
+            STREAM_CRYPTO_METHOD_TLSv1_0_CLIENT => '1.0',
+            STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT => '1.1',
+            STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT => '1.2',
+            STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT => '1.3'
+        );
+        if (ee()->config->item('tls_crypto_method') !== false && ! array_key_exists(ee()->config->item('tls_crypto_method'), $tls_options)) {
+            $tls_options[ee()->config->item('tls_crypto_method')] = ee()->config->item('tls_crypto_method'); //support custom value
+        }
         $vars['sections'] = array(
             array(
                 array(
@@ -126,7 +135,22 @@ class Email extends Settings
                                     'ssl' => lang('ssl'),
                                     'tls' => lang('tls'),
                                     '' => lang('unencrypted')
+                                ),
+                                'group_toggle' => array(
+                                    'tls' => 'tls_options'
                                 )
+                            )
+                        )
+                    ),
+                    array(
+                        'title' => 'tls_version',
+                        'desc' => 'tls_version_desc',
+                        'group' => 'tls_options',
+                        'fields' => array(
+                            'tls_crypto_method' => array(
+                                'type' => 'radio',
+                                'choices' => $tls_options,
+                                'value' => (ee()->config->item('tls_crypto_method') !== false) ? ee()->config->item('tls_crypto_method') : STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT
                             )
                         )
                     ),

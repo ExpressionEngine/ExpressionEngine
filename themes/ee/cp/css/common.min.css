@@ -22363,6 +22363,13 @@ em label input[type=checkbox] {
   margin-top: 5px;
 }
 
+input[type=text][dir=rtl][field_content_type=numeric],
+input[type=text][dir=rtl][field_content_type=integer],
+input[type=text][dir=rtl][field_content_type=decimal] {
+  direction: ltr;
+  text-align: right;
+}
+
 .grid-instruct {
   display: block;
   color: var(--ee-text-secondary);
@@ -23011,6 +23018,7 @@ dialog {
 .alert__content p {
   margin: 0;
   color: var(--ee-text-tertiary);
+  font-size: initial;
 }
 .app-notice__content p.alert__title,
 .alert__content p.alert__title {
@@ -27804,6 +27812,14 @@ input[type=button].btn-block {
   outline: none;
   box-shadow: none;
 }
+@media (max-width: 767px) {
+  .sidebar__link--parent {
+    display: flex;
+  }
+  .sidebar__link--parent a {
+    display: inline-block;
+  }
+}
 
 .ui-sortable .sidebar__link .ui-sortable-handle i, .ui-sortable .add-on-layout .secondary-sidebar .sidebar__section-title a:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link) .ui-sortable-handle i, .add-on-layout .secondary-sidebar .sidebar__section-title .ui-sortable a:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link) .ui-sortable-handle i {
   cursor: move;
@@ -28996,6 +29012,19 @@ input[type=button].btn-block {
   color: var(--ee-text-secondary);
   font-size: 80%;
   margin-left: 3px;
+}
+
+.dropdown__link-status-indicator {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 5px;
+  text-transform: capitalize;
+  font-size: 70%;
+  border: 1px solid transparent;
+  background: var(--ee-bg-blank);
+  padding: 0 5px;
+  border-radius: 1000px;
 }
 
 .dropdown__link-right {
@@ -30387,6 +30416,35 @@ input[type=checkbox].checkbox--small:active:not(:disabled) {
   padding: 5px 15px 15px;
 }
 
+.lots-of-checkboxes .splitForTwo {
+  display: inline-block;
+  vertical-align: top;
+  width: 50%;
+  border-right: 2px solid var(--ee-border);
+}
+.lots-of-checkboxes .splitForTwo h3 {
+  display: none;
+  color: var(--ee-text-normal);
+  margin-bottom: 5px;
+  font-weight: 500;
+  font-size: 1em;
+}
+@media (max-width: 767px) {
+  .lots-of-checkboxes .splitForTwo {
+    display: block;
+    width: 100%;
+    border-right: none;
+    border-bottom: 2px solid var(--ee-border);
+  }
+  .lots-of-checkboxes .splitForTwo h3 {
+    display: block;
+  }
+}
+
+.lots-of-checkboxes .second-list {
+  border: none;
+}
+
 .lots-of-checkboxes__items--too-many {
   height: 250px;
   max-height: 1000px;
@@ -30720,6 +30778,9 @@ fieldset.hide-block {
   color: var(--ee-error);
   font-style: normal;
 }
+.fieldset-invalid > .field-control .fields-select {
+  padding: 0 8px;
+}
 .fieldset-invalid .WysiHat-editor,
 .fieldset-invalid .WysiHat-editor:focus {
   border: 1px solid var(--ee-error);
@@ -30989,6 +31050,36 @@ fieldset .field-control #eye {
 .panel-body__publish tr.ui-sortable-helper {
   box-shadow: var(--ee-shadow-dropdown);
   background: var(--ee-accent-light);
+}
+
+.fields-multiselect label {
+  display: flex;
+  margin-bottom: 10px;
+  align-items: center;
+}
+@media (max-width: 767px) {
+  .fields-multiselect label {
+    display: block;
+  }
+}
+.fields-multiselect label span {
+  margin-right: 5px;
+  min-width: 60px;
+}
+@media (max-width: 767px) {
+  .fields-multiselect label span {
+    max-width: 100%;
+    display: block;
+    margin-bottom: 5px;
+  }
+}
+.fields-multiselect label select {
+  max-width: 100%;
+}
+@media (max-width: 767px) {
+  .fields-multiselect label select {
+    width: 100%;
+  }
 }
 
 .note-fieldtype {
@@ -31295,6 +31386,7 @@ fieldset .field-control #eye {
   padding: 10px;
   text-align: center;
   border-radius: 5px;
+  color: var(--ee-secondary-sidebar-item-icon);
 }
 .fields-upload-chosen .fields-upload-chosen-file img {
   max-width: 200px;
@@ -34351,6 +34443,20 @@ a.ck.ck-button.ck-on {
   top: 34px;
   left: 15px;
 }
+.list-item__secondary .status-indicator {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2px 8px 3px;
+  border: 1px solid transparent;
+  border-radius: 1000px;
+  line-height: 1;
+  text-transform: capitalize;
+  margin-left: 5px;
+  font-size: 11px;
+  background: var(--ee-bg-blank);
+  white-space: nowrap;
+}
 
 .list-item__content .list-item__secondary {
   position: inherit;
@@ -35802,7 +35908,7 @@ table .field-no-results {
   text-transform: none;
   letter-spacing: revert;
   font-size: 1.728em;
-  color: #111;
+  color: inherit;
   margin-bottom: 0.5em;
   padding: 0;
 }
@@ -38071,6 +38177,11 @@ body[data-theme="dark"] {
   flex: 1 1 80%;
   min-width: 0;
 }
+@media (max-width: 767px) {
+  .container {
+    width: 100%;
+  }
+}
 .secondary-sidebar-container {
   display: flex;
   padding-top: 0;
@@ -38096,6 +38207,7 @@ body[data-theme="dark"] {
     padding: 0;
     padding-top: 20px;
     max-width: 100%;
+    width: 100%;
   }
 }
 .secondary-sidebar.secondary-sidebar__collapsed {

@@ -47,7 +47,7 @@ context('One-Click Updater', () => {
       cy.task('updater:restore_files')
   })
 
-  it('should fail preflight check when permissions are incorrect', () => {
+  it('Fail preflight check when file permissions are incorrect', () => {
     cy.exec(`chmod 444 '../../system/user/config/config.php'`)
     cy.get('.app-about__status .button--primary:visible').click()
     if (Cypress.platform === 'win32')

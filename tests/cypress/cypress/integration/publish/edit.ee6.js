@@ -25,8 +25,8 @@ context('Publish Page - Edit', () => {
     cy.contains("404")
   })
 
-  context('autosaving', () => {
-    it('autosaves the changes', () => {
+  context('Autosaving', () => {
+    it('Autosaves the changes', () => {
       cy.visit('admin.php?/cp/publish/edit/entry/1')
       cy.get('input[name=title]').clear().type('Auto Saved Title');
       cy.wait(65000);// 60 sec before the ajax + 5 sec to finish
@@ -58,7 +58,7 @@ context('Publish Page - Edit', () => {
       cy.logCPPerformance()
     })
 
-    it('prevent navigating away', () => {
+    it('Prevent navigating away with unsaved changes', () => {
       cy.visit('admin.php?/cp/publish/edit/entry/1')
       var alerted = false;
       cy.get('input[name=title]').clear().type('Auto Saved Title');
@@ -73,7 +73,7 @@ context('Publish Page - Edit', () => {
 
   })
 
-  it('saves relationship field', () => {
+  it('Save relationship field', () => {
     cy.visit('admin.php?/cp/publish/edit/entry/1')
     cy.get('button:contains("Relate Entry")').first().click()
     cy.get('a.dropdown__link:contains("Welcome to the Example Site!")').first().click();

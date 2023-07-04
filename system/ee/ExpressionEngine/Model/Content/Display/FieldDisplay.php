@@ -38,6 +38,11 @@ class FieldDisplay
         return $this->field->getId();
     }
 
+    public function getData()
+    {
+        return $this->field->getData();
+    }
+
     public function getType()
     {
         return $this->field->getItem('field_type');
