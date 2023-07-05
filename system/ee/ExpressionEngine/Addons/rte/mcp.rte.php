@@ -49,14 +49,16 @@ class Rte_mcp
         if (ee('Request')->isPost()) {
             $rules = array(
                 'rte_default_toolset' => 'required|enum[' . implode(',', $toolset_ids) . ']',
-                'rte_file_browser' => 'required|enum[' . implode(',', array_keys($file_browser_choices)) . ']'
+                'rte_file_browser' => 'required|enum[' . implode(',', array_keys($file_browser_choices)) . ']',
+                'rte_custom_ckeditor_build' => 'required|enum[y,n]'
             );
             $validationResult = ee('Validation')->make($rules)->validate($_POST);
 
             if ($validationResult->passed()) {
                 $prefs = [
                     'rte_default_toolset' => ee()->input->post('rte_default_toolset', true),
-                    'rte_file_browser' => ee()->input->post('rte_file_browser', true)
+                    'rte_file_browser' => ee()->input->post('rte_file_browser', true),
+                    'rte_custom_ckeditor_build' => ee()->input->post('rte_custom_ckeditor_build', true) === 'y' ? 'y' : 'n'
                 ];
                 ee()->config->update_site_prefs($prefs);
 
@@ -77,7 +79,8 @@ class Rte_mcp
         if (empty($prefs)) {
             $prefs = [
                 'rte_default_toolset' => ee()->config->item('rte_default_toolset') ? ee()->config->item('rte_default_toolset') : reset($toolset_ids),
-                'rte_file_browser' => ee()->config->item('rte_file_browser') ? ee()->config->item('rte_file_browser') : reset($file_browser_choices)
+                'rte_file_browser' => ee()->config->item('rte_file_browser') ? ee()->config->item('rte_file_browser') : reset($file_browser_choices),
+                'rte_custom_ckeditor_build' => ee()->config->item('rte_custom_ckeditor_build') ? ee()->config->item('rte_custom_ckeditor_build') : 'n'
             ];
         }
 
@@ -163,6 +166,16 @@ class Rte_mcp
                                 'type' => 'select',
                                 'value' => $prefs['rte_file_browser'],
                                 'choices' => $file_browser_choices
+                            )
+                        )
+                    ),
+                    array(
+                        'title' => 'rte_custom_ckeditor_build',
+                        'desc' => 'rte_custom_ckeditor_build_desc',
+                        'fields' => array(
+                            'rte_custom_ckeditor_build' => array(
+                                'type' => 'yes_no',
+                                'value' => $prefs['rte_custom_ckeditor_build'],
                             )
                         )
                     )
