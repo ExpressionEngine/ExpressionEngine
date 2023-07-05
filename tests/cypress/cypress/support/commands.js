@@ -13,6 +13,7 @@
 import 'cypress-file-upload';
 import 'cypress-maildev';
 import 'cypress-audit/commands';
+import 'cypress-real-events';
 
 //https://github.com/cypress-io/cypress/issues/249
 const COMMAND_DELAY = Cypress.env('COMMAND_DELAY') || 0;

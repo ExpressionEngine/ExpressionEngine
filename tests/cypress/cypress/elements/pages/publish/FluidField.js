@@ -67,7 +67,8 @@ class FluidField extends ControlPanel {
           cy.get('[name=title]').click()
           break;
         case 'rte':
-          field.find('.ck-content').type('Lorem ipsum dolor sit amet' + lorem.generateParagraphs(Cypress._.random(1, (2 + skew))));
+          field.find('.ck-content').focus()
+          cy.realType('Lorem ipsum dolor sit amet' + lorem.generateParagraphs(Cypress._.random(1, (2 + skew))));
           break;
         case 'multi_select':
           field.find('input[type=checkbox]').eq(0 + skew).check()

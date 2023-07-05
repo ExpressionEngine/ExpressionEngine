@@ -311,19 +311,24 @@ context('Fields of different types', () => {
 		// Edit the entry and add the text stuff
 		cy.visit('admin.php?/cp/publish/edit')
 		cy.get('div').contains('AA Test Entry').eq(0).click()
-		cy.get('.ck-content').type('This is paragraph{enter}')
+		cy.get('.ck-content').focus()
+		cy.realType('This is paragraph{enter}')
 
 		// Type something in BOLD
 		cy.get('button.ck-button').contains('Bold').click()
-		cy.get('.ck-content').type('This is bold!')
+		cy.get('.ck-content').focus()
+		cy.realType('This is bold!')
 		cy.get('button.ck-button').contains('Bold').click()
-		cy.get('.ck-content').type('{enter}')
+		cy.get('.ck-content').focus()
+		cy.realType('{enter}')
 
 		// Type something in italics
 		cy.get('button.ck-button').contains('Italic').click()
-		cy.get('.ck-content').type('This is italic!')
+		cy.get('.ck-content').focus()
+		cy.realType('This is italic!')
 		cy.get('button.ck-button').contains('Italic').click()
-		cy.get('.ck-content').type('{enter}')
+		cy.get('.ck-content').focus()
+		cy.realType('{enter}')
 
 		// cy.get('select').select('heading 1')
 		// cy.get('.ck-content').type('This is heading 1{enter}')
