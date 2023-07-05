@@ -319,6 +319,10 @@ $lang = array(
 
     'fontBackgroundColor_rte' => 'Font background',
 
+    'codeBlock_rte' => 'Code block',
+
+    'sourceEditing_rte' =>  'Source editing',
+
     'open_in_new_tab' => 'Open in a new tab',
 
     'source_rte' => 'View Source',

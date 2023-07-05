@@ -46,6 +46,7 @@ import PageBreak from '@ckeditor/ckeditor5-page-break/src/pagebreak';
 import Font from '@ckeditor/ckeditor5-font/src/font';
 import Alignment from '@ckeditor/ckeditor5-alignment/src/alignment';
 import WordCount from '@ckeditor/ckeditor5-word-count/src/wordcount';
+import { SourceEditing } from '@ckeditor/ckeditor5-source-editing';
 
 import Mention from '../plugins/ckeditor5-mention/src/mention';
 import ReadMore from '../plugins/readmore/src/readmore';
@@ -103,7 +104,8 @@ ClassicEditor.builtinPlugins = [
 	Mention,
 	PageLinks,
 	EditorClassPlugin,
-	WordCount
+	WordCount,
+	SourceEditing
 ];
 
 // Editor configuration.

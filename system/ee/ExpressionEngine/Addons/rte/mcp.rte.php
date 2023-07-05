@@ -209,7 +209,7 @@ class Rte_mcp
     public function edit_toolset()
     {
         $toolsetType = ee('Security/XSS')->clean(ee('Request')->post('toolset_type', 'ckeditor'));
-        
+
         if (ee('Request')->isPost()) {
             $settings = ee('Security/XSS')->clean(ee('Request')->post('settings'));
 
