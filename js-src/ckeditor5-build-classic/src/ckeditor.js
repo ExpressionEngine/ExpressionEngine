@@ -47,6 +47,7 @@ import Font from '@ckeditor/ckeditor5-font/src/font';
 import Alignment from '@ckeditor/ckeditor5-alignment/src/alignment';
 import WordCount from '@ckeditor/ckeditor5-word-count/src/wordcount';
 import { SourceEditing } from '@ckeditor/ckeditor5-source-editing';
+import { ShowBlocks } from '@ckeditor/ckeditor5-show-blocks';
 
 import Mention from '../plugins/ckeditor5-mention/src/mention';
 import ReadMore from '../plugins/readmore/src/readmore';
@@ -105,7 +106,8 @@ ClassicEditor.builtinPlugins = [
 	PageLinks,
 	EditorClassPlugin,
 	WordCount,
-	SourceEditing
+	SourceEditing,
+	ShowBlocks
 ];
 
 // Editor configuration.

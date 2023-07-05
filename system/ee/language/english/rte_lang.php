@@ -329,6 +329,8 @@ $lang = array(
 
     'source_rte' => 'View Source',
 
+    'showBlocks_rte' => 'Show blocks',
+
     'video_rte' => 'Video',
 
     'fullscreen_rte' => 'Fullscreen',

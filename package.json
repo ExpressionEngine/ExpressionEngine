@@ -53,6 +53,7 @@
     "@ckeditor/ckeditor5-ui": "^38.1.0",
     "@ckeditor/ckeditor5-word-count": "^38.1.0",
     "@ckeditor/ckeditor5-source-editing": "^38.1.0",
+    "@ckeditor/ckeditor5-show-blocks": "^38.1.0",
     "@types/jquery": "^3.3.31",
     "@types/react": "^16.9.16",
     "@types/react-dom": "^16.9.4",

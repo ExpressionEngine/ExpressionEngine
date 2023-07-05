@@ -355,6 +355,7 @@ class CkeditorService extends AbstractRteService implements RteService
                 "readMore",
                 "fontColor",
                 "fontBackgroundColor",
+                "showBlocks",
                 "sourceEditing"
             ],
         ];
