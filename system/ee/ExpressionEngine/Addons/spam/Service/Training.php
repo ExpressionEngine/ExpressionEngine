@@ -41,7 +41,7 @@ class Training
     {
         if (! empty($this->shm_id)) {
             // Handle deprecation warnings and future removal, in PHP8+ this happens automatically
-            if(function_exists('shmop_close')) {
+            if (function_exists('shmop_close')) {
                 @shmop_close($this->shm_id);
             }
         }
@@ -201,7 +201,7 @@ class Training
      *
      * @param string $name The name of the kernel
      * @access private
-     * @return int The kernel ID
+     * @return object The kernel model
      */
     private function getKernel($name)
     {
