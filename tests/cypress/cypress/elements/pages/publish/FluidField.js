@@ -138,7 +138,7 @@ class FluidField extends ControlPanel {
           field.contains(expected_val)
           break;
         case 'rte':
-          field.find('textarea').contains('Lorem ipsum')// {:visible => false}
+          field.find('textarea').contains('ipsum dolor sit amet')// {:visible => false}
           break;
         case 'multi_select':
           field.find('input[type=checkbox]').eq(0 + skew).should('be.checked')
@@ -160,7 +160,7 @@ class FluidField extends ControlPanel {
           })
           break;
         case 'textarea':
-          field.find('textarea').contains('Lorem ipsum')
+          field.find('textarea').contains('ipsum dolor sit amet')
           break;
         case 'toggle':
           field.find('.toggle-btn').click()
