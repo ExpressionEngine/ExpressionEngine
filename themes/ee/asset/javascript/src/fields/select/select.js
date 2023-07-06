@@ -40,7 +40,7 @@ var SelectField = /*#__PURE__*/function (_React$Component) {
 
     _classCallCheck(this, SelectField);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(SelectField).call(this, props)); // This code is for the page channels->edit->Category
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(SelectField).call(this, props));
 
     _defineProperty(_assertThisInitialized(_this), "selectionChanged", function (selected) {
       _this.setState({
@@ -59,10 +59,6 @@ var SelectField = /*#__PURE__*/function (_React$Component) {
       $(event.target).closest('[data-id]').trigger('select:removeItem', [item]);
     });
 
-    if (_this.props.name == 'cat_group') {
-      props.selected = _this.categorySelected(props.selected, props.items);
-    }
-
     _this.props.items = SelectList.formatItems(props.items);
     _this.state = {
       selected: SelectList.formatItems(props.selected, null, props.multi),
@@ -72,21 +68,6 @@ var SelectField = /*#__PURE__*/function (_React$Component) {
   }
 
   _createClass(SelectField, [{
-    key: "categorySelected",
-    // Check and update selected items to get cat_toggles elements
-    // we are using cat_toggles on the select_list.js
-    value: function categorySelected(selected, items) {
-      var catArr = [];
-      items.filter(function (item) {
-        selected.map(function (el) {
-          if (el == item.value) {
-            catArr.push(item);
-          }
-        });
-      });
-      return catArr;
-    }
-  }, {
     key: "render",
     value: function render() {
       var _this2 = this;

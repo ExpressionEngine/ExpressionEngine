@@ -57,7 +57,7 @@ class SelectList extends React.Component {
           entry_id: items[key].entry_id ? items[key].entry_id : '',
           upload_location_id: items[key].upload_location_id ? items[key].upload_location_id : '',
           path: items[key].path ? items[key].path : '',
-          cat_toggles: items[key].toggles ? items[key].toggles : null
+          toggles: items[key].toggles ? items[key].toggles : null
         }
 
         if (items[key].children) {
@@ -363,26 +363,22 @@ class SelectList extends React.Component {
     return item
   }
 
-  showToggleName (item, mainInput) {
-    var catToggleArr = Object.keys(item.cat_toggles).map(key => {
-      return {
-        name: key,
-        value: item.cat_toggles[key],
-        id: item.value
-      }
-    })
-
-    return catToggleArr;
-  }
-
   render () {
     let props = this.props
     let shouldShowToggleAll = (props.multi || ! props.selectable) && props.toggleAll !== null
     var values = props.selected.length ? props.selected.map(item => item.value) : [];
-
-    // if (props.name == 'cat_group' || props.name == 'statuses') {
-    if (props.name == 'cat_group') {
-      console.log('SelectList', this.props);
+    var toggles = [];
+    if (props.selectable && props.items.length != 0 && props.selected.length != 0 && props.toggles && props.toggles.length != 0) {
+      props.items.filter(item => values.includes(item.value)).forEach(item => {
+        props.toggles.filter(toggle => {
+          if (item.toggles[toggle] == true) {
+            toggles.push({
+              'name': toggle,
+              'value': item.value
+            });
+          }
+        })
+      });
     }
 
     return (
@@ -458,19 +454,12 @@ class SelectList extends React.Component {
           )
         }
 
-
         {/* CHANGE THIS CODE BASED ON TOOGLE PROPS*/}
-        {/* Added toggle elements hidden input for Channel Category page*/}
-        {/* Can't understand how to print these inputs on the screen */}
-        { ! props.jsonify && props.toggles && props.toggles.length != 0 && props.selected.filter(item => {
-            var arr = this.showToggleName(item);
-            var newArr = arr.map(el => 
-              <input type="hidden" key={el.id} name={el.name + '[]'} value={el.id} ref={(input) => { this.input = input }} />
-            )
-            console.log('newArr', newArr);
-          })
+        { toggles.length != 0 &&
+          toggles.map(toggle => {
+              return <input type="hidden" key={toggle.name} name={props.multi ? toggle.name + '[]' : toggle.name} value={toggle.value} ref={(input) => { this.input = input }} />
+            })
         }
-
 
         {/* JSONified fields are using joined input */}
         { props.jsonify && props.selectable &&
@@ -540,6 +529,7 @@ class SelectItem extends React.Component {
       e.preventDefault();
       $(e.target).toggleClass('active');
       $(e.target).find('i').toggleClass('fa-toggle-on fa-toggle-off');
+      console.log('value', value);
   }
 
   render() {
@@ -581,8 +571,8 @@ class SelectItem extends React.Component {
           <span className="meta-info">{props.item.instructions}</span>
         )}
         <div class="button-group button-group-xsmall button-group-flyout-right">
-        {props.toggles && props.toggles.length != 0 && props.toggles.map((item, index) =>
-          <a href="" className={'button button--default flyout-' + item} onClick={(e) => this.bindToggleChange(e, props.item)} disabled = {checked ? false : true}>{EE.lang[item]} <i class="fa-solid fa-toggle-on"></i></a>
+        {props.toggles && props.toggles.length != 0 && props.toggles.map((toggleName, index) =>
+          <a href="" className={'button button--default flyout-' + toggleName + (props.item.toggles[toggleName] == true ? ' active' : '')} onClick={(e) => this.bindToggleChange(e, props.item)} disabled = {checked ? false : true}>{EE.lang[toggleName]} <i className={'fa-solid fa-toggle-' + (props.item.toggles[toggleName] == true ? 'on' : 'off')}></i></a>
         )}
         {props.editable && (
           <a href="" className="button button--default flyout-edit flyout-edit-icon" data-id={props.item.value}><i class="fal fa-pencil-alt"></i></a>

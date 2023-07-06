@@ -365,18 +365,6 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
       return item;
     }
   }, {
-    key: "showToggleName",
-    value: function showToggleName(item, mainInput) {
-      var catToggleArr = Object.keys(item.cat_toggles).map(function (key) {
-        return {
-          name: key,
-          value: item.cat_toggles[key],
-          id: item.value
-        };
-      });
-      return catToggleArr;
-    }
-  }, {
     key: "render",
     value: function render() {
       var _this8 = this;
@@ -385,10 +373,22 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
       var shouldShowToggleAll = (props.multi || !props.selectable) && props.toggleAll !== null;
       var values = props.selected.length ? props.selected.map(function (item) {
         return item.value;
-      }) : []; // if (props.name == 'cat_group' || props.name == 'statuses') {
+      }) : [];
+      var toggles = [];
 
-      if (props.name == 'cat_group') {
-        console.log('SelectList', this.props);
+      if (props.selectable && props.items.length != 0 && props.selected.length != 0 && props.toggles && props.toggles.length != 0) {
+        props.items.filter(function (item) {
+          return values.includes(item.value);
+        }).forEach(function (item) {
+          props.toggles.filter(function (toggle) {
+            if (item.toggles[toggle] == true) {
+              toggles.push({
+                'name': toggle,
+                'value': item.value
+              });
+            }
+          });
+        });
       }
 
       return React.createElement("div", {
@@ -476,21 +476,16 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
             _this8.input = input;
           }
         });
-      }), !props.jsonify && props.toggles && props.toggles.length != 0 && props.selected.filter(function (item) {
-        var arr = _this8.showToggleName(item);
-
-        var newArr = arr.map(function (el) {
-          return React.createElement("input", {
-            type: "hidden",
-            key: el.id,
-            name: el.name + '[]',
-            value: el.id,
-            ref: function ref(input) {
-              _this8.input = input;
-            }
-          });
+      }), toggles.length != 0 && toggles.map(function (toggle) {
+        return React.createElement("input", {
+          type: "hidden",
+          key: toggle.name,
+          name: props.multi ? toggle.name + '[]' : toggle.name,
+          value: toggle.value,
+          ref: function ref(input) {
+            _this8.input = input;
+          }
         });
-        console.log('newArr', newArr);
       }), props.jsonify && props.selectable && React.createElement("input", {
         type: "hidden",
         name: props.name,
@@ -531,7 +526,7 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
             entry_id: items[key].entry_id ? items[key].entry_id : '',
             upload_location_id: items[key].upload_location_id ? items[key].upload_location_id : '',
             path: items[key].path ? items[key].path : '',
-            cat_toggles: items[key].toggles ? items[key].toggles : null
+            toggles: items[key].toggles ? items[key].toggles : null
           };
 
           if (items[key].children) {
@@ -634,6 +629,7 @@ var SelectItem = /*#__PURE__*/function (_React$Component2) {
       e.preventDefault();
       $(e.target).toggleClass('active');
       $(e.target).find('i').toggleClass('fa-toggle-on fa-toggle-off');
+      console.log('value', value);
     }
   }, {
     key: "render",
@@ -682,16 +678,16 @@ var SelectItem = /*#__PURE__*/function (_React$Component2) {
         className: "meta-info"
       }, props.item.instructions), React.createElement("div", {
         "class": "button-group button-group-xsmall button-group-flyout-right"
-      }, props.toggles && props.toggles.length != 0 && props.toggles.map(function (item, index) {
+      }, props.toggles && props.toggles.length != 0 && props.toggles.map(function (toggleName, index) {
         return React.createElement("a", {
           href: "",
-          className: 'button button--default flyout-' + item,
+          className: 'button button--default flyout-' + toggleName + (props.item.toggles[toggleName] == true ? ' active' : ''),
           onClick: function onClick(e) {
             return _this9.bindToggleChange(e, props.item);
           },
           disabled: checked ? false : true
-        }, EE.lang[item], " ", React.createElement("i", {
-          "class": "fa-solid fa-toggle-on"
+        }, EE.lang[toggleName], " ", React.createElement("i", {
+          className: 'fa-solid fa-toggle-' + (props.item.toggles[toggleName] == true ? 'on' : 'off')
         }));
       }), props.editable && React.createElement("a", {
         href: "",
