@@ -264,6 +264,8 @@ $lang = array(
 
     'grid_min_rows_desc' => 'Sets the minimum amount of data rows this grid will accept',
 
+    'grid_min_rows_required' => 'This grid requires at least %d rows.',
+
     'grid_order_by' => 'Order by',
 
     'grid_output_format' => 'Output formatting?',

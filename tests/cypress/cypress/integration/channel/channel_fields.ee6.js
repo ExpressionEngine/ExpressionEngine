@@ -16,8 +16,8 @@ context('Channel Fields', () => {
         cy.authVisit(page.url);
     })
 
-    describe('when creating or editing fields', function() {
-        it('creates a field', function() {
+    describe('Creating & editing fields', function() {
+        it('Creates new text field', function() {
             form.createField({
                 type: 'Text Input',
                 label: 'Shipping Method'
@@ -26,14 +26,14 @@ context('Channel Fields', () => {
             page.hasAlert('success')
         })
 
-        it('saves a field', function() {
+        it('Saves existing field without changes', function() {
             page.get('fields_edit').eq(1).click()
             //form.get('form').find('.button[value="save"]').first().click()
             cy.get('button[value="save"]').eq(0).click()
             page.hasAlert('success')
         })
 
-        it('invalidates reserved words used in field_name', function() {
+        it('Cannot use reserved words in field_name', function() {
             form.createField({
                 type: 'Date',
                 label: 'Date'
@@ -43,7 +43,7 @@ context('Channel Fields', () => {
         })
     })
 
-    it('deletes a field', function() {
+    it('Delete a field', function() {
         page.get('fields').its('length').then((length) => {
         
             page.get('fields_checkboxes').eq(1).click()

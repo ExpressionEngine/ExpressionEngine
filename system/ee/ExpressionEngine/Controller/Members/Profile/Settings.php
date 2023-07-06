@@ -237,15 +237,15 @@ class Settings extends Profile
         $name_array = explode('.', $_FILES['upload_avatar']['name']);
         $suffix = array_pop($name_array);
 
-        $name = $_FILES['upload_avatar']['name'];
+        //$name = $_FILES['upload_avatar']['name'];
         $name = 'avatar_' . $this->member->member_id . '.' . $suffix;
 
         $file_path = ee()->filemanager->clean_filename(
-            $upload_response['upload_directory_prefs']['server_path'] . basename($name),
+            $name,
             $directory->id,
             array('ignore_dupes' => false)
         );
-    
+
         $filename = basename($file_path);
 
         $original = $upload_response['upload_directory_prefs']['server_path'] . $upload_response['file_name'];

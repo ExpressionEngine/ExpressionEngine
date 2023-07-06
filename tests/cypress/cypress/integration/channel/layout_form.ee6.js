@@ -16,7 +16,7 @@ context('Channel Layouts: Create/Edit', () => {
         page.load()
     })
 
-    it('display the Create Form Layout view', function() {
+    it('display the Create Layout view', function() {
         page.get('breadcrumb').should('exist')
         page.get('page_title').should('exist')
         page.get('add_tab_button').should('exist')

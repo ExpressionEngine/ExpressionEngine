@@ -420,20 +420,29 @@ class LegacyParser
 
                     // in order to support multiple modifiers, we'll do this in a loop
                     if (isset($var_props['all_modifiers']) && !empty($var_props['all_modifiers'])) {
+                        $modifiersCounter = 0;
                         foreach ($var_props['all_modifiers'] as $modifier => $params) {
                             // is the modifier valid?
                             $method = 'replace_' . $modifier;
                             if (! method_exists($this, $method) && ! ee('Variables/Modifiers')->has($modifier)) {
+                                if ($modifiersCounter == 0) {
+                                    // if first modifier is not valid, we might be dealing with column name and PV early parsing
+                                    // continue to next variable
+                                    continue 2;
+                                }
+                                // continue to next modifier
                                 continue;
                             }
 
                             $content = $this->$method($content, $params);
+                            $modifiersCounter++;
                         }
                     } else {
                         // fallback to just last modifier if 'all_modifiers' is not set
                         // which should never happen, but...
                         $method = 'replace_' . $var_props['modifier'];
                         if (! method_exists($this, $method) && ! ee('Variables/Modifiers')->has($var_props['modifier'])) {
+                            // continue to next variable
                             continue;
                         }
 

@@ -114,6 +114,10 @@ $(document).ready(function () {
 				$.post(ajax_url, $(modalIs + " form").serialize(), function(data) {
 					$(modalIs + " .ajax").html(data);
 					Dropdown.renderFields();
+
+					if ($('div[data-select-react]').length) {
+						SelectField.renderFields();
+					}
 				});
 			}
 			Dropdown.renderFields();

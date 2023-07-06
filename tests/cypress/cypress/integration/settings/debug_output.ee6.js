@@ -16,11 +16,7 @@ context('Debugging & Output Settings', () => {
     cy.hasNoErrors()
   })
 
-  it('shows the Debugging & Output Settings page', () => {
-    //page.all_there?.should == true
-  })
-
-  it('should load current settings into form fields', () => {
+  it('Load current Debugging & Output Settings into form fields', () => {
 
     // This is ridiculous -- testing *each* radio button's status
     cy.eeConfig({item: 'debug'}) .then((config) => {
@@ -64,38 +60,31 @@ context('Debugging & Output Settings', () => {
     })
   })
 
-  it('should validate the form', () => {
+  it('Validate Debugging & Output Settings form', () => {
     const max_caches_error = 'This field must contain an integer.'
 
     page.get('max_caches').clear().type('sdfsdfsd')
     cy.get('button').contains('Save Settings').first().click()
 
     cy.hasNoErrors()
-    //page.hasErrors()
-//should_have_form_errors(page)
+
     page.get('wrap').contains('Attention: Settings not saved')
     page.get('wrap').contains(max_caches_error)
 
     // AJAX validation
-
-
     page.load()
     page.get('max_caches').clear().type('sdfsdfsd')
     page.get('max_caches').blur()
 
-
-//should_have_form_errors(page)
     page.hasError(page.get('max_caches'), max_caches_error)
 
     page.get('max_caches').clear().type('100')
     page.get('max_caches').blur()
 
     page.get('wrap').should('not.contain', 'Attention')
-    //page.hasErrorsCount(0)
-    //should_have_no_form_errors(page)
   })
 
-  it('should save and load the settings', () => {
+  it('Save and load Debugging & Output Settings', () => {
 
     let show_profiler, enable_devlog_alerts, gzip_output, force_query_string, send_headers
     cy.eeConfig({item: 'show_profiler'}) .then((config) => {
