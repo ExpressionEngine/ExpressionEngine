@@ -28,6 +28,15 @@
                     flex-grow: 0;
                 }
 
+                &-search {
+                    flex-grow: 3;
+
+                    @media (max-width: 1200px) {
+                        flex-grow: 2;
+                    }
+                }
+
+
                 @media (max-width: 1080px) {
                     margin-bottom: 10px;
 

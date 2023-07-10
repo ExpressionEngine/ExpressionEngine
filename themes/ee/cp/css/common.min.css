@@ -39370,6 +39370,14 @@ body[data-theme="dark"] {
 .member_manager-wrapper .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item-no-search {
   flex-grow: 0;
 }
+.member_manager-wrapper .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item-search {
+  flex-grow: 3;
+}
+@media (max-width: 1200px) {
+  .member_manager-wrapper .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item-search {
+    flex-grow: 2;
+  }
+}
 @media (max-width: 1080px) {
   .member_manager-wrapper .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item {
     margin-bottom: 10px;
