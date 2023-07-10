@@ -10,6 +10,8 @@
 
 namespace ExpressionEngine\Model\Content;
 
+use ExpressionEngine\Error\AddonNotFound;
+
 /**
  * Content Field Facade
  */
@@ -275,7 +277,12 @@ class FieldFacade
         ee()->lang->load('fieldtypes');
         $rulesList = [];
         $supportedEvaluationRules = [];
-        $ft = $this->getNativeField();
+        try {
+            $ft = $this->getNativeField();
+        } catch (AddonNotFound $e) {
+            // silently ignore exceptions if the fieldtype is missing
+            return $supportedEvaluationRules;
+        }
         if (!property_exists($ft, 'supportedEvaluationRules')) {
             if (property_exists($ft, 'has_array_data') && $ft->has_array_data === true) {
                 $rulesList = ['isEmpty', 'isNotEmpty'];

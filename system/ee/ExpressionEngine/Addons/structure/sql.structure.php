@@ -1,11 +1,4 @@
 <?php
-
-require_once PATH_ADDONS . 'structure/helper.php';
-require_once PATH_ADDONS . 'structure/addon.setup.php';
-
-use ExpressionEngine\Structure\Conduit\StaticCache;
-use ExpressionEngine\Structure\Conduit\PersistentCache;
-
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -14,6 +7,13 @@ use ExpressionEngine\Structure\Conduit\PersistentCache;
  * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
+
+require_once PATH_ADDONS . 'structure/helper.php';
+require_once PATH_ADDONS . 'structure/addon.setup.php';
+
+use ExpressionEngine\Structure\Conduit\StaticCache;
+use ExpressionEngine\Structure\Conduit\PersistentCache;
+
 class Sql_structure
 {
     public $site_id;
@@ -748,14 +748,14 @@ class Sql_structure
             // }
 
             // Build class string if any exist
-            $classes = count($tree[$i]['classes']) > 0 ? ' class="' . implode(' ', $tree[$i]['classes']) . '"' : null;
+            $classes = count($tree[$i]['classes']) > 0 ? ' class="' . implode(' ', $tree[$i]['classes']) . '"' : '';
 
             if ($show_overview) {
                 $classes = str_replace("first", "", $classes);
             }
 
             // Build id string if any exist
-            $ids = count($tree[$i]['ids']) > 0 ? ' id="' . implode(' ', $tree[$i]['ids']) . '"' : null;
+            $ids = count($tree[$i]['ids']) > 0 ? ' id="' . implode(' ', $tree[$i]['ids']) . '"' : '';
 
             // Title field: custom|title
             $title = $custom_title_fields !== false ? $custom_title_fields[$tree[$i]['entry_id']] : $tree[$i]['title'];
