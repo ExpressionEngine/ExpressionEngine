@@ -27821,7 +27821,7 @@ input[type=button].btn-block {
   }
 }
 
-.ui-sortable .sidebar__link .ui-sortable-handle i, .ui-sortable .add-on-layout .secondary-sidebar .sidebar__section-title a:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link) .ui-sortable-handle i, .add-on-layout .secondary-sidebar .sidebar__section-title .ui-sortable a:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link) .ui-sortable-handle i {
+.ui-sortable .sidebar__link .ui-sortable-handle i:first-of-type, .ui-sortable .add-on-layout .secondary-sidebar .sidebar__section-title a:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link) .ui-sortable-handle i:first-of-type, .add-on-layout .secondary-sidebar .sidebar__section-title .ui-sortable a:not(.button):not(.filter-bar__button):not(.license-status-badge):not(.select__button):not(.select-popup):not(select):not(.pagination__link) .ui-sortable-handle i:first-of-type {
   cursor: move;
 }
 

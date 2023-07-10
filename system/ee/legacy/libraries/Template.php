@@ -2230,6 +2230,9 @@ class EE_Template
         ee()->db->select('group_id');
         ee()->db->where('group_name', ee()->uri->segment(1));
         ee()->db->where('site_id', ee()->config->item('site_id'));
+        // always get the first template group to avoid dealing with duplicates
+        ee()->db->order_by('group_id', 'asc');
+        ee()->db->limit(1);
         $query = ee()->db->get('template_groups');
 
         // Template group found!

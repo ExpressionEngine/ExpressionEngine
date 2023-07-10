@@ -94,7 +94,8 @@ abstract class AbstractDesign extends CP_Controller
 
         $template_groups = ee('Model')->get('TemplateGroup')
             ->filter('site_id', ee()->config->item('site_id'))
-            ->order('group_order', 'asc');
+            ->order('group_order', 'asc')
+            ->order('group_id', 'asc');
 
         if (! ee('Permission')->isSuperAdmin()) {
             $template_groups->filter('group_id', 'IN', $this->assigned_template_groups);
@@ -104,13 +105,58 @@ abstract class AbstractDesign extends CP_Controller
             }
         }
 
-        foreach ($template_groups->all() as $group) {
+        // are there any duplicate template groups?
+        $hasDuplicates = false;
+        $duplicatesCheckQuery = ee()->db
+            ->select('group_name')
+            ->from('template_groups')
+            ->where('site_id', ee()->config->item('site_id'))
+            ->group_by('group_name, site_id')
+            ->having('COUNT(group_name) > 1')
+            ->get();
+        if ($duplicatesCheckQuery->num_rows() > 0) {
+            $hasDuplicates = true;
+            // display alert
+            ee('CP/Alert')->makeInline('template-group-duplicates')
+                ->asWarning()
+                ->addToBody(lang('duplicate_template_group_name_warning'))
+                ->now();
+            $duplicateGroupNames = array_map(function ($row) {
+                return $row['group_name'];
+            }, $duplicatesCheckQuery->result_array());
+            // get the duplicate groups
+            $duplicatesQuery = ee()->db
+                ->select('group_name, group_id')
+                ->from('template_groups')
+                ->where('site_id', ee()->config->item('site_id'))
+                ->where_in('group_name', $duplicateGroupNames)
+                ->order_by('group_name', 'asc')
+                ->order_by('group_id', 'asc')
+                ->get();
+            $duplicateGroups = [];
+            $duplicateGroupIds = [];
+            foreach ($duplicatesQuery->result_array() as $row) {
+                if (!isset($duplicateGroups[$row['group_name']])) {
+                    $duplicateGroups[$row['group_name']] = [];
+                } else {
+                    // we're skipping the first (by ID) group, everything else is a duplicate
+                    // hence this code is in ELSE
+                    $duplicateGroupIds[] = $row['group_id'];
+                }
+            }
+        }
+
+        foreach ($template_groups->all(true) as $group) {
             $item = $template_group_list->addItem($group->group_name, ee('CP/URL')->make('design/manager/' . $group->group_name));
 
             $item->withEditUrl(ee('CP/URL')->make('design/group/edit/' . $group->group_name));
 
             $item->withRemoveConfirmation(lang('template_group') . ': <b>' . $group->group_name . '</b>')
                 ->identifiedBy($group->group_name);
+
+            if ($hasDuplicates && in_array($group->group_id, $duplicateGroupIds)) {
+                $item->withWarning(lang('duplicate_template_group_name'));
+            }
 
             if (! ee('Permission')->can('edit_template_groups')) {
                 $item->cannotEdit();
@@ -190,6 +236,8 @@ abstract class AbstractDesign extends CP_Controller
                 $header->isActive();
             }
         }
+
+        $prevGroupId = $group->group_id;
 
         ee()->cp->add_js_script(array(
             'file' => array('cp/design/menu'),
