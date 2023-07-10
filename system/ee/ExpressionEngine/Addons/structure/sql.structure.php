@@ -1,8 +1,4 @@
 <?php
-
-use ExpressionEngine\Structure\Conduit\StaticCache;
-use ExpressionEngine\Structure\Conduit\PersistentCache;
-
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -11,6 +7,13 @@ use ExpressionEngine\Structure\Conduit\PersistentCache;
  * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
+
+require_once PATH_ADDONS . 'structure/helper.php';
+require_once PATH_ADDONS . 'structure/addon.setup.php';
+
+use ExpressionEngine\Structure\Conduit\StaticCache;
+use ExpressionEngine\Structure\Conduit\PersistentCache;
+
 class Sql_structure
 {
     public $site_id;
@@ -21,9 +24,6 @@ class Sql_structure
 
     public function __construct()
     {
-        require_once PATH_ADDONS . 'structure/helper.php';
-        require_once PATH_ADDONS . 'structure/addon.setup.php';
-
         ee()->load->add_package_path(PATH_ADDONS . 'structure/');
         ee()->load->library('sql_helper');
         ee()->load->library('general_helper');
