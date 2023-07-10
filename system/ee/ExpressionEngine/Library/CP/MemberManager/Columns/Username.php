@@ -23,16 +23,17 @@ class Username extends EntryManager\Columns\Title
         return 'column_username';
     }
 
-    public function renderTableCell($data, $field_id, $member, $viewtype = 'list', $pickerMode = false, $addQueryString = [])
+    public function renderTableCell($data, $field_id, $member, $viewtype = 'list', $pickerMode = false, $addQueryString = [], $isFullyEditable = true)
     {
-        if (!ee('Permission')->isSuperAdmin()) {
-            $can_operate_member = (bool) ($member->PrimaryRole->is_locked != 'y');
+        if (ee('Permission')->isSuperAdmin() || $member->member_id == ee()->session->userdata('member_id')) {
+            $canEdit = true;
         } else {
-            $can_operate_member = true;
+            $canEdit = (bool) ($member->PrimaryRole->is_locked != 'y' && ee('Permission')->can('edit_members'));
         }
 
-        if (ee('Permission')->can('edit_members') && $can_operate_member) {
-            $username_display = "<a href=\"" . ee('CP/URL')->make('members/profile/', array('id' => $member->member_id)) . "\">" . $member->username . "</a>";
+        if ($canEdit) {
+            $editLink = ee('CP/URL')->make('members/profile/', array('id' => $member->member_id));
+            $username_display = "<a href=\"" . $editLink . "\">" . $member->username . "</a>";
         } else {
             $username_display = $member->username;
         }
@@ -45,8 +46,8 @@ class Username extends EntryManager\Columns\Title
         $avatar = "<img src=\"$avatar_url\" alt=\"" . $member->username . "\" class=\"avatar-icon add-mrg-right\">";
 
         $out = "<div class=\"d-flex align-items-center\">";
-        if (ee('Permission')->can('edit_members') && $can_operate_member) {
-            $out .= "<a href=\"" . ee('CP/URL')->make('members/profile/', array('id' => $member->member_id)) . "\">" . $avatar . "</a>";
+        if ($canEdit) {
+            $out .= "<a href=\"" . $editLink . "\">" . $avatar . "</a>";
         } else {
             $out .= $avatar;
         }

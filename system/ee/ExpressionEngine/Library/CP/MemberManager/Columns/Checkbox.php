@@ -19,17 +19,17 @@ class Checkbox extends EntryManager\Columns\Checkbox
 {
     public function renderTableCell($data, $field_id, $member)
     {
-        if (!ee('Permission')->isSuperAdmin()) {
-            $can_operate_member = (bool) ($member->PrimaryRole->is_locked != 'y');
+        if (ee('Permission')->isSuperAdmin() || $member->member_id == ee()->session->userdata('member_id')) {
+            $canEdit = true;
         } else {
-            $can_operate_member = true;
+            $canEdit = (bool) ($member->PrimaryRole->is_locked != 'y' && (ee('Permission')->can('edit_members') || ee('Permission')->can('delete_members')));
         }
         $data = [
             'name' => 'selection[]',
             'value' => $member->getId(),
-            'disabled' => !$can_operate_member || ($member->member_id == ee()->session->userdata('member_id')),
+            'disabled' => ! $canEdit,
             'data' => [
-                'confirm' => lang('member') . ': <b>' . htmlentities($member->username, ENT_QUOTES, 'UTF-8') . '</b>'
+                'confirm' => lang('member') . ': <b>' . htmlentities(!empty($member->screen_name) ? $member->screen_name : $member->username, ENT_QUOTES, 'UTF-8') . '</b>'
             ]
         ];
 

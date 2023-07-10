@@ -6,6 +6,8 @@ $lang = array(
 
     'all_roles' => 'All Roles',
 
+    'all_role_members' => 'All %s Members',
+
     'alpha' => 'Alphabetical Ascending',
 
     'alpha_desc' => 'Alphabetical Descending',
@@ -174,6 +176,10 @@ $lang = array(
 
     'locked' => 'Locked',
 
+    'login_as' => 'Login as %s',
+
+    'login_as_member' => 'Login as Member',
+
     'login_as_member_description' => 'When you click submit, you will be logged in as the member "%screen_name%" and redirected to the page below.',
 
     'login_as_user' => 'SuperAdmin Logging In as User',
@@ -265,6 +271,10 @@ $lang = array(
 
     'role_desc' => 'Assign this user access permissions.',
 
+    'role_highlight_color' => 'Highlight color',
+
+    'role_highlight_color_desc' => 'Color for this role badge. Accepts HEX codes.',
+
     'role_updated_desc' => 'Role has been saved successfully.',
 
     'role_deleted_desc' => 'Role has been deleted successfully.',
@@ -331,7 +341,7 @@ $lang = array(
 
     'no_members_found' => 'No <b>Members</b> found.',
 
-    'no_pending_members_found' => 'No <b>Pending members</b> found.',
+    'no_role_members_found' => 'No <b>%s members</b> found.',
 
     'not_writable_path' => 'The path you submitted is not writeable. Please make sure the file permissions are set to 777.',
 

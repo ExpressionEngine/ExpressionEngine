@@ -28515,36 +28515,6 @@ input[type=button].btn-block {
   display: block;
 }
 
-@media (max-width: 1080px) {
-  .members--filter-search-bar .filter-search-bar__filter-row {
-    flex-wrap: wrap;
-  }
-}
-.members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item {
-  flex: auto;
-  margin-bottom: 0;
-}
-.members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item:last-child {
-  margin-right: 0;
-}
-.members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item-no-search {
-  flex-grow: 0;
-}
-@media (max-width: 1080px) {
-  .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item {
-    margin-bottom: 10px;
-  }
-  .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item:last-child {
-    margin-bottom: 0;
-  }
-}
-@media (max-width: 767px) {
-  .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item {
-    margin-bottom: 5px;
-    margin-right: 0;
-  }
-}
-
 .tab-bar {
   display: flex;
   flex-wrap: wrap-reverse;
@@ -39373,6 +39343,45 @@ body[data-theme="dark"] {
 @media (max-width: 767px) {
   .modal-wrap .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item:first-child .dropdown, .modal-wrap .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item:first-child .select__dropdown {
     width: 100%;
+  }
+}
+
+.member_manager-wrapper .dropdown a.edit:before, .member_manager-wrapper .select__dropdown a.edit:before,
+.member_manager-wrapper .dropdown a.download:before,
+.member_manager-wrapper .select__dropdown a.download:before,
+.member_manager-wrapper .dropdown a.approve:before,
+.member_manager-wrapper .select__dropdown a.approve:before,
+.member_manager-wrapper .dropdown a.link:before,
+.member_manager-wrapper .select__dropdown a.link:before {
+  display: none;
+}
+@media (max-width: 1080px) {
+  .member_manager-wrapper .members--filter-search-bar .filter-search-bar__filter-row {
+    flex-wrap: wrap;
+  }
+}
+.member_manager-wrapper .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item {
+  flex: auto;
+  margin-bottom: 0;
+}
+.member_manager-wrapper .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item:last-child {
+  margin-right: 0;
+}
+.member_manager-wrapper .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item-no-search {
+  flex-grow: 0;
+}
+@media (max-width: 1080px) {
+  .member_manager-wrapper .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item {
+    margin-bottom: 10px;
+  }
+  .member_manager-wrapper .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item:last-child {
+    margin-bottom: 0;
+  }
+}
+@media (max-width: 767px) {
+  .member_manager-wrapper .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item {
+    margin-bottom: 5px;
+    margin-right: 0;
   }
 }
 

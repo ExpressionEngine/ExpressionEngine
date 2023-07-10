@@ -363,6 +363,7 @@ class EE_Schema
 			`name` varchar(100) NOT NULL,
 			`short_name` varchar(50) NOT NULL,
 			`description` text,
+			`site_color` varchar(6) NOT NULL default '',
 			`total_members` mediumint(8) unsigned NOT NULL DEFAULT '0',
 			`is_locked` char(1) NOT NULL DEFAULT 'n',
 			PRIMARY KEY (`role_id`)

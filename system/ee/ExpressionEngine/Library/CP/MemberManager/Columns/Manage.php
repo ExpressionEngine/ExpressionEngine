@@ -33,7 +33,15 @@ class Manage extends EntryManager\Columns\Column
 
     public function renderTableCell($data, $field_id, $member)
     {
-        $confirmationUrl = ee('CP/URL')->make('files/confirm')->compile();
+        if (ee('Permission')->isSuperAdmin() || $member->member_id == ee()->session->userdata('member_id')) {
+            $canEdit = true;
+        } else {
+            $canEdit = (bool) ($member->PrimaryRole->is_locked != 'y' && (ee('Permission')->can('edit_members') || ee('Permission')->can('delete_members')));
+        }
+        if (!$canEdit) {
+            return '';
+        }
+
         $toolbar = [];
         //if (! ee('Permission')->can('ban_users')) {
         if ($member->role_id == Member::PENDING) {
@@ -41,56 +49,52 @@ class Manage extends EntryManager\Columns\Column
                 'href' => ee('CP/URL')->make('files/directory/' . $member->upload_location_id, ['directory_id' => $member->getId()]),
                 'title' => lang('approve'),
             );
-            $toolbar['resend'] = array(
-                'href' => '#',
-                'title' => lang('resend'),
-                'rel' => 'modal-confirm-rename-file',
-                'class' => 'm-link',
-                'data-file-id' => $member->getId(),
-                'data-file-name' => $member->getId(),
-                'data-confirm-ajax' => '',
-            );
-            $toolbar['decline'] = array(
-                'href' => '#',
-                'title' => lang('decline'),
-                'rel' => 'modal-confirm-move-file',
-                'data-file-id' => $member->getId(),
-                'data-file-name' => $member->getId(),
-                'data-confirm-ajax' => '',
-            );
+            if (ee()->config->item('req_mbr_activation') !== 'email' && ee('Permission')->can('edit_members')) {
+                $toolbar['resend'] = array(
+                    'href' => '#',
+                    'title' => lang('resend'),
+                    'rel' => 'modal-confirm-rename-file',
+                    'class' => 'm-link',
+                    'data-file-id' => $member->getId(),
+                );
+            }
+            if (ee('Permission')->has('can_delete_members')) {
+                $toolbar['decline'] = array(
+                    'href' => '',
+                    'class' => 'm-link with-divider',
+                    'rel' => 'modal-confirm-decline',
+                    'data-file-id' => $member->getId(),
+                    'title' => lang('decline'),
+                );
+            }
         } else {
-            $toolbar['edit'] = array(
-                'href' => '#',
-                'title' => lang('edit'),
-                'rel' => 'modal-confirm-move-file',
-                'data-file-id' => $member->getId(),
-                'data-file-name' => $member->getId(),
-                'data-confirm-ajax' => '',
-            );
-            $toolbar['roles'] = array(
-                'href' => '#',
-                'title' => 'Manage roles',
-                'rel' => 'modal-confirm-move-file',
-                'data-file-id' => $member->getId(),
-                'data-file-name' => $member->getId(),
-                'data-confirm-ajax' => '',
-            );
-            $toolbar['delete'] = array(
-                'href' => '#',
-                'title' => lang('delete'),
-                'rel' => 'modal-confirm-move-file',
-                'data-file-id' => $member->getId(),
-                'data-file-name' => $member->getId(),
-                'data-confirm-ajax' => '',
-            );
-            $toolbar['login_as'] = array(
-                'href' => '#',
-                'title' => 'Log in as',
-                'rel' => 'modal-confirm-move-file',
-                'data-file-id' => $member->getId(),
-                'data-file-name' => $member->getId(),
-                'data-confirm-ajax' => '',
-            );
+            if (ee('Permission')->has('can_edit_members')) {
+                $toolbar['edit'] = array(
+                    'href' => ee('CP/URL')->make('members/profile/settings', ['id' => $member->getId()]),
+                    'class' => '',
+                    'title' => lang('edit')
+                );
+                $toolbar['roles'] = array(
+                    'href' => ee('CP/URL')->make('members/profile/roles', ['id' => $member->getId()]),
+                    'title' => lang('roles')
+                );
+            }
+            if (ee('Permission')->isSuperAdmin() && $member->member_id != ee()->session->userdata('member_id')) {
+                $toolbar['login_as'] = array(
+                    'href' => ee('CP/URL')->make('members/profile/login', ['id' => $member->getId()]),
+                    'title' => lang('login_as_member')
+                );
+            }
+            if (ee('Permission')->has('can_delete_members') && $member->member_id != ee()->session->userdata('member_id')) {
+                $toolbar['delete'] = [
+                    'href' => '',
+                    'class' => 'm-link with-divider',
+                    'rel' => 'modal-confirm-delete',
+                    'data-file-id' => $member->getId(),
+                    'data-confirm-ajax' => ee('CP/URL')->make('members/confirm')->compile(),
+                    'title' => lang('delete'),
+                ];
+            }
         }
 
         return [

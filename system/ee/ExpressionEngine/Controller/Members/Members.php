@@ -195,6 +195,8 @@ class Members extends CP_Controller
                 ->addToBody($usernames)
                 ->defer();
         }
+
+        ee()->functions->redirect(ee('CP/URL')->make('members', ['role_filter' => Member::PENDING]));
     }
 
     /**
@@ -203,11 +205,15 @@ class Members extends CP_Controller
      * @param array $ids The ID(s) of the member(s) being approved
      * @return void
      */
-    private function resend(array $ids)
+    public function resend(array $ids)
     {
         if (! ee('Permission')->can('edit_members') or
             ee()->config->item('req_mbr_activation') !== 'email') {
             show_error(lang('unauthorized_access'), 403);
+        }
+
+        if (! is_array($ids)) {
+            $ids = array($ids);
         }
 
         $members = ee('Model')->get('Member', $ids)
@@ -247,6 +253,8 @@ class Members extends CP_Controller
                 ->addToBody($members->pluck('username'))
                 ->defer();
         }
+
+        ee()->functions->redirect(ee('CP/URL')->make('members', ['role_filter' => Member::PENDING]));
     }
 
     /**
@@ -1048,7 +1056,7 @@ class Members extends CP_Controller
             $alert->defer();
         }
 
-        ee()->functions->redirect(ee('CP/URL', 'members/pending'));
+        ee()->functions->redirect(ee('CP/URL')->make('members', ['role_filter' => Member::PENDING]));
     }
 
     protected function listingsPage($primaryRole = null)
@@ -1179,15 +1187,6 @@ class Members extends CP_Controller
                         }
                     }
                 }
-                /*if (!empty($column->getEntryManagerColumnFields())) {
-                    foreach ($column->getEntryManagerColumnFields() as $field) {
-                        if (!empty($field)) {
-                            // $files->fields($field);
-                        }
-                    }
-                } else {
-                    // $files->fields($column->getTableColumnIdentifier());
-                }*/
             }
         }
 
@@ -1195,7 +1194,11 @@ class Members extends CP_Controller
         $table_columns = $column_renderer->getTableColumnsConfig();
         $table->setColumns($table_columns);
 
-        $table->setNoResultsText('no_members_found');
+        if (!empty($primaryRole)) {
+            $table->setNoResultsText(sprintf(lang('no_role_members_found'), $primaryRole->name));
+        } else {
+            $table->setNoResultsText('no_members_found');
+        }
 
         foreach ($table_columns as $table_column) {
             if ($table_column['label'] == $table->sort_col) {

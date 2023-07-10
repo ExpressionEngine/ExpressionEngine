@@ -29,7 +29,8 @@ class Updater
             [
                 'modifyMemberFieldTypeColumn',
                 'addMemberManagerViewsTable',
-                'addEditMemberFieldsPermission'
+                'addEditMemberFieldsPermission',
+                'addRoleHighlightColumn'
             ]
         );
 
@@ -111,6 +112,24 @@ class Updater
                 ee('db')->insert('permissions', $insert);
             }
         }
+    }
+
+    private function addRoleHighlightColumn()
+    {
+        if (! ee()->db->field_exists('highlight', 'roles')) {
+            ee()->smartforge->add_column(
+                'roles',
+                array(
+                    'highlight' => array(
+                        'type' => 'varchar',
+                        'constraint' => 6,
+                        'default' => '',
+                        'null' => false
+                    )
+                )
+            );
+        }
+        return true;
     }
 }
 

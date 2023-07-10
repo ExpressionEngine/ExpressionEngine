@@ -647,7 +647,7 @@ $lang = array(
 
     'new_member' => 'New Member',
 
-    'all_members' => 'All Members',
+    'all_members' => 'Members',
 
     'pending_members' => 'Pending Members',
 

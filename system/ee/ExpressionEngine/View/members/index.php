@@ -5,7 +5,7 @@ if (! AJAX_REQUEST) {
 ?>
 
 <div class="box panel">
-    <div class="tbl-ctrls">
+    <div class="tbl-ctrls member_manager-wrapper">
         <?=form_open($table['base_url'], ['data-save-default-url' => ee('CP/URL')->make('members/views/save-default', ['role_id' => $role_id])->compile()])?>
             <div class="panel-heading">
                 <div class="title-bar">
@@ -28,34 +28,31 @@ if (! AJAX_REQUEST) {
                 </div>
             </div>
 
+            <?php $this->embed('_shared/table', $table); ?>
 
+            <?php if (! empty($pagination)) {
+                echo $pagination;
+            } ?>
 
-
-		<?php $this->embed('_shared/table', $table); ?>
-
-		<?php if (! empty($pagination)) {
-    echo $pagination;
-} ?>
-
-		<?php if (! empty($table['data']) && $can_delete_members): ?>
-		<?php $this->embed('ee:_shared/form/bulk-action-bar', [
-		    'options' => [
-		        [
-		            'value' => "",
-		            'text' => '-- ' . lang('with_selected') . ' --'
-		        ],
-		        [
-		            'value' => "remove",
-		            'text' => lang('delete'),
-		            'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete"'
-		        ]
-		    ],
-		    'modal' => true,
-		    'ajax_url' => ee('CP/URL')->make('/members/confirm')
-		]); ?>
-		<?php endif; ?>
-	<?=form_close()?>
-	</div>
+            <?php if (! empty($table['data']) && $can_delete_members) : ?>
+            <?php $this->embed('ee:_shared/form/bulk-action-bar', [
+                'options' => [
+                    [
+                        'value' => "",
+                        'text' => '-- ' . lang('with_selected') . ' --'
+                    ],
+                    [
+                        'value' => "remove",
+                        'text' => lang('delete'),
+                        'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete"'
+                    ]
+                ],
+                'modal' => true,
+                'ajax_url' => ee('CP/URL')->make('/members/confirm')
+            ]); ?>
+            <?php endif; ?>
+        <?=form_close()?>
+    </div>
 </div>
 
 <?php
@@ -66,6 +63,24 @@ $modal_vars = array(
         'bulk_action' => 'remove'
     ),
     'secure_form_ctrls' => isset($confirm_remove_secure_form_ctrls) ? $confirm_remove_secure_form_ctrls : null
+);
+
+$modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);
+ee('CP/Modal')->addModal('delete', $modal);
+
+$modal_vars = array(
+    'name' => 'modal-confirm-decline',
+    'title' => lang('confirm_decline'),
+    'alert' => lang('confirm_decline_desc'),
+    'button' => array(
+        'text' => 'btn_confirm_and_decline',
+        'working' => 'btn_confirm_and_decline_working'
+    ),
+    'form_url' => $form_url,
+    'hidden' => array(
+        'bulk_action' => 'decline'
+    ),
+    'secure_form_ctrls' => false
 );
 
 $modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);

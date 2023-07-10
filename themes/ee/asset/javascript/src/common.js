@@ -866,7 +866,7 @@ $(document).ready(function(){
 		});
 
 		// Prevent clicks on checkboxes from bubbling to the table row
-		$('body').on('click', 'table tr td:last-child input[type=checkbox]', function(e) {
+		$('body').on('click', 'table tr td:last-child input[type=checkbox], table tr td.app-listing__cell', function(e) {
 			e.stopPropagation();
 		});
 
