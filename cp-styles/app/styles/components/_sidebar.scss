@@ -114,7 +114,7 @@ $link-padding: 6px 12px;
 	}
 }
 
-.ui-sortable .sidebar__link .ui-sortable-handle i {
+.ui-sortable .sidebar__link .ui-sortable-handle i:first-of-type {
   cursor: move;
 }
 
