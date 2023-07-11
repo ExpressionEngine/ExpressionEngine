@@ -151,6 +151,8 @@ $lang = array(
 
     'file_ft_show_files_desc' => 'When enabled, a drop down with existing files will be shown to authors.',
 
+    'file_field_msm_warning' => 'This field is currently set to use the <b>%s</b> upload directory, which is only available in <b>%s</b> MSM site.',
+
     'file_ft_upload_directories' => 'Upload Directories',
 
     /* File Drag and Drop */
