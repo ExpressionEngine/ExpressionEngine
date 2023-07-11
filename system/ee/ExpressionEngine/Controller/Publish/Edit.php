@@ -170,8 +170,11 @@ class Edit extends AbstractPublishController
             }
         }
         $sort_field = $columns[$sort_col]->getEntryManagerColumnSortField();
-        $entries->order($sort_field, $table->sort_dir)
-            ->limit($filter_values['perpage'])
+        $entries->order($sort_field, $table->sort_dir);
+        if ($sort_col != 'entry_id') {
+            $entries->order('entry_id', $table->sort_dir);
+        }
+        $entries->limit($filter_values['perpage'])
             ->offset($offset);
         $entries = $entries->all();
 
