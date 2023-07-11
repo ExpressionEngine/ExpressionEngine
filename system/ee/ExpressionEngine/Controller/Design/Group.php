@@ -482,9 +482,13 @@ class Group extends AbstractDesignController
             show_error(lang('unauthorized_access'), 403);
         }
 
-        $group = ee('Model')->get('TemplateGroup')
-            ->filter('group_name', ee()->input->post('group_name'))
-            ->filter('site_id', ee()->config->item('site_id'))
+        $group = ee('Model')->get('TemplateGroup');
+        if (is_numeric(ee()->input->post('group_id'))) {
+            $group = $group->filter('group_id', ee()->input->post('group_id'));
+        } else {
+            $group = $group->filter('group_name', ee()->input->post('group_name'));
+        }
+        $group = $group->filter('site_id', ee()->config->item('site_id'))
             ->first();
 
         if (! $group) {
