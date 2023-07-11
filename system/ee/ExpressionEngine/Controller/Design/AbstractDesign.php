@@ -85,7 +85,7 @@ abstract class AbstractDesign extends CP_Controller
 
         $template_group_list = $template_group_list->addFolderList('template-group')
             ->withRemoveUrl(ee('CP/URL')->make('design/group/remove'))
-            ->withRemovalKey('group_name')
+            ->withRemovalKey('group_id')
             ->withNoResultsText(lang('zero_template_groups_found'));
 
         if (ee('Permission')->can('edit_template_groups')) {
@@ -147,12 +147,12 @@ abstract class AbstractDesign extends CP_Controller
         }
 
         foreach ($template_groups->all(true) as $group) {
-            $item = $template_group_list->addItem($group->group_name, ee('CP/URL')->make('design/manager/' . $group->group_name));
+            $item = $template_group_list->addItem($group->group_name, ee('CP/URL')->make('design/manager/' . $group->group_name . '/' . $group->group_id));
 
-            $item->withEditUrl(ee('CP/URL')->make('design/group/edit/' . $group->group_name));
+            $item->withEditUrl(ee('CP/URL')->make('design/group/edit/' . $group->group_name . '/' . $group->group_id));
 
             $item->withRemoveConfirmation(lang('template_group') . ': <b>' . $group->group_name . '</b>')
-                ->identifiedBy($group->group_name);
+                ->identifiedBy($group->group_id);
 
             if ($hasDuplicates && in_array($group->group_id, $duplicateGroupIds)) {
                 $item->withWarning(lang('duplicate_template_group_name'));

@@ -65,7 +65,7 @@
 		EE.cp.folderList.onSort('template-group', function(list) {
 			// Create an array of template group names
 			var template_groups = $.map($('> .sidebar__link', list), function(list_item) {
-				return $(list_item).data('group_name');
+				return $(list_item).data('group_id');
 			});
 
 			$.ajax({
