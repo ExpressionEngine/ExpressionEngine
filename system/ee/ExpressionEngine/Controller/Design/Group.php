@@ -198,7 +198,7 @@ class Group extends AbstractDesignController
                         ->addToBody(sprintf(lang('create_template_group_success_desc'), $group->group_name))
                         ->defer();
 
-                    ee()->functions->redirect(ee('CP/URL')->make('design/manager/' . $name));
+                    ee()->functions->redirect(ee('CP/URL')->make('design/manager/' . $name . '/' . $group->group_id));
                 }
             }
         }
@@ -284,7 +284,7 @@ class Group extends AbstractDesignController
         ee()->cp->render('settings/form', $vars);
     }
 
-    public function edit($group_name)
+    public function edit($group_name, $group_id = null)
     {
         if (! ee('Permission')->can('edit_template_groups')) {
             show_error(lang('unauthorized_access'), 403);
@@ -293,8 +293,11 @@ class Group extends AbstractDesignController
         $errors = null;
 
         $group = ee('Model')->get('TemplateGroup')
-            ->filter('group_name', $group_name)
-            ->filter('site_id', ee()->config->item('site_id'))
+            ->filter('group_name', $group_name);
+        if (!is_null($group_id) && is_numeric($group_id)) {
+            $group = $group->filter('group_id', $group_id);
+        }
+        $group = $group->filter('site_id', ee()->config->item('site_id'))
             ->first();
 
         if (! $group) {
@@ -402,7 +405,7 @@ class Group extends AbstractDesignController
                         ->addToBody(sprintf(lang('edit_template_group_success_desc'), $group->group_name))
                         ->defer();
 
-                    ee()->functions->redirect(ee('CP/URL')->make('design/manager/' . $name));
+                    ee()->functions->redirect(ee('CP/URL')->make('design/manager/' . $name . '/' . $group->group_id));
                 }
             }
         }
@@ -410,7 +413,7 @@ class Group extends AbstractDesignController
         $vars = array(
             'ajax_validate' => true,
             'errors' => $errors,
-            'base_url' => ee('CP/URL')->make('design/group/edit/' . $group_name),
+            'base_url' => ee('CP/URL')->make('design/group/edit/' . $group_name . '/' . $group->group_id),
             'save_btn_text' => sprintf(lang('btn_save'), lang('template_group')),
             'save_btn_text_working' => 'btn_saving',
             'sections' => array(
@@ -505,7 +508,7 @@ class Group extends AbstractDesignController
             ee('CP/Alert')->makeInline('template-group')
                 ->asSuccess()
                 ->withTitle(lang('template_group_deleted'))
-                ->addToBody(sprintf(lang('template_group_deleted_desc'), ee()->input->post('group_name')))
+                ->addToBody(sprintf(lang('template_group_deleted_desc'), $group->group_name))
                 ->defer();
         }
 
