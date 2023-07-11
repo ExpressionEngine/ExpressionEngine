@@ -26,6 +26,24 @@ class SelectList extends React.Component {
     // increment this variable which is set as a key on the root element,
     // telling React to destroy it and start anew
     this.version = 0
+    var toggles = [];
+    var values = props.selected.length ? props.selected.map(item => item.value) : [];
+    if (props.selectable && props.items.length != 0 && props.selected.length != 0 && props.toggles && props.toggles.length != 0) {
+      props.items.filter(item => values.includes(item.value)).forEach(item => {
+        props.toggles.filter(toggle => {
+          if (item.toggles[toggle] == true) {
+            toggles.push({
+              'name': toggle,
+              'value': item.value
+            });
+          }
+        })
+      });
+    }
+
+    this.state ={
+      toggles: toggles
+    }
   }
 
   static formatItems (items, parent, multi) {
@@ -367,19 +385,6 @@ class SelectList extends React.Component {
     let props = this.props
     let shouldShowToggleAll = (props.multi || ! props.selectable) && props.toggleAll !== null
     var values = props.selected.length ? props.selected.map(item => item.value) : [];
-    var toggles = [];
-    if (props.selectable && props.items.length != 0 && props.selected.length != 0 && props.toggles && props.toggles.length != 0) {
-      props.items.filter(item => values.includes(item.value)).forEach(item => {
-        props.toggles.filter(toggle => {
-          if (item.toggles[toggle] == true) {
-            toggles.push({
-              'name': toggle,
-              'value': item.value
-            });
-          }
-        })
-      });
-    }
 
     return (
       <div className={((props.tooMany) ? ' lots-of-checkboxes' : '')}
@@ -433,6 +438,8 @@ class SelectList extends React.Component {
               handleRemove={(e, item) => props.handleRemove(e, item)}
               groupToggle={props.groupToggle}
               toggles = {props.toggles}
+              state={this.state}
+              toggleChanged={props.toggleChanged}
             />
           )}
         </FieldInputs>
@@ -455,10 +462,10 @@ class SelectList extends React.Component {
         }
 
         {/* CHANGE THIS CODE BASED ON TOOGLE PROPS*/}
-        { toggles.length != 0 &&
-          toggles.map(toggle => {
-              return <input type="hidden" key={toggle.name} name={props.multi ? toggle.name + '[]' : toggle.name} value={toggle.value} ref={(input) => { this.input = input }} />
-            })
+        { this.state.toggles.length != 0 &&
+          this.state.toggles.map(toggle => 
+            <input type="hidden" key={toggle.name + '[' + toggle.value + ']'} name={props.multi ? toggle.name + '[]' : toggle.name} value={toggle.value} ref={(input) => { this.input = input }} />
+          )
         }
 
         {/* JSONified fields are using joined input */}
@@ -525,11 +532,27 @@ class SelectItem extends React.Component {
     })
   }
 
-  bindToggleChange (e, value) {
-      e.preventDefault();
-      $(e.target).toggleClass('active');
-      $(e.target).find('i').toggleClass('fa-toggle-on fa-toggle-off');
-      console.log('value', value);
+  bindToggleChange (e, item) {
+    e.preventDefault();
+    $(e.currentTarget).toggleClass('active');
+    $(e.currentTarget).find('i').toggleClass('fa-toggle-on fa-toggle-off');
+    var toggleName = $(e.currentTarget).attr('data-toggle-name');
+
+    item.toggles[toggleName] = !item.toggles[toggleName];
+
+    if (item.toggles[toggleName]) {
+      this.props.state.toggles.push({
+        [toggleName]: item.value,
+        'name': toggleName,
+        'value': item.value
+      });
+    } else {
+      this.props.state.toggles = this.props.state.toggles.filter(object => {
+        if (object[toggleName] != item.value) return object
+      })
+    }
+
+    this.props.toggleChanged(this.props.state.toggles);
   }
 
   render() {
@@ -572,7 +595,7 @@ class SelectItem extends React.Component {
         )}
         <div class="button-group button-group-xsmall button-group-flyout-right">
         {props.toggles && props.toggles.length != 0 && props.toggles.map((toggleName, index) =>
-          <a href="" className={'button button--default flyout-' + toggleName + (props.item.toggles[toggleName] == true ? ' active' : '')} onClick={(e) => this.bindToggleChange(e, props.item)} disabled = {checked ? false : true}>{EE.lang[toggleName]} <i className={'fa-solid fa-toggle-' + (props.item.toggles[toggleName] == true ? 'on' : 'off')}></i></a>
+          <a href="" className={'button button--default flyout-' + toggleName + (props.item.toggles[toggleName] == true ? ' active' : '')} onClick={(e) => this.bindToggleChange(e, props.item)} disabled = {checked ? false : true} data-toggle-name={toggleName}>{EE.lang[toggleName]} <i className={'fa-solid fa-toggle-' + (props.item.toggles[toggleName] == true ? 'on' : 'off')}></i></a>
         )}
         {props.editable && (
           <a href="" className="button button--default flyout-edit flyout-edit-icon" data-id={props.item.value}><i class="fal fa-pencil-alt"></i></a>

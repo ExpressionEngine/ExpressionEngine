@@ -135,6 +135,29 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
     });
 
     _this.version = 0;
+    var toggles = [];
+    var values = props.selected.length ? props.selected.map(function (item) {
+      return item.value;
+    }) : [];
+
+    if (props.selectable && props.items.length != 0 && props.selected.length != 0 && props.toggles && props.toggles.length != 0) {
+      props.items.filter(function (item) {
+        return values.includes(item.value);
+      }).forEach(function (item) {
+        props.toggles.filter(function (toggle) {
+          if (item.toggles[toggle] == true) {
+            toggles.push({
+              'name': toggle,
+              'value': item.value
+            });
+          }
+        });
+      });
+    }
+
+    _this.state = {
+      toggles: toggles
+    };
     return _this;
   }
 
@@ -374,23 +397,6 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
       var values = props.selected.length ? props.selected.map(function (item) {
         return item.value;
       }) : [];
-      var toggles = [];
-
-      if (props.selectable && props.items.length != 0 && props.selected.length != 0 && props.toggles && props.toggles.length != 0) {
-        props.items.filter(function (item) {
-          return values.includes(item.value);
-        }).forEach(function (item) {
-          props.toggles.filter(function (toggle) {
-            if (item.toggles[toggle] == true) {
-              toggles.push({
-                'name': toggle,
-                'value': item.value
-              });
-            }
-          });
-        });
-      }
-
       return React.createElement("div", {
         className: props.tooMany ? ' lots-of-checkboxes' : '',
         ref: function ref(container) {
@@ -453,7 +459,9 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
             return props.handleRemove(e, item);
           },
           groupToggle: props.groupToggle,
-          toggles: props.toggles
+          toggles: props.toggles,
+          state: _this8.state,
+          toggleChanged: props.toggleChanged
         });
       })), !props.multi && props.tooMany && props.selected[0] && React.createElement(SelectedItem, {
         item: this.getFullItem(props.selected[0]),
@@ -476,10 +484,10 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
             _this8.input = input;
           }
         });
-      }), toggles.length != 0 && toggles.map(function (toggle) {
+      }), this.state.toggles.length != 0 && this.state.toggles.map(function (toggle) {
         return React.createElement("input", {
           type: "hidden",
-          key: toggle.name,
+          key: toggle.name + '[' + toggle.value + ']',
           name: props.multi ? toggle.name + '[]' : toggle.name,
           value: toggle.value,
           ref: function ref(input) {
@@ -625,11 +633,24 @@ var SelectItem = /*#__PURE__*/function (_React$Component2) {
     }
   }, {
     key: "bindToggleChange",
-    value: function bindToggleChange(e, value) {
+    value: function bindToggleChange(e, item) {
       e.preventDefault();
-      $(e.target).toggleClass('active');
-      $(e.target).find('i').toggleClass('fa-toggle-on fa-toggle-off');
-      console.log('value', value);
+      $(e.currentTarget).toggleClass('active');
+      $(e.currentTarget).find('i').toggleClass('fa-toggle-on fa-toggle-off');
+      var toggleName = $(e.currentTarget).attr('data-toggle-name');
+      item.toggles[toggleName] = !item.toggles[toggleName];
+
+      if (item.toggles[toggleName]) {
+        var _this$props$state$tog;
+
+        this.props.state.toggles.push((_this$props$state$tog = {}, _defineProperty(_this$props$state$tog, toggleName, item.value), _defineProperty(_this$props$state$tog, 'name', toggleName), _defineProperty(_this$props$state$tog, 'value', item.value), _this$props$state$tog));
+      } else {
+        this.props.state.toggles = this.props.state.toggles.filter(function (object) {
+          if (object[toggleName] != item.value) return object;
+        });
+      }
+
+      this.props.toggleChanged(this.props.state.toggles);
     }
   }, {
     key: "render",
@@ -685,7 +706,8 @@ var SelectItem = /*#__PURE__*/function (_React$Component2) {
           onClick: function onClick(e) {
             return _this9.bindToggleChange(e, props.item);
           },
-          disabled: checked ? false : true
+          disabled: checked ? false : true,
+          "data-toggle-name": toggleName
         }, EE.lang[toggleName], " ", React.createElement("i", {
           className: 'fa-solid fa-toggle-' + (props.item.toggles[toggleName] == true ? 'on' : 'off')
         }));
