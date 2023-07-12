@@ -91,8 +91,6 @@ class Members extends CP_Controller
             ];
         }
 
-        $vars['can_delete_members'] = ee('Permission')->can('delete_members');
-
         $vars['cp_heading'] = lang('all_members');
         $vars['toolbar_items'] = [];
         if (ee('Permission')->can('edit_member_fields')) {
@@ -207,8 +205,7 @@ class Members extends CP_Controller
      */
     public function resend(array $ids)
     {
-        if (! ee('Permission')->can('edit_members') or
-            ee()->config->item('req_mbr_activation') !== 'email') {
+        if (! ee('Permission')->can('edit_members') || ee()->config->item('req_mbr_activation') !== 'email') {
             show_error(lang('unauthorized_access'), 403);
         }
 
@@ -378,8 +375,7 @@ class Members extends CP_Controller
             ->filter('member_id', $member_id)
             ->first();
 
-        if (! ee('Permission')->can('delete_members') ||
-            ! $member) {
+        if (! ee('Permission')->can('delete_members') || ! $member) {
             show_error(lang('unauthorized_access'), 403);
         }
 
@@ -426,8 +422,7 @@ class Members extends CP_Controller
     {
         $member_ids = ee('Request')->post('selection', true);
 
-        if (! ee('Permission')->can('delete_members') ||
-            ! $member_ids) {
+        if (! ee('Permission')->can('delete_members') || ! $member_ids) {
             show_error(lang('unauthorized_access'), 403);
         }
 
@@ -711,7 +706,7 @@ class Members extends CP_Controller
                 $member->save();
 
                 // Get a fresh copy of this member model and update statistics for its roles
-                if (!bool_config_item('ignore_member_stats')) { 
+                if (!bool_config_item('ignore_member_stats')) {
                     ee('Model')->get('Member')->filter('member_id', $member->getId())->first()->updateRoleTotalMembers();
                 }
 
@@ -1200,6 +1195,31 @@ class Members extends CP_Controller
             $table->setNoResultsText('no_members_found');
         }
 
+        $vars['bulk_options'] = [];
+        if (!empty($primaryRole) && $primaryRole->role_id == Member::PENDING) {
+            if (ee('Permission')->can('edit_members')) {
+                $vars['bulk_options'][] = [
+                    'value' => "approve",
+                    'text' => lang('approve')
+                ];
+            }
+            if (ee('Permission')->can('delete_members')) {
+                $vars['bulk_options'][] = [
+                    'value' => "decline",
+                    'text' => lang('decline'),
+                    'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-decline"'
+                ];
+            }
+        } else {
+            if (ee('Permission')->can('delete_members')) {
+                $vars['bulk_options'][] = [
+                    'value' => "remove",
+                    'text' => lang('delete'),
+                    'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete"'
+                ];
+            }
+        }
+
         foreach ($table_columns as $table_column) {
             if ($table_column['label'] == $table->sort_col) {
                 $sort_col = $table_column['name'];
@@ -1242,7 +1262,6 @@ class Members extends CP_Controller
         $data = array();
 
         foreach ($members as $member) {
-
             $attrs = [
                 'member_id' => $member->member_id,
                 'title' => $member->screen_name,

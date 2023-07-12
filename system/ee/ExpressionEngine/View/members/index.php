@@ -34,23 +34,21 @@ if (! AJAX_REQUEST) {
                 echo $pagination;
             } ?>
 
-            <?php if (! empty($table['data']) && $can_delete_members) : ?>
-            <?php $this->embed('ee:_shared/form/bulk-action-bar', [
-                'options' => [
+            <?php 
+            if (! empty($table['data'])) {
+                $bulk_options = array_merge([
                     [
                         'value' => "",
                         'text' => '-- ' . lang('with_selected') . ' --'
-                    ],
-                    [
-                        'value' => "remove",
-                        'text' => lang('delete'),
-                        'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete"'
                     ]
-                ],
-                'modal' => true,
-                'ajax_url' => ee('CP/URL')->make('/members/confirm')
-            ]); ?>
-            <?php endif; ?>
+                ], $bulk_options);
+                $this->embed('ee:_shared/form/bulk-action-bar', [
+                    'options' => $bulk_options,
+                    'modal' => true,
+                    'ajax_url' => ee('CP/URL')->make('/members/confirm')
+                ]);
+            }
+            ?>
         <?=form_close()?>
     </div>
 </div>
