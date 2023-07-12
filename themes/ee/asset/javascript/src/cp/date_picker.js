@@ -247,7 +247,7 @@ EE.cp.datePicker = {
 					if ($(that.element).val()) {
 						d = new Date($(that.element).data('timestamp') * 1000);
 					} else {
-						var d = new Date(that.year, that.month, $(this).text());
+						var d = new Date(that.year, that.month, day, $(this).text());
 					}
 
 					var hoursVal = timeVal.substring(0,timeVal.indexOf(':'));
