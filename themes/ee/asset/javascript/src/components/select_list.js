@@ -702,14 +702,14 @@ var SelectItem = /*#__PURE__*/function (_React$Component2) {
       }, props.toggles && props.toggles.length != 0 && props.toggles.map(function (toggleName, index) {
         return React.createElement("a", {
           href: "",
-          className: 'button button--default flyout-' + toggleName + (props.item.toggles[toggleName] == true ? ' active' : ''),
+          className: 'button button--default extra-flyout-button flyout-' + toggleName + (props.item.toggles[toggleName] == true ? ' active' : ''),
           onClick: function onClick(e) {
             return _this9.bindToggleChange(e, props.item);
           },
           disabled: checked ? false : true,
           "data-toggle-name": toggleName
         }, EE.lang[toggleName], " ", React.createElement("i", {
-          className: 'fa-solid fa-toggle-' + (props.item.toggles[toggleName] == true ? 'on' : 'off')
+          className: 'fa-regular fa-toggle-' + (props.item.toggles[toggleName] == true ? 'on' : 'off')
         }));
       }), props.editable && React.createElement("a", {
         href: "",

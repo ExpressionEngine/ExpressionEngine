@@ -30611,6 +30611,34 @@ ul.field-nested ul li ul::before {
   right: 15px;
 }
 
+#fieldset-cat_group.channel-statuses .checkbox-label {
+  background-color: var(--ee-bg-0);
+  border: 1px solid var(--ee-border);
+  box-shadow: 0 1px 2px 0 var(--ee-shadow-input);
+  border-radius: 5px;
+  position: relative;
+  margin-bottom: 8px;
+}
+#fieldset-cat_group.channel-statuses .checkbox-label .checkbox-label__text {
+  height: 45px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding-left: 35px;
+}
+#fieldset-cat_group.channel-statuses .checkbox-label input[type=checkbox] {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 10px;
+}
+#fieldset-cat_group.channel-statuses .checkbox-label .button-group.button-group-flyout-right {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 15px;
+}
+
 div[data-input-value=category_fields] .lots-of-checkboxes__selection {
   display: none;
 }
@@ -30622,13 +30650,25 @@ div[data-input-value=category_fields] .checkbox-label:hover .checkbox-label__tex
   border-radius: 5px;
 }
 
-.flyout-cat_allow_multiple,
-.flyout-cat_required {
+.extra-flyout-button {
   pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
 }
-.flyout-cat_allow_multiple[disabled],
-.flyout-cat_required[disabled] {
-  pointer-events: none;
+.extra-flyout-button .fa-regular {
+  font-family: "Font Awesome 6 Pro";
+  font-weight: 400;
+  font-size: 1.2rem;
+  margin-left: 4px;
+}
+.extra-flyout-button[disabled] {
+  pointer-events: none !important;
+}
+.extra-flyout-button[disabled] i {
+  opacity: 0.55;
+}
+.extra-flyout-button.active i {
+  color: var(--ee-accent-dark);
 }
 
 .fieldset-group {

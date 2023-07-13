@@ -595,7 +595,7 @@ class SelectItem extends React.Component {
         )}
         <div class="button-group button-group-xsmall button-group-flyout-right">
         {props.toggles && props.toggles.length != 0 && props.toggles.map((toggleName, index) =>
-          <a href="" className={'button button--default flyout-' + toggleName + (props.item.toggles[toggleName] == true ? ' active' : '')} onClick={(e) => this.bindToggleChange(e, props.item)} disabled = {checked ? false : true} data-toggle-name={toggleName}>{EE.lang[toggleName]} <i className={'fa-solid fa-toggle-' + (props.item.toggles[toggleName] == true ? 'on' : 'off')}></i></a>
+          <a href="" className={'button button--default extra-flyout-button flyout-' + toggleName + (props.item.toggles[toggleName] == true ? ' active' : '')} onClick={(e) => this.bindToggleChange(e, props.item)} disabled = {checked ? false : true} data-toggle-name={toggleName}>{EE.lang[toggleName]} <i className={'fa-regular fa-toggle-' + (props.item.toggles[toggleName] == true ? 'on' : 'off')}></i></a>
         )}
         {props.editable && (
           <a href="" className="button button--default flyout-edit flyout-edit-icon" data-id={props.item.value}><i class="fal fa-pencil-alt"></i></a>

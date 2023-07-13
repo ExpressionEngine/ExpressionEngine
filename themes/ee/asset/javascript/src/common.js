@@ -1243,7 +1243,7 @@ $(document).ready(function(){
 
 						if ($(this).find('.checkbox-label__text-editable').length) {
 							$(this).find('.checkbox-label__text-editable').css('pointer-events', 'none');
-							$(this).find('.checkbox-label__text-editable .flyout-edit').css('pointer-events', 'auto')
+							$(this).find('.checkbox-label__text-editable .button').css('pointer-events', 'auto')
 						}
 				}
 			});
