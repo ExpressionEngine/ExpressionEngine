@@ -433,7 +433,7 @@ class Channels extends AbstractChannelsController
         });
         foreach ($channel->CategoryGroups as $group) {
             if (!isset($assignedGroupSettings[$group->group_id])) {
-                $assignedGroupSettings[$group->group_id] = ee('Model')->make('CategoryGroupSetting', [
+                $assignedGroupSettings[$group->group_id] = ee('Model')->make('CategoryGroupSettings', [
                     'group_id' => $group->group_id,
                     'channel_id' => $channel->channel_id,
                     'site_id' => $channel->site_id,
