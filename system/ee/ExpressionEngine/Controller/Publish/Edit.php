@@ -378,8 +378,10 @@ class Edit extends AbstractPublishController
             }
         }
 
-        if (! ee('Permission')->can('edit_other_entries_channel_id_' . $entry->channel_id)
-            && $entry->author_id != ee()->session->userdata('member_id')) {
+        if (
+            ($entry->author_id != ee()->session->userdata('member_id') && ! ee('Permission')->can('edit_other_entries_channel_id_' . $entry->channel_id)) ||
+            ($entry->author_id == ee()->session->userdata('member_id') && ! ee('Permission')->can('edit_self_entries_channel_id_' . $entry->channel_id))
+        ) {
             show_error(lang('unauthorized_access'), 403);
         }
 
