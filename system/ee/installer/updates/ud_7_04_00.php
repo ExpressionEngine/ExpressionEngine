@@ -161,7 +161,7 @@ class Updater
                 'cat_allow_multiple' => [
                     'type' => 'CHAR(1)',
                     'null' => false,
-                    'default' => 'n'
+                    'default' => 'y'
                 ]
             ]
         );

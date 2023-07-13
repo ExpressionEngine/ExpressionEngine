@@ -12,6 +12,8 @@ namespace ExpressionEngine\Controller\Channels;
 
 use ExpressionEngine\Library\CP;
 use ExpressionEngine\Controller\Channels\AbstractChannels as AbstractChannelsController;
+use ExpressionEngine\Model\Channel\Channel;
+use ExpressionEngine\Library\Data\Collection;
 
 /**
  * Channels Controller
@@ -245,6 +247,9 @@ class Channels extends AbstractChannelsController
             if ($result->isValid()) {
                 $channel = $this->saveChannel($channel);
 
+                // Set category group settings
+                $this->saveCategoryGroupSettings($channel);
+
                 if (is_null($channel_id)) {
                     ee()->session->set_flashdata('highlight_id', $channel->getId());
                 }
@@ -411,6 +416,34 @@ class Channels extends AbstractChannelsController
         ];
 
         ee()->cp->render('settings/form', $vars);
+    }
+
+    /**
+     * Save category group settings
+     *
+     * @param Channel $channel
+     * @return void
+     */
+    private function saveCategoryGroupSettings(Channel $channel)
+    {
+        //delete all existing category group settings
+        $assignedGroupIds = $channel->CategoryGroups->pluck('group_id');
+        $assignedGroupSettings = array_filter($channel->CategoryGroupSettings->indexBy('group_id'), function ($group) use ($assignedGroupIds) {
+            return in_array($group->group_id, $assignedGroupIds);
+        });
+        foreach ($channel->CategoryGroups as $group) {
+            if (!isset($assignedGroupSettings[$group->group_id])) {
+                $assignedGroupSettings[$group->group_id] = ee('Model')->make('CategoryGroupSetting', [
+                    'group_id' => $group->group_id,
+                    'channel_id' => $channel->channel_id,
+                    'site_id' => $channel->site_id,
+                ]);
+            }
+            $assignedGroupSettings[$group->group_id]->cat_required = in_array($group->group_id, ee('Request')->post('cat_required')) ? 'y' : 'n';
+            $assignedGroupSettings[$group->group_id]->cat_allow_multiple = in_array($group->group_id, ee('Request')->post('cat_allow_multiple')) ? 'y' : 'n';
+            $assignedGroupSettings[$group->group_id]->save();
+        }
+        $channel->CategoryGroupSettings = $assignedGroupSettings;
     }
 
     /**
@@ -717,33 +750,19 @@ class Channels extends AbstractChannelsController
         $cat_group_options = [];
 
         $selected = ee('Request')->post('cat_group') ?: [];
-        $cat_allow_multiple = ee('Request')->post('cat_allow_multiple') ?: $categoryGroups->pluck('group_id');
-        $cat_required = ee('Request')->post('cat_required') ?: [];
+
+        $categoryGroupSettings = $channel ? $channel->CategoryGroupSettings->indexBy('group_id') : null;
 
         if (!ee('Request')->isPost() && !is_null($channel) && ! is_null($channel->CategoryGroups)) {
             $selected =  $channel->CategoryGroups->pluck('group_id');
-            $cat_allow_multiple = ee('Model')
-                ->get('CategoryGroupSettings')
-                ->filter('channel_id', $channel->getId())
-                ->filter('group_id', 'IN', $selected)
-                ->filter('cat_allow_multiple', 'y')
-                ->all()
-                ->pluck('group_id');
-            $cat_required = ee('Model')
-                ->get('CategoryGroupSettings')
-                ->filter('channel_id', $channel->getId())
-                ->filter('group_id', 'IN', $selected)
-                ->filter('cat_required', 'y')
-                ->all()
-                ->pluck('group_id');
         }
 
         foreach ($categoryGroups as $categoryGroup) {
             $cat_group_options[$categoryGroup->group_id] = [
                 'label' => $categoryGroup->group_name,
                 'toggles' => [
-                    'cat_allow_multiple' => in_array($categoryGroup->group_id, $cat_allow_multiple),
-                    'cat_required' => in_array($categoryGroup->group_id, $cat_required)
+                    'cat_allow_multiple' => ($categoryGroupSettings && isset($categoryGroupSettings[$categoryGroup->group_id])) ? $categoryGroupSettings[$categoryGroup->group_id]->cat_allow_multiple : true,
+                    'cat_required' => ($categoryGroupSettings && isset($categoryGroupSettings[$categoryGroup->group_id])) ? $categoryGroupSettings[$categoryGroup->group_id]->cat_required : false
                 ]
             ];
         }
@@ -1550,7 +1569,7 @@ class Channels extends AbstractChannelsController
         }
         $channel->set($_POST);
 
-        $channel->CategoryGroups = ee('Model')->get('ChannelFieldGroup', $categoryGroups)->all();
+        $channel->CategoryGroups = ee('Model')->get('CategoryGroup', $categoryGroups)->all();
         $channel->FieldGroups = ee('Model')->get('ChannelFieldGroup', ee()->input->post('field_groups'))->all();
         $channel->CustomFields = ee('Model')->get('ChannelField', ee()->input->post('custom_fields'))->all();
 

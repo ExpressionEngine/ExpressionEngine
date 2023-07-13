@@ -812,7 +812,7 @@ class EE_Schema
 			channel_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
 			group_id INT(6) UNSIGNED NOT NULL DEFAULT 1,
 			cat_required char(1) NOT NULL default 'n',
-			allow_multiple char(1) NOT NULL default 'n',
+			cat_allow_multiple char(1) NOT NULL default 'y',
 			PRIMARY KEY `category_group_settings_id` (`category_group_settings_id`),
 			KEY `channel_id_group_id` (`channel_id`, `group_id`)
 			KEY `site_id` (`site_id`),
