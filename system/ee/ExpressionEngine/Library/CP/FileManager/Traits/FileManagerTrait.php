@@ -121,7 +121,7 @@ trait FileManagerTrait
             );
         }
 
-        $filters->add('FileManagerColumns', $this->createColumnFilter($uploadLocation), $uploadLocation, $view_type);
+        $filters->add('FileManagerColumns', $this->createColumnFilter($uploadLocation, $filepickerMode), $uploadLocation, $view_type);
 
         $search_terms = ee()->input->get_post('filter_by_keyword');
 
@@ -192,7 +192,10 @@ trait FileManagerTrait
             array_unshift($selected_columns, 'thumbnail');
             if (! $filepickerMode) {
                 array_unshift($selected_columns, 'checkbox');
+                array_unshift($selected_columns, 'pick');
                 $selected_columns[] = 'manage';
+            } else {
+                $selected_columns[] = 'pick';
             }
         }
 
@@ -521,7 +524,7 @@ trait FileManagerTrait
     /**
      * Creates a column filter
      */
-    private function createColumnFilter($uploadLocation = null)
+    private function createColumnFilter($uploadLocation = null, $filepickerMode = false)
     {
         $column_choices = [];
 
@@ -532,6 +535,9 @@ trait FileManagerTrait
 
             // This column is mandatory, not optional
             if (in_array($identifier, ['checkbox', 'thumbnail', 'manage'])) {
+                continue;
+            }
+            if ($filepickerMode && $identifier == 'pick') {
                 continue;
             }
 
