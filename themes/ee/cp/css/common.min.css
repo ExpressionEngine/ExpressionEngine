@@ -30655,20 +30655,15 @@ div[data-input-value=category_fields] .checkbox-label:hover .checkbox-label__tex
   display: inline-flex;
   align-items: center;
 }
-.extra-flyout-button .fa-regular {
-  font-family: "Font Awesome 6 Pro";
-  font-weight: 400;
-  font-size: 1.2rem;
+.extra-flyout-button svg {
+  width: 1.2rem;
   margin-left: 4px;
 }
 .extra-flyout-button[disabled] {
   pointer-events: none !important;
 }
-.extra-flyout-button[disabled] i {
+.extra-flyout-button[disabled] svg {
   opacity: 0.55;
-}
-.extra-flyout-button.active i {
-  color: var(--ee-accent-dark);
 }
 
 .fieldset-group {

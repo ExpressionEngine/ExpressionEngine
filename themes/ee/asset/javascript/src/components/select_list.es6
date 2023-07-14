@@ -573,6 +573,14 @@ class SelectItem extends React.Component {
     this.props.toggleChanged(this.props.state.toggles);
   }
 
+  toggleOn () {
+    return <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 384"><path fill="#171feb" d="m0,192C0,86,86,0,192,0h192c106,0,192,86,192,192s-86,192-192,192h-192C86,384,0,298,0,192Z"/><circle fill="#fff" cx="384" cy="192" r="96"/></svg>
+  }
+
+  toggleOff () {
+    return <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M384 112c79.5 0 144 64.5 144 144s-64.5 144-144 144H192c-79.5 0-144-64.5-144-144s64.5-144 144-144H384zM576 256c0-106-86-192-192-192H192C86 64 0 150 0 256S86 448 192 448H384c106 0 192-86 192-192zM192 352a96 96 0 1 0 0-192 96 96 0 1 0 0 192z"/></svg>
+  }
+
   render() {
     let props = this.props
     let checked = this.checked(props.item.value)
@@ -613,7 +621,7 @@ class SelectItem extends React.Component {
         )}
         <div class="button-group button-group-xsmall button-group-flyout-right">
         {props.toggles && props.toggles.length != 0 && props.toggles.map((toggleName, index) =>
-          <a href="" className={'button button--default extra-flyout-button flyout-' + toggleName + (props.item.toggles[toggleName] == true ? ' active' : '')} onClick={(e) => this.bindToggleChange(e, props.item)} disabled = {checked ? false : true} data-toggle-name={toggleName}>{EE.lang[toggleName]} <i className={'fa-regular fa-toggle-' + (props.item.toggles[toggleName] == true ? 'on' : 'off')}></i></a>
+          <a href="" className={'button button--default extra-flyout-button flyout-' + toggleName + (props.item.toggles[toggleName] == true ? ' active' : '')} onClick={(e) => this.bindToggleChange(e, props.item)} disabled = {checked ? false : true} data-toggle-name={toggleName}>{EE.lang[toggleName]} {(props.item.toggles[toggleName] == true ? this.toggleOn() : this.toggleOff())}</a>
         )}
         {props.editable && (
           <a href="" className="button button--default flyout-edit flyout-edit-icon" data-id={props.item.value}><i class="fal fa-pencil-alt"></i></a>

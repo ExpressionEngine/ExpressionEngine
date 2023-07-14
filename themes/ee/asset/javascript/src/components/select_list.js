@@ -45,18 +45,7 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
     _defineProperty(_assertThisInitialized(_this), "handleSelect", function (event, item) {
       var selected = [],
           checked = event.target.checked,
-          XORvalue = '--'; // if (item.toggles[toggleName]) {
-      //   this.props.state.toggles.push({
-      //     [toggleName]: item.value,
-      //     'name': toggleName,
-      //     'value': item.value
-      //   });
-      // } else {
-      //   this.props.state.toggles = this.props.state.toggles.filter(object => {
-      //     if (object[toggleName] != item.value) return object
-      //   })
-      // }
-      // this.props.toggleChanged(this.props.state.toggles);
+          XORvalue = '--';
 
       if (_this.props.multi && item.value != XORvalue) {
         if (checked) {
@@ -67,14 +56,8 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
           // toggles are present on the Channel->Edit->Categories
 
           if (item.toggles && Object.keys(item.toggles).length) {
-            console.log('state', _this.state.toggles);
-
             var _loop = function _loop(_key) {
-              console.log('id', item.value);
-
               if (item.toggles[_key]) {
-                console.log('key', _key);
-                console.log('item', item);
                 i = _this.state.toggles.filter(function (toggle) {
                   return toggle[_key] == item.value;
                 });
@@ -693,6 +676,32 @@ var SelectItem = /*#__PURE__*/function (_React$Component2) {
       this.props.toggleChanged(this.props.state.toggles);
     }
   }, {
+    key: "toggleOn",
+    value: function toggleOn() {
+      return React.createElement("svg", {
+        xmlns: "http://www.w3.org/2000/svg",
+        viewBox: "0 0 576 384"
+      }, React.createElement("path", {
+        fill: "#171feb",
+        d: "m0,192C0,86,86,0,192,0h192c106,0,192,86,192,192s-86,192-192,192h-192C86,384,0,298,0,192Z"
+      }), React.createElement("circle", {
+        fill: "#fff",
+        cx: "384",
+        cy: "192",
+        r: "96"
+      }));
+    }
+  }, {
+    key: "toggleOff",
+    value: function toggleOff() {
+      return React.createElement("svg", {
+        xmlns: "http://www.w3.org/2000/svg",
+        viewBox: "0 0 576 512"
+      }, React.createElement("path", {
+        d: "M384 112c79.5 0 144 64.5 144 144s-64.5 144-144 144H192c-79.5 0-144-64.5-144-144s64.5-144 144-144H384zM576 256c0-106-86-192-192-192H192C86 64 0 150 0 256S86 448 192 448H384c106 0 192-86 192-192zM192 352a96 96 0 1 0 0-192 96 96 0 1 0 0 192z"
+      }));
+    }
+  }, {
     key: "render",
     value: function render() {
       var _this9 = this;
@@ -748,9 +757,7 @@ var SelectItem = /*#__PURE__*/function (_React$Component2) {
           },
           disabled: checked ? false : true,
           "data-toggle-name": toggleName
-        }, EE.lang[toggleName], " ", React.createElement("i", {
-          className: 'fa-regular fa-toggle-' + (props.item.toggles[toggleName] == true ? 'on' : 'off')
-        }));
+        }, EE.lang[toggleName], " ", props.item.toggles[toggleName] == true ? _this9.toggleOn() : _this9.toggleOff());
       }), props.editable && React.createElement("a", {
         href: "",
         className: "button button--default flyout-edit flyout-edit-icon",

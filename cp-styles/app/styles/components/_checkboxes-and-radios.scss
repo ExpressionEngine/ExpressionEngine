@@ -539,24 +539,16 @@ div[data-input-value="category_fields"] {
 	display: inline-flex;
 	align-items: center;
 
-	.fa-regular {
-		font-family: "Font Awesome 6 Pro";
-		font-weight: 400;
-		font-size: 1.2rem;
+	svg {
+		width: 1.2rem;
 		margin-left: 4px;
 	}
 
 	&[disabled] {
 		pointer-events: none !important;
 
-		i {
+		svg {
 			opacity: 0.55;
-		}
-	}
-
-	&.active {
-		i {
-			color: var(--ee-accent-dark);
 		}
 	}
 }
