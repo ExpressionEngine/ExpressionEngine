@@ -49,7 +49,7 @@ module.exports = (on, config) => {
 
     const child_process = require('child_process');
 
-    const consoleLog = require('cypress-log-to-output');
+    /*const consoleLog = require('cypress-log-to-output');
     consoleLog.install(on, (type, event) => {
         if (event.level === 'error' || event.type === 'error') {
           return true
@@ -61,7 +61,7 @@ module.exports = (on, config) => {
         'console:getLogs': () => {
             return consoleLog.getLogs()
         }
-    })
+    })*/
 
     /*on('after:spec', (spec, results) => {
         var filename = spec.name.split('/');
@@ -333,10 +333,10 @@ module.exports = (on, config) => {
 
 
     on('before:browser:launch', (browser, launchOptions) => {
-        launchOptions.args = consoleLog.browserLaunchHandler(
+        /*launchOptions.args = consoleLog.browserLaunchHandler(
             browser,
             launchOptions.args
-        )
+        )*/
 
         /*if (browser.name === 'chrome') {
             prepareAudit(launchOptions);
