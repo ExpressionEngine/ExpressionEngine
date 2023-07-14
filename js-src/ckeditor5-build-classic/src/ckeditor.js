@@ -46,6 +46,8 @@ import PageBreak from '@ckeditor/ckeditor5-page-break/src/pagebreak';
 import Font from '@ckeditor/ckeditor5-font/src/font';
 import Alignment from '@ckeditor/ckeditor5-alignment/src/alignment';
 import WordCount from '@ckeditor/ckeditor5-word-count/src/wordcount';
+import { Style } from '@ckeditor/ckeditor5-style';
+import { GeneralHtmlSupport } from '@ckeditor/ckeditor5-html-support';
 import { SourceEditing } from '@ckeditor/ckeditor5-source-editing';
 import { ShowBlocks } from '@ckeditor/ckeditor5-show-blocks';
 
@@ -102,6 +104,8 @@ ClassicEditor.builtinPlugins = [
 	PageBreak,
 	Font,
 	Alignment,
+	Style,
+	GeneralHtmlSupport,
 	Mention,
 	PageLinks,
 	EditorClassPlugin,

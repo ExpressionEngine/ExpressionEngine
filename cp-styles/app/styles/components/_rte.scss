@@ -425,15 +425,11 @@ It breaks CKEditor 5 (see how <p><code>[]</code></p> looks). */
 }
 
 .ck.ck-list__item .ck-button.ck-on:not(.ck-switchbutton) {
-    background: var(--ee-button-primary-bg) !important;
+    background: var(--ee-accent-light) !important;
 }
 
 .ck.ck-list__item .ck-button.ck-on.ck-switchbutton {
     background: transparent !important;
-}
-
-.ck.ck-list__item .ck-button.ck-on:not(.ck-switchbutton) .ck.ck-button__label {
-    color: var(--ee-button-primary-color) !important;
 }
 
 .ck.ck-button__label {
@@ -736,9 +732,19 @@ a.ck.ck-button.ck-on {
     border-color: var(--ee-list-item-border) !important;
 }
 
+.ck.ck-tooltip {
+    color: var(--ee-text-secondary) !important;
+}
+
+.ck.ck-dropdown:not(.ck-disabled):hover,
 .ck.ck-button:not(.ck-disabled):hover,
 a.ck.ck-button:not(.ck-disabled):hover {
     background: var(--ee-bg-5) !important;
+}
+
+.ck.ck-splitbutton.ck-splitbutton_open>.ck-button:not(.ck-on):not(.ck-disabled):not(:hover),
+.ck.ck-splitbutton:hover>.ck-button:not(.ck-on):not(.ck-disabled):not(:hover) {
+    background: var(--ee-button-default-bg) !important;
 }
 
 .ck.ck-button.ck-on,
