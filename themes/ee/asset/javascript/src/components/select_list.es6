@@ -33,6 +33,7 @@ class SelectList extends React.Component {
         props.toggles.filter(toggle => {
           if (item.toggles[toggle] == true) {
             toggles.push({
+              [toggle]: item.value,
               'name': toggle,
               'value': item.value
             });
@@ -250,6 +251,23 @@ class SelectList extends React.Component {
         selected = this.props.selected
             .concat([item])
             .filter(item => item.value != XORvalue) // uncheck XOR value
+
+        // check if item has toggles object
+        // toggles are present on the Channel->Edit->Categories
+        if (item.toggles && Object.keys(item.toggles).length) {
+          for (let key in item.toggles) {
+            if (item.toggles[key]) {
+              var i = this.state.toggles.filter(toggle => toggle[key] == item.value);
+              if (!i.length) {
+                this.state.toggles.push({
+                  [key]: item.value,
+                  'name': key,
+                  'value': item.value
+                });
+              }
+            }
+          }
+        }
 
         // Sort selection?
         if (this.props.selectionShouldRetainItemOrder) {

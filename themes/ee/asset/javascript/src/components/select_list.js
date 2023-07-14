@@ -45,14 +45,55 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
     _defineProperty(_assertThisInitialized(_this), "handleSelect", function (event, item) {
       var selected = [],
           checked = event.target.checked,
-          XORvalue = '--';
+          XORvalue = '--'; // if (item.toggles[toggleName]) {
+      //   this.props.state.toggles.push({
+      //     [toggleName]: item.value,
+      //     'name': toggleName,
+      //     'value': item.value
+      //   });
+      // } else {
+      //   this.props.state.toggles = this.props.state.toggles.filter(object => {
+      //     if (object[toggleName] != item.value) return object
+      //   })
+      // }
+      // this.props.toggleChanged(this.props.state.toggles);
 
       if (_this.props.multi && item.value != XORvalue) {
         if (checked) {
           selected = _this.props.selected.concat([item]).filter(function (item) {
             return item.value != XORvalue;
           }); // uncheck XOR value
-          // Sort selection?
+          // check if item has toggles object
+          // toggles are present on the Channel->Edit->Categories
+
+          if (item.toggles && Object.keys(item.toggles).length) {
+            console.log('state', _this.state.toggles);
+
+            var _loop = function _loop(_key) {
+              console.log('id', item.value);
+
+              if (item.toggles[_key]) {
+                console.log('key', _key);
+                console.log('item', item);
+                i = _this.state.toggles.filter(function (toggle) {
+                  return toggle[_key] == item.value;
+                });
+
+                if (!i.length) {
+                  var _this$state$toggles$p;
+
+                  _this.state.toggles.push((_this$state$toggles$p = {}, _defineProperty(_this$state$toggles$p, _key, item.value), _defineProperty(_this$state$toggles$p, 'name', _key), _defineProperty(_this$state$toggles$p, 'value', item.value), _this$state$toggles$p));
+                }
+              }
+            };
+
+            for (var _key in item.toggles) {
+              var i;
+
+              _loop(_key);
+            }
+          } // Sort selection?
+
 
           if (_this.props.selectionShouldRetainItemOrder) {
             selected = _this.getOrderedSelection(selected);
@@ -146,10 +187,9 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
       }).forEach(function (item) {
         props.toggles.filter(function (toggle) {
           if (item.toggles[toggle] == true) {
-            toggles.push({
-              'name': toggle,
-              'value': item.value
-            });
+            var _toggles$push;
+
+            toggles.push((_toggles$push = {}, _defineProperty(_toggles$push, toggle, item.value), _defineProperty(_toggles$push, 'name', toggle), _defineProperty(_toggles$push, 'value', item.value), _toggles$push));
           }
         });
       });
