@@ -87,6 +87,7 @@
             <?php if (! $field->isRequired() && ! $field->isVisible()) {
                 continue;
             } ?>
+            <?=$field->renderAlert()?>
             <?php
                 $field_class = '';
                 if ($field->getStatus() == 'warning') {

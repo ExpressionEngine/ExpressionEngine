@@ -159,6 +159,18 @@ class FieldDisplay
         return get_bool_from_string($this->field->getHidden());
     }
 
+    public function renderAlert()
+    {
+        if (!empty($this->field->getAlertText())) {
+            return ee('CP/Alert')->makeInline('__inline_alert_' . $this->getShortName())
+                ->asWarning()
+                ->cannotClose()
+                ->addToBody($this->field->getAlertText())
+                ->render();
+        }
+        return '';
+    }
+
     public function getSetting($item)
     {
         $settings = $this->field->initField();

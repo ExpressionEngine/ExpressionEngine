@@ -1076,18 +1076,10 @@ class ChannelEntry extends ContentModel
 
         $set_cats = $cat_objects->asArray();
 
-        // set the category parent, but only if multiple selection is enabled
+        // set the category parent
         if (ee()->config->item('auto_assign_cat_parents') == 'y') {
-            $categoryGroupSettings = $this->getModelFacade()
-                    ->get('CategoryGroupSettings')
-                    ->filter('channel_id', $this->getId())
-                    ->all(true)
-                    ->indexBy('group_id');
             $category_ids = $cat_objects->pluck('cat_id');
             foreach ($set_cats as $cat) {
-                if (isset($categoryGroupSettings[$cat->group_id]) && $categoryGroupSettings[$cat->group_id]->cat_allow_multiple === false) {
-                    continue;
-                }
                 while ($cat->Parent !== null) {
                     $cat = $cat->Parent;
                     if (! in_array($cat->getId(), $category_ids)) {
@@ -1278,8 +1270,20 @@ class ChannelEntry extends ContentModel
                         $metadata['field_required'] = 'y';
                     }
                     // can multiple categories from this group be selected? (default yes)
-                    if (isset($cat_allow_multiple[$cat_group->getId()]) && $cat_allow_multiple[$cat_group->getId()] === false && $this->Categories->count() <= 1) {
-                        $metadata['field_type'] = 'radio';
+                    if (isset($cat_allow_multiple[$cat_group->getId()]) && $cat_allow_multiple[$cat_group->getId()] === false) {
+                        if ($this->Categories->filter('group_id', $cat_group->getId())->count() > 1) {
+                            $metadata['alertText'] = lang('cat_selection_is_multiple_categories_assigned');
+                        } elseif (ee()->config->item('auto_assign_cat_parents') == 'y') {
+                            // we have to know if there are children in this group
+                            $categoryChildrenCount = ee('Model')->get('Category')->filter('group_id', $cat_group->getId())->filter('parent_id', '!=', 0)->count();
+                            if ($categoryChildrenCount == 0) {
+                                $metadata['field_type'] = 'radio';
+                            } else {
+                                $metadata['alertText'] = lang('cat_selection_is_multiple_auto_select_parent');
+                            }
+                        } else {
+                            $metadata['field_type'] = 'radio';
+                        }
                     }
 
                     if ($cat_groups->count() == 1) {
