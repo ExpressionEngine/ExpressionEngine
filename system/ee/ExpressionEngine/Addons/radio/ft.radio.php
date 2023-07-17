@@ -124,7 +124,8 @@ class Radio_ft extends OptionFieldtype
                 'disabled' => $this->get_setting('field_disabled'),
                 'filter_url' => $this->get_setting('filter_url', null),
                 'no_results' => $this->get_setting('no_results', null),
-
+                'nested' => true,
+                'nestable_reorder' => true,
                 'force_react' => $this->get_setting('force_react', false),
                 'manageable' => $this->get_setting('editable', false)
                     && ! $this->get_setting('in_modal_context'),
