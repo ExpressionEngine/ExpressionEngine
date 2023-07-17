@@ -844,6 +844,7 @@ class Grid_ft extends EE_Fieldtype
         ee()->grid_lib->entry_id = ($this->content_id() == null) ? $entry_id : $this->content_id();
         ee()->grid_lib->field_id = $this->id();
         ee()->grid_lib->field_name = $this->name();
+        ee()->grid_lib->field_required = $this->settings['field_required'];
         ee()->grid_lib->content_type = $this->content_type();
         ee()->grid_lib->fluid_field_data_id = (isset($this->settings['fluid_field_data_id'])) ? $this->settings['fluid_field_data_id'] : 0;
         ee()->grid_lib->in_modal_context = $this->get_setting('in_modal_context');

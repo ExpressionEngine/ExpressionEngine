@@ -12,6 +12,7 @@ namespace ExpressionEngine\Controller\Fields;
 
 use ExpressionEngine\Controller\Fields\AbstractFields as AbstractFieldsController;
 use ExpressionEngine\Model\Channel\ChannelField;
+use ExpressionEngine\Error\AddonNotFound;
 
 /**
  * Fields Controller
@@ -821,9 +822,13 @@ class Fields extends AbstractFieldsController
                 continue;
             }
 
-            $field_options = $dummy_field->getSettingsForm();
-            if (is_array($field_options) && ! empty($field_options)) {
-                $sections = array_merge($sections, $field_options);
+            try {
+                $field_options = $dummy_field->getSettingsForm();
+                if (is_array($field_options) && ! empty($field_options)) {
+                    $sections = array_merge($sections, $field_options);
+                }
+            } catch (AddonNotFound $e) {
+                // silently ignore exceptions if the fieldtype is missing
             }
         }
 

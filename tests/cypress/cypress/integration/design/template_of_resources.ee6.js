@@ -14,7 +14,7 @@ const replaceColors = {
 	'yellow': 'blue',
 }
 
-context('Design', () => {
+context('JS and CSS templates', () => {
 	before(function () {
 		cy.task('db:seed')
 		cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })

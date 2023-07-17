@@ -21,7 +21,8 @@ class Grid_lib
     public $entry_id;
     public $fluid_field_data_id = 0;
     public $in_modal_context = false;
-    public $settings_form_field_name;
+    public $settings_form_field_name; //grid or file_grid
+    public $field_required = false;
 
     protected $_fieldtypes = [];
     protected $_validated = [];
@@ -37,9 +38,9 @@ class Grid_lib
     /**
      * Handles EE_Fieldtype's display_field for displaying the Grid field
      *
-     * @param	array	Grid input object
-     * @param	array	Field data to display prepopulated in publish field
-     * @return	string	HTML of publish field
+     * @param array Grid input object
+     * @param array Field data to display prepopulated in publish field
+     * @return string HTML of publish field
      */
     public function display_field($grid, $data)
     {
@@ -50,13 +51,11 @@ class Grid_lib
         // validation error
         if (isset($this->_validated[$this->field_id . ',' . $this->fluid_field_data_id]['value'])) {
             $rows = $this->_validated[$this->field_id . ',' . $this->fluid_field_data_id]['value'];
-        }
-        // Load autosaved/revision data
-        elseif (is_array($data)) {
+        } elseif (is_array($data)) {
+            // Load autosaved/revision data
             $rows = isset($data['rows']) ? $data['rows'] : $data;
-        }
-        // Editing an existing entry
-        elseif ($this->entry_id) {
+        } elseif ($this->entry_id) {
+            // Editing an existing entry
             $rows = ee()->grid_model->get_entry_rows(
                 $this->entry_id,
                 $this->field_id,
@@ -66,9 +65,8 @@ class Grid_lib
                 $this->fluid_field_data_id
             );
             $rows = (isset($rows[$this->entry_id])) ? $rows[$this->entry_id] : array();
-        }
-        // Creating a new entry
-        else {
+        } else {
+            // Creating a new entry
             $rows = [];
         }
 
@@ -193,9 +191,9 @@ class Grid_lib
     /**
      * Returns publish field HTML for a given cell
      *
-     * @param	array	Column data
-     * @param	array	Data for current row
-     * @return	string	HTML for specified cell's publish field
+     * @param array Column data
+     * @param array Data for current row
+     * @return string HTML for specified cell's publish field
      */
     protected function _publish_field_cell($column, $row = null)
     {
@@ -236,8 +234,8 @@ class Grid_lib
     /**
      * Interface for Grid fieldtype validation
      *
-     * @param	array	POST data from publish form
-     * @return	array	Validated field data
+     * @param array POST data from publish form
+     * @return array Validated field data
      */
     public function validate($data)
     {
@@ -288,8 +286,8 @@ class Grid_lib
     /**
      * Interface for Grid fieldtype saving
      *
-     * @param	array	Validated Grid publish form data
-     * @return	boolean
+     * @param array Validated Grid publish form data
+     * @return boolean
      */
     public function save($data)
     {
@@ -356,8 +354,8 @@ class Grid_lib
      * Notifies fieldtypes of impending deletion of their Grid rows, and then
      * deletes those rows
      *
-     * @param	array	Validated Grid publish form data
-     * @return	boolean
+     * @param array Validated Grid publish form data
+     * @return boolean
      */
     public function delete_rows($row_ids)
     {
@@ -399,11 +397,11 @@ class Grid_lib
      * save method for further processing, in which the fieldtype can specify
      * other columns that need to be filled.
      *
-     * @param	string	Method to process, 'save' or 'validate'
-     * @param	array	Grid publish form data
-     * @param	int		Field ID of field being saved
-     * @param	int		Entry ID of entry being saved
-     * @return	boolean
+     * @param string Method to process, 'save' or 'validate'
+     * @param array Grid publish form data
+     * @param int Field ID of field being saved
+     * @param int Entry ID of entry being saved
+     * @return boolean
      */
     protected function _process_field_data($method, $data)
     {
@@ -418,9 +416,8 @@ class Grid_lib
 
         if (! is_array($data)) {
             $data = array();
-        }
-        // Rows key may not be set if we're at the saving stage
-        elseif (isset($data['rows'])) {
+        } elseif (isset($data['rows'])) {
+            // Rows key may not be set if we're at the saving stage
             $data = $data['rows'];
         }
 
@@ -500,6 +497,11 @@ class Grid_lib
                 if ($method == 'validate') {
                     $error = $result;
 
+                    // if File grid field is required, the File column is also required if
+                    if ($this->field_required && $this->settings_form_field_name == 'file_grid' && $column['col_name'] == 'file') {
+                        $column['col_required'] = 'y';
+                    }
+
                     // First, assign the row data as the final value
                     $value = $row[$col_id];
 
@@ -523,8 +525,10 @@ class Grid_lib
                     // Is this AJAX validation? If so, just return the result for the field
                     // we're validating
                     if (ee()->input->is_ajax_request() && $field = ee()->input->post('ee_fv_field')) {
-                        if (strpos($field, 'field_id_' . $this->field_id . '[rows][' . $row_id . '][' . $col_id . ']') === 0
-                            || strpos($field, '[field_id_' . $this->field_id . '][rows][' . $row_id . '][' . $col_id . ']') !== false) {
+                        if (
+                            strpos($field, 'field_id_' . $this->field_id . '[rows][' . $row_id . '][' . $col_id . ']') === 0
+                            || strpos($field, '[field_id_' . $this->field_id . '][rows][' . $row_id . '][' . $col_id . ']') !== false
+                        ) {
                             return $error;
                         }
                     }
@@ -541,9 +545,8 @@ class Grid_lib
                     if ($column['col_search'] == 'y') {
                         $this->_searchable_data[$this->field_id . ',' . $this->fluid_field_data_id][] = $value;
                     }
-                }
-                // 'save' method
-                elseif ($method == 'save') {
+                } elseif ($method == 'save') {
+                    // 'save' method
                     // Flatten array
                     if (is_array($result)) {
                         $result = encode_multi_field($result);
@@ -568,7 +571,7 @@ class Grid_lib
     /**
      * Gets the searchable data for this field as accumulated in validation
      *
-     * @return	array	Array of searchable data
+     * @return array Array of searchable data
      */
     public function getSearchableData()
     {
@@ -583,7 +586,7 @@ class Grid_lib
      * Gets a list of installed fieldtypes and filters them for ones enabled
      * for Grid
      *
-     * @return	array	Array of Grid-enabled fieldtypes
+     * @return array Array of Grid-enabled fieldtypes
      */
     public function get_grid_fieldtypes()
     {
@@ -621,10 +624,12 @@ class Grid_lib
             // Check to see if the fieldtype accepts Grid as a content type;
             // also, temporarily exlcude Relationships for content types
             // other than channel
-            if (empty($fieldtype) ||
+            if (
+                empty($fieldtype) ||
                 ! method_exists($fieldtype, 'accepts_content_type') ||
                 ! $fieldtype->accepts_content_type('grid') ||
-                ($this->content_type != 'channel' && $field_short_name == 'relationship')) {
+                ($this->content_type != 'channel' && $field_short_name == 'relationship')
+            ) {
                 unset($fieldtypes[$field_short_name], $compatibility[$field_short_name]);
             }
         }
@@ -642,8 +647,8 @@ class Grid_lib
     /**
      * Validates settings before form is saved
      *
-     * @param	array	POSTed column settings from field settings page
-     * @return	array	Array of failed result objects
+     * @param array POSTed column settings from field settings page
+     * @return array Array of failed result objects
      */
     public function validate_settings($settings)
     {
@@ -678,8 +683,8 @@ class Grid_lib
      * Given POSTed column settings, adds new columns to the database and
      * figures out if any columns need deleting
      *
-     * @param	array	POSTed column settings from field settings page
-     * @return	void
+     * @param array POSTed column settings from field settings page
+     * @return void
      */
     public function apply_settings($settings)
     {
@@ -791,8 +796,8 @@ class Grid_lib
      * Calls grid_save_settings() on fieldtypes to do any extra processing on
      * saved field settings
      *
-     * @param	array	Column settings data
-     * @return	array	Processed settings
+     * @param array Column settings data
+     * @return array Processed settings
      */
     protected function _save_settings($column)
     {
@@ -812,10 +817,10 @@ class Grid_lib
     /**
      * Returns rendered HTML for a column on the field settings page
      *
-     * @param	array	Array of single column settings from the grid_columns table
-     * @param	array	Array of string names representing the namespace field names
-     *	that have validation errors
-     * @return	string	Rendered column view for settings page
+     * @param array Array of single column settings from the grid_columns table
+     * @param array Array of string names representing the namespace field names
+     *             that have validation errors
+     * @return string Rendered column view for settings page
      */
     public function get_column_view($column = null, $errors = null)
     {
@@ -953,8 +958,8 @@ class Grid_lib
      * Create a dropdown-frieldly array of available fieldtypes based on
      * compatibility of passed column type
      *
-     * @param	string	Short name of fieldtype
-     * @return	array	Key/value array of compatible fieldtypes
+     * @param string Short name of fieldtype
+     * @return array Key/value array of compatible fieldtypes
      */
     private function getGridFieldtypeDropdownForColumn($col_type = null)
     {
@@ -986,11 +991,10 @@ class Grid_lib
     /**
      * Returns rendered HTML for the custom settings form of a grid column type
      *
-     * @param	string	Name of fieldtype to get settings form for
-     * @param	string	Name of field in POST for accessing validation errors
-     * @param	array	Column data from database to populate settings form
-     * @return	array	Rendered HTML settings form for given fieldtype and
-     * 					column data
+     * @param string Name of fieldtype to get settings form for
+     * @param string Name of field in POST for accessing validation errors
+     * @param array Column data from database to populate settings form
+     * @return array Rendered HTML settings form for given fieldtype and column data
      */
     public function get_settings_form($type, $field_name = null, $column = null)
     {
@@ -1026,12 +1030,11 @@ class Grid_lib
      * Returns rendered HTML for the custom settings form of a grid column type,
      * helper method for Grid_lib::get_settings_form
      *
-     * @param	string	Name of fieldtype to get settings form for
-     * @param	array	Column data from database to populate settings form
-     * @param	int		Column ID for field naming
-     * @param	Validation\Result	Validation result object for this column
-     * @return	array	Rendered HTML settings form for given fieldtype and
-     * 					column data
+     * @param string Name of fieldtype to get settings form for
+     * @param array Column data from database to populate settings form
+     * @param int Column ID for field naming
+     * @param Validation\Result Validation result object for this column
+     * @return array Rendered HTML settings form for given fieldtype and column data
      */
     protected function _view_for_col_settings($col_type, $col_settings, $col_id = null, $fieldtype_errors = null)
     {
@@ -1075,9 +1078,9 @@ class Grid_lib
      * Performes find and replace for input names in order to namespace them
      * for a POST array
      *
-     * @param	string	String to search
-     * @param	string	String to use for replacement
-     * @return	string	String with namespaced inputs
+     * @param string String to search
+     * @param string String to use for replacement
+     * @return string String with namespaced inputs
      */
     protected function _namespace_inputs($search, $replace)
     {

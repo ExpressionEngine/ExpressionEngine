@@ -12,18 +12,15 @@ context('Spam Module', () => {
     cy.task('db:seed')
   })
 
-  context('Installation', () => {
-
-    it('can install from add-on manager', () => {
-      cy.auth();
-      addon_manager.load()
-      cy.intercept('https://updates.expressionengine.com/check').as('check')
-      cy.intercept('**/license/handleAccessResponse').as('license')
-      addon_manager.get('wrap').find('a[data-post-url*="cp/addons/install/spam"]').click()
-      cy.wait('@check')
-      cy.wait('@license')
-      cy.hasNoErrors()
-    })
+  it('can install Spam Module from add-on manager', () => {
+    cy.auth();
+    addon_manager.load()
+    cy.intercept('https://updates.expressionengine.com/check').as('check')
+    cy.intercept('**/license/handleAccessResponse').as('license')
+    addon_manager.get('wrap').find('a[data-post-url*="cp/addons/install/spam"]').click()
+    cy.wait('@check')
+    cy.wait('@license')
+    cy.hasNoErrors()
   })
 
 

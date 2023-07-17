@@ -309,7 +309,15 @@ class EntryListing
             $entries->filter('status', $this->status_filter->value());
         }
 
-        if (! empty($this->author_filter) && $this->author_filter->value()) {
+        // if the user has no 'other entries' permissions at all
+        // or if they are viewing a channel where they have "own" permissions only
+        // then restrict to their own entries
+        if (
+            (!empty($channel_id) && !ee('Permission')->has('can_edit_other_entries_channel_id_' . $channel_id)) ||
+            !ee('Permission')->hasAny('can_edit_other_entries')
+        ) {
+            $entries->filter('author_id', ee()->session->userdata('member_id'));
+        } elseif (! empty($this->author_filter) && $this->author_filter->value()) {
             $entries->filter('author_id', $this->author_filter->value());
         }
 

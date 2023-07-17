@@ -594,7 +594,6 @@ class Structure_ext
                 $result = ee()->db->get();
                 if ($result->num_rows() > 0) {
                     $row = $result->row();
-                    ee()->uri->page_query_string = $entry_id;
 
                     return array($row->group_name, $row->template_name);
                 }
