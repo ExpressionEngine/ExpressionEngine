@@ -51,13 +51,27 @@ trait FileUsageTrait
         }
         if (!empty($dirsAndFilesInSubfolders)) {
             foreach ($dirsAndFilesInSubfolders as $dir_id => $file_names) {
-                $uploadLocation = ee('Model')->get('UploadDestination', $dir_id)->first(true);
+                $uploadLocation = ee('Model')->get('UploadDestination', $dir_id)->with('FileDimensions')->first(true);
+                $dimensions = $uploadLocation->FileDimensions->pluck('short_name');
+                $dimensions[] = 'thumbs';
                 // Make sure UploadLocation still exists, would be better if we could filter out these files earlier
                 if (!is_null($uploadLocation)) {
                     foreach ($file_names as $i => $fileRealtivePath) {
+                        $modifier = 'url';
+                        // is this a manipulated image?
+                        if (!empty($dimensions)) {
+                            $fileRealtivePathParts = explode('/', $fileRealtivePath);
+                            $filename = end($fileRealtivePathParts);
+                            $possibleDimension = substr(prev($fileRealtivePathParts), 1); // strip _ from the beginning
+                            if (in_array($possibleDimension, $dimensions)) {
+                                $modifier = $possibleDimension;
+                                // remove the dimension from the path, so we could get file by path
+                                $fileRealtivePath = str_replace('/' . $possibleDimension . '/' . $filename, '/' . $filename, $fileRealtivePath);
+                            }
+                        }
                         $file = $uploadLocation->getFileByPath($fileRealtivePath);
                         if (!empty($file)) {
-                            $fileUsageReplacements[$file->getId()] = ['{filedir_' . $file->upload_location_id . '}' . $fileRealtivePath => '{file:' . $file->file_id . ':url}'];
+                            $fileUsageReplacements[$file->getId()] = ['{filedir_' . $file->upload_location_id . '}' . $fileRealtivePath => '{file:' . $file->file_id . ':' . $modifier . '}'];
                         }
                     }
                 }

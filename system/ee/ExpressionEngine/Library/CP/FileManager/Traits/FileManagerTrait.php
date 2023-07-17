@@ -53,6 +53,11 @@ trait FileManagerTrait
                     'hasUpload' => ee('Request')->get('hasUpload')
                 ]);
             }
+            if (!empty(ee('Request')->get('pickDimensions'))) {
+                $base_url->addQueryStringVariables([
+                    'pickDimensions' => ee('Request')->get('pickDimensions')
+                ]);
+            }
         }
 
         $files = ee('Model')->get($model)
@@ -192,10 +197,11 @@ trait FileManagerTrait
             array_unshift($selected_columns, 'thumbnail');
             if (! $filepickerMode) {
                 array_unshift($selected_columns, 'checkbox');
-                array_unshift($selected_columns, 'pick');
                 $selected_columns[] = 'manage';
             } else {
-                $selected_columns[] = 'pick';
+                if (! bool_config_item('file_manager_compatibility_mode') && ! empty(ee('Request')->get('pickDimensions'))) {
+                    $selected_columns[] = 'pick';
+                }
             }
         }
 
@@ -534,10 +540,7 @@ trait FileManagerTrait
             $identifier = $column->getTableColumnIdentifier();
 
             // This column is mandatory, not optional
-            if (in_array($identifier, ['checkbox', 'thumbnail', 'manage'])) {
-                continue;
-            }
-            if ($filepickerMode && $identifier == 'pick') {
+            if (in_array($identifier, ['checkbox', 'thumbnail', 'manage', 'pick'])) {
                 continue;
             }
 

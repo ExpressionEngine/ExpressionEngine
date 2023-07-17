@@ -54,6 +54,10 @@ class FilePicker
             $qs['hasUpload'] = $data['hasUpload'];
         }
 
+        if (isset($data['pickDimensions'])) {
+            $qs['pickDimensions'] = $data['pickDimensions'];
+        }
+
         $href = ee('CP/URL')->make($this->controller, $qs);
         $extra = "";
         $class = "";

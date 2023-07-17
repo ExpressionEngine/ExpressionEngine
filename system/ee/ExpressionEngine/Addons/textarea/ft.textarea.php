@@ -75,7 +75,7 @@ class Textarea_ft extends EE_Fieldtype
 
 				$("li.html-upload").addClass("m-link").attr({
 					rel: "modal-file",
-					href: "' . ee('CP/URL')->make('addons/settings/filepicker/modal', array('field_upload_locations' => 'all', 'hasUpload' => true)) . '"
+					href: "' . ee('CP/URL')->make('addons/settings/filepicker/modal', array('field_upload_locations' => 'all', 'hasUpload' => true, 'pickDimensions' => true)) . '"
 				});
 
 				Grid.bind("textarea", "display", function(cell)
@@ -84,7 +84,7 @@ class Textarea_ft extends EE_Fieldtype
 
 					$("li.html-upload", cell).addClass("m-link").attr({
 						rel: "modal-file",
-						href: "' . ee('CP/URL')->make('addons/settings/filepicker/modal', array('field_upload_locations' => 'all', 'hasUpload' => true)) . '"
+						href: "' . ee('CP/URL')->make('addons/settings/filepicker/modal', array('field_upload_locations' => 'all', 'hasUpload' => true, 'pickDimensions' => true)) . '"
 					});
 				});
 
@@ -94,7 +94,7 @@ class Textarea_ft extends EE_Fieldtype
 
 					$("li.html-upload", field).addClass("m-link").attr({
 						rel: "modal-file",
-						href: "' . ee('CP/URL')->make('addons/settings/filepicker/modal', array('field_upload_locations' => 'all', 'hasUpload' => true)) . '"
+						href: "' . ee('CP/URL')->make('addons/settings/filepicker/modal', array('field_upload_locations' => 'all', 'hasUpload' => true, 'pickDimensions' => true)) . '"
 					});
 
 					$(".textarea-field-filepicker, li.html-upload").FilePicker({callback: EE.filePickerCallback});
@@ -165,7 +165,7 @@ class Textarea_ft extends EE_Fieldtype
                 && $this->settings['field_show_formatting_btns'] == 'y')) {
                 $fp = new FilePicker();
                 $fp->inject(ee()->view);
-                $vars['fp_url'] = ee('CP/URL')->make($fp->controller, array('field_upload_locations' => 'all', 'hasUpload' => true));
+                $vars['fp_url'] = ee('CP/URL')->make($fp->controller, array('field_upload_locations' => 'all', 'hasUpload' => true, 'pickDimensions' => true));
 
                 ee()->load->library('file_field');
                 ee()->lang->loadfile('fieldtypes');

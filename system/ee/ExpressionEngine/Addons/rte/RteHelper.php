@@ -77,7 +77,7 @@ class RteHelper
     {
         $tags = static::_getFileTags();
         $data = str_replace($tags[1], $tags[0], $data);
-        
+
         $filedirReplacements = static::getFileUsageReplacements($data);
         if (!empty($filedirReplacements)) {
             foreach ($filedirReplacements as $file_id => $replacements) {
