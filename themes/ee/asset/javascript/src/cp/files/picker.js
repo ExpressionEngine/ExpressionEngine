@@ -63,6 +63,14 @@
 				return true;
 			}
 
+			if ($(e.target).hasClass('js-dropdown-toggle') || $(e.target).is('i')) {
+				var button = $(this).find('.js-dropdown-toggle').get(0);
+				var dropdown = DropdownController.getDropdownForElement(button);
+				DropdownController.hideAllDropdowns()
+				DropdownController.showDropdown(dropdown, button)
+				return false;
+			}
+
 			e.stopPropagation();
 			var id = $(this).data('id'),
 				file_url = $(this).data('url'),
