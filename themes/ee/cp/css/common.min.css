@@ -30626,6 +30626,9 @@ ul.field-nested ul li ul::before {
   align-items: center;
   padding-left: 35px;
 }
+#fieldset-cat_group.channel-statuses .checkbox-label .checkbox-label__text a {
+  color: var(--ee-text-primary);
+}
 #fieldset-cat_group.channel-statuses .checkbox-label input[type=checkbox] {
   position: absolute;
   top: 50%;

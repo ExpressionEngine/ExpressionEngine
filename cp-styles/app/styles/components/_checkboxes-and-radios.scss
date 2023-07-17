@@ -498,6 +498,10 @@ ul.field-nested ul {
 				display: flex;
 				align-items: center;
 				padding-left: 35px;
+
+				a {
+					color: var(--ee-text-primary);
+				}
 			}
 
 			input[type="checkbox"] {
