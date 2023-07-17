@@ -439,8 +439,8 @@ class Channels extends AbstractChannelsController
                     'site_id' => $channel->site_id,
                 ]);
             }
-            $assignedGroupSettings[$group->group_id]->cat_required = in_array($group->group_id, ee('Request')->post('cat_required')) ? 'y' : 'n';
-            $assignedGroupSettings[$group->group_id]->cat_allow_multiple = in_array($group->group_id, ee('Request')->post('cat_allow_multiple')) ? 'y' : 'n';
+            $assignedGroupSettings[$group->group_id]->cat_required = !empty(ee('Request')->post('cat_required')) && in_array($group->group_id, ee('Request')->post('cat_required')) ? 'y' : 'n';
+            $assignedGroupSettings[$group->group_id]->cat_allow_multiple = !empty(ee('Request')->post('cat_allow_multiple')) && in_array($group->group_id, ee('Request')->post('cat_allow_multiple')) ? 'y' : 'n';
             $assignedGroupSettings[$group->group_id]->save();
         }
         $channel->CategoryGroupSettings = $assignedGroupSettings;

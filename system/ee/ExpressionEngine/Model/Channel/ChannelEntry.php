@@ -1278,7 +1278,7 @@ class ChannelEntry extends ContentModel
                         $metadata['field_required'] = 'y';
                     }
                     // can multiple categories from this group be selected? (default yes)
-                    if (isset($cat_allow_multiple[$cat_group->getId()]) && $cat_allow_multiple[$cat_group->getId()] === false) {
+                    if (isset($cat_allow_multiple[$cat_group->getId()]) && $cat_allow_multiple[$cat_group->getId()] === false && $this->Categories->count() <= 1) {
                         $metadata['field_type'] = 'radio';
                     }
 
