@@ -76,6 +76,10 @@
 				file_url = $(this).data('url'),
 				current = $(this);
 
+			if ($(e.target).hasClass('dropdown__link')) {
+				file_url = $(e.target).data('url');
+			}
+
 			current.data('selected', id);
 			modal.find('tbody .selected').toggleClass('selected');
 			options.selected = id;
