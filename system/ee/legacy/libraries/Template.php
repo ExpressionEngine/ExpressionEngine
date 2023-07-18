@@ -4252,6 +4252,18 @@ class EE_Template
             return false;
         }
 
+        // if site_id not known (on update), get it from site short name
+        if (empty(ee()->config->item('site_id'))) {
+            $site = ee('Model')->get('Site')
+                ->filter('site_name', ee()->config->item('site_short_name'))
+                ->first();
+            if (!is_null($site)) {
+                ee()->config->set_item('site_id', $site->getId());
+            } else {
+                return false;
+            }
+        }
+
         ee()->load->library('api');
         ee()->legacy_api->instantiate('template_structure');
 
