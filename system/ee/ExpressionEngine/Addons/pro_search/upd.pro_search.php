@@ -761,7 +761,10 @@ class Pro_search_upd
     {
         // Check to see if low search is in the user folder. If so, leave a developer log item
         if (ee('Filesystem')->isDir(PATH_THIRD . 'low_search')) {
-            ee()->load->library('logger');
+            if (!ee()->has('logger')) {
+                ee()->load->library('logger');
+            }
+
             ee()->logger->developer(lang('low_search_in_third_party_folder_message'), true, 1209600);
         }
     }
