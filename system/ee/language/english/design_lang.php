@@ -84,10 +84,6 @@ $lang = array(
 
     'duplicate_group_desc' => 'Will be created with all templates found in copied group.',
 
-    'duplicate_template_group_name' => 'This template group name is used by another group on this site.',
-
-    'duplicate_template_group_name_warning' => 'Some of template group names are duplicates. Please rename or delete those.',
-
     'edit_partial' => 'Edit Partial',
 
     'edit_template' => 'Edit Template: %s',

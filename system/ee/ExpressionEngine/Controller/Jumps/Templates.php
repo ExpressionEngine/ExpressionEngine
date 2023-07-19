@@ -47,7 +47,7 @@ class Templates extends Jumps
                 'command_title' => $group->group_name,
                 'dynamic' => false,
                 'addon' => false,
-                'target' => ee('CP/URL')->make('design/manager/' . $group->group_name . '/' . $group->group_id)->compile()
+                'target' => ee('CP/URL')->make('design/manager/' . $group->group_name)->compile()
             );
         }
 
@@ -87,7 +87,7 @@ class Templates extends Jumps
                 'command_title' => $group->group_name,
                 'dynamic' => false,
                 'addon' => false,
-                'target' => ee('CP/URL')->make('design/group/edit/' . $group->group_name . '/' . $group->group_id)->compile()
+                'target' => ee('CP/URL')->make('design/group/edit/' . $group->group_name)->compile()
             );
         }
 

@@ -100,19 +100,15 @@ context('Template Manager', () => {
 
         it('removes template group', function() {
             page.get('template_groups').its('length').then((length) => {
-                page.get('template_groups').last().find('a.ui-sortable-handle').first().invoke('text').then((text) => {
-                    page.get('template_groups').last().find('a[rel="modal-confirm-template-group"]').first().click({force: true})
-                    
-                    cy.get('.modal:visible .checklist').should('contain', text.trim());
-                    cy.get('[value="Confirm and Delete"]').filter(':visible').first().click({force:true})
+                page.get('template_groups').last().find('a[rel="modal-confirm-template-group"]').first().click({force: true})
 
-                    cy.hasNoErrors()
+                cy.get('[value="Confirm and Delete"]').filter(':visible').first().click({force:true})
 
-                    page.hasAlert()
-                    page.get('alert').contains('Template group deleted')
-                    page.get('template_groups').its('length').should('eq', length-1)
-                    page.get('template_groups').should('not.contain', text.trim())
-                })
+                cy.hasNoErrors()
+
+                page.hasAlert()
+                page.get('alert').contains('Template group deleted')
+                page.get('template_groups').its('length').should('eq', length-1)
             })
         })
 

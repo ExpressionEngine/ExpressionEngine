@@ -55,20 +55,6 @@ class FolderItem extends ListItem
     protected $has_remove = true;
 
     /**
-     * Whether to show exclamatory icon or not
-     *
-     * @var boolean
-     */
-    protected $hasWarning = false;
-
-    /**
-     * Warning text, shown as tooltip
-     *
-     * @var string
-     */
-    protected $warningText = '';
-
-    /**
      * Constructor: Sets the text, url, name, and removal key for this item.
      *
      * @see ListItem::__construct()
@@ -190,20 +176,6 @@ class FolderItem extends ListItem
     }
 
     /**
-     * Set warning icon and text
-     *
-     * @param string $text
-     * @return void
-     */
-    public function withWarning($text = '')
-    {
-        $this->hasWarning = true;
-        $this->warningText = ee('Format')->make('Text', $text)->convertToEntities();
-
-        return $this;
-    }
-
-    /**
      * Renders this item. This should not be called directly. Instead use
      * the Sidebar's render method.
      *
@@ -227,9 +199,7 @@ class FolderItem extends ListItem
             'confirm' => $this->remove_confirmation,
             'key' => $this->removal_key,
             'value' => $this->removal_key_value,
-            'icon' => $this->icon,
-            'hasWarning' => $this->hasWarning,
-            'warningText' => $this->warningText
+            'icon' => $this->icon
         );
 
         return $view->make('_shared/sidebar/folder_item')->render($vars);
