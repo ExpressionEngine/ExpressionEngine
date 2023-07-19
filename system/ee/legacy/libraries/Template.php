@@ -4320,20 +4320,8 @@ class EE_Template
         }
 
         // if we don't know site short name, we can't proceed
-        if (empty(ee()->config->item('site_short_name'))) {
+        if (empty(ee()->config->item('site_short_name')) || empty(ee()->config->item('site_id'))) {
             return false;
-        }
-
-        // if site_id not known (on update), get it from site short name
-        if (empty(ee()->config->item('site_id'))) {
-            $site = ee('Model')->get('Site')
-                ->filter('site_name', ee()->config->item('site_short_name'))
-                ->first();
-            if (!is_null($site)) {
-                ee()->config->set_item('site_id', $site->getId());
-            } else {
-                return false;
-            }
         }
 
         ee()->load->library('api');

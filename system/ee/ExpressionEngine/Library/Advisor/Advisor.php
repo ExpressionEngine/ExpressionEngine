@@ -17,9 +17,18 @@ class Advisor
     {
         // if we call this from updater, site_short_name might be not set
         // grab the first site and set it
-        if (empty(ee()->config->item('site_short_name'))) {
-            $siteQuery = ee('db')->select('site_name')->from('sites')->order_by('site_id', 'asc')->limit(1)->get();
-            ee()->config->set_item('site_short_name', $siteQuery->row('site_name'));
+        if (empty(ee()->config->item('site_short_name')) || empty(ee()->config->item('site_id'))) {
+            $siteQuery = ee('db')->select('site_id, site_name')->from('sites')->order_by('site_id', 'asc');
+            if (! empty(ee()->config->item('site_id'))) {
+                $siteQuery = $siteQuery->where('site_id', ee()->config->item('site_id'));
+            } elseif (! empty(ee()->config->item('site_short_name'))) {
+                $siteQuery = $siteQuery->where('site_name', ee()->config->item('site_short_name'));
+            }
+            $siteQuery = $siteQuery->limit(1)->get();
+            if ($siteQuery->num_rows() > 0) {
+                ee()->config->set_item('site_id', $siteQuery->row('site_id'));
+                ee()->config->set_item('site_short_name', $siteQuery->row('site_name'));
+            }
         }
 
         $messages = [];
