@@ -36,7 +36,7 @@ class Design extends AbstractDesignController
         $this->exportTemplates();
     }
 
-    public function manager($group_name = null, $group_id = null)
+    public function manager($group_name = null)
     {
         $assigned_groups = null;
 
@@ -62,11 +62,11 @@ class Design extends AbstractDesignController
                 ee()->functions->redirect(ee('CP/URL')->make('design/system'));
             }
         } else {
-            $group = $this->getAssignedTemplateGroup($group_name, false, $group_id);
+            $group = $this->getAssignedTemplateGroup($group_name);
 
             if (! $group) {
                 $group_name = str_replace('_', '.', $group_name);
-                $group = $this->getAssignedTemplateGroup($group_name, false, $group_id);
+                $group = $this->getAssignedTemplateGroup($group_name);
 
                 if (! $group) {
                     show_error(sprintf(lang('error_no_template_group'), $group_name));
@@ -77,7 +77,7 @@ class Design extends AbstractDesignController
         if (ee()->input->post('bulk_action') == 'remove') {
             if (ee('Permission')->can('delete_templates_template_group_id_' . $group->getId())) {
                 $this->removeTemplates(ee()->input->post('selection'));
-                ee()->functions->redirect(ee('CP/URL')->make('design/manager/' . $group_name . '/' . $group->group_id, ee()->cp->get_url_state()));
+                ee()->functions->redirect(ee('CP/URL')->make('design/manager/' . $group_name, ee()->cp->get_url_state()));
             } else {
                 show_error(lang('unauthorized_access'), 403);
             }
@@ -85,7 +85,7 @@ class Design extends AbstractDesignController
             $this->export(ee()->input->post('selection'));
         }
 
-        $base_url = ee('CP/URL')->make('design/manager/' . $group->group_name . '/' . $group->group_id);
+        $base_url = ee('CP/URL')->make('design/manager/' . $group->group_name);
         $this->base_url = $base_url;
 
         $templates = ee('Model')->get('Template')->with('TemplateGroup')->filter('group_id', $group->group_id)->filter('site_id', ee()->config->item('site_id'));
@@ -120,7 +120,7 @@ class Design extends AbstractDesignController
         ee()->cp->render('design/index', $vars);
     }
 
-    private function getAssignedTemplateGroup($group_name = null, $site_default = false, $group_id = null)
+    private function getAssignedTemplateGroup($group_name = null, $site_default = false)
     {
         $assigned_groups = null;
 
@@ -140,9 +140,6 @@ class Design extends AbstractDesignController
         if ($group_name) {
             $group->filter('group_name', $group_name);
         }
-        if (!is_null($group_id) && is_numeric($group_id)) {
-            $group->filter('group_id', $group_id);
-        }
 
         if ($site_default) {
             $group->filter('is_site_default', 'y');
@@ -160,7 +157,7 @@ class Design extends AbstractDesignController
      */
     public function reorderGroups()
     {
-        if (! ($group_ids = ee()->input->post('groups'))
+        if (! ($group_names = ee()->input->post('groups'))
             or ! AJAX_REQUEST
             or ! ee('Permission')->can('edit_template_groups')) {
             return;
@@ -171,11 +168,11 @@ class Design extends AbstractDesignController
             ->order('group_name', 'asc')
             ->all();
 
-        $groups_indexed = $groups->indexBy('group_id');
+        $groups_indexed = $groups->indexBy('group_name');
 
         $i = 1;
-        foreach ($group_ids as $id) {
-            $groups_indexed[$id]->group_order = $i;
+        foreach ($group_names as $name) {
+            $groups_indexed[$name]->group_order = $i;
             $i++;
         }
 

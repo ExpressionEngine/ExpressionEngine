@@ -2230,9 +2230,6 @@ class EE_Template
         ee()->db->select('group_id');
         ee()->db->where('group_name', ee()->uri->segment(1));
         ee()->db->where('site_id', ee()->config->item('site_id'));
-        // always get the first template group to avoid dealing with duplicates
-        ee()->db->order_by('group_id', 'asc');
-        ee()->db->limit(1);
         $query = ee()->db->get('template_groups');
 
         // Template group found!
@@ -4324,18 +4321,6 @@ class EE_Template
             return false;
         }
 
-        // if site_id not known (on update), get it from site short name
-        if (empty(ee()->config->item('site_id'))) {
-            $site = ee('Model')->get('Site')
-                ->filter('site_name', ee()->config->item('site_short_name'))
-                ->first();
-            if (!is_null($site)) {
-                ee()->config->set_item('site_id', $site->getId());
-            } else {
-                return false;
-            }
-        }
-
         ee()->load->library('api');
         ee()->legacy_api->instantiate('template_structure');
 
@@ -4345,7 +4330,6 @@ class EE_Template
             $groups = ee('Model')->get('TemplateGroup')
                 ->with('Templates')
                 ->filter('site_id', ee()->config->item('site_id'))
-                ->order('group_id', 'desc') // we need older groups in case of duplicate names
                 ->all();
         } catch (\Exception $e) {
             //if we got SQL error, silently exit

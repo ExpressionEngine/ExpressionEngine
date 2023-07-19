@@ -100,7 +100,7 @@ class Template extends AbstractDesignController
                 if (ee()->input->post('submit') == 'edit') {
                     ee()->functions->redirect(ee('CP/URL', 'design/template/edit/' . $template->template_id));
                 } else {
-                    ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name . '/' . $group->group_id));
+                    ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name));
                 }
             }
         }
@@ -195,7 +195,7 @@ class Template extends AbstractDesignController
 
         ee()->view->cp_breadcrumbs = array(
             ee('CP/URL')->make('design')->compile() => lang('templates'),
-            ee('CP/URL')->make('design/manager/' . $group_name . '/' . $group->group_id)->compile() => $group->group_name,
+            ee('CP/URL')->make('design/manager/' . $group_name)->compile() => $group->group_name,
             '' => lang('create_new_template')
         );
 
@@ -262,7 +262,7 @@ class Template extends AbstractDesignController
 
                     if (ee()->input->post('submit') == 'save_and_close') {
                         ee()->session->set_flashdata('template_id', $template->template_id);
-                        ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name . '/' . $group->group_id));
+                        ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name));
                     }
 
                     ee()->functions->redirect(ee('CP/URL', 'design/template/edit/' . $template->template_id));
@@ -334,7 +334,7 @@ class Template extends AbstractDesignController
         ee()->view->cp_page_title = $group->group_name . '/' . $template->template_name;
         ee()->view->cp_breadcrumbs = array(
             ee('CP/URL')->make('design')->compile() => lang('templates'),
-            ee('CP/URL')->make('design/manager/' . $group->group_name . '/' . $group->group_id)->compile() => $group->group_name,
+            ee('CP/URL')->make('design/manager/' . $group->group_name)->compile() => $group->group_name,
             '' => lang('edit_template_title')
         );
 
@@ -471,7 +471,7 @@ class Template extends AbstractDesignController
                         ->defer();
 
                     ee()->session->set_flashdata('template_id', $template->template_id);
-                    ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name . '/' . $group->group_id));
+                    ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name));
                 }
             }
         }
