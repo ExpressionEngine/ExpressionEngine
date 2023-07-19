@@ -52,7 +52,7 @@ class CommandSyncUploadDirectory extends Cli
      * @var array
      */
     public $commandOptions = [
-        'upload-id,id:'        => 'command_sync_upload_directory_option_id',
+        'upload-id,u:'        => 'command_sync_upload_directory_option_id',
         'manipulations,m:'     => 'command_sync_upload_directory_option_regenerate_manipulations',
     ];
     /**
