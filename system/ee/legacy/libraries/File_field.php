@@ -970,7 +970,7 @@ class File_field
             });
         }
 
-        return is_null($dir_id) ? $this->_manipulations : $this->_manipulations[$dir_id];
+        return is_null($dir_id) ? $this->_manipulations : (isset($this->_manipulations[$dir_id]) ? $this->_manipulations[$dir_id] : []);
     }
 
     /**

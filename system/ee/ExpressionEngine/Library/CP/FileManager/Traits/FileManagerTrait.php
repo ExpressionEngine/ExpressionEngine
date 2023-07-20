@@ -365,6 +365,11 @@ trait FileManagerTrait
                             'hasUpload' => ee('Request')->get('hasUpload')
                         ]);
                     }
+                    if (!empty(ee('Request')->get('pickDimensions'))) {
+                        $attrs['data-filter-url']->addQueryStringVariables([
+                            'pickDimensions' => ee('Request')->get('pickDimensions')
+                        ]);
+                    }
                 }
             }
 

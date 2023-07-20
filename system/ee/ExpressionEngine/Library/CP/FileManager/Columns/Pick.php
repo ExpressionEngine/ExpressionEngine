@@ -33,7 +33,7 @@ class Pick extends EntryManager\Columns\Column
     public function renderTableCell($data, $field_id, $file)
     {
         $toolbar = [];
-        if ($file->model_type == 'File') {
+        if ($file->model_type == 'File' && $file->isImage()) {
             $fileDimensions = ee('Model')->get('FileDimension')->filter('upload_location_id', $file->upload_location_id)->all(true);
             $toolbar['original'] = array(
                 'href' => $file->getAbsoluteURL(),
