@@ -98,6 +98,7 @@ class DockFactory
         $cacheBuster = time();
 
         $assets = '<style type="text/css">[v-cloak]{display: none;}</style>';
+        $assets = '<style type="text/css">@media print {div[id^="ee-pro"],span.eeFrontEdit {display: none !important;}}</style>';
         $assets .= '<div id="ee-44E4F0E59DFA295EB450397CA40D1169" v-cloak></div>';
         $assets .= '<script type="text/javascript" src="' . URL_PRO_THEMES . 'js/fronteditor.min.js?v=' . $version . '-' . $cacheBuster .'"></script>';
         $assets .= '<link rel="stylesheet" type="text/css"  media="screen" href="' . URL_PRO_THEMES . 'css/fronteditor.min.css?v=' . $version . '-' . $cacheBuster .'" />';
