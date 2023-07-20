@@ -4317,7 +4317,7 @@ class EE_Template
         }
 
         // if we don't know site short name, we can't proceed
-        if (empty(ee()->config->item('site_short_name'))) {
+        if (empty(ee()->config->item('site_short_name')) || empty(ee()->config->item('site_id'))) {
             return false;
         }
 
