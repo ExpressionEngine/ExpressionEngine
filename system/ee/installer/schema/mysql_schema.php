@@ -814,7 +814,7 @@ class EE_Schema
 			cat_required char(1) NOT NULL default 'n',
 			cat_allow_multiple char(1) NOT NULL default 'y',
 			PRIMARY KEY `category_group_settings_id` (`category_group_settings_id`),
-			KEY `channel_id_group_id` (`channel_id`, `group_id`)
+			KEY `channel_id_group_id` (`channel_id`, `group_id`),
 			KEY `site_id` (`site_id`),
 			KEY `group_id` (`group_id`)
 		)";
