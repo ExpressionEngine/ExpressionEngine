@@ -2233,14 +2233,12 @@ class EE_Template
         ee()->db->order_by('group_id', 'asc');
         $query = ee()->db->get('template_groups');
 
-        $row = $query->first_row();
-
-        if($query->num_rows() > 1) {
-            $this->log_item("Duplicate Template Group Name: " . ee()->uri->segment(1) . ". Using Template Group ID: " . $row->group_id);
+        if ($query->num_rows() > 1) {
+            $this->log_item("Duplicate Template Group Name: " . ee()->uri->segment(1) . ". Using Template Group ID: " . $query->row('group_id'));
         }
 
         // Template group found!
-        if ($row) {
+        if ($query->num_rows() > 0) {
             // Set the name of our template group
             $template_group = ee()->uri->segment(1);
 
