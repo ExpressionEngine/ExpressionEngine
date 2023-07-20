@@ -46,7 +46,9 @@ trait FileUsageTrait
             }
             $files->endFilterGroup();
             foreach ($files->all() as $file) {
-                $fileUsageReplacements[$file->getId()] = ['{filedir_' . $file->upload_location_id . '}' . $file->file_name => '{file:' . $file->file_id . ':url}'];
+                $fileUsageReplacements[$file->getId()] = [
+                    ['{filedir_' . $file->upload_location_id . '}' . $file->file_name => '{file:' . $file->file_id . ':url}']
+                ];
             }
         }
         if (!empty($dirsAndFilesInSubfolders)) {
@@ -71,7 +73,10 @@ trait FileUsageTrait
                         }
                         $file = $uploadLocation->getFileByPath($fileRealtivePath);
                         if (!empty($file)) {
-                            $fileUsageReplacements[$file->getId()] = ['{filedir_' . $file->upload_location_id . '}' . $fileRealtivePath => '{file:' . $file->file_id . ':' . $modifier . '}'];
+                            if (!isset($fileUsageReplacements[$file->getId()])) {
+                                $fileUsageReplacements[$file->getId()] = [];
+                            }
+                            $fileUsageReplacements[$file->getId()][] = ['{filedir_' . $file->upload_location_id . '}' . $fileRealtivePath => '{file:' . $file->file_id . ':' . $modifier . '}'];
                         }
                     }
                 }

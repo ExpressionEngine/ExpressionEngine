@@ -249,14 +249,15 @@ class Filepicker_mcp
         }
 
         $result = $file->getValues();
+        $result['manipulation'] = 'url';
 
         if (!empty($manipulation)) {
             $result['path'] = $file->getAbsoluteManipulationURL($manipulation);
+            $result['manipulation'] = $manipulation;
             unset($result['file_hw_original']);
         } else {
             $result['path'] = $file->getAbsoluteURL();
         }
-        $result['path'] = $file->getAbsoluteURL();
         $result['thumb_path'] = ee('Thumbnail')->get($file)->url;
         $result['isImage'] = $file->isImage();
         $result['isSVG'] = $file->isSVG();

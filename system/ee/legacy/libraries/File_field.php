@@ -836,7 +836,9 @@ class File_field
                 }
                 $files = ee('Model')->get('File', $file_ids)->with('UploadDestination')->all();
                 foreach ($files as $file) {
-                    $data = str_replace('{file:' . $file->file_id . ':' . $match[2] . '}', ($match[2] == 'url' ? $file->getAbsoluteURL() : $file->getAbsoluteManipulationURL($match[2], true)), $data);
+                    foreach ($matches as $match) {
+                        $data = str_replace('{file:' . $file->file_id . ':' . $match[2] . '}', ($match[2] == 'url' ? $file->getAbsoluteURL() : $file->getAbsoluteManipulationURL($match[2], true)), $data);
+                    }
                 }
             }
         }

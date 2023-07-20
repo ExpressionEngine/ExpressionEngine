@@ -81,8 +81,10 @@ class RteHelper
         $filedirReplacements = static::getFileUsageReplacements($data);
         if (!empty($filedirReplacements)) {
             foreach ($filedirReplacements as $file_id => $replacements) {
-                foreach ($replacements as $from => $to) {
-                    $data = str_replace($from, $to, $data);
+                foreach ($replacements as $replacement) {
+                    foreach ($replacement as $from => $to) {
+                        $data = str_replace($from, $to, $data);
+                    }
                 }
             }
         }
