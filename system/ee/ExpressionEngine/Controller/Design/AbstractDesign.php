@@ -104,7 +104,13 @@ abstract class AbstractDesign extends CP_Controller
             }
         }
 
+        $groupNamesListed = [];
+
         foreach ($template_groups->all() as $group) {
+            if (in_array($group->group_name, $groupNamesListed)) {
+                // duplicates found, show alert but do not add to sidebar
+                continue;
+            }
             $item = $template_group_list->addItem($group->group_name, ee('CP/URL')->make('design/manager/' . $group->group_name));
 
             $item->withEditUrl(ee('CP/URL')->make('design/group/edit/' . $group->group_name));
@@ -127,6 +133,8 @@ abstract class AbstractDesign extends CP_Controller
             if ($group->is_site_default) {
                 $item->asDefaultItem();
             }
+
+            $groupNamesListed[] = $group->group_name;
         }
 
         // System Templates
