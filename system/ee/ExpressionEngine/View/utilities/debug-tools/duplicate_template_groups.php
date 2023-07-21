@@ -10,7 +10,6 @@
 
     <div class="panel-body">
         <?php $this->embed('_shared/table', $table); ?>
-        <?=$pagination?>
     </div>
 
 </div>
