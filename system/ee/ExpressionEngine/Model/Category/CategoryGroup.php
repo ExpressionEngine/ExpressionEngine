@@ -185,6 +185,8 @@ class CategoryGroup extends StructureModel
             'editable' => $editable,
             'editing' => false,
             'deletable' => $deletable,
+            'nested' => true,
+            'nestableReorder' => true,
             'populateCallback' => array($this, 'populateCategories'),
             'manage_toggle_label' => lang('manage_categories'),
             'add_btn_label' => REQ == 'CP' && ee('Permission')->can('create_categories')
