@@ -293,20 +293,36 @@ trait FileManagerTrait
         $data = array();
         $missing_files = false;
 
-        $destinationsToEagerLoad = [];
+        // Group files by destination and eager load first
+        $eagerLoads = array_reduce($files->asArray(), function ($carry, $file) use ($member) {
+            if ($file->UploadDestination->adapter != 'local' && $file->UploadDestination->exists()) {
+                if(!array_key_exists($file->upload_location_id, $carry)) {
+                    $carry[$file->upload_location_id] = [];
+                }
+                $carry[$file->upload_location_id][] = $file;
+            }
+
+            return $carry;
+        }, []);
+
+        foreach($eagerLoads as $files) {
+            $paths = [];
+            $uploadDestination = $files[0]->UploadDestination;
+            $files = array_filter($files, function ($file) {
+                return !$file->isDirectory();
+            });
+
+            foreach($files as $file) {
+                $paths[] = $file->getAbsolutePath();
+                $paths[] = $file->getAbsoluteManipulationPath('thumbs');
+            }
+
+            $uploadDestination->getFilesystem()->eagerLoadPaths($paths);
+        }
 
         foreach ($files as $file) {
             if (! $file->memberHasAccess($member)) {
                 continue;
-            }
-
-            // We only need to eager load contents for destinations that are displaying
-            // files in this current page of the listing
-            if (! in_array($file->upload_location_id, $destinationsToEagerLoad)) {
-                if ($file->UploadDestination->adapter != 'local' && $file->UploadDestination->exists()) {
-                    $file->UploadDestination->eagerLoadContents();
-                }
-                $destinationsToEagerLoad[$file->upload_location_id] = $file->upload_location_id;
             }
 
             $attrs = [
@@ -400,6 +416,7 @@ trait FileManagerTrait
                 'cp/files/copy-url'
             ),
         ));
+
         return $vars;
     }
 
@@ -571,6 +588,7 @@ trait FileManagerTrait
                 ];
             }
         }
+
         return $uploadLocationsAndDirectoriesDropdownChoices;
     }
 }
