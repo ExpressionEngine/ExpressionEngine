@@ -34195,7 +34195,16 @@ a.ck.ck-button.ck-on {
 
 .ck.ck-link-form_layout-vertical .ck-button {
   border-top: 1px solid var(--ee-border-dark) !important;
-  color: var(--ee-button-default-color) !important;
+}
+
+.ck.ck-button.ck-button-save,
+a.ck.ck-button.ck-button-save {
+  color: var(--ck-color-button-save) !important;
+}
+
+.ck.ck-button.ck-button-cancel,
+a.ck.ck-button.ck-button-cancel {
+  color: var(--ck-color-button-cancel) !important;
 }
 
 .ck.ck-link-form_layout-vertical .ck-button:hover {
@@ -34217,6 +34226,7 @@ a.ck.ck-button.ck-on {
 
 .ck.ck-tooltip {
   color: var(--ee-text-secondary) !important;
+  background: var(--ee-bg-neutral-dark) !important;
 }
 
 .ck.ck-dropdown:not(.ck-disabled):hover,
