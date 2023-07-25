@@ -414,6 +414,15 @@ class Fluid_field_ft extends EE_Fieldtype
         $query->set($values);
         $query->where('id', $fluid_field->field_data_id);
         $query->update($fluid_field->ChannelField->getTableName());
+
+        if (ee()->extensions->active_hook('fluid_field_after_update_field') === true) {
+            ee()->extensions->call(
+                'fluid_field_after_update_field',
+                $fluid_field,
+                $fluid_field->ChannelField->getTableName(),
+                $values
+            );
+        }
     }
 
     private function addField($order, $group, $field_id, array $values)
@@ -437,6 +446,7 @@ class Fluid_field_ft extends EE_Fieldtype
         if (ee()->extensions->active_hook('fluid_field_add_field') === true) {
             $values = ee()->extensions->call(
                 'fluid_field_add_field',
+                $fluid_field,
                 $fluid_field->ChannelField->getTableName(),
                 $values
             );
@@ -451,6 +461,16 @@ class Fluid_field_ft extends EE_Fieldtype
 
         $fluid_field->field_data_id = $id;
         $fluid_field->save();
+
+        if (ee()->extensions->active_hook('fluid_field_after_add_field') === true) {
+            ee()->extensions->call(
+                'fluid_field_after_add_field',
+                $fluid_field,
+                $fluid_field->ChannelField->getTableName(),
+                $values,
+                $id
+            );
+        }
     }
 
     private function removeField($fluid_field)
@@ -593,17 +613,22 @@ class Fluid_field_ft extends EE_Fieldtype
                             }, $field_data),
                             'field_name' => $field_group->short_name,
                         ]);
+
+                        $fields .= ee('View')->make($view)->render($viewData);
                     } else {
-                        $field = $field_data[0]->getField();
+                        foreach ($field_data as $field_datum) {
+                           $field = $field_datum->getField();
 
-                        $field->setName($this->name() . '[fields][field_' . $field_data[0]->getId() . '][field_group_id_0][field_id_' . $field->getId() . ']');
-                        $viewData = array_merge($viewData, [
-                            'field' => $field,
-                            'field_name' => $field_data[0]->ChannelField->field_name,
-                        ]);
+                           $field->setName($this->name() . '[fields][field_' . $field_datum->getId() . '][field_group_id_0][field_id_' . $field->getId() . ']');
+
+                           $viewData = array_merge($viewData, [
+                               'field' => $field,
+                               'field_name' => $field_datum->ChannelField->field_name,
+                           ]);
+
+                           $fields .= ee('View')->make($view)->render($viewData);
+                       }
                     }
-
-                    $fields .= ee('View')->make($view)->render($viewData);
                 }
             }
         // This happens when we have a validation issue and data was not saved
