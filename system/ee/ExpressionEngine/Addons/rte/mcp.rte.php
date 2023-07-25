@@ -590,7 +590,7 @@ class Rte_mcp
         ]);
         ee()->javascript->set_global(
             'editor.height',
-            ee()->config->item('codemirror_height') !== false ? ee()->config->item('codemirror_height') : 200
+            ee()->config->item('codemirror_height') !== false ? ee()->config->item('codemirror_height') : 400
         );
         $fontSize = ee()->config->item('codemirror_fontsize');
         if ($fontSize !== false) {
@@ -599,7 +599,7 @@ class Rte_mcp
         if (isset($config->settings['rte_advanced_config']) && $config->settings['rte_advanced_config'] == 'y') {
             //json editor is visible, initialize immediately
             ee()->javascript->output("
-                $('textarea[name=\"settings[rte_config_json]\"]').toggleCodeMirror();
+                $('textarea[name=\"settings[rte_config_json]\"]').toggleCodeMirror({name: 'javascript', json: true});
                 $('fieldset[data-group=ckeditor_toolbar]').hide();
                 $('fieldset[data-group=redactor_toolbar]').hide();
             ");
@@ -614,7 +614,7 @@ class Rte_mcp
                     } else {
                         $('fieldset[data-group=' + $('select[name=toolset_type]').children('option:selected').val() + '_toolbar]').show();
                     }
-                    $('textarea[name=\"settings[rte_config_json]\"]').toggleCodeMirror();
+                    $('textarea[name=\"settings[rte_config_json]\"]').toggleCodeMirror({name: 'javascript', json: true});
                 }
             });
         ");
