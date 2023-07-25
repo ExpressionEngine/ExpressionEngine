@@ -141,15 +141,6 @@ class FluidField extends Model
             $field_data = $this->setFieldData($this->fetchFieldData());
         }
 
-        if (ee()->extensions->active_hook('fluid_field_get_all_data') === true) {
-            $field_data = ee()->extensions->call(
-                'fluid_field_get_all_data',
-                $field_data,
-                $this->fluid_field_id,
-                $this->entry_id
-            );
-        }
-
         return $field_data;
     }
 

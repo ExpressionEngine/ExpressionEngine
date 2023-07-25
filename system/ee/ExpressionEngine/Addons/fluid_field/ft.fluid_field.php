@@ -1063,6 +1063,15 @@ class Fluid_field_ft extends EE_Fieldtype
             ee()->session->set_cache("FluidField", $cache_key, $fluid_field_data);
         }
 
+        if (ee()->extensions->active_hook('fluid_field_get_all_data') === true) {
+            $fluid_field_data = ee()->extensions->call(
+                'fluid_field_get_all_data',
+                $fluid_field_data,
+                $fluid_field_id,
+                $entry_id
+            );
+        }
+
         return $fluid_field_data;
     }
 
