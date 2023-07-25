@@ -243,6 +243,17 @@ class CkeditorService extends AbstractRteService implements RteService
                 ];
             }
 
+            $tableContentToolbar = [
+                'tableColumn',
+                'tableRow',
+                'mergeTableCells',
+                'tableProperties',
+                'tableCellProperties',
+                'toggleTableCaption'
+            ];
+            $toolbarConfig['table'] = new \stdClass();
+            $toolbarConfig['table']->contentToolbar = $tableContentToolbar;
+
             //link
             $toolbarConfig['link'] = (object) [
                 'decorators' => [
