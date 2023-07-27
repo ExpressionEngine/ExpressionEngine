@@ -383,7 +383,8 @@ class Fluid_field_parser
             foreach ($chunks as $chunk) {
                 $i = $chunk_i;
                 $chunk_output = '';
-                foreach ($group['fields'] as $fluid_field) {
+                $fieldCountInGroup = count($group['fields']);
+                foreach ($group['fields'] as $fieldCount => $fluid_field) {
                     $field_name = $fluid_field->ChannelField->field_name;
 
                     // Flip this field's conditional to TRUE so all the other fields will be
@@ -398,6 +399,10 @@ class Fluid_field_parser
                         $fluid_field_name . ':last' => (int) (($i + 1) == $total_fields),
                         $fluid_field_name . ':count' => $i + 1,
                         $fluid_field_name . ':index' => $i,
+                        $fluid_field_name . ':first_in_group' => (int) ($fieldCount == 0),
+                        $fluid_field_name . ':last_in_group' => (int) (($fieldCount + 1) == $fieldCountInGroup),
+                        $fluid_field_name . ':count_in_group' => $fieldCount + 1,
+                        $fluid_field_name . ':index_in_group' => $fieldCount,
                         $fluid_field_name . ':current_field_name' => $field_name,
                         $fluid_field_name . ':next_field_name' => (($i + 1) < $total_fields) ? $fluid_field_data[$i + 1]->ChannelField->field_name : null,
                         $fluid_field_name . ':prev_field_name' => ($i > 0) ? $fluid_field_data[$i - 1]->ChannelField->field_name : null,
