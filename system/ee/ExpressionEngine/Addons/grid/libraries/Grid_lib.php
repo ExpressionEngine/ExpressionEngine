@@ -250,14 +250,21 @@ class Grid_lib
         }
 
         if (isset($data['rows'])) {
+            $total_rows = count($data['rows']);
             foreach ($data['rows'] as $key => $row) {
                 if (substr($key, 0, 6) == 'row_id') {
                     $row_key = str_replace('row_id_', '', $key);
 
                     if (! in_array($row_key, $valid_rows)) {
-                        if (ee('Permission')->isSuperAdmin()) {
-                            return array('value' => '', 'error' => lang('not_authorized'));
+                        if (ee('Request')->get('version')) {
+                            //if we have loaded version, restore the fields that are missing
+                            $keys = array_keys($data['rows']);
+                            $values = array_values($data['rows']);
+                            $index = array_search($key, $keys);
+                            $keys[$index] = 'new_row_' . $total_rows + (int) $row_key;
+                            $data['rows'] = array_combine($keys, $values);
                         } else {
+                            // otherwise assume someone else removed the row, and they know what they are doing
                             unset($data['rows'][$key]);
                         }
                     }
