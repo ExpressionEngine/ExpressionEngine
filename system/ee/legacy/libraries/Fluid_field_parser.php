@@ -305,8 +305,8 @@ class Fluid_field_parser
             }
             if (!isset($groups[$groupKey])) {
                 $groups[$groupKey] = [
-                    'name' => $field->ChannelFieldGroup ? strtolower($field->ChannelFieldGroup->group_name) : '',
-                    'short_name' => $field->ChannelFieldGroup ? strtolower($field->ChannelFieldGroup->short_name) : '',
+                    'name' => $field->ChannelFieldGroup ? $field->ChannelFieldGroup->group_name : '',
+                    'short_name' => $field->ChannelFieldGroup ? $field->ChannelFieldGroup->short_name : '',
                     'fields' => []
                 ];
             }
