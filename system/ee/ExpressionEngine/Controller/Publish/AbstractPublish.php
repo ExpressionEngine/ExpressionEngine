@@ -187,7 +187,7 @@ abstract class AbstractPublish extends CP_Controller
                 'attrs' => $attrs,
                 'columns' => array(
                     $i,
-                    ee()->localize->human_time($version->version_date->format('U')),
+                    ee()->localize->human_time($version->version_date->format('U'), true, true),
                     $authors[$version->author_id],
                     $toolbar
                 )
@@ -202,7 +202,7 @@ abstract class AbstractPublish extends CP_Controller
 
             // Current
             $edit_date = ($entry->edit_date)
-                ? ee()->localize->human_time($entry->edit_date->format('U'))
+                ? ee()->localize->human_time($entry->edit_date->format('U'), true, true)
                 : null;
 
             array_unshift(
@@ -265,7 +265,7 @@ abstract class AbstractPublish extends CP_Controller
 
             // Current
             $edit_date = ($entry->edit_date)
-                ? ee()->localize->human_time($entry->edit_date->format('U'))
+                ? ee()->localize->human_time($entry->edit_date->format('U'), true, true)
                 : null;
 
             $data[] = array(
@@ -309,7 +309,7 @@ abstract class AbstractPublish extends CP_Controller
                 'attrs' => $attrs,
                 'columns' => array(
                     $i,
-                    ee()->localize->human_time($autosave->edit_date),
+                    ee()->localize->human_time($autosave->edit_date, true, true),
                     isset($authors[$autosave->author_id]) ? $authors[$autosave->author_id] : '-',
                     $toolbar
                 )
