@@ -189,7 +189,7 @@ abstract class AbstractPublish extends CP_Controller
                 'attrs' => $attrs,
                 'columns' => array(
                     $i,
-                    ee()->localize->human_time($version->version_date->format('U')),
+                    ee()->localize->human_time($version->version_date->format('U'), true, true),
                     $authors[$version->author_id],
                     $toolbar
                 )
@@ -204,7 +204,7 @@ abstract class AbstractPublish extends CP_Controller
 
             // Current
             $edit_date = ($entry->edit_date)
-                ? ee()->localize->human_time($entry->edit_date->format('U'))
+                ? ee()->localize->human_time($entry->edit_date->format('U'), true, true)
                 : null;
 
             array_unshift(
@@ -267,7 +267,7 @@ abstract class AbstractPublish extends CP_Controller
 
             // Current
             $edit_date = ($entry->edit_date)
-                ? ee()->localize->human_time($entry->edit_date->format('U'))
+                ? ee()->localize->human_time($entry->edit_date->format('U'), true, true)
                 : null;
 
             $data[] = array(
@@ -311,7 +311,7 @@ abstract class AbstractPublish extends CP_Controller
                 'attrs' => $attrs,
                 'columns' => array(
                     $i,
-                    ee()->localize->human_time($autosave->edit_date),
+                    ee()->localize->human_time($autosave->edit_date, true, true),
                     isset($authors[$autosave->author_id]) ? $authors[$autosave->author_id] : '-',
                     $toolbar
                 )
@@ -459,7 +459,7 @@ abstract class AbstractPublish extends CP_Controller
             ? ee('CP/Alert')->makeStandard()
             : ee('CP/Alert')->makeInline('entry-form');
 
-        $lang_string = sprintf(lang($action . '_entry_success_desc'), htmlentities($edit_entry_url, ENT_QUOTES, 'UTF-8'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8'), ee()->localize->human_time($entry->edit_date));
+        $lang_string = sprintf(lang($action . '_entry_success_desc'), htmlentities($edit_entry_url, ENT_QUOTES, 'UTF-8'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8'), ee()->localize->human_time($entry->edit_date), true, true);
 
         $alert->asSuccess()
             ->withTitle(lang($action . '_entry_success'))
