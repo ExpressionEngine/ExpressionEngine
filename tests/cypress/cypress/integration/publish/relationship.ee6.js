@@ -177,6 +177,8 @@ context('Relationship field - Edit', () => {
 
 		it('search in relationship field', () => {
 			cy.visit('admin.php?/cp/publish/edit/entry/1')
+			cy.get('[data-relationship-react] .list-item__title:contains("Band Title")').closest('.list-item').find('[title="Remove"]').click()
+			cy.get('[data-relationship-react] .list-item__title:contains("Welcome to the Example Site!")').closest('.list-item').find('[title="Remove"]').click()
 			cy.get('button:contains("Relate Entry")').first().click()
 
 			cy.get('[data-relationship-react] .dropdown__search .search-input input').clear().type('band')
