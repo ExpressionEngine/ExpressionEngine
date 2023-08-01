@@ -1151,7 +1151,7 @@ class Sql_structure
         if (!is_numeric($entry_id)) {
             return false;
         }
-        
+
         $cached_page_title = StaticCache::get('structure_page_title_' . $entry_id);
 
         if(!empty($cached_page_title)) {
@@ -1171,6 +1171,7 @@ class Sql_structure
             return $row->title;
         }
         
+
         return false;
     }
 
@@ -1522,40 +1523,51 @@ class Sql_structure
      */
     public function get_listing_channel($entry_id)
     {
-        if (is_numeric($entry_id)) {
-            // get all listing id's
-            $listing_ids = $this->get_listing_entry_ids();
+        if (!is_numeric($entry_id)) {
+            return false;
+        }
 
-            if (is_array($listing_ids) && array_key_exists($entry_id, $listing_ids)) {
-                // set to parent_id if it exists
-                $entry_id = $this->get_parent_id($entry_id) ?: $entry_id;
+        // get all listing id's
+        $listing_ids = $this->get_listing_entry_ids();
+
+        if (is_array($listing_ids) && array_key_exists($entry_id, $listing_ids)) {
+            // set to parent_id if it exists
+            $entry_id = $this->get_parent_id($entry_id) ?: $entry_id;
+        }
+
+        // get the listing channel id for the entry_id that was passed in
+        $sql = "SELECT listing_cid FROM exp_structure
+                WHERE entry_id = " . $entry_id .
+                " AND site_id = " . $this->site_id;
+
+        
+        $cached_listing_cid = StaticCache::get('get_listing_channel_' . $sql);
+
+        if(!empty($cached_listing_cid)) {
+            return $cached_listing_cid;
+        }
+
+        $result = ee()->sql_helper->row($sql);
+
+        // return the listing channel id.
+        if ($result !== null && $result['listing_cid'] != '0') {
+            // Make sure the channel this listing references still exists as there
+            // is no EE hook for adding/deleting an entire channel (as of this writing).
+            $channel_exists = ee()->db->get_where('channels', array('channel_id' => $result['listing_cid']), 1)->result_array();
+
+            // No channel exists, it must have been deleted. Let's update our exp_structure record so we don't have to go through this again.
+            if (empty($channel_exists)) {
+                ee()->db->where('entry_id', $entry_id);
+                ee()->db->where('site_id', $this->site_id);
+                ee()->db->update('structure', array('listing_cid' => 0));
+
+                // There is no listing channel so make sure we don't return the incorrect response.
+                return false;
             }
+            
+            StaticCache::set('get_listing_channel_' . $sql, $result['listing_cid']);
 
-            // get the listing channel id for the entry_id that was passed in
-            $sql = "SELECT listing_cid FROM exp_structure
-                    WHERE entry_id = " . $entry_id .
-                    " AND site_id = " . $this->site_id;
-
-            $result = ee()->sql_helper->row($sql);
-
-            // return the listing channel id.
-            if ($result !== null && $result['listing_cid'] != '0') {
-                // Make sure the channel this listing references still exists as there
-                // is no EE hook for adding/deleting an entire channel (as of this writing).
-                $channel_exists = ee()->db->get_where('channels', array('channel_id' => $result['listing_cid']), 1)->result_array();
-
-                // No channel exists, it must have been deleted. Let's update our exp_structure record so we don't have to go through this again.
-                if (empty($channel_exists)) {
-                    ee()->db->where('entry_id', $entry_id);
-                    ee()->db->where('site_id', $this->site_id);
-                    ee()->db->update('structure', array('listing_cid' => 0));
-
-                    // There is no listing channel so make sure we don't return the incorrect response.
-                    return false;
-                }
-
-                return $result['listing_cid'];
-            }
+            return $result['listing_cid'];
         }
 
         return false;
