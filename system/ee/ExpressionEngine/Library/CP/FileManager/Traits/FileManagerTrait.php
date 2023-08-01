@@ -72,7 +72,6 @@ trait FileManagerTrait
         //limit to subfolder, show breadcrumbs
         if (! empty($uploadLocation)) {
             $directory_id = (int) ee('Request')->get('directory_id');
-            $files->filter('directory_id', $directory_id);
             if (! empty(ee('Request')->get('directory_id'))) {
                 $breadcrumbs = [];
                 do {
@@ -122,25 +121,30 @@ trait FileManagerTrait
         }
 
         $filters->add('FileManagerColumns', $this->createColumnFilter($uploadLocation), $uploadLocation, $view_type);
+        $needToFilterFiles = false;
 
         $search_terms = ee()->input->get_post('filter_by_keyword');
 
         if ($search_terms) {
             $files->search(['title', 'file_name', 'mime_type'], $search_terms);
             $vars['search_terms'] = htmlentities($search_terms, ENT_QUOTES, 'UTF-8');
+            $needToFilterFiles = true;
         }
 
         if (! empty($type_filter) && $type_filter->value()) {
             $files->filter('file_type', $type_filter->value());
+            $needToFilterFiles = true;
         }
 
         if ($category_filter->value()) {
             $files->with('Categories')
                 ->filter('Categories.cat_id', $category_filter->value());
+            $needToFilterFiles = true;
         }
 
         if (! empty($author_filter) && $author_filter->value()) {
             $files->filter('uploaded_by_member_id', $author_filter->value());
+            $needToFilterFiles = true;
         }
 
         $filter_values = $filters->values();
@@ -150,6 +154,33 @@ trait FileManagerTrait
                 $files->filter('upload_date', '<', $filter_values['filter_by_date'][1]);
             } else {
                 $files->filter('upload_date', '>=', ee()->localize->now - $filter_values['filter_by_date']);
+            }
+            $needToFilterFiles = true;
+        }
+
+        if (! empty($uploadLocation) && ! bool_config_item('file_manager_compatibility_mode')) {
+            $directory_id = (int) ee('Request')->get('directory_id');
+            if ($needToFilterFiles) {
+                // if searching in root directory, just return everything from subfolders
+                // not ideal, but that's what we also do when searching without selecting upload location
+                if ($directory_id !== 0) {
+                    // filters applied, we need to get tricky and also search what's in subfolders
+                    $directories = $subfolders = [$directory_id];
+                    do {
+                        $subfolders = ee('Model')
+                            ->get('Directory')
+                            ->fields('file_id', 'upload_location_id', 'directory_id')
+                            ->filter('upload_location_id', $uploadLocation->getId())
+                            ->filter('directory_id', 'IN', $subfolders)
+                            ->all()
+                            ->pluck('file_id');
+                        $directories = array_merge($directories, $subfolders);
+                    } while (!empty($subfolders));
+                    $files->filter('directory_id', 'IN', $directories);
+                }
+            } else {
+                // no filters applied, just get everything that's in the current directory
+                $files->filter('directory_id', $directory_id);
             }
         }
 
