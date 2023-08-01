@@ -1101,6 +1101,14 @@ class Sql_structure
         if (! is_numeric($entry_id)) {
             return false;
         }
+
+        $cacheKey = 'get_parent_id/' . $this->site_id . '/' . $entry_id . '/' . $default;
+        $cacheItem = StaticCache::get($cacheKey);
+
+        if ($cacheItem) {
+            return $cacheItem;
+        }
+
         $listing_ids = $this->get_listing_entry_ids();
         if (is_array($listing_ids) && in_array($entry_id, $listing_ids)) {
             $sql = "SELECT parent_id FROM exp_structure_listings WHERE entry_id = $entry_id AND site_id = $this->site_id";
@@ -1115,12 +1123,14 @@ class Sql_structure
 
         // Get homepage instead
         if ($result['parent_id'] !== 0) {
+            StaticCache::set($cacheKey, $result['parent_id']);
             return $result['parent_id'];
         } elseif ($default == 'home') {
             $sql = "SELECT entry_id FROM exp_structure WHERE lft = 2 AND site_id = $this->site_id";
             $result = ee()->sql_helper->row($sql);
 
             if (isset($result['entry_id']) && is_numeric($result['entry_id'])) {
+                StaticCache::set($cacheKey, $result['entry_id']);
                 return $result['entry_id'];
             }
         }
@@ -1139,9 +1149,16 @@ class Sql_structure
 
     public function get_home_node()
     {
+        $cacheItem = StaticCache::get('get_home_node');
+
+        if ($cacheItem) {
+            return $cacheItem;
+        }
+
         $sql = "SELECT * FROM exp_structure WHERE entry_id = 0";
         $result = ee()->sql_helper->row($sql);
-        // print_r($result);
+
+        StaticCache::set('get_home_node', $result);
 
         return $result;
     }
@@ -1564,7 +1581,7 @@ class Sql_structure
                 // There is no listing channel so make sure we don't return the incorrect response.
                 return false;
             }
-            
+
             StaticCache::set('get_listing_channel_' . $sql, $result['listing_cid']);
 
             return $result['listing_cid'];
