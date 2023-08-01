@@ -1148,19 +1148,29 @@ class Sql_structure
 
     public function get_page_title($entry_id)
     {
-        if (is_numeric($entry_id)) {
-            ee()->db->where('entry_id', $entry_id);
-            ee()->db->limit(1);
+        if (!is_numeric($entry_id)) {
+            return false;
+        }
+        
+        $cached_page_title = StaticCache::get('structure_page_title_' . $entry_id);
 
-            $query = ee()->db->get('exp_channel_titles');
-
-            if ($query->num_rows() == 1) {
-                $row = $query->row();
-
-                return $row->title;
-            }
+        if(!empty($cached_page_title)) {
+            return $cached_page_title;
         }
 
+        ee()->db->where('entry_id', $entry_id);
+        ee()->db->limit(1);
+
+        $query = ee()->db->get('exp_channel_titles');
+
+        if ($query->num_rows() == 1) {
+            $row = $query->row();
+
+            StaticCache::set('structure_page_title_' . $entry_id, $row->title);
+
+            return $row->title;
+        }
+        
         return false;
     }
 
