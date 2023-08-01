@@ -70,11 +70,11 @@ trait FileManagerTrait
         }
 
         //limit to subfolder, show breadcrumbs
+        $breadcrumbs = [];
         if (! empty($uploadLocation)) {
             $directory_id = (int) ee('Request')->get('directory_id');
             $files->filter('directory_id', $directory_id);
             if (! empty(ee('Request')->get('directory_id'))) {
-                $breadcrumbs = [];
                 do {
                     $directory = ee('Model')->get('Directory', $directory_id)->fields('file_id', 'directory_id', 'title')->first();
                     $directory_id = $directory->directory_id;
@@ -85,9 +85,9 @@ trait FileManagerTrait
                         }
                         $params['field_upload_locations'] = $field_upload_locations;
                     }
-                    $breadcrumbs[ee('CP/URL')->make($controller, $params)->compile()] = $directory->title;
+                    $breadcrumbs[] = [ee('CP/URL')->make($controller, $params), $directory->title];
                 } while ($directory->directory_id != 0);
-                $vars['breadcrumbs'] = array_merge([$base_url->compile() => $uploadLocation->name], array_reverse($breadcrumbs));
+                $breadcrumbs[] = [clone $base_url, $uploadLocation->name];
                 $base_url->setQueryStringVariable('directory_id', (int) ee('Request')->get('directory_id'));
             }
         } elseif (bool_config_item('file_manager_compatibility_mode')) {
@@ -164,14 +164,12 @@ trait FileManagerTrait
         $page = ((int) ee()->input->get('page')) ?: 1;
         $offset = ($page - 1) * $perpage;
 
-        $base_url->addQueryStringVariables(
-            array_filter(
-                $filter_values,
-                function ($key) {
-                    return (!in_array($key, ['columns', 'sort']));
-                },
-                ARRAY_FILTER_USE_KEY
-            )
+        $queryStringVariables = array_filter(
+            $filter_values,
+            function ($key) {
+                return (!in_array($key, ['columns', 'sort']));
+            },
+            ARRAY_FILTER_USE_KEY
         );
 
         $table = ee('CP/Table', array(
@@ -272,18 +270,28 @@ trait FileManagerTrait
         }
 
         if (! ($table->sort_dir == 'desc' && $table->sort_col == 'date_added')) {
-            $base_url->addQueryStringVariables(
-                array(
+            $queryStringVariables = array_merge($queryStringVariables, array(
                     'sort_dir' => $table->sort_dir,
                     'sort_col' => $table->sort_col
                 )
             );
         }
+        $base_url->addQueryStringVariables($queryStringVariables);
+        unset($queryStringVariables['viewtype']); // is managed by cookie
 
         $vars['pagination'] = ee('CP/Pagination', $total_files)
             ->perPage($perpage)
             ->currentPage($page)
             ->render($base_url);
+
+        if (!empty($breadcrumbs)) {
+            foreach (array_reverse($breadcrumbs) as $crumb) {
+                $url = $crumb[0];
+                $title = $crumb[1];
+                $url->addQueryStringVariables($queryStringVariables);
+                $vars['breadcrumbs'][$url->compile()] = $title;
+            }
+        }
 
         $files = $files->order($sort_field, $table->sort_dir)
             ->limit($perpage)
@@ -330,7 +338,7 @@ trait FileManagerTrait
 
             if ($view_type != 'list') {
                 if ($file->isDirectory()) {
-                    $attrs['href'] = ee('CP/URL')->make('files/directory/' . $file->upload_location_id, ['directory_id' => $file->file_id]);
+                    $attrs['href'] = ee('CP/URL')->make('files/directory/' . $file->upload_location_id, array_merge($queryStringVariables, ['directory_id' => $file->file_id]));
                 } elseif (ee('Permission')->can('edit_files')) {
                     $attrs['href'] = ee('CP/URL')->make('files/file/view/' . $file->file_id);
                 }
@@ -361,7 +369,7 @@ trait FileManagerTrait
 
             $data[] = array(
                 'attrs' => $attrs,
-                'columns' => $column_renderer->getRenderedTableRowForEntry($file, $view_type, $filepickerMode)
+                'columns' => $column_renderer->getRenderedTableRowForEntry($file, $view_type, $filepickerMode, $queryStringVariables)
             );
         }
 
