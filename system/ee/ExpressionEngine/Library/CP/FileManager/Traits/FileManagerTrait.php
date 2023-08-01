@@ -156,7 +156,7 @@ trait FileManagerTrait
         $total_files = $files->count();
         $vars['total_files'] = $total_files;
 
-        $filters->add('Perpage', $total_files, 'show_all_files');
+        $perpageFilter = $filters->add('Perpage', $total_files, 'show_all_files');
 
         $filter_values = $filters->values();
 
@@ -171,6 +171,9 @@ trait FileManagerTrait
             },
             ARRAY_FILTER_USE_KEY
         );
+        if (! $perpageFilter->canReset()) {
+            unset($queryStringVariables['perpage']);
+        }
 
         $table = ee('CP/Table', array(
             'sort_col' => 'date_added',
