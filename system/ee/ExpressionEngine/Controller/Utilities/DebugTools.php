@@ -196,6 +196,14 @@ class DebugTools extends Utilities
 
         $table->setData($data);
 
+        if (!empty($data)) {
+            ee('CP/Alert')
+                ->makeInline()
+                ->addToBody(lang('back_up_db_and_templates'))
+                ->asImportant()
+                ->now();
+        }
+
         $vars['form_url'] = ee('CP/URL')->make('design/group/remove');
 
         $base_url = ee('CP/URL', 'utilities/debug-tools/duplicate-template-groups');

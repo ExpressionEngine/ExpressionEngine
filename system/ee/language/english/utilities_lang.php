@@ -640,6 +640,8 @@ Once you are ready to experience the new File Manager features, please run the <
 
     'review_duplicate_template_groups' => 'Review duplicate template groups',
 
+    'back_up_db_and_templates' => 'Make sure you have back up of your database and templates before making any changes',
+
 );
 
 // EOF

@@ -9,6 +9,7 @@
     </div>
 
     <div class="panel-body">
+        <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
         <?php $this->embed('_shared/table', $table); ?>
     </div>
 
