@@ -89,9 +89,11 @@ class Fluid_field_ft extends EE_Fieldtype
             $f = $field->getField();
             $ft_instance = $f->getNativeField();
 
-            if (isset($ft_instance->has_array_data)
+            if (
+                isset($ft_instance->has_array_data)
                 && $ft_instance->has_array_data
-                && ! is_array($data['field_id_' . $field_id])) {
+                && ! is_array($data['field_id_' . $field_id])
+            ) {
                 $data['field_id_' . $field_id] = array();
             }
 
@@ -148,6 +150,7 @@ class Fluid_field_ft extends EE_Fieldtype
 
         $compiled_data_for_search = [];
 
+        $total_fields = count($data['fields']);
         foreach ($data['fields'] as $key => $value) {
             if ($key == 'new_field_0') {
                 continue;
@@ -158,10 +161,15 @@ class Fluid_field_ft extends EE_Fieldtype
             // Existing field
             if (strpos($key, 'field_') === 0) {
                 $id = str_replace('field_', '', $key);
-                $field = $fluid_field_data[$id]->getField();
-                $fluid_field_data_id = $fluid_field_data[$id]->getId();
+                if (isset($fluid_field_data[$id])) {
+                    $field = $fluid_field_data[$id]->getField();
+                    $fluid_field_data_id = $fluid_field_data[$id]->getId();
+                } elseif (ee('Request')->get('version')) {
+                    $key = 'new_field_' . $total_fields + (int) $id;
+                }
+            }
             // New field
-            } elseif (strpos($key, 'new_field_') === 0) {
+            if (strpos($key, 'new_field_') === 0) {
                 foreach (array_keys($value) as $k) {
                     if (strpos($k, 'field_id_') === 0) {
                         $field_id = str_replace('field_id_', '', $k);
@@ -202,6 +210,7 @@ class Fluid_field_ft extends EE_Fieldtype
         $fluid_field_data = $this->getFieldData()->indexBy('id');
 
         $i = 1;
+        $total_fields = count($data['fields']);
         foreach ($data['fields'] as $key => $value) {
             if ($key == 'new_field_0') {
                 continue;
@@ -210,10 +219,15 @@ class Fluid_field_ft extends EE_Fieldtype
             // Existing field
             if (strpos($key, 'field_') === 0 && (!defined('CLONING_MODE') || CLONING_MODE !== true)) {
                 $id = str_replace('field_', '', $key);
-                $this->updateField($fluid_field_data[$id], $i, $value);
-                unset($fluid_field_data[$id]);
+                if (isset($fluid_field_data[$id])) {
+                    $this->updateField($fluid_field_data[$id], $i, $value);
+                    unset($fluid_field_data[$id]);
+                } elseif (ee('Request')->get('version')) {
+                    $key = 'new_field_' . $total_fields + (int) $id;
+                }
+            }
             // New field
-            } elseif (strpos($key, 'new_field_') === 0 || (defined('CLONING_MODE') && CLONING_MODE === true)) {
+            if (strpos($key, 'new_field_') === 0 || (defined('CLONING_MODE') && CLONING_MODE === true)) {
                 foreach (array_keys($value) as $k) {
                     if (strpos($k, 'field_id_') === 0) {
                         $field_id = str_replace('field_id_', '', $k);
@@ -733,8 +747,10 @@ class Fluid_field_ft extends EE_Fieldtype
                     [$this->id()]
                 );
 
-                if (! isset($data["field_id_{$this->id()}"])
-                    || ! isset($data["field_id_{$this->id()}"]['fields'])) {
+                if (
+                    ! isset($data["field_id_{$this->id()}"])
+                    || ! isset($data["field_id_{$this->id()}"]['fields'])
+                ) {
                     return 0;
                 }
             }
