@@ -165,7 +165,7 @@ class Fluid_field_ft extends EE_Fieldtype
                     $field = $fluid_field_data[$id]->getField();
                     $fluid_field_data_id = $fluid_field_data[$id]->getId();
                 } elseif (ee('Request')->get('version')) {
-                    $key = 'new_field_' . $total_fields + (int) $id;
+                    $key = 'new_field_' . ($total_fields + (int) $id);
                 }
             }
             // New field
@@ -223,7 +223,7 @@ class Fluid_field_ft extends EE_Fieldtype
                     $this->updateField($fluid_field_data[$id], $i, $value);
                     unset($fluid_field_data[$id]);
                 } elseif (ee('Request')->get('version')) {
-                    $key = 'new_field_' . $total_fields + (int) $id;
+                    $key = 'new_field_' . ($total_fields + (int) $id);
                 }
             }
             // New field
