@@ -261,7 +261,7 @@ class Grid_lib
                             $keys = array_keys($data['rows']);
                             $values = array_values($data['rows']);
                             $index = array_search($key, $keys);
-                            $keys[$index] = 'new_row_' . $total_rows + (int) $row_key;
+                            $keys[$index] = 'new_row_' . ($total_rows + (int) $row_key);
                             $data['rows'] = array_combine($keys, $values);
                         } else {
                             // otherwise assume someone else removed the row, and they know what they are doing

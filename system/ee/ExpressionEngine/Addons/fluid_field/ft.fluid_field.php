@@ -193,7 +193,7 @@ class Fluid_field_ft extends EE_Fieldtype
             if (strpos($key, 'field_') === 0) {
                 $fluid_field_id = (int) str_replace('field_', '', $key);
                 if (! isset($fluid_field_data[$fluid_field_id]) && ee('Request')->get('version')) {
-                    $key = 'new_field_' . $total_fields + $fluid_field_id;
+                    $key = 'new_field_' . ($total_fields + $fluid_field_id);
                 }
             }
             // New field - field_id_3[fields][new_field_1][field_group_1][field_id_2] = value
@@ -284,7 +284,7 @@ class Fluid_field_ft extends EE_Fieldtype
                     if (isset($fluid_field_data[$id])) {
                         $group_key = 'group_' . $fluid_field_data[$id]->group;
                     } elseif (ee('Request')->get('version')) {
-                        $key = 'new_field_' . $total_fields + (int) $id;
+                        $key = 'new_field_' . ($total_fields + (int) $id);
                     }
                 }
                 // New field
