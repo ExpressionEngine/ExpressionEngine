@@ -175,6 +175,7 @@ class Fluid_field_ft extends EE_Fieldtype
 
         $compiled_data_for_search = [];
 
+        $total_fields = count($data['fields']);
         foreach ($data['fields'] as $key => $value) {
             if ($key == 'new_field_0') {
                 continue;
@@ -191,8 +192,12 @@ class Fluid_field_ft extends EE_Fieldtype
             // Existing field - field_id_3[fields][field_3][field_group_0][field_id_2] = value
             if (strpos($key, 'field_') === 0) {
                 $fluid_field_id = (int) str_replace('field_', '', $key);
+                if (! isset($fluid_field_data[$fluid_field_id]) && ee('Request')->get('version')) {
+                    $key = 'new_field_' . $total_fields + $fluid_field_id;
+                }
+            }
             // New field - field_id_3[fields][new_field_1][field_group_1][field_id_2] = value
-            } elseif (strpos($key, 'new_field_') === 0) {
+            if (strpos($key, 'new_field_') === 0) {
                 $create = true;
             }
 
@@ -250,6 +255,7 @@ class Fluid_field_ft extends EE_Fieldtype
 
         $i = 1;
         $g = 0;
+        $total_fields = count($data['fields']);
         // [field_3][field_group_0][field_id_2]
         // [new_field_1][field_group_1][field_id_2]
         foreach ($data['fields'] as $key => $value) {
@@ -275,9 +281,14 @@ class Fluid_field_ft extends EE_Fieldtype
                 // Existing field
                 if (strpos($key, 'field_') === 0 && (!defined('CLONING_MODE') || CLONING_MODE !== true)) {
                     $id = str_replace('field_', '', $key);
-                    $group_key = 'group_' . $fluid_field_data[$id]->group;
+                    if (isset($fluid_field_data[$id])) {
+                        $group_key = 'group_' . $fluid_field_data[$id]->group;
+                    } elseif (ee('Request')->get('version')) {
+                        $key = 'new_field_' . $total_fields + (int) $id;
+                    }
+                }
                 // New field
-                } elseif (strpos($key, 'new_field_') === 0 || (defined('CLONING_MODE') && CLONING_MODE === true)) {
+                if (strpos($key, 'new_field_') === 0 || (defined('CLONING_MODE') && CLONING_MODE === true)) {
                     $field_id = str_replace('field_id_', '', $fieldKey);
                 }
 
