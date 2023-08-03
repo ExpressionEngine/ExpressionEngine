@@ -439,6 +439,32 @@ class Fluid_field_ft extends EE_Fieldtype
 
     private function removeField($fluid_field)
     {
+        // some built-in fields are more complex, we have to do more clean-up
+        // third-party fields are expected to use extensions hook
+        switch ($fluid_field->ChannelField->field_type) {
+            case 'grid':
+            case 'file_grid':
+                ee()->load->add_package_path(PATH_ADDONS . 'grid');
+                ee()->load->library('grid_lib');
+                ee()->grid_lib->field_id = $fluid_field->field_id;
+                ee()->grid_lib->content_type = $this->content_type;
+                ee()->grid_lib->entry_id = $this->content_id;
+                ee()->grid_lib->fluid_field_data_id = $fluid_field->id;
+                ee()->grid_lib->save([]);
+                ee()->load->remove_package_path(PATH_ADDONS . 'grid');
+                break;
+            case 'relationship':
+                ee('db')
+                    ->where('parent_id', $this->content_id)
+                    ->where('field_id', $fluid_field->field_id)
+                    ->where('fluid_field_data_id', $fluid_field->id)
+                    ->where('grid_field_id', 0)
+                    ->delete('relationships');
+                break;
+            default:
+                break;
+        }
+
         $query = ee('db');
         $query->where('id', $fluid_field->field_data_id);
         $query->delete($fluid_field->ChannelField->getTableName());
