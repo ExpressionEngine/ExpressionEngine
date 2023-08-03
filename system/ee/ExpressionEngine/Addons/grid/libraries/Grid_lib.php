@@ -298,8 +298,16 @@ class Grid_lib
      */
     public function save($data)
     {
+        if (ee('Request')->get('version')) {
+            if (isset($data['rows'])) {
+                // only need to do this once
+                $data['rows'] = ee()->grid_model->remap_revision_rows($data['rows'], $this->field_id, $this->entry_id, $this->fluid_field_data_id, $this->content_type);
+            }
+        }
         $field_data = $this->_process_field_data('save', $data);
 
+        // save the Grid field
+        // and get back the rows that are no longer present
         $deleted_rows = ee()->grid_model->save_field_data(
             $field_data['value'],
             $this->field_id,
