@@ -604,6 +604,11 @@ class Fluid_field_ft extends EE_Fieldtype
                     $fluid_field_data_id = (int) str_replace('field_', '', $key);
                 }
 
+                // if we loaded older revision, it might be structured differently
+                if (ee('Request')->get('version') && strpos(array_key_first($field_data), 'field_group_id_') !== 0) {
+                    $field_data = ['field_group_id_0' => $field_data];
+                }
+
                 foreach ($field_data as $id => $datum) {
                     if (strpos($id, 'field_group_id_') === 0) {
                         $field_group_id = (int) str_replace('field_group_id_', '', $id);
