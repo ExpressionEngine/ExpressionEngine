@@ -226,8 +226,8 @@ class EE_Template
         // Record the New Relic transaction. Use a constant so that separate instances of this
         // class can't accidentally restart the transaction metrics
         if (!defined('EECMS_NEW_RELIC_TRANS_NAME')) {
-            $template = $this->templates_loaded[0];
-            define('EECMS_NEW_RELIC_TRANS_NAME', "{$template['group_name']}/{$template['template_name']}");
+            $templateLoaded = $this->templates_loaded[0];
+            define('EECMS_NEW_RELIC_TRANS_NAME', "{$templateLoaded['group_name']}/{$templateLoaded['template_name']}");
             ee()->core->set_newrelic_transaction(EECMS_NEW_RELIC_TRANS_NAME);
         }
 
