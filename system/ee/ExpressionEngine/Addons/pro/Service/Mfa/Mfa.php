@@ -29,21 +29,27 @@ class Mfa
      */
     private function _init()
     {
-        \ExpressionEngine\Core\Autoloader::getInstance()
+        $autoloader = \ExpressionEngine\Core\Autoloader::getInstance()
             ->addPrefix('OTPHP', SYSPATH . 'ee/ExpressionEngine/Addons/pro/lib/spomky-labs/otphp')
             ->addPrefix('ParagonIE\ConstantTime', SYSPATH . 'ee/ExpressionEngine/Addons/pro/lib/paragonie/constant_time_encoding')
             ->addPrefix('BaconQrCode', SYSPATH . 'ee/ExpressionEngine/Addons/pro/lib/bacon/bacon-qr-code')
             ->addPrefix('DASPRiD\Enum', SYSPATH . 'ee/ExpressionEngine/Addons/pro/lib/dasprid/enum')
-            ->addPrefix('Assert', SYSPATH . 'ee/ExpressionEngine/Addons/pro/lib/beberlei/assert/lib/Assert')
-            ->addPrefix('Safe', SYSPATH . 'ee/ExpressionEngine/Addons/pro/lib/thecodingmachine/safe/generated')
-            ->addPrefix('Safe', SYSPATH . 'ee/ExpressionEngine/Addons/pro/lib/thecodingmachine/safe/lib')
-            ->register();
+            ->addPrefix('Assert', SYSPATH . 'ee/ExpressionEngine/Addons/pro/lib/beberlei/assert/lib/Assert');
 
-        $extraFiles = [
-            '/thecodingmachine/safe/generated/strings.php',
-            '/thecodingmachine/safe/generated/array.php',
-            '/thecodingmachine/safe/generated/url.php',
-        ];
+        $extraFiles = [];
+        if (!class_exists('Expressionengine\Coilpack\Coilpack')) {
+            $autoloader
+                ->addPrefix('Safe', SYSPATH . 'ee/ExpressionEngine/Addons/pro/lib/thecodingmachine/safe/generated')
+                ->addPrefix('Safe', SYSPATH . 'ee/ExpressionEngine/Addons/pro/lib/thecodingmachine/safe/lib');
+
+            $extraFiles = [
+                '/thecodingmachine/safe/generated/strings.php',
+                '/thecodingmachine/safe/generated/array.php',
+                '/thecodingmachine/safe/generated/url.php',
+            ];
+        }
+        $autoloader->register();
+
         foreach ($extraFiles as $file) {
             include_once(SYSPATH . 'ee/ExpressionEngine/Addons/pro/lib' . $file);
         }
