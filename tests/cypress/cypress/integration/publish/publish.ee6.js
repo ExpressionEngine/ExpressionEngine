@@ -759,7 +759,7 @@ context('Publish Entry', () => {
     })
 
     context('Date field', () => {
-      it.only('Date picker shows as it should', () => {
+      it('Date picker shows as it should', () => {
         var date_val, grid_date_val, entry_date_val;
         cy.auth();
         cy.log('create date field, no time shown')
