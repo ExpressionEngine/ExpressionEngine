@@ -358,7 +358,7 @@ $lang = array(
 
     'moderate_comments' => 'Moderate comments?',
 
-    'moderate_comments_desc' => 'When enabled, submitted comments will be put into a moderation queue, and must be approved by a Super Admin or member in role with moderation permissions.',
+    'moderate_comments_desc' => 'When enabled, submitted comments will be put into a moderation queue, and must be approved by a Super Admin or member with a role that has moderation permissions.',
 
     'notifications' => 'Notifications',
 
