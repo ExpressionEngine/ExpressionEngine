@@ -110,10 +110,6 @@
 } ?>
 <?php echo implode('', ee('CP/Modal')->getAllModals()); ?>
 
-        <?=ee()->javascript->set_global([
-            'lang.password_icon' => lang('password_icon')
-        ])?>
-
         <?=ee()->view->script_tag('jquery/jquery.js')?>
         <?=ee()->view->script_tag('jquery/jquery-migrate-3.0.0.min.js')?>
 
