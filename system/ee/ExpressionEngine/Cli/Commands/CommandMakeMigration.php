@@ -56,6 +56,24 @@ class CommandMakeMigration extends Cli
     public $migration_name;
 
     /**
+     * Migration location
+     * @var string
+     */
+    public $migration_location;
+
+    /**
+     * Migration category
+     * @var string
+     */
+    public $migrationCategory;
+
+    /**
+     * Migration
+     * @var string
+     */
+    public $migration;
+
+    /**
      * Migration action. Options are create, update, and generic
      * @var string
      */

@@ -68,6 +68,10 @@ class DragAndDropUpload extends React.Component {
 
     var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
 
+    if (typeof(directory) === 'undefined') {
+      return ' ';
+    }
+
     return directory.label
   }
 
@@ -80,6 +84,13 @@ class DragAndDropUpload extends React.Component {
       }
     } else {
       var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+      if (typeof(directory) === 'undefined') {
+        return {
+          upload_location_id: null,
+          path: '',
+          directory_id: 0
+        };
+      }
       if (directory.value == directory.upload_location_id) {
         directory.directory_id = 0
       } else {
@@ -544,6 +555,24 @@ class DragAndDropUpload extends React.Component {
       subheading = EE.lang.file_dnd_choose_directory_before_uploading
     }
 
+    var selectedDirectoryNotInList = false;
+    if (this.state.directory != 'all') {
+      dir = this.state.directory;
+      if (EE.dragAndDrop.uploadDesinations.length != 0) {
+        selectedDirectoryNotInList = true;
+        Object.values(EE.dragAndDrop.uploadDesinations).forEach(function (uploadDesination) {
+          if (uploadDesination.value == dir) {
+            selectedDirectoryNotInList = false;
+          }
+        });
+      }
+    }
+    if (EE.dragAndDrop.uploadDesinations.length == 0 || selectedDirectoryNotInList) {
+      heading = EE.lang.file_dnd_no_directories;
+      subheading = EE.lang.file_dnd_no_directories_desc;
+      this.props.showActionButtons = false;
+    }
+
     let checkChildren = this.directoryHasChild(this.props.allowedDirectory);
     let uploadDirectoriesForDropdown = EE.dragAndDrop.uploadDesinations;
     if (typeof(this.props.roleAllowedDirectoryIds) !== 'undefined' && this.props.roleAllowedDirectoryIds.length > 0) {
@@ -567,7 +596,7 @@ class DragAndDropUpload extends React.Component {
             <div className="file-field__dropzone-title">{heading}</div>
             <div class="file-field__dropzone-button">
                 {subheading}
-                {this.state.directory == 'all' && ':'}
+                {this.state.directory == 'all' && uploadDirectoriesForDropdown.length > 0 && ':'}
                 {this.state.directory != 'all' && <b>{this.getDirectoryName(this.state.directory)}</b>}
                 &nbsp;
                 {this.state.directory != 'all' && this.props.allowedDirectory != 'all' && checkChildren && checkChildren.children.length > 0 &&
@@ -585,7 +614,7 @@ class DragAndDropUpload extends React.Component {
                     addInput={false}
                   />
                 }
-                {this.state.files.length == 0 && this.props.allowedDirectory == 'all' &&
+                {this.state.files.length == 0 && this.props.allowedDirectory == 'all' && uploadDirectoriesForDropdown.length > 0 &&
                     <DropDownButton key={EE.lang.file_dnd_choose_existing}
                         action={this.state.directory == 'all'}
                         center={true}
