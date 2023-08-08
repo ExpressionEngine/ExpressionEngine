@@ -305,14 +305,14 @@ trait FileManagerTrait
             return $carry;
         }, []);
 
-        foreach($eagerLoads as $files) {
+        foreach($eagerLoads as $eagerLoadFiles) {
             $paths = [];
-            $uploadDestination = $files[0]->UploadDestination;
-            $files = array_filter($files, function ($file) {
+            $uploadDestination = $eagerLoadFiles[0]->UploadDestination;
+            $eagerLoadFiles = array_filter($eagerLoadFiles, function ($file) {
                 return !$file->isDirectory();
             });
 
-            foreach($files as $file) {
+            foreach($eagerLoadFiles as $file) {
                 $paths[] = $file->getAbsolutePath();
                 $paths[] = $file->getAbsoluteManipulationPath('thumbs');
             }
