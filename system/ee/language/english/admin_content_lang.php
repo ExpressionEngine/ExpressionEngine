@@ -606,10 +606,6 @@ $lang = array(
 
     'manage_custom_fields' => 'Manage Category Fields',
 
-    'member_group' => 'Member Group',
-
-    'member_groups' => 'Member Groups',
-
     'missing_required_fields' => 'You Are Missing Required Field(s):',
 
     'name_of_category_group' => 'Name of category group',

@@ -524,8 +524,6 @@ $lang = array(
 
     'medium' => 'Medium',
 
-    'member_group' => 'Member Group',
-
     'missing_name' => 'Your template must have a name',
 
     'name_of_template' => 'Template Name',
@@ -848,8 +846,6 @@ $lang = array(
     'forgot_form' => 'Forgot Password Form',
 
     'full_profile' => 'Full Profile Page',
-
-    'group_description' => 'Member Group Description',
 
     'home_page' => 'Member Profile Home Page',
 
