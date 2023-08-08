@@ -142,6 +142,7 @@ class DockFactory
                 'cancel' => lang('cancel'),
                 'save_without_reload' => lang('save_without_reload'),
                 'login' => lang('login'),
+                'drag_handle_icon' => lang('drag_handle_icon'),
             ],
             'pro.prolets'=> [],
             'pro.actions'=> []

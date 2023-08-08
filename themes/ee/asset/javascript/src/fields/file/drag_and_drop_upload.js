@@ -812,7 +812,11 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
 
           _this5.uploadNew(_this5.state.directory);
         }
-      }, EE.lang.file_dnd_upload_new), React.createElement("input", {
+      }, EE.lang.file_dnd_upload_new), React.createElement("label", {
+        htmlFor: "f_open-filepicker_id",
+        className: "sr-only"
+      }, EE.lang.hidden_input), React.createElement("input", {
+        id: "f_open-filepicker_id",
         type: "file",
         className: "f_open-filepicker",
         style: {
@@ -863,7 +867,11 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
         "data-directory_id": '',
         "data-path": '',
         className: "imitation_button"
-      }, "Imitation"), React.createElement("input", {
+      }, "Imitation"), React.createElement("label", {
+        htmlFor: "f_open-filepicker_id",
+        className: "sr-only"
+      }, EE.lang.hidden_input), React.createElement("input", {
+        id: "f_open-filepicker_id",
         type: "file",
         className: "f_open-filepicker",
         style: {

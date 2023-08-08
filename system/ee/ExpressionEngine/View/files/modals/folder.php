@@ -27,7 +27,7 @@
 
             <fieldset>
                 <label for="folder_name"><?= lang('folder_name') ?></label>
-                <input type="text" name="folder_name" autocomplete="off">
+                <input id="folder_name" type="text" name="folder_name" autocomplete="off">
             </fieldset>
         </div>
 
