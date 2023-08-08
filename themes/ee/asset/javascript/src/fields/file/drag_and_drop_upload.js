@@ -648,11 +648,11 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
 
         if (EE.dragAndDrop.uploadDesinations.length != 0) {
           selectedDirectoryNotInList = true;
-          Object.values(EE.dragAndDrop.uploadDesinations).forEach(function (uploadDesination) {
-            if (uploadDesination.value == dir) {
-              selectedDirectoryNotInList = false;
-            }
-          });
+          var dir_in_list = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, dir);
+
+          if (typeof dir_in_list != 'undefined') {
+            selectedDirectoryNotInList = false;
+          }
         }
       }
 
