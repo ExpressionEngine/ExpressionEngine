@@ -533,6 +533,12 @@ ul.state-sorting {
     font-weight: normal;
 }
 
+#structure-ui span.status-tag.missing-status {
+    border-color: black;
+    background-color: white;
+    color: black;
+}
+
 /* assets */
 
 #structure-ui ul#assets {
