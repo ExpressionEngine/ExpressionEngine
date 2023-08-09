@@ -253,13 +253,13 @@ class CachedAdapter extends Flysystem\Cached\CachedAdapter
      */
     public function eagerLoadPaths($paths)
     {
-        if(! method_exists($this->getAdapter(), 'eagerLoadPaths')) {
+        if (!method_exists($this->getAdapter(), 'eagerLoadPaths')) {
             return [];
         }
 
         $cached = [];
 
-        foreach($paths as $key => $path) {
+        foreach ($paths as $key => $path) {
             $cacheHas = $this->cache->has($path);
             if ($cacheHas !== null) {
                 $cached[$path] = $cacheHas;
@@ -269,7 +269,7 @@ class CachedAdapter extends Flysystem\Cached\CachedAdapter
 
         $adapterResponse = $this->getAdapter()->eagerLoadPaths($paths);
 
-        foreach($paths as $path) {
+        foreach ($paths as $path) {
             if (empty($adapterResponse) || empty($adapterResponse[$path])) {
                 $this->cache->storeMiss($path);
             } else {
@@ -304,5 +304,4 @@ class CachedAdapter extends Flysystem\Cached\CachedAdapter
 
         return $result;
     }
-
 }

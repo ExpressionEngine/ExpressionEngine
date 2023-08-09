@@ -310,7 +310,8 @@ class Filesystem
      */
     public function eagerLoadPaths($paths)
     {
-        if(!method_exists($this->flysystem->getAdapter(), 'eagerLoadPaths')) {
+        if (!method_exists($this->flysystem->getAdapter(), 'eagerLoadPaths')) {
+            $this->getDirectoryContents('/', true);
             return [];
         }
 

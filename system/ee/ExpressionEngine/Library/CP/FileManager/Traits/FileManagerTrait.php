@@ -296,7 +296,7 @@ trait FileManagerTrait
         // Group files by destination and eager load first
         $eagerLoads = array_reduce($files->asArray(), function ($carry, $file) use ($member) {
             if ($file->UploadDestination->adapter != 'local' && $file->UploadDestination->exists()) {
-                if(!array_key_exists($file->upload_location_id, $carry)) {
+                if (!array_key_exists($file->upload_location_id, $carry)) {
                     $carry[$file->upload_location_id] = [];
                 }
                 $carry[$file->upload_location_id][] = $file;
@@ -305,14 +305,14 @@ trait FileManagerTrait
             return $carry;
         }, []);
 
-        foreach($eagerLoads as $eagerLoadFiles) {
+        foreach ($eagerLoads as $eagerLoadFiles) {
             $paths = [];
             $uploadDestination = $eagerLoadFiles[0]->UploadDestination;
             $eagerLoadFiles = array_filter($eagerLoadFiles, function ($file) {
                 return !$file->isDirectory();
             });
 
-            foreach($eagerLoadFiles as $file) {
+            foreach ($eagerLoadFiles as $file) {
                 $paths[] = $file->getAbsolutePath();
                 $paths[] = $file->getAbsoluteManipulationPath('thumbs');
             }
