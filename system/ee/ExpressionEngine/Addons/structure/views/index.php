@@ -146,8 +146,7 @@ if ($cp_asset_data or count($tabs) > 1) {
                 }
 
                 if (isset($settings['show_entry_status']) && $settings['show_entry_status'] == 'y') {
-                    $status = ee('Model')->get('Status')->filter('status', '==', $page['status'])->first();
-                    echo $status->renderTag();
+                    echo isset($status_tags[$page['status']]) ? $status_tags[$page['status']] : '<span class="status-tag st-'.str_replace(" ", "-", strtolower($page['status'])).'" style="">'.$page['status'].'</span>';
                 }
 
                 if ((!isset($settings['show_nav_status']) || $settings['show_nav_status'] == 'y') && $page['hidden'] == 'y') {

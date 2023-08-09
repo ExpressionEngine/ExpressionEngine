@@ -150,6 +150,14 @@ class Structure_mcp
         $data['homepage'] = array_search('/', $site_pages['uris']);
         $data['selected_tab'] = 0;
         $data['channel_rules'] = $rules;
+        $data['status_tags'] = [];
+
+        // generate all status tags for UI to reference
+        if (isset($settings['show_entry_status']) && $settings['show_entry_status'] == 'y') {
+            foreach(ee('Model')->get('Status')->all()->getIterator() as $status) {
+                $data['status_tags'][$status->status] = $status->renderTag();
+            }
+        }
 
         // Gut check to make sure they ran the update method!
         if (!ee()->db->field_exists('updated', 'structure')) {
