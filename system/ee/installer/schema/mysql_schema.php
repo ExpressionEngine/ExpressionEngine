@@ -1052,6 +1052,7 @@ class EE_Schema
 			allowed_types varchar(100) NOT NULL default 'img',
 			allow_subfolders ENUM('y','n') NOT NULL DEFAULT 'n',
 			subfolders_on_top ENUM('y','n') NOT NULL DEFAULT 'y',
+			resolve_unique_filename ENUM('y','n') NOT NULL DEFAULT 'n',
 			default_modal_view varchar(5) NOT NULL default 'list',
 			max_size varchar(16) NULL DEFAULT NULL,
 			max_height varchar(6) NULL DEFAULT NULL,

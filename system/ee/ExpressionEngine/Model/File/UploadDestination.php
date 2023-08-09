@@ -71,6 +71,7 @@ class UploadDestination extends StructureModel
         'allowed_types' => 'pipeDelimited',
         'allow_subfolders' => 'boolString',
         'subfolders_on_top' => 'boolString',
+        'resolve_unique_filename' => 'boolString',
         'adapter_settings' => 'json',
     );
 
@@ -79,6 +80,7 @@ class UploadDestination extends StructureModel
         'adapter' => 'required',
         'allow_subfolders' => 'enum[y,n]',
         'subfolders_on_top' => 'enum[y,n]',
+        'resolve_unique_filename' => 'enum[y,n]',
         'default_modal_view' => 'enum[list,thumb]',
         'max_size' => 'numeric|greaterThan[0]',
         'max_height' => 'isNatural',
@@ -97,6 +99,7 @@ class UploadDestination extends StructureModel
     protected $allowed_types;
     protected $allow_subfolders;
     protected $subfolders_on_top;
+    protected $resolve_unique_filename;
     protected $default_modal_view;
     protected $max_size;
     protected $max_height;

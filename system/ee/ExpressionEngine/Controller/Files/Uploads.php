@@ -348,6 +348,17 @@ class Uploads extends AbstractFilesController
             ));
         }
 
+        $vars['sections']['browser_behavior']['resolve_unique_filename'] = array(
+            'title' => 'resolve_unique_filename',
+            'desc' => 'resolve_unique_filename_desc',
+            'fields' => array(
+                'resolve_unique_filename' => array(
+                    'type' => 'yes_no',
+                    'value' => $upload_destination->resolve_unique_filename
+                )
+            )
+                );
+
         // Image manipulations Grid
         $grid = $this->getImageSizesGrid($upload_destination);
 

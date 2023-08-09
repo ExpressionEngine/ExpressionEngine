@@ -666,6 +666,10 @@ $lang = array(
 
     'where' => 'Where',
 
+    'resolve_unique_filename' => 'Automaticallly resolve filename conflicts?',
+
+    'resolve_unique_filename_desc' => 'When turned on, unique filename will be generated if file is uploaded with the name that already exists. When turned off, warning will be shown with the options to skip, overwrite or rename file.',
+
     /* Upload modal */
     'all_categories' => 'all categories',
 

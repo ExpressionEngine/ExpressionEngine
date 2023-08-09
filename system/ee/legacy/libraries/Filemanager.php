@@ -1897,20 +1897,19 @@ class Filemanager
 
         // --------------------------------------------------------------------
         // Upload the file
-
         $field = ($field_name) ? $field_name : 'userfile';
-        $original_filename = $_FILES[$field]['name'];
-        $clean_filename = basename($this->clean_subdir_and_filename(
-            $_FILES[$field]['name'],
-            $dir['id'],
-            array('ignore_dupes' => true)
-        ));
-
+        $original_filename = $filename = $_FILES[$field]['name'];
         $upload_path = $dir['server_path'];
-
         if ($directory_id != 0) {
-            $upload_path = ee('Model')->get('Directory', $directory_id)->first()->getAbsolutePath();
+            $directory = ee('Model')->get('Directory', $directory_id)->first(true);
+            $upload_path = $directory->getAbsolutePath();
+            $filename = $directory->getSubfoldersPath() . $directory->file_name . '/' . $filename;
         }
+        $clean_filename = basename($this->clean_subdir_and_filename(
+            $filename,
+            $dir['id'],
+            array('ignore_dupes' => ($dir['resolve_unique_filename'] === false))
+        ));
 
         $config = array(
             'upload_destination' => $dir['upload_destination'],
