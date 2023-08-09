@@ -175,6 +175,25 @@ context('Edit entry with Relationship field', () => {
 
 		})
 
+		it('search in relationship field', () => {
+			cy.visit('admin.php?/cp/publish/edit/entry/1')
+			cy.get('[data-relationship-react] .list-item__title:contains("Band Title")').closest('.list-item').find('[title="Remove"]').click()
+			cy.get('[data-relationship-react] .list-item__title:contains("Welcome to the Example Site!")').closest('.list-item').find('[title="Remove"]').click()
+			cy.get('button:contains("Relate Entry")').first().click()
+
+			cy.get('[data-relationship-react] .dropdown__search .search-input input').clear().type('band')
+			cy.get('[data-relationship-react] .dropdown--open .dropdown__scroll a').should('have.length', 1)
+			cy.get('a.dropdown__link:contains("Band Title")').should('be.visible')
+
+			cy.get('[data-relationship-react] .dropdown__search .search-input input').clear()
+			cy.get('[data-relationship-react] .dropdown--open .dropdown__scroll a').should('have.length.above', 1)
+
+			cy.get('[data-relationship-react] .dropdown__search .search-input input').clear().type('2')
+			cy.get('[data-relationship-react] .dropdown--open .dropdown__scroll a').should('have.length', 1)
+			cy.get('a.dropdown__link:contains("Band Title")').should('not.exist')
+			cy.get('a.dropdown__link:contains("Welcome to the Example Site!")').should('be.visible')
+		})
+
 		//  display_entry_id On, items have been added
 		it('saves relationship field with display entry id', () => {
 			cy.visit('admin.php?/cp/fields/edit/8');

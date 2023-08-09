@@ -135,7 +135,8 @@ class Design extends AbstractDesignController
         $group = ee('Model')->get('TemplateGroup')
             ->fields('group_id', 'group_name')
             ->filter('site_id', ee()->config->item('site_id'))
-            ->order('group_name', 'asc');
+            ->order('group_name', 'asc')
+            ->order('group_id', 'asc'); //get the older group
 
         if ($group_name) {
             $group->filter('group_name', $group_name);

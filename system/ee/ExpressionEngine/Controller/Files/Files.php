@@ -204,6 +204,7 @@ class Files extends AbstractFilesController
         $subdir->file_name = $subdir_name;
         $subdir->upload_location_id = $upload_destination_id;
         $subdir->directory_id = $subdirectory_id;
+        $subdir->site_id = $uploadDirectory->site_id;
 
         //validate before saving on filesystem
         $validation = $subdir->validate();

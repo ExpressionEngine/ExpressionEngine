@@ -39,6 +39,7 @@ class Template extends AbstractDesignController
         $group = ee('Model')->get('TemplateGroup')
             ->filter('group_name', $group_name)
             ->filter('site_id', ee()->config->item('site_id'))
+            ->order('group_id', 'asc')
             ->first();
 
         if (! $group) {

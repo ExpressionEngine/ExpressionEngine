@@ -102,6 +102,8 @@ abstract class AbstractPublish extends CP_Controller
             'lang.confirm_exit' => lang('confirm_exit'),
             'lang.loading' => lang('loading'),
             'lang.extra_title' => lang('extra_title'),
+            'lang.edit_element' => lang('edit_element'),
+            'lang.remove_btn' => lang('remove_btn'),
             'publish.autosave.interval' => (int) $autosave_interval_seconds,
             'publish.autosave.URL' => ee('CP/URL')->make('publish/autosave/' . $channel_id . '/' . $entry_id)->compile(),
             'publish.channel_title' => ee('Format')->make('Text', $entry->Channel->channel_title)
@@ -176,7 +178,7 @@ abstract class AbstractPublish extends CP_Controller
                     'toolbar_items' => array(
                         'txt-only' => array(
                             'href' => ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id, array('version' => $version->version_id)),
-                            'title' => lang('view'),
+                            'title' => lang('load_revision'),
                             'content' => lang('view')
                         ),
                     )
@@ -215,7 +217,7 @@ abstract class AbstractPublish extends CP_Controller
                         $current_id,
                         $edit_date,
                         $current_author_id,
-                        '<span class="st-open">' . lang('current') . '</span>'
+                        '<a href="' . ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id) . '"><span class="st-open">' . lang('current') . '</span></a>'
                     ))
             );
         }
@@ -467,7 +469,7 @@ abstract class AbstractPublish extends CP_Controller
             ->defer();
 
         $qs = $_GET;
-        unset($qs['S'], $qs['D'], $qs['C'], $qs['M']);
+        unset($qs['S'], $qs['D'], $qs['C'], $qs['M'], $qs['version']);
 
         // Loop through and clean GET values
         foreach ($qs as $key => $value) {

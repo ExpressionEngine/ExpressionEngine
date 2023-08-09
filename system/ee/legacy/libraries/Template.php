@@ -4329,6 +4329,7 @@ class EE_Template
             $groups = ee('Model')->get('TemplateGroup')
                 ->with('Templates')
                 ->filter('site_id', ee()->config->item('site_id'))
+                ->order('group_id', 'desc') // sort reverse, so that older group IDs would be used
                 ->all();
         } catch (\Exception $e) {
             //if we got SQL error, silently exit

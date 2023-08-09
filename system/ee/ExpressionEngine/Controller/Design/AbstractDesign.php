@@ -19,6 +19,7 @@ use ExpressionEngine\Service\CP\Filter\Filter;
 use ExpressionEngine\Service\Filter\FilterFactory;
 use ExpressionEngine\Service\CP\Filter\FilterRunner;
 use ExpressionEngine\Service\Model\Query\Builder as QueryBuilder;
+use ExpressionEngine\Library\Advisor;
 
 /**
  * Abstract Design Controller
@@ -104,7 +105,26 @@ abstract class AbstractDesign extends CP_Controller
             }
         }
 
+        $groupNamesListed = [];
+
         foreach ($template_groups->all() as $group) {
+            if (in_array($group->group_name, $groupNamesListed)) {
+                // duplicates found, show alert but do not add to sidebar
+                if (!isset($duplicateAlert)) {
+                    ee()->lang->load('utilities');
+                    $templateAdvisor = new Advisor\TemplateAdvisor();
+                    $message = sprintf(lang('duplicate_template_groups_found'), $templateAdvisor->getDuplicateTemplateGroupsCount()) . '<br><a href="' . ee('CP/URL')->make('utilities/debug-tools/duplicate-template-groups') . '">' . lang('review_duplicate_template_groups') . '</a>';
+                    $duplicateAlert = ee('CP/Alert')
+                        ->makeInline()
+                        ->addToBody($message)
+                        ->asImportant();
+                    if (ee('Permission')->isSuperAdmin()) {
+                        $duplicateAlert->now();
+                    }
+                    ee()->logger->developer($message, true, 60 * 60 * 24 * 30);
+                }
+                continue;
+            }
             $item = $template_group_list->addItem($group->group_name, ee('CP/URL')->make('design/manager/' . $group->group_name));
 
             $item->withEditUrl(ee('CP/URL')->make('design/group/edit/' . $group->group_name));
@@ -127,6 +147,8 @@ abstract class AbstractDesign extends CP_Controller
             if ($group->is_site_default) {
                 $item->asDefaultItem();
             }
+
+            $groupNamesListed[] = $group->group_name;
         }
 
         // System Templates

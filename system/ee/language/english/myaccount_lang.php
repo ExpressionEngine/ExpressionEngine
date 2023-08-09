@@ -278,11 +278,7 @@ $lang = array(
 
     'member_email' => 'Email Member',
 
-    'member_group_assignment' => 'Member Group Assignment',
-
-    'member_group_default' => 'Member group default',
-
-    'member_group_warning' => 'Be very careful assigning this',
+    'member_group_default' => 'Role\'s default',
 
     'user_ip_address' => 'IP Address',
 
@@ -473,8 +469,6 @@ $lang = array(
     'subscriptions' => 'Current Subscriptions',
 
     'subscriptions_removed' => 'Subscriptions have been removed',
-
-    'super_admin_demotion_alert' => 'As a Super Admin, you are not allowed to change your member group assignment',
 
     'system_offline_indicator' => 'System offline indicator',
 
