@@ -78,7 +78,7 @@ class Structure_mcp
 
         ee()->load->library('general_helper');
 
-        ee()->cp->add_to_head("<link rel='stylesheet' href='" . $this->sql->theme_url() . "css/structure.css'>");
+        ee()->cp->add_to_head("<link rel='stylesheet' href='" . $this->sql->theme_url() . "css/structure.css?v=".STRUCTURE_VERSION."'>");
     }
 
     /**
