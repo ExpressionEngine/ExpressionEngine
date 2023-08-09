@@ -145,8 +145,17 @@ if ($cp_asset_data or count($tabs) > 1) {
                     }
                 }
 
-                if ($page['hidden'] == 'y') {
+                if (isset($settings['show_entry_status']) && $settings['show_entry_status'] == 'y') {
+                    $status = ee('Model')->get('Status')->filter('status', '==', $page['status'])->first();
+                    echo $status->renderTag();
+                }
+
+                if (isset($settings['show_nav_status']) && $settings['show_nav_status'] == 'y' && $page['hidden'] == 'y') {
                     echo ' <span class="hidden-page">(hidden)</span>';
+                }
+
+                if (isset($page['extra_html']) && $page['extra_html']) {
+                    echo ' <span class="extra-html">'.$page['extra_html'].'</span>';
                 }
 
                 echo '</span>', "\n";

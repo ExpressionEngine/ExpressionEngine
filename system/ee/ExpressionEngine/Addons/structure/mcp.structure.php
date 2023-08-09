@@ -752,6 +752,8 @@ class Structure_mcp
             'redirect_on_login'     => 'n',
             'redirect_on_publish'   => 'n',
             'hide_hidden_templates' => 'n',
+            'show_nav_status'       => 'y',
+            'show_entry_status'     => 'n',
             'add_trailing_slash' => 'y'
         );
 
