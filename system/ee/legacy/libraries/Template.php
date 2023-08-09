@@ -388,7 +388,7 @@ class EE_Template
 
                         $replace = $this->wrapInContextAnnotations(
                             $value,
-                            'Snippet "' . $variable . '"'
+                            'Template Partial "' . $variable . '"'
                         );
 
                         $this->template = str_replace(LD . $variable . RD, $replace, $this->template);
