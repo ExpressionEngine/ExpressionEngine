@@ -150,7 +150,7 @@ if ($cp_asset_data or count($tabs) > 1) {
                     echo $status->renderTag();
                 }
 
-                if (isset($settings['show_nav_status']) && $settings['show_nav_status'] == 'y' && $page['hidden'] == 'y') {
+                if ((!isset($settings['show_nav_status']) || $settings['show_nav_status'] == 'y') && $page['hidden'] == 'y') {
                     echo ' <span class="hidden-page">(hidden)</span>';
                 }
 
