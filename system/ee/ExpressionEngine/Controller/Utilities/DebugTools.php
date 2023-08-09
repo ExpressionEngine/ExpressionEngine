@@ -12,6 +12,7 @@
 namespace ExpressionEngine\Controller\Utilities;
 
 use ExpressionEngine\Library\Advisor;
+use ExpressionEngine\Library\CP\Table;
 
 /**
  * Debug Tools
@@ -44,6 +45,7 @@ class DebugTools extends Utilities
 
         $templateAdvisor = new Advisor\TemplateAdvisor();
         $vars['bad_tags_count'] = $templateAdvisor->getBadTagCount();
+        $vars['duplicate_template_groups_count'] = $templateAdvisor->getDuplicateTemplateGroupsCount();
 
         $ftAdvisor = new Advisor\FieldtypeAdvisor();
         $vars['missing_fieldtype_count'] = $ftAdvisor->getMissingFieldtypeCount();
@@ -141,6 +143,99 @@ class DebugTools extends Utilities
         );
 
         return ee()->cp->render('utilities/debug-tools/missing_fieldtypes', $vars);
+    }
+
+    public function duplicateTemplateGroups()
+    {
+        ee()->view->cp_page_title = lang('debug_tools_debug_duplicate_template_groups');
+
+        $templateAdvisor = new Advisor\TemplateAdvisor();
+
+        $vars = [];
+        $table = ee('CP/Table', array('autosort' => false));
+
+        $table->setColumns(
+            array(
+                'group_id',
+                'group_name',
+                'manage' => array(
+                    'type' => Table::COL_TOOLBAR
+                )
+            )
+        );
+
+        $data = [];
+        $duplicates = $templateAdvisor->getDuplicateTemplateGroups();
+        if (count($duplicates) > 0) {
+            foreach ($duplicates as $row) {
+                $toolbar = array(
+                    'edit' => array(
+                        'href' => ee('CP/URL')->make('design/group/edit/' . $row['group_name'] . '/' . $row['group_id']),
+                        'title' => lang('edit')
+                    ),
+                    'remove' => array(
+                        'href' => '#',
+                        'class' => 'm-link',
+                        'data-confirm' => lang('template_group') . ': <b>' . $row['group_name'] . '</b>, ID: <b>' . $row['group_id'] . '</b>',
+                        'data-group_id' => $row['group_id'],
+                        'title' => lang('remove'),
+                        'rel' => 'modal-confirm-delete-template-group'
+                    )
+                );
+                $column = [
+                    $row['group_id'],
+                    $row['group_name'],
+                    ['toolbar_items' => $toolbar]
+                ];
+                $data[] = [
+                    'attrs' => [],
+                    'columns' => $column
+                ];
+            }
+        }
+
+        $table->setData($data);
+
+        if (!empty($data)) {
+            ee('CP/Alert')
+                ->makeInline()
+                ->addToBody(lang('back_up_db_and_templates'))
+                ->asImportant()
+                ->now();
+        }
+
+        $vars['form_url'] = ee('CP/URL')->make('design/group/remove');
+
+        $base_url = ee('CP/URL', 'utilities/debug-tools/duplicate-template-groups');
+        $vars['table'] = $table->viewData($base_url);
+
+        ee()->cp->add_js_script(array(
+            'file' => array(
+                'cp/confirm_remove',
+                'cp/design/manager'
+            ),
+        ));
+
+        ee()->javascript->output("
+        $(document).ready(function () {
+            $('[rel=modal-confirm-delete-template-group]').click(function (e) {
+                var modalIs = '.' + $(this).attr('rel');
+        
+                $(modalIs + ' .checklist').html(''); // Reset it
+                $(modalIs + ' .checklist').append('<li>' + $(this).data('confirm') + '</li>');
+                $(modalIs + ' input[name=group_id]').val($(this).data('group_id'));
+        
+                e.preventDefault();
+            })
+        });
+        ");
+
+        ee()->view->cp_breadcrumbs = array(
+            ee('CP/URL')->make('utilities/debug-tools')->compile() => lang('debug_tools'),
+            '' => lang('debug_tools_debug_duplicate_template_groups')
+        );
+
+        return ee()->cp->render('utilities/debug-tools/duplicate_template_groups', $vars);
     }
 }
 // END CLASS

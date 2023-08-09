@@ -32,6 +32,10 @@ class Advisor
         if ($bad_tags_count > 0) {
             $messages[] = sprintf(lang('debug_tools_broken_tags_found'), $bad_tags_count);
         }
+        $duplicate_template_groups_count = $templateAdvisor->getDuplicateTemplateGroupsCount();
+        if ($duplicate_template_groups_count > 0) {
+            $messages[] = sprintf(lang('duplicate_template_groups_found'), $duplicate_template_groups_count);
+        }
 
         $ftAdvisor = new \ExpressionEngine\Library\Advisor\FieldtypeAdvisor();
         $missing_fieldtype_count = $ftAdvisor->getMissingFieldtypeCount();
