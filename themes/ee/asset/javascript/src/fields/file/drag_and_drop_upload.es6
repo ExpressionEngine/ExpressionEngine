@@ -67,7 +67,6 @@ class DragAndDropUpload extends React.Component {
     if (directory == 'all') return null;
 
     var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
-
     if (typeof(directory) === 'undefined') {
       return ' ';
     }
@@ -557,14 +556,13 @@ class DragAndDropUpload extends React.Component {
 
     var selectedDirectoryNotInList = false;
     if (this.state.directory != 'all') {
-      dir = this.state.directory;
+      var dir = this.state.directory;
       if (EE.dragAndDrop.uploadDesinations.length != 0) {
         selectedDirectoryNotInList = true;
-        Object.values(EE.dragAndDrop.uploadDesinations).forEach(function (uploadDesination) {
-          if (uploadDesination.value == dir) {
-            selectedDirectoryNotInList = false;
-          }
-        });
+        var dir_in_list = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, dir);
+        if (typeof dir_in_list != 'undefined') {
+          selectedDirectoryNotInList = false;
+        }
       }
     }
     if (EE.dragAndDrop.uploadDesinations.length == 0 || selectedDirectoryNotInList) {
@@ -712,7 +710,8 @@ class DragAndDropUpload extends React.Component {
               e.preventDefault()
               this.uploadNew(this.state.directory)
             }}>{EE.lang.file_dnd_upload_new}</a>
-            <input type="file" className="f_open-filepicker" style={{display: 'none'}} multiple="multiple"/>
+            <label htmlFor="f_open-filepicker_id" className="sr-only">{EE.lang.hidden_input}</label>
+            <input id="f_open-filepicker_id" type="file" className="f_open-filepicker" style={{display: 'none'}} multiple="multiple"/>
             </div>
           </React.Fragment>
           )
@@ -751,7 +750,8 @@ class DragAndDropUpload extends React.Component {
         {this.props.imitationButton && (
           <React.Fragment>
           <a href="#" style={{display: 'none'}} onClick={(el) => this.hiddenUpload(el)} data-upload_location_id={''} data-directory_id={''} data-path={''} className='imitation_button'>Imitation</a>
-          <input type="file" className="f_open-filepicker" style={{display: 'none'}} multiple="multiple"/>
+          <label htmlFor="f_open-filepicker_id" className="sr-only">{EE.lang.hidden_input}</label>
+          <input id="f_open-filepicker_id" type="file" className="f_open-filepicker" style={{display: 'none'}} multiple="multiple"/>
           </React.Fragment>
         )}
         </div>

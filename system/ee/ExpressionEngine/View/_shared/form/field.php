@@ -63,7 +63,7 @@ case 'text':
         <div class="<?=$class?>" <?=isset($field['group']) ? ' data-group="' . $field['group'] . '"' : ''?>>
     <?php endif ?>
 
-            <input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>>
+            <input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?> aria-label="<?=$field_name?>">
 
     <?php if (!empty($class)): ?>
         </div>
@@ -83,20 +83,20 @@ case 'number':
         <div class="<?=$class?>" <?=isset($field['group']) ? ' data-group="' . $field['group'] . '"' : ''?>>
     <?php endif ?>
 
-            <input type="number" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>>
+            <input type="number" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?> aria-label="<?=$field_name?>">
 
     <?php if (!empty($class)): ?>
         </div>
     <?php endif ?>
 <?php break;
 case 'file': ?>
-    <input type="file" name="<?=$field_name?>"<?=$attrs?> class="<?=$class?>">
+    <input type="file" name="<?=$field_name?>"<?=$attrs?> class="<?=$class?>" aria-label="<?=$field_name?>">
 <?php break;
 case 'password': ?>
-    <input type="password" name="<?=$field_name?>" value="<?=$value?>" autocomplete="<?=($field_name=='verify_password' || $field_name=='password_confirm' ? 'current' : 'new')?>-password"<?=$attrs?> class="<?=$class?>">
+    <input type="password" name="<?=$field_name?>" value="<?=$value?>" autocomplete="<?=($field_name=='verify_password' || $field_name=='password_confirm' ? 'current' : 'new')?>-password"<?=$attrs?> class="<?=$class?>" aria-label="<?=$field_name?>">
 <?php break;
 case 'hidden': ?>
-    <input type="hidden" name="<?=$field_name?>" value="<?=$value?>">
+    <input type="hidden" name="<?=$field_name?>" value="<?=$value?>" aria-label="<?=$field_name?>">
 <?php break;
 
 case 'radio_block':
@@ -168,7 +168,7 @@ case 'textarea':
     if ($class): ?>
         <div class="<?=$class?>" <?=isset($field['group']) ? ' data-group="' . $field['group'] . '"' : ''?>>
     <?php endif ?>
-            <textarea name="<?=$field_name?>" <?=(isset($field['cols']) ? "cols=\"{$field['cols']}\"" : "")?> <?=(isset($field['rows']) ? "rows=\"{$field['rows']}\"" : "")?> <?=$attrs?>><?=(isset($field['kill_pipes']) && $field['kill_pipes'] === true) ? str_replace('|', NL, $value) : $value?></textarea>
+            <textarea aria-label="<?=$field_name?>" name="<?=$field_name?>" <?=(isset($field['cols']) ? "cols=\"{$field['cols']}\"" : "")?> <?=(isset($field['rows']) ? "rows=\"{$field['rows']}\"" : "")?> <?=$attrs?>><?=(isset($field['kill_pipes']) && $field['kill_pipes'] === true) ? str_replace('|', NL, $value) : $value?></textarea>
     <?php if ($margin_top or $margin_left): ?>
         </div>
     <?php endif ?>

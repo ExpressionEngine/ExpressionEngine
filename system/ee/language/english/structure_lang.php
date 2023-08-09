@@ -24,8 +24,6 @@ $lang = array(
                                 <li>Use the Content > Publish tab to create your first top level pages
                             </ol>',
     'no_weblogs'        => 'Please create a Channel before using Structure',
-    'no_groups'         => 'No member groups have been given access to Structure yet',
-    'no_groups_add'     => 'Manage member group access',
     'groups'            => 'Group',
     'no_roles'         => 'No member roles have been given access to Structure yet',
     'no_roles_add'     => 'Manage member roles access',

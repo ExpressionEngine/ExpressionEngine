@@ -117,7 +117,7 @@ class Channel
 
         $tag .= $this->fetch_dynamic_params();
 
-        return ee()->cache->get('/' . $this->_sql_cache_prefix . '/' . md5($tag . $this->uri));
+        return ee()->cache->get('/' . $this->_sql_cache_prefix . '/' . md5($tag . ee()->uri->uri_string()));
     }
 
     /**
@@ -128,7 +128,7 @@ class Channel
         $tag = ($identifier == '') ? ee()->TMPL->tagproper : ee()->TMPL->tagproper . $identifier;
 
         return ee()->cache->save(
-            '/' . $this->_sql_cache_prefix . '/' . md5($tag . $this->uri),
+            '/' . $this->_sql_cache_prefix . '/' . md5($tag . ee()->uri->uri_string()),
             $sql,
             0   // No TTL, cache lives on till cleared
         );

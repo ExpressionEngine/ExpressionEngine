@@ -67,7 +67,11 @@ class EntryList
         }
 
         if (! empty($search)) {
-            $entries->search('title', '"' . $search . '"');
+            if (is_numeric($search) && strlen($search) < 3) {
+                $entries->filter('entry_id', $search);
+            } else {
+                $entries->search(['title', 'url_title', 'entry_id'], $search);
+            }
         }
 
         if (! empty($channel_id) && is_numeric($channel_id)) {

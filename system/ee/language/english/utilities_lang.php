@@ -356,8 +356,6 @@ $lang = array(
 
     'mbr_xml_file' => '<abbr title="Extensible Markup Language">XML</abbr> file location',
 
-    'member_group' => 'Member group',
-
     'role' => 'Role',
 
     'member_import_error' => 'Attention: Import not completed',

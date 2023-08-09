@@ -644,15 +644,15 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
       var selectedDirectoryNotInList = false;
 
       if (this.state.directory != 'all') {
-        dir = this.state.directory;
+        var dir = this.state.directory;
 
         if (EE.dragAndDrop.uploadDesinations.length != 0) {
           selectedDirectoryNotInList = true;
-          Object.values(EE.dragAndDrop.uploadDesinations).forEach(function (uploadDesination) {
-            if (uploadDesination.value == dir) {
-              selectedDirectoryNotInList = false;
-            }
-          });
+          var dir_in_list = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, dir);
+
+          if (typeof dir_in_list != 'undefined') {
+            selectedDirectoryNotInList = false;
+          }
         }
       }
 
@@ -812,7 +812,11 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
 
           _this5.uploadNew(_this5.state.directory);
         }
-      }, EE.lang.file_dnd_upload_new), React.createElement("input", {
+      }, EE.lang.file_dnd_upload_new), React.createElement("label", {
+        htmlFor: "f_open-filepicker_id",
+        className: "sr-only"
+      }, EE.lang.hidden_input), React.createElement("input", {
+        id: "f_open-filepicker_id",
         type: "file",
         className: "f_open-filepicker",
         style: {
@@ -863,7 +867,11 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
         "data-directory_id": '',
         "data-path": '',
         className: "imitation_button"
-      }, "Imitation"), React.createElement("input", {
+      }, "Imitation"), React.createElement("label", {
+        htmlFor: "f_open-filepicker_id",
+        className: "sr-only"
+      }, EE.lang.hidden_input), React.createElement("input", {
+        id: "f_open-filepicker_id",
         type: "file",
         className: "f_open-filepicker",
         style: {
