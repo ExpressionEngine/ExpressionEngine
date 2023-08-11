@@ -23,6 +23,7 @@ context('Publish Page - Create', () => {
         cy.visit('admin.php?/cp/design')
       })
       cy.eeConfig({ item: 'show_profiler', value: 'y' })
+      cy.task('filesystem:delete', '../../images/uploads/*')
     })
 
     beforeEach(function(){
@@ -192,6 +193,134 @@ context('Publish Page - Create', () => {
 
           page.get('chosen_files').should('have.length', 2);
         })
+    })
+
+    context('Create entry with file grid', () => {
+
+      beforeEach(function(){
+          cy.visit(Cypress._.replace(page.url, '{channel_id}', 1))
+          page.get('title').should('exist')
+          page.get('url_title').should('exist')
+          cy.wait(1000)
+      })
+
+      before(function() {
+          cy.auth();
+          const channel_field_form = new ChannelFieldForm
+          channel_field_form.createField({
+              group_id: 1,
+              type: 'File Grid',
+              label: 'File Grid Field',
+              fields: { field_content_type: 'all' }
+          })
+
+          cy.visit(Cypress._.replace(page.url, '{channel_id}', 1))
+          page.get('title').should('exist')
+          page.get('url_title').should('exist')
+      })
+
+      it('uploads several files into same field', () => {
+          cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
+          cy.intercept('POST', '**/publish/create/**'). as('validation')
+          cy.get('.js-file-grid').eq(0).find('.file-field__dropzone:visible').attachFile(['../../support/file/README.md', '../../../../LICENSE.txt', '../../support/file/script.sh'], { subjectType: 'drag-n-drop' })
+          //nothing happens until you select upload destination
+          cy.wait(3000);
+          cy.get('.js-file-grid').eq(0).contains('You must choose a directory to upload files').should('be.visible')
+          //select the destination
+          cy.get('.js-file-grid').eq(0).find('.file-field__dropzone-button:visible .js-dropdown-toggle').click();
+          cy.get('.js-file-grid').eq(0).find('.file-field__dropzone-button:visible .dropdown__link:contains("Main Upload Directory")').click()
+          cy.wait('@upload')
+          cy.hasNoErrors()
+
+          //one of the files is not allowed, two should be successfully uploaded
+          cy.get('.js-file-grid').eq(0).should('contain', 'File not allowed')
+          cy.get('.js-file-grid').eq(0).find('a').contains('Dismiss').click()
+          cy.get('.grid-field__table tbody tr:visible').should('have.length', 2)
+          cy.get('.grid-field__table tbody tr:visible').contains('README.md')
+          cy.get('.grid-field__table tbody tr:visible').contains('LICENSE.txt')
+          cy.get('.grid-field__table tbody tr:visible').should('not.contain', 'script.sh')
+
+          //data in place after validation error
+          cy.get('button[value="save"]').click()
+
+          cy.get('.grid-field__table tbody tr:visible').should('have.length', 2)
+          cy.get('.grid-field__table tbody tr:visible').contains('README.md')
+          cy.get('.grid-field__table tbody tr:visible').contains('LICENSE.txt')
+          cy.get('.grid-field__table tbody tr:visible').should('not.contain', 'script.sh')
+
+          //data in place after saving
+          page.get('title').clear().type('File Grid Test').blur()
+          page.get('url_title').focus().blur()
+          cy.wait('@validation')
+          cy.wait(3000)
+          cy.get('button[value="save"]').click()
+          
+          cy.get('.grid-field__table tbody tr:visible').should('have.length', 2)
+          cy.get('.grid-field__table tbody tr:visible').contains('README.md')
+          cy.get('.grid-field__table tbody tr:visible').contains('LICENSE.txt')
+          cy.get('.grid-field__table tbody tr:visible').should('not.contain', 'script.sh')
+      })
+
+      it('File Grid respect min and max rows settings', () => {
+        /**
+         * TODO:
+         * if you don't have any rows, you can still submit the field - that is skipping validation somewhere
+         * we need to find a way to make grid_min_rows: 0 work the same as setting the field required
+         * once that is done, remove 0 from this test - that should really show error
+         */
+        var settings = [
+          {
+            'grid_min_rows': '0',
+            'grid_max_rows': 2,
+            'rows': [0, 1, 2]
+          },
+          {
+            'grid_min_rows': '2',
+            'grid_max_rows': 2,
+            'rows': [0, 2]
+          },
+          {
+            'grid_min_rows': '2',
+            'grid_max_rows': '',
+            'rows': [0, 2, 3]
+          },
+        ];
+        var i = 0;
+        settings.forEach(function(setting) {
+          i++;
+          cy.authVisit('admin.php?/cp/fields');
+          cy.get('.list-item__content:contains("File Grid Field")').click();
+          cy.get('input[name=grid_min_rows]:visible').clear().type(setting.grid_min_rows);
+          cy.get('input[name=grid_max_rows]:visible').clear().type(setting.grid_max_rows + '{end}');
+          cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+          cy.visit(Cypress._.replace(page.url, '{channel_id}', 1))
+          page.get('title').type('File Grid Test ' + i + ' ' + Cypress._.random(1, 99))
+          page.get('url_title').should('exist')
+
+          for (var r = 0; r <= 3; r++) {
+            cy.get('body').type('{ctrl}', {release: false}).type('s')
+            // show error if min rows not met
+            page.hasAlert(setting.rows.includes(r) ? 'success' : 'error')
+
+            if (setting.grid_max_rows != '' && r >= setting.grid_max_rows) {
+              // reached maximum rows
+              cy.get('.js-file-grid').find("button:contains('Choose Existing')").should('not.be.visible')
+              break;
+            }
+
+            // add another row
+            let link = cy.get('.js-file-grid').find("button:contains('Choose Existing'):visible");
+            link.click()
+            link.next('.dropdown').find("a:contains('About')").click()
+            file_modal.get('files').should('be.visible')
+            file_modal.get('files').eq(r).click()
+            file_modal.get('files').should('not.be.visible')
+            cy.get('.grid-field__table tbody tr:visible').should('have.length', r+1)
+            cy.wait(5000); //give JS some extra time
+          }
+        })
+      })
     })
 
     context('when using fluid fields', () => {

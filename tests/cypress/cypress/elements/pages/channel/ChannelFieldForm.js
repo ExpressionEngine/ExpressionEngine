@@ -52,17 +52,19 @@ class ChannelFieldForm extends ControlPanel {
 
         for (const field in options.fields) {
             let value = options.fields[field];
-            if ($(`input[type='radio'][name='${field}']`).length) {
-                cy.get(`input[type='radio'][name='${field}'][value='${value}']`).click()
-            } else if ($(`input[type='checkbox'][name='${field}']`).length) {
-                cy.get(`input[type='checkbox'][name='${field}'][value='${value}']`).click()
-            } else if ($(`input[type!=hidden][name='${field}']`).length) {
-                cy.get(`input[type!=hidden][name='${field}']`).type(value)
-            } else if ($(`textarea[name='${field}']`).length) {
-                cy.get(`textarea[name='${field}']`).type(value)
-            } else if ($(`select[name='${field}']`).length) {
-                cy.get(`select[name='${field}']`).select(value)
-            }
+            cy.get('body').then((body) => {
+                if (body.find("input[type='radio'][name=" +field + "][value='" + value + "']:visible").length > 0) {
+                    cy.get("input[type='radio'][name=" +field + "][value='" + value + "']:visible").check();
+                } else if (body.find("input[type='checkbox'][name=" +field + "][value='" + value + "']:visible").length > 0) {
+                    cy.get("input[type='checkbox'][name=" +field + "][value='" + value + "']:visible").check();
+                } else if (body.find("input[type!=hidden][name=" +field + "][value='" + value + "']:visible").length > 0) {
+                    cy.get("input[type!=hidden][name=" +field + "][value='" + value + "']:visible").clear().type(value);
+                } else if (body.find("textarea[name=" +field + "][value='" + value + "']:visible").length > 0) {
+                    cy.get("textarea[name=" +field + "][value='" + value + "']:visible").clear().type(value);
+                } else if (body.find("select[name=" +field + "][value='" + value + "']:visible").length > 0) {
+                    cy.get("select[name=" +field + "][value='" + value + "']:visible").select();
+                }
+            })
         }
 
 
