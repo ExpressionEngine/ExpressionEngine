@@ -131,7 +131,7 @@ context('Publish Page - Create', () => {
 
         it('the file field restricts you to the chosen directory', () => {
           cy.server();
-          let link = page.get('file_fields').first().find("button:contains('Choose Existing')");
+          let link = cy.get("[data-file-field-react] .file-field__buttons button:contains('Choose Existing'):visible");
           link.click()
 
           link.next('.dropdown').find("a:contains('About')").click()
