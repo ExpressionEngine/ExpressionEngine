@@ -529,7 +529,9 @@ ul.state-sorting {
     }
 
 #structure-ui span.status-tag {
-    line-height: 1.6;
+    font-size: 9px !important;
+    line-height: 1.2;
+    padding: 2px 6px 3px;
     font-weight: normal;
 }
 
