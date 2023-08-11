@@ -393,8 +393,7 @@ else: ?>
                                 $column_desc = lang($columns[$key]['desc']);
                             }
 
-                            $style = (REQ == 'PAGE') ? "style='display:none'" : '';
-                            $column_label = "<div class=\"grid-field__column-label\"  role=\"rowheader\" $style>
+                            $column_label = "<div class=\"grid-field__column-label\"  role=\"rowheader\">
                                 <div class=\"grid-field__column-label__instraction\">
                                     <label>$column_name</label>";
                             if (!empty($column_desc)) {
