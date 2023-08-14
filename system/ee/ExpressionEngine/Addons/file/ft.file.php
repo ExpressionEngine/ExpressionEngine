@@ -860,6 +860,20 @@ JSC;
             )
         );
 
+        if (!array_key_exists($allowed_directories, $directory_choices)) {
+            $selectedDir = ee('Model')->get('UploadDestination', $allowed_directories)->with('Site')->first();
+            if (!is_null($selectedDir)) {
+                $settings['field_options_file']['settings'][1]['fields']['file_field_msm_warning'] = array(
+                    'type' => 'html',
+                    'content' => ee('CP/Alert')->makeInline('file_field_msm_warning')
+                        ->asImportant()
+                        ->addToBody(sprintf(lang('file_field_msm_warning'), $selectedDir->name, $selectedDir->Site->site_label))
+                        ->cannotClose()
+                        ->render()
+                );
+            }
+        }
+
         return $settings;
     }
 
