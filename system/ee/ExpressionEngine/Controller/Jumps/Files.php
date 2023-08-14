@@ -109,7 +109,7 @@ class Files extends Jumps
             $keywords = explode(' ', $searchString);
 
             foreach ($keywords as $keyword) {
-                $directories->filter('name', 'LIKE', '%' . $keyword . '%');
+                $directories->filter('name', 'LIKE', '%' . ee()->db->escape_like_str($keyword) . '%');
             }
         }
 

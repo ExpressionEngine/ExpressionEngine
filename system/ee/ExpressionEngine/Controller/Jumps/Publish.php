@@ -119,7 +119,7 @@ class Publish extends Jumps
             $keywords = explode(' ', $searchString);
 
             foreach ($keywords as $keyword) {
-                $channels->filter('channel_title', 'LIKE', '%' . $keyword . '%');
+                $channels->filter('channel_title', 'LIKE', '%' . ee()->db->escape_like_str($keyword) . '%');
             }
         }
 
@@ -154,7 +154,7 @@ class Publish extends Jumps
             $keywords = explode(' ', $searchString);
 
             foreach ($keywords as $keyword) {
-                $entries->filter('title', 'LIKE', '%' . $keyword . '%');
+                $entries->filter('title', 'LIKE', '%' . ee()->db->escape_like_str($keyword) . '%');
             }
         }
 
