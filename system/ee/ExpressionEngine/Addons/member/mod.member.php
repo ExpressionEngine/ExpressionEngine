@@ -2620,6 +2620,42 @@ class Member
     }
 
     /**
+     * Member Role Groups list
+     */
+    public function role_groups()
+    {
+        $member_id = (!ee()->TMPL->fetch_param('member_id')) ? ee()->session->userdata('member_id') : ee()->TMPL->fetch_param('member_id');
+
+        $member = ee('Model')
+            ->get('Member', $member_id)
+            ->with('RoleGroups')
+            ->all()
+            ->first();
+
+        if (!$member) {
+            return ee()->TMPL->no_results();
+        }
+
+        $vars = [];
+        foreach($member->RoleGroups->asArray() as $roleGroup) {
+            if ($roleGroup->group_id === 0 && $roleGroup->name === null) {
+                continue;
+            }
+
+            $vars[] = [
+                'role_group_id' => $roleGroup->group_id,
+                'role_group_name' => $roleGroup->name,
+            ];
+        };
+
+        if (!$vars) {
+            return ee()->TMPL->no_results();
+        }
+
+        return ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $vars);
+    }
+
+    /**
      * Member roles list
      */
     public function roles()
