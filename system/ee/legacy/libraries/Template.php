@@ -403,6 +403,8 @@ class EE_Template
                             'Snippet "' . $variable . '"'
                         );
 
+                        $replace = $this->addSourceMarker($replace, $variable, $added_globals['template_type']);
+
                         $this->template = str_replace(LD . $variable . RD, $replace, $this->template);
                     }
                 }
@@ -673,6 +675,33 @@ class EE_Template
             $this->final_template = $this->template;
             $this->_cleanup_layout_tags();
         }
+    }
+
+    /**
+     * Adds markers to easier identify where the template is coming from
+     *
+     * @param string $templateContents the template contents
+     * @param string $sourceMarker the name of template / partial / variable
+     * @param string $templateType depending on template type, the syntax might differ
+     * @return string
+     */
+    private function addSourceMarker($templateContents, $sourceMarker, $templateType) {
+        if ($this->debugging) {
+            switch ($templateType) {
+                case 'webpage':
+                    $templateContents = "<!-- " . $sourceMarker . " -->\n" . $templateContents . "\n<!-- // " . $sourceMarker . " -->";
+                    break;
+                case 'css':
+                    $templateContents = "/* " . $sourceMarker . " */\n" . $templateContents . "\n/* // " . $sourceMarker . " */";
+                    break;
+                case 'js':
+                    $templateContents = "// " . $sourceMarker . "\n" . $templateContents . "\n// // " . $sourceMarker . "\n";
+                    break;
+                default:
+                    break;
+            }
+        }
+        return $templateContents;
     }
 
     /**
