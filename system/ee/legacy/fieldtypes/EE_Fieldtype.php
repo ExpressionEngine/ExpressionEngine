@@ -21,6 +21,9 @@ abstract class EE_Fieldtype
     public $field_id;
     public $field_name;
 
+    public $row;
+    public $var_id;
+
     // EE super object
     // @deprecated - use ee()
     protected $EE;

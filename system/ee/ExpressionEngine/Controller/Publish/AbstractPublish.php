@@ -176,7 +176,7 @@ abstract class AbstractPublish extends CP_Controller
                     'toolbar_items' => array(
                         'txt-only' => array(
                             'href' => ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id, array('version' => $version->version_id)),
-                            'title' => lang('view'),
+                            'title' => lang('load_revision'),
                             'content' => lang('view')
                         ),
                     )
@@ -215,7 +215,7 @@ abstract class AbstractPublish extends CP_Controller
                         $current_id,
                         $edit_date,
                         $current_author_id,
-                        '<span class="st-open">' . lang('current') . '</span>'
+                        '<a href="' . ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id) . '"><span class="st-open">' . lang('current') . '</span></a>'
                     ))
             );
         }
