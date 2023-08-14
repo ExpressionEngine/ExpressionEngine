@@ -104,7 +104,10 @@ context('Publish Page - Create', () => {
 
           page.get('file_fields').each(function(field, i) {
 
-              let link = field.find("button:contains('Choose Existing')")
+              cy.intercept('/admin.php?/cp/addons/settings/filepicker/modal*').as('filepicker' + i)
+
+              let link = field.find(".file-field__buttons .button-segment").find(":contains('Choose Existing')")
+              cy.get(link).should('be.visible')
               cy.get(link).click()
 
               if (link.hasClass('has-sub')) {
@@ -112,10 +115,11 @@ context('Publish Page - Create', () => {
                   cy.get(dir_link).click()
               }
 
-              cy.wait(1000)
+              cy.wait('@filepicker' + i)
 
               //page.get('modal').should('be.visible')
               file_modal.get('files').should('be.visible')
+              cy.wait(1000)
               //page.file_modal.wait_for_filters
 
               file_modal.get('files').first().scrollIntoView().click()
@@ -160,25 +164,30 @@ context('Publish Page - Create', () => {
 
         it('the file field retains data after being created and edited', () => {
           page.get('file_fields').each(function(field, i) {
-            let link = field.find("button:contains('Choose Existing')")
+            cy.intercept('/admin.php?/cp/addons/settings/filepicker/modal*').as('filepicker' + i)
+
+            let link = field.find(".file-field__buttons .button-segment").find(":contains('Choose Existing')")
+            cy.get(link).should('be.visible')
             cy.get(link).click()
 
             if (link.hasClass('has-sub')) {
               let dir_link = link.next('.dropdown').find("a:contains('About')")
               cy.get(dir_link).click()
-
-              cy.wait(2000)
-
-              //page.get('modal').should('be.visible')
-              file_modal.get('files').should('be.visible')
-              //page.file_modal.wait_for_filters
-
-              file_modal.get('files').first().click()
-
-              file_modal.get('title').should('not.be.visible')
-
-              cy.wait(500)
             }
+
+            cy.wait('@filepicker' + i)
+
+            cy.wait(2000)
+
+            //page.get('modal').should('be.visible')
+            file_modal.get('files').should('be.visible')
+            //page.file_modal.wait_for_filters
+
+            file_modal.get('files').first().click()
+
+            file_modal.get('title').should('not.be.visible')
+
+            cy.wait(500)
           })
 
           page.get('title').clear().type('File Field Test')
