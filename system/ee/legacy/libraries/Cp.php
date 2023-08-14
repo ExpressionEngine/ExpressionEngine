@@ -152,6 +152,7 @@ class Cp
             'dark_theme' => lang('dark_theme'),
             'light_theme' => lang('light_theme'),
             'many_jump_results' => lang('many_jump_results'),
+            'password_icon' => lang('password_icon')
         );
 
         $lastUpdateCheck = false;

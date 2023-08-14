@@ -100,6 +100,8 @@ abstract class AbstractPublish extends CP_Controller
             'lang.close' => lang('close'),
             'lang.confirm_exit' => lang('confirm_exit'),
             'lang.loading' => lang('loading'),
+            'lang.edit_element' => lang('edit_element'),
+            'lang.remove_btn' => lang('remove_btn'),
             'publish.autosave.interval' => (int) $autosave_interval_seconds,
             'publish.autosave.URL' => ee('CP/URL')->make('publish/autosave/' . $channel_id . '/' . $entry_id)->compile(),
             'publish.channel_title' => ee('Format')->make('Text', $entry->Channel->channel_title)
