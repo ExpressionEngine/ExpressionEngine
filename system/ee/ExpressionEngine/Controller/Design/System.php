@@ -25,7 +25,7 @@ class System extends AbstractDesignController
     {
         parent::__construct();
 
-        if (! ee('Permission')->can('access_design')) {
+        if (! ee('Permission')->can('admin_design')) {
             show_error(lang('unauthorized_access'), 403);
         }
 
