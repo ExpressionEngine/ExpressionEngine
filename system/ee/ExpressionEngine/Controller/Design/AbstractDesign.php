@@ -19,6 +19,7 @@ use ExpressionEngine\Service\CP\Filter\Filter;
 use ExpressionEngine\Service\Filter\FilterFactory;
 use ExpressionEngine\Service\CP\Filter\FilterRunner;
 use ExpressionEngine\Service\Model\Query\Builder as QueryBuilder;
+use ExpressionEngine\Library\Advisor;
 
 /**
  * Abstract Design Controller
@@ -105,7 +106,26 @@ abstract class AbstractDesign extends CP_Controller
                 }
             }
 
+            $groupNamesListed = [];
+
             foreach ($template_groups->all() as $group) {
+                if (in_array($group->group_name, $groupNamesListed)) {
+                    // duplicates found, show alert but do not add to sidebar
+                    if (!isset($duplicateAlert)) {
+                        ee()->lang->load('utilities');
+                        $templateAdvisor = new Advisor\TemplateAdvisor();
+                        $message = sprintf(lang('duplicate_template_groups_found'), $templateAdvisor->getDuplicateTemplateGroupsCount()) . '<br><a href="' . ee('CP/URL')->make('utilities/debug-tools/duplicate-template-groups') . '">' . lang('review_duplicate_template_groups') . '</a>';
+                        $duplicateAlert = ee('CP/Alert')
+                            ->makeInline()
+                            ->addToBody($message)
+                            ->asImportant();
+                        if (ee('Permission')->isSuperAdmin()) {
+                            $duplicateAlert->now();
+                        }
+                        ee()->logger->developer($message, true, 60 * 60 * 24 * 30);
+                    }
+                    continue;
+                }
                 $item = $template_group_list->addItem($group->group_name, ee('CP/URL')->make('design/manager/' . $group->group_name));
 
                 $item->withEditUrl(ee('CP/URL')->make('design/group/edit/' . $group->group_name));
@@ -129,6 +149,8 @@ abstract class AbstractDesign extends CP_Controller
                     $item->asDefaultItem();
                 }
             }
+
+            $groupNamesListed[] = $group->group_name;
         }
 
         // System Templates
@@ -153,16 +175,16 @@ abstract class AbstractDesign extends CP_Controller
             if ($active == 'email') {
                 $item->isActive();
             }
+        }
 
-            if (ee('Config')->getFile()->getBoolean('legacy_member_templates') && ee('Permission')->can('admin_mbr_templates') && ee('Model')->get('Module')->filter('module_name', 'Member')->first()) {
-                $item = $system_templates->addItem(lang('members'), ee('CP/URL')->make('design/members'))
-                    ->withEditUrl(ee('CP/URL')->make('design/members'))
-                    ->cannotEdit()
-                    ->cannotRemove();
+        if (ee('Config')->getFile()->getBoolean('legacy_member_templates') && ee('Permission')->can('admin_mbr_templates')) {
+            $item = $system_templates->addItem(lang('members'), ee('CP/URL')->make('design/members'))
+                ->withEditUrl(ee('CP/URL')->make('design/members'))
+                ->cannotEdit()
+                ->cannotRemove();
 
-                if ($active == 'members') {
-                    $item->isActive();
-                }
+            if ($active == 'members') {
+                $item->isActive();
             }
         }
 
@@ -489,7 +511,7 @@ abstract class AbstractDesign extends CP_Controller
                     'title' => lang('edit')
                 ),
                 'settings' => array(
-                    'href' => $edit_url.'#tab=t-2',
+                    'href' => $edit_url . '#tab=t-2',
                     'class' => 'm-link',
                     'title' => lang('settings'),
                     'data-template-id' => $template->template_id,
@@ -517,6 +539,7 @@ abstract class AbstractDesign extends CP_Controller
             $column[] = array(
                 'name' => 'selection[]',
                 'value' => $template->template_id,
+                'disabled' => (bool_config_item('save_tmpl_files') && $template->template_name == 'index') ? true : false,
                 'data' => array(
                     'confirm' => lang('template') . ': <b>' . htmlentities($template->template_name, ENT_QUOTES, 'UTF-8') . '</b>'
                 )

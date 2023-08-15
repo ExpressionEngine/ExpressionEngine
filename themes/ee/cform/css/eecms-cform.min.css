@@ -16,3 +16,4 @@
 .ee-cform .redactor-in em{display: inline}
 .ee-cform .redactor-in a{font-size:revert}
 @media print{.redactor-in .readmore{padding:0}.redactor-in .readmore::after{display:none}}
+.ee-cform table .grid-field__column-label { display: none;}

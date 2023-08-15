@@ -497,7 +497,8 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
             sectionLabel: currentSection,
             entry_id: items[key].entry_id ? items[key].entry_id : '',
             upload_location_id: items[key].upload_location_id ? items[key].upload_location_id : '',
-            path: items[key].path ? items[key].path : ''
+            path: items[key].path ? items[key].path : '',
+            status: items[key].status ? items[key].status : null
           };
 
           if (items[key].children) {

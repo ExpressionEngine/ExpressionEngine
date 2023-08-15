@@ -53,6 +53,8 @@ class Design extends AbstractDesignController
                     ee()->functions->redirect(ee('CP/URL')->make('design/snippets'));
                 } elseif (ee('Permission')->hasAny('can_create_template_variables', 'can_edit_template_variables', 'can_delete_template_variables')) {
                     ee()->functions->redirect(ee('CP/URL')->make('design/variables'));
+                } elseif (ee('Config')->getFile()->getBoolean('legacy_member_templates') && ee('Permission')->can('admin_mbr_templates')) {
+                    ee()->functions->redirect(ee('CP/URL')->make('design/members'));
                 } else {
                     show_error(lang('unauthorized_access'));
                 }
@@ -143,7 +145,8 @@ class Design extends AbstractDesignController
         $group = ee('Model')->get('TemplateGroup')
             ->fields('group_id', 'group_name')
             ->filter('site_id', ee()->config->item('site_id'))
-            ->order('group_name', 'asc');
+            ->order('group_name', 'asc')
+            ->order('group_id', 'asc'); //get the older group
 
         if ($group_name) {
             $group->filter('group_name', $group_name);

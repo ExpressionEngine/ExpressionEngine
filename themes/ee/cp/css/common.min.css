@@ -31851,6 +31851,9 @@ fieldset .field-control #eye {
   border: 1px solid var(--ee-border);
   overflow-x: auto;
 }
+.grid-field .ui-sortable-placeholder > * {
+  display: none !important;
+}
 
 .grid-field__table th {
   font-size: 0.9em;
