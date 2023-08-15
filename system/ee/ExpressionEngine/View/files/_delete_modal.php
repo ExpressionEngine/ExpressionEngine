@@ -2,7 +2,7 @@
 
 <div class="modal-wrap modal-view-file hidden">
 	<div class="modal modal--no-padding">
-		<a class="m-close" href="#"></a>
+		<a class="m-close" href="#"><span class="sr-only"><?=lang('close_modal')?></span></a>
 		<div class="box">
 		</div>
 	</div>

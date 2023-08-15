@@ -614,7 +614,9 @@ function (_React$Component2) {
       }, props.editable && React.createElement("a", {
         href: "",
         className: "button button--default flyout-edit flyout-edit-icon"
-      }, React.createElement("i", {
+      }, React.createElement("span", {
+        className: "sr-only"
+      }, EE.lang.edit_element), React.createElement("i", {
         "class": "fas fa-pencil-alt"
       })), props.removable && React.createElement("a", {
         href: "",
@@ -622,7 +624,9 @@ function (_React$Component2) {
         onClick: function onClick(e) {
           return props.handleRemove(e, props.item);
         }
-      }, React.createElement("i", {
+      }, React.createElement("span", {
+        className: "sr-only"
+      }, EE.lang.remove_btn), React.createElement("i", {
         "class": "fas fa-fw fa-trash-alt"
       })))));
 

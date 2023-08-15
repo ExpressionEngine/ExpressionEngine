@@ -808,6 +808,55 @@ $lang = array(
 
     'dashboard_needs_some_widgets' => 'Please enable at least one widget',
 
+    /* Accessibility */
+
+    'color_picker_file' => 'Color picker file',
+
+    'colorpicker_input' => 'Colorpicker input',
+
+    'close_modal' => 'Close modal window',
+
+    'close_banner' => 'Close banner icon',
+
+    'image_alt' => 'Image for',
+
+    'clear_filter' => 'Clear filter button',
+
+    'search_for' => 'Search for',
+
+    'save_btn' => 'Button that opens options for saving the page',
+
+    'condition_rule_operator' => 'Select to choice of condition',
+
+    'conditional_rule_value' => 'Conditional rule value input',
+
+    'remove_set' => 'Remove set button',
+
+    'toggle_buton' => 'toggle button',
+
+    'reorder_row' => 'Reorder row button',
+
+    'remove_row' => 'Remove row button',
+
+    'thumbnail_column' => 'Thumbnail Column',
+
+    'toolbar_column' => 'Toolbar Column',
+
+    'textarea_label' => 'Textarea for email body',
+
+    'textarea_query' => 'Query textarea',
+
+    'search_input' => 'Search input',
+
+    'edit_element' => 'Edit element button',
+
+    'remove_btn' => 'Remove button',
+
+    'password_icon' => 'Show or hide password icon',
+
+    'button' => 'button',
+
+    'checkbox' => 'checkbox'
 );
 
 // EOF

@@ -77,81 +77,85 @@ abstract class AbstractDesign extends CP_Controller
         $sidebar = ee('CP/Sidebar')->make();
 
         // Template Groups
-        $template_group_list = $sidebar->addHeader(lang('template_groups'));
+        if (ee('Permission')->isSuperAdmin() || ee('Permission')->can('create_template_groups') || !empty($this->assigned_template_groups)) {
+            $template_group_list = $sidebar->addHeader(lang('template_groups'));
 
-        if (ee('Permission')->can('create_template_groups')) {
-            $template_group_list = $template_group_list->withButton(lang('new'), ee('CP/URL')->make('design/group/create'));
-        }
-
-        $template_group_list = $template_group_list->addFolderList('template-group')
-            ->withRemoveUrl(ee('CP/URL')->make('design/group/remove'))
-            ->withRemovalKey('group_name')
-            ->withNoResultsText(lang('zero_template_groups_found'));
-
-        if (ee('Permission')->can('edit_template_groups')) {
-            $template_group_list->canReorder();
-        }
-
-        $template_groups = ee('Model')->get('TemplateGroup')
-            ->filter('site_id', ee()->config->item('site_id'))
-            ->order('group_order', 'asc');
-
-        if (! ee('Permission')->isSuperAdmin()) {
-            $template_groups->filter('group_id', 'IN', $this->assigned_template_groups);
-
-            if (empty($this->assigned_template_groups)) {
-                $template_groups->markAsFutile();
-            }
-        }
-
-        foreach ($template_groups->all() as $group) {
-            $item = $template_group_list->addItem($group->group_name, ee('CP/URL')->make('design/manager/' . $group->group_name));
-
-            $item->withEditUrl(ee('CP/URL')->make('design/group/edit/' . $group->group_name));
-
-            $item->withRemoveConfirmation(lang('template_group') . ': <b>' . $group->group_name . '</b>')
-                ->identifiedBy($group->group_name);
-
-            if (! ee('Permission')->can('edit_template_groups')) {
-                $item->cannotEdit();
+            if (ee('Permission')->can('create_template_groups')) {
+                $template_group_list = $template_group_list->withButton(lang('new'), ee('CP/URL')->make('design/group/create'));
             }
 
-            if (! ee('Permission')->can('delete_template_groups')) {
-                $item->cannotRemove();
+            $template_group_list = $template_group_list->addFolderList('template-group')
+                ->withRemoveUrl(ee('CP/URL')->make('design/group/remove'))
+                ->withRemovalKey('group_name')
+                ->withNoResultsText(lang('zero_template_groups_found'));
+
+            if (ee('Permission')->can('edit_template_groups')) {
+                $template_group_list->canReorder();
             }
 
-            if ($active_group_id == $group->group_id) {
-                $item->isActive();
+            $template_groups = ee('Model')->get('TemplateGroup')
+                ->filter('site_id', ee()->config->item('site_id'))
+                ->order('group_order', 'asc');
+
+            if (! ee('Permission')->isSuperAdmin()) {
+                $template_groups->filter('group_id', 'IN', $this->assigned_template_groups);
+
+                if (empty($this->assigned_template_groups)) {
+                    $template_groups->markAsFutile();
+                }
             }
 
-            if ($group->is_site_default) {
-                $item->asDefaultItem();
+            foreach ($template_groups->all() as $group) {
+                $item = $template_group_list->addItem($group->group_name, ee('CP/URL')->make('design/manager/' . $group->group_name));
+
+                $item->withEditUrl(ee('CP/URL')->make('design/group/edit/' . $group->group_name));
+
+                $item->withRemoveConfirmation(lang('template_group') . ': <b>' . $group->group_name . '</b>')
+                    ->identifiedBy($group->group_name);
+
+                if (! ee('Permission')->can('edit_template_groups')) {
+                    $item->cannotEdit();
+                }
+
+                if (! ee('Permission')->can('delete_template_groups')) {
+                    $item->cannotRemove();
+                }
+
+                if ($active_group_id == $group->group_id) {
+                    $item->isActive();
+                }
+
+                if ($group->is_site_default) {
+                    $item->asDefaultItem();
+                }
             }
         }
 
         // System Templates
-        $system_templates = $sidebar->addHeader(lang('system_templates'))
-            ->addFolderList('system-templates');
+        if (ee('Permission')->can('admin_design')) {
+            $system_templates = $sidebar->addHeader(lang('system_templates'))
+                ->addFolderList('system-templates');
 
-        $item = $system_templates->addItem(lang('messages'), ee('CP/URL')->make('design/system'))
-            ->withEditUrl(ee('CP/URL')->make('design/system'))
-            ->cannotEdit()
-            ->cannotRemove();
+            $item = $system_templates->addItem(lang('messages'), ee('CP/URL')->make('design/system'))
+                ->withEditUrl(ee('CP/URL')->make('design/system'))
+                ->cannotEdit()
+                ->cannotRemove();
 
-        if ($active == 'messages') {
-            $item->isActive();
+            if ($active == 'messages') {
+                $item->isActive();
+            }
+
+            $item = $system_templates->addItem(lang('email'), ee('CP/URL')->make('design/email'))
+                ->withEditUrl(ee('CP/URL')->make('design/email'))
+                ->cannotEdit()
+                ->cannotRemove();
+
+            if ($active == 'email') {
+                $item->isActive();
+            }
         }
 
-        $item = $system_templates->addItem(lang('email'), ee('CP/URL')->make('design/email'))
-            ->withEditUrl(ee('CP/URL')->make('design/email'))
-            ->cannotEdit()
-            ->cannotRemove();
-
-        if ($active == 'email') {
-            $item->isActive();
-        }
-
-        if (ee('Config')->getFile()->getBoolean('legacy_member_templates') && ee('Permission')->can('admin_mbr_templates') && ee('Model')->get('Module')->filter('module_name', 'Member')->first()) {
+        if (ee('Config')->getFile()->getBoolean('legacy_member_templates') && ee('Permission')->can('admin_mbr_templates')) {
             $item = $system_templates->addItem(lang('members'), ee('CP/URL')->make('design/members'))
                 ->withEditUrl(ee('CP/URL')->make('design/members'))
                 ->cannotEdit()

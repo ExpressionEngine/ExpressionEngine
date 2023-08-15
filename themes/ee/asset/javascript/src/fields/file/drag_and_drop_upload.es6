@@ -60,6 +60,10 @@ class DragAndDropUpload extends React.Component {
     directory = EE.dragAndDrop.uploadDesinations.find(
       thisDirectory => thisDirectory.value == directory
     )
+
+    if (typeof(directory) === 'undefined') {
+      return ' ';
+    }
     return directory.label
   }
 
@@ -309,6 +313,24 @@ class DragAndDropUpload extends React.Component {
     if (this.state.pendingFiles) {
       heading = EE.lang.file_dnd_choose_file_directory
       subheading = EE.lang.file_dnd_choose_directory_before_uploading
+    }
+
+    var selectedDirectoryNotInList = false;
+    if (this.state.directory != 'all') {
+      dir = this.state.directory;
+      if (EE.dragAndDrop.uploadDesinations.length != 0) {
+        selectedDirectoryNotInList = true;
+        Object.values(EE.dragAndDrop.uploadDesinations).forEach(function (uploadDesination) {
+          if (uploadDesination.value == dir) {
+            selectedDirectoryNotInList = false;
+          }
+        });
+      }
+    }
+    if (EE.dragAndDrop.uploadDesinations.length == 0 || selectedDirectoryNotInList) {
+      heading = EE.lang.file_dnd_no_directories;
+      subheading = EE.lang.file_dnd_no_directories_desc;
+      this.props.showActionButtons = false;
     }
 
     return (

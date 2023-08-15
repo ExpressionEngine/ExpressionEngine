@@ -22,6 +22,6 @@
                 <p>Along with the new File Manager, the latest ExpressionEngine 7 release allows Field Groups in Fluid fields, chaining variable modifiers in templates, and new CLI commands. <span class="upgrade-success-banner__blurb-learn">Find out more&hellip;</span></p>
             </a>
         </div>
-        <a href="<?= ee('CP/URL')->make('homepage/dismissBanner')->compile(); ?>" class="banner-dismiss"></a>
+        <a href="<?= ee('CP/URL')->make('homepage/dismissBanner')->compile(); ?>" class="banner-dismiss"><span class="sr-only"><?=lang('close_banner')?></span></a>
     </div>
 <?php endif; ?>

@@ -49,7 +49,7 @@
 								<?php if (isset($settings['content'])): ?>
 									<?=$settings['content']?>
 								<?php else: ?>
-									<label for="<?=$table_id?>-select-all" class="hidden"><?=lang('select_all')?></label>
+									<label for="<?=$table_id?>-select-all" class="sr-only"><?=lang('select_all')?></label>
 									<input id="<?=$table_id?>-select-all" class="input--no-mrg" type="checkbox" title="<?=lang('select_all')?>">
 								<?php endif ?>
 							<?php endif ?>
@@ -73,6 +73,15 @@
                         }
                         ?>
 						<th<?php if (! empty($header_class)): ?> class="<?=trim($header_class)?>"<?php endif ?><?php foreach ($attrs as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
+
+                            <?php if (empty($settings['label']) && $settings['name'] == 'thumbnail') {?>
+                                <span class="sr-only"><?=lang('thumbnail_column')?></span>
+                            <?php } ?>
+
+                            <?php if (empty($settings['label']) && $settings['name'] == 'manage') {?>
+                                <span class="sr-only"><?=lang('toolbar_column')?></span>
+                            <?php } ?>
+
 							<?php if ($header_sorts): ?>
 								<?php
                                 $url = clone $base_url;
@@ -161,7 +170,7 @@
 								</td>
 							<?php elseif ($column['type'] == Table::COL_CHECKBOX): ?>
 								<td class="app-listing__cell app-listing__cell--input text--center">
-									<label class="hidden" for="<?=$table_id . '-' . $i . '-' . $row_id?>"><?=lang('select_row')?></label>
+									<label class="sr-only" for="<?=$table_id . '-' . $i . '-' . $row_id?>"><?=lang('select_row')?></label>
 									<input
 										id="<?=$table_id . '-' . $i . '-' . $row_id?>"
 										class="input--no-mrg"
