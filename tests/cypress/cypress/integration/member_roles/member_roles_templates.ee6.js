@@ -50,7 +50,7 @@ context('Test Templates roles ', () => {
 
 		cy.get('.ee-sidebar__item[title="Templates"]').click()
 
-	   cy.get('.box').contains('No Template Groups found')
+	   cy.get('.box').should('not.contain', 'Template Groups')
 	   cy.get('.box').contains('Messages')
 	   cy.get('.box').contains('Email')
 	   cy.get('.box').contains('Template Routes')
