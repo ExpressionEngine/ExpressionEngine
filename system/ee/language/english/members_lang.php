@@ -561,7 +561,7 @@ $lang = array(
 
     'can_admin_design' => 'Global template settings',
 
-    'can_admin_design_desc' => 'When enabled, users assigned to this group may access the global template settings and template routes.',
+    'can_admin_design_desc' => 'When enabled, users assigned to this group may access the global template settings, system templates, and template routes.',
 
     'can_admin_mbr_groups' => 'Access roles',
 
