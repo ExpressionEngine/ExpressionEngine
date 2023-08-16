@@ -17,11 +17,7 @@ context('Content & Design Settings', () => {
     cy.hasNoErrors()
   })
 
-  it('shows the Content & Design Settings page', () => {
-    //page.all_there?.should == true
-  })
-
-  it('should load current settings into form fields', () => {
+  it('Load current Content & Design Settings into form fields', () => {
 
     cy.eeConfig({item: 'new_posts_clear_caches'}) .then((config) => {
       page.get('new_posts_clear_caches').invoke('val').then((val) => {
@@ -58,7 +54,7 @@ context('Content & Design Settings', () => {
     })
   })
 
-  context('when validating the form', () => {
+  context('Validating Content & Design Settings', () => {
     const image_library_path_error = 'This field must contain a valid path to an image processing library if ImageMagick or NetPBM is the selected protocol.'
 
     it('validates image resize protocol when using ImageMagick', () => {
@@ -78,7 +74,7 @@ context('Content & Design Settings', () => {
       page.get('image_library_path').blur()
       //page.hasErrorsCount(1, 10)
       //page.hasErrors() AJ
-//should_have_form_errors(page)
+
       page.hasError(page.get('image_library_path'), image_library_path_error)
     })
 
@@ -89,7 +85,6 @@ context('Content & Design Settings', () => {
       //page.hasErrorsCount(1)
       //page.hasErrors()AJ
 
-//should_have_form_errors(page)
       page.hasError(page.get('image_library_path'), page.messages.validation.invalid_path)
     })
 
@@ -110,17 +105,15 @@ context('Content & Design Settings', () => {
     page.get('image_library_path').blur()
     page.hasError(page.get('image_library_path'), page.messages.xss_error)
     //page.hasErrors()AJ
-//should_have_form_errors(page)
 
     page.get('emoticon_url').clear().type(page.messages.xss_vector)
     page.get('emoticon_url').blur()
     //page.hasErrorsCount(3)AJ
     page.hasError(page.get('emoticon_url'), page.messages.xss_error)
     //page.hasErrors()AJ
-//should_have_form_errors(page)
   })
 
-  it('should save and load the settings', () => {
+  it('Save and load Content & Design Settings', () => {
 
     let new_posts_clear_caches, enable_sql_caching, auto_assign_cat_parents, enable_emoticons
     cy.eeConfig({item: 'new_posts_clear_caches'}) .then((config) => {

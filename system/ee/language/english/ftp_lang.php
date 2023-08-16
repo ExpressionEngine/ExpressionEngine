@@ -2,7 +2,7 @@
 
 $lang = array(
 
-    'ftp_no_connection' => 'Unable to locate a valid connection ID. Please make sure you are connected before peforming any file routines.',
+    'ftp_no_connection' => 'Unable to locate a valid connection ID. Please make sure you are connected before performing any file routines.',
 
     'ftp_no_source_file' => 'Unable to locate the source file. Please check your path.',
 

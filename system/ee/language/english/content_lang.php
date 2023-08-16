@@ -90,8 +90,6 @@ $lang = array(
 
     'create_entry_error' => 'Cannot Create Entry',
 
-    'copy_of' => 'Copy of',
-
     'create_entry_error_desc' => 'We were unable to create this entry, please review and fix errors below.',
 
     'create_entry_success' => 'Entry Created',
@@ -553,6 +551,8 @@ $lang = array(
 
     'no_entries_matching_that_criteria' => 'There are no entries matching the criteria you selected.',
 
+    'no_entries_on_this_site' => 'The entry belongs to different site.',
+
     'no_glossary' => 'A glossary does not exist',
 
     'no_member_roles' => 'You need to select at least one member role to apply/remove a layout.',
@@ -917,8 +917,6 @@ $lang = array(
     'layout_success' => 'Layout successfully saved.',
 
     'maintain_ratio' => 'Maintain Aspect Ratio',
-
-    'member_group' => 'Member Group',
 
     'no_entry_to_update' => 'You have tried to update an entry that does not exist.',
 

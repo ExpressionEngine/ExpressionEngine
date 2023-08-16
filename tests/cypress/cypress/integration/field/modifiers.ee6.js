@@ -4,7 +4,7 @@ import Category from '../../elements/pages/channel/Category';
 const page = new Category;
 const { _, $ } = Cypress
 
-context('Categories', () => {
+context('Variable Modifiers', () => {
 
     before(function() {
         cy.task('db:seed')
@@ -23,7 +23,7 @@ context('Categories', () => {
         cy.task('filesystem:delete', '../../system/user/config/stopwords.php')
     })
 
-    it('trim modifier in templates', function() {
+    it(':trim modifier in templates', function() {
         cy.visit('index.php/modifiers/trim')
         cy.logFrontendPerformance()
 
@@ -46,7 +46,7 @@ context('Categories', () => {
 
     })
 
-    describe('url_slug modifier in templates', () => {
+    describe(':url_slug modifier in templates', () => {
 
         it('without parameters', function() {
             cy.visit('index.php/modifiers/url_slug')
@@ -76,7 +76,7 @@ context('Categories', () => {
         })
     })
 
-    it('url_encode modifier in templates', function() {
+    it(':url_encode modifier in templates', function() {
         cy.visit('index.php/modifiers/url_encode')
         cy.logFrontendPerformance()
 
@@ -89,7 +89,7 @@ context('Categories', () => {
         cy.get('h4').contains('url_encode, encoded spaces, break in several lines').next('span').invoke('text').should('eq', 'Welcome+to+the+Example+Site%21')
     })
 
-    it('url_decode modifier in templates', function() {
+    it(':url_decode modifier in templates', function() {
         cy.visit('index.php/modifiers/url_decode/Welcome%20to%20the%20Example%20Site%21')
 
         cy.get('h4').contains('url_decode, no params').next('span').invoke('text').should('eq', 'Welcome to the Example Site!')
@@ -108,7 +108,7 @@ context('Categories', () => {
         cy.logFrontendPerformance()
     })
 
-    it('url modifier in templates', function() {
+    it(':url modifier in templates', function() {
         cy.visit('index.php/modifiers/url/www.expressionengine.com')
 
         cy.get('h4').contains('url').next('span').invoke('text').should('eq', 'http://www.expressionengine.com')
@@ -117,7 +117,7 @@ context('Categories', () => {
 
     })
 
-    it('spellout modifier in templates', function() {
+    it(':spellout modifier in templates', function() {
         cy.visit('index.php/modifiers/spellout/84')
 
         cy.get('h4').contains('spellout, no params').next('span').invoke('text').should('eq', 'eighty-four')
@@ -126,7 +126,7 @@ context('Categories', () => {
         cy.logFrontendPerformance()
     })
 
-    it('currency modifier in templates', function() {
+    it(':currency modifier in templates', function() {
         cy.visit('index.php/modifiers/currency')
 
         cy.get('h4').contains('currency, single line').next('span').invoke('text').should('eq', '€2.00')
@@ -135,7 +135,7 @@ context('Categories', () => {
         cy.logFrontendPerformance()
     })
 
-    it('limit modifier in templates', function() {
+    it(':limit modifier in templates', function() {
         cy.visit('index.php/modifiers/limit')
 
         cy.get('h4').contains('hard limit').next('span').invoke('text').should('eq', 'Welcome to the Examp…')
@@ -144,7 +144,7 @@ context('Categories', () => {
         cy.logFrontendPerformance()
     })
 
-    it('modifiers inside relationships', function() {
+    it(':modifiers inside relationships', function() {
         cy.visit('index.php/modifiers/relation')
 
         cy.get('h4').contains('original entry with all params').next('span').invoke('text').should('contain', 'EUR')
@@ -158,6 +158,17 @@ context('Categories', () => {
         cy.logFrontendPerformance()
 
 
+    })
+
+    it('multiple modifiers on title', function() {
+        cy.visit('index.php/modifiers/multiple')
+
+        cy.get('h4').contains('limit, prefixed and unprefixed').next('span').invoke('text').should('eq', 'Welcome to')
+        cy.get('h4').contains('limit + urlencode').next('span').invoke('text').should('eq', 'Welcome+to')
+        cy.get('h4').contains('urlencode, prefixed only').next('span').invoke('text').should('eq', 'Welcome+to+the+Example+Site%21')
+        cy.get('h4').contains('limit + urlencode, mixed params').next('span').invoke('text').should('eq', 'Welcome+to')
+
+        cy.logFrontendPerformance()
     })
 
 })

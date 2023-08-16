@@ -237,8 +237,8 @@ class EE_Template
         // Record the New Relic transaction. Use a constant so that separate instances of this
         // class can't accidentally restart the transaction metrics
         if (!defined('EECMS_NEW_RELIC_TRANS_NAME')) {
-            $template = $this->templates_loaded[0];
-            define('EECMS_NEW_RELIC_TRANS_NAME', "{$template['group_name']}/{$template['template_name']}");
+            $templateLoaded = $this->templates_loaded[0];
+            define('EECMS_NEW_RELIC_TRANS_NAME', "{$templateLoaded['group_name']}/{$templateLoaded['template_name']}");
             ee()->core->set_newrelic_transaction(EECMS_NEW_RELIC_TRANS_NAME);
         }
 
@@ -354,7 +354,7 @@ class EE_Template
             'template_id' => $this->template_id,
             'template_type' => $this->embed_type ?: $this->template_type,
             'is_ajax_request' => AJAX_REQUEST,
-            'is_live_preview_request' => isset(ee()->session) && ee('LivePreview')->hasEntryData(),
+            'is_live_preview_request' => isset(ee()->session) ? ee('LivePreview')->hasEntryData() : false,
         ];
 
         //Pro conditionals
@@ -400,7 +400,7 @@ class EE_Template
 
                         $replace = $this->wrapInContextAnnotations(
                             $value,
-                            'Snippet "' . $variable . '"'
+                            'Template Partial "' . $variable . '"'
                         );
 
                         $this->template = str_replace(LD . $variable . RD, $replace, $this->template);
@@ -420,6 +420,15 @@ class EE_Template
         for ($i = 1; $i < 10; $i++) {
             $this->template = str_replace(LD . 'segment_' . $i . RD, ee()->uri->segment($i), $this->template);
             $this->segment_vars['segment_' . $i] = ee()->uri->segment($i);
+
+            // apply modifiers to segments
+            if (strpos($this->template, LD . 'segment_' . $i . ':') !== false) {
+                if (preg_match_all('/{(segment_' . $i . ':(.*?))}/', $this->template, $matches, PREG_SET_ORDER)) {
+                    foreach ($matches as $match) {
+                        $this->segment_vars[$match[1]] = ee()->uri->segment($i);
+                    }
+                }
+            }
         }
 
         // Parse template route segments
@@ -921,6 +930,8 @@ class EE_Template
         // Find the first open tag
         $open_tag = LD . 'layout:set';
         $close_tag = LD . '/layout:set' . RD;
+
+        $template = $this->decode_channel_form_ee_tags($template);
 
         $open_tag_len = strlen($open_tag);
         $close_tag_len = strlen($close_tag);
@@ -2221,10 +2232,15 @@ class EE_Template
         ee()->db->select('group_id');
         ee()->db->where('group_name', ee()->uri->segment(1));
         ee()->db->where('site_id', ee()->config->item('site_id'));
+        ee()->db->order_by('group_id', 'asc');
         $query = ee()->db->get('template_groups');
 
+        if ($query->num_rows() > 1) {
+            $this->log_item("Duplicate Template Group Name: " . ee()->uri->segment(1) . ". Using Template Group ID: " . $query->row('group_id'));
+        }
+
         // Template group found!
-        if ($query->num_rows() == 1) {
+        if ($query->num_rows() > 0) {
             // Set the name of our template group
             $template_group = ee()->uri->segment(1);
 
@@ -2269,18 +2285,12 @@ class EE_Template
             }
         } else {
             // The first segment in the URL does NOT correlate to a valid template group.  Oh my!
-            if ($query->num_rows() > 1) {
-                $duplicate = true;
-                $log_message = "Duplicate Template Group: " . ee()->uri->segment(1);
-            } else {
-                $duplicate = false;
-                $log_message = "Template group and template not found, showing 404 page";
-            }
+            $this->log_item("Template group and template not found, showing 404 page");
 
             // If we are enforcing strict URLs we need to show a 404
-            if ($duplicate == true or $this->strict_urls == true) {
+            if ($this->strict_urls == true) {
                 // is there a file we can automatically create this template from?
-                if ($duplicate == false && ee()->config->item('save_tmpl_files') == 'y') {
+                if (ee()->config->item('save_tmpl_files') == 'y') {
                     if ($this->_create_from_file(ee()->uri->segment(1), ee()->uri->segment(2))) {
                         return $this->fetch_template(ee()->uri->segment(1), ee()->uri->segment(2), false);
                     }
@@ -3741,7 +3751,7 @@ class EE_Template
 
             // is the modifier valid?
             $method = 'replace_' . $var['modifier'];
-            if (!method_exists($this, $method)) {
+            if (!method_exists($this, $method) && ! ee('Variables/Modifiers')->has($var['modifier'])) {
                 continue;
             }
 
@@ -3763,8 +3773,21 @@ class EE_Template
             } else {
                 $raw = $original;
             }
-            $content = ($method == 'replace_raw_content') ? $raw : $content;
-            $content = $this->$method($content, $var['params']);
+
+            if (isset($var['all_modifiers']) && !empty($var['all_modifiers'])) {
+                foreach ($var['all_modifiers'] as $modifier => $params) {
+                    $method = 'replace_' . $modifier;
+                    if (!method_exists($this, $method) && ! ee('Variables/Modifiers')->has($modifier)) {
+                        continue;
+                    }
+                    $content = ($method == 'replace_raw_content') ? $raw : $content;
+                    $content = $this->$method($content, $params);
+                }
+            } else {
+                $content = ($method == 'replace_raw_content') ? $raw : $content;
+                $content = $this->$method($content, $var['params']);
+            }
+
             $this->conditional_vars[$tagname] = $content;
 
             $tagdata = $this->_parse_var_single($tag, $content, $tagdata);
@@ -4294,6 +4317,11 @@ class EE_Template
             return false;
         }
 
+        // if we don't know site short name, we can't proceed
+        if (empty(ee()->config->item('site_short_name')) || empty(ee()->config->item('site_id'))) {
+            return false;
+        }
+
         ee()->load->library('api');
         ee()->legacy_api->instantiate('template_structure');
 
@@ -4303,6 +4331,7 @@ class EE_Template
             $groups = ee('Model')->get('TemplateGroup')
                 ->with('Templates')
                 ->filter('site_id', ee()->config->item('site_id'))
+                ->order('group_id', 'desc') // sort reverse, so that older group IDs would be used
                 ->all();
         } catch (\Exception $e) {
             //if we got SQL error, silently exit
@@ -4453,7 +4482,7 @@ class EE_Template
 
     protected function getMemberVariables()
     {
-        static $vars;
+        static $vars = [];
 
         if (!isset(ee()->session)) {
             //early parsing, e.g. called from code and not web request

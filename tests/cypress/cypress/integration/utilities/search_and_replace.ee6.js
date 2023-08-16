@@ -2,7 +2,7 @@ import SearchAndReplace from '../../elements/pages/utilities/Search_and_replace'
 
 const page = new SearchAndReplace
 
-context('Search and Replace', () => {
+context('Search and Replace Utility', () => {
   
     before(function(){
         cy.task('db:seed')
@@ -26,7 +26,7 @@ context('Search and Replace', () => {
 	  })
 
 	  //Works
-	  it('should validate the form', () =>{
+	  it('Validates Search and Replace form', () =>{
 	  	/*if this errors, It may be because when the test was written 
 	  	2 Search and replace buttons were present, 
 	  	one @ top 1 @ bottom and multiple hidden buttons existed hidden also existed

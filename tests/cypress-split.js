@@ -82,5 +82,6 @@ getFiles(`${projectDir}/${specDir}`).then(async files => {
 
 async function testCount(filename) {
     const content = await fs.readFile(`${filename}`, 'utf8');
-    return content.match(testPattern).length;
+    const match = content.match(testPattern);
+    return match ? match.length : 0;
 }

@@ -35,6 +35,9 @@
 	var EE = {
 		cp: {
 			validatePasswordUrl: "<?=ee('CP/URL', 'login/validate_password')->compile()?>"
+		},
+		lang: {
+			password_icon: "<?=lang('password_icon')?>"
 		}
 	}
 

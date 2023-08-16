@@ -195,7 +195,7 @@ class MemberImport extends Utilities
      * Callback that handles file upload
      *
      *
-     * @return	bool
+     * @return bool
      */
     public function _file_handler()
     {
@@ -240,7 +240,7 @@ class MemberImport extends Utilities
      *
      * Confirmation page for Member Data import
      *
-     * @return	mixed
+     * @return mixed
      */
     public function memberImportConfirm()
     {
@@ -318,7 +318,7 @@ class MemberImport extends Utilities
      *
      * Imports the members from XML and redirects to the index page on successful completion
      *
-     * @return	void
+     * @return void
      */
     public function processXml()
     {
@@ -403,7 +403,7 @@ class MemberImport extends Utilities
      *
      * Validates both the format and content of Member Import XML
      *
-     * @return	mixed
+     * @return mixed
      */
     public function validateXml($xml)
     {
@@ -506,11 +506,11 @@ class MemberImport extends Utilities
 
                                 break;
                             case 'avatar_filename':
-                                    if (strlen($tag->value) > 120) {
-                                        $errors[] = array(str_replace("%x", $tag->value, lang('invalid_avatar_filename')));
-                                    }
+                                if (strlen($tag->value) > 120) {
+                                    $errors[] = array(str_replace("%x", $tag->value, lang('invalid_avatar_filename')));
+                                }
 
-                                    break;
+                                break;
                             case 'password':
                                 // We require a type attribute here, as outlined in the docs.
                                 // This is a quick error check to ensure its present.
@@ -605,7 +605,7 @@ class MemberImport extends Utilities
      *
      * Inserts new members into the database
      *
-     * @return	number
+     * @return int
      */
     public function doImport()
     {
@@ -667,6 +667,13 @@ class MemberImport extends Utilities
                 $dupe = $member_obj->getValues();
                 unset($dupe['member_id']);
                 ee('Model')->make('Member', $dupe)->save();
+            } elseif (isset($data['member_id'])) {
+                // member was pre-existing in EE
+                $member_obj = ee('Model')->get('Member', $data['member_id'])->first();
+                // do not allow changing self
+                if ($data['member_id'] == ee()->session->userdata('member_id')) {
+                    continue;
+                }
             } else {
                 $member_obj = ee('Model')->make('Member');
             }
@@ -694,7 +701,7 @@ class MemberImport extends Utilities
      *
      * Finds the fields in the first XML record that do not already exist
      *
-     * @return	array
+     * @return array
      */
     private function _custom_field_check($xml_file)
     {
@@ -779,7 +786,7 @@ class MemberImport extends Utilities
      *
      * Creates the custom field form
      *
-     * @return	mixed
+     * @return mixed
      */
     public function createCustomFields()
     {
@@ -847,7 +854,7 @@ class MemberImport extends Utilities
      *
      * Validates new custom field submission
      *
-     * @return	mixed
+     * @return mixed
      */
     private function _create_custom_validation()
     {

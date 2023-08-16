@@ -79,7 +79,7 @@ class Pro_search_upd
         $lowSearch = ee('Addon')->get('low_search');
         if ($lowSearch && $lowSearch->isInstalled()) {
             $this->migrateFromLow();
-            $this->update($this->version);
+            $this->update($lowSearch->getVersion());
             $this->updateVersionNumber();
 
             return true;
@@ -329,18 +329,16 @@ class Pro_search_upd
         // --------------------------------------
 
         if (version_compare($current, '7.0.0', '<')) {
-            $this->_v700();
+            //$this->_v700();
         }
 
         // --------------------------------------
-        // Update to 8.0.1
+        // Update to 8.0.3
         // --------------------------------------
 
-        if (version_compare($current, '8.0.1', '<')) {
+        // if the user updated directly from Low Search to Pro Search 8.0.2, the updates might not have been run
+        if (version_compare($current, '8.0.3', '<')) {
             $this->_v801();
-        }
-
-        if (version_compare($current, '8.0.2', '<')) {
             $this->_v802();
         }
 
@@ -763,7 +761,10 @@ class Pro_search_upd
     {
         // Check to see if low search is in the user folder. If so, leave a developer log item
         if (ee('Filesystem')->isDir(PATH_THIRD . 'low_search')) {
-            ee()->load->library('logger');
+            if (!ee()->has('logger')) {
+                ee()->load->library('logger');
+            }
+
             ee()->logger->developer(lang('low_search_in_third_party_folder_message'), true, 1209600);
         }
     }

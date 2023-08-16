@@ -570,6 +570,10 @@ $setup = [
             return new File\Factory();
         },
 
+        'FileUsage' => function ($ee) {
+            return new File\Usage();
+        },
+
         'Filesystem' => function ($ee) {
             return new Filesystem\Filesystem();
         },
@@ -622,15 +626,15 @@ $setup = [
         },
 
         'Permission' => function ($ee, $site_id = null) {
-            $userdata = ee()->session->all_userdata();
-            $member = ee()->session->getMember();
+            $userdata = (REQ !== 'CLI') ? ee()->session->all_userdata() : [];
+            $member = (REQ !== 'CLI') ? ee()->session->getMember() : false;
             $site_id = ($site_id) ?: ee()->config->item('site_id');
 
             return new Permission\Permission(
                 $ee->make('Model'),
                 $userdata,
                 ($member) ? $member->getPermissions() : [],
-                ($member) ? $member->Roles->getDictionary('role_id', 'name') : [],
+                ($member) ? $member->Roles->getDictionary('role_id', 'name') : (REQ === 'CLI' ? [1 => 'SuperAdmin'] : []),
                 $site_id
             );
         },
@@ -655,6 +659,10 @@ $setup = [
 
         'Validation' => function ($ee) {
             return new Validation\Factory();
+        },
+
+        'Variables/Modifiers' => function ($ee) {
+            return new Template\Variables\Modifiers();
         },
 
         'View/Helpers' => function ($ee) {

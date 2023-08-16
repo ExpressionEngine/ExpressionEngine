@@ -12,7 +12,7 @@ const edit = new EntryManager;
 const fluid_field = new FluidField;
 let file_modal = new FileModal;
 
-context('Publish Page - Create', () => {
+context('Publish Entry', () => {
 
     before(function(){
       cy.task('db:seed')
@@ -75,7 +75,7 @@ context('Publish Page - Create', () => {
         page.get('wrap').find('input[type="checkbox"][value=2]').should('be.checked')
     })
 
-    context('when using file fields', () => {
+    context('Create entry with file fields', () => {
 
         beforeEach(function(){
             cy.visit(Cypress._.replace(page.url, '{channel_id}', 1))
@@ -259,7 +259,7 @@ context('Publish Page - Create', () => {
         })
     })
 
-    context('file grid', () => {
+    context('Create entry with file grid', () => {
 
       beforeEach(function(){
           cy.visit(Cypress._.replace(page.url, '{channel_id}', 1))
@@ -283,7 +283,7 @@ context('Publish Page - Create', () => {
           page.get('url_title').should('exist')
       })
 
-      it('uploads several files', () => {
+      it('uploads several files into same field', () => {
           cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
           cy.intercept('POST', '**/publish/create/**'). as('validation')
           cy.get('.js-file-grid').eq(0).find('.file-field__dropzone:visible').attachFile(['../../support/file/README.md', '../../../../LICENSE.txt', '../../support/file/script.sh'], { subjectType: 'drag-n-drop' })
@@ -324,9 +324,70 @@ context('Publish Page - Create', () => {
           cy.get('.grid-field__table tbody tr:visible').contains('LICENSE.txt')
           cy.get('.grid-field__table tbody tr:visible').should('not.contain', 'script.sh')
       })
+
+      it('File Grid respect min and max rows settings', () => {
+        /**
+         * TODO:
+         * if you don't have any rows, you can still submit the field - that is skipping validation somewhere
+         * we need to find a way to make grid_min_rows: 0 work the same as setting the field required
+         * once that is done, remove 0 from this test - that should really show error
+         */
+        var settings = [
+          {
+            'grid_min_rows': '0',
+            'grid_max_rows': 2,
+            'rows': [0, 1, 2]
+          },
+          {
+            'grid_min_rows': '2',
+            'grid_max_rows': 2,
+            'rows': [0, 2]
+          },
+          {
+            'grid_min_rows': '2',
+            'grid_max_rows': '',
+            'rows': [0, 2, 3]
+          },
+        ];
+        var i = 0;
+        settings.forEach(function(setting) {
+          i++;
+          cy.authVisit('admin.php?/cp/fields');
+          cy.get('.list-item__content:contains("File Grid Field")').click();
+          cy.get('input[name=grid_min_rows]:visible').clear().type(setting.grid_min_rows);
+          cy.get('input[name=grid_max_rows]:visible').clear().type(setting.grid_max_rows + '{end}');
+          cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+          cy.visit(Cypress._.replace(page.url, '{channel_id}', 1))
+          page.get('title').type('File Grid Test ' + i + ' ' + Cypress._.random(1, 99))
+          page.get('url_title').should('exist')
+
+          for (var r = 0; r <= 3; r++) {
+            cy.get('body').type('{ctrl}', {release: false}).type('s')
+            // show error if min rows not met
+            page.hasAlert(setting.rows.includes(r) ? 'success' : 'error')
+
+            if (setting.grid_max_rows != '' && r >= setting.grid_max_rows) {
+              // reached maximum rows
+              cy.get('.js-file-grid').find("button:contains('Choose Existing')").should('not.be.visible')
+              break;
+            }
+
+            // add another row
+            let link = cy.get('.js-file-grid').find("button:contains('Choose Existing'):visible");
+            link.click()
+            link.next('.dropdown').find("a:contains('About')").click()
+            file_modal.get('files').should('be.visible')
+            file_modal.get('files').eq(r).click()
+            file_modal.get('files').should('not.be.visible')
+            cy.get('.grid-field__table tbody tr:visible').should('have.length', r+1)
+            cy.wait(5000); //give JS some extra time
+          }
+        })
+      })
   })
 
-    context('when using fluid fields', () => {
+    context('Create entry with fluid fields', () => {
 
       const available_fields = [
         "A Date",
@@ -515,7 +576,54 @@ context('Publish Page - Create', () => {
         })
       }
 
-      it('adds a field', () => {
+      it('adds field groups', () => {
+
+        cy.authVisit('/admin.php?/cp/fields&group_id=0');
+        cy.get('.list-item__content').contains('Corpse').click()
+
+        cy.wait(5000)
+        cy.get('[data-input-value="field_channel_field_groups"] input[type=checkbox][value=1]').check();
+
+        cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+        cy.visit(Cypress._.replace(page.url, '{channel_id}', 3))
+        page.get('title').type("Fluid Field Test the First")
+        page.get('url_title').clear().type("fluid-field-test-first")
+        cy.hasNoErrors();
+
+        cy.get('.fluid__footer a').contains('Add News').click();
+
+        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-fieldset:visible').contains('News')
+        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').should('have.length', 4);
+        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').eq(0).should('contain', 'Body')
+        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').eq(1).should('contain', 'Extended text')
+        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').eq(2).should('contain', 'Image')
+        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').eq(3).should('contain', 'Item')
+
+        page.get('save').click()
+        //cy.screenshot({capture: 'fullPage'});
+        page.get('alert').contains('Entry Created')
+
+        // Make sure the fields stuck around after save
+        cy.log('Make sure the fields stuck around after save')
+        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-fieldset:visible').contains('News')
+        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').should('have.length', 4);
+        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').eq(0).should('contain', 'Body')
+        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').eq(1).should('contain', 'Extended text')
+        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').eq(2).should('contain', 'Image')
+        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').eq(3).should('contain', 'Item')
+
+        page.get('save').click()
+
+        //cy.screenshot({capture: 'fullPage'});
+
+        page.get('alert').contains('Entry Updated')
+
+        cy.visit('index.php/entries/complex-w-fluid')
+        cy.hasNoErrors();
+      })
+
+      it('adds a field to Fluid', () => {
 
         available_fields.forEach(function(field, index) {
           fluid_field.get('actions_menu.fields').eq(index).click()
@@ -546,9 +654,10 @@ context('Publish Page - Create', () => {
         cy.logCPPerformance()
 
         cy.visit('index.php/entries/complex-w-fluid')
+        cy.hasNoErrors();
       })
 
-      it('adds repeat fields', () => {
+      it('adds repeat fields to Fluid', () => {
         const number_of_fields = available_fields.length
 
         available_fields.forEach(function(field, index) {
@@ -582,7 +691,7 @@ context('Publish Page - Create', () => {
       // it('s fields', () => {
       // }
 
-      it('removes fields', () => {
+      it('removes fields from Fluid', () => {
         // First: without saving
         available_fields.forEach(function(field, index) {
           fluid_field.get('actions_menu.fields').eq(index).click()
@@ -626,7 +735,7 @@ context('Publish Page - Create', () => {
         fluid_field.get('items').should('have.length', 0)
       })
 
-      it('keeps data when the entry is invalid', () => {
+      it('keeps data in Fluid when the entry is invalid', () => {
         available_fields.forEach(function(field, index) {
           fluid_field.get('actions_menu.fields').eq(index).click()
           fluid_field.add_content(index)
@@ -646,7 +755,7 @@ context('Publish Page - Create', () => {
 
     })
 
-    context('various Grids', () => {
+    context('Create entry with various Grids', () => {
       it('Grid with Buttons', () => {
         cy.authVisit('admin.php?/cp/fields/create/1')
         cy.get('[data-input-value=field_type] .select__button.js-dropdown-toggle').should('exist')

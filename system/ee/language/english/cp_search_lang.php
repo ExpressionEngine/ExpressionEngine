@@ -42,8 +42,6 @@ $lang = array(
 
     'member_custom_profile_fields' => 'Custom Member Fields',
 
-    'member_group_manager' => 'Member Group Manager',
-
     'member_ip_search' => 'Member IP Search',
 
     'member_register_member' => 'Register Member',
@@ -55,8 +53,6 @@ $lang = array(
     'member_view_members' => 'View Members',
 
     'members_custom_profile_fields' => 'Custom Member Profile Fields',
-
-    'members_member_group_manager' => 'Member Group Management',
 
     'modu_index' => 'Modules',
 

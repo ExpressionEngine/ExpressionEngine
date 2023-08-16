@@ -39,7 +39,7 @@ context('Block and Allow', () => {
 
   })
 
-  it('should save Blocked', () => {
+  it('Should save Blocked list', () => {
     page.get('blockedlist_ip').should('be.visible')
     page.get('allowedlist_ip').should('not.be.visible')
     page.get('htaccess_path').should('not.be.visible')
@@ -53,7 +53,7 @@ context('Block and Allow', () => {
     page.get('blockedlist_ip').contains('1.1.1.1');
   })
 
-  it('should download blocked list', () => {
+  it('Should download blocked list', () => {
     page.get('blockedlist_ip').should('be.visible')
     page.get('allowedlist_ip').should('not.be.visible')
     page.get('htaccess_path').should('not.be.visible')
@@ -70,7 +70,7 @@ context('Block and Allow', () => {
     page.get('blockedlist_url').contains('-poker.');
   })
 
-  it('should save Allowed', () => {
+  it('Should save Allowed list', () => {
     page.get('allowed_tab_switch').click()
     
     page.get('blockedlist_ip').should('not.be.visible')
@@ -87,7 +87,7 @@ context('Block and Allow', () => {
     page.get('allowedlist_url').contains('expressionengine.com');
   })
 
-  it('should download allowed list', () => {
+  it('Should download allowed list', () => {
     page.get('allowed_tab_switch').click()
     
     page.get('blockedlist_ip').should('not.be.visible')
@@ -104,7 +104,7 @@ context('Block and Allow', () => {
     page.get('allowedlist_url').contains('del.icio.us');
   })
 
-  it('should save to .htaccess', () => {
+  it('Should save to .htaccess', () => {
     page.get('settings_tab_switch').click()
     
     page.get('blockedlist_ip').should('not.be.visible')

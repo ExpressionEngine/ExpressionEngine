@@ -49,6 +49,10 @@ class Filemanager
     }
 
     /**
+     * A compatibility version of the `clean_subdir_and_filename` function
+     * Does not include server path (but may include subdirectories)
+     * Safe to use in EE7 for compatibility with subdirs and cloud storages
+     *
      * Cleans the filename to prep it for the system, mostly removing spaces
      * sanitizing the file name and checking for duplicates.
      *
@@ -58,10 +62,9 @@ class Filemanager
      *   'convert_spaces' (Default: TRUE) Setting this to FALSE will not remove spaces
      *   'ignore_dupes' (Default: TRUE) Setting this to FALSE will check for duplicates
      *
-     * @return string Full path and filename of the file, use basepath() to just
-     *   get the filename
+     * @return string Subdirectory path and filename of the file
      */
-    public function clean_filename($filename, $dir_id, $parameters = array())
+    public function clean_subdir_and_filename($filename, $dir_id, $parameters = array())
     {
         // at one time the third parameter was (bool) $dupe_check
         if (! is_array($parameters)) {
@@ -93,6 +96,32 @@ class Filemanager
 
         if ($parameters['ignore_dupes'] === false) {
             $filename = $prefs['directory']->getFilesystem()->getUniqueFilename($filename);
+        }
+
+        return $filename;
+    }
+
+    /**
+     * Cleans the filename to prep it for the system, mostly removing spaces
+     * sanitizing the file name and checking for duplicates.
+     *
+     * @param string $filename The filename to clean the name of
+     * @param integer $dir_id The ID of the directory in which we'll check for duplicates
+     * @param array $parameters Associative array containing optional parameters
+     *   'convert_spaces' (Default: TRUE) Setting this to FALSE will not remove spaces
+     *   'ignore_dupes' (Default: TRUE) Setting this to FALSE will check for duplicates
+     *
+     * @return string Full path and filename of the file, use `clean_subdir_and_filename` instead to just
+     *   get the filename and subdirectory
+     */
+    public function clean_filename($filename, $dir_id, $parameters = array()) 
+    {
+        $filename = $this->clean_subdir_and_filename($filename, $dir_id, $parameters);
+
+        $prefs = $this->fetch_upload_dir_prefs($dir_id, true);
+
+        if ($prefs['adapter'] == 'local') {
+            $filename = $prefs['server_path'] . $filename;
         }
 
         return $filename;
@@ -143,7 +172,7 @@ class Filemanager
         $dir = ee('Model')->get('UploadDestination', $dir_id);
 
         if (! $ignore_site_id) {
-            $dir->filter('site_id', ee()->config->item('site_id'));
+            $dir->filter('site_id', 'IN', [0, ee()->config->item('site_id')]);
         }
 
         if ($dir->count() < 1) {
@@ -368,20 +397,27 @@ class Filemanager
                 return $this->_save_file_response(false, lang('gd_not_installed'));
             }
 
-            // Check and fix orientation
-            $orientation = $this->orientation_check($image_path, $prefs);
+            if(!($prefs['image_processed'] ?? false)) {
+                // Check and fix orientation
+                $orientation = $this->orientation_check($image_path, $prefs);
 
-            if (! empty($orientation)) {
-                $prefs = $orientation;
+                if (! empty($orientation)) {
+                    $prefs = $orientation;
+                }
+
+                $prefs = $this->max_hw_check($image_path, array_merge($prefs, [
+                    // If we're using a temp image we need to pass along a null filesystem in some cases
+                    'filesystem' => isset($prefs['temp_file']) && !empty($prefs['temp_file']) ? null : $directory['upload_destination']->getFilesystem()
+                ]));
             }
-
-            $prefs = $this->max_hw_check($image_path, array_merge($prefs, [
-                // If we're using a temp image we need to pass along a null filesystem in some cases
-                'filesystem' => isset($prefs['temp_file']) && !empty($prefs['temp_file']) ? null : $directory['upload_destination']->getFilesystem()
-            ]));
 
             if (! $prefs) {
                 return $this->_save_file_response(false, lang('image_exceeds_max_size'));
+            }
+
+            // Write $image_path to $file_path
+            if($image_path !== $file_path) {
+                $directory['upload_destination']->getFilesystem()->write($file_path, file_get_contents($image_path), true);
             }
 
             // It is important to use the same upload destination object because of filesystem caching
@@ -1610,7 +1646,7 @@ class Filemanager
         $directories = ee('Model')->get('UploadDestination');
 
         if (!$ignore_site_id) {
-            $directories->filter('site_id', ee()->config->item('site_id'));
+            $directories->filter('site_id', 'IN', [0, ee()->config->item('site_id')]);
         }
 
         $dirs = $directories->all()->indexBy('id');
@@ -1864,7 +1900,7 @@ class Filemanager
 
         $field = ($field_name) ? $field_name : 'userfile';
         $original_filename = $_FILES[$field]['name'];
-        $clean_filename = basename($this->clean_filename(
+        $clean_filename = basename($this->clean_subdir_and_filename(
             $_FILES[$field]['name'],
             $dir['id'],
             array('ignore_dupes' => true)
@@ -2009,6 +2045,8 @@ class Filemanager
                     )
                 );
             }
+
+            $file_data['image_processed'] = true;
         }
 
         // Save file to database
@@ -2232,7 +2270,7 @@ class Filemanager
     public function _rename_raw_file($old_file_name, $new_file_name, $directory_id)
     {
         // Make sure the filename is clean
-        $new_file_name = $this->clean_filename($new_file_name, $directory_id);
+        $new_file_name = $this->clean_subdir_and_filename($new_file_name, $directory_id);
 
         // Check they have permission for this directory and get directory info
         $upload_directory = $this->fetch_upload_dir_prefs($directory_id);
