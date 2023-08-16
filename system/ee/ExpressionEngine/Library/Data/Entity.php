@@ -34,7 +34,7 @@ abstract class Entity extends MixableImpl implements Publisher
     protected $_filters = array();
 
     /**
-     * @var Backup of clean values
+     * @var Array Backup of clean values
      */
     protected $_clean_backups = array();
 
@@ -158,8 +158,10 @@ abstract class Entity extends MixableImpl implements Publisher
             }
 
             $child = $class;
-        } while (($class = get_parent_class($class))
-            && $child != 'ExpressionEngine\Service\Model\Model');
+        } while (
+            ($class = get_parent_class($class))
+            && $child != 'ExpressionEngine\Service\Model\Model'
+        );
 
         return array_reverse($values);
     }
@@ -648,9 +650,7 @@ abstract class Entity extends MixableImpl implements Publisher
         if ($new_value !== $old_value) {
             if (! $this->hasBackup($name)) {
                 $this->setBackup($name, $old_value);
-            } elseif ($new_value === $this->getBackup($name) && !is_null($new_value)) {
-                // if both values are NULL, we might be dealing with complex fields
-                // do not mark as clean in that case
+            } elseif ($new_value === $this->getBackup($name)) {
                 $this->markAsClean($name);
             }
         }
