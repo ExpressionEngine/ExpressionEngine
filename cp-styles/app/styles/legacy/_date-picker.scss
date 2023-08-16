@@ -164,7 +164,19 @@
 		margin-top: $s-xs;
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
+		justify-content: center;
+
+		#date-picker-time-block {
+			display: none;
+		}
+
+		&.include_time {
+			justify-content: space-between;
+
+			#date-picker-time-block {
+				display: block;
+			}
+		}
 
 		input[type="time"] {
 			padding: 5px 15px !important;

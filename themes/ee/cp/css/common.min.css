@@ -37074,7 +37074,16 @@ body[data-theme="dark"] {
   margin-top: 5px;
   display: flex;
   align-items: center;
+  justify-content: center;
+}
+.date-picker-wrap .date-picker-footer #date-picker-time-block {
+  display: none;
+}
+.date-picker-wrap .date-picker-footer.include_time {
   justify-content: space-between;
+}
+.date-picker-wrap .date-picker-footer.include_time #date-picker-time-block {
+  display: block;
 }
 .date-picker-wrap .date-picker-footer input[type=time] {
   padding: 5px 15px !important;

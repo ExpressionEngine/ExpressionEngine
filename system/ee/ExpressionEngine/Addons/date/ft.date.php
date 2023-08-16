@@ -177,6 +177,8 @@ class Date_ft extends EE_Fieldtype
         }
 
         $include_seconds = ee()->session->userdata('include_seconds', ee()->config->item('include_seconds'));
+        $show_time_on_fe = isset($this->settings['localization']) ? get_bool_from_string($this->settings['show_time']) : false;
+
         ee()->javascript->set_global('date.date_format', ee()->localize->get_date_format(false, $include_time));
         ee()->javascript->set_global('date.include_seconds', $include_seconds);
         ee()->javascript->set_global('date.time_format', ee()->session->userdata('time_format', ee()->config->item('time_format')));
@@ -184,7 +186,6 @@ class Date_ft extends EE_Fieldtype
         $this->addDatePickerScript();
 
         $localized = (! isset($_POST[$date_local])) ? (($localize === true) ? 'y' : 'n') : ee()->input->post($date_local, true);
-
         $show_localize_options = 'ask';
         if (isset($this->settings['localization']) && $this->settings['localization'] == 'fixed') {
             $show_localize_options = 'fixed';
@@ -200,7 +201,8 @@ class Date_ft extends EE_Fieldtype
             'localize_option_name' => $date_local,
             'localized' => $localized,
             'date_format' => ee()->localize->get_date_format(false, $include_time),
-            'disabled' => $this->get_setting('field_disabled')
+            'disabled' => $this->get_setting('field_disabled'),
+            'include_time' => $include_time,
         ));
     }
 

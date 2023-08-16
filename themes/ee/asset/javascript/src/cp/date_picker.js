@@ -150,6 +150,7 @@ EE.cp.datePicker = {
 				}
 
 				var include_seconds = EE.date.include_seconds
+				var timeBlock;
 
 				if (include_seconds == 'y') {
 					timeBlock = '<input type="time" value="12:00:00" step="1">';
@@ -315,6 +316,16 @@ EE.cp.datePicker = {
 			}
 
 			if ($(this.element).val()) {
+				if ($(this.element).data('include_time') != undefined) {
+					if ($(this.element).data('include_time')) {
+						$('.date-picker-wrap .date-picker-footer').addClass('include_time');
+					} else {
+						if ($('.date-picker-wrap .date-picker-footer').hasClass('include_time')) {
+							$('.date-picker-wrap .date-picker-footer').removeClass('include_time');
+						}
+					}
+				}
+
 				var timestamp = $(this.element).data('timestamp');
 
 				var time_format = EE.date.time_format;
@@ -377,6 +388,17 @@ EE.cp.datePicker = {
 				d = new Date();
 				year  = d.getFullYear();
 				month = d.getMonth();
+
+				if ($(this.element).data('include_time') != undefined) {
+					if ($(this.element).data('include_time')) {
+						$('.date-picker-wrap .date-picker-footer').addClass('include_time');
+					} else {
+						if ($('.date-picker-wrap .date-picker-footer').hasClass('include_time')) {
+							$('.date-picker-wrap .date-picker-footer').removeClass('include_time');
+						}
+					}
+				}
+
 				if (include_seconds == 'y') {
 					$('.date-picker-wrap .date-picker-footer input[type="time"]').val('12:00:00');
 				} else {
