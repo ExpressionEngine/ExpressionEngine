@@ -456,7 +456,7 @@ class Member
         }
 
         if (! EE_Messages::can_send_pm()) {
-            return;
+            return '';
         }
 
         $MESS = new EE_Messages();

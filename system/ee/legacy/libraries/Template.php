@@ -237,8 +237,8 @@ class EE_Template
         // Record the New Relic transaction. Use a constant so that separate instances of this
         // class can't accidentally restart the transaction metrics
         if (!defined('EECMS_NEW_RELIC_TRANS_NAME')) {
-            $template = $this->templates_loaded[0];
-            define('EECMS_NEW_RELIC_TRANS_NAME', "{$template['group_name']}/{$template['template_name']}");
+            $templateLoaded = $this->templates_loaded[0];
+            define('EECMS_NEW_RELIC_TRANS_NAME', "{$templateLoaded['group_name']}/{$templateLoaded['template_name']}");
             ee()->core->set_newrelic_transaction(EECMS_NEW_RELIC_TRANS_NAME);
         }
 
@@ -400,7 +400,7 @@ class EE_Template
 
                         $replace = $this->wrapInContextAnnotations(
                             $value,
-                            'Snippet "' . $variable . '"'
+                            'Template Partial "' . $variable . '"'
                         );
 
                         $this->template = str_replace(LD . $variable . RD, $replace, $this->template);
@@ -930,6 +930,8 @@ class EE_Template
         // Find the first open tag
         $open_tag = LD . 'layout:set';
         $close_tag = LD . '/layout:set' . RD;
+
+        $template = $this->decode_channel_form_ee_tags($template);
 
         $open_tag_len = strlen($open_tag);
         $close_tag_len = strlen($close_tag);
@@ -2230,10 +2232,15 @@ class EE_Template
         ee()->db->select('group_id');
         ee()->db->where('group_name', ee()->uri->segment(1));
         ee()->db->where('site_id', ee()->config->item('site_id'));
+        ee()->db->order_by('group_id', 'asc');
         $query = ee()->db->get('template_groups');
 
+        if ($query->num_rows() > 1) {
+            $this->log_item("Duplicate Template Group Name: " . ee()->uri->segment(1) . ". Using Template Group ID: " . $query->row('group_id'));
+        }
+
         // Template group found!
-        if ($query->num_rows() == 1) {
+        if ($query->num_rows() > 0) {
             // Set the name of our template group
             $template_group = ee()->uri->segment(1);
 
@@ -2278,18 +2285,12 @@ class EE_Template
             }
         } else {
             // The first segment in the URL does NOT correlate to a valid template group.  Oh my!
-            if ($query->num_rows() > 1) {
-                $duplicate = true;
-                $this->log_item("Duplicate Template Group: " . ee()->uri->segment(1));
-            } else {
-                $duplicate = false;
-                $this->log_item("Template group and template not found, showing 404 page");
-            }
+            $this->log_item("Template group and template not found, showing 404 page");
 
             // If we are enforcing strict URLs we need to show a 404
-            if ($duplicate == true or $this->strict_urls == true) {
+            if ($this->strict_urls == true) {
                 // is there a file we can automatically create this template from?
-                if ($duplicate == false && ee()->config->item('save_tmpl_files') == 'y') {
+                if (ee()->config->item('save_tmpl_files') == 'y') {
                     if ($this->_create_from_file(ee()->uri->segment(1), ee()->uri->segment(2))) {
                         return $this->fetch_template(ee()->uri->segment(1), ee()->uri->segment(2), false);
                     }
@@ -4317,7 +4318,7 @@ class EE_Template
         }
 
         // if we don't know site short name, we can't proceed
-        if (empty(ee()->config->item('site_short_name'))) {
+        if (empty(ee()->config->item('site_short_name')) || empty(ee()->config->item('site_id'))) {
             return false;
         }
 
@@ -4330,6 +4331,7 @@ class EE_Template
             $groups = ee('Model')->get('TemplateGroup')
                 ->with('Templates')
                 ->filter('site_id', ee()->config->item('site_id'))
+                ->order('group_id', 'desc') // sort reverse, so that older group IDs would be used
                 ->all();
         } catch (\Exception $e) {
             //if we got SQL error, silently exit

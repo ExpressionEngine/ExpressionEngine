@@ -48,6 +48,7 @@
                                 disabled="disabled"
                             <?php endif; ?>
                             type="checkbox"
+                            aria-label="<?=$row['label'] . ' ' . lang('checkbox')?>"
                         >
                     </div>
                 <?php endif ?>

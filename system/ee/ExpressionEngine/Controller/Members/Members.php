@@ -38,7 +38,8 @@ class Members extends CP_Controller
         $this->base_url = ee('CP/URL')->make('members');
 
         ee()->javascript->set_global([
-            'cp.validatePasswordUrl' => ee('CP/URL', 'login/validate_password')->compile()
+            'cp.validatePasswordUrl' => ee('CP/URL', 'login/validate_password')->compile(),
+            'lang.password_icon' => lang('password_icon')
         ]);
     }
 
@@ -286,6 +287,21 @@ class Members extends CP_Controller
         ee()->email->subject($email_title);
         ee()->email->message(entities_to_ascii($email_message));
         return ee()->email->send();
+    }
+
+    public function banned()
+    {
+        ee()->functions->redirect(ee('CP/URL')->make('members', ['role_filter' => Member::BANNED]));
+    }
+
+    public function banSettings()
+    {
+        ee()->functions->redirect(ee('CP/URL')->make('settings/ban'));
+    }
+
+    public function pending()
+    {
+        ee()->functions->redirect(ee('CP/URL')->make('members', ['role_filter' => Member::PENDING]));
     }
 
     /**

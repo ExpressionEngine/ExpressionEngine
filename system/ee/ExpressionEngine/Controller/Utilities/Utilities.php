@@ -87,6 +87,7 @@ class Utilities extends CP_Controller
             $debug_tools = $sidebar->addHeader(lang('debug_tools'))
                 ->addBasicList();
             $debug_tools->addItem(lang('debug_tools_overview'), ee('CP/URL')->make('utilities/debug-tools'));
+            $debug_tools->addItem(lang('debug_tools_debug_duplicate_template_groups'), ee('CP/URL')->make('utilities/debug-tools/duplicate-template-groups'));
             $debug_tools->addItem(lang('debug_tools_debug_tags'), ee('CP/URL')->make('utilities/debug-tools/debug-tags'));
             $debug_tools->addItem(lang('debug_tools_fieldtypes'), ee('CP/URL')->make('utilities/debug-tools/debug-fieldtypes'));
         }

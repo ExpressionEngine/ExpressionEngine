@@ -83,7 +83,7 @@ class DropDownButton extends React.Component {
                     </> }
                     <div className="dropdown__scroll">
                         {this.props.addInput &&
-                            <input type="file" className="f_open-filepicker" style={{display: 'none'}} data-upload_location_id={''} data-path={''} />
+                            <label htmlFor="f_open-filepicker_id" className="sr-only">{EE.lang.hidden_input}</label> && <input id="f_open-filepicker_id" type="file" className="f_open-filepicker" style={{display: 'none'}} data-upload_location_id={''} data-path={''} />
                         }
                         {this.dropdownRecursion(dropdownItems)}
                     </div>

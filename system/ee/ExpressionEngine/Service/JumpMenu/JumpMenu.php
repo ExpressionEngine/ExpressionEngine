@@ -199,7 +199,7 @@ class JumpMenu extends AbstractJumpMenu
                 'command' => 'manage_bans ip_address_banning email_address_banning username_banning screen_name_banning ban_options',
                 'dynamic' => false,
                 'addon' => false,
-                'target' => 'members/ban-settings',
+                'target' => 'settings/ban',
                 'permission' => 'ban_users'
             ),
             //categories
@@ -1809,6 +1809,14 @@ class JumpMenu extends AbstractJumpMenu
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'utilities/debug-tools/debug-fieldtypes',
+                'permission' => 'is_super_admin'
+            ),
+            'systemUtilitiesDebugDuplicateTemplateGroups' => array(
+                'icon' => 'fa-hammer',
+                'command' => 'system_utilities debug_tools_debug_duplicate_template_groups',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'utilities/debug-tools/duplicate-template-groups',
                 'permission' => 'is_super_admin'
             ),
             'systemUtilitiesFileConverter' => array(

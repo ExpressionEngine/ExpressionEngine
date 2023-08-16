@@ -326,6 +326,67 @@ context('Publish Entry', () => {
           cy.get('.grid-field__table tbody tr:visible').contains('LICENSE.txt')
           cy.get('.grid-field__table tbody tr:visible').should('not.contain', 'script.sh')
       })
+
+      it('File Grid respect min and max rows settings', () => {
+        /**
+         * TODO:
+         * if you don't have any rows, you can still submit the field - that is skipping validation somewhere
+         * we need to find a way to make grid_min_rows: 0 work the same as setting the field required
+         * once that is done, remove 0 from this test - that should really show error
+         */
+        var settings = [
+          {
+            'grid_min_rows': '0',
+            'grid_max_rows': 2,
+            'rows': [0, 1, 2]
+          },
+          {
+            'grid_min_rows': '2',
+            'grid_max_rows': 2,
+            'rows': [0, 2]
+          },
+          {
+            'grid_min_rows': '2',
+            'grid_max_rows': '',
+            'rows': [0, 2, 3]
+          },
+        ];
+        var i = 0;
+        settings.forEach(function(setting) {
+          i++;
+          cy.authVisit('admin.php?/cp/fields');
+          cy.get('.list-item__content:contains("File Grid Field")').click();
+          cy.get('input[name=grid_min_rows]:visible').clear().type(setting.grid_min_rows);
+          cy.get('input[name=grid_max_rows]:visible').clear().type(setting.grid_max_rows + '{end}');
+          cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+          cy.visit(Cypress._.replace(page.url, '{channel_id}', 1))
+          page.get('title').type('File Grid Test ' + i + ' ' + Cypress._.random(1, 99))
+          page.get('url_title').should('exist')
+
+          for (var r = 0; r <= 3; r++) {
+            cy.get('body').type('{ctrl}', {release: false}).type('s')
+            // show error if min rows not met
+            page.hasAlert(setting.rows.includes(r) ? 'success' : 'error')
+
+            if (setting.grid_max_rows != '' && r >= setting.grid_max_rows) {
+              // reached maximum rows
+              cy.get('.js-file-grid').find("button:contains('Choose Existing')").should('not.be.visible')
+              break;
+            }
+
+            // add another row
+            let link = cy.get('.js-file-grid').find("button:contains('Choose Existing'):visible");
+            link.click()
+            link.next('.dropdown').find("a:contains('About')").click()
+            file_modal.get('files').should('be.visible')
+            file_modal.get('files').eq(r).click()
+            file_modal.get('files').should('not.be.visible')
+            cy.get('.grid-field__table tbody tr:visible').should('have.length', r+1)
+            cy.wait(5000); //give JS some extra time
+          }
+        })
+      })
   })
 
     context('Create entry with fluid fields', () => {

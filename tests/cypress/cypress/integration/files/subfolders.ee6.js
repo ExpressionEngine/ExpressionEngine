@@ -51,6 +51,7 @@ context('Upload Destination Subfolders', () => {
         cy.hasNoErrors()
 
         managerPage.hasAlert('success').contains('Folder created')
+        cy.get('.app-listing__row').should('contain', 'sub1')
     })
 
     it('Cannot create a folder that already exists', () => {

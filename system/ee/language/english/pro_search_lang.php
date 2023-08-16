@@ -521,9 +521,6 @@ of these words.",
     "filters_help" =>
     "Available filters. Uncheck to disable a filter.",
 
-    "member_group" =>
-    "Member group",
-
     "can_manage" =>
     "Can manage collections",
 
