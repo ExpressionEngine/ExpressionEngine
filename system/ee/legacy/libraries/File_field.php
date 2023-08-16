@@ -19,7 +19,8 @@ class File_field
     public $_file_ids = array();
     public $_dir_ids = array();
 
-    public $_manipulations = array();
+    public $_manipulations = null;
+    private $manipulationsList = 'thumbs';
     public $_upload_prefs = array();
 
     /**
@@ -271,7 +272,7 @@ class File_field
      * Takes a string like `{filedir_1}somefile.jpg` and returns a file model for it
      *
      * @param string $data Standard file field data string
-     * @return File Model
+     * @return ExpressionEngine\Model\File\File Model
      */
     public function getFileModelForFieldData($data)
     {
@@ -766,10 +767,9 @@ class File_field
         $file['directory_id'] = $file['upload_location_id'];
         $file['directory_title'] = $upload_dir->name;
 
-        $manipulations = $this->_get_dimensions_by_dir_id($file['upload_location_id']);
+        $manipulations = $this->_get_manipulations($file['upload_location_id']);
 
         if (! empty($manipulations)) {
-
             $isManipulated = isset($file['mime_type']) && strpos($file['mime_type'], 'image/') === 0 && strpos($file['mime_type'], 'image/svg') !== 0;
 
             foreach ($manipulations as $manipulation) {
@@ -828,14 +828,17 @@ class File_field
         }
 
         if (strpos((string) $data, 'file:') !== false) {
-            if (preg_match_all('/{file\:(\d+)\:url}/', (string) $data, $matches, PREG_SET_ORDER)) {
+            $this->_get_manipulations();
+            if (preg_match_all('/{file\:(\d+)\:(url|' . $this->manipulationsList . ')}/', (string) $data, $matches, PREG_SET_ORDER)) {
                 $file_ids = [];
                 foreach ($matches as $match) {
                     $file_ids[] = $match[1];
                 }
                 $files = ee('Model')->get('File', $file_ids)->with('UploadDestination')->all();
                 foreach ($files as $file) {
-                    $data = str_replace('{file:' . $file->file_id . ':url}', $file->getAbsoluteURL(), $data);
+                    foreach ($matches as $match) {
+                        $data = str_replace('{file:' . $file->file_id . ':' . $match[2] . '}', ($match[2] == 'url' ? $file->getAbsoluteURL() : $file->getAbsoluteManipulationURL($match[2], true)), $data);
+                    }
                 }
             }
         }
@@ -956,15 +959,18 @@ class File_field
      * @param int $dir_id   ID of upload directory
      * @return array        Array of image manipulation settings
      */
-    private function _get_dimensions_by_dir_id($dir_id)
+    private function _get_manipulations($dir_id = null)
     {
-        if (! isset($this->_manipulations[$dir_id])) {
-            $this->_manipulations[$dir_id] = ee('Model')->get('FileDimension')
-                ->filter('upload_location_id', $dir_id)
-                ->all();
+        if (is_null($this->_manipulations)) {
+            $fileDimensions = ee('Model')->get('FileDimension')->all()->indexBy('id');
+            $this->_manipulations = [];
+            array_walk($fileDimensions, function ($dimension) {
+                $this->_manipulations[$dimension->upload_location_id][] = $dimension;
+                $this->manipulationsList .= '|' . $dimension->short_name;
+            });
         }
 
-        return $this->_manipulations[$dir_id];
+        return is_null($dir_id) ? $this->_manipulations : (isset($this->_manipulations[$dir_id]) ? $this->_manipulations[$dir_id] : []);
     }
 
     /**

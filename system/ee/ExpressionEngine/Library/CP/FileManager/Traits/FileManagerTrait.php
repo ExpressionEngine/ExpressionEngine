@@ -53,6 +53,11 @@ trait FileManagerTrait
                     'hasUpload' => ee('Request')->get('hasUpload')
                 ]);
             }
+            if (!empty(ee('Request')->get('pickDimensions'))) {
+                $base_url->addQueryStringVariables([
+                    'pickDimensions' => ee('Request')->get('pickDimensions')
+                ]);
+            }
         }
 
         $files = ee('Model')->get($model)
@@ -121,7 +126,7 @@ trait FileManagerTrait
             );
         }
 
-        $filters->add('FileManagerColumns', $this->createColumnFilter($uploadLocation), $uploadLocation, $view_type);
+        $filters->add('FileManagerColumns', $this->createColumnFilter($uploadLocation, $filepickerMode), $uploadLocation, $view_type);
 
         $search_terms = ee()->input->get_post('filter_by_keyword');
 
@@ -194,6 +199,10 @@ trait FileManagerTrait
             if (! $filepickerMode) {
                 array_unshift($selected_columns, 'checkbox');
                 $selected_columns[] = 'manage';
+            } else {
+                if (! bool_config_item('file_manager_compatibility_mode') && ! empty(ee('Request')->get('pickDimensions'))) {
+                    $selected_columns[] = 'pick';
+                }
             }
         }
 
@@ -367,6 +376,11 @@ trait FileManagerTrait
                             'hasUpload' => ee('Request')->get('hasUpload')
                         ]);
                     }
+                    if (!empty(ee('Request')->get('pickDimensions'))) {
+                        $attrs['data-filter-url']->addQueryStringVariables([
+                            'pickDimensions' => ee('Request')->get('pickDimensions')
+                        ]);
+                    }
                 }
             }
 
@@ -532,7 +546,7 @@ trait FileManagerTrait
     /**
      * Creates a column filter
      */
-    private function createColumnFilter($uploadLocation = null)
+    private function createColumnFilter($uploadLocation = null, $filepickerMode = false)
     {
         $column_choices = [];
 
@@ -542,7 +556,7 @@ trait FileManagerTrait
             $identifier = $column->getTableColumnIdentifier();
 
             // This column is mandatory, not optional
-            if (in_array($identifier, ['checkbox', 'thumbnail', 'manage'])) {
+            if (in_array($identifier, ['checkbox', 'thumbnail', 'manage', 'pick'])) {
                 continue;
             }
 

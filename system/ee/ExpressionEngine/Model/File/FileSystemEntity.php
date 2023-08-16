@@ -334,7 +334,14 @@ class FileSystemEntity extends ContentModel
         return $this->getBaseServerPath() . $this->getSubfoldersPath() . '_' . $manipulation . '/' . $this->file_name;
     }
 
-    public function getAbsoluteManipulationURL($manipulation = 'thumbs')
+    /**
+     * Get the URL for manipulated image
+     *
+     * @param string $manipulation Manipulation name
+     * @param boolean $forceIfNotExists Return the URL even if file does not exist
+     * @return string
+     */
+    public function getAbsoluteManipulationURL($manipulation = 'thumbs', $forceIfNotExists = false)
     {
         if (!$this->UploadDestination->exists()) {
             return null;
@@ -342,7 +349,7 @@ class FileSystemEntity extends ContentModel
 
         $filesystem = $this->UploadDestination->getFilesystem();
 
-        if (! $filesystem->exists($this->getAbsoluteManipulationPath($manipulation))) {
+        if (! $forceIfNotExists && ! $filesystem->exists($this->getAbsoluteManipulationPath($manipulation))) {
             return $this->getAbsoluteURL();
         }
 

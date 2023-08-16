@@ -905,6 +905,8 @@ $lang = array(
 
     'thumbnail' => 'Thumbnail',
 
+    'original' => 'Original',
+
     /* Watermark */
     'add_watermark' => 'None',
 

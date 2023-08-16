@@ -36,6 +36,7 @@ class ColumnFactory extends EntryManager\ColumnFactory
         'thumbnail' => Columns\Thumbnail::class,
         'manage' => Columns\Manage::class,
         'usage' => Columns\Usage::class,
+        'pick' => Columns\Pick::class,
     ];
 
     /**
