@@ -217,7 +217,7 @@ context('Publish Entry', () => {
 
         it('uploads the file into field with drag & drop', () => {
             cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
-            page.get('file_fields').eq(0).find('.file-field__dropzone').attachFile('../../support/file/README.md', { subjectType: 'drag-n-drop' })
+            page.get('file_fields').eq(0).find('.file-field__dropzone').selectFile('support/file/README.md', { action: 'drag-drop' })
             cy.wait('@upload')
             cy.hasNoErrors()
 
@@ -235,7 +235,7 @@ context('Publish Entry', () => {
             //try again
             cy.visit(Cypress._.replace(page.url, '{channel_id}', 1))
             cy.wait(1000)
-            page.get('file_fields').eq(0).find('.file-field__dropzone').attachFile('../../support/file/README.md', { subjectType: 'drag-n-drop' })
+            page.get('file_fields').eq(0).find('.file-field__dropzone').selectFile('support/file/README.md', { action: 'drag-drop' })
             cy.wait('@upload')
 
             page.get('chosen_files').should('have.length', 1)
@@ -286,7 +286,7 @@ context('Publish Entry', () => {
       it('uploads several files into same field', () => {
           cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
           cy.intercept('POST', '**/publish/create/**'). as('validation')
-          cy.get('.js-file-grid').eq(0).find('.file-field__dropzone:visible').attachFile(['../../support/file/README.md', '../../../../LICENSE.txt', '../../support/file/script.sh'], { subjectType: 'drag-n-drop' })
+          cy.get('.js-file-grid').eq(0).find('.file-field__dropzone:visible').selectFile(['support/file/README.md', '../../LICENSE.txt', 'support/file/script.sh'], { action: 'drag-drop' })
           //nothing happens until you select upload destination
           cy.wait(3000);
           cy.get('.js-file-grid').eq(0).contains('You must choose a directory to upload files').should('be.visible')

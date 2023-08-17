@@ -8,10 +8,10 @@ const returnPage = new EditFile;
 const filePage = new EditFile;
 const { _, $ } = Cypress
 
-const md_file = '../../support/file/README.md'
-const script_file = '../../support/file/script.sh'
-const image_file = '../../support/file/programming.gif'
-const php_file = '../../support/file/clever.php.png'
+const md_file = 'support/file/README.md'
+const script_file = 'support/file/script.sh'
+const image_file = 'support/file/programming.gif'
+const php_file = 'support/file/clever.php.png'
 
 const upload_dir = '../../images/uploads'
 
@@ -131,7 +131,7 @@ context('File Manager / Upload File', () => {
     })
     cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
     cy.intercept('/admin.php?/cp/files/directory/*').as('table')
-    page.get('file_input').find('.file-field__dropzone').attachFile('../../support/sql/database_7.0.0.sql', { subjectType: 'drag-n-drop' })
+    page.get('file_input').find('.file-field__dropzone').selectFile('support/sql/database_7.0.0.sql', { action: 'drag-drop' })
     cy.wait('@upload')
     cy.wait('@table')
     cy.hasNoErrors()
@@ -145,7 +145,7 @@ context('File Manager / Upload File', () => {
       $(widget).removeClass('hidden')
     })
     cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
-    page.get('file_input').find('.file-field__dropzone').attachFile(script_file, { subjectType: 'drag-n-drop' })
+    page.get('file_input').find('.file-field__dropzone').selectFile(script_file, { action: 'drag-drop' })
     cy.wait('@upload')
     cy.hasNoErrors()
 
@@ -161,7 +161,7 @@ context('File Manager / Upload File', () => {
     })
     cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
     cy.intercept('/admin.php?/cp/files/directory/*').as('table')
-    page.get('file_input').find('.file-field__dropzone').attachFile(image_file, { subjectType: 'drag-n-drop' })
+    page.get('file_input').find('.file-field__dropzone').selectFile(image_file, { action: 'drag-drop' })
     cy.wait('@upload')
     cy.wait('@table')
     cy.hasNoErrors()
@@ -202,7 +202,7 @@ context('File Manager / Upload File', () => {
       $(widget).removeClass('hidden')
     })
     cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
-    page.get('file_input').find('.file-field__dropzone').attachFile(php_file, { subjectType: 'drag-n-drop' })
+    page.get('file_input').find('.file-field__dropzone').selectFile(php_file, { action: 'drag-drop' })
     cy.wait('@upload')
     cy.hasNoErrors()
 

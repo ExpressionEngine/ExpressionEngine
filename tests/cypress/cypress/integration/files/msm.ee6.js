@@ -78,7 +78,7 @@ context('Upload Destinations on MSM sites', () => {
     })
     cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
     cy.intercept('/admin.php?/cp/files/directory/*').as('table')
-    uploadFile.get('file_input').find('.file-field__dropzone').attachFile('../../support/file/programming.gif', { subjectType: 'drag-n-drop' })
+    uploadFile.get('file_input').find('.file-field__dropzone').selectFile('support/file/programming.gif', { action: 'drag-drop' })
     cy.wait('@upload')
     cy.wait('@table')
     cy.hasNoErrors()
