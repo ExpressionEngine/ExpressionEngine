@@ -215,11 +215,11 @@ context('Entry Manager', () => {
 		it('Change columns displayed in entry manager', () => {
 			cy.visit('admin.php?/cp/publish/edit')
 			cy.dismissLicenseAlert()
-			cy.get('a').contains('Author').should('exist')
+			cy.get('th a').contains('Author').should('exist')
 			entry.get('ColumnsSort').click()
 			entry.get('Author').uncheck()
 			cy.get('h3').contains('Entries').click() //need to click out of the columns menu to have the action occur
-			cy.get('a').contains('Author').should('not.exist')
+			cy.get('th a').contains('Author').should('not.exist')
 		})
 
 

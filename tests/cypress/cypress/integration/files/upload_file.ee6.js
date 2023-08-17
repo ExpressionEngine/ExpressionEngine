@@ -190,7 +190,7 @@ context('File Manager / Upload File', () => {
     page.dragAndDropUpload(md_file)
 
     page.get('file_input').find('.file-field__dropzone').invoke('show')
-    .page.dragAndDropUpload('../../themes/ee/asset/fonts/fontawesome-webfont.eot')
+    page.dragAndDropUpload('../../themes/ee/asset/fonts/fontawesome-webfont.eot')
 
     cy.get('.file-upload-widget:contains(fontawesome-webfont.eot)').its('length').should('eq', 1)
   })
