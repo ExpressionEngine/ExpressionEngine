@@ -9,13 +9,14 @@ var app_version;
 context('One-Click Updater', () => {
  
   before(function(){
-    cy.eeConfig({ item: 'app_version' }).then((config) => {
-      app_version = config
-    })
     cy.task('updater:backup_files')
     cy.task('db:seed')
     cy.task('installer:disable')
     cy.exec(`chmod 666 '../../system/user/config/config.php'`)
+
+    cy.eeConfig({ item: 'app_version' }).then((config) => {
+      app_version = config
+    })
 
     // This test is also used in the pre-release.yml workflow and gets a copy of 6.1.5
     // We've just selected the same version here to not interfere with that test
@@ -67,10 +68,10 @@ context('One-Click Updater', () => {
     cy.get('body').contains('Up to date!')
 
       cy.get('.ee-sidebar__version-number').invoke('text').then((text) => {
-        expect(text).to.eq(app_version)
+        expect(text).to.contain(app_version + '-dp.')
       })
       cy.eeConfig({ item: 'app_version' }).then((config) => {
-        expect(config).to.eq(app_version)
+        expect(config).to.eq(app_version + '-dp.')
       })
   })
 
