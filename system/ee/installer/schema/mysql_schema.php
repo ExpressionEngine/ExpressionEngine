@@ -366,6 +366,7 @@ class EE_Schema
 			`site_color` varchar(6) NOT NULL default '',
 			`total_members` mediumint(8) unsigned NOT NULL DEFAULT '0',
 			`is_locked` char(1) NOT NULL DEFAULT 'n',
+            `highlight` varchar(6) NOT NULL default '',
 			PRIMARY KEY (`role_id`)
 		)";
 
