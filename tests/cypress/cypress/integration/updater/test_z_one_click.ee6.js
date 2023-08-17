@@ -68,10 +68,10 @@ context('One-Click Updater', () => {
     cy.get('body').contains('Up to date!')
 
       cy.get('.ee-sidebar__version-number').invoke('text').then((text) => {
-        expect(text).to.contain(app_version + '-dp.')
+        expect(text).to.contain(app_version)
       })
       cy.eeConfig({ item: 'app_version' }).then((config) => {
-        expect(config).to.eq(app_version + '-dp.')
+        expect(config).to.eq(app_version)
       })
   })
 
