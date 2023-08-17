@@ -791,7 +791,7 @@ context('Publish Entry', () => {
         cy.log('check date field')
         cy.get('label:contains("My Date")').parents('fieldset').find('input[type=text]').focus();
         cy.get('.date-picker-wrap').should('be.visible');
-        cy.get('.date-picker-wrap #date-picker-time-block input[type=time]').type('13:00')
+        cy.get('.date-picker-wrap #date-picker-time-block input[type=time]').should('not.be.visible');
         cy.get('.date-picker-wrap td:visible a:contains(13)').trigger('click');
         cy.get('label:contains("My Date")').parents('fieldset').find('input[type=text]').invoke('val').should('contain' ,'/13/').should('not.contain', ':')
         cy.get('label:contains("My Date")').parents('fieldset').find('input[type=text]').invoke('val').then((value) => {
