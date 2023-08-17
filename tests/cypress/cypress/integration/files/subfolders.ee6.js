@@ -22,8 +22,6 @@ context('Upload Destination Subfolders', () => {
         cy.auth();
         page.load()
         cy.hasNoErrors()
-
-        cy.server()
     })
 
     after(function() {

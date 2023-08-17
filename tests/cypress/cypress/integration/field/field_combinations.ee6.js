@@ -26,9 +26,9 @@ context('Fields of different types', () => {
 
 		cy.auth()
 
-		cy.window().then((win) => { 
+		/*cy.window().then((win) => { 
 			win.parent.document.getElementsByClassName('reporter-wrap')[0].style.width = '70%';
-		});
+		});*/
 
 		cy.log('verifies fields page exists')
 		cy.visit('admin.php?/cp/fields')

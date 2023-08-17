@@ -80,7 +80,7 @@ context('File Manager / Upload File', () => {
   })
 
   it('Cannot upload a file when mime type is not registered', () => {
-    page.dragAndDropUpload('../../support/file/ubuntu-22.04-live-server-amd64-iso.torrent')
+    page.dragAndDropUpload('support/file/ubuntu-22.04-live-server-amd64-iso.torrent')
 
     cy.get('.file-upload-widget').should('be.visible')
     cy.get('.file-upload-widget').should('contain', 'File not allowed')
@@ -96,7 +96,7 @@ context('File Manager / Upload File', () => {
   })
 
   it('Uploads the file correctly after error', () => {
-    page.dragAndDropUpload('../../support/file/ubuntu-22.04-live-server-amd64-iso.torrent')
+    page.dragAndDropUpload('support/file/ubuntu-22.04-live-server-amd64-iso.torrent')
 
     cy.get('.file-upload-widget').should('be.visible')
     cy.get('.file-upload-widget').should('contain', 'File not allowed')
@@ -104,7 +104,7 @@ context('File Manager / Upload File', () => {
     cy.get('.file-upload-widget a').contains('Dismiss').click()
     cy.hasNoErrors()
 
-    page.dragAndDropUpload('../../../../LICENSE.txt')
+    page.dragAndDropUpload('../../LICENSE.txt')
     returnPage.get('selected_file').should('exist')
     returnPage.get('selected_file').contains("LICENSE.txt")
     returnPage.get('selected_file').should('contain', 'Document')
@@ -115,7 +115,7 @@ context('File Manager / Upload File', () => {
 
   it('Upload a file when mime type is whitelisted in config', () => {
     cy.task('filesystem:copy', { from: 'support/config/mimes.php', to: '../../system/user/config/' })
-    page.dragAndDropUpload('../../support/file/ubuntu-22.04-live-server-amd64-iso.torrent')
+    page.dragAndDropUpload('support/file/ubuntu-22.04-live-server-amd64-iso.torrent')
     cy.get('.file-upload-widget').should('not.be.visible')
     cy.wait('@table')
     cy.hasNoErrors()
@@ -190,7 +190,7 @@ context('File Manager / Upload File', () => {
     page.dragAndDropUpload(md_file)
 
     page.get('file_input').find('.file-field__dropzone').invoke('show')
-    page.dragAndDropUpload('../../../../themes/ee/asset/fonts/fontawesome-webfont.eot')
+    .page.dragAndDropUpload('../../themes/ee/asset/fonts/fontawesome-webfont.eot')
 
     cy.get('.file-upload-widget:contains(fontawesome-webfont.eot)').its('length').should('eq', 1)
   })

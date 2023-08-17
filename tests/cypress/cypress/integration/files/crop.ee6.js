@@ -25,7 +25,7 @@ context('File Manager / Crop File', () => {
         cy.auth();
         cy.contains('Files').click()
         cy.get('.sidebar__link').contains('About').click()
-        cy.get('.ee-main__content form .table-responsive table tr:nth-child(2) td:nth-child(4)').invoke('text').as('file_name')
+        cy.get('.ee-main__content form .table-responsive table tr:nth-child(2) td:nth-child(4)').invoke('text').as('file_name', { type: 'static' })
         //cy.get('.ee-main__content form .table-responsive table tr:nth-child(2) td:nth-child(4) ul.toolbar li.crop').click()
         // cy.get('a[title="Crop"]').first().click({force: true})
         cy.get('.ee-main__content form .table-responsive table tr:nth-child(2) .toolbar-wrap .js-dropdown-toggle').click()

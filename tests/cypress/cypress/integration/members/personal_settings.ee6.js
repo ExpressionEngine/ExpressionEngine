@@ -54,7 +54,7 @@ context('Profile - Personal Settings', () => {
     page.get('alert').contains("File not allowed.")
     cy.get('#avatar').should('not.be.visible')
 
-    cy.get('input[name="upload_avatar"]').selectFile('fixtures/pictureUpload.png')
+    cy.get('input[name="upload_avatar"]').selectFile('cypress/fixtures/pictureUpload.png')
     cy.get('body').type('{ctrl}', {release: false}).type('s')
     page.hasAlert('success')
     page.get('alert').contains("Member Profile Saved")

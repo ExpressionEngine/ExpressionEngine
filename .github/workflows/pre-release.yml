@@ -5,6 +5,8 @@ on:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:
       - '*.x'
+  push:
+    branches:
       - 'feature/7.x/cypress-12'
 
 jobs:
