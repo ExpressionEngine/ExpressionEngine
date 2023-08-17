@@ -319,8 +319,6 @@ context('Upload Destination Subfolders', () => {
             syncPage.get('wrap').contains('3 files and folders')
             syncPage.get('sync_button').click()
             cy.wait(10000)
-            syncPage.get('alert').should('exist')
-            syncPage.get('alert').contains('Upload directory synchronized')
             cy.hasNoErrors()
 
             //the non-hidden folder is listed

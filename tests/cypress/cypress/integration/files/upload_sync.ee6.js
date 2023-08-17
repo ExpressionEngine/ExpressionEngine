@@ -146,7 +146,6 @@ context('Upload Sync', () => {
   it('should sync non-images if directory allows it', () => {
     cy.task('filesystem:copy', { from: non_images_path+'*', to: upload_path })
 
-
     let file_count = images_count + non_images_count
 
     new_upload.load_edit_for_dir(2)
@@ -155,16 +154,24 @@ context('Upload Sync', () => {
     new_upload.get('wrap').contains('Upload directory saved')
     cy.hasNoErrors()
 
-    page.load_sync_for_dir(2)
+    cy.visit('admin.php?/cp/files')
+
+    cy.get('div.sidebar .folder-list > div:nth-child(2) > a').click()
+    cy.get('.f_manager-wrapper tbody tr').should('not.exist')
+    cy.get('a.icon--sync').click()
 
     // Page should show file count for all files now
     page.get('wrap').contains(file_count.toString() + ' files')
 
     page.get('sync_button').click()
+    page.get('sync_button').should('have.text', 'Syncing...')
+
     cy.wait(10000)
-    //cy.visit(dir_link)
-    page.get('alert').should('exist')
-    page.get('alert').contains('Upload directory synchronized')
+
+    page.get('sync_button').should('have.text', 'Sync Directory')
+    
+    cy.get('.sidebar__link.active').click()
+    cy.get('.f_manager-wrapper tbody tr').its('length').should('eq', file_count)
 
     cy.task('filesystem:delete', upload_path + '/**/*.mp3')
   })
