@@ -956,7 +956,7 @@ class Member extends ContentModel
         $roles = ($cache == true) ? $this->getFromCache($cache_key) : false;
 
         if ($roles === false) {
-            $roles = $this->Roles->indexBy('name');
+            $roles = $this->Roles->filter('role_id', '!=', 0)->indexBy('name');
             if (is_object($this->PrimaryRole)) {
                 $roles[$this->PrimaryRole->name] = $this->PrimaryRole;
             }

@@ -17,8 +17,7 @@ class BansMembers extends MemberManagerSection {
     }
 
   load() {
-    this.get('members_btn').click()
-    this.get('wrap').find('a:contains("Ban Settings")').click()
+    cy.visit('admin.php?/cp/members&role_filter=2')
   }
 }
 export default BansMembers;
