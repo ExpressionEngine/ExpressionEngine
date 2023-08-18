@@ -39,7 +39,9 @@ class Manage extends EntryManager\Columns\Column
             $canEdit = (bool) ($member->PrimaryRole->is_locked != 'y' && (ee('Permission')->can('edit_members') || ee('Permission')->can('delete_members')));
         }
         if (!$canEdit) {
-            return '';
+            return [
+                'toolbar_items' => []
+            ];
         }
 
         $toolbar = [];

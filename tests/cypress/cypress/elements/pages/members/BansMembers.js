@@ -17,7 +17,7 @@ class BansMembers extends MemberManagerSection {
     }
 
   load() {
-    cy.visit('admin.php?/cp/members&role_filter=2')
+    cy.visit('admin.php?/cp/settings/ban')
   }
 }
 export default BansMembers;

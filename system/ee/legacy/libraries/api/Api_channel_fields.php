@@ -221,6 +221,7 @@ class Api_channel_fields extends Api
         ee()->db->select('m_field_id, m_field_name, m_field_fmt, m_legacy_field_data, m_field_type');
         $query = ee()->db->get('member_fields');
 
+        $mfields = array();
         foreach ($query->result_array() as $row) {
             if (! array_key_exists($row['m_field_type'], $this->field_types)) {
                 $this->field_types[$row['m_field_type']] = $this->include_handler($row['m_field_type']);

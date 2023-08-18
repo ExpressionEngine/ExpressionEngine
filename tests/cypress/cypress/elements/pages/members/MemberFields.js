@@ -13,7 +13,8 @@ class MemberFields extends ControlPanel {
     }
 
   load() {
-    cy.visit('admin.php?/cp/settings/members')
+    this.get('members_btn').click()
+    cy.get('a:contains("Member Fields")').first().click()
   }
 }
 export default MemberFields;

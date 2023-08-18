@@ -12,7 +12,7 @@ const page = new MemberFields
 
 context('Member Field List', () => {
 
-  /*before(function(){
+  before(function(){
     cy.task('db:seed')
     cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })
     cy.eeConfig({ item: 'require_captcha', value: 'n' })
@@ -81,7 +81,7 @@ context('Member Field List', () => {
     cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' }).then(() => {
       cy.authVisit('admin.php?/cp/design')
     })
-  })*/
+  })
 
   beforeEach(function() {
     cy.auth();
