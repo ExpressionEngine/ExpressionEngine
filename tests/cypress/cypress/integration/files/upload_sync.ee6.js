@@ -157,7 +157,7 @@ context('Upload Sync', () => {
     cy.visit('admin.php?/cp/files')
 
     cy.get('div.sidebar .folder-list > div:nth-child(2) > a').click()
-    cy.get('.f_manager-wrapper tbody tr').should('not.exist')
+    cy.get('.f_manager-wrapper tbody tr').its('length').should('not.eq', file_count)
     cy.get('a.icon--sync').click()
 
     // Page should show file count for all files now

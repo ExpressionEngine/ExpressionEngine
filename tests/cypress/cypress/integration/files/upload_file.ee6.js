@@ -102,6 +102,7 @@ context('File Manager / Upload File', () => {
     cy.get('.file-upload-widget').should('contain', 'File not allowed')
     cy.get('.file-upload-widget a').should('contain', 'Dismiss')
     cy.get('.file-upload-widget a').contains('Dismiss').click()
+    cy.wait('@table')
     cy.hasNoErrors()
 
     page.dragAndDropUpload('../../LICENSE.txt')
