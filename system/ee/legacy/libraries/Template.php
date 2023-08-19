@@ -558,7 +558,7 @@ class EE_Template
             $this->log_item("Conditionals Parsed, Processing Sub Templates");
             $this->template = $this->process_layout_template($this->template, $layout);
             $this->template = $this->process_sub_templates($this->template);
-            $this->final_template = $this->_cleanup_layout_tags($this->template);
+            $this->final_template = $this->template;
 
             return;
         }
@@ -669,7 +669,7 @@ class EE_Template
             $this->template = $this->process_layout_template($this->template, $layout);
             $this->template = $this->process_sub_templates($this->template);
 
-            $this->final_template = $this->_cleanup_layout_tags($this->template);
+            $this->final_template = $this->template;
         }
     }
 
@@ -755,6 +755,11 @@ class EE_Template
         }
 
         $this->layout_conditionals = $layout_conditionals;
+
+        // cleanup of leftover/undeclared layout variables (excluding layout:contents)
+        if (strpos($str, LD . 'layout:') !== false) {
+            $str = preg_replace('/' . LD . 'layout:(?!\bcontents\b)([^!]+?)' . RD . '/', '', $str);
+        }
 
         return $str;
     }
@@ -871,25 +876,6 @@ class EE_Template
         }
 
         return $layout;
-    }
-
-    /**
-     * Cleanup any leftover layout tags
-     *
-     * We need to do this at various steps of post parsing as doing it too early
-     * can result in accidental cleanup of the {layout:contents} variable.
-     *
-     * @param   string  $template  Template string
-     * @return  string  Template string with cleaned up layout tags
-     */
-    protected function _cleanup_layout_tags($template)
-    {
-        // cleanup of leftover/undeclared layout variables
-        if (strpos($template, LD . 'layout:') !== false) {
-            $template = preg_replace('/' . LD . 'layout:([^!]+?)' . RD . '/', '', $template);
-        }
-
-        return $template;
     }
 
     /**
@@ -1279,8 +1265,6 @@ class EE_Template
 
                 $args = trim((preg_match("/\s+.*/", $tag, $matches))) ? $matches[0] : '';
                 $tag = trim(str_replace($args, '', $tag));
-
-                $args = $this->_cleanup_layout_tags($args);
 
                 $cur_tag_close = LD . '/' . $tag . RD;
 
