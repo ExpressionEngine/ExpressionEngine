@@ -403,25 +403,6 @@ class LegacyParser
     {
         $conditionals = [];
 
-        // get all the left over layout variables in the string (excluding layout:contents and layout:set)
-        // the ones left here (after Template parseLayoutVariables) should only be layout variables with modifiers
-        if (preg_match_all('/' . LD . 'layout:(?!\bcontents\b|\bset\b)([^!]+?)' . RD . '/', $str, $matches)) {
-            foreach ($matches[1] as $match) {
-                // ensure that the match string has a modifier character in it
-                if (($modifier_pos = strpos($match, ':')) !== false) {
-                    $key = substr($match, 0, $modifier_pos);
-
-                    // ignore if layout:variable is already defined
-                    if (isset($vars['layout:' . $key])) {
-                        continue;
-                    }
-
-                    // set the undeclared (but referenced) variable to an empty string
-                    $vars['layout:' . $key] = '';
-                }
-            }
-        }
-
         foreach ($vars as $name => $value) {
             if (strpos($str, $name . ':') !== false) {
                 $prefix = '';

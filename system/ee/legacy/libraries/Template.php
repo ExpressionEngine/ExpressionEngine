@@ -690,6 +690,26 @@ class EE_Template
         $this->log_item("layout Variables:", $layout_vars);
         $this->layout_conditionals = [];
 
+        // get all the declared layout variables (excluding layout:contents)
+        if (preg_match_all('/' . LD . 'layout:(?!\bcontents\b)([^!]+?)' . RD . '/', $str, $matches)) {
+            foreach ($matches[1] as $match) {
+                // get the key to the layout_vars array, if the string contains any modifier characters
+                // we will remove the trailing part of the string.
+                $key = $match;
+                if (($modifier_pos = strpos($key, ':')) !== false) {
+                    $key = substr($key, 0, $modifier_pos);
+                }
+
+                // ignore if the variable is already defined
+                if (isset($layout_vars[$key])) {
+                    continue;
+                }
+
+                // set the undefined (but declared) variable to an empty string
+                $layout_vars[$key] = '';
+            }
+        }
+
         foreach ($layout_vars as $key => $val) {
             if (is_array($val)) {
                 $layout_conditionals['layout:' . $key] = true;
@@ -757,11 +777,6 @@ class EE_Template
         }
 
         $this->layout_conditionals = $layout_conditionals;
-
-        // cleanup of leftover/undeclared layout variables (excluding layout:contents and variables with chained modifiers)
-        if (strpos($str, LD . 'layout:') !== false) {
-            $str = preg_replace('/' . LD . 'layout:(?!\bcontents\b)([^!:]+?)' . RD . '/', '', $str);
-        }
 
         return $str;
     }
