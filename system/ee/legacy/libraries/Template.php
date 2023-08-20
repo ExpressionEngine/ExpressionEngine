@@ -559,6 +559,7 @@ class EE_Template
             $this->template = $this->process_layout_template($this->template, $layout);
             $this->template = $this->process_sub_templates($this->template);
             $this->final_template = $this->template;
+            $this->_cleanup_layout_tags();
 
             return;
         }
@@ -670,6 +671,7 @@ class EE_Template
             $this->template = $this->process_sub_templates($this->template);
 
             $this->final_template = $this->template;
+            $this->_cleanup_layout_tags();
         }
     }
 
@@ -756,9 +758,9 @@ class EE_Template
 
         $this->layout_conditionals = $layout_conditionals;
 
-        // cleanup of leftover/undeclared layout variables (excluding layout:contents)
+        // cleanup of leftover/undeclared layout variables (excluding layout:contents and variables with chained modifiers)
         if (strpos($str, LD . 'layout:') !== false) {
-            $str = preg_replace('/' . LD . 'layout:(?!\bcontents\b)([^!]+?)' . RD . '/', '', $str);
+            $str = preg_replace('/' . LD . 'layout:(?!\bcontents\b)([^!:]+?)' . RD . '/', '', $str);
         }
 
         return $str;
@@ -876,6 +878,22 @@ class EE_Template
         }
 
         return $layout;
+    }
+
+    /**
+     * Cleanup any leftover layout tags
+     *
+     * We need to do this at various steps of post parsing as doing it too early
+     * can result in accidental cleanup of the {layout:contents} variable.
+     *
+     * @return  void
+     */
+    protected function _cleanup_layout_tags()
+    {
+        // cleanup of leftover/undeclared layout variables
+        if (strpos($this->final_template, LD . 'layout:') !== false) {
+            $this->final_template = preg_replace('/' . LD . 'layout:([^!]+?)' . RD . '/', '', $this->final_template);
+        }
     }
 
     /**
