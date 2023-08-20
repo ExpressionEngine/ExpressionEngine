@@ -408,7 +408,7 @@ class LegacyParser
         if (preg_match_all('/' . LD . 'layout:(?!\bcontents\b|\bset\b)([^!]+?)' . RD . '/', $str, $matches)) {
             foreach ($matches[1] as $match) {
                 // ensure that the match string has a modifier character in it
-                if (($modifier_pos = strrpos($match, ':')) !== false) {
+                if (($modifier_pos = strpos($match, ':')) !== false) {
                     $key = substr($match, 0, $modifier_pos);
 
                     // ignore if layout:variable is already defined
