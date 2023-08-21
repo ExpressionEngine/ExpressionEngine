@@ -17,7 +17,7 @@ context('Request add-on', () => {
   })
 
   it('XSS filtering is applied', function(){
-    cy.visit('index.php/request/index?my-var=<script>alert(%27hello%27)</script>');
+    cy.authVisit('index.php/request/index?my-var=<script>alert(%27hello%27)</script>');
     cy.get('#get span').invoke('text').should('contain', "[removed]")
     cy.get('#get span').invoke('text').should('contain', "alert")
     cy.get('#get span').invoke('text').should('contain', "'hello'")
@@ -33,32 +33,24 @@ context('Request add-on', () => {
     cy.logFrontendPerformance()
   })
 
-  context('Check template tags', function(){
-    before(function() {
+  it('Check template tags', function(){
+
       cy.visit('index.php/request');//extra visit to get the tracker cookie
       cy.visit('index.php/request/index?my-var=I+love+EE');
-    })
-    it('exp:request:get', function(){
+
+      cy.log('exp:request:get')
       cy.get('#get span').invoke('text').should('eq', "I love EE")
-    })
-    it('exp:request:get_post', function(){
+      cy.log('exp:request:get_post')
       cy.get('#get_post span').invoke('text').should('eq', "I love EE")
-    })
-    it('exp:request:cookie', function(){
+      cy.log('exp:request:cookie')
       cy.get('#cookie span').invoke('text').should('contain', "request")
-    })
-    it('exp:request:ip', function(){
+      cy.log('exp:request:ip')
       cy.get('#ip span').invoke('text').should('be.oneOf', ["127.0.0.1", "::1"])
-    })
-    it('exp:request:user_agent', function(){
+      cy.log('exp:request:user_agent')
       cy.get('#user_agent span').invoke('text').should('contain', "Mozilla")
-    })
-    it('exp:request:request_header', function(){
+      cy.log('exp:request:request_header')
       cy.get('#request_header span').invoke('text').should('contain', "text/html")
 
       cy.logFrontendPerformance()
     })
   })
-
-
-})

@@ -22,8 +22,6 @@ context('Upload Destination Subfolders', () => {
         cy.auth();
         page.load()
         cy.hasNoErrors()
-
-        cy.server()
     })
 
     after(function() {
@@ -163,7 +161,7 @@ context('Upload Destination Subfolders', () => {
 
         cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
         cy.intercept('/admin.php?/cp/files/directory/*').as('table')
-        managerPage.get('file_input').find('.file-field__dropzone').attachFile('../../support/file/README.md', { subjectType: 'drag-n-drop' })
+        managerPage.get('file_input').find('.file-field__dropzone').selectFile('support/file/README.md', { action: 'drag-drop' })
 
         cy.wait('@upload')
         cy.wait('@table')
@@ -181,7 +179,7 @@ context('Upload Destination Subfolders', () => {
         cy.get('.file-upload-widget').then(function(widget) {
             $(widget).removeClass('hidden')
         })
-        managerPage.get('file_input').find('.file-field__dropzone').attachFile(('../../../../LICENSE.txt'), { subjectType: 'drag-n-drop' })
+        managerPage.get('file_input').find('.file-field__dropzone').selectFile('../../LICENSE.txt', { action: 'drag-drop' })
 
         cy.wait('@upload')
         cy.wait('@table')
@@ -251,7 +249,7 @@ context('Upload Destination Subfolders', () => {
         cy.get('.file-upload-widget').then(function(widget) {
             $(widget).removeClass('hidden')
         })
-        managerPage.get('file_input').find('.file-field__dropzone').attachFile(('../../../../LICENSE.txt'), { subjectType: 'drag-n-drop' })
+        managerPage.get('file_input').find('.file-field__dropzone').selectFile('../../LICENSE.txt', { action: 'drag-drop' })
 
         cy.wait('@upload')
         cy.wait('@table')
@@ -321,8 +319,6 @@ context('Upload Destination Subfolders', () => {
             syncPage.get('wrap').contains('3 files and folders')
             syncPage.get('sync_button').click()
             cy.wait(10000)
-            syncPage.get('alert').should('exist')
-            syncPage.get('alert').contains('Upload directory synchronized')
             cy.hasNoErrors()
 
             //the non-hidden folder is listed

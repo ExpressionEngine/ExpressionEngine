@@ -109,12 +109,10 @@ context('Entry Manager', () => {
 
 		beforeEach(function() {
 			cy.auth()
-
-			cy.server()
 		})
 
 		it('Sort and filter entries by channel', () => {
-			cy.route("GET", "**/publish/edit**").as("ajax");
+			cy.intercept("GET", "**/publish/edit**").as("ajax");
 
 			cy.visit('admin.php?/cp/publish/edit')
 			cy.dismissLicenseAlert()
@@ -145,7 +143,7 @@ context('Entry Manager', () => {
 		})
 
 		it('Sort entries by status and combine this sort with channel', () => {
-			cy.route("GET", "**/publish/edit**").as("ajax");
+			cy.intercept("GET", "**/publish/edit**").as("ajax");
 
 			cy.visit('admin.php?/cp/publish/edit')
 			cy.dismissLicenseAlert()
@@ -197,7 +195,7 @@ context('Entry Manager', () => {
 		})
 
 		it('Search by titles', () =>{
-			cy.route("POST", "**/publish/edit**").as("ajax");
+			cy.intercept("POST", "**/publish/edit**").as("ajax");
 
 			cy.visit('admin.php?/cp/publish/edit')
 			cy.dismissLicenseAlert()
@@ -217,11 +215,11 @@ context('Entry Manager', () => {
 		it('Change columns displayed in entry manager', () => {
 			cy.visit('admin.php?/cp/publish/edit')
 			cy.dismissLicenseAlert()
-			cy.get('a').contains('Author').should('exist')
+			cy.get('th a').contains('Author').should('exist')
 			entry.get('ColumnsSort').click()
 			entry.get('Author').uncheck()
 			cy.get('h3').contains('Entries').click() //need to click out of the columns menu to have the action occur
-			cy.get('a').contains('Author').should('not.exist')
+			cy.get('th a').contains('Author').should('not.exist')
 		})
 
 
@@ -250,7 +248,7 @@ context('Entry Manager', () => {
 		})
 
 		it('Search and filter by author', () => {
-			cy.route("GET", "**/publish/edit**").as("ajax");
+			cy.intercept("GET", "**/publish/edit**").as("ajax");
 
 		  	cy.visit('admin.php?/cp/publish/edit')
 			cy.dismissLicenseAlert()
@@ -270,7 +268,7 @@ context('Entry Manager', () => {
 		})
 
 		it('Combine all search fields', () =>{
-			cy.route("GET", "**/publish/edit**").as("ajax");
+			cy.intercept("GET", "**/publish/edit**").as("ajax");
 
 			cy.visit('admin.php?/cp/publish/edit')
 			cy.dismissLicenseAlert()
@@ -301,7 +299,7 @@ context('Entry Manager', () => {
 		})
 
 		it('Search in Content',() => {
-			cy.route("POST", "**/publish/edit**").as("ajax");
+			cy.intercept("POST", "**/publish/edit**").as("ajax");
 
 			//Real quick add in a text field to one of our channels
 			cy.visit('admin.php?/cp/fields')

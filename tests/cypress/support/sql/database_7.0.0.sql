@@ -543,7 +543,17 @@ DELETE FROM `exp_entry_versioning`;
 
 
 -- Dumping data for table ee-test.exp_field_groups: ~2 rows (approximately)
-DELETE FROM `exp_field_groups`;
+DROP TABLE IF EXISTS `exp_field_groups`;
+
+CREATE TABLE IF NOT EXISTS `exp_field_groups` (
+  `group_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `site_id` int unsigned DEFAULT '1',
+  `group_name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `short_name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `group_description` text COLLATE utf8_unicode_ci,
+  PRIMARY KEY (`group_id`),
+  KEY `site_id` (`site_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb3 COLLATE = utf8_unicode_ci;
 /*!40000 ALTER TABLE `exp_field_groups` DISABLE KEYS */;
 INSERT INTO `exp_field_groups` (`group_id`, `site_id`, `group_name`, `short_name`) VALUES
 	(1, 1, 'News', 'news'),
