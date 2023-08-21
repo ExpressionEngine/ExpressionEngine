@@ -172,6 +172,15 @@ context('Login Page', () => {
     })
 
     context('advanced login routines', () => {
+        it('logs in using email', function() {
+            // Log in
+            cy.login({ email: 'cypress@expressionengine.com', password: 'password' });
+
+            // User is logged in
+            cy.get('h2').contains("Members");
+
+        })
+        
         it('logs in after logout', function() {
             // Log in
             cy.login({ email: 'admin', password: 'password' });
