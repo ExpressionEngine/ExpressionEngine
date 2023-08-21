@@ -82,5 +82,5 @@ $modal_vars = array(
 );
 
 $modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);
-ee('CP/Modal')->addModal('delete', $modal);
+ee('CP/Modal')->addModal('decline', $modal);
 ?>

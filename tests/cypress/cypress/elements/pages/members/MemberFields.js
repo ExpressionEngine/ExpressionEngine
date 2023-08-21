@@ -14,6 +14,7 @@ class MemberFields extends ControlPanel {
 
   load() {
     this.get('members_btn').click()
+    cy.dismissLicenseAlert()
     cy.get('a:contains("Member Fields")').first().click()
   }
 }
