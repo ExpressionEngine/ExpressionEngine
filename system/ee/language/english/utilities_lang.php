@@ -633,10 +633,10 @@ Once you are ready to experience the new File Manager features, please run the <
     'debug_tools_debug_duplicate_template_groups' => 'Duplicate Template Groups',
 
     'duplicate_template_groups_found' => 'We found %s duplicate template groups.',
-	
+
     'group_name' => 'Group name',
-	
-    'group_id' => 'Group id',
+
+    'group_id' => 'Group ID',
 
     'no_duplicate_template_groups_found' => 'No duplicate template groups found.',
 
