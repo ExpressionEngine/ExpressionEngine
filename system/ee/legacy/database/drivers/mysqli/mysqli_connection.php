@@ -74,6 +74,34 @@ class CI_DB_mysqli_connection
             PDO::ATTR_STRINGIFY_FETCHES => ! $this->mysqlnd
         );
 
+        // There is a limited set of PDO options that we can pass though
+        // from config.php file
+        $mysqlAttr = [
+            'MYSQL_ATTR_LOCAL_INFILE',
+            'MYSQL_ATTR_LOCAL_INFILE_DIRECTORY',
+
+            'MYSQL_ATTR_READ_DEFAULT_FILE',
+            'MYSQL_ATTR_READ_DEFAULT_GROUP',
+
+            'MYSQL_ATTR_MAX_BUFFER_SIZE',
+
+            'MYSQL_ATTR_INIT_COMMAND',
+
+            'MYSQL_ATTR_COMPRESS',
+
+            'MYSQL_ATTR_SSL_CA',
+            'MYSQL_ATTR_SSL_CAPATH',
+            'MYSQL_ATTR_SSL_CERT',
+            'MYSQL_ATTR_SSL_CIPHER',
+            'MYSQL_ATTR_SSL_KEY',
+            'MYSQL_ATTR_SSL_VERIFY_SERVER_CERT'
+        ];
+        foreach ($mysqlAttr as $attr) {
+            if (isset($this->config[$attr])) {
+                $options[constant("PDO::$attr")] = $this->config[$attr];
+            }
+        }
+
         $this->connection = @new PDO(
             $dsn,
             $username,
