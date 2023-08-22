@@ -74,6 +74,12 @@ class CI_DB_mysqli_connection
             PDO::ATTR_STRINGIFY_FETCHES => ! $this->mysqlnd
         );
 
+        // only set names and collation if they are set in config
+        // and are different from what's default in EE
+        if (isset($this->config['dbcollat_default']) && $this->config['dbcollat_default'] === true) {
+            $options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES '$char_set' COLLATE '$dbcollat'";
+        }
+
         // There is a limited set of PDO options that we can pass though
         // from config.php file
         $mysqlAttr = [
@@ -108,8 +114,6 @@ class CI_DB_mysqli_connection
             $password,
             $options
         );
-
-        $this->query("SET NAMES '$char_set' COLLATE '$dbcollat'");
     }
 
     /**
