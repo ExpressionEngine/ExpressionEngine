@@ -275,10 +275,20 @@ class NavigationSidebar extends AbstractSidebar
      */
     public function addCustomSection()
     {
-        $item = new NavigationCustomSection();
-        $this->items[] = $item;
+        $sets = ee('Model')->get('MenuSet')
+            ->with('Roles')
+            ->filter('Roles.role_id', 'IN', ee()->session->getMember()->getAllRoles()->pluck('role_id'))
+            ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
+            ->all();
+        if ($sets->count() == 0) {
+            return false;
+        }
+        foreach ($sets as $set) {
+            $item = new NavigationCustomSection($set);
+            $this->items[] = $item;
+        }
 
-        return $item;
+        return true;
     }
 }
 

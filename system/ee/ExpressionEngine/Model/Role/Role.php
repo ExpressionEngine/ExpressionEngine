@@ -122,6 +122,13 @@ class Role extends Model
                 'table' => 'email_cache_mg'
             )
         ),
+        'MenuSets' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'MenuSet',
+            'pivot' => array(
+                'table' => 'exp_menu_set_roles'
+            )
+        ),
     ];
 
     protected static $_validation_rules = [

@@ -11,15 +11,20 @@
 namespace ExpressionEngine\Service\Sidebar\Navigation;
 
 use ExpressionEngine\Service\View\ViewFactory;
+use ExpressionEngine\Model\Menu\MenuSet;
 
 /**
  * Sidebar NavigationCustomSection
  */
 class NavigationCustomSection extends NavigationSection
 {
-    public function __construct()
+    protected $set_id;
+
+    public function __construct(MenuSet $set)
     {
-        parent::__construct(lang('custom'), 'custom');
+        $name = ($set->name != 'Default') ? ee('Security/XSS')->clean($set->name) : lang('custom');
+        parent::__construct($name, 'custom');
+        $this->set_id = $set->set_id;
     }
 
     public function render(ViewFactory $view)
@@ -39,8 +44,8 @@ class NavigationCustomSection extends NavigationSection
         $args = array($custom);
         $items = ee('Model')->get('MenuItem')
             ->fields('MenuItem.*', 'Children.*')
-            ->with(array('Set' => 'RoleSettings'), 'Children')
-            ->filter('RoleSettings.role_id', ee()->session->userdata('role_id'))
+            ->with('Children')
+            ->filter('set_id', $this->set_id)
             ->order('MenuItem.sort')
             ->order('Children.sort')
             ->all();

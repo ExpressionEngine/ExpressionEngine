@@ -408,7 +408,6 @@ class EE_Schema
 			`id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`role_id` int(10) unsigned NOT NULL,
 			`site_id` int(4) unsigned NOT NULL DEFAULT '1',
-			`menu_set_id` int(5) unsigned NOT NULL DEFAULT '1',
 			`mbr_delete_notify_emails` varchar(255) DEFAULT NULL,
 			`exclude_from_moderation` char(1) NOT NULL DEFAULT 'n',
 			`search_flood_control` mediumint(5) unsigned NOT NULL,
@@ -1405,9 +1404,16 @@ class EE_Schema
 		)";
 
         $Q[] = "CREATE TABLE `exp_menu_sets` (
-  			`set_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  			`name` varchar(50) DEFAULT NULL,
-  			PRIMARY KEY (`set_id`)
+			`set_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`site_id` INT(4) unsigned NOT NULL DEFAULT 0,
+			`name` varchar(50) DEFAULT NULL,
+			PRIMARY KEY (`set_id`)
+		)";
+
+        $Q[] = "CREATE TABLE `exp_menu_set_roles` (
+			set_id int(4) unsigned NOT NULL,
+			role_id int(10) unsigned NOT NULL,
+			PRIMARY KEY `set_id_role_id` (`set_id`, `role_id`)
 		)";
 
         $Q[] = "CREATE TABLE `exp_menu_items` (
@@ -1548,9 +1554,6 @@ class EE_Schema
 			PRIMARY KEY (`view_id`),
 			KEY `viewtype_upload_id_member_id` (`viewtype`, `upload_id`, `member_id`)
 		);";
-
-        // Default menu set
-        $Q[] = "INSERT INTO exp_menu_sets(name) VALUES ('Default')";
 
         // --------------------------------------------------------------------
         // --------------------------------------------------------------------
