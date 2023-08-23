@@ -24,7 +24,7 @@ class NavigationSidebar extends AbstractSidebar
      *
      * @return Array Array of sidebar items
      */
-    private function populateItems()
+    public function populateItems()
     {
         if (!empty($this->items)) {
             return $this->items;
@@ -37,6 +37,7 @@ class NavigationSidebar extends AbstractSidebar
             $this->addItem(lang('nav_overview'), ee('CP/URL', 'homepage'))->withIcon('tachometer-alt');
         }
 
+        $createEntryMenu = [];
         if (ee('Permission')->hasAny('can_edit_other_entries', 'can_edit_self_entries', 'can_create_entries', 'can_access_files') || (ee('Permission')->has('can_admin_channels') && ee('Permission')->hasAny('can_create_categories', 'can_edit_categories', 'can_delete_categories'))) {
             $section = $this->addSection(lang('nav_content'));
 
@@ -86,6 +87,7 @@ class NavigationSidebar extends AbstractSidebar
                     $listitem = $list->addItem($channel->channel_title, $editLink ?: '#');
                     if (!empty($publishLink)) {
                         $listitem->withAddLink($publishLink);
+                        $createEntryMenu[$publishLink->compile()] = $channel->channel_title;
                     }
                 }
             }
@@ -96,6 +98,7 @@ class NavigationSidebar extends AbstractSidebar
                 $section->addItem(lang('categories'), ee('CP/URL', 'categories'))->withIcon('tags');
             }
         }
+        ee()->session->set_cache(__CLASS__, 'create_entry_menu/' . ee()->config->item('site_id'), $createEntryMenu);
 
         if (ee('Permission')->has('can_access_members')) {
             $section = $this->addSection(lang('members'));

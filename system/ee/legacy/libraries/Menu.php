@@ -24,6 +24,7 @@ class EE_Menu
      */
     public function __construct()
     {
+        ee()->logger->deprecated('7.5', "ee('CP/NavigationSidebar')");
         ee()->load->library('api');
     }
 

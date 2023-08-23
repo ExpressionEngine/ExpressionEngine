@@ -219,12 +219,9 @@ class Edit extends AbstractPublishController
         $vars['table'] = $table->viewData($base_url);
         $vars['form_url'] = $vars['table']['base_url'];
 
-        $menu = ee()->menu->generate_menu();
-        $choices = [];
-        foreach ($menu['channels']['create'] as $text => $link) {
-            $choices[$link->compile()] = $text;
-        }
-
+        // make sure the navigation sidebar caches have been built
+        ee('CP/NavigationSidebar')->populateItems();
+        $choices = ee()->session->cache("ExpressionEngine\Service\Sidebar\Navigation\NavigationSidebar", 'create_entry_menu/' . ee()->config->item('site_id'), []);
         $vars['head'] = array(
             'title' => lang('entry_manager'),
             'action_button' => (count($choices) || ee('Permission')->can('create_entries_channel_id_' . $channel_id)) && $show_new_button ? [
