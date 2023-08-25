@@ -590,7 +590,9 @@ class EE_Core
         // Load the Super Model
         ee()->load->model('super_model');
 
-        // Laod Menu library
+        // Load Menu library
+        // Deprecated in 7.5
+        // we still load it, but will stop doing that in future versions
         ee()->load->library('menu');
 
         $this->set_newrelic_transaction(function () use ($get) {
