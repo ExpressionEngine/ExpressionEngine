@@ -28,10 +28,10 @@ class Recent_entries extends Dashboard\AbstractDashboardWidget implements Dashbo
     public function getContent()
     {
         $vars = [];
-        $vars['can_create_channels'] = ee('Permission')->can('create_channels');
-        $vars['number_of_channels'] = ee('Model')->get('Channel')
-            ->filter('site_id', ee()->config->item('site_id'))
-            ->count();
+        $vars['assigned_channels'] = ee()->functions->fetch_assigned_channels();
+        if (!ee('Permission')->isSuperAdmin() && empty($vars['assigned_channels'])) {
+            return '';
+        }
 
         return ee('View')->make('pro:widgets/recent_entries')->render($vars);
     }

@@ -37,6 +37,7 @@ class EE_Menu
      */
     public function generate_menu()
     {
+        ee()->logger->deprecated('7.5', "ee('CP/NavigationSidebar')");
         if (isset(static::$menu)) {
             return static::$menu;
         }
@@ -66,8 +67,9 @@ class EE_Menu
         $args = array($custom);
         $items = ee('Model')->get('MenuItem')
             ->fields('MenuItem.*', 'Children.*')
-            ->with(array('Set' => 'RoleSettings'), 'Children')
-            ->filter('RoleSettings.role_id', ee()->session->userdata('role_id'))
+            ->with(array('Set' => 'Roles'), 'Children')
+            ->filter('Roles.role_id', ee()->session->userdata('role_id'))
+            ->filter('Set.site_id', 'IN', [0, ee()->config->item('site_id')])
             ->order('MenuItem.sort')
             ->order('Children.sort')
             ->all();
