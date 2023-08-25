@@ -386,7 +386,7 @@ module.exports = defineConfig({
     "chromeWebSecurity": false,
     "failOnStatusCode": false,
     "experimentalInteractiveRunEvents": true,
-    "redirectionLimit": 200,
+    "redirectionLimit": 300,
     "retries": {
         "runMode": 1,
         "openMode": 0
