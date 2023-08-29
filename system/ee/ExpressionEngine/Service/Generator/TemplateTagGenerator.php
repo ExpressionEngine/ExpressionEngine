@@ -23,6 +23,11 @@ class TemplateTagGenerator
     protected $addonPath;
     protected $stubPath;
 
+    protected $namespace;
+    protected $TagName;
+    protected $tag_name;
+    protected $tagsPath;
+
     public function __construct(Filesystem $filesystem, Str $str, array $data)
     {
         // Set FS

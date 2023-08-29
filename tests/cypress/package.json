@@ -1,6 +1,6 @@
 {
     "name": "ee-tests",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "private": true,
     "description": "",
     "main": "index.js",
@@ -14,19 +14,17 @@
     "author": "",
     "license": "ISC",
     "devDependencies": {
-        "@4tw/cypress-drag-drop": "^2.2.0",
         "find-test-names": "^1.28.12"
     },
     "dependencies": {
-        "cypress": "^9.7.0",
+        "cypress": "^12.17.0",
         "cypress-audit": "^1.1.0",
-        "cypress-file-upload": "^5.0.8",
         "cypress-maildev": "^1.1.0",
         "cypress-otp": "^1.0.3",
         "cypress-xpath": "^1.6.2",
         "cypress-log-to-output": "^1.1.2",
         "del": "^6.0.0",
-        "fs-extra": "^9.0.0",
+        "fs-extra": "^11.0.0",
         "glob": "^8.0.1",
         "image-size": "^1.0.0",
         "lorem-ipsum": "^2.0.4",

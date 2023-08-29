@@ -46,17 +46,17 @@ context('Rich Text Editor', () => {
 
         it('Displays an itemized modal when trying to remove 5 or less tool sets', function() {
             cy.authVisit(page.url);
-            let tool_set_name = page.$('tool_set_names').eq(1).text()
+            page.get('tool_set_names').eq(1).invoke('text').then((tool_set_name) => {
+                // Header at 0, first "real" row is 1
+                page.get('tool_sets').eq(2).find('input[type="checkbox"]').check()
+                page.get('bulk_action').select("Delete")
+                page.get('action_submit_button').click()
 
-            // Header at 0, first "real" row is 1
-            page.get('tool_sets').eq(2).find('input[type="checkbox"]').check()
-            page.get('bulk_action').select("Delete")
-            page.get('action_submit_button').click()
-
-            page.get('modal_title').contains("Confirm Removal")
-            page.get('modal').contains("You are attempting to remove the following items, please confirm this action.")
-            page.get('modal').contains(tool_set_name)
-            page.get('modal').find('.checklist li').its('length').should('eq', 1)
+                page.get('modal_title').contains("Confirm Removal")
+                page.get('modal').contains("You are attempting to remove the following items, please confirm this action.")
+                page.get('modal').contains(tool_set_name)
+                page.get('modal').find('.checklist li').its('length').should('eq', 1)
+            })
         })
 
         it('Displays a bulk confirmation modal when trying to remove more than 5 tool sets', function() {
@@ -72,26 +72,26 @@ context('Rich Text Editor', () => {
 
         it('Cannot remove the default tool set', function() {
             cy.authVisit(page.url);
-            let tool_set_name = page.$('tool_set_names').eq(0).text()
+            page.get('tool_set_names').eq(0).invoke('text').then((tool_set_name) => {
+                // This populates the modal with a hidden input so we can modify it later
+                page.get('tool_sets').eq(2).find('input[type="checkbox"]').check()
+                page.get('bulk_action').select("Delete")
+                page.get('action_submit_button').click()
 
-            // This populates the modal with a hidden input so we can modify it later
-            page.get('tool_sets').eq(2).find('input[type="checkbox"]').check()
-            page.get('bulk_action').select("Delete")
-            page.get('action_submit_button').click()
-
-            cy.get('input[name="selection[]"]').then(elem => {
-                cy.get('[value="Confirm, and Remove"]').first().invoke('val').then((val) => {
-                    elem.val(val)
+                cy.get('input[name="selection[]"]').then(elem => {
+                    cy.get('[value="Confirm, and Remove"]').first().invoke('val').then((val) => {
+                        elem.val(val)
+                    });
                 });
-            });
 
-            //page.get('modal_submit_button').click() // Submits a form AJ
-            cy.get('button').contains('Confirm, and Remove').first().click({force:true})
-            cy.hasNoErrors()
+                //page.get('modal_submit_button').click() // Submits a form AJ
+                cy.get('button').contains('Confirm, and Remove').first().click({force:true})
+                cy.hasNoErrors()
 
-            page.hasAlert('error')
-            page.get('alert').contains("Your Rich Text Editor Settings could not be saved")
-            page.get('tool_set_names').eq(0).contains(tool_set_name)
+                page.hasAlert('error')
+                page.get('alert').contains("Your Rich Text Editor Settings could not be saved")
+                page.get('tool_set_names').eq(0).contains(tool_set_name)
+            })
         })
 
         it('Can reverse sort tool sets by name', function() {

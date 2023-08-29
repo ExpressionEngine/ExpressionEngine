@@ -12,25 +12,40 @@
 
     <?php
         $alerts = [];
-        $alerts[0] = ee('CP/Alert')
+
+        $alert = ee('CP/Alert')
+            ->makeInline()
+            ->withTitle(lang('debug_tools_debug_duplicate_template_groups'));
+        if ($duplicate_template_groups_count > 0) {
+            $alert->addToBody(sprintf(lang('duplicate_template_groups_found'), $duplicate_template_groups_count) . '<br><a href="' . ee('CP/URL')->make('utilities/debug-tools/duplicate-template-groups') . '">' . lang('review_duplicate_template_groups') . '</a>');
+            $alert->asImportant();
+        } else {
+            $alert->addToBody(lang('no_duplicate_template_groups_found'));
+            $alert->asSuccess();
+        }
+        $alerts[] = $alert;
+
+        $alert = ee('CP/Alert')
             ->makeInline()
             ->withTitle(lang('debug_tools_debug_tags'))
             ->addToBody(sprintf(lang('debug_tools_broken_tags_found'), $bad_tags_count) . '<br><a href="' . ee('CP/URL')->make('utilities/debug-tools/debug-tags') . '">' . lang('debug_tools_debug_tags') . '</a>');
         if ($bad_tags_count == 0) {
-            $alerts[0]->asSuccess();
+            $alert->asSuccess();
         } else {
-            $alerts[0]->asImportant();
+            $alert->asImportant();
         }
+        $alerts[] = $alert;
 
-        $alerts[1] = ee('CP/Alert')
+        $alert = ee('CP/Alert')
             ->makeInline()
             ->withTitle(lang('debug_tools_fieldtypes'))
             ->addToBody(sprintf(lang('debug_tools_found_missing_fieldtypes'), $missing_fieldtype_count) . '<br><a href="' . ee('CP/URL')->make('utilities/debug-tools/debug-fieldtypes') . '">' . lang('debug_tools_show_missing_fieldtypes') . '</a>');
         if ($missing_fieldtype_count == 0) {
-            $alerts[1]->asSuccess();
+            $alert->asSuccess();
         } else {
-            $alerts[1]->asImportant();
+            $alert->asImportant();
         }
+        $alerts[] = $alert;
 
         foreach ($alerts as $alert) {
             $alert->cannotClose();

@@ -34,12 +34,11 @@ context('Statuses', () => {
     })
 
     it('Delete a status', function() {
-        cy.server()
         page.get_statuses_for_group(1).then(function(statuses){
 
             page.get('statuses').eq(2).find('.button.js-button-delete').click()
 
-            cy.route("POST", "**/channels/render-statuses-field").as("ajax");
+            cy.intercept("POST", "**/channels/render-statuses-field").as("ajax");
             page.get('modal').contains(statuses[2], {matchCase: false})
             
             //page.get('modal_submit_button').click()AJ

@@ -540,6 +540,11 @@ class Roles extends AbstractRolesController
 
         // template_access
         $template_ids = [];
+        // ensure templates from other sites are always in
+        if (!$role->isNew() && bool_config_item('multiple_sites_enabled')) {
+            $template_ids = $role->AssignedTemplates->filter('site_id', '!=', ee()->config->item('site_id'))->pluck('template_id');
+        }
+        // add posted template IDs
         if (!empty(ee('Request')->post('assigned_templates'))) {
             $posted_assigned_templates = ee('Request')->post('assigned_templates');
             if (!is_array($posted_assigned_templates) && strpos($posted_assigned_templates, '[') === 0) {

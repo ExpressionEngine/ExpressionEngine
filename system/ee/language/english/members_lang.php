@@ -470,7 +470,7 @@ $lang = array(
 
     'username_banning_instructions' => '<b>Place each username on a separate line</b><br> These usernames will not be allowed.',
 
-    /* Member group settings */
+    /* Role settings */
     'access_privilege_caution' => 'Any setting marked with <span class="icon--caution" title="exercise caution"></span> should only be granted to people you trust implicitly.',
 
     'access_privilege_warning' => '<b>Warning</b>: Please be very careful with the access privileges you grant.',
@@ -561,7 +561,7 @@ $lang = array(
 
     'can_admin_design' => 'Global template settings',
 
-    'can_admin_design_desc' => 'When enabled, users assigned to this group may access the global template settings and template routes.',
+    'can_admin_design_desc' => 'When enabled, users assigned to this group may access the global template settings, system templates, and template routes.',
 
     'can_admin_mbr_groups' => 'Access roles',
 

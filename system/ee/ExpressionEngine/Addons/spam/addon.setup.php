@@ -17,7 +17,7 @@ return array(
     'author_url' => 'https://expressionengine.com/',
     'name' => 'ExpressionEngine Spam Module',
     'description' => 'Block spammy comments, forum posts, and member registrations',
-    'version' => '2.0.0',
+    'version' => '2.1.0',
     'namespace' => 'ExpressionEngine\Addons\Spam',
     'settings_exist' => true,
     'services' => array(

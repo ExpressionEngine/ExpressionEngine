@@ -7,6 +7,10 @@
 		border: 1px solid color(border);
 		overflow-x: auto;
 	}
+
+	.ui-sortable-placeholder > * {
+		display: none !important;
+	}
 }
 
 .grid-field__table {

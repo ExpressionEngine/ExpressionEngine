@@ -501,10 +501,6 @@ $lang = array(
 
     'upload_manage' => 'Manage',
 
-    'upload_member_groups' => 'Allowed member groups',
-
-    'upload_member_groups_desc' => 'The following user groups are allowed to upload to this directory.</em><br /><em>Super Administrators are <b>always</b> allowed.',
-
     'upload_roles' => 'Allowed member roles',
 
     'upload_roles_desc' => 'The following member roles are allowed to upload to this directory.<br />Super Administrators are <b>always</b> allowed.',
@@ -797,8 +793,6 @@ $lang = array(
 
     'max_width' => 'Maximum Image Width (in pixels)',
 
-    'member_group' => 'Member Group',
-
     'new_file_upload_created' => 'New File Upload Created',
 
     'new_file_upload_preferences' => 'New File Upload Preferences',
@@ -810,8 +804,6 @@ $lang = array(
     'no_edit_selected' => 'No Edit Operation Selected',
 
     'no_errors' => 'No errors',
-
-    'no_results' => 'No available member groups.',
 
     'no_sync_title' => 'No Results', // @todo, this phrase should change, just not sure what to put -ga
     'no_upload_directories_for_fieldtype' => 'There are currently no upload directories available. Please <a href="%s" rel="external">add one or more upload directories</a> to use the File fieldtype.',
@@ -853,14 +845,6 @@ $lang = array(
     'resize_type' => 'Resize Type',
 
     'resize_width' => 'Width',
-
-    'restrict_notes_1' => 'These radio buttons let you to specify which Member Groups are allowed to upload files.',
-
-    'restrict_notes_2' => 'Super Admins can always upload files',
-
-    'restrict_notes_3' => 'Note: File uploading is currently only allowed via the control panel',
-
-    'restrict_to_group' => 'Restrict file uploading to select member groups',
 
     'rotate' => 'Rotate',
 

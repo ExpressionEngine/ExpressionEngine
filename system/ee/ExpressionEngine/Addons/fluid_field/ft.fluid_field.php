@@ -175,6 +175,7 @@ class Fluid_field_ft extends EE_Fieldtype
 
         $compiled_data_for_search = [];
 
+        $total_fields = count($data['fields']);
         foreach ($data['fields'] as $key => $value) {
             if ($key == 'new_field_0') {
                 continue;
@@ -191,8 +192,12 @@ class Fluid_field_ft extends EE_Fieldtype
             // Existing field - field_id_3[fields][field_3][field_group_0][field_id_2] = value
             if (strpos($key, 'field_') === 0) {
                 $fluid_field_id = (int) str_replace('field_', '', $key);
+                if (! isset($fluid_field_data[$fluid_field_id]) && ee('Request')->get('version')) {
+                    $key = 'new_field_' . ($total_fields + $fluid_field_id);
+                }
+            }
             // New field - field_id_3[fields][new_field_1][field_group_1][field_id_2] = value
-            } elseif (strpos($key, 'new_field_') === 0) {
+            if (strpos($key, 'new_field_') === 0) {
                 $create = true;
             }
 
@@ -250,6 +255,7 @@ class Fluid_field_ft extends EE_Fieldtype
 
         $i = 1;
         $g = 0;
+        $total_fields = count($data['fields']);
         // [field_3][field_group_0][field_id_2]
         // [new_field_1][field_group_1][field_id_2]
         foreach ($data['fields'] as $key => $value) {
@@ -275,9 +281,14 @@ class Fluid_field_ft extends EE_Fieldtype
                 // Existing field
                 if (strpos($key, 'field_') === 0 && (!defined('CLONING_MODE') || CLONING_MODE !== true)) {
                     $id = str_replace('field_', '', $key);
-                    $group_key = 'group_' . $fluid_field_data[$id]->group;
+                    if (isset($fluid_field_data[$id])) {
+                        $group_key = 'group_' . $fluid_field_data[$id]->group;
+                    } elseif (ee('Request')->get('version')) {
+                        $key = 'new_field_' . ($total_fields + (int) $id);
+                    }
+                }
                 // New field
-                } elseif (strpos($key, 'new_field_') === 0 || (defined('CLONING_MODE') && CLONING_MODE === true)) {
+                if (strpos($key, 'new_field_') === 0 || (defined('CLONING_MODE') && CLONING_MODE === true)) {
                     $field_id = str_replace('field_id_', '', $fieldKey);
                 }
 
@@ -428,6 +439,32 @@ class Fluid_field_ft extends EE_Fieldtype
 
     private function removeField($fluid_field)
     {
+        // some built-in fields are more complex, we have to do more clean-up
+        // third-party fields are expected to use extensions hook
+        switch ($fluid_field->ChannelField->field_type) {
+            case 'grid':
+            case 'file_grid':
+                ee()->load->add_package_path(PATH_ADDONS . 'grid');
+                ee()->load->library('grid_lib');
+                ee()->grid_lib->field_id = $fluid_field->field_id;
+                ee()->grid_lib->content_type = $this->content_type;
+                ee()->grid_lib->entry_id = $this->content_id;
+                ee()->grid_lib->fluid_field_data_id = $fluid_field->id;
+                ee()->grid_lib->save([]);
+                ee()->load->remove_package_path(PATH_ADDONS . 'grid');
+                break;
+            case 'relationship':
+                ee('db')
+                    ->where('parent_id', $this->content_id)
+                    ->where('field_id', $fluid_field->field_id)
+                    ->where('fluid_field_data_id', $fluid_field->id)
+                    ->where('grid_field_id', 0)
+                    ->delete('relationships');
+                break;
+            default:
+                break;
+        }
+
         $query = ee('db');
         $query->where('id', $fluid_field->field_data_id);
         $query->delete($fluid_field->ChannelField->getTableName());
@@ -568,6 +605,11 @@ class Fluid_field_ft extends EE_Fieldtype
 
                 if (strpos($key, 'field_') === 0) {
                     $fluid_field_data_id = (int) str_replace('field_', '', $key);
+                }
+
+                // if we loaded older revision, it might be structured differently
+                if (ee('Request')->get('version') && strpos(array_key_first($field_data), 'field_group_id_') !== 0) {
+                    $field_data = ['field_group_id_0' => $field_data];
                 }
 
                 foreach ($field_data as $id => $datum) {

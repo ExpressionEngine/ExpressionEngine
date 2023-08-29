@@ -90,7 +90,7 @@ class Categories extends Jumps
             $keywords = explode(' ', $searchString);
 
             foreach ($keywords as $keyword) {
-                $categoryGroups->filter('group_name', 'LIKE', '%' . $keyword . '%');
+                $categoryGroups->filter('group_name', 'LIKE', '%' . ee()->db->escape_like_str($keyword) . '%');
             }
         }
 
@@ -109,7 +109,7 @@ class Categories extends Jumps
             $keywords = explode(' ', $searchString);
 
             foreach ($keywords as $keyword) {
-                $categories->filter('cat_name', 'LIKE', '%' . $keyword . '%');
+                $categories->filter('cat_name', 'LIKE', '%' . ee()->db->escape_like_str($keyword) . '%');
             }
         }
 
