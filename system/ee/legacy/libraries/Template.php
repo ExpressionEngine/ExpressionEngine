@@ -694,10 +694,15 @@ class EE_Template
         if (preg_match_all('/' . LD . 'layout:(?!\bcontents\b)([^!]+?)' . RD . '/', $str, $matches)) {
             foreach ($matches[1] as $match) {
                 // get the key to the layout_vars array, if the string contains any modifier characters
-                // we will remove the trailing part of the string.
+                // we will remove the trailing part of the string. (e.g. {layout:var:modifier} -> {layout:var})
                 $key = $match;
                 if (($modifier_pos = strpos($key, ':')) !== false) {
                     $key = substr($key, 0, $modifier_pos);
+                }
+
+                // remove any arguments after the remaining variable name (e.g. {layout:var index='1'} -> {layout:var})
+                if (($args_pos = strpos($key, ' ')) !== false) {
+                    $key = substr($key, 0, $args_pos);
                 }
 
                 // ignore if the variable is already defined
