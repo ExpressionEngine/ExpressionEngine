@@ -687,11 +687,13 @@ class EE_Template
      */
     private function parseLayoutVariables($str, $layout_vars)
     {
-        $this->log_item("layout Variables:", $layout_vars);
+        $this->log_item("Layout Variables:", $layout_vars);
         $this->layout_conditionals = [];
 
         // get all the declared layout variables (excluding layout:contents)
         if (preg_match_all('/' . LD . 'layout:(?!\bcontents\b)([^!]+?)' . RD . '/', $str, $matches)) {
+            $undefined_layout_vars = [];
+
             foreach ($matches[1] as $match) {
                 // get the key to the layout_vars array, if the string contains any modifier characters
                 // we will remove the trailing part of the string. (e.g. {layout:var:modifier} -> {layout:var})
@@ -712,6 +714,11 @@ class EE_Template
 
                 // set the undefined (but declared) variable to an empty string
                 $layout_vars[$key] = '';
+                $undefined_layout_vars[] = $key;
+            }
+
+            if (count($undefined_layout_vars) > 0) {
+                $this->log_item(" -> Undefined Variables:", $undefined_layout_vars);
             }
         }
 
