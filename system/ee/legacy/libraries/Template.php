@@ -691,22 +691,10 @@ class EE_Template
         $this->layout_conditionals = [];
 
         // get all the declared layout variables (excluding layout:contents)
-        if (preg_match_all('/' . LD . 'layout:(?!\bcontents\b)([^!]+?)' . RD . '/', $str, $matches)) {
+        if (preg_match_all('/' . LD . 'layout:(?!\bcontents\b)([^!]+?)(' . RD . '|\s|:)/', $str, $matches)) {
             $undefined_layout_vars = [];
 
-            foreach ($matches[1] as $match) {
-                // get the key to the layout_vars array, if the string contains any modifier characters
-                // we will remove the trailing part of the string. (e.g. {layout:var:modifier} -> {layout:var})
-                $key = $match;
-                if (($modifier_pos = strpos($key, ':')) !== false) {
-                    $key = substr($key, 0, $modifier_pos);
-                }
-
-                // remove any arguments after the remaining variable name (e.g. {layout:var index='1'} -> {layout:var})
-                if (($args_pos = strpos($key, ' ')) !== false) {
-                    $key = substr($key, 0, $args_pos);
-                }
-
+            foreach ($matches[1] as $key) {
                 // ignore if the variable is already defined
                 if (isset($layout_vars[$key])) {
                     continue;
