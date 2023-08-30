@@ -37,7 +37,6 @@ context('Publish Entry', () => {
     it('shows a 404 if there is no channel id', () => {
         cy.visit(Cypress._.replace(page.url, '{channel_id}', ''), {failOnStatusCode: false})
         cy.contains("404")
-        cy.logCPPerformance()
     })
 
     it('shows comment fields when comments are enabled by system and channel allows comments', () => {

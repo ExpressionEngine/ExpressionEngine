@@ -164,7 +164,8 @@ class EE_Exceptions
             ee()->output->fatal_error($message);
         }
 
-        if (defined('REQ') && constant('REQ') == 'CP') {
+        // if this is CP request and they are logged in, throw special kind of Exception
+        if (defined('REQ') && constant('REQ') == 'CP' && ee()->session->userdata('admin_sess') != 0) {
             throw new \ExpressionEngine\Error\CPException($message, $status_code);
         }
 
