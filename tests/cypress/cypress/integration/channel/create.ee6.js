@@ -66,7 +66,9 @@ context('Channel Create/Edit', () => {
 
 
         // Duplicate channel short name
+        cy.intercept('POST', '/admin.php?/cp/channels/create').as('ajax')
         page.get('channel_name').clear().type('news').blur()
+        cy.wait('@ajax')
         page.hasError(page.get('channel_name'), page.messages.validation.unique)
         //page.hasErrors()
         cy.get('button[value="save"]').filter('[type=submit]').first().should('be.disabled')
