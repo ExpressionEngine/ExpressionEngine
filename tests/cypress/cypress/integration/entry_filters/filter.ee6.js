@@ -160,37 +160,47 @@ context('Entry Manager', () => {
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Closed').click(); //Closed
 			cy.wait("@ajax")
 			cy.get('h3').contains('Entries').click()
+			cy.get('a[class="dropdown__link"]').should('not.be.visible')
 			entry.get('Entries').find('tr').should('have.length',1)
 
 			entry.get('StatusSort').click()
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Open').click(); //Open
 			cy.wait("@ajax")
 			cy.get('h3').contains('Entries').click()
+			cy.get('a[class="dropdown__link"]').should('not.be.visible')
 
+			cy.wait(1000)
 			entry.get('ChannelSort').click()
+			cy.get('a[class="dropdown__link"]').should('be.visible')
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Channel').click();//Channel
 			cy.wait("@ajax")
 			cy.get('h3').contains('Entries').click()
+			cy.get('a[class="dropdown__link"]').should('not.be.visible')
 			//entry.get('Entries').contains('No Entries found')
 			entry.get('Entries').find('tr').should('have.length',1)
 
-
+			cy.wait(1000)
 			entry.get('StatusSort').click()
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Closed').click(); //Closed
 			cy.wait("@ajax")
 			cy.get('h3').contains('Entries').click()
+			cy.get('a[class="dropdown__link"]').should('not.be.visible')
 			entry.get('Entries').find('tr').should('have.length',1)
 
+			cy.wait(1000)
 			entry.get('ChannelSort').click()
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Contact').click();//Contact
 			cy.wait("@ajax")
 			cy.get('h3').contains('Entries').click()
+			cy.get('a[class="dropdown__link"]').should('not.be.visible')
 			entry.get('Entries').contains('No Entries found')
 
+			cy.wait(1000)
 			entry.get('ChannelSort').click()
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Discover').click();//Discover
 			cy.wait("@ajax")
 			cy.get('h3').contains('Entries').click()
+			cy.get('a[class="dropdown__link"]').should('not.be.visible')
 			entry.get('Entries').contains('No Entries found')
 		})
 

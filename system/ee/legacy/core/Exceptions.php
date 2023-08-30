@@ -164,6 +164,11 @@ class EE_Exceptions
             ee()->output->fatal_error($message);
         }
 
+        // if this is CP request and they are logged in, throw special kind of Exception
+        if (defined('REQ') && constant('REQ') == 'CP' && ee()->session->userdata('admin_sess') != 0) {
+            throw new \ExpressionEngine\Error\CPException($message, $status_code);
+        }
+
         if (ob_get_level() > $this->ob_level + 1) {
             ob_end_flush();
         }
