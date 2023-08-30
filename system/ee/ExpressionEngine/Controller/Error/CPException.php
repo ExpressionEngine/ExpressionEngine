@@ -13,9 +13,9 @@ namespace ExpressionEngine\Controller\Error;
 use CP_Controller;
 
 /**
- * Error\FileNotFound Controller
+ * Error\CPException Controller
  */
-class FileNotFound extends CP_Controller
+class CPException extends CP_Controller
 {
     public function __construct()
     {
@@ -24,11 +24,15 @@ class FileNotFound extends CP_Controller
         ee()->output->enable_profiler(false);
     }
 
-    public function index($url = '')
+    public function index($message = 'unauthorized_access', $code = 403)
     {
-        ee()->output->out_type = 404;
-        ee()->view->cp_page_title = lang('404_does_not_exist');
-        ee()->cp->render('errors/file_not_found', compact('url'));
+        ee('Response')->setStatus($code);
+        $vars = [
+            'code' => $code,
+            'message' => lang($message),
+            'cp_page_title' => lang('http_code_' . $code),
+        ];
+        ee()->cp->render('errors/cp_exception', $vars);
     }
 }
 
