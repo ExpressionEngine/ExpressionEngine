@@ -70,6 +70,10 @@ context('Upload Destinations on MSM sites', () => {
   })
 
   it('Upload an image', () => {
+	// Cleaning up before we upload
+    cy.task('filesystem:delete', '../../uploads/programming.gif')
+    cy.task('filesystem:delete', '../../uploads/_thumbs/programming.gif')
+	
     cy.authVisit('admin.php?/cp/files')
     cy.get('.sidebar').contains('Dir 2').click()
 
@@ -78,7 +82,7 @@ context('Upload Destinations on MSM sites', () => {
     })
     cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
     cy.intercept('/admin.php?/cp/files/directory/*').as('table')
-    uploadFile.get('file_input').find('.file-field__dropzone').attachFile('../../support/file/programming.gif', { subjectType: 'drag-n-drop' })
+    uploadFile.get('file_input').find('.file-field__dropzone').selectFile('support/file/programming.gif', { action: 'drag-drop' })
     cy.wait('@upload')
     cy.wait('@table')
     cy.hasNoErrors()
