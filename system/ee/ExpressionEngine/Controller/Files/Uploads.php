@@ -192,7 +192,7 @@ class Uploads extends AbstractFilesController
                     foreach ($field['fields'] as $input_name => $input) {
                         $prefixed_name = implode('', [
                             "_for_adapter[{$key}]",
-                            (strpos($input_name, '[') !== false) ? '['. str_replace('[', '][', $input_name) : "[{$input_name}]"
+                            (strpos($input_name, '[') !== false) ? '[' . str_replace('[', '][', $input_name) : "[{$input_name}]"
                         ]);
                         $field['fields'][$prefixed_name] = $input;
                         unset($field['fields'][$input_name]);
@@ -231,7 +231,9 @@ class Uploads extends AbstractFilesController
             )
         );
         $vars['sections'][0] = array_merge($vars['sections'][0], $adapter_settings);
-        $vars['sections'][0] = array_merge($vars['sections'][0], array(
+        $vars['sections'][0] = array_merge(
+            $vars['sections'][0],
+            array(
                 array(
                     'title' => 'upload_allowed_types',
                     'desc' => '',
@@ -388,8 +390,6 @@ class Uploads extends AbstractFilesController
                 )
             )
         );
-
-
 
         // Grid validation results
         ee()->view->image_sizes_errors = isset($this->upload_errors['image_sizes'])
@@ -821,8 +821,14 @@ class Uploads extends AbstractFilesController
             }
         }
 
-        // Get a listing of raw files in the directory
-        $directoryMap = $upload_destination->getDirectoryMap();
+        // Get a listing of raw files in the directory.  If we are using a non-local filesystem
+        // we will skip the check for allowed mime types since this can be very slow. Instead we
+        // will check during the actual sync because it will feel faster on a smaller chunk of files
+        if($upload_destination->getFilesystem()->isLocal()) {
+            $directoryMap = $upload_destination->getDirectoryMap();
+        } else {
+            $directoryMap = $upload_destination->getDirectoryMap('/', false, false, false, false, true);
+        }
         $flatDirectoryMap = [];
         $this->flattenDirectoryMap($flatDirectoryMap, $directoryMap);
         $files = array_keys($flatDirectoryMap);
@@ -1004,6 +1010,30 @@ class Uploads extends AbstractFilesController
 
         $filesystem = $uploadDestination->getFilesystem();
 
+        // Eager load files for mimetype filtering
+        $filesystem->eagerLoadPaths(array_map(function ($filePath) {
+            return basename($filePath);
+        }, $current_files));
+
+        // filter out files that do not have an allowed mimetype in this destination
+        $current_files = array_values(array_filter($current_files, function ($filePath) use ($uploadDestination) {
+            return $uploadDestination->isFileMimetypeAllowed($filePath);
+        }));
+
+        // Eager Load manipulations
+        $eagerLoadFiles = [];
+        foreach($current_files as $filePath) {
+            $basename = basename($filePath);
+            if(strpos($basename, '.') !== false) {
+                $eagerLoadFiles[] = str_replace($basename, "_thumbs/$basename", $filePath);
+                foreach($replace_sizes as $size) {
+                    $eagerLoadFiles[] = str_replace($basename, "_{$size['short_name']}/$basename", $filePath);
+                }
+            }
+        }
+
+        $filesystem->eagerLoadPaths($eagerLoadFiles);
+
         foreach ($current_files as $filePath) {
             $fileInfo = $filesystem->getWithMetadata($filePath);
             if (!isset($fileInfo['basename'])) {
@@ -1039,6 +1069,7 @@ class Uploads extends AbstractFilesController
                 // Rename the file
                 if (! $filesystem->rename($fileInfo['path'], $clean_filename)) {
                     $errors[$fileInfo['path']] = lang('invalid_filename');
+
                     continue;
                 }
 
@@ -1087,8 +1118,11 @@ class Uploads extends AbstractFilesController
                     true 	// Don't overwrite existing thumbs
                 );
 
+                // Set the filesystem so that it can use the cached data from eager loading
+                $file->setFilesystem($filesystem);
+
                 // Update dimensions
-                $image_dimensions = $file->actLocally(function($path) {
+                $image_dimensions = $file->actLocally(function ($path) {
                     return ee()->filemanager->get_image_dimensions($path);
                 });
                 $file->setRawProperty('file_hw_original', $image_dimensions['height'] . ' ' . $image_dimensions['width']);
@@ -1098,6 +1132,7 @@ class Uploads extends AbstractFilesController
                     foreach ($fileTypes as $fileType) {
                         if (in_array($file->getProperty('mime_type'), $mimes[$fileType])) {
                             $file->setProperty('file_type', $fileType);
+
                             break;
                         }
                     }
@@ -1135,7 +1170,7 @@ class Uploads extends AbstractFilesController
                 $image_dimensions = $file->actLocally(function ($path) {
                     return ee()->filemanager->get_image_dimensions($path);
                 });
-                $file_data['file_hw_original'] =  $image_dimensions['height'] . ' ' . $image_dimensions['width'];
+                $file_data['file_hw_original'] = $image_dimensions['height'] . ' ' . $image_dimensions['width'];
                 $file->setRawProperty('file_hw_original', $file_data['file_hw_original']);
             }
             //$file->save(); need to fallback to old saving because of the checks

@@ -267,6 +267,9 @@ class CachedAdapter extends Flysystem\Cached\CachedAdapter
             }
         }
 
+        // Since we may have removed elements we need to reindex the array
+        $paths = array_values($paths);
+
         $adapterResponse = $this->getAdapter()->eagerLoadPaths($paths);
 
         foreach ($paths as $path) {

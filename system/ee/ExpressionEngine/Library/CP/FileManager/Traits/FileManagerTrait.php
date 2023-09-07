@@ -305,19 +305,29 @@ trait FileManagerTrait
             return $carry;
         }, []);
 
-        foreach ($eagerLoads as $eagerLoadFiles) {
-            $paths = [];
-            $uploadDestination = $eagerLoadFiles[0]->UploadDestination;
-            $eagerLoadFiles = array_filter($eagerLoadFiles, function ($file) {
-                return !$file->isDirectory();
-            });
-
-            foreach ($eagerLoadFiles as $file) {
-                $paths[] = $file->getAbsolutePath();
-                $paths[] = $file->getAbsoluteManipulationPath('thumbs');
+        // If we are loading a single destination or multiple destinations and
+        // a large number of files per page we will eager load the entire contents
+        // of the upload destination otherwise just eager load the files being shown
+        if(count($eagerLoads) == 1 || (!empty($eagerLoads) && $perpage > 100)) {
+            foreach($eagerLoads as $eagerLoadFiles) {
+                $uploadDestination = current($eagerLoadFiles)->UploadDestination;
+                $uploadDestination->eagerLoadContents();
             }
+        } else {
+            foreach ($eagerLoads as $eagerLoadFiles) {
+                $paths = [];
+                $uploadDestination = $eagerLoadFiles[0]->UploadDestination;
+                $eagerLoadFiles = array_filter($eagerLoadFiles, function ($file) {
+                    return !$file->isDirectory();
+                });
 
-            $uploadDestination->getFilesystem()->eagerLoadPaths($paths);
+                foreach ($eagerLoadFiles as $file) {
+                    $paths[] = $file->getAbsolutePath();
+                    $paths[] = $file->getAbsoluteManipulationPath('thumbs');
+                }
+
+                $uploadDestination->getFilesystem()->eagerLoadPaths($paths);
+            }
         }
 
         foreach ($files as $file) {
