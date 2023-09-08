@@ -1016,7 +1016,9 @@ class Uploads extends AbstractFilesController
         }, $current_files));
 
         // filter out files that do not have an allowed mimetype in this destination
-        $current_files = array_values(array_filter($current_files, function ($filePath) use ($uploadDestination) {
+        $current_files = array_values(array_filter($current_files, function ($filePath) use ($filesystem, $uploadDestination) {
+            $filesystem->getWithMetadata($filePath);
+
             return $uploadDestination->isFileMimetypeAllowed($filePath);
         }));
 

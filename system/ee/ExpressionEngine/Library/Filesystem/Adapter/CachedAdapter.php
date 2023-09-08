@@ -253,7 +253,14 @@ class CachedAdapter extends Flysystem\Cached\CachedAdapter
      */
     public function eagerLoadPaths($paths)
     {
+        // If the base adapter does not support eager loading specific paths prefetch
+        // the directory listing.  Unless we are using the local filesystem since this
+        // would not result in a performance increase and could consume a lot of memory
         if (!method_exists($this->getAdapter(), 'eagerLoadPaths')) {
+            if(!$this->getAdapter() instanceof Flysystem\Adapter\Local) {
+                $this->listContents('', true);
+            }
+
             return [];
         }
 
