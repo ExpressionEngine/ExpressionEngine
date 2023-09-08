@@ -12,6 +12,7 @@ return [
     'fieldtypes' => [
         'grid' => [
             'name' => 'Grid',
+            'templateGenerator' => 'Grid',
             'compatibility' => 'grid'
         ],
         'file_grid' => [

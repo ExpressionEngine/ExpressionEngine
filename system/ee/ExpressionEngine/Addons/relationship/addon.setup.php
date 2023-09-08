@@ -9,6 +9,7 @@ return array(
     'namespace' => 'ExpressionEngine\Addons\Relationships',
     'settings_exist' => false,
     'built_in' => true,
+    'docs_url' => 'https://docs.expressionengine.com/latest/fieldtypes/relationships.html',
     'fieldtypes' => array(
         'relationship' => array(
             'compatibility' => 'relationship'

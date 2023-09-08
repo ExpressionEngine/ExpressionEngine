@@ -9,4 +9,7 @@ return array(
     'namespace' => 'ExpressionEngine\Addons\Channel',
     'settings_exist' => true,
     'built_in' => true,
+    'templateGenerators' => array(
+        'Entries',
+    )
 );

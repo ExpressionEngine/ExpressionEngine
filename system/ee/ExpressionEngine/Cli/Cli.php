@@ -14,6 +14,7 @@ use ExpressionEngine\Cli\CliFactory;
 use ExpressionEngine\Cli\Help;
 use ExpressionEngine\Cli\Status;
 use ExpressionEngine\Cli\Context\OptionFactory;
+use ExpressionEngine\Cli\Exception;
 use ExpressionEngine\Library\Filesystem\Filesystem;
 
 class Cli
@@ -112,6 +113,9 @@ class Cli
         // Config
         'config:config' => Commands\CommandConfigConfig::class,
         'config:env' => Commands\CommandConfigEnv::class,
+
+        // Generate
+        'generate:templates' => Commands\CommandGenerateTemplates::class,
 
         // List
         'list' => Commands\CommandListCommands::class,
@@ -281,7 +285,7 @@ class Cli
             ->setOptions($this->commandOptions);
 
         // Echo out just the simple options for the command
-        if($this->option('--options')) {
+        if ($this->option('--options')) {
             $this->write($help->getHelpOptionsSimple());
             exit();
         }
@@ -364,7 +368,7 @@ class Cli
     public function table(array $headers, array $data)
     {
         // We need headers in order to print a table
-        if(empty($headers)) {
+        if (empty($headers)) {
             return;
         }
 
@@ -389,7 +393,7 @@ class Cli
             $format .= '%-' . $width . 's | ';
 
             // if last row by key
-            if($k === array_key_last($widths)) {
+            if ($k === array_key_last($widths)) {
                 $format = rtrim($format, '| ');
             }
         }
@@ -401,14 +405,14 @@ class Cli
         $dash_str = '';
         foreach ($widths as $k => $width) {
             $length = $width + 2;
-            if($k === array_key_first($widths)) {
+            if ($k === array_key_first($widths)) {
                 $length -= 1;
             }
 
             $dash_str .= str_repeat('-', $length) . '|';
 
             // if last row by key
-            if($k === array_key_last($widths)) {
+            if ($k === array_key_last($widths)) {
                 $dash_str = rtrim($dash_str, '|');
             }
         }
@@ -618,13 +622,18 @@ class Cli
 
         if ($this->options->hasErrors()) {
             $errors = $this->options->getErrors();
+            $shouldFail = false;
 
             foreach ($errors as $error) {
+                if (!($error instanceof Exception\OptionNotDefined)) {
+                    $shouldFail = true;
+                }
                 // print error messages to stderr using a Stdio object
                 $this->error($error->getMessage());
             }
-
-            $this->fail();
+            if ($shouldFail) {
+                $this->fail();
+            }
         };
     }
 

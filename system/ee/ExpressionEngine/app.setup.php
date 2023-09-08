@@ -51,6 +51,7 @@ use ExpressionEngine\Service\URL;
 use ExpressionEngine\Service\Updater;
 use ExpressionEngine\Service\Validation;
 use ExpressionEngine\Service\Template;
+use ExpressionEngine\Service\TemplateGenerator;
 use ExpressionEngine\Service\View;
 use ExpressionEngine\Addons\Spam\Service\Spam;
 use ExpressionEngine\Addons\FilePicker\Service\FilePicker;
@@ -660,6 +661,10 @@ $setup = [
             $session = ee()->session->getSessionModel();
 
             return new Session\Session($session);
+        },
+
+        'TemplateGenerator' => function ($ee) {
+            return new TemplateGenerator\Factory();
         },
 
         'Validation' => function ($ee) {

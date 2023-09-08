@@ -446,6 +446,22 @@ class Provider extends InjectionBindingDecorator
     }
 
     /**
+     * Register Template Generators
+     * 
+     * @return void
+     */
+    public function registerTemplateGenerators()
+    {
+        $generators = $this->get('templateGenerators', array());
+        if (!empty($generators)) {
+            foreach ($generators as $generator) {
+                ee('TemplateGenerator')->register($generator, $this);
+            }
+        }
+        unset($generators);
+    }
+
+    /**
      * Forcably override the first parameter on a given closure
      *
      * @param Closure $closure Function to partially apply

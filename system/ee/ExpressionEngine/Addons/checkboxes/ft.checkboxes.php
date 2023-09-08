@@ -29,6 +29,8 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
 
     public $size = 'small';
 
+    public $stub = 'options';
+
     // used in display_field() below to set
     // some defaults for third party usage
     public $settings_vars = array(
