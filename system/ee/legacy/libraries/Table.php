@@ -37,10 +37,12 @@ class EE_Table
     public $empty_cells = "";
     public $function = false;
 
+    private $temp;
+
     /**
      * Constructor
      *
-     * @access	public
+     * @access  public
      */
     public function __construct()
     {
@@ -58,8 +60,8 @@ class EE_Table
      * If not set, the cp safe refresh url will be used, which may not
      * be correct if the page is loaded with a POST request.
      *
-     * @access	public
-     * @param	string	base url	do not include BASE.AMP
+     * @access  public
+     * @param   string  base url    do not include BASE.AMP
      */
     public function set_base_url($url)
     {
@@ -74,7 +76,7 @@ class EE_Table
      *
      * @third parties: do not touch this, it will definitely change
      *
-     * @access	public
+     * @access  public
      */
     public function force_initial_load()
     {
@@ -84,15 +86,15 @@ class EE_Table
     /**
      * Setup the datasource
      *
-     * @access	public
-     * @param	string	data callback function
-     * @param	mixed	default data that will later be passed in the get array
+     * @access  public
+     * @param   string  data callback function
+     * @param   mixed   default data that will later be passed in the get array
      */
     public function datasource($func, $options = array(), $params = array())
     {
         $settings = array(
             'offset' => 0,
-            'sort' => array(),		// column_name => value
+            'sort' => array(),// column_name => value
             'columns' => $this->column_config
         );
 
@@ -182,8 +184,8 @@ class EE_Table
     /**
      * Setup columns
      *
-     * @access	public
-     * @param	mixed	column key => sort[bool]
+     * @access  public
+     * @param   mixed   column key => sort[bool]
      */
     public function set_columns($cols = array())
     {
@@ -219,14 +221,16 @@ class EE_Table
     /**
      * Set data
      *
-     * @access	public
-     * @param	mixed	rows of data in the new format
+     * @access  public
+     * @param   mixed   rows of data in the new format
      */
     public function set_data($table_data = null)
     {
         if (! $this->jq_template) {
             $this->jq_template = true;
-            ee()->cp->add_js_script('plugin', array('tmpl', 'ee_table'));
+            if (REQ == 'CP') {
+                ee()->cp->add_js_script('plugin', array('tmpl', 'ee_table'));
+            }
         }
 
         if (empty($table_data)) {
@@ -255,8 +259,8 @@ class EE_Table
     /**
      * Setup columns
      *
-     * @access	public
-     * @param	string	data callback function
+     * @access  public
+     * @param   string  data callback function
      */
     public function generate($table_data = null)
     {
@@ -345,8 +349,8 @@ class EE_Table
     /**
      * Generate the table
      *
-     * @param	mixed
-     * @return	string
+     * @param   mixed
+     * @return  string
      */
     protected function _generate($table_data = null)
     {
@@ -499,13 +503,13 @@ class EE_Table
     /**
      * Clears the table arrays.  Useful if multiple tables are being generated
      *
-     * @return	void
+     * @return  void
      */
     public function clear()
     {
         $this->uniqid = '';
         $this->base_url = '';
-        $this->no_result = '';
+        $this->no_results = '';
         $this->pagination_tmpl = '';
 
         $this->sort = array();
@@ -521,9 +525,9 @@ class EE_Table
     /**
      * Set the template
      *
-     * @access	public
-     * @param	array
-     * @return	void
+     * @access  public
+     * @param   array
+     * @return  void
      */
     public function set_template($template)
     {
@@ -539,9 +543,9 @@ class EE_Table
      *
      * Can be passed as an array or discreet params
      *
-     * @access	public
-     * @param	mixed
-     * @return	void
+     * @access  public
+     * @param   mixed
+     * @return  void
      */
     public function set_heading()
     {
@@ -554,9 +558,9 @@ class EE_Table
      *
      * Can be passed as an array or discreet params
      *
-     * @access	public
-     * @param	mixed
-     * @return	void
+     * @access  public
+     * @param   mixed
+     * @return  void
      */
     public function set_footer()
     {
@@ -570,10 +574,10 @@ class EE_Table
      * columns.  This allows a single array with many elements to  be
      * displayed in a table that has a fixed column count.
      *
-     * @access	public
-     * @param	array
-     * @param	int
-     * @return	void
+     * @access  public
+     * @param   array
+     * @param   int
+     * @return  void
      */
     public function make_columns($array = array(), $col_limit = 0)
     {
@@ -610,9 +614,9 @@ class EE_Table
      *
      * Can be passed as an array or discreet params
      *
-     * @access	public
-     * @param	mixed
-     * @return	void
+     * @access  public
+     * @param   mixed
+     * @return  void
      */
     public function set_empty($value)
     {
@@ -624,9 +628,9 @@ class EE_Table
      *
      * Can be passed as an array or discreet params
      *
-     * @access	public
-     * @param	mixed
-     * @return	void
+     * @access  public
+     * @param   mixed
+     * @return  void
      */
     public function add_row()
     {
@@ -639,9 +643,9 @@ class EE_Table
      *
      * Ensures a standard associative array format for all cell data
      *
-     * @access	public
-     * @param	type
-     * @return	type
+     * @access  public
+     * @param   type
+     * @return  type
      */
     public function _prep_args($args)
     {
@@ -673,9 +677,9 @@ class EE_Table
     /**
      * Add a table caption
      *
-     * @access	public
-     * @param	string
-     * @return	void
+     * @access  public
+     * @param   string
+     * @return  void
      */
     public function set_caption($caption)
     {
@@ -685,9 +689,9 @@ class EE_Table
     /**
      * Set table data from a database result object
      *
-     * @access	public
-     * @param	object
-     * @return	void
+     * @access  public
+     * @param   object
+     * @return  void
      */
     public function _set_from_object($query)
     {
@@ -716,9 +720,9 @@ class EE_Table
     /**
      * Set table data from an array
      *
-     * @access	public
-     * @param	array
-     * @return	void
+     * @access  public
+     * @param   array
+     * @return  void
      */
     public function _set_from_array($data, $set_heading = true)
     {
@@ -742,8 +746,8 @@ class EE_Table
     /**
      * Compile Template
      *
-     * @access	private
-     * @return	void
+     * @access  private
+     * @return  void
      */
     public function _compile_template()
     {
@@ -777,8 +781,8 @@ class EE_Table
     /**
      * Default Template
      *
-     * @access	private
-     * @return	void
+     * @access  private
+     * @return  void
      */
     public function _default_template()
     {
@@ -816,8 +820,8 @@ class EE_Table
     /**
      * Setup table pagination
      *
-     * @access	protected
-     * @param	string	pagination html
+     * @access  protected
+     * @param   string  pagination html
      */
     protected function _create_pagination($data, $ajax_request = false)
     {

@@ -539,3 +539,27 @@
     height: 100%;
   }
 }
+
+
+.modal-wrap {
+  .filter-search-bar {
+    .filter-search-bar__filter-row {
+      .filter-search-bar__item {
+        @media screen and (min-width: 1200px) {
+          &:first-child {
+            flex: inherit;
+          }
+        }
+        &:first-child {
+          .dropdown {
+            width: max-content;
+
+            @include m-tablet-down {
+              width: 100%;
+            }
+          }
+        }
+      }
+    }
+  }
+}

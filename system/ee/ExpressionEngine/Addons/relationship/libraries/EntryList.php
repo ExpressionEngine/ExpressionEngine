@@ -57,7 +57,7 @@ class EntryList
 
         $entries = ee('Model')->get('ChannelEntry')
             ->with('Channel')
-            ->fields('Channel.channel_title', 'title')
+            ->fields('Channel.channel_title', 'title', 'status')
             ->order($order_field, $order_dir);
 
         if ($related == 'related') {
@@ -67,7 +67,11 @@ class EntryList
         }
 
         if (! empty($search)) {
-            $entries->search('title', '"' . $search . '"');
+            if (is_numeric($search) && strlen($search) < 3) {
+                $entries->filter('entry_id', $search);
+            } else {
+                $entries->search(['title', 'url_title', 'entry_id'], $search);
+            }
         }
 
         if (! empty($channel_id) && is_numeric($channel_id)) {
@@ -215,6 +219,9 @@ class EntryList
                 'value' => $entry->getId(),
                 'label' => $entry->title,
                 'instructions' => $entry->Channel->channel_title,
+                'channel_id' => $entry->Channel->channel_id,
+                'editable' => (ee('Permission')->isSuperAdmin() || array_key_exists($entry->Channel->getId(), ee()->session->userdata('assigned_channels'))),
+                'status' => $entry->status
             ];
         }
 

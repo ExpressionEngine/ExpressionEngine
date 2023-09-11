@@ -27,8 +27,8 @@ class File extends AbstractFilesController
         }
 
         $file = ee('Model')->get('File', $id)
-            ->with('UploadDestination', 'UploadAuthor', 'ModifyAuthor', 'Categories')
-            ->filter('site_id', ee()->config->item('site_id'))
+            ->with('UploadDestination', 'UploadAuthor', 'ModifyAuthor')
+            ->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
             ->all()
             ->first();
 
@@ -90,7 +90,7 @@ class File extends AbstractFilesController
         if ($file->isEditableImage()) {
             ee()->load->library('image_lib');
             // we should really be storing the image properties in the db during file upload
-            $info = $file->actLocally(function($path) {
+            $info = $file->actLocally(function ($path) {
                 return ee()->image_lib->get_image_properties($path, true);
             });
             ee()->image_lib->error_msg = array(); // Reset any erorrs
@@ -209,17 +209,20 @@ class File extends AbstractFilesController
                 ee()->form_validation->set_rules('crop_x', 'lang:x_axis', 'trim|numeric|required');
                 ee()->form_validation->set_rules('crop_y', 'lang:y_axis', 'trim|numeric|required');
                 $action_desc = "cropped";
+
                 break;
             case 'rotate':
                 ee()->form_validation->set_rules('rotate', 'lang:rotate', 'required');
                 $action_desc = "rotated";
                 $active_tab = 1;
+
                 break;
             case 'resize':
                 ee()->form_validation->set_rules('resize_width', 'lang:width', 'trim|is_natural');
                 ee()->form_validation->set_rules('resize_height', 'lang:height', 'trim|is_natural');
                 $action_desc = "resized";
                 $active_tab = 2;
+
                 break;
         }
 
@@ -236,17 +239,16 @@ class File extends AbstractFilesController
             $response = null;
             switch ($action) {
                 case 'crop':
-                    $response = ee()->filemanager->_do_crop($file->getAbsolutePath());
+                    $response = ee()->filemanager->_do_crop($file->getAbsolutePath(), $file->getFilesystem());
 
                     break;
 
                 case 'rotate':
-                    $response = ee()->filemanager->_do_rotate($file->getAbsolutePath());
+                    $response = ee()->filemanager->_do_rotate($file->getAbsolutePath(), $file->getFilesystem());
 
                     break;
 
                 case 'resize':
-
                     // Preserve proportions if either dimention was omitted
                     if (empty($_POST['resize_width']) or empty($_POST['resize_height'])) {
                         $size = explode(" ", $file->file_hw_original);
@@ -258,7 +260,7 @@ class File extends AbstractFilesController
                         }
                     }
 
-                    $response = ee()->filemanager->_do_resize($file->getAbsolutePath());
+                    $response = ee()->filemanager->_do_resize($file->getAbsolutePath(), $file->getFilesystem());
 
                     break;
             }
@@ -329,10 +331,13 @@ class File extends AbstractFilesController
         $data = array();
         foreach ($file->FileEntries as $entry) {
             $title = ee('Format')->make('Text', $entry->title)->convertToEntities();
-            if (ee('Permission')->can('edit_other_entries_channel_id_' . $entry->channel_id)
-                || (ee('Permission')->can('edit_self_entries_channel_id_' . $entry->channel_id) &&
-                $entry->author_id == ee()->session->userdata('member_id'))) {
-                    $title = '<a href="' . ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id) . '">' . $title . '</a>';
+            if (
+                $entry->site_id == ee()->config->item('site_id') && (
+                    ee('Permission')->can('edit_other_entries_channel_id_' . $entry->channel_id) ||
+                    (ee('Permission')->can('edit_self_entries_channel_id_' . $entry->channel_id) && $entry->author_id == ee()->session->userdata('member_id'))
+                )
+            ) {
+                $title = '<a href="' . ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id) . '">' . $title . '</a>';
             }
             $attrs = [];
             $columns = [
@@ -366,9 +371,11 @@ class File extends AbstractFilesController
         foreach ($file->FileCategories as $category) {
             $title = ee('Format')->make('Text', $category->cat_name)->convertToEntities();
             $can_edit = explode('|', rtrim((string) $category->CategoryGroup->can_edit_categories, '|'));
-            if (ee('Permission')->isSuperAdmin()
-                || (ee('Permission')->can('edit_categories') && ee('Permission')->hasAnyRole($can_edit))) {
-                    $title = '<a href="' . ee('CP/URL')->make('categories/edit/' . $category->group_id . '/' . $category->cat_id) . '">' . $title . '</a>';
+            if (
+                ee('Permission')->isSuperAdmin() ||
+                (ee('Permission')->can('edit_categories') && ee('Permission')->hasAnyRole($can_edit))
+            ) {
+                $title = '<a href="' . ee('CP/URL')->make('categories/edit/' . $category->group_id . '/' . $category->cat_id) . '">' . $title . '</a>';
             }
             $attrs = [];
             $columns = [
@@ -381,7 +388,7 @@ class File extends AbstractFilesController
             );
         }
         $categoriesTable->setData($data);
-        
+
         $section = [
             [
                 'title' => 'usage_desc',
@@ -549,7 +556,8 @@ class File extends AbstractFilesController
     public function download($id)
     {
         $file = ee('Model')->get('File', $id)
-            ->filter('site_id', ee()->config->item('site_id'))
+            ->with('UploadDestination')
+            ->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
             ->first();
 
         if (! $file) {
@@ -561,7 +569,7 @@ class File extends AbstractFilesController
         }
 
         ee()->load->helper('download');
-        force_download($file->file_name, file_get_contents($file->getAbsolutePath()));
+        force_download($file->file_name, $file->UploadDestination->getFilesystem()->read($file->getAbsolutePath()));
     }
 }
 

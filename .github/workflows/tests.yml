@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - '*.dev'
+      - 'release*'
 
 jobs:
 
@@ -74,6 +75,7 @@ jobs:
             with:
               path: build-tools/builds/ExpressionEngine
               key: cache-ee-build-${{ github.sha }}
+              enableCrossOsArchive: true
 
           - name: Directory Listing on Failure
             if: failure()
@@ -89,8 +91,8 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.2, 7.3, 7.4, 8.0]
-                os: [ubuntu-18.04]
+                php: [7.4, 8.0]
+                os: [ubuntu-20.04]
                 containers: [0, 1, 2, 3, 4 , 5]
                 include:
                   - php: 8.1
@@ -139,6 +141,8 @@ jobs:
               with:
                 path: build-tools/builds/ExpressionEngine
                 key: cache-ee-build-${{ github.sha }}
+                fail-on-cache-miss: true
+                enableCrossOsArchive: true
 
             - name: Move files to webroot
               run: |
@@ -164,6 +168,10 @@ jobs:
               run: |
                 mv system/ee/installer system/ee/_installer
 
+            - name: Add logs folder
+              run: |
+                mkdir system/user/logs
+
             - name: Setup Permissions
               run: |
                   sudo chmod 666 system/user/config/config.php
@@ -171,6 +179,7 @@ jobs:
                   sudo chmod -R 777 system/user/cache
                   sudo chmod -R 777 system/user/templates
                   sudo chmod -R 777 system/user/language
+                  sudo chmod -R 777 system/user/logs
                   sudo chmod -R 777 tests/cypress/support/tmp
                   sudo chmod -R 777 tests/cypress/support/file-sync/uploads
                   sudo chmod -R 777 images
@@ -208,10 +217,10 @@ jobs:
             #     echo "::set-output name=SPECS::$(node tests/cypress-split.js 4 ${{ matrix.containers }})"
             #   id: specs
 
-            - name: Install Chrome Beta
+            - name: Install Chrome
               uses: browser-actions/setup-chrome@latest
               with:
-                chrome-version: beta
+                chrome-version: stable
 
             - name: Run Cypress Tests
               if: matrix.php != '5.6'
@@ -220,7 +229,6 @@ jobs:
                 # spec: ${{ steps.specs.outputs.SPECS }}
                 browser: chrome
                 working-directory: tests/cypress
-                config-file: cypress.json
                 record: true
                 parallel: true
                 group: PHP${{ matrix.php }}
@@ -235,7 +243,7 @@ jobs:
               with:
                 browser: chrome
                 working-directory: tests/cypress
-                config-file: cypress.without-pro.json
+                config: specPattern=cypress/integration/!(updater|pro)/**.ee6.js
                 record: true
                 parallel: true
                 group: PHP${{ matrix.php }}
@@ -257,3 +265,16 @@ jobs:
               with:
                 name: error.PHP${{ matrix.php }}-${{ matrix.containers }}.log
                 path: /home/runner/php_errors.log
+
+            - name: Archive JS errors
+              uses: actions/upload-artifact@v3
+              if: failure()
+              with:
+                name: js-error.PHP${{ matrix.php }}-${{ matrix.containers }}.log
+                path: tests/cypress/cypress/downloads/js.log.txt
+
+            - name: Archive EE error logs
+              uses: actions/upload-artifact@v3
+              with:
+                name: ee-error-logs.PHP${{ matrix.php }}-${{ matrix.containers }}
+                path: system/user/logs/

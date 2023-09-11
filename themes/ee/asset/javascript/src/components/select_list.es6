@@ -57,6 +57,8 @@ class SelectList extends React.Component {
           entry_id: items[key].entry_id ? items[key].entry_id : '',
           upload_location_id: items[key].upload_location_id ? items[key].upload_location_id : '',
           path: items[key].path ? items[key].path : '',
+          status: items[key].status ? items[key].status : null,
+          editable: items[key].editable ? items[key].editable : false,
         }
 
         if (items[key].children) {
@@ -397,7 +399,7 @@ class SelectList extends React.Component {
           </div>
           </div>
         }
-        <FieldInputs nested={props.nested} tooMany={props.tooMany}>
+        <FieldInputs nested={props.nested} tooMany={props.tooMany} splitForTwo={props.splitForTwo} list={props.items} selectedItems={props.selected} handle={this.handleSelect}>
           { ! props.loading && props.items.length == 0 &&
             <NoResults text={props.noResults} />
           }
@@ -451,6 +453,35 @@ class SelectList extends React.Component {
 
 function FieldInputs (props) {
   var divClass = (props.tooMany ? ' lots-of-checkboxes__items--too-many' : '')
+
+  if (props.tooMany && props.splitForTwo && props.nested) {
+    return (
+      <>
+        <ul className={'field-inputs lots-of-checkboxes__items field-nested splitForTwo' + divClass}>
+          {props.children}
+        </ul>
+        <ul className={'field-inputs lots-of-checkboxes__items field-nested splitForTwo second-list' + divClass}>
+          {<h3>{EE.lang.extra_title}</h3>}
+          { props.list.map((item, index) =>
+            <ListOfSelectedCategories key={item.value}
+              item={item}
+              name={props.name}
+              selected={props.selectedItems}
+              disabledChoices={props.disabledChoices}
+              nested={props.nested}
+              selectable={true}
+              reorderable={false}
+              removable={false}
+              editable={false}
+              handleSelect={props.handle}
+              handleRemove={(e, item) => props.handleRemove(e, item)}
+              groupToggle={props.groupToggle}
+            />
+          )}
+        </ul>
+      </>
+    )
+  }
 
   if (props.nested) {
     return (
@@ -514,10 +545,10 @@ class SelectItem extends React.Component {
         )}
         <div class="button-group button-group-xsmall button-group-flyout-right">
         {props.editable && (
-          <a href="" className="button button--default flyout-edit flyout-edit-icon"><i class="fal fa-pencil-alt"></i></a>
+          <a href="" className="button button--default flyout-edit flyout-edit-icon"><span className="sr-only">{EE.lang.edit_element}</span><i class="fal fa-pencil-alt"></i></a>
         )}
         {props.removable && (
-            <a href="" className="button button--default js-button-delete" onClick={(e) => props.handleRemove(e, props.item)}><i class="fal fa-fw fa-trash-alt"></i></a>
+            <a href="" className="button button--default js-button-delete" onClick={(e) => props.handleRemove(e, props.item)}><span className="sr-only">{EE.lang.remove_btn}</span><i class="fal fa-fw fa-trash-alt"></i></a>
         )}
         </div>
         </div>
@@ -560,5 +591,64 @@ class SelectedItem extends React.Component {
           }
       </div>
     )
+  }
+}
+
+// This class we will use only for Entry page
+// Category tab, to show selected category as a single list
+// add don't break the main category order
+class ListOfSelectedCategories extends React.Component {
+  checked (value) {
+    return this.props.selected.find((item) => {
+      return item.value == value
+    })
+  }
+
+  render() {
+    let props = this.props
+    let checked = this.checked(props.item.value)
+    let label = props.item.label
+    let disabled = props.disabledChoices && props.disabledChoices.includes(props.item.value)
+    let listItem
+
+    if (checked) {
+      listItem = (
+        <label className={'checkbox-label'}
+            data-id={props.item.value}>
+          {props.selectable && checked && (
+            <input type={"checkbox"}
+              value={props.item.value}
+              checked={'checked'}
+              onChange={(e) => props.handleSelect(e, props.item)}
+              data-group-toggle={(props.groupToggle ? JSON.stringify(props.groupToggle) : '[]')}
+             />
+          )}
+          <div className={props.editable ? "checkbox-label__text checkbox-label__text-editable" : "checkbox-label__text"}>
+          { ! props.editable && <div dangerouslySetInnerHTML={{ __html: label }} />}
+          {" "}
+          </div>
+        </label>
+      )
+    }
+
+    if (props.nested) {
+      return (
+        <li className="nestable-item" data-id={props.item.value}>
+          {listItem}
+          {props.item.children &&
+            <ul className="field-nested">
+              {props.item.children.map((item, index) =>
+                <ListOfSelectedCategories {...props}
+                  key={item.value}
+                  item={item}
+                />
+              )}
+            </ul>
+          }
+        </li>
+      )
+    }
+
+    return listItem
   }
 }

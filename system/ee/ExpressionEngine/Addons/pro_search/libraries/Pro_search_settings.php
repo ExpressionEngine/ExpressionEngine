@@ -45,6 +45,7 @@ class Pro_search_settings
         'search_log_size'     => '500',
         'ignore_words'        => 'a an and the or of s',
         'disabled_filters'    => array(),
+        'build_index_act_key' => '',
         'stop_words'          =>
             // http://dev.mysql.com/doc/refman/5.5/en/fulltext-stopwords.html
             "a's able about above according accordingly across actually after afterwards again against ain't
@@ -90,7 +91,7 @@ class Pro_search_settings
         'can_manage_lexicon'   => array(),
         'can_replace'          => array(),
         'can_view_search_log'  => array(),
-        'can_view_replace_log' => array()
+        'can_view_replace_log' => array(),
     );
 
     private $_search_modes = array('any', 'all', 'exact', 'auto');

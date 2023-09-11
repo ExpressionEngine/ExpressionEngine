@@ -34,7 +34,7 @@ class FrontEdit
         if (!is_numeric($site_id) || !is_numeric($channel_id) || !is_numeric($entry_id)) {
             return '';
         }
-        return '{frontedit_link site_id=@' . $site_id . '@ channel_id=@' . $channel_id . '@ entry_id=@' . $entry_id . '@ field_id=@' . $field_id_or_name .'@}';
+        return '{frontedit_link site_id=@' . $site_id . '@ channel_id=@' . $channel_id . '@ entry_id=@' . $entry_id . '@ field_id=@' . $field_id_or_name . '@}';
     }
 
     /**
@@ -95,16 +95,13 @@ class FrontEdit
             }
             //get all field names
             $field_regexps = [];
-            $allFields = ee('Model')->get('ChannelField')->fields('field_id', 'field_type', 'field_name')->filter('enable_frontedit', 'y')->order('field_name', 'desc')->all();
+            $allFields = ee('Model')->get('ChannelField')->fields('field_id', 'field_type', 'field_name')->filter('enable_frontedit', 'y')->order('field_name', 'desc')->all(true);
             $fields = [
                 'title' => 'title'
             ];
             $relFields = [];
             $gridFields = [];
             $gridLikeFieldtypes = static::getComplexFieldtypes();
-            if (empty($gridLikeFieldtypes)) {
-                //$gridLikeFieldtypes = ['grid', 'file_grid', 'fluid_field', 'bloqs']; //fallback, should be removed in v2.0
-            }
             foreach ($allFields as $field) {
                 if ($field->field_type == 'relationship') {
                     $relFields[$prefix . $field->field_name] = $field->field_id;
@@ -146,7 +143,7 @@ class FrontEdit
 
             $injectPositions = []; //remember where we already injected the link so we don't do
             foreach ($field_regexps as $field_regexp) {
-                if (preg_match_all($field_regexp, $tagdata, $matches, PREG_SET_ORDER|PREG_OFFSET_CAPTURE)) {
+                if (preg_match_all($field_regexp, $tagdata, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE)) {
                     $matches = array_reverse($matches);
                     foreach ($matches as $match) {
                         if (strpos($match[2][0], 'disable') !== false && strpos($match[2][0], 'frontedit') !== false) {
@@ -184,20 +181,20 @@ class FrontEdit
             do {
                 $allClean = true;
                 foreach ($stripFromTags as $tag => $preserve) {
-                    $tagPresent = preg_match_all($tag, $tagdata, $matches, PREG_SET_ORDER|PREG_OFFSET_CAPTURE);
+                    $tagPresent = preg_match_all($tag, $tagdata, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE);
                     if ($tagPresent) {
                         $cleanupReplacements = [];
                         $allClean = false;
                         $matches = array_reverse($matches);
                         //inject the links that need to be preserved
                         foreach ($matches as $match) {
-                            if ($preserve && strpos($match['link'][0], ':frontedit')!==false) {
+                            if ($preserve && strpos($match['link'][0], ':frontedit') !== false) {
                                 $tagdata = substr_replace($tagdata, $match['link'][0], $match[0][1], 0);
                             }
                         }
                         //now prepare to strip the links that are not in proper context
                         foreach ($matches as $match) {
-                            if (strpos($match['link'][0], ':frontedit')!==false) {
+                            if (strpos($match['link'][0], ':frontedit') !== false) {
                                 $clean_match = str_replace($match['link'][0], '', $match[0][0]);
                                 $cleanupReplacements[$match[0][0]] = $clean_match;
                             }
@@ -214,7 +211,7 @@ class FrontEdit
 
 
             // avoid duplicates.
-            if (preg_match_all('/\{[\w:]+\:frontedit\}/si', $tagdata, $matches, PREG_SET_ORDER|PREG_OFFSET_CAPTURE)) {
+            if (preg_match_all('/\{[\w:]+\:frontedit\}/si', $tagdata, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE)) {
                 $orig_tagdata = $tagdata;
                 foreach ($matches as $i => $match) {
                     $tag = $match[0][0];
@@ -225,19 +222,29 @@ class FrontEdit
                     // if the link follows itself divided by opening tag, strip the first one
                     // (might be caused by if conditionals)
 
-                    if (isset($matches[$i+1]) && $matches[$i+1][0][0] == $tag) {
-                        $substr = substr($orig_tagdata, $match[0][1], $matches[$i+1][0][1] - $match[0][1] + strlen($tag));
+                    if (isset($matches[$i + 1]) && $matches[$i + 1][0][0] == $tag) {
+                        $substrOrig = substr($orig_tagdata, $match[0][1], $matches[$i + 1][0][1] - $match[0][1] + strlen($tag));
+                        // :frontedit tag cannot be inside of tag pair
+                        // (case when jusing image modifiers)
+                        $substr = preg_replace_callback('/{([a-zA-Z0-9_-]*):frontedit}(?!(\{\1[\}\s]))(.*?){\/\1}/s', function ($substrMatches) {
+                            if (preg_match('/{' . $substrMatches[1] . '[\}\s]/s', $substrMatches[0], $check)) {
+                                return $substrMatches[0];
+                            }
+                            return preg_replace('/{' . $substrMatches[1] . ':frontedit}/', '', $substrMatches[0]);
+                        }, $substrOrig);
+                        $tagdata = str_replace($substrOrig, $substr, $tagdata);
                         //there is some tag between, but no closing tag
                         if (
                             (strpos($substr, '<') === false && strpos($substr, '>') === false) ||
                             (strpos($substr, '<') !== false && strpos($substr, '>') !== false && strpos($substr, '</') === false)
-                            ) {
+                        ) {
                             $tagdata = str_replace($substr, $tag . str_replace($tag, '', $substr), $tagdata);
                         }
                     }
                 }
             }
 
+            // inject manual links back
             $tagdata = str_replace(':MAGIC_frontedit_HAPPENING', ':frontedit', $tagdata);
         }
 
@@ -283,12 +290,14 @@ class FrontEdit
 
         $pencilUrl = URL_PRO_THEMES . 'img/edit.svg';
 
+        $altText = lang('pencil_icon');
+
         $element = '<span class="eeFrontEdit MARKER_CLASS" data-ee-editable data-editableid="'
                     . $elementId
                     . '" data-editableurl="'
                     . $fieldEditUrl
                     . '" data-entry_id="ENTRY_ID" data-site_id="SITE_ID" data-size="WINDOW_SIZE" title="FIELD_NAME">'
-                    . '<img src="' . $pencilUrl . '" width="24px" height="24px" style="cursor:pointer !important; filter: drop-shadow(0 1px 3px rgba(0,0,0,.20)) !important; vertical-align: bottom !important; border-radius: 0 !important; width: unset !important;" />'
+                    . '<img src="' . $pencilUrl . '" width="24px" height="24px" alt="' . $altText . '" style="cursor:pointer !important; filter: drop-shadow(0 1px 3px rgba(0,0,0,.20)) !important; vertical-align: bottom !important; border-radius: 0 !important; width: unset !important;" />'
                     . '</span>';
         $frontEditPermission = [];
         $entry_data = [];
@@ -505,7 +514,7 @@ class FrontEdit
                 }
             }
         }
-        if (preg_match_all('/\{frontedit_link\s+(.*)\}/sUi', $output, $matches, PREG_SET_ORDER|PREG_OFFSET_CAPTURE)) {
+        if (preg_match_all('/\{frontedit_link\s+(.*)\}/sUi', $output, $matches, PREG_SET_ORDER | PREG_OFFSET_CAPTURE)) {
             foreach ($matches as $i => $match) {
                 $tag = $match[0][0];
                 // Find and strip the edit links that are right after themselves

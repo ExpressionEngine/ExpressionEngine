@@ -66,7 +66,8 @@ class Profile extends CP_Controller
         $this->generateSidebar();
 
         ee()->javascript->set_global([
-            'cp.validatePasswordUrl' => ee('CP/URL', 'login/validate_password')->compile()
+            'cp.validatePasswordUrl' => ee('CP/URL', 'login/validate_password')->compile(),
+            'lang.password_icon' => lang('password_icon')
         ]);
 
         $this->breadcrumbs = array(
@@ -224,18 +225,9 @@ class Profile extends CP_Controller
                     if (ee('Model')->get('ChannelEntry')->filter('author_id', $this->member->getId())->count() > 0) {
                         $role_ids = array(1, $this->member->role_id);
 
-                        $heirs = ee('Model')->get('Member')
-                            ->fields('username', 'screen_name')
-                            ->filter('role_id', 'IN', $role_ids)
-                            ->filter('member_id', '!=', $this->member->getId())
-                            ->order('screen_name')
-                            ->limit(100)
-                            ->all();
-
-                        $vars['heirs'] = [];
-                        foreach ($heirs as $heir) {
-                            $vars['heirs'][$heir->getId()] = ($heir->screen_name != '') ? $heir->screen_name : $heir->username;
-                            ;
+                        $vars['heirs'] = ee('Member')->getAuthors();
+                        if (array_key_exists($this->member->getId(), $vars['heirs'])) {
+                            unset($vars['heirs'][$this->member->getId()]);
                         }
 
                         $vars['selected'] = array($this->member->getId());

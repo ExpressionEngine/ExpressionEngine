@@ -299,6 +299,7 @@ class Member extends ContentModel
     protected $timezone;
     protected $time_format;
     protected $date_format;
+    protected $week_start;
     protected $include_seconds;
     protected $profile_theme;
     protected $forum_theme;
@@ -632,7 +633,7 @@ class Member extends ContentModel
         if (!empty($this->_cpHomepageUrl)) {
             return $this->_cpHomepageUrl;
         }
-        
+
         $cp_homepage = null;
         $cp_homepage_custom = 'homepage';
 
@@ -802,7 +803,7 @@ class Member extends ContentModel
      */
     public function validateDateFormat($key, $value, $params, $rule)
     {
-        if (! preg_match("#^[a-zA-Z0-9_\.\-%/]+$#i", $value)) {
+        if (! preg_match("#^[a-zA-Z0-9_\.\-%/]+$#i", (string) $value)) {
             return 'invalid_date_format';
         }
 

@@ -5,6 +5,9 @@ on:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:
       - '*.x'
+  push:
+    branches:
+      - 'feature/7.x/cypress-12'
 
 jobs:
   build:
@@ -139,7 +142,7 @@ jobs:
                 repository: ExpressionEngine/ExpressionEngine
                 path: __repo
 
-            - name: Download EE 6
+            - name: Download EE 7.0
               run: |
                   wget -q https://github.com/ExpressionEngine/ExpressionEngine/releases/download/7.0.0/ExpressionEngine7.0.0.zip
                   unzip -q ExpressionEngine7.0.0.zip
@@ -165,7 +168,6 @@ jobs:
               run: |
                 rm -f system/user/config/config.php
                 cp -f tests/cypress/support/config/config.php system/user/config/config.php
-                rpl -v '${{ needs.build.outputs.version }}' '7.0.0' system/user/config/config.php
                 rpl -v '${{ needs.build.outputs.version }}' '7.0.0' build-tools/build.json
 
             - name: Remove installer
@@ -199,12 +201,18 @@ jobs:
             - name: Start PHP Server
               run: php -S localhost:8888 &
 
-            - name: Run Cypress Tests
+            - name: Run 1-click Updater Tests
               uses: cypress-io/github-action@v5
               with:
                 browser: chrome
                 working-directory: tests/cypress
-                config-file: updater.cypress.json
+                config: specPattern=cypress/integration/updater/**.ee6.js
+                record: true
+                group: PHP${{ matrix.php }}
+              env:
+                CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+                CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Archive screenshots
               uses: actions/upload-artifact@v3

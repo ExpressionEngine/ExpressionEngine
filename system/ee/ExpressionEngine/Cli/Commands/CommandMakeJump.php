@@ -65,7 +65,7 @@ class CommandMakeJump extends Cli
             $service = ee('JumpsGenerator', $this->data);
             $service->build();
         } catch (\Exception $e) {
-            $this->fail($e->getMessage());
+            $this->fail(addslashes($e->getMessage()));
         }
 
         $this->info('command_make_cp_jumps_created_successfully');

@@ -16,8 +16,8 @@ class Member_auth extends Member
     /**
      * Login Page
      *
-     * @param 	string 	number of pages to return back to in the
-     *					exp_tracker cookie
+     * @param   string  number of pages to return back to in the
+     *                  exp_tracker cookie
      */
     public function profile_login_form($return = '-2')
     {
@@ -104,6 +104,10 @@ class Member_auth extends Member
         // Figure out how many sites we're dealing with here
         $sites = ee()->config->item('multi_login_sites');
         $sites_array = explode('|', $sites);
+        $protocolsReplace = [
+            'http://' => 'https://',
+            'https://' => 'http://'
+        ];
 
         // No username/password?  Bounce them...
         $multi = (ee()->input->get('multi') && count($sites_array) > 0)
@@ -142,7 +146,10 @@ class Member_auth extends Member
 
             $current_url = ee()->functions->fetch_site_index();
             $current_search_url = preg_replace('/\/S=.*$/', '', $current_url);
-            $current_idx = array_search($current_search_url, $sites_array);
+            do {
+                $current_idx = array_search($current_search_url, $sites_array);
+                $current_search_url = str_replace(array_key_first($protocolsReplace), array_shift($protocolsReplace), $current_search_url);
+            } while ($current_idx === false && !empty($protocolsReplace));
 
             // Figure out return
             if (! $return_link = ee()->input->get('RET')) {
@@ -159,6 +166,10 @@ class Member_auth extends Member
             $current_idx = array_search($current_search_url, $sites_array);
 
             $return_link = reduce_double_slashes(ee()->functions->form_backtrack());
+        }
+
+        if (!empty($sites) && $current_idx === false) {
+            ee()->output->show_user_error('general', lang('multi_auth_redirect_site_not_found'));
         }
 
         // Set login state
@@ -189,10 +200,10 @@ class Member_auth extends Member
     /**
      * Check against minimum username/password length
      *
-     * @param 	object 	member auth object
-     * @param 	string 	username
-     * @param 	string 	password
-     * @return 	void 	a redirect on failure, or nothing
+     * @param   object  member auth object
+     * @param   string  username
+     * @param   string  password
+     * @return  void    a redirect on failure, or nothing
      */
     private function _check_min_unpwd($member_obj, $username, $password)
     {
@@ -222,9 +233,9 @@ class Member_auth extends Member
     /**
      * Do member auth
      *
-     * @param 	string 	POSTed username
-     * @param 	string 	POSTed password
-     * @return 	object 	session data.
+     * @param   string  POSTed username
+     * @param   string  POSTed password
+     * @return  object  session data.
      */
     private function _do_auth($username, $password)
     {
@@ -279,12 +290,11 @@ class Member_auth extends Member
      *
      * @param array $sites Array of site URLs to login to
      * @param string $login_state The hash identifying the member
-     * @return 	object 	member auth object
+     * @return  object  member auth object
      */
     private function _do_multi_auth($sites, $login_state)
     {
-        if (! $sites
-            or empty($login_state)) {
+        if (! $sites or empty($login_state)) {
             return ee()->output->show_user_error('general', lang('not_authorized'));
         }
 
@@ -383,8 +393,10 @@ class Member_auth extends Member
      */
     private function _update_online_user_stats()
     {
-        if (ee()->config->item('enable_online_user_tracking') == 'n' or
-            ee()->config->item('disable_all_tracking') == 'y') {
+        if (
+            ee()->config->item('enable_online_user_tracking') == 'n'
+            or ee()->config->item('disable_all_tracking') == 'y'
+        ) {
             return;
         }
 
@@ -472,8 +484,10 @@ class Member_auth extends Member
         /* -------------------------------------------*/
 
         if (ee()->input->get_post('FROM') == 'forum' && bool_config_item('forum_is_installed')) {
-            if (ee()->input->get_post('board_id') !== false &&
-                is_numeric(ee()->input->get_post('board_id'))) {
+            if (
+                ee()->input->get_post('board_id') !== false
+                && is_numeric(ee()->input->get_post('board_id'))
+            ) {
                 $query = ee()->db->select("board_forum_url, board_label")
                     ->where('board_id', (int) ee()->input->get_post('board_id'))
                     ->get('forum_boards');
@@ -518,8 +532,10 @@ class Member_auth extends Member
         }
 
         if (ee()->input->get_post('FROM') == 'forum' && bool_config_item('forum_is_installed')) {
-            if (ee()->input->get_post('board_id') !== false &&
-                is_numeric(ee()->input->get_post('board_id'))) {
+            if (
+                ee()->input->get_post('board_id') !== false
+                && is_numeric(ee()->input->get_post('board_id'))
+            ) {
                 $query = ee()->db->select('board_forum_url, board_id, board_label')
                     ->where('board_id', (int) ee()->input->get_post('board_id'))
                     ->get('forum_boards');
@@ -621,7 +637,7 @@ class Member_auth extends Member
      * the results to Member_auth::send_reset_token().  If the user is logged
      * in, it sends them away.
      *
-     * @param 	string 	pages to return back to
+     * @param   string  pages to return back to
      */
     public function forgot_password($ret = '-3')
     {
@@ -721,8 +737,10 @@ class Member_auth extends Member
         }
 
         if (ee()->input->get_post('FROM') == 'forum' && bool_config_item('forum_is_installed')) {
-            if (ee()->input->get_post('board_id') !== false &&
-                is_numeric(ee()->input->get_post('board_id'))) {
+            if (
+                ee()->input->get_post('board_id') !== false
+                && is_numeric(ee()->input->get_post('board_id'))
+            ) {
                 $query = ee()->db->select('board_forum_url, board_id, board_label')
                     ->where('board_id', (int) ee()->input->get_post('board_id'))
                     ->get('forum_boards');
@@ -959,10 +977,15 @@ class Member_auth extends Member
         $expired = $this->getTokenExpiration();
 
         // Make sure the token is valid and belongs to a member.
-        $member_id_query = ee()->db->select('member_id')
-            ->where('resetcode', $resetcode)
-            ->where('date >', $expired)
-            ->get('reset_password');
+        $member_id_query = ee()->db->select('r.member_id, m.username')
+            ->from('reset_password r')
+            ->join('members m', 'r.member_id = m.member_id')
+            ->where([
+                'r.resetcode' => $resetcode,
+                'r.date >' => $expired
+            ])
+            ->limit(1)
+            ->get();
 
         if ($member_id_query->num_rows() === 0) {
             return ee()->output->show_user_error('submission', array(lang('mbr_id_not_found')), '', $return_error_link);
@@ -988,8 +1011,9 @@ class Member_auth extends Member
         // match.
 
         $pw_data = array(
+            'username' => $member_id_query->row('username'),
             'password' => $password,
-            'password_confirm' => $password_confirm,
+            'password_confirm' => $password_confirm
         );
 
         $validationRules = [
@@ -999,7 +1023,12 @@ class Member_auth extends Member
         $validationResult = ee('Validation')->make($validationRules)->validate($pw_data);
 
         if ($validationResult->isNotValid()) {
-            return ee()->output->show_user_error('submission', $validationResult->getAllErrors(), '', $return_error_link);
+            $errors = [];
+            foreach ($validationResult->getAllErrors() as $error) {
+                $errors = array_merge($errors, array_values($error));
+            }
+
+            return ee()->output->show_user_error('submission', $errors, '', $return_error_link);
         }
 
         // Update the database with the new password.  Apply the appropriate salt first.

@@ -66,11 +66,11 @@ class URL implements \Serializable
         $this->path = (string) $path;
         $this->session_id = (string) $session_id;
         $this->base = (empty($cp_url)) ? EESELF : (string) $cp_url;
-        $this->requested_uri = $requested_uri;
+        $this->requested_uri = (string) $requested_uri;
 
         if (is_array($qs)) {
             $this->qs = $qs;
-        } else {
+        } elseif (! empty($qs)) {
             parse_str(str_replace(AMP, '&', $qs), $this->qs);
         }
 

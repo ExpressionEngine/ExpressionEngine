@@ -17,6 +17,11 @@ use PHPUnit\Framework\TestCase;
 
 class OneToOneModelTest extends TestCase
 {
+    public $parentClass;
+    public $childClass;
+    public $has_one_relation;
+    public $belongs_to_relation;
+
     public function setUp(): void
     {
         $this->parentClass = __NAMESPACE__ . '\OneToOneParent';

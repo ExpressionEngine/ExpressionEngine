@@ -43,6 +43,20 @@ class LayoutTab
 
     public function addField($field)
     {
+        // not sure this is the best place for this check, but:
+        // we need to show alert if the status is not available,
+        // and this is the point where we for sure have all data
+        if ($field->getId() == 'status') {
+            if (! array_key_exists($field->getData(), $field->get('field_list_items'))) {
+                ee('CP/Alert')->makeInline('status-not-available')
+                    ->asWarning()
+                    ->cannotClose()
+                    ->withTitle(lang('status_not_available'))
+                    ->addToBody(sprintf(lang('status_not_available_desc'), $field->getData()))
+                    ->now();
+            }
+        }
+
         $this->fields[] = $field;
 
         return $this;

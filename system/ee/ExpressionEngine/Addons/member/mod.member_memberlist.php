@@ -360,7 +360,9 @@ class Member_memberlist extends Member
             }
         }
 
-        $result_page = str_replace(trim($search_path, '/'), '', $result_page);
+        if (!empty($result_page)) {
+            $result_page = str_replace(trim($search_path, '/'), '', $result_page);
+        }
 
         /** ----------------------------------------
         /**  Parse the request URI
@@ -702,8 +704,12 @@ class Member_memberlist extends Member
                     /** ----------------------------------------
                     /**  parse custom member fields
                     /** ----------------------------------------*/
-                    if (isset($fields[$val]) and isset($row['m_field_id_' . $fields[$val]])) {
-                        $temp = $this->_var_swap_single($val, $row['m_field_id_' . $fields[$val]], $temp);
+                    if (isset($fields[$val])) {
+                        if (isset($row['m_field_id_' . $fields[$val]])) {
+                            $temp = $this->_var_swap_single($val, $row['m_field_id_' . $fields[$val]], $temp);
+                        } else {
+                            $temp = $this->_var_swap_single($val, '', $temp);
+                        }
                     }
                 }
 

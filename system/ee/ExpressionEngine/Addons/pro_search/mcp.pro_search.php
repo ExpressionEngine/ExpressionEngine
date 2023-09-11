@@ -7,7 +7,6 @@
  * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-
 if (! defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
@@ -232,6 +231,22 @@ class Pro_search_mcp
                 'default_result_page' => array(
                     'type'  => 'text',
                     'value' => ee()->pro_search_settings->get('default_result_page')
+                )
+            )
+        );
+
+        // --------------------------------------
+        // Build Index ACT key
+        // --------------------------------------
+        $actUrl = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . ee()->cp->fetch_action_id($this->class_name, 'build_index') . AMP . 'key=' . ee()->pro_search_settings->get('build_index_act_key') . AMP . 'collection_id=1';
+
+        $sections[0][] = array(
+            'title' => 'build_index_act_key',
+            'desc' => sprintf(lang('build_index_act_key_help'), $actUrl),
+            'fields' => array(
+                'build_index_act_key' => array(
+                    'type'  => 'text',
+                    'value' => ee()->pro_search_settings->get('build_index_act_key')
                 )
             )
         );
@@ -663,7 +678,6 @@ class Pro_search_mcp
                             'disabled' => 'true'
                         );
                     }
-
 
                     // Add custom row
                     $row[] = array(
@@ -2946,7 +2960,7 @@ class Pro_search_mcp
                     $r = array($row['keywords']);
 
                     // Num results
-                    $r[] = number_format($row['num_results']);
+                    $r[] = !empty($row['num_results']) ? number_format($row['num_results']) : 0;
 
                     // Member
                     $r[] = isset($members[$row['member_id']])

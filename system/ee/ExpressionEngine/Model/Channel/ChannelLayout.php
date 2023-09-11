@@ -70,7 +70,7 @@ class ChannelLayout extends Model implements LayoutInterface
         foreach ($layout as $section) {
             // Tabs have 4 pieces of data: an id, a name, a list of fields,
             // and a visibility flag. If any of them are missing this is not
-            // a tab (but visiblity is non-essential so...) we'll skip it. This
+            // a tab (but visibility is non-essential so...) we'll skip it. This
             // is better than a PHP error.
             if (! (isset($section['id'])
                     && isset($section['name'])
@@ -81,7 +81,7 @@ class ChannelLayout extends Model implements LayoutInterface
 
             $tab = new LayoutTab($section['id'], $section['name']);
 
-            // If they don't havea 'visible' key we'll assume it is visible
+            // If they don't have 'visible' key we'll assume it is visible
             // and just move on.
             if (isset($section['visible']) && ! $section['visible']) {
                 $tab->hide();
@@ -179,6 +179,9 @@ class ChannelLayout extends Model implements LayoutInterface
         $field_layout = $this->field_layout;
 
         foreach ($field_layout as $i => $section) {
+            if (!isset($section['fields']) || empty($section['fields'])) {
+                continue;
+            }
             foreach ($section['fields'] as $j => $field_info) {
                 $field_name = isset($field_info['field']) ? $field_info['field'] : 0;
 

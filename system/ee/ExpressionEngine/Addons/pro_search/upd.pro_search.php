@@ -79,7 +79,7 @@ class Pro_search_upd
         $lowSearch = ee('Addon')->get('low_search');
         if ($lowSearch && $lowSearch->isInstalled()) {
             $this->migrateFromLow();
-            $this->update($this->version);
+            $this->update($lowSearch->getVersion());
             $this->updateVersionNumber();
 
             return true;
@@ -118,6 +118,9 @@ class Pro_search_upd
         foreach ($this->hooks as $hook) {
             $this->_add_hook($hook);
         }
+
+        // Generate an initial key for the ACT url
+        $this->createNewActKey();
 
         // --------------------------------------
 
@@ -326,15 +329,17 @@ class Pro_search_upd
         // --------------------------------------
 
         if (version_compare($current, '7.0.0', '<')) {
-            $this->_v700();
+            //$this->_v700();
         }
 
         // --------------------------------------
-        // Update to 8.0.1
+        // Update to 8.0.3
         // --------------------------------------
 
-        if (version_compare($current, '8.0.1', '<')) {
+        // if the user updated directly from Low Search to Pro Search 8.0.2, the updates might not have been run
+        if (version_compare($current, '8.0.3', '<')) {
             $this->_v801();
+            $this->_v802();
         }
 
         $this->logMessageAboutLowVersion();
@@ -715,11 +720,51 @@ class Pro_search_upd
         ee()->db->query($sql);
     }
 
+    /**
+     * Update routines for version 8.0.2
+     *
+     * @access     private
+     * @return     void
+     */
+    private function _v802()
+    {
+        // If build_index_act_key is empty, we assign a new random key
+        if (empty(ee()->pro_search_settings->get('build_index_act_key'))) {
+            // Start with a null key
+            $key = null;
+
+            // If there is an existing license key, we will use that
+            if (!empty(ee()->pro_search_settings->get('license_key'))) {
+                $key = ee()->pro_search_settings->get('license_key');
+            }
+
+            // Create a new ACT key
+            $this->createNewActKey($key);
+        }
+    }
+
+    private function createNewActKey($key = null)
+    {
+        // If we didnt pass in a key, generate one
+        if (is_null($key)) {
+            // Make a pseudo-random key for the Build Index ACT key
+            $key = strtoupper(bin2hex(random_bytes(20)));
+        }
+
+        ee()->pro_search_settings->set(['build_index_act_key' => $key]);
+
+        ee()->db->where('class', $this->class_name . '_ext');
+        ee()->db->update('extensions', array('settings' => serialize(ee()->pro_search_settings->get())));
+    }
+
     private function logMessageAboutLowVersion()
     {
         // Check to see if low search is in the user folder. If so, leave a developer log item
         if (ee('Filesystem')->isDir(PATH_THIRD . 'low_search')) {
-            ee()->load->library('logger');
+            if (!ee()->has('logger')) {
+                ee()->load->library('logger');
+            }
+
             ee()->logger->developer(lang('low_search_in_third_party_folder_message'), true, 1209600);
         }
     }

@@ -90,8 +90,6 @@ $lang = array(
 
     'create_entry_error' => 'Cannot Create Entry',
 
-    'copy_of' => 'Copy of',
-
     'create_entry_error_desc' => 'We were unable to create this entry, please review and fix errors below.',
 
     'create_entry_success' => 'Entry Created',
@@ -379,6 +377,8 @@ $lang = array(
 
     'exact_match' => 'Exact Match',
 
+    'extra_title' => 'List of selected categories:',
+
     'field_blank' => 'You left a field blank.',
 
     'fields' => 'Fields',
@@ -551,6 +551,8 @@ $lang = array(
 
     'no_entries_matching_that_criteria' => 'There are no entries matching the criteria you selected.',
 
+    'no_entries_on_this_site' => 'The entry belongs to different site.',
+
     'no_glossary' => 'A glossary does not exist',
 
     'no_member_roles' => 'You need to select at least one member role to apply/remove a layout.',
@@ -708,6 +710,10 @@ $lang = array(
     'status_changed' => 'Status Changed',
 
     'status_changed_desc' => 'Entry status has been changed to <b>%s</b>',
+
+    'status_not_available' => 'Status not available',
+
+    'status_not_available_desc' => 'Current entry status is <b>%s</b> cannot be accessed. <br /> It is either deleted, not assigned to this channel, or you don\'t have permissions for it.',
 
     'tab_count_zero' => 'There needs to be at least one tab available to hold fields.',
 
@@ -911,8 +917,6 @@ $lang = array(
     'layout_success' => 'Layout successfully saved.',
 
     'maintain_ratio' => 'Maintain Aspect Ratio',
-
-    'member_group' => 'Member Group',
 
     'no_entry_to_update' => 'You have tried to update an entry that does not exist.',
 

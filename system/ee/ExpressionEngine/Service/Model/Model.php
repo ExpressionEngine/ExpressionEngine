@@ -510,7 +510,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
     /**
      * Validate the model
      *
-     * @return validation result
+     * @return \ExpressionEngine\Service\Validation\Result validation result
      */
     public function validate()
     {
@@ -886,7 +886,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
             call_user_func_array(array($this, $method), array_slice($args, 1));
         }
 
-        call_user_func_array('parent::emit', $args);
+        call_user_func_array(parent::class . "::emit", $args);
     }
 
     /**
@@ -904,8 +904,8 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
         $events = array_flip($events);
 
         if (isset($events[$event])) {
-            $method = 'on' . ucfirst($event);
-            forward_static_call_array('static::' . $method, $args);
+            $method = '::on' . ucfirst($event);
+            forward_static_call_array(static::class . $method, $args);
         }
 
         // Extension hook

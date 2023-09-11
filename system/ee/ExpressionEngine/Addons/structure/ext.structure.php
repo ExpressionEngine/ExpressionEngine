@@ -21,6 +21,17 @@ class Structure_ext
     public $settings = array();
     public $settings_exist = 'n';
 
+    public $sql;
+    public $version;
+    public $site_pages;
+    public $entry_id;
+    public $parent_id;
+    public $page_title;
+    public $uri;
+    public $structure;
+    public $segment_1;
+    public $top_id;
+
     public function __construct($settings = '')
     {
         $this->version = STRUCTURE_VERSION;
@@ -264,7 +275,7 @@ class Structure_ext
                 $session_id = null;
             }
 
-            $url = new \EllisLab\ExpressionEngine\Library\CP\URL(
+            $url = new \ExpressionEngine\Library\CP\URL(
                 $path,
                 $session_id,
                 '',
@@ -572,6 +583,7 @@ class Structure_ext
 
             if ($entry_id) {
                 $template_id = $this->site_pages['templates'][$entry_id];
+                ee()->uri->page_query_string = $entry_id;
 
                 // TODO:: I think we only need to select the template name and the group name.
                 // This could be a large speed increase -- Matt
@@ -583,7 +595,6 @@ class Structure_ext
                 $result = ee()->db->get();
                 if ($result->num_rows() > 0) {
                     $row = $result->row();
-                    ee()->uri->page_query_string = $entry_id;
 
                     return array($row->group_name, $row->template_name);
                 }

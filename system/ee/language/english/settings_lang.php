@@ -68,11 +68,15 @@ $lang = array(
 
     'date_time_settings' => 'Date &amp; Time Settings',
 
+    'week_start' => 'Week start',
+
+    'week_start_desc' => 'The day on which the new week starts',
+
     'defaults' => 'Defaults',
 
     'enable_msm' => 'Enable Site Manager (MSM)?',
 
-    'enable_msm_desc' => 'When enabled, Super Admins and member groups with permissions will be able to manage additional websites from the <abbr title="Control Panel">CP</abbr>.',
+    'enable_msm_desc' => 'When enabled, Super Admins and members with roles that have proper permissions will be able to manage additional websites from the <abbr title="Control Panel">CP</abbr>.',
 
     'error_getting_version' => 'You are using ExpressionEngine %s. Unable to determine if a newer version is available at this time.',
 
@@ -98,7 +102,7 @@ $lang = array(
 
     'site_online' => 'Website online?',
 
-    'site_online_desc' => 'When disabled, only Super Admins and member groups with permissions will be able to browse your website.',
+    'site_online_desc' => 'When disabled, only Super Admins and members with roles that have proper permissions will be able to browse this website.',
 
     'site_short_name' => 'Short name',
 
@@ -184,6 +188,10 @@ $lang = array(
 
     'email_smtp_crypto_desc' => 'Refer to your SMTP provider for instructions.',
 
+    'tls_version' => 'TLS version',
+
+    'tls_version_desc' => 'When using TLS, select the version used by your SMTP provider.',
+
     'empty_stmp_fields' => 'This field is required for SMTP.',
 
     'html' => 'HTML',
@@ -265,7 +273,7 @@ $lang = array(
 
     'gzip_output_desc' => 'When enabled, your website will be compressed using GZIP compression, this will decrease page load times.',
 
-    'max_caches' => 'Cachable <abbr title="Uniform Resource Identifier">URI</abbr>s',
+    'max_caches' => 'Cacheable <abbr title="Uniform Resource Identifier">URI</abbr>s',
 
     'max_caches_desc' => 'If you cache your pages or database, this limits the number of cache instances. We recommend 150 for small sites and 300 for large sites. The allowed maximum is 1000.',
 

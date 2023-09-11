@@ -150,7 +150,7 @@ class Hooks
 
     public const RELATIONSHIPS_QUERY = [
         'name' => 'relationships_query',
-        'params' => '$field_name, $entry',
+        'params' => '$field_name, $entry_ids, $depths, $sql',
         'library' => 'Relationships Fieldtype Extension Hooks_ids, $depths, $sql',
     ];
 

@@ -440,7 +440,7 @@ class Grid_model extends CI_Model
 
             if ($fluid_field_data_id && ! is_int($fluid_field_data_id)) {
                 list($fluid_field, $sub_field_id) = explode(',', $fluid_field_data_id);
-                $data = $data[$fluid_field]['fields'][$sub_field_id];
+                $data = reset($data[$fluid_field]['fields'][$sub_field_id]);
             }
 
             if (array_key_exists($entry_id, $entry_data)
@@ -952,6 +952,46 @@ class Grid_model extends CI_Model
     protected function _data_table($content_type, $field_id)
     {
         return $content_type . '_' . $this->_table_prefix . $field_id;
+    }
+
+    /**
+     * When revision has been loaded and then trying to save it,
+     * some keys might correspond to the rows that no longer exist
+     * Here we make then submitted as new rows instead
+     *
+     * @param array $rows
+     * @param integer $field_id
+     * @param integer $entry_id
+     * @param integer $fluid_field_data_id
+     * @param string $content_type
+     * @return array
+     */
+    public function remap_revision_rows($rows, $field_id, $entry_id, $fluid_field_data_id = 0, $content_type = 'channel')
+    {
+        // get IDs of rows that already exist
+        $existingRows = ee('db')
+            ->select('row_id')
+            ->from($this->_data_table($content_type, $field_id))
+            ->where('entry_id', $entry_id)
+            ->where('fluid_field_data_id', $fluid_field_data_id)
+            ->get();
+        $existingRowKeys = array();
+        if ($existingRows->num_rows() > 0) {
+            $existingRowKeys = array_map(function ($row) {
+                return 'row_id_' . $row['row_id'];
+            }, $existingRows->result_array());
+        }
+        $total_rows = count($rows);
+        $values = array_values($rows);
+        $keys = array_keys($rows);
+        $values = array_values($rows);
+        foreach ($keys as $index => $key) {
+            if (! in_array($key, $existingRowKeys)) {
+                $keys[$index] = 'new_row_' . ($total_rows + (int) str_replace('row_id_', '', $key));
+            }
+        }
+        $rows = array_combine($keys, $values);
+        return $rows;
     }
 
     /**

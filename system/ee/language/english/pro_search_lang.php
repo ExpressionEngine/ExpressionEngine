@@ -442,6 +442,13 @@ $lang = array(
     "default_result_page_help" =>
     "If a <code>result_page</code> is not explicitly given, the search will fall back to this result page.",
 
+    "build_index_act_key" =>
+    "Build Index ACT Key",
+
+    "build_index_act_key_help" =>
+    "Key for building the index via an ACT url. This can be anything, but we recommend an alphanumeric string 16+ characters long. Please note, building the index via an ACT url will not work if this key is not set. Example ACT URL for building a collection with id 1: <br>
+    <code>%s</code>",
+
     "min_word_length" =>
     "Minimum word length",
 
@@ -513,9 +520,6 @@ of these words.",
 
     "filters_help" =>
     "Available filters. Uncheck to disable a filter.",
-
-    "member_group" =>
-    "Member group",
 
     "can_manage" =>
     "Can manage collections",

@@ -28,9 +28,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-var Dropdown =
-/*#__PURE__*/
-function (_React$Component) {
+var Dropdown = /*#__PURE__*/function (_React$Component) {
   _inherits(Dropdown, _React$Component);
 
   function Dropdown(props) {
@@ -165,7 +163,7 @@ function (_React$Component) {
         tabIndex: "0"
       }, React.createElement("label", {
         className: 'select__button-label' + (this.state.selected ? ' act' : '')
-      }, selected && React.createElement("span", null, selected.sectionLabel ? selected.sectionLabel + ' / ' : '', React.createElement("span", {
+      }, selected && React.createElement("span", null, selected.sectionLabel && !this.props.ignoreSectionLabel ? selected.sectionLabel + ' / ' : '', React.createElement("span", {
         dangerouslySetInnerHTML: {
           __html: selected.label
         }
@@ -178,7 +176,8 @@ function (_React$Component) {
         },
         name: this.props.name,
         value: this.state.selected ? this.state.selected.value : '',
-        "data-group-toggle": this.props.groupToggle ? JSON.stringify(this.props.groupToggle) : '[]'
+        "data-group-toggle": this.props.groupToggle ? JSON.stringify(this.props.groupToggle) : '[]',
+        disabled: this.props.disabledInput ? 'disabled' : null
       })), selected && this.props.name.includes('[condition_field_id]') && React.createElement("span", {
         className: "tooltiptext"
       }, "".concat(selected.label.replace(/<.*/g, ""), " ").concat(selected.label.match(/(?:\{).+?(?:\})/g)))), React.createElement("div", {
@@ -211,6 +210,10 @@ function (_React$Component) {
 
         if (window.selectedFolder) {
           props.selected = window.selectedFolder;
+        }
+
+        if ($(this).parents('tr.hidden').length) {
+          props.disabledInput = true;
         }
 
         ReactDOM.render(React.createElement(FilterableDropdown, props, null), this);

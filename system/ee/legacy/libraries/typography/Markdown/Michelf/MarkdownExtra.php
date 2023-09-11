@@ -52,6 +52,8 @@ class MarkdownExtra extends \Michelf\Markdown
     # Predefined abbreviations.
     public $predef_abbr = array();
 
+    public $ref_attr;
+
     ### Parser Implementation ###
 
     public function __construct()

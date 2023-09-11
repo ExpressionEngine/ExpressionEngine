@@ -153,6 +153,7 @@ class Cp
             'slate_theme' => lang('slate_theme'),
             'snow_theme' => lang('snow_theme'),
             'many_jump_results' => lang('many_jump_results'),
+            'password_icon' => lang('password_icon')
         );
 
         $lastUpdateCheck = false;
@@ -302,21 +303,21 @@ class Cp
 
         $pro_status = !ee('pro:Access')->requiresValidLicense() ? 'skip' : (string) ee('Addon')->get('pro')->checkCachedLicenseResponse();
         switch ($pro_status) {
-                case 'update_available':
-                    ee()->view->pro_license_status = 'valid';
+            case 'update_available':
+                ee()->view->pro_license_status = 'valid';
 
-                    break;
+                break;
 
-                case '':
-                    ee()->view->pro_license_status = 'na';
+            case '':
+                ee()->view->pro_license_status = 'na';
 
-                    break;
+                break;
 
-                default:
-                    ee()->view->pro_license_status = $pro_status;
+            default:
+                ee()->view->pro_license_status = $pro_status;
 
-                    break;
-            }
+                break;
+        }
 
         $this->_notices();
 
@@ -1081,7 +1082,7 @@ class Cp
         );
 
         $prefixes = array(
-            'parents', 'siblings'
+            'parents', 'siblings', 'file'
         );
 
         $control_structures = array(

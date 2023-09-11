@@ -18,6 +18,11 @@ class Structure_upd
     public $has_publish_fields = 'n';
     public $ext_settings = 'n';
 
+    public $sql;
+    public $version;
+    public $page_title;
+    public $nset;
+
     public function __construct($switch = true)
     {
         $this->version = STRUCTURE_VERSION;

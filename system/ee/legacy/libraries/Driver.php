@@ -11,6 +11,7 @@
 /**
  * Driver Library
  */
+#[AllowDynamicProperties]
 class EE_Driver_Library
 {
     /**

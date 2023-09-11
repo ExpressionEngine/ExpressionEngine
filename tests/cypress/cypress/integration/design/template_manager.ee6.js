@@ -20,7 +20,7 @@ context('Template Manager', () => {
         cy.authVisit(page.url);
     })
 
-    it('displays', function() {
+    it('Lists the templates', function() {
         cy.hasNoErrors()
 
         page.get('templates').its('length').should('eq', 6)
@@ -85,7 +85,7 @@ context('Template Manager', () => {
             page.get('alert').contains('cypress-test-three')
         })
 
-        it('should validate the form', function() {
+        it('validates template group form', function() {
             let form = new TemplateGroupCreate
             cy.visit(form.url)
 
@@ -98,7 +98,7 @@ context('Template Manager', () => {
 
         })
 
-        it('remove a template group', function() {
+        it('removes template group', function() {
             page.get('template_groups').its('length').then((length) => {
                 page.get('template_groups').last().find('a[rel="modal-confirm-template-group"]').first().click({force: true})
 
@@ -112,7 +112,7 @@ context('Template Manager', () => {
             })
         })
 
-        it('can change the template group view', function() {
+        it('changes the template group view', function() {
             cy.visit('admin.php?/cp/design/manager/news')
             page.get('templates').its('length').should('eq', 6)
             page.get('template_groups').eq(0).find('a[href*="cp/design/manager"]').click()
@@ -122,7 +122,7 @@ context('Template Manager', () => {
 
         })
 
-        it('can change the default group', function() {
+        it('change the default group', function() {
             cy.hasNoErrors()
 
             page.get('default_template_group').contains('news')
@@ -214,7 +214,7 @@ context('Template Manager', () => {
             })
         })
 
-        it('should validate the settings form', function() {
+        it('should validate template settings form', function() {
             cy.get('.table-responsive a[title="Edit"]').first().click({force: true})
             cy.get('button').contains('Settings').click()
 
@@ -226,11 +226,7 @@ context('Template Manager', () => {
 
         })
 
-        it.skip('can export some templates', function() {
-            // "need to handle download via POST"
-        })
-
-        it('can remove a template', function() {
+        it('remove a template', function() {
             page.get('templates').its('length').then((length) => {
                 page.get('templates').eq(0).find('td:nth-child(4) input').click()
 
@@ -249,18 +245,6 @@ context('Template Manager', () => {
                 page.get('templates').its('length').should('eq', length-1)
             })
         })
-    })
-
-    it.skip('can export all templates', function() {
-        cy.hasNoErrors()
-            /*
-                url = page.export_icon[:href]
-
-                page.execute_script("window.downloadCSVXHR = function(){ var url = '#{url}'; return getFile(url); }")
-                page.execute_script('window.getFile = function(url) { var xhr = new XMLHttpRequest();  xhr.open("GET", url, false);  xhr.s})(null); return xhr.responseText; }')
-                data = page.evaluate_script('downloadCSVXHR()')
-                data.should start_with('PK')
-                */
     })
 
     it('can search templates', function() {

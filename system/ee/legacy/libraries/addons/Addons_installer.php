@@ -67,7 +67,6 @@ class Addons_installer
         $class = $this->_module_install_setup($module);
 
         $MOD = new $class();
-        $MOD->_ee_path = APPPATH;
 
         if ($MOD->install() !== true) {
             show_error(lang('module_can_not_be_found'));
@@ -86,7 +85,6 @@ class Addons_installer
         $class = $this->_module_install_setup($module);
 
         $MOD = new $class();
-        $MOD->_ee_path = APPPATH;
 
         if ($MOD->uninstall() !== true) {
             show_error(lang('module_can_not_be_found'));
@@ -322,11 +320,15 @@ class Addons_installer
                         }
                     }
                 } else {
-                    ee()->load->add_package_path(ee()->addons->_packages[$addon][$type]['path'], false);
+                    if (isset(ee()->addons->_packages[$addon][$type])) {
+                        ee()->load->add_package_path(ee()->addons->_packages[$addon][$type]['path'], false);
+                    }
 
                     $this->$method($addon);
 
-                    ee()->load->remove_package_path(ee()->addons->_packages[$addon][$type]['path']);
+                    if (isset(ee()->addons->_packages[$addon][$type])) {
+                        ee()->load->remove_package_path(ee()->addons->_packages[$addon][$type]['path']);
+                    }
                 }
             }
         }

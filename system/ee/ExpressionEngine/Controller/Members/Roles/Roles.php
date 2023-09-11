@@ -117,7 +117,7 @@ class Roles extends AbstractRolesController
         }
 
         foreach ($roles as $role) {
-            $edit_url = ee('CP/URL')->make('members/roles/edit/' . $role->getId());
+            $edit_url = (ee('Permission')->hasAny('can_edit_roles')) ? ee('CP/URL')->make('members/roles/edit/' . $role->getId()) : '';
             $data[] = [
                 'id' => $role->getId(),
                 'label' => $role->name,
@@ -320,6 +320,18 @@ class Roles extends AbstractRolesController
 
         $role_groups = $role->RoleGroups;
         $active_groups = $role_groups->pluck('group_id');
+
+        if (defined('CLONING_MODE') && CLONING_MODE === true) {
+            $role->setId(null);
+            while (true !== $role->validateUnique('short_name', $_POST['short_name'])) {
+                $_POST['short_name'] = 'copy_' . $_POST['short_name'];
+            }
+            while (true !== $role->validateUnique('name', $_POST['name'])) {
+                $_POST['name'] = lang('copy_of') . ' ' . $_POST['name'];
+            }
+            return $this->create(!empty($active_groups) ? $active_groups[0] : null);
+        }
+
         $this->generateSidebar($active_groups);
 
         $errors = null;
@@ -402,6 +414,16 @@ class Roles extends AbstractRolesController
             ),
         );
 
+        if ($role->getId() != 1) {
+            $vars['buttons'][] = [
+                'name' => 'submit',
+                'type' => 'submit',
+                'value' => 'save_as_new_entry',
+                'text' => sprintf(lang('clone_to_new'), lang('role')),
+                'working' => 'btn_saving'
+            ];
+        }
+
         ee()->view->cp_page_title = lang('edit_role');
         ee()->view->extra_alerts = array('search-reindex');
 
@@ -420,9 +442,10 @@ class Roles extends AbstractRolesController
 
         $role_groups = !empty(ee('Request')->post('role_groups')) ? ee('Request')->post('role_groups') : array();
 
-        $role->name = ee('Request')->post('name');
-        $role->short_name = ee('Request')->post('short_name');
-        $role->description = ee('Request')->post('description');
+        // can't use ee('Request') because $_POST could have been modified for cloning
+        $role->name = ee('Security/XSS')->clean($_POST['name']);
+        $role->short_name = ee('Security/XSS')->clean($_POST['short_name']);
+        $role->description = ee('Security/XSS')->clean(ee('Request')->post('description'));
 
         // Settings
         $settings = ee('Model')->make('RoleSetting')->getValues();
@@ -465,7 +488,7 @@ class Roles extends AbstractRolesController
         $assignedUploadDestinations = $role->AssignedUploadDestinations->getDictionary('id', 'site_id');
         if (!empty($assignedUploadDestinations)) {
             foreach ($assignedUploadDestinations as $dest_id => $dest_site_id) {
-                if ($dest_site_id != $site_id) {
+                if ($dest_site_id != 0 && $dest_site_id != $site_id) {
                     $uploadDestinationIds[] = $dest_id;
                 }
             }
@@ -517,6 +540,11 @@ class Roles extends AbstractRolesController
 
         // template_access
         $template_ids = [];
+        // ensure templates from other sites are always in
+        if (!$role->isNew() && bool_config_item('multiple_sites_enabled')) {
+            $template_ids = $role->AssignedTemplates->filter('site_id', '!=', ee()->config->item('site_id'))->pluck('template_id');
+        }
+        // add posted template IDs
         if (!empty(ee('Request')->post('assigned_templates'))) {
             $posted_assigned_templates = ee('Request')->post('assigned_templates');
             if (!is_array($posted_assigned_templates) && strpos($posted_assigned_templates, '[') === 0) {
@@ -591,17 +619,16 @@ class Roles extends AbstractRolesController
             'file' => array('cp/form_group'),
         ));
 
-        if ($role->getId() != 1) {
-            $tabs = [
-                'role' => $this->renderRoleTab($role, $errors),
-                'site_access' => $this->renderSiteAccessTab($role, $errors),
-                'cp_access' => $this->renderCPAccessTab($role, $errors),
-                'template_access' => $this->renderTemplateAccessTab($role, $errors),
-            ];
-        } else {
-            $tabs = [
-                'role' => $this->renderRoleTab($role, $errors)
-            ];
+        $tabs = [
+            'role' => $this->renderRoleTab($role, $errors)
+        ];
+
+        if ($role->getId() != Member::SUPERADMIN) {
+            $tabs['site_access'] = $this->renderSiteAccessTab($role, $errors);
+            if ($role->getId() != Member::GUESTS) {
+                $tabs['cp_access'] = $this->renderCPAccessTab($role, $errors);
+            }
+            $tabs['template_access'] = $this->renderTemplateAccessTab($role, $errors);
         }
 
         return $tabs;
@@ -653,51 +680,58 @@ class Roles extends AbstractRolesController
             ]
         ];
 
-        ee()->lang->load('pro');
-        $section = array_merge($section, [
-            [
-                'title' => 'require_mfa',
-                'desc' => 'require_mfa_desc',
-                'caution' => true,
-                'fields' => [
-                    'require_mfa' => [
-                        'type' => 'yes_no',
-                        'value' => $role->isNew() ? 'n' : $role->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa,
-                    ]
-                ]
-            ],
-        ]);
-
-        if ($role->getId() != Member::SUPERADMIN) {
+        if (!in_array($role->getId(), [Member::BANNED, Member::GUESTS, Member::PENDING])) {
+            ee()->lang->load('pro');
             $section = array_merge($section, [
                 [
-                    'title' => 'security_lock',
-                    'desc' => 'lock_description',
+                    'title' => 'require_mfa',
+                    'desc' => 'require_mfa_desc',
+                    'caution' => true,
                     'fields' => [
-                        'is_locked' => [
+                        'require_mfa' => [
                             'type' => 'yes_no',
-                            'value' => $role->is_locked,
+                            'value' => $role->isNew() ? 'n' : $role->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa,
                         ]
                     ]
                 ],
-                [
-                    'title' => 'role_groups',
-                    'desc' => 'role_groups_desc',
-                    'fields' => [
-                        'role_groups' => [
-                            'type' => 'checkbox',
-                            'choices' => $role_groups,
-                            'value' => $role->RoleGroups->pluck('group_id'),
-                            'no_results' => [
-                                'text' => sprintf(lang('no_found'), lang('role_groups')),
-                                'link_text' => lang('add_new'),
-                                'link_href' => ee('CP/URL')->make('members/roles/groups/create')->compile()
+            ]);
+        }
+
+        if (!in_array($role->getId(), [Member::SUPERADMIN, Member::BANNED, Member::GUESTS, Member::PENDING])) {
+            if ($role->getId() != Member::SUPERADMIN) {
+                $section = array_merge($section, [
+                    [
+                        'title' => 'security_lock',
+                        'desc' => 'lock_description',
+                        'fields' => [
+                            'is_locked' => [
+                                'type' => 'yes_no',
+                                'value' => $role->is_locked,
+                            ]
+                        ]
+                    ],
+                    [
+                        'title' => 'role_groups',
+                        'desc' => 'role_groups_desc',
+                        'fields' => [
+                            'role_groups' => [
+                                'type' => 'checkbox',
+                                'choices' => $role_groups,
+                                'value' => $role->RoleGroups->pluck('group_id'),
+                                'no_results' => [
+                                    'text' => sprintf(lang('no_found'), lang('role_groups')),
+                                    'link_text' => lang('add_new'),
+                                    'link_href' => ee('CP/URL')->make('members/roles/groups/create')->compile()
+                                ]
                             ]
                         ]
                     ]
-                ]
-            ]);
-        } else {
+                ]);
+            }
+        }
+
+        if ($role->getId() == Member::SUPERADMIN) {
+            // superadmins don't have other tabs, so including checkboxes here
             $section = array_merge($section, [
                 [
                     'title' => 'include_members_in',
@@ -755,6 +789,10 @@ class Roles extends AbstractRolesController
                         'can_view_profiles' => $permissions['fields']['can_view_profiles']
                     ]
                 ],
+            ]
+        ];
+        if ($role->getId() != Member::GUESTS) {
+            $sections[0] = array_merge($sections[0], [
                 [
                     'title' => 'can_delete_self',
                     'desc' => 'can_delete_self_desc',
@@ -772,79 +810,83 @@ class Roles extends AbstractRolesController
                         ]
                     ]
                 ],
-                [
-                    'title' => 'include_members_in',
-                    'desc' => 'include_members_in_desc',
-                    'fields' => [
-                        'include_in_authorlist' => [
-                            'type' => 'checkbox',
-                            'choices' => ['y' => lang('include_in_authorlist')],
-                            'scalar' => true,
-                            'value' => $settings->include_in_authorlist
-                        ],
-                        'include_in_memberlist' => [
-                            'type' => 'checkbox',
-                            'margin_top' => false,
-                            'scalar' => true,
-                            'choices' => ['y' => lang('include_in_memberlist')],
-                            'value' => $settings->include_in_memberlist
-                        ]
+            ]);
+        }
+        $sections[0][] = [
+            'title' => 'include_members_in',
+            'desc' => 'include_members_in_desc',
+            'fields' => [
+                'include_in_authorlist' => [
+                    'type' => 'checkbox',
+                    'choices' => ['y' => lang('include_in_authorlist')],
+                    'scalar' => true,
+                    'value' => $settings->include_in_authorlist
+                ],
+                'include_in_memberlist' => [
+                    'type' => 'checkbox',
+                    'margin_top' => false,
+                    'scalar' => true,
+                    'choices' => ['y' => lang('include_in_memberlist')],
+                    'value' => $settings->include_in_memberlist
+                ]
+            ]
+        ];
+        $sections['commenting'] = [
+            [
+                'title' => 'can_post_comments',
+                'desc' => 'can_post_comments_desc',
+                'fields' => [
+                    'can_post_comments' => $permissions['fields']['can_post_comments']
+                ]
+            ],
+            [
+                'title' => 'exclude_from_moderation',
+                'desc' => sprintf(lang('exclude_from_moderation_desc'), ee('CP/URL', 'settings/comments')),
+                'group' => 'can_post_comments',
+                'fields' => [
+                    'exclude_from_moderation' => [
+                        'type' => 'yes_no',
+                        'value' => $settings->exclude_from_moderation,
                     ]
                 ]
             ],
-            'commenting' => [
-                [
-                    'title' => 'can_post_comments',
-                    'desc' => 'can_post_comments_desc',
-                    'fields' => [
-                        'can_post_comments' => $permissions['fields']['can_post_comments']
+        ];
+        if ($role->getId() != Member::GUESTS) {
+            $sections['commenting'][] = [
+                'title' => 'comment_actions',
+                'desc' => 'comment_actions_desc',
+                'caution' => true,
+                'fields' => [
+                    'comment_actions' => [
+                        'type' => 'checkbox',
+                        'choices' => $permissions['choices']['comment_actions'],
+                        'value' => $permissions['values']['comment_actions'],
                     ]
-                ],
-                [
-                    'title' => 'exclude_from_moderation',
-                    'desc' => sprintf(lang('exclude_from_moderation_desc'), ee('CP/URL', 'settings/comments')),
-                    'group' => 'can_post_comments',
-                    'fields' => [
-                        'exclude_from_moderation' => [
-                            'type' => 'yes_no',
-                            'value' => $settings->exclude_from_moderation,
-                        ]
-                    ]
-                ],
-                [
-                    'title' => 'comment_actions',
-                    'desc' => 'comment_actions_desc',
-                    'caution' => true,
-                    'fields' => [
-                        'comment_actions' => [
-                            'type' => 'checkbox',
-                            'choices' => $permissions['choices']['comment_actions'],
-                            'value' => $permissions['values']['comment_actions'],
-                        ]
-                    ]
-                ],
+                ]
+            ];
+        }
+        $sections['search'] = [
+            [
+                'title' => 'can_search',
+                'desc' => 'can_search_desc',
+                'fields' => [
+                    'can_search' => $permissions['fields']['can_search']
+                ]
             ],
-            'search' => [
-                [
-                    'title' => 'can_search',
-                    'desc' => 'can_search_desc',
-                    'fields' => [
-                        'can_search' => $permissions['fields']['can_search']
+            [
+                'title' => 'search_flood_control',
+                'desc' => 'search_flood_control_desc',
+                'group' => 'can_search',
+                'fields' => [
+                    'search_flood_control' => [
+                        'type' => 'text',
+                        'value' => $settings->search_flood_control,
                     ]
-                ],
-                [
-                    'title' => 'search_flood_control',
-                    'desc' => 'search_flood_control_desc',
-                    'group' => 'can_search',
-                    'fields' => [
-                        'search_flood_control' => [
-                            'type' => 'text',
-                            'value' => $settings->search_flood_control,
-                        ]
-                    ]
-                ],
+                ]
             ],
-            'personal_messaging' => [
+        ];
+        if ($role->getId() != Member::GUESTS) {
+            $sections['personal_messaging'] = [
                 [
                     'title' => 'can_send_private_messages',
                     'desc' => 'can_send_private_messages_desc',
@@ -890,8 +932,8 @@ class Roles extends AbstractRolesController
                         'can_send_bulletins' => $permissions['fields']['can_send_bulletins']
                     ]
                 ],
-            ]
-        ];
+            ];
+        }
 
         $html = '';
 
@@ -952,7 +994,7 @@ class Roles extends AbstractRolesController
             ->getDictionary('module_id', 'module_name');
 
         $allowed_upload_destinations = ee('Model')->get('UploadDestination')
-            ->filter('site_id', ee()->config->item('site_id'))
+            ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
             ->filter('module_id', 0)
             ->all()
             ->getDictionary('id', 'name');

@@ -16,7 +16,7 @@ context('Channel Layouts: Create/Edit', () => {
         page.load()
     })
 
-    it('display the Create Form Layout view', function() {
+    it('display the Create Layout view', function() {
         page.get('breadcrumb').should('exist')
         page.get('page_title').should('exist')
         page.get('add_tab_button').should('exist')
@@ -106,6 +106,7 @@ context('Channel Layouts: Create/Edit', () => {
             page.get('fields').filter(':visible').eq(0).find('.field-option-hide input').check()
 
             page.get('layout_name').clear().type('Default')
+            page.get('member_groups').eq(0).check()
             cy.get('.form-btns-top .saving-options').click()
             page.get('submit_button').click()
             cy.hasNoErrors()
@@ -142,6 +143,7 @@ context('Channel Layouts: Create/Edit', () => {
         page.get('tabs').eq(-1).contains(new_tab_name)
 
         cy.get('input[name="layout_name"]').clear().type('Default')
+        page.get('member_groups').eq(0).check()
         cy.get('button').contains('Save').first().click()
         cy.wait(300) //AJ
         cy.hasNoErrors()
@@ -277,6 +279,7 @@ context('Channel Layouts: Create/Edit', () => {
                 page.get('hide_options_tab').should('have.class', 'tab-off')
 
                 page.get('layout_name').clear().type('Default')
+                page.get('member_groups').eq(0).check()
                 cy.get('.form-btns-top .saving-options').click()
                 page.get('submit_button').click()
                 cy.wait(300) //AJ
@@ -319,6 +322,7 @@ context('Channel Layouts: Create/Edit', () => {
                 page.get('fields').filter(':visible').eq(0).find('.field-option-hide input').check()
 
                 page.get('layout_name').clear().type('Default')
+                page.get('member_groups').eq(0).check()
                 cy.get('.form-btns-top .saving-options').click()
                 page.get('submit_button').click().then(function() {
                     cy.hasNoErrors()
