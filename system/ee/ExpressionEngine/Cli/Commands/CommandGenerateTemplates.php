@@ -41,7 +41,8 @@ class CommandGenerateTemplates extends Cli
      */
     public $commandOptions = [
         'list,l'        => 'command_generate_templates_list_generators',
-        'themes,t'      => 'command_generate_templates_list_themes'
+        'themes,t'      => 'command_generate_templates_list_themes',
+        'show,s'        => 'command_generate_templates_show_template_content'
     ];
 
     protected $data = [];
@@ -204,10 +205,14 @@ class CommandGenerateTemplates extends Cli
 
         $this->info('command_generate_templates_building_action');
 
+        $showOnly = $this->option('--show', false);
+
         // for each of the templates, run the build process and pass it on for saving
 
         try {
-            $group = ee('TemplateGenerator')->createTemplateGroup($this->data['options']['template_group']);
+            if (!$showOnly) {
+                $group = ee('TemplateGenerator')->createTemplateGroup($this->data['options']['template_group']);
+            }
             // we'll start with index templates
             if (isset($templates['index'])) {
                 $indexTmpl = $templates['index'];
@@ -215,13 +220,18 @@ class CommandGenerateTemplates extends Cli
                 $templates = array_merge(['index' => $indexTmpl], $templates); // we want index to be created first
             }
             foreach ($templates as $template => $templateDescription) {
-                $this->info('command_generate_templates_building_template', [$template]);
+                $this->info('command_generate_templates_building_template');
+                $this->info($this->data['options']['template_group'] . '/' . $template . (isset($templateDescription['notes']) ? ': ' . $templateDescription['notes'] : ''));
                 $templateData = ee('TemplateGenerator')->generate($template);
 
-                echo $templateData;
+                if ($showOnly) {
+                    echo $templateData;
+                }
 
-                // now we need to save the template
-                ee('TemplateGenerator')->createTemplate($group, $template, $templateData);
+                if (!$showOnly) {
+                    // now we need to save the template
+                    ee('TemplateGenerator')->createTemplate($group, $template, $templateData);
+                }
             }
         } catch (\Exception $e) {
             $this->fail(addslashes($e->getMessage()));

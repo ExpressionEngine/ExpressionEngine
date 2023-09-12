@@ -30,6 +30,8 @@ class Range_slider_ft extends Slider_ft
 
     public $entry_manager_compatible = true;
 
+    public $stub = 'range_slider';
+
     /**
      * A list of operators that this fieldtype supports
      *

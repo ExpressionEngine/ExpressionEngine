@@ -3,6 +3,7 @@
 return [
     'author' => 'ExpressionEngine',
     'author_url' => 'https://expressionengine.com/',
+    'docs_url' => 'https://docs.expressionengine.com/latest/fieldtypes/grid.html',
     'name' => 'Grid',
     'description' => '',
     'version' => '1.0.0',
@@ -17,6 +18,7 @@ return [
         ],
         'file_grid' => [
             'name' => 'File Grid',
+            'templateGenerator' => 'Grid',
             'compatibility' => 'file_grid'
         ]
     ],

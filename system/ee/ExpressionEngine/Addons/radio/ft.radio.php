@@ -25,6 +25,8 @@ class Radio_ft extends OptionFieldtype
 
     public $size = 'small';
 
+    public $stub = 'select';
+
     // used in display_field() below to set
     // some defaults for third party usage
     public $settings_vars = array(

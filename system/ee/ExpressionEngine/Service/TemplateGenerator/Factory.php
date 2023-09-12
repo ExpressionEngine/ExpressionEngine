@@ -644,7 +644,18 @@ class Factory
         $template->template_data = $data;
         $template->TemplateGroup = $group;
         $template->Roles = ee('Model')->get('Role')->all(true);
-        // validate here
+
+        $validationResult = $template->validate();
+        if ($validationResult->isNotValid()) {
+            // can't use renderErrors() directly here, because we need line view
+            $errors = [];
+            ee()->lang->load('design');
+            foreach ($validationResult->getFailed() as $field => $failed) {
+                $errors[$field] = implode("\n", $validationResult->getErrors($field));
+            }
+            throw new \Exception(implode("\n", $errors));
+        }
+
         $template->save();
 
         return $template;

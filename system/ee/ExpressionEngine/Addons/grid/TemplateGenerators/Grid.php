@@ -34,9 +34,18 @@ class Grid extends AbstractFieldTemplateGenerator implements FieldTemplateGenera
                 'docs_url' => $stubsAndGenerators[$column->col_type]['docs_url'],
                 'is_tag_pair' => $stubsAndGenerators[$column->col_type]['is_tag_pair'],
             ];
+
+            // if the field has its own generator, instantiate the field and pass to generator
+            if (!empty($stubsAndGenerators[$column->col_type]['generator'])) {
+                $interfaces = class_implements($stubsAndGenerators[$column->col_type]['generator']);
+                if (!empty($interfaces) && in_array(FieldTemplateGeneratorInterface::class, $interfaces)) {
+                    $generator = new $stubsAndGenerators[$column->col_type]['generator']($column);
+                    $generator->settings = array_merge($this->settings, $generator->settings); // file grid settings are saved in different place
+                    $vars['columns']['grid_col_' . $column->col_id] = array_merge($vars['columns']['grid_col_' . $column->col_id], $generator->getVariables());
+                }
+            }
         }
 
-        //each of the columns will have its own stub and possibly generator
         return $vars;
     }
 }

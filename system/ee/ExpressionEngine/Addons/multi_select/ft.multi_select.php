@@ -27,6 +27,8 @@ class Multi_select_ft extends OptionFieldtype
 
     public $entry_manager_compatible = true;
 
+    public $stub = 'options';
+
     /**
      * A list of operators that this fieldtype supports
      *

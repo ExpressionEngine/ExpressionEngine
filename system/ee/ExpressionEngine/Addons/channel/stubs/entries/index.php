@@ -10,7 +10,9 @@
                 <a href="{link}">{title}</a>
                 <?php
                 foreach ($fields as $field) {
-                    $this->embed($field['stub'], $field);
+                    if ($field['is_search_excerpt']) {
+                        $this->embed($field['stub'], $field);
+                    }
                 }
                 ?>
                 {pagination}

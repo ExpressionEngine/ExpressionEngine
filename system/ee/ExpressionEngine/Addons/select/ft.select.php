@@ -29,6 +29,8 @@ class Select_ft extends OptionFieldtype
 
     public $size = 'small';
 
+    public $stub = 'select';
+
     /**
      * A list of operators that this fieldtype supports
      *

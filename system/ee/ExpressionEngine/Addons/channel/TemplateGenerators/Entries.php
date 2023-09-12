@@ -100,6 +100,7 @@ class Entries extends AbstractTemplateGenerator implements TemplateGeneratorInte
                     'stub' => $stubsAndGenerators[$fieldInfo->field_type]['stub'],
                     'docs_url' => $stubsAndGenerators[$fieldInfo->field_type]['docs_url'],
                     'is_tag_pair' => $stubsAndGenerators[$fieldInfo->field_type]['is_tag_pair'],
+                    'is_search_excerpt' => $channel->search_excerpt == $fieldInfo->field_id,
                 ];
                 // if the field has its own generator, instantiate the field and pass to generator
                 if (!empty($stubsAndGenerators[$fieldInfo->field_type]['generator'])) {

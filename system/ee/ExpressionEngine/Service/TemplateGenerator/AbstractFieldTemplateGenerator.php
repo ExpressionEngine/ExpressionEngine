@@ -11,23 +11,36 @@
 namespace ExpressionEngine\Service\TemplateGenerator;
 
 use ExpressionEngine\Model\Content\FieldModel;
+use ExpressionEngine\Addons\Grid\Model\GridColumn;
 
 abstract class AbstractFieldTemplateGenerator implements FieldTemplateGeneratorInterface
 {
     /**
      * The field that we'll be working with
      *
-     * @var FieldModel
+     * @var FieldModel|GridColumn
      */
     protected $field;
 
     /**
-     * Construct the class for given field
+     * Settings of field or Grid column
      *
-     * @param FieldModel $field
+     * @var array
      */
-    public function __construct(FieldModel $field)
+    public $settings;
+
+    /**
+     * Construct the class for given field or Grid column
+     *
+     * @param FieldModel|GridColumn $field
+     */
+    public function __construct($field)
     {
         $this->field = $field;
+        if ($field instanceof FieldModel) {
+            $this->settings = $this->field->getSettingsValues()['field_settings'];
+        } elseif ($field instanceof GridColumn) {
+            $this->settings = $this->field->col_settings;
+        }
     }
 }
