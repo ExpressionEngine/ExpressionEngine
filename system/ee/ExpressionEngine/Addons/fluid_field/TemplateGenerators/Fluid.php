@@ -27,9 +27,9 @@ class Fluid extends AbstractFieldTemplateGenerator implements FieldTemplateGener
             ->order('field_label')
             ->all();
         foreach ($fields as $field) {
-            $vars['fluidFields']['field_' . $field->field_id] = [
+            $vars['fluidFields'][$field->field_name] = [
                 'field_type' => $field->field_type,
-                'field_name' => 'content:' . $field->field_name,
+                'field_name' => 'content',
                 'field_label' => $field->field_label,
                 'stub' => $stubsAndGenerators[$field->field_type]['stub'],
                 'docs_url' => $stubsAndGenerators[$field->field_type]['docs_url'],
@@ -40,8 +40,8 @@ class Fluid extends AbstractFieldTemplateGenerator implements FieldTemplateGener
             if (!empty($stubsAndGenerators[$field->field_type]['generator'])) {
                 $interfaces = class_implements($stubsAndGenerators[$field->field_type]['generator']);
                 if (!empty($interfaces) && in_array(FieldTemplateGeneratorInterface::class, $interfaces)) {
-                    $generator = new $stubsAndGenerators[$field->field_type]['generator']($field);
-                    $vars['fluidFields']['field_' . $field->field_id] = array_merge($vars['fluidFields']['field_' . $field->field_id], $generator->getVariables());
+                    $generator = new $stubsAndGenerators[$field->field_type]['generator']($field, ['field_prefix' => 'content']);
+                    $vars['fluidFields'][$field->field_name] = array_merge($vars['fluidFields'][$field->field_name], $generator->getVariables());
                 }
             }
         }
@@ -53,9 +53,9 @@ class Fluid extends AbstractFieldTemplateGenerator implements FieldTemplateGener
         foreach ($fieldGroups as $group) {
             $groupFields = [];
             foreach ($group->ChannelFields as $field) {
-                $groupFields['field_' . $field->field_id] = [
+                $groupFields[$field->field_name] = [
                     'field_type' => $field->field_type,
-                    'field_name' => 'content:' . $field->field_name,
+                    'field_name' => 'content',
                     'field_label' => $field->field_label,
                     'stub' => $stubsAndGenerators[$field->field_type]['stub'],
                     'docs_url' => $stubsAndGenerators[$field->field_type]['docs_url'],
@@ -66,7 +66,7 @@ class Fluid extends AbstractFieldTemplateGenerator implements FieldTemplateGener
                 if (!empty($stubsAndGenerators[$field->field_type]['generator'])) {
                     $interfaces = class_implements($stubsAndGenerators[$field->field_type]['generator']);
                     if (!empty($interfaces) && in_array(FieldTemplateGeneratorInterface::class, $interfaces)) {
-                        $generator = new $stubsAndGenerators[$field->field_type]['generator']($field);
+                        $generator = new $stubsAndGenerators[$field->field_type]['generator']($field, ['field_prefix' => 'content']);
                         $groupFields = array_merge($groupFields, $generator->getVariables());
                     }
                 }

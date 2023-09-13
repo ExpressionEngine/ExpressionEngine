@@ -66,35 +66,8 @@ class Stub extends View
             throw new \Exception('Invalid stub path: ' . htmlentities($this->path));
         }
 
-        // set the stub path that are specific to this embed
-        // so if you have embed like $this->embed('member:profile:_field_metadata', $field); running from channel:entries generator
-        // the stubPaths map will look like
-        // system/user/stubs/themes/tailwind/member/profile
-        // system/ee/ExpressionEngine/Addons/themes/stubs/tailwind/profile
-        // system/user/stubs/member/profile
-        // system/ee/ExpressionEngine/Addons/member/stubs/profile
-        // system/user/stubs/themes/tailwind/channel/entries
-        // system/ee/ExpressionEngine/Addons/themes/stubs/tailwind/channel/entries
-        // system/user/stubs/channel/entries
-        //system/ee/ExpressionEngine/Addons/themes/stubs/entries
-        // ... and then into shared folder
-
-        $stubPaths = [];
-        //here we add path provided by theme
-        $optionValues = ee('TemplateGenerator')->getOptionValues();
-        if (isset($optionValues['theme']) && !empty($optionValues['theme']) && $optionValues['theme'] != 'none') {
-            // if we use a theme, we need to check the path set by theme
-            $themeProvider = explode(':', $optionValues['theme']);
-            $provider = ee('App')->get($themeProvider[0]);
-            // user folder first, then own folder of theme add-on
-            $stubPaths[] = SYSPATH . 'user/stubs/' . $themeProvider[0] . '/' . $themeProvider[1] . '/' . $this->provider->getPrefix() . $this->generatorFolder;
-            // e.g. system/user/stubs/mytheme/tailwind/channel/entries
-            $stubPaths[] = $provider->getPath() . '/stubs/' . $themeProvider[1] . '/' . $this->provider->getPrefix() . $this->generatorFolder;
-            // e.g. system/user/addons/mytheme/stubs/tailwind/channel/entries
-        }
-        // and then, the embed's defaults
-        $stubPaths[] = SYSPATH . 'user/stubs/' . $this->provider->getPrefix() . $this->generatorFolder;
-        $stubPaths[] = $this->provider->getPath() . '/stubs' . $this->generatorFolder;
+        // set the stub path that are specific to this stub
+        $stubPaths = ee('TemplateGenerator')->getStubPaths($this->provider, $this->generatorFolder);
 
         // get the shared stub paths
         $stubPaths = array_merge($stubPaths, ee('TemplateGenerator')->getSharedStubPaths());

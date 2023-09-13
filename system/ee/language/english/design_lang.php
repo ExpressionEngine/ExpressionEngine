@@ -963,6 +963,18 @@ $lang = array(
 
     'view_message' => 'Private Message - View Message',
 
+    /* Template Generator */
+
+    'channel_entries_template_generator' => 'Channel Entries Template Generator',
+
+    'list_all_entries' => 'List of all entries',
+
+    'entry_details_page' => 'Entry details page',
+
+    'select_theme' => 'Select Theme',
+
+    'select_templates_to_generate' => 'Select the templates that you want to generate',
+
 );
 
 // EOF

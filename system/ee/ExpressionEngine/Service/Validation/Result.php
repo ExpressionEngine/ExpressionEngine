@@ -110,6 +110,8 @@ class Result
 
     /**
      * Get error strings for a given field
+     *
+     * @return array
      */
     public function getErrors($field, View $view = null)
     {

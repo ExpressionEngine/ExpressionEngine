@@ -91,7 +91,14 @@ class CommandGenerateTemplates extends Cli
         $this->info('command_generate_templates_started');
 
         //get the generator to use
-        $generatorKey = $this->getFirstUnnamedArgument("command_generate_templates_ask_generator", null, true);
+        $askText = lang('command_generate_templates_ask_generator');
+        array_walk($generatorsList, function ($info, $key) use (&$askText) {
+            ee('TemplateGenerator')->setGenerator($key);
+            $name = ee('TemplateGenerator')->getGenerator()->getInstance()->getName();
+            $askText .= "\n" . $key . ' : ' . $name;
+        });
+        $askText .= "\n: ";
+        $generatorKey = $this->getFirstUnnamedArgument($askText, null, true);
         if (!isset($generatorsList[$generatorKey])) {
             $this->fail('command_generate_templates_invalid_generator');
         }
@@ -100,6 +107,8 @@ class CommandGenerateTemplates extends Cli
         } catch (\Exception $e) {
             $this->fail($e->getMessage());
         }
+
+        $showOnly = $this->option('--show', false);
 
         // instantiate the generator
         $generator = ee('TemplateGenerator')->getGenerator()->getInstance();
@@ -128,6 +137,10 @@ class CommandGenerateTemplates extends Cli
         $this->loadOptions(); // need to have those re-loaded now
 
         foreach ($options as $option => $optionParams) {
+            if ($showOnly && $option == 'template_group') {
+                $this->data['options']['template_group'] = '';
+                continue; // need not to ask if we just show template on screen
+            }
             $default = isset($optionParams['default']) ? $optionParams['default'] : '';
             $required = isset($optionParams['required']) ? $optionParams['required'] : false;
             // populate the choices, if dynamic
@@ -144,7 +157,7 @@ class CommandGenerateTemplates extends Cli
             ) {
                 continue; // do not ask if we have no choice
             }
-            $askText = isset($optionParams['desc']) ? $optionParams['desc'] : $option;
+            $askText = isset($optionParams['desc']) ? lang($optionParams['desc']) : lang($option);
             if (isset($optionParams['choices']) && !empty($optionParams['choices'])) {
                 foreach ($optionParams['choices'] as $key => $val) {
                     $askText .= "\n - " . $key . " : " . lang($val);
@@ -164,7 +177,7 @@ class CommandGenerateTemplates extends Cli
             // ensure the checkbox options receive an array
             // comma is expected separator, but we'll also allow | for convenience
             if ($optionParams['type'] == 'checkbox' && !is_array($optionValue)) {
-                $optionValue = explode(',', str_replace(',', '|', $optionValue));
+                $optionValue = explode('|', str_replace(',', '|', $optionValue));
                 $optionValue = array_map('trim', $optionValue);
             } elseif (is_string($optionValue)) {
                 $optionValue = trim($optionValue);
@@ -203,10 +216,6 @@ class CommandGenerateTemplates extends Cli
             $this->fail('command_generate_templates_no_templates');
         }
 
-        $this->info('command_generate_templates_building_action');
-
-        $showOnly = $this->option('--show', false);
-
         // for each of the templates, run the build process and pass it on for saving
 
         try {
@@ -225,12 +234,19 @@ class CommandGenerateTemplates extends Cli
                 $templateData = ee('TemplateGenerator')->generate($template);
 
                 if ($showOnly) {
-                    echo $templateData;
+                    $this->info($templateData);
                 }
 
                 if (!$showOnly) {
                     // now we need to save the template
-                    ee('TemplateGenerator')->createTemplate($group, $template, $templateData);
+                    $templateInfo = ['template_data' => $templateData];
+                    if (isset($templateDescription['notes'])) {
+                        $templateInfo['template_notes'] = $templateDescription['notes'];
+                    }
+                    if (isset($templateDescription['type'])) {
+                        $templateInfo['template_type'] = $templateDescription['type'];
+                    }
+                    ee('TemplateGenerator')->createTemplate($group, $template, $templateInfo);
                 }
             }
         } catch (\Exception $e) {

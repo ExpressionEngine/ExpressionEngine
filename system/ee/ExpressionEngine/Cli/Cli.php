@@ -622,16 +622,17 @@ class Cli
 
         if ($this->options->hasErrors()) {
             $errors = $this->options->getErrors();
-            $shouldFail = false;
 
-            foreach ($errors as $error) {
-                if (!($error instanceof Exception\OptionNotDefined)) {
-                    $shouldFail = true;
+            foreach ($errors as $i => $error) {
+                if ($this->signature == 'generate:templates' && $error instanceof Exception\OptionNotDefined) {
+                    // a very specific exception that we make for command that's dynamically loading options
+                    unset($errors[$i]);
+                    continue;
                 }
                 // print error messages to stderr using a Stdio object
                 $this->error($error->getMessage());
             }
-            if ($shouldFail) {
+            if (count($errors) > 0) {
                 $this->fail();
             }
         };

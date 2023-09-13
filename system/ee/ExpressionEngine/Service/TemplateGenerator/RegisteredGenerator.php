@@ -104,43 +104,4 @@ class RegisteredGenerator
         }
         return $this->instance;
     }
-
-    /**
-     * Get the stub path specific to this add-on
-     *
-     * @return array
-     */
-    public function getStubPaths()
-    {
-        if (empty($this->stubPaths)) {
-            $this->stubPaths = [];
-            $optionValues = ee('TemplateGenerator')->getOptionValues();
-            $provider = ee('App')->get($this->prefix);
-            if (isset($optionValues['theme']) && !empty($optionValues['theme']) && $optionValues['theme'] != 'none') {
-                // if we use a theme, we need to check the path set by theme
-                $themeInfo = explode(':', $optionValues['theme']);
-                $themeProviderPrefix = $themeInfo[0];
-                $themeName = $themeInfo[1];
-                if ($themeProviderPrefix != $this->prefix) {
-                    $themeProvider = ee('App')->get($themeProviderPrefix);
-                } else {
-                    $themeProvider = $provider;
-                }
-                // user folder first, then own folder of theme add-on
-                $this->stubPaths[] = SYSPATH . 'user/stubs/' . $themeProviderPrefix . '/' . $themeName . '/' . $this->prefix . '/' . lcfirst($this->className);
-                // e.g. system/user/stubs/mytheme/tailwind/channel/entries
-                $this->stubPaths[] = $themeProvider->getPath() . '/stubs/' . $themeName . '/' . $this->prefix . '/' . lcfirst($this->className);
-                // e.g. system/user/addons/mytheme/stubs/tailwind/channel/entries
-            }
-
-            //user-provided stubs for this generator
-            $this->stubPaths[] = SYSPATH . 'user/stubs/' . $this->prefix . '/' . lcfirst($this->className);
-            // e.g. system/user/stubs/channel/entries
-            // stubs provided by the generator add-on
-            $this->stubPaths[] = $provider->getPath() . '/stubs/' . lcfirst($this->className);
-            // e.g. system/ee/ExpressionEngine/addons/channel/entries
-            // or system/user/addons/channel/entries
-        }
-        return $this->stubPaths;
-    }
 }

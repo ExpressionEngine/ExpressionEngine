@@ -33,8 +33,9 @@ abstract class AbstractFieldTemplateGenerator implements FieldTemplateGeneratorI
      * Construct the class for given field or Grid column
      *
      * @param FieldModel|GridColumn $field
+     * @param array $settings
      */
-    public function __construct($field)
+    public function __construct($field, $settings = [])
     {
         $this->field = $field;
         if ($field instanceof FieldModel) {
@@ -42,5 +43,6 @@ abstract class AbstractFieldTemplateGenerator implements FieldTemplateGeneratorI
         } elseif ($field instanceof GridColumn) {
             $this->settings = $this->field->col_settings;
         }
+        $this->settings = array_merge($this->settings, $settings);
     }
 }

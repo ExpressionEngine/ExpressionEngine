@@ -30,7 +30,7 @@ class Factory
 {
     /**
      * Template engine to use
-     * Defaults to buil-in (ee) but can also be set to twig or blade
+     * Defaults to native but can also be set to twig or blade
      *
      * @var string
      */
@@ -56,13 +56,6 @@ class Factory
      * @var array
      */
     protected $options = [
-        // we will likely not need to support template engines, because we have themes
-        // it's easier to have just one thing managed
-        'template_engine' => [
-            'type' => 'select',
-            'choices' => [], // populate from Api_template_structure->get_template_engines()
-            'default' => ''
-        ],
         'site_id' => [
             'type' => 'select',
             'callback' => 'getSites',
@@ -72,16 +65,19 @@ class Factory
         'theme' => [
             'type' => 'select',
             'callback' => 'getThemes',
+            'desc' => 'select_theme',
             'default' => 'none'
         ],
         'template_group' => [
             'type' => 'text',
             'default' => '',
+            'desc' => 'name_of_template_group',
             'required' => true
         ],
         'templates' => [
             'type' => 'checkbox',
             'callback' => 'getTemplatesList',
+            'desc' => 'select_templates_to_generate',
             'default' => 'all',
         ],
     ];
@@ -140,6 +136,8 @@ class Factory
 
     public function __construct()
     {
+        ee()->lang->load('cp');
+        ee()->lang->load('design');
         $this->values = [];
     }
 
@@ -183,14 +181,42 @@ class Factory
      * This would include:
      * - user folder
      * - add-on folder
-     * - external stubs folder (e.g. Coilpack)
+     * - theming add-on folder
      * - shared stubs folder
      *
+     * @param Provider $provider
+     * @param string $generatorFolder
+     * 
      * @return array
      */
-    public function getStubPaths()
+    public function getStubPaths(Provider $provider, string $generatorFolder)
     {
-        $stubPaths = $this->getGenerator()->getStubPaths();
+        $stubPaths = [];
+        $optionValues = ee('TemplateGenerator')->getOptionValues();
+        if (isset($optionValues['theme']) && !empty($optionValues['theme']) && $optionValues['theme'] != 'none') {
+            // if we use a theme, we need to check the path set by theme
+            $themeInfo = explode(':', $optionValues['theme']);
+            $themeProviderPrefix = $themeInfo[0];
+            $themeName = $themeInfo[1];
+            if ($themeProviderPrefix != $provider->getPrefix()) {
+                $themeProvider = ee('App')->get($themeProviderPrefix);
+            } else {
+                $themeProvider = $provider;
+            }
+            // user folder first, then own folder of theme add-on
+            $stubPaths[] = SYSPATH . 'user/stubs/' . $themeProviderPrefix . '/' . $themeName . '/' . $provider->getPrefix() . '/' . $generatorFolder;
+            // e.g. system/user/stubs/mytheme/tailwind/channel/entries
+            $stubPaths[] = $themeProvider->getPath() . '/stubs/' . $themeName . '/' . $provider->getPrefix() . '/' . $generatorFolder;
+            // e.g. system/user/addons/mytheme/stubs/tailwind/channel/entries
+        }
+
+        //user-provided stubs for this generator
+        $stubPaths[] = SYSPATH . 'user/stubs/' . $provider->getPrefix() . '/' . $generatorFolder;
+        // e.g. system/user/stubs/channel/entries
+        // stubs provided by the generator add-on
+        $stubPaths[] = $provider->getPath() . '/stubs/' . $generatorFolder;
+        // e.g. system/ee/ExpressionEngine/addons/channel/entries
+        // or system/user/addons/channel/entries
 
         $stubPaths = array_merge($stubPaths, $this->getSharedStubPaths());
 
@@ -266,7 +292,6 @@ class Factory
      */
     public function registerAllTemplateGenerators()
     {
-        ee()->lang->load('template_generator');
         if (is_null($this->registeredGenerators)) {
             $providers = ee('App')->getProviders();
             foreach ($providers as $provider) {
@@ -599,9 +624,12 @@ class Factory
         if ($validationResult->isNotValid()) {
             // can't use renderErrors() directly here, because we need line view
             $errors = [];
-            ee()->lang->load('design');
             foreach ($validationResult->getFailed() as $field => $failed) {
-                $errors[$field] = implode("\n", $validationResult->getErrors($field));
+                $fieldErrors = $validationResult->getErrors($field);
+                array_walk($fieldErrors, function ($message, $key, $field) use (&$fieldErrors) {
+                    $fieldErrors[$key] = $field . ': ' . $message;
+                }, $field);
+                $errors[$field] = implode("\n", $fieldErrors);
             }
             throw new \Exception(implode("\n", $errors));
         }
@@ -621,7 +649,8 @@ class Factory
                     'role_id' => $role_id,
                     'site_id' => $this->site_id,
                     'permission' => $perm
-                ]);
+                ])
+                ->save();
             }
         }
 
@@ -633,15 +662,18 @@ class Factory
      *
      * @param TemplateGroup $group
      * @param string $name
-     * @param string $data
+     * @param array $data
      * @return Template
      */
-    public function createTemplate(TemplateGroup $group, string $name, string $data = '')
+    public function createTemplate(TemplateGroup $group, string $name, array $data = [])
     {
         $template = ee('Model')->make('Template');
         $template->site_id = $this->site_id;
         $template->template_name = $name;
-        $template->template_data = $data;
+        $template->template_data = $data['template_data'];
+        $template->template_type = $data['template_type'] ?? 'webpage';
+        $template->template_notes = $data['template_notes'] ?? '';
+        $template->template_engine = $this->templateEngine;
         $template->TemplateGroup = $group;
         $template->Roles = ee('Model')->get('Role')->all(true);
 
@@ -649,9 +681,12 @@ class Factory
         if ($validationResult->isNotValid()) {
             // can't use renderErrors() directly here, because we need line view
             $errors = [];
-            ee()->lang->load('design');
             foreach ($validationResult->getFailed() as $field => $failed) {
-                $errors[$field] = implode("\n", $validationResult->getErrors($field));
+                $fieldErrors = $validationResult->getErrors($field);
+                array_walk($fieldErrors, function ($message, $key, $field) use (&$fieldErrors) {
+                    $fieldErrors[$key] = $field . ': ' . $message;
+                }, $field);
+                $errors[$field] = implode("\n", $fieldErrors);
             }
             throw new \Exception(implode("\n", $errors));
         }

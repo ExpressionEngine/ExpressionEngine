@@ -17,6 +17,7 @@ class Grid extends AbstractFieldTemplateGenerator implements FieldTemplateGenera
 {
     public function getVariables(): array
     {
+        $prefix = isset($this->settings['field_prefix']) ? $this->settings['field_prefix'] : $this->field->field_name;
         $vars = [
             'columns' => []
         ];
@@ -28,7 +29,7 @@ class Grid extends AbstractFieldTemplateGenerator implements FieldTemplateGenera
                 'col_name' => $column->col_name,
                 'col_label' => $column->col_label,
                 'field_type' => $column->col_type,
-                'field_name' => $this->field->field_name . ':' . $column->col_name,
+                'field_name' => $prefix . ':' . $column->col_name,
                 'field_label' => $column->col_label,
                 'stub' => $stubsAndGenerators[$column->col_type]['stub'],
                 'docs_url' => $stubsAndGenerators[$column->col_type]['docs_url'],

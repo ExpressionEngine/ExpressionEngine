@@ -15,7 +15,7 @@ use ExpressionEngine\Service\TemplateGenerator\TemplateGeneratorInterface;
 
 class Profile extends AbstractTemplateGenerator implements TemplateGeneratorInterface
 {
-    protected $name = 'channel_entries_template_generator';
+    protected $name = 'Member Profile Template Generator';
 
     protected $templates = [
         'index' => [
