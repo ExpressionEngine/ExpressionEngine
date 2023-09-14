@@ -45,6 +45,8 @@ class Api_template_structure extends Api
 
         ee()->load->model('template_model');
 
+        $this->register_template_engine(['twig' => 'Twig']);
+
         // initialize the reserved names array
         $this->_load_reserved_groups();
         $this->_setup_template_engine_extensions();

@@ -39,7 +39,7 @@ class Stub extends View
             $parts = explode(':', $view, 3);
             $prefix = $parts[0];
             if (isset($parts[2])) {
-                $generatorFolder = '/' . $parts[1]; //adding leading slash as that makes building full path easier
+                $generatorFolder = $parts[1];
                 $view = $parts[2];
             } else {
                 $generatorFolder = '';
@@ -61,16 +61,18 @@ class Stub extends View
      */
     protected function getPath()
     {
+        // if template engine selected, add suffix
+        if (!empty(ee('TemplateGenerator')->templateEngine) && ee('TemplateGenerator')->templateEngine != 'native') {
+            $this->path .= '.' . ee('TemplateGenerator')->templateEngine;
+        }
+
         // do not allow any path traversal
         if (strpos($this->path, '..') !== false) {
             throw new \Exception('Invalid stub path: ' . htmlentities($this->path));
         }
 
-        // set the stub path that are specific to this stub
+        // set the stub path that are specific to this stub and shared ones
         $stubPaths = ee('TemplateGenerator')->getStubPaths($this->provider, $this->generatorFolder);
-
-        // get the shared stub paths
-        $stubPaths = array_merge($stubPaths, ee('TemplateGenerator')->getSharedStubPaths());
 
         foreach ($stubPaths as $path) {
             if (strpos($path, '..') !== false) {

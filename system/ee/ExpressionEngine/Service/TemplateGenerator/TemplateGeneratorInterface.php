@@ -24,10 +24,9 @@ interface TemplateGeneratorInterface
 
     /**
      * Every generator is required to return list of templates that it's capable to create
-     * We expect the array key to be the template name and the value to array of properties
-     * [type => 'webpage', notes => 'template_description']
-     * If omited, type will default to webpage
-     * Each template needs to have correspoding file in stubs folder with .php extension
+     * We expect the array key to be the template name and the value to be template description (saved as notes)
+     * Template type will default to webpage, can be changed by using appropriate extension (e.g. entries.rss)
+     * Each template needs to have correspoding file in stubs folder with .php extension (e.g. entries.rss.php)
      *
      * @return array
      */

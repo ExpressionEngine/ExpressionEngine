@@ -505,6 +505,8 @@ $lang = array(
     'command_sync_conditional_fields_database_info'             => "Database: %d queries in %f seconds",
 
     // generate:templates
+    'command_generate_templates_summary' => 'Creates templates based on existing data structure',
+    'command_generate_templates_description' => 'Using pre-defined stubs provided by ExpressionEngine or the add-ons, will generate ready-to-use templates for your site. If theming add-ons are available, will use those.',
     'command_generate_templates_list_generators' => 'List available template generators',
     'command_generate_templates_list_themes' => 'List available themes',
     'command_generate_templates_show_template_content' => 'Show template content without saving',

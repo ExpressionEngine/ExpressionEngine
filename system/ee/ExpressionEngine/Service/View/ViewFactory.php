@@ -76,7 +76,7 @@ class ViewFactory
             $parts = explode(':', $path, 3);
             $prefix = $parts[0];
             if (isset($parts[2])) {
-                $generatorFolder = '/' . $parts[1]; //adding leading slash as that makes building full path easier
+                $generatorFolder = $parts[1]; //adding leading slash as that makes building full path easier
                 $path = $parts[2];
             } else {
                 $generatorFolder = '';

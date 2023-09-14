@@ -248,7 +248,12 @@ class Cli
         $command->loadOptions();
 
         if ($command->option('-h', false)) {
-            return $command->help();
+            // special case for generate:templates generator:name --help
+            if ($command->signature == 'generate:templates' && count($this->arguments) > 1 && in_array($this->arguments[1], ['--help', '-h'])) {
+                // template generator, when having generator specified, will handle displaying help later
+            } else {
+                return $command->help();
+            }
         }
 
         // -------------------------------------------

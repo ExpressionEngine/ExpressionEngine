@@ -34,7 +34,7 @@ class Factory
      *
      * @var string
      */
-    protected $templateEngine;
+    public $templateEngine;
 
     /**
      * The list of extra themes that are available
@@ -56,17 +56,23 @@ class Factory
      * @var array
      */
     protected $options = [
-        'site_id' => [
+        'template_engine' => [
             'type' => 'select',
-            'callback' => 'getSites',
-            'default' => '1',
-            'required' => true
+            'callback' => 'getTemplateEnginesList',
+            'desc' => 'select_template_engine',
+            'default' => ''
         ],
         'theme' => [
             'type' => 'select',
-            'callback' => 'getThemes',
+            'callback' => 'getThemesList',
             'desc' => 'select_theme',
             'default' => 'none'
+        ],
+        'site_id' => [
+            'type' => 'select',
+            'callback' => 'getSitesList',
+            'default' => '1',
+            'required' => true
         ],
         'template_group' => [
             'type' => 'text',
@@ -89,6 +95,7 @@ class Factory
      */
     protected $_validation_rules = [
         'site_id' => 'integer',
+        'template_engine' => 'validateTemplateEngine',
         'theme' => 'validateTheme'
     ];
 
@@ -149,10 +156,13 @@ class Factory
      */
     public function setOptionValues(array $values): void
     {
+        $this->values = $values;
         if (isset($this->values['site_id'])) {
             $this->site_id = (int) $this->values['site_id'];
         }
-        $this->values = $values;
+        if (isset($this->values['template_engine'])) {
+            $this->templateEngine = (string) $this->values['template_engine'];
+        }
     }
 
     /**
@@ -163,17 +173,6 @@ class Factory
     public function getOptionValues(): array
     {
         return $this->values;
-    }
-
-    /**
-     * Sets the template engine to use
-     *
-     * @param string $engine
-     * @return void
-     */
-    public function setTemplateEngine($engine = '')
-    {
-        $this->templateEngine = $engine;
     }
 
     /**
@@ -193,20 +192,21 @@ class Factory
     {
         $stubPaths = [];
         $optionValues = ee('TemplateGenerator')->getOptionValues();
+        if (is_null($this->themes)) {
+            $this->registerThemes();
+        }
         if (isset($optionValues['theme']) && !empty($optionValues['theme']) && $optionValues['theme'] != 'none') {
             // if we use a theme, we need to check the path set by theme
-            $themeInfo = explode(':', $optionValues['theme']);
-            $themeProviderPrefix = $themeInfo[0];
-            $themeName = $themeInfo[1];
-            if ($themeProviderPrefix != $provider->getPrefix()) {
-                $themeProvider = ee('App')->get($themeProviderPrefix);
-            } else {
-                $themeProvider = $provider;
+            if (!isset($this->themes[$optionValues['theme']])) {
+                throw new \Exception('Theme not found');
             }
+            $themeProviderPrefix = $this->themes[$optionValues['theme']]['prefix'];
+            $themeFolder = $this->themes[$optionValues['theme']]['folder'];
+            $themeProvider = ee('App')->get($themeProviderPrefix);
             // user folder first, then own folder of theme add-on
-            $stubPaths[] = SYSPATH . 'user/stubs/' . $themeProviderPrefix . '/' . $themeName . '/' . $provider->getPrefix() . '/' . $generatorFolder;
+            $stubPaths[] = SYSPATH . 'user/stubs/' . $themeProviderPrefix . '/' . $themeFolder . '/' . $provider->getPrefix() . '/' . $generatorFolder;
             // e.g. system/user/stubs/mytheme/tailwind/channel/entries
-            $stubPaths[] = $themeProvider->getPath() . '/stubs/' . $themeName . '/' . $provider->getPrefix() . '/' . $generatorFolder;
+            $stubPaths[] = $themeProvider->getPath() . '/stubs/' . $themeFolder . '/' . $provider->getPrefix() . '/' . $generatorFolder;
             // e.g. system/user/addons/mytheme/stubs/tailwind/channel/entries
         }
 
@@ -217,6 +217,8 @@ class Factory
         $stubPaths[] = $provider->getPath() . '/stubs/' . $generatorFolder;
         // e.g. system/ee/ExpressionEngine/addons/channel/entries
         // or system/user/addons/channel/entries
+        // twig and blade will be taking this from elswehere
+        // e.g. 'vendor/coilpack/stubs/' . $provider->getPrefix() . '/' . $generatorFolder;
 
         $stubPaths = array_merge($stubPaths, $this->getSharedStubPaths());
 
@@ -234,15 +236,16 @@ class Factory
             $optionValues = $this->getOptionValues();
             if (isset($optionValues['theme']) && !empty($optionValues['theme']) && $optionValues['theme'] != 'none') {
                 // if we use a theme, we need to check the path set by theme
-                $themeInfo = explode(':', $optionValues['theme']);
-                $themeProviderPrefix = $themeInfo[0];
-                $themeName = $themeInfo[1];
+                $themeProviderPrefix = $this->themes[$optionValues['theme']]['prefix'];
+                $themeFolder = $this->themes[$optionValues['theme']]['folder'];
                 $themeProvider = ee('App')->get($themeProviderPrefix);
-                $this->sharedStubPaths[] = SYSPATH . 'user/stubs/' . $themeProviderPrefix . '/' . $themeName;
-                $this->sharedStubPaths[] = $themeProvider->getPath() . '/stubs/' . $themeName;
+                $this->sharedStubPaths[] = SYSPATH . 'user/stubs/' . $themeProviderPrefix . '/' . $themeFolder;
+                $this->sharedStubPaths[] = $themeProvider->getPath() . '/stubs/' . $themeFolder;
             }
             //if specifics not found, fallback to shared stubs (user first)
             $this->sharedStubPaths[] = SYSPATH . 'user/stubs';
+            // ee/templates/stubs is shared folder for native template engine
+            // twig and blade will have their own folder elsewhere
             $this->sharedStubPaths[] = SYSPATH . 'ee/templates/stubs';
         }
         return $this->sharedStubPaths;
@@ -397,12 +400,25 @@ class Factory
     }
 
     /**
+     * Get the list of template engines available
+     *
+     * @return array
+     */
+    public function getTemplateEnginesList()
+    {
+        ee()->load->library('api');
+        ee()->legacy_api->instantiate('template_structure');
+        return ['native' => 'Native', 'twig' => 'Twig', 'blade' => 'Blade'];
+        return ee()->api_template_structure->get_template_engines();
+    }
+
+    /**
      * If this is MSM install, get list of sites
      * If just one site is available, set it's site ID on factory
      *
      * @return array
      */
-    public function getSites()
+    public function getSitesList()
     {
         $sites = ee('Model')->get('Site')
             ->order('site_label', 'asc')
@@ -435,7 +451,7 @@ class Factory
      *
      * @return array
      */
-    public function getThemes()
+    public function getThemesList()
     {
         $themes = [
             'none' => 'No Theme'
@@ -443,7 +459,12 @@ class Factory
         if (is_null($this->themes)) {
             $this->registerThemes();
         }
+        $selectedTemplateEngine = empty($this->templateEngine) ? 'native' : $this->templateEngine;
         foreach ($this->themes as $theme => $themeInfo) {
+            // only list themes that support selected template engine
+            if (!in_array($selectedTemplateEngine, $themeInfo['template_engines'])) {
+                continue;
+            }
             $themes[$theme] = $themeInfo['name'];
         }
         return $themes;
@@ -456,13 +477,41 @@ class Factory
      */
     public function validateTheme($key, $value, $params, $rule)
     {
-        if (empty($value)) {
+        if (empty($value) || $value == 'none') {
+            //no further validation needed
             return true;
         }
-        $themes = $this->getThemes();
-        if (!isset($themes[$value])) {
-            return ee()->lang->line('invalid_theme');
+        if (is_null($this->themes)) {
+            $this->registerThemes();
         }
+        // is the theme registered?
+        if (!isset($this->themes[$value])) {
+            return lang('invalid_theme');
+        }
+        // does the theme support the template engine?
+        $selectedTemplateEngine = empty($this->templateEngine) ? 'native' : $this->templateEngine;
+        if (!in_array($selectedTemplateEngine, $this->themes[$value]['template_engines'])) {
+            return sprintf(lang('theme_does_not_support_template_engine'), $selectedTemplateEngine);
+        }
+        return true;
+    }
+
+    /**
+     * Validate template engine
+     *
+     * @return void
+     */
+    public function validateTemplateEngine($key, $value, $params, $rule)
+    {
+        if (empty($value) || $value == 'native') {
+            return true;
+        }
+        $templateEngines = $this->getTemplateEnginesList();
+
+        if (!isset($templateEngines[$value])) {
+            return lang('invalid_template_engine');
+        }
+
         return true;
     }
 
@@ -478,7 +527,16 @@ class Factory
         foreach ($providers as $providerKey => $provider) {
             if ($provider->get('templateThemes')) {
                 foreach ($provider->get('templateThemes') as $theme => $themeData) {
-                    $this->themes[$provider->getPrefix() . ':' . $theme] = $themeData;
+                    $themeData['prefix'] = $provider->getPrefix();
+                    $themeData['folder'] = $theme;
+                    if (!isset($themeData['template_engines']) || !is_array($themeData['template_engines'])) {
+                        $themeData['template_engines'] = ['native'];
+                    }
+                    $key = $theme;
+                    if (isset($this->themes[$key])) {
+                        $key = $provider->getPrefix() . ':' . $theme; //ensure uniqueness
+                    }
+                    $this->themes[$key] = $themeData;
                 }
             }
         }
@@ -667,13 +725,21 @@ class Factory
      */
     public function createTemplate(TemplateGroup $group, string $name, array $data = [])
     {
+        $ext = '.html';
+        if (!empty($this->templateEngine) && $this->templateEngine != 'native') {
+            $ext = '.' . $this->templateEngine;
+        }
+        $fileName = $name . $ext;
+        ee()->load->library('api');
+        ee()->legacy_api->instantiate('template_structure');
+        $info = ee()->api_template_structure->get_template_file_info($fileName);
         $template = ee('Model')->make('Template');
         $template->site_id = $this->site_id;
         $template->template_name = $name;
         $template->template_data = $data['template_data'];
-        $template->template_type = $data['template_type'] ?? 'webpage';
+        $template->template_type = $info['type'];
         $template->template_notes = $data['template_notes'] ?? '';
-        $template->template_engine = $this->templateEngine;
+        $template->template_engine = $this->templateEngine == 'native' ? null : $this->templateEngine;
         $template->TemplateGroup = $group;
         $template->Roles = ee('Model')->get('Role')->all(true);
 

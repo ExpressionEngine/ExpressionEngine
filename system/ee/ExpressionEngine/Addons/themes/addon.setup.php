@@ -12,11 +12,10 @@ return array(
     'templateThemes' => array(
         'tailwind' => array( //key should match the folder name
             'name' => 'Tailwind', // name for selection in the UI
-            'engine' => 'native', // template engine
-        ),
-        'tailwind-twig' => array(
-            'name' => 'Tailwind Twig',
-            'engine' => 'twig',
+            'template_engines' => [
+                'native', // template engine name
+                'twig'
+            ]
         )
     )
 );

@@ -7,12 +7,14 @@
     <body>
         <h1>{title}</h1>
         <p>by {author} on {entry_date format="%F %d, %Y"}</p>
-        {!-- categories --}
-        <?php
-        foreach ($fields as $field) {
-            $this->embed($field['stub'], $field);
-        }
-        ?>
+        <?php foreach ($fields as $field) : ?>
+            <div>
+                {!-- Fieldtype: <?=$field['field_type']?> --}
+                {!-- Docs: <?=$field['docs_url']?> --}
+                <h6><?=$field['field_label']?></h6>
+                <?=$this->embed($field['stub'], $field);?>
+            </div>
+        <?php endforeach; ?>
     </body>
 </html>
 {/exp:channel:entries}

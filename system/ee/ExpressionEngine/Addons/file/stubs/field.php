@@ -1,4 +1,3 @@
-<?php $this->extend('_field_wrapper'); ?>
 {<?=$field_name?>}
     {if mime_type ^= 'image/'}
         <img src="{url}" alt="{title}">

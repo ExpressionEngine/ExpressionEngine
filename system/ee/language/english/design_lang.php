@@ -967,13 +967,23 @@ $lang = array(
 
     'channel_entries_template_generator' => 'Channel Entries Template Generator',
 
+    'channel_form_template_generator' => 'Channel Form Template Generator',
+
     'list_all_entries' => 'List of all entries',
 
     'entry_details_page' => 'Entry details page',
 
+    'select_template_engine' => 'Select template engine',
+
     'select_theme' => 'Select Theme',
 
     'select_templates_to_generate' => 'Select the templates that you want to generate',
+
+    'invalid_theme' => 'No valid theme selected',
+
+    'invalid_template_engine' => 'Template engine is not supported',
+
+    'theme_does_not_support_template_engine' => 'Selected theme does not support %s template engine',
 
 );
 

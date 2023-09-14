@@ -1,4 +1,3 @@
-<?php $this->extend('_field_wrapper'); ?>
 {<?=$field_name?>}
 <?php foreach ($fluidFields as $fluidFieldName => $fluidField) : ?>
     {<?=$field_name . ':' . $fluidFieldName?>}

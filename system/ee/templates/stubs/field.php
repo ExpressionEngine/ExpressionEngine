@@ -1,4 +1,3 @@
-<?php $this->extend('_field_wrapper'); ?>
 <?php if ($is_tag_pair) : ?>
 <div>
     {<?=$field_name?>}

@@ -19,24 +19,18 @@ class Entries extends AbstractTemplateGenerator implements TemplateGeneratorInte
     protected $name = 'channel_entries_template_generator';
 
     protected $templates = [
-        'index' => [
-            'type' => 'webpage',
-            'notes' => 'List all entries'
-        ],
-        'entry' => [
-            'type' => 'webpage',
-            'notes' => 'Entry details page'
-        ]
+        'index' => 'List all entries',
+        'entry' => 'Entry details page'
     ];
 
     protected $options = [
         'channel' => [
             'title' => 'channel',
-            'desc' => 'channel_desc',
+            'desc' => 'channel_name',
             'type' => 'checkbox',
             'required' => true,
             'choices' => [],
-            'callback' => 'getChannels',
+            'callback' => 'getChannelList',
         ],
     ];
 
@@ -49,12 +43,21 @@ class Entries extends AbstractTemplateGenerator implements TemplateGeneratorInte
      *
      * @return array
      */
-    public function getChannels()
+    public function getChannelList()
     {
         $channels = ee('Model')->get('Channel')->all(true)->getDictionary('channel_name', 'channel_title');
         return $channels;
     }
 
+    /**
+     * Validate that the channel exists
+     *
+     * @param [type] $key
+     * @param [type] $value
+     * @param [type] $params
+     * @param [type] $rule
+     * @return mixed
+     */
     public function validateChannelExists($key, $value, $params, $rule)
     {
         if (!is_array($value)) {
@@ -83,7 +86,9 @@ class Entries extends AbstractTemplateGenerator implements TemplateGeneratorInte
 
         // get the fields for assigned channels
         $channels = ee('Model')->get('Channel')->filter('channel_name', 'IN', $vars['channel'])->all();
+        $channel_titles = [];
         foreach ($channels as $channel) {
+            $channel_titles[] = $channel->channel_title;
             $fields = $channel->getAllCustomFields();
             foreach ($fields as $fieldInfo) {
                 if (!isset($stubsAndGenerators[$fieldInfo->field_type])) {
@@ -115,6 +120,7 @@ class Entries extends AbstractTemplateGenerator implements TemplateGeneratorInte
         }
         // channel is array at this point, but for replacement it needs to be a string
         $vars['channel'] = implode('|', $vars['channel']);
+        $vars['channel_title'] = implode(', ', $channel_titles);
 
         return $vars;
     }

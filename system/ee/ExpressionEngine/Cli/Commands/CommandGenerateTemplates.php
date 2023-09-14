@@ -55,6 +55,10 @@ class CommandGenerateTemplates extends Cli
     {
         $generatorsList = ee('TemplateGenerator')->registerAllTemplateGenerators();
 
+       /* ee()->load->library('api');
+            ee()->legacy_api->instantiate('template_structure');
+            dd(ee()->api_template_structure->all_file_extensions());*/
+
         // do we need to just list all possible generators?
         if ($this->option('--list', false)) {
             $this->info('command_generate_templates_listing_generators');
@@ -88,7 +92,9 @@ class CommandGenerateTemplates extends Cli
             $this->complete();
         }
 
-        $this->info('command_generate_templates_started');
+        if (! $this->option('--help', false)) {
+            $this->info('command_generate_templates_started');
+        }
 
         //get the generator to use
         $askText = lang('command_generate_templates_ask_generator');
@@ -135,6 +141,10 @@ class CommandGenerateTemplates extends Cli
         }
         $this->commandOptions = array_merge($normalizedOptions, $this->commandOptions);
         $this->loadOptions(); // need to have those re-loaded now
+
+        if ($this->option('--help', false)) {
+            return $this->help();
+        }
 
         foreach ($options as $option => $optionParams) {
             if ($showOnly && $option == 'template_group') {
@@ -189,18 +199,9 @@ class CommandGenerateTemplates extends Cli
             if ($validationResult->isNotValid()) {
                 $this->fail(implode("\n", $validationResult->getErrors($option)));
             }
-        }
 
-        // Now that we have all options, ask to confirm those
-        ee('TemplateGenerator')->setOptionValues($this->data['options']);
-
-        // set the theme engine
-        if (isset($this->data['options']['theme']) && !empty($this->data['options']['theme']) && $this->data['options']['theme'] != 'none') {
-            $theme = $this->data['options']['theme'];
-            $themeRegistry = ee('TemplateGenerator')->registerThemes();
-            if (isset($themeRegistry[$theme]['engine'])) {
-                ee('TemplateGenerator')->setTemplateEngine($themeRegistry[$theme]['engine']);
-            }
+            // options are inter-dependant, set those each time
+            ee('TemplateGenerator')->setOptionValues($this->data['options']);
         }
 
         // Generate the templates
@@ -230,7 +231,7 @@ class CommandGenerateTemplates extends Cli
             }
             foreach ($templates as $template => $templateDescription) {
                 $this->info('command_generate_templates_building_template');
-                $this->info($this->data['options']['template_group'] . '/' . $template . (isset($templateDescription['notes']) ? ': ' . $templateDescription['notes'] : ''));
+                $this->info($this->data['options']['template_group'] . '/' . $template . ': ' . $templateDescription);
                 $templateData = ee('TemplateGenerator')->generate($template);
 
                 if ($showOnly) {
@@ -239,17 +240,16 @@ class CommandGenerateTemplates extends Cli
 
                 if (!$showOnly) {
                     // now we need to save the template
-                    $templateInfo = ['template_data' => $templateData];
-                    if (isset($templateDescription['notes'])) {
-                        $templateInfo['template_notes'] = $templateDescription['notes'];
-                    }
-                    if (isset($templateDescription['type'])) {
-                        $templateInfo['template_type'] = $templateDescription['type'];
-                    }
+                    $templateInfo = [
+                        'template_data' => $templateData,
+                        'template_notes' => $templateDescription
+                    ];
                     ee('TemplateGenerator')->createTemplate($group, $template, $templateInfo);
                 }
             }
         } catch (\Exception $e) {
+            // note: if the exception was triggered in embed, we might still get part of template
+            // because embed is echo'ing stuff instead of returning
             $this->fail(addslashes($e->getMessage()));
         }
 
