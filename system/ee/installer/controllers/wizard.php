@@ -1887,7 +1887,6 @@ class Wizard extends CI_Controller
                 }
 
                 $UPD = new $class();
-                $UPD->_ee_path = EE_APPPATH;
 
                 if ($UPD->version > $row->module_version && method_exists($UPD, 'update') && $UPD->update($row->module_version) !== false) {
                     ee()->db->update('modules', array('module_version' => $UPD->version), array('module_name' => ucfirst($module)));

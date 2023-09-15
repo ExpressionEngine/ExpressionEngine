@@ -21,6 +21,9 @@ class EE_Input
     public $_standardize_newlines = true;
     public $_enable_xss = false; // Set automatically based on config setting
 
+    public $security;
+    public $uni;
+
     protected $headers = array();
 
     /**

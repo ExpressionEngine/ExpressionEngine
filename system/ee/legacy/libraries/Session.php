@@ -91,6 +91,7 @@ class EE_Session
     private $session_model = null;
     private $member_model = null;
 
+    public $validation;
     /**
      * Session Class Constructor
      */
@@ -955,7 +956,7 @@ class EE_Session
         if (ee()->config->item('enable_tracking_cookie') === 'n') {
             return true;
         }
-        
+
         if (is_null($tracker)) {
             $tracker = $this->tracker;
         }

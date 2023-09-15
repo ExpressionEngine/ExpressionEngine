@@ -16,6 +16,8 @@ class EE_Javascript
     public $global_vars = array();
     public $_javascript_location = 'js';
 
+    public $js;
+
     public function __construct($params = array())
     {
         $defaults = array('js_library_driver' => 'jquery', 'autoload' => true);
