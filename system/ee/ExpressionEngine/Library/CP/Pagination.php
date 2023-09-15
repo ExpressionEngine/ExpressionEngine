@@ -154,12 +154,12 @@ class Pagination
         $links['current_page'] = $this->current_page;
         $links['first'] = $base_url->compile();
         foreach (array('prev', 'next', 'last') as $key) {
-            if (${$key} === null) {
+            if ($$key === null) {
                 continue;
             }
 
             $url = clone $base_url;
-            $url->setQueryStringVariable((string) $this->page_variable, ${$key});
+            $url->setQueryStringVariable((string) $this->page_variable, $$key);
             $url->setQueryStringVariable('perpage', $this->per_page);
             $links[$key] = $url->compile();
         }

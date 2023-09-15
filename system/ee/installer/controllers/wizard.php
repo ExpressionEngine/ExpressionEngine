@@ -468,11 +468,6 @@ class Wizard extends CI_Controller
             return false;
         }
 
-        // Assign the config and DB arrays to class variables so we don't have
-        // to reload them.
-        $this->_config = $config;
-        $this->_db = $db;
-
         // Set the flag
         $this->is_installed = true;
 
