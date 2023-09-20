@@ -62,6 +62,7 @@ class Stub extends View
     protected function getPath()
     {
         // if template engine selected, add suffix
+        $origTemplatePath = $this->path;
         if (!empty(ee('TemplateGenerator')->templateEngine) && ee('TemplateGenerator')->templateEngine != 'native') {
             $this->path .= '.' . ee('TemplateGenerator')->templateEngine;
         }
@@ -80,6 +81,15 @@ class Stub extends View
             }
             if (file_exists($path . '/' . $this->path . '.php')) {
                 return $path . '/' . $this->path . '.php';
+            }
+        }
+
+        // if still not there, try fallback to no engine extension
+        if ($origTemplatePath != $this->path) {
+            foreach ($stubPaths as $path) {
+                if (file_exists($path . '/' . $origTemplatePath . '.php')) {
+                    return $path . '/' . $origTemplatePath . '.php';
+                }
             }
         }
 

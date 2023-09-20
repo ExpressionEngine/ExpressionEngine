@@ -1,0 +1,1 @@
+<input type="url" name="<?=$field_name?>" value="{<?=$field_name?>}" maxlength="<?=$field_maxl?>" placeholder="<?=$field_settings['url_scheme_placeholder']?>">

@@ -1,5 +1,7 @@
 {<?=$field_name?>}
 <?php foreach ($fluidFields as $fluidFieldName => $fluidField) : ?>
+    {!-- Fieldtype: <?=$fluidField['field_type']?> --}
+    {!-- Docs: <?=$fluidField['docs_url']?> --}
     {<?=$field_name . ':' . $fluidFieldName?>}
     <?=$this->embed($fluidField['stub'], $fluidField)?>
     {/<?=$field_name . ':' . $fluidFieldName?>}
@@ -8,6 +10,8 @@
     {<?=$field_name . ':' . $fluidFieldGroupName?>}
     {fields}
     <?php foreach ($fluidFields as $fluidFieldName => $fluidField) : ?>
+        {!-- Fieldtype: <?=$fluidField['field_type']?> --}
+        {!-- Docs: <?=$fluidField['docs_url']?> --}
         {<?=$field_name . ':' . $fluidFieldName?>}
         <?=$this->embed($fluidField['stub'], $fluidField)?>
         {/<?=$field_name . ':' . $fluidFieldName?>}

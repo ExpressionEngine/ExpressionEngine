@@ -38,6 +38,12 @@ class Form extends Entries implements TemplateGeneratorInterface
     public function getVariables(): array
     {
         ee()->load->library('session'); //getAllCustomFields requres session
+        // we need to make sure the fields can load their JS and that might be, um, tricky
+        ee()->load->helper('form');
+        ee()->router->set_class('cp');
+        ee()->load->library('cp');
+        ee()->router->set_class('ee');
+        ee()->load->library('javascript');
         $vars = ee('TemplateGenerator')->getOptionValues();
         $vars['fields'] = [];
         // get list of assigned channel fields and pass the data to array
@@ -69,7 +75,10 @@ class Form extends Entries implements TemplateGeneratorInterface
                 'stub' => $stub[0] . ':' . 'form/' . $stub[1],
                 'docs_url' => $stubsAndGenerators[$fieldInfo->field_type]['docs_url'],
                 'field_settings' => $fieldInfo->field_settings,
+                'field_text_direction' => $fieldInfo->field_text_direction,
+                'field_ta_rows' => $fieldInfo->field_ta_rows,
                 'field_list_items' => $fieldInfo->getPossibleValuesForEvaluation(),
+                'field_input' => $fieldInfo->getField()->getForm()
             ];
             // if the field has its own generator, instantiate the field and pass to generator
             if (!empty($stubsAndGenerators[$fieldInfo->field_type]['generator'])) {
@@ -85,6 +94,8 @@ class Form extends Entries implements TemplateGeneratorInterface
             }
             $vars['fields'][$fieldInfo->field_name] = $field;
         }
+
+        dd(ee()->cp->js_files);
 
         return $vars;
     }

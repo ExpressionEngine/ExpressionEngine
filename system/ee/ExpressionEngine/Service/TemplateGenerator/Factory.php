@@ -408,7 +408,6 @@ class Factory
     {
         ee()->load->library('api');
         ee()->legacy_api->instantiate('template_structure');
-        return ['native' => 'Native', 'twig' => 'Twig', 'blade' => 'Blade'];
         return ee()->api_template_structure->get_template_engines();
     }
 
