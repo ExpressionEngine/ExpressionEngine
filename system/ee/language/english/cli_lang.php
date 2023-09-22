@@ -513,12 +513,9 @@ $lang = array(
     'command_generate_templates_listing_generators' => 'Available template generators:',
     'command_generate_templates_listing_themes' => 'Available themes:',
     'command_generate_templates_ask_generator' => 'What is the generator that you want to use?',
-    'command_generate_templates_started' => 'Generating templates...',
     'command_generate_templates_invalid_generator' => 'The generator is not valid',
     'separate_choices_commas' => 'Separate multiple options with commas',
-    'command_generate_templates_no_templates' => 'No templates were found',
     'command_generate_templates_building_template' => 'Building template',
-    'command_generate_templates_created_successfully' => 'Templates were created successfully!',
 
 
 );

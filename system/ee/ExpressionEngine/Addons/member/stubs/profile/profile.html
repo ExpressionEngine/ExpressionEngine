@@ -1,0 +1,30 @@
+{layout="members/_layout"}
+{exp:channel:entries entry_id="1"}
+/{password}/{backup_mfa_code}
+member_field_1="{member_field_1}"
+{title} - {cpicker} - {rte}
+
+{file wrap="image"}
+
+{other_file}<img src="{url}">{/other_file}
+
+{/exp:channel:entries}
+
+<hr>
+{exp:member:custom_profile_data}
+/{password}/{backup_mfa_code}
+({last_visit} - {last_visit format="%Y-%m-%d %H:%i:%s"})
+={avatar}=
+/{avatar_url}/
+member_field_1="{member_field_1}"
+{if cpicker}
+  {cpicker}**
+ {/if}
+  +
+  {rte}
+  +
+  {file wrap="image"}
+  +
+  {other_file}<img src="{url}">{/other_file}
+  +
+{/exp:member:custom_profile_data}

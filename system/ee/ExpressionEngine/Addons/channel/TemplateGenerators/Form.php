@@ -24,7 +24,7 @@ class Form extends Entries implements TemplateGeneratorInterface
     protected $options = [
         'channel' => [
             'title' => 'channel',
-            'desc' => 'channel_name',
+            'desc' => 'select_channels_to_generate',
             'type' => 'select',
             'required' => true,
             'callback' => 'getChannelList',
@@ -94,8 +94,6 @@ class Form extends Entries implements TemplateGeneratorInterface
             }
             $vars['fields'][$fieldInfo->field_name] = $field;
         }
-
-        dd(ee()->cp->js_files);
 
         return $vars;
     }

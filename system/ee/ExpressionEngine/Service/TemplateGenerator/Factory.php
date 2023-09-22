@@ -14,11 +14,12 @@ use ExpressionEngine\Service\Model;
 use ExpressionEngine\Core\Provider;
 use ExpressionEngine\Model\Template\TemplateGroup;
 use ExpressionEngine\Model\Template\Template;
+use ExpressionEngine\Dependency\Weiler\Beautify_Html;
 
 /**
  * Template Generator Factory
  *
- * It will take any generator (built-in or provided by add-on) 
+ * It will take any generator (built-in or provided by add-on)
  * that is compatible with TemplateGeneratorInterface
  * and turn it into service that we can work with
  *
@@ -96,7 +97,8 @@ class Factory
     protected $_validation_rules = [
         'site_id' => 'integer',
         'template_engine' => 'validateTemplateEngine',
-        'theme' => 'validateTheme'
+        'theme' => 'required|validateTheme',
+        'template_group' => 'required|alphaDashPeriodEmoji|validateTemplateGroup[site_id]'
     ];
 
     /**
@@ -273,6 +275,7 @@ class Factory
             throw new \Exception('Template Generator is not properly registered');
         }
         $this->generator = $this->registeredGenerators[$generatorKey];
+        ee()->lang->loadfile($this->generator->prefix, '', false);
     }
 
     /**
@@ -440,7 +443,7 @@ class Factory
             'all' => 'All templates'
         ];
         foreach ($this->getGenerator()->getInstance()->getTemplates() as $template => $templateInfo) {
-            $templates[$template] = isset($templateInfo['notes']) ? $templateInfo['notes'] : $template;
+            $templates[$template] = $templateInfo;
         }
         return $templates;
     }
@@ -460,11 +463,7 @@ class Factory
         }
         $selectedTemplateEngine = empty($this->templateEngine) ? 'native' : $this->templateEngine;
         foreach ($this->themes as $theme => $themeInfo) {
-            // only list themes that support selected template engine
-            if (!in_array($selectedTemplateEngine, $themeInfo['template_engines'])) {
-                continue;
-            }
-            $themes[$theme] = $themeInfo['name'];
+            $themes[$theme] = $themeInfo['name'] . ' (' . implode(', ', $themeInfo['template_engines']) . ')';
         }
         return $themes;
     }
@@ -515,6 +514,23 @@ class Factory
     }
 
     /**
+     * Validates the template name checking for reserved names.
+     * Also checks if it's not already taken
+     */
+    public function validateTemplateGroup($key, $value, $params, $rule)
+    {
+        $model = ee('Model')->make('TemplateGroup', ['site_id' => $this->site_id]);
+
+        $valid = $model->validateTemplateGroupName('group_name', $value, $params, $rule);
+
+        if ($valid !== true) {
+            return $valid;
+        }
+
+        return $model->validateUnique('group_name', $value, $params, $rule);
+    }
+
+    /**
      * Get the list of themes provided by add-ons
      *
      * @return array
@@ -559,7 +575,7 @@ class Factory
             $ruleNames = explode('|', $rule);
             foreach ($ruleNames as $ruleName) {
                 $bracketPos = strpos($ruleName, '[');
-                $allRuleNames[] = $bracketPos !== false ? substr($ruleName, 0, $bracketPos + 1) : $ruleName;
+                $allRuleNames[] = $bracketPos !== false ? substr($ruleName, 0, $bracketPos) : $ruleName;
             }
         }
         // is the rule set in generator?
@@ -600,6 +616,7 @@ class Factory
         $stub = ee('View')->makeStub($this->getGenerator()->prefix . ':' . lcfirst($this->getGenerator()->className) . ':' . $template);
         // parse the stub, including the embeds
         $templateData = $stub->render($vars);
+
         return $templateData;
     }
 

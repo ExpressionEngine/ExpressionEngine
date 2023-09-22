@@ -1,0 +1,1 @@
+<input type="text" name="<?=$field_name?>" value="{<?=$field_name?>}" <?=(!empty($field_maxl) ? 'maxlength="' . $field_maxl . '"' : '')?> dir="<?=$field_text_direction?>">

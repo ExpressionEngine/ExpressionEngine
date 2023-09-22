@@ -1,0 +1,1 @@
+<input type="range" name="<?=$field_name?>" value="{<?=$field_name?>}" min="<?=$field_settings['field_min_value']?>" max="<?=$field_settings['field_max_value']?>" step="<?=$field_settings['field_step']?>" />

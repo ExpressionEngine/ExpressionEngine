@@ -93,7 +93,7 @@ class CommandGenerateTemplates extends Cli
         }
 
         if (! $this->option('--help', false)) {
-            $this->info('command_generate_templates_started');
+            $this->info('generate_templates_started');
         }
 
         //get the generator to use
@@ -195,8 +195,8 @@ class CommandGenerateTemplates extends Cli
             $this->data['options'][$option] = $optionValue;
 
             // if there is validation rule for this option, process it (e.g. template group needs to be unique)
-            $validationResult = $validator->validate($this->data['options']);
-            if ($validationResult->isNotValid()) {
+            $validationResult = $validator->validatePartial($this->data['options']);
+            if ($validationResult->isNotValid() && $validationResult->hasErrors($option)) {
                 $this->fail(implode("\n", $validationResult->getErrors($option)));
             }
 
@@ -214,7 +214,7 @@ class CommandGenerateTemplates extends Cli
             }, ARRAY_FILTER_USE_KEY);
         }
         if (empty($templates)) {
-            $this->fail('command_generate_templates_no_templates');
+            $this->fail('generate_templates_no_templates');
         }
 
         // for each of the templates, run the build process and pass it on for saving
@@ -253,6 +253,6 @@ class CommandGenerateTemplates extends Cli
             $this->fail(addslashes($e->getMessage()));
         }
 
-        $this->info('command_generate_templates_created_successfully');
+        $this->info('generate_templates_created_successfully');
     }
 }

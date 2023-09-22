@@ -18,53 +18,14 @@ class Profile extends AbstractTemplateGenerator implements TemplateGeneratorInte
     protected $name = 'Member Profile Template Generator';
 
     protected $templates = [
-        'index' => [
-            'type' => 'webpage',
-            'notes' => 'List all entries'
-        ],
-        'entry' => [
-            'type' => 'webpage',
-            'notes' => 'Entry details page'
-        ]
+        'index' => 'Members list page',
+        'register' => 'Register new member',
+        'login' => 'Member login page',
+        'forgot_password' => 'Forgot password page',
+        'reset_password' => 'Reset password page',
+        'profile' => 'Public member profile page',
+        'edit' => 'Edit member profile page'
     ];
-
-    protected $options = [
-        'channel' => [
-            'title' => 'channel',
-            'desc' => 'channel_desc',
-            'type' => 'checkbox',
-            'required' => true,
-            'choices' => [],
-            'callback' => 'getChannels',
-        ],
-    ];
-
-    protected $_validation_rules = [
-        'channel' => 'validateChannelExists'
-    ];
-
-    /**
-     * Populate list of channels for the channel option
-     *
-     * @return array
-     */
-    public function getChannels()
-    {
-        $channels = ee('Model')->get('Channel')->all(true)->getDictionary('channel_name', 'channel_title');
-        return $channels;
-    }
-
-    public function validateChannelExists($key, $value, $params, $rule)
-    {
-        if (!is_array($value)) {
-            $value = [$value];
-        }
-        $channels = ee('Model')->get('Channel')->filter('channel_name', 'IN', $value)->all();
-        if (count($channels) !== count($value)) {
-            return 'invalid_channels';
-        }
-        return true;
-    }
 
     public function getVariables(): array
     {
@@ -78,7 +39,7 @@ class Profile extends AbstractTemplateGenerator implements TemplateGeneratorInte
             $vars['channel'] = [$vars['channel']];
         }
         //loop through installed fieldtypes and grab the stubs and generators
-        $stubsAndGenerators = $this->getFieldtypesStubsAndGenerators();
+        $stubsAndGenerators = ee('TemplateGenerator')->getFieldtypesStubsAndGenerators();
 
         // get the fields for assigned channels
         $channels = ee('Model')->get('Channel')->filter('channel_name', 'IN', $vars['channel'])->all();
@@ -113,44 +74,4 @@ class Profile extends AbstractTemplateGenerator implements TemplateGeneratorInte
         return $vars;
     }
 
-    /**
-     * Get the stubs and generators for all installed fieldtypes
-     *
-     * @return array
-     */
-    private function getFieldtypesStubsAndGenerators()
-    {
-        $data = [];
-        ee()->legacy_api->instantiate('channel_fields');
-        foreach (ee('Addon')->installed() as $addon) {
-            if ($addon->hasFieldtype()) {
-                $provider = $addon->getProvider();
-                foreach ($addon->get('fieldtypes', array()) as $fieldtype => $metadata) {
-                    $stub = 'field';
-                    $generator = null;
-                    $ftClassName = ee()->api_channel_fields->include_handler($fieldtype);
-                    $reflection = new \ReflectionClass($ftClassName);
-                    $instance = $reflection->newInstanceWithoutConstructor();
-                    if (isset($instance->stub)) {
-                        // grab the stub out of fieldtype property
-                        $stub = $instance->stub;
-                    }
-                    // is a generator set for this field?
-                    if (isset($metadata['templateGenerator'])) {
-                        $fqcn = trim($provider->getNamespace(), '\\') . '\\TemplateGenerators\\' . $metadata['templateGenerator'];
-                        if (class_exists($fqcn)) {
-                            $generator = $fqcn;
-                        }
-                    }
-                    $data[$fieldtype] = [
-                        'stub' => $provider->getPrefix() . ':' . $stub,
-                        'docs_url' => $provider->get('docs_url') ?? $provider->get('author_url'),
-                        'generator' => $generator,
-                        'is_tag_pair' => (isset($instance->has_array_data) && $instance->has_array_data === true)
-                    ];
-                }
-            }
-        }
-        return $data;
-    }
 }

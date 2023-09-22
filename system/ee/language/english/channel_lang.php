@@ -640,6 +640,12 @@ $lang = array(
 
     'channel_roles_desc' => 'Members in these roles can perform each selected action in this channel.',
 
+    /* Template Generator */
+
+    'select_channels_to_generate' => 'Select the channels that you want to use in templates',
+
+    'invalid_channel' => 'No valid channel selected',
+
 );
 
 // EOF

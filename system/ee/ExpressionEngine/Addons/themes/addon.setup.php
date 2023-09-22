@@ -9,9 +9,12 @@ return array(
     'namespace' => 'ExpressionEngine\Addons\Themes',
     'settings_exist' => false,
     'built_in' => true,
+    'templateGenerators' => array(
+        'Slider',
+    ),
     'templateThemes' => array(
-        'tailwind' => array( //key should match the folder name
-            'name' => 'Tailwind', // name for selection in the UI
+        'daisyui' => array( //key should match the folder name
+            'name' => 'DaisyUI', // name for selection in the UI
             'template_engines' => [
                 'native', // template engine name
                 'twig'

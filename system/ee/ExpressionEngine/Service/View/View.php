@@ -150,9 +150,10 @@ class View
      * @param String $view The name of the sub-view
      * @param Array  $vars Additional variables to pass to the sub-view
      * @param bool  $return Whether to return a string or output the results
+     * @param int $indent Number of spaces to indent the embed
      * @return String The parsed sub-view
      */
-    public function embed($view, $vars = array(), $disable = array())
+    public function embed($view, $vars = array(), $disable = array(), $indent = 0)
     {
         if (empty($vars)) {
             $vars = array();
@@ -161,8 +162,25 @@ class View
         $vars = array_merge($this->processing, $vars);
         $view = $this->make($view)->disable($disable);
 
+        $out = $view->render($vars);
+
+        //indent everything at the same level
+        $buffer = ob_get_contents();
+        if (!empty($buffer)) {
+            $bufferLines = explode("\n", $buffer);
+            $indent = strlen(end($bufferLines));
+        }
+
+        $lines = explode("\n", $out);
+        foreach ($lines as $i => &$line) {
+            if ($i > 0) {
+                $line = str_repeat(' ', $indent) . $line;
+            }
+        }
+        $out = implode("\n", $lines);
+
         ob_start();
-        echo $view->render($vars);
+        echo $out;
 
         ob_end_flush();
     }

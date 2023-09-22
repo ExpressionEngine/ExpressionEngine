@@ -1,0 +1,5 @@
+<select name="<?=$field_name?>">
+<?php foreach ($field_list_items as $value => $label) : ?>
+    <option value="<?=$value?>"{if field_name == '<?=$value?>} selected{/if}><?=$label?></option>
+<?php endforeach; ?>
+</select>

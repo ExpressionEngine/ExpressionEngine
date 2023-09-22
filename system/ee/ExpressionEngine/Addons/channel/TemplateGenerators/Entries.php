@@ -25,8 +25,7 @@ class Entries extends AbstractTemplateGenerator implements TemplateGeneratorInte
 
     protected $options = [
         'channel' => [
-            'title' => 'channel',
-            'desc' => 'channel_name',
+            'desc' => 'select_channels_to_generate',
             'type' => 'checkbox',
             'required' => true,
             'choices' => [],
@@ -65,7 +64,7 @@ class Entries extends AbstractTemplateGenerator implements TemplateGeneratorInte
         }
         $channels = ee('Model')->get('Channel')->filter('channel_name', 'IN', $value)->all();
         if (count($channels) !== count($value)) {
-            return 'invalid_channels';
+            return 'invalid_channel';
         }
         return true;
     }

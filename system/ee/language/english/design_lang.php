@@ -965,6 +965,12 @@ $lang = array(
 
     /* Template Generator */
 
+    'template_generator' => 'Template Generator',
+
+    'generate' => 'Generate',
+
+    'generate_templates_started' => 'Generating templates...',
+
     'channel_entries_template_generator' => 'Channel Entries Template Generator',
 
     'channel_form_template_generator' => 'Channel Form Template Generator',
@@ -975,6 +981,8 @@ $lang = array(
 
     'select_template_engine' => 'Select template engine',
 
+    'theme' => 'Theme',
+
     'select_theme' => 'Select Theme',
 
     'select_templates_to_generate' => 'Select the templates that you want to generate',
@@ -984,6 +992,12 @@ $lang = array(
     'invalid_template_engine' => 'Template engine is not supported',
 
     'theme_does_not_support_template_engine' => 'Selected theme does not support %s template engine',
+
+    'generate_templates_created_successfully' => 'Templates were generated successfully!',
+
+    'generate_templates_no_templates' => 'No templates were found',
+
+    'generate_templates_error' => 'Unable to generate templates',
 
 );
 

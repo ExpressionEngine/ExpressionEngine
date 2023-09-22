@@ -8,12 +8,17 @@
         <h1>{title}</h1>
         <p>by {author} on {entry_date format="%F %d, %Y"}</p>
         <?php foreach ($fields as $field) : ?>
+
             <div>
+                {!-- Field: <?=$field['field_label']?> --}
                 {!-- Fieldtype: <?=$field['field_type']?> --}
                 {!-- Docs: <?=$field['docs_url']?> --}
-                <h6><?=$field['field_label']?></h6>
+                <h4><?=$field['field_label']?></h4>
                 <?=$this->embed($field['stub'], $field);?>
+
+                {!-- End field: <?=$field['field_label']?> --}
             </div>
+
         <?php endforeach; ?>
     </body>
 </html>
