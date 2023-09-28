@@ -174,7 +174,7 @@
     color: #0d0d19;
     background: #fff;
     font-weight: normal;
-        text-transform: none;
+    text-transform: none;
     -webkit-appearance: none;
     display: inline-block;
     font-weight: 500;
@@ -192,11 +192,5 @@
 .ee-cform .grid-field__column--tools .button i {
     text-transform: none;
     font-style: normal;
-    font-family: 'Font Awesome 6 Free';
-    font-weight: 900;
-}
-
-.ee-cform .grid-field__column--tools .button.cursor-move span i:before {
-    content: '\f0b2' !important;
 }
 /* End Grid field */
