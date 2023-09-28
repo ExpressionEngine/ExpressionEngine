@@ -77,8 +77,7 @@ class Form extends Entries implements TemplateGeneratorInterface
                 'field_settings' => $fieldInfo->field_settings,
                 'field_text_direction' => $fieldInfo->field_text_direction,
                 'field_ta_rows' => $fieldInfo->field_ta_rows,
-                'field_list_items' => $fieldInfo->getPossibleValuesForEvaluation(),
-                'field_input' => $fieldInfo->getField()->getForm()
+                'field_list_items' => $fieldInfo->getPossibleValuesForEvaluation()
             ];
             // if the field has its own generator, instantiate the field and pass to generator
             if (!empty($stubsAndGenerators[$fieldInfo->field_type]['generator'])) {
