@@ -17,3 +17,186 @@
 .ee-cform .redactor-in a{font-size:revert}
 @media print{.redactor-in .readmore{padding:0}.redactor-in .readmore::after{display:none}}
 .ee-cform table .grid-field__column-label { display: none;}
+
+/*GRID field*/
+.ee-cform .grid-field {
+    width: 100%;
+}
+
+.ee-cform .grid-field .table-responsive {
+    box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
+    border: 1px solid #dfe0ef;
+    overflow-x: auto;
+    display: block;
+    width: 100%;
+}
+
+.ee-cform .grid-field .table-responsive table {
+    margin-bottom: 10px;
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    margin-bottom: 0;
+}
+
+.ee-cform .grid-field__table th {
+    font-size: 0.9em;
+    background: #f7f7fb;
+    border-right: 1px solid #dfe0ef;
+    white-space: nowrap;
+    text-align: left;
+    border-bottom: 1px solid #dfe0ef;
+    color: #8f90b0;
+    font-weight: 500;
+}
+.ee-cform .grid-field__table td:first-child, .grid-field__table th:first-child {
+    padding-left: 15px;
+}
+.ee-cform .grid-field__table td:last-child, .grid-field__table th:last-child {
+    padding-right: 15px;
+    border-right: none;
+    min-width: 80px;
+}
+.ee-cform .grid-field__table .no-results, .grid-field__table .field-no-results {
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: center;
+    line-height: 1.6;
+    border-radius: 5px;
+}
+
+.ee-cform .grid-field__table tr.no-results td {
+    border-bottom: none;
+}
+
+.ee-cform .no-results a {
+    -webkit-appearance: none;
+    display: inline-block;
+    font-weight: 500;
+    text-align: center;
+    vertical-align: middle;
+    touch-action: manipulation;
+    background-image: none;
+    cursor: pointer;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    -webkit-transition: background-color 0.15s ease-in-out;
+    -moz-transition: background-color 0.15s ease-in-out;
+    -o-transition: background-color 0.15s ease-in-out;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
+    font-size: 1rem;
+        color: #5D63F1;
+    background-color: #e0e2fc;
+    border-color: #e0e2fc;
+    font-weight: normal;
+    text-decoration: none;
+    padding: 5px 15px !important;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    border-radius: 4px;
+    margin-left: 5px;
+}
+
+.ee-cform .no-results a:hover {
+    color: #5D63F1;
+    background-color: #cecffb;
+    border-color: #cecffb;
+}
+
+.ee-cform .grid-field__footer {
+    margin-top: 10px;
+}
+
+.ee-cform .grid-field__footer .button-group {
+    display: flex;
+    flex-wrap: wrap;
+    position: relative; 
+}
+
+.ee-cform .grid-field__footer .button-group > .button {
+    margin-left: 0;
+    padding: 5px 15px !important;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    border-radius: 4px;
+    color: #0d0d19;
+    background: #fff;
+    font-weight: normal;
+    text-transform: none;
+    -webkit-appearance: none;
+    display: inline-block;
+    font-weight: 500;
+    text-align: center;
+    vertical-align: middle;
+    touch-action: manipulation;
+    cursor: pointer;
+    border: 1px solid #cbcbda;
+    white-space: nowrap;
+    transition: background-color 0.15s ease-in-out;
+    user-select: none;
+    box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
+}
+
+.ee-cform .grid-field__footer .button-group > .button:hover {
+    background: #f7f7fb;
+}
+
+.ee-cform .grid-field__table tbody td {
+    vertical-align: top;
+    border-right: 1px solid #dfe0ef;
+    border-bottom: 1px solid #dfe0ef;
+    min-width: 250px;
+    max-width: 600px;
+}
+
+.ee-cform .grid-field__column--tools {
+    vertical-align: top;
+    font-size: 1rem;
+    padding-left: 8px;
+    padding-right: 8px !important;
+}
+
+.ee-cform .grid-field__column--tools .button {
+    margin-bottom: 5px;
+    cursor: move;
+    padding: 5px 15px !important;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    border-radius: 4px;
+    color: #0d0d19;
+    background: #fff;
+    font-weight: normal;
+        text-transform: none;
+    -webkit-appearance: none;
+    display: inline-block;
+    font-weight: 500;
+    text-align: center;
+    vertical-align: middle;
+    touch-action: manipulation;
+    cursor: pointer;
+    border: 1px solid #cbcbda;
+    white-space: nowrap;
+    transition: background-color 0.15s ease-in-out;
+    user-select: none;
+    box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
+}
+
+.ee-cform .grid-field__column--tools .button i {
+    text-transform: none;
+    font-style: normal;
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+}
+
+.ee-cform .grid-field__column--tools .button.cursor-move span i:before {
+    content: '\f0b2' !important;
+}
+/* End Grid field */
