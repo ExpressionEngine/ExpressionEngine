@@ -1,1 +1,0 @@
-<textarea name="<?=$field_name?>" rows="<?=$field_ta_rows?>" <?=(!empty($field_maxl) ? 'maxlength="' . $field_maxl . '"' : '')?> dir="<?=$field_text_direction?>"<?=(isset($field_settings['field_show_formatting_btns']) && $field_settings['field_show_formatting_btns'] == 'y' ? ' data-markitup="yes"' : '')?>>{<?=$field_name?>}</textarea>

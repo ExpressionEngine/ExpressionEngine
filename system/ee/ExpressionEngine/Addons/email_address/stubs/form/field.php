@@ -1,1 +1,0 @@
-<input type="email" name="<?=$field_name?>" value="{<?=$field_name?>}" maxlength="<?=$field_maxl?>" placeholder="username@example.com">
