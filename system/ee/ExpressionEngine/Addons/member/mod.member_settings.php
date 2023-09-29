@@ -893,7 +893,7 @@ class Member_settings extends Member
                 $data['name'] = ee()->TMPL->fetch_param('form_name');
             }
 
-            $data['id'] = 'cform';
+            $data['id'] = !empty(ee()->TMPL->form_id) ? ee()->TMPL->form_id : 'cform';
             $data['class'] = (get_bool_from_string(ee()->TMPL->fetch_param('include_assets', 'n') || strpos($template, LD . 'form_assets' . RD) !== false) ? 'ee-cform ' : '');
             $data['class'] .= ee()->TMPL->form_class;
 
