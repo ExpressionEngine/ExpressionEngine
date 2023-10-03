@@ -86,35 +86,37 @@ class Entries extends AbstractTemplateGenerator implements TemplateGeneratorInte
         // get the fields for assigned channels
         $channels = ee('Model')->get('Channel')->filter('channel_name', 'IN', $vars['channel'])->all();
         $channel_titles = [];
-        foreach ($channels as $channel) {
-            $channel_titles[] = $channel->channel_title;
-            $fields = $channel->getAllCustomFields();
-            foreach ($fields as $fieldInfo) {
-                if (!isset($stubsAndGenerators[$fieldInfo->field_type])) {
-                    // fieldtype is not installed, skip it
-                    continue;
-                }
-                // by default, we'll use generic field stub
-                // but we'll let each field type to override it
-                // by either providing stub property, or calling its own generator
-                $field = [
-                    'field_type' => $fieldInfo->field_type,
-                    'field_name' => $fieldInfo->field_name,
-                    'field_label' => $fieldInfo->field_label,
-                    'stub' => $stubsAndGenerators[$fieldInfo->field_type]['stub'],
-                    'docs_url' => $stubsAndGenerators[$fieldInfo->field_type]['docs_url'],
-                    'is_tag_pair' => $stubsAndGenerators[$fieldInfo->field_type]['is_tag_pair'],
-                    'is_search_excerpt' => $channel->search_excerpt == $fieldInfo->field_id,
-                ];
-                // if the field has its own generator, instantiate the field and pass to generator
-                if (!empty($stubsAndGenerators[$fieldInfo->field_type]['generator'])) {
-                    $interfaces = class_implements($stubsAndGenerators[$fieldInfo->field_type]['generator']);
-                    if (!empty($interfaces) && in_array(FieldTemplateGeneratorInterface::class, $interfaces)) {
-                        $generator = new $stubsAndGenerators[$fieldInfo->field_type]['generator']($fieldInfo);
-                        $field = array_merge($field, $generator->getVariables());
+        if (!empty($channels)) {
+            foreach ($channels as $channel) {
+                $channel_titles[] = $channel->channel_title;
+                $fields = $channel->getAllCustomFields();
+                foreach ($fields as $fieldInfo) {
+                    if (!isset($stubsAndGenerators[$fieldInfo->field_type])) {
+                        // fieldtype is not installed, skip it
+                        continue;
                     }
+                    // by default, we'll use generic field stub
+                    // but we'll let each field type to override it
+                    // by either providing stub property, or calling its own generator
+                    $field = [
+                        'field_type' => $fieldInfo->field_type,
+                        'field_name' => $fieldInfo->field_name,
+                        'field_label' => $fieldInfo->field_label,
+                        'stub' => $stubsAndGenerators[$fieldInfo->field_type]['stub'],
+                        'docs_url' => $stubsAndGenerators[$fieldInfo->field_type]['docs_url'],
+                        'is_tag_pair' => $stubsAndGenerators[$fieldInfo->field_type]['is_tag_pair'],
+                        'is_search_excerpt' => $channel->search_excerpt == $fieldInfo->field_id,
+                    ];
+                    // if the field has its own generator, instantiate the field and pass to generator
+                    if (!empty($stubsAndGenerators[$fieldInfo->field_type]['generator'])) {
+                        $interfaces = class_implements($stubsAndGenerators[$fieldInfo->field_type]['generator']);
+                        if (!empty($interfaces) && in_array(FieldTemplateGeneratorInterface::class, $interfaces)) {
+                            $generator = new $stubsAndGenerators[$fieldInfo->field_type]['generator']($fieldInfo);
+                            $field = array_merge($field, $generator->getVariables());
+                        }
+                    }
+                    $vars['fields'][$fieldInfo->field_name] = $field;
                 }
-                $vars['fields'][$fieldInfo->field_name] = $field;
             }
         }
         // channel is array at this point, but for replacement it needs to be a string

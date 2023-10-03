@@ -14,7 +14,6 @@ use ExpressionEngine\Service\Model;
 use ExpressionEngine\Core\Provider;
 use ExpressionEngine\Model\Template\TemplateGroup;
 use ExpressionEngine\Model\Template\Template;
-use ExpressionEngine\Dependency\Weiler\Beautify_Html;
 
 /**
  * Template Generator Factory
