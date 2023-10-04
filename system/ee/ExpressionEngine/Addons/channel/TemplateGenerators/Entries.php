@@ -34,7 +34,7 @@ class Entries extends AbstractTemplateGenerator implements TemplateGeneratorInte
     ];
 
     protected $_validation_rules = [
-        'channel' => 'validateChannelExists'
+        'channel' => 'required|validateChannelExists'
     ];
 
     /**

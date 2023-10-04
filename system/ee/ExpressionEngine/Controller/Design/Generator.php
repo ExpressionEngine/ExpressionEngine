@@ -38,8 +38,16 @@ class Generator extends AbstractDesignController
         $vars = array(
             'ajax_validate' => true,
             'base_url' => ee('CP/URL')->make('design/generator'),
-            'save_btn_text' => sprintf(lang('generate')),
-            'save_btn_text_working' => 'generate_templates_started'
+            'buttons' => array(
+                array(
+                    'name' => '',
+                    'type' => 'submit',
+                    'value' => 'save',
+                    'shortcut' => 's',
+                    'text' => lang('generate'),
+                    'working' => 'generate_templates_started'
+                )
+            )
         );
 
         ee('TemplateGenerator')->site_id = ee()->config->item('site_id');
