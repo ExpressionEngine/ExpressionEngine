@@ -102,6 +102,7 @@ class Entries extends AbstractTemplateGenerator implements TemplateGeneratorInte
                         'field_type' => $fieldInfo->field_type,
                         'field_name' => $fieldInfo->field_name,
                         'field_label' => $fieldInfo->field_label,
+                        'field_settings' => $fieldInfo->field_settings,
                         'stub' => $stubsAndGenerators[$fieldInfo->field_type]['stub'],
                         'docs_url' => $stubsAndGenerators[$fieldInfo->field_type]['docs_url'],
                         'is_tag_pair' => $stubsAndGenerators[$fieldInfo->field_type]['is_tag_pair'],

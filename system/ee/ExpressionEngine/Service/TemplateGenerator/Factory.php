@@ -649,7 +649,7 @@ class Factory
             foreach (ee('Addon')->installed() as $addon) {
                 if ($addon->hasFieldtype()) {
                     $provider = $addon->getProvider();
-                    foreach ($addon->get('fieldtypes', array()) as $fieldtype => $metadata) {
+                    foreach ($addon->get('fieldtypes', array($provider->getPrefix() => [])) as $fieldtype => $metadata) {
                         $stub = 'field';
                         $generator = null;
                         $ftClassName = ee()->api_channel_fields->include_handler($fieldtype);
