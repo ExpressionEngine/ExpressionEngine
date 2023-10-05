@@ -314,6 +314,46 @@ JSC;
             $data['id_path'] = array('/' . $data['file_id'], array('path_variable' => true));
         }
 
+        // Parse on-the-fly modifiers for {url}, e.g. {url:resize width="100"}
+        if (!empty($tagdata)) {
+            $urlVars = ee('Variables/Parser')->extractVariables($tagdata, 'url');
+            if (!empty($urlVars['var_single'])) {
+                $fileModifiers = ['resize', 'crop', 'rotate', 'webp', 'resize_crop'];
+                $modifiersRequireArray = $this->getChainableModifiersThatRequireArray();
+                foreach ($urlVars['var_single'] as $var) {
+                    // no modifiers, or already set, skip
+                    if (in_array($var, ['url', 'url:thumbs'])) {
+                        continue;
+                    }
+                    $content = $data;
+                    $var_props = ee('Variables/Parser')->parseVariableProperties($var);
+                    // check first modifiers, if it's not on-the-fly manipulation, skip
+                    // pre-define manipuilations will also get skipped this way
+                    if (!empty($var_props['all_modifiers']) && in_array(array_key_first($var_props['all_modifiers']), $fileModifiers)) {
+                        $modifiers = array_keys($var_props['all_modifiers']);
+                        $modifiersCounter = 0;
+                        foreach ($var_props['all_modifiers'] as $modifier => $modParams) {
+                            $modifiersCounter++;
+                            // figure out whether we are chaining modifiers here
+                            $content_param = (isset($modifiers[$modifiersCounter]) && in_array($modifiers[$modifiersCounter], $modifiersRequireArray)) ? null : false;
+                            // is the modifier valid?
+                            $method = 'replace_' . $modifier;
+                            if (! method_exists($this, $method) && ! ee('Variables/Modifiers')->has($modifier)) {
+                                // continue to next modifier
+                                continue;
+                            }
+
+                            $content = $this->$method($content, $modParams, $content_param);
+                        }
+                        if (is_string($content)) {
+                            $tagdata = str_replace(LD . $var . RD, $content, $tagdata);
+                        }
+                    }
+                }
+            }
+            //dd($urlVars);
+        }
+
         // Make sure we have file_info to work with
         if ($tagdata !== false && isset($data['file_id'])) {
             return ee()->TMPL->parse_variables($tagdata, array($data));
