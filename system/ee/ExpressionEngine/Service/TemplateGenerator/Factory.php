@@ -25,7 +25,6 @@ use ExpressionEngine\Model\Template\Template;
  * `setGenerator()` method needs to be run before we can do anything -
  * with the only exception of `listGenerators()`
  */
-
 class Factory
 {
     /**
@@ -186,7 +185,7 @@ class Factory
      *
      * @param Provider $provider
      * @param string $generatorFolder
-     * 
+     *
      * @return array
      */
     public function getStubPaths(Provider $provider, string $generatorFolder)
@@ -249,6 +248,7 @@ class Factory
             // twig and blade will have their own folder elsewhere
             $this->sharedStubPaths[] = SYSPATH . 'ee/templates/stubs';
         }
+
         return $this->sharedStubPaths;
     }
 
@@ -279,7 +279,7 @@ class Factory
 
     /**
      * List the generators available in the system
-     * 
+     *
      * @param string $generatorKey prefix:className
      * @return array
      */
@@ -305,6 +305,7 @@ class Factory
                 }
             }
         }
+
         return $this->registeredGenerators;
     }
 
@@ -353,6 +354,7 @@ class Factory
         if (empty($this->generator)) {
             throw new \Exception('Template Generator is required');
         }
+
         return $this->generator;
     }
 
@@ -398,6 +400,7 @@ class Factory
         if (!is_array($result)) {
             throw new \Exception($callback . ' must return an array');
         }
+
         return $result;
     }
 
@@ -410,6 +413,7 @@ class Factory
     {
         ee()->load->library('api');
         ee()->legacy_api->instantiate('template_structure');
+
         return ee()->api_template_structure->get_template_engines();
     }
 
@@ -428,6 +432,7 @@ class Factory
         if (! bool_config_item('multiple_sites_enabled') || count($sites) == 1) {
             $this->site_id = array_key_first($sites);
         }
+
         return $sites;
     }
 
@@ -444,6 +449,7 @@ class Factory
         foreach ($this->getGenerator()->getInstance()->getTemplates() as $template => $templateInfo) {
             $templates[$template] = $templateInfo;
         }
+
         return $templates;
     }
 
@@ -462,8 +468,9 @@ class Factory
         }
         $selectedTemplateEngine = empty($this->templateEngine) ? 'native' : $this->templateEngine;
         foreach ($this->themes as $theme => $themeInfo) {
-            $themes[$theme] = $themeInfo['name'] . ' (' . implode(', ', $themeInfo['template_engines']) . ')';
+            $themes[$theme] = $themeInfo['name'] . ((count($themeInfo['template_engines']) > 1) ? ' (' . implode(', ', $themeInfo['template_engines']) . ')' : '');
         }
+
         return $themes;
     }
 
@@ -490,6 +497,7 @@ class Factory
         if (!in_array($selectedTemplateEngine, $this->themes[$value]['template_engines'])) {
             return sprintf(lang('theme_does_not_support_template_engine'), $selectedTemplateEngine);
         }
+
         return true;
     }
 
@@ -543,9 +551,13 @@ class Factory
                 foreach ($provider->get('templateThemes') as $theme => $themeData) {
                     $themeData['prefix'] = $provider->getPrefix();
                     $themeData['folder'] = $theme;
-                    if (!isset($themeData['template_engines']) || !is_array($themeData['template_engines'])) {
-                        $themeData['template_engines'] = ['native'];
-                    }
+
+                    // Only show template_engines that are supported in this site
+                    $themeData['template_engines'] = array_intersect(
+                        array_merge(array_keys($this->getTemplateEnginesList()), ['native']),
+                        $themeData['template_engines'] ?? ['native']
+                    ) ?: ['native'];
+
                     $key = $theme;
                     if (isset($this->themes[$key])) {
                         $key = $provider->getPrefix() . ':' . $theme; //ensure uniqueness
@@ -554,6 +566,7 @@ class Factory
                 }
             }
         }
+
         return $this->themes;
     }
 
@@ -633,6 +646,7 @@ class Factory
             ->filter('role_id', 'NOT IN', array(1, 2, 4))
             ->order('name', 'asc')
             ->all();
+
         return $this->permittedRoles;
     }
 
@@ -676,6 +690,7 @@ class Factory
                 }
             }
         }
+
         return $this->ftStubsAndGenerators;
     }
 
@@ -704,6 +719,7 @@ class Factory
                 }, $field);
                 $errors[$field] = implode("\n", $fieldErrors);
             }
+
             throw new \Exception(implode("\n", $errors));
         }
         $group->save();
@@ -723,7 +739,7 @@ class Factory
                     'site_id' => $this->site_id,
                     'permission' => $perm
                 ])
-                ->save();
+                    ->save();
             }
         }
 
@@ -769,6 +785,7 @@ class Factory
                 }, $field);
                 $errors[$field] = implode("\n", $fieldErrors);
             }
+
             throw new \Exception(implode("\n", $errors));
         }
 
