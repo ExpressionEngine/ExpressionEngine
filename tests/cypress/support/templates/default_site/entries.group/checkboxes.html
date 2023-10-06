@@ -1,0 +1,20 @@
+
+{layout="cypress/layout"}
+{exp:channel:entries entry_id="1"}
+<h1>{title}</h1>
+
+<div class="checkboxes">
+{checkboxes_field}
+    <div class="row">
+        <div class="item">{item}</div>
+        <div class="label">{item:label}</div>
+        <div class="value">{item:value}</div>
+        <div class="count">{count}</div>
+        <div class="index">{index}</div>
+        <div class="total">{total_items}</div>
+    </div>
+{/checkboxes_field}
+</div>
+
+
+{/exp:channel:entries}
