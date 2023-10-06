@@ -293,6 +293,7 @@ class EE_Session
             return false;
         }
 
+        $match = (string) $match;
         foreach (explode('|', $ban) as $val) {
             if ($val == '*') {
                 continue;
