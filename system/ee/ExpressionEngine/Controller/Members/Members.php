@@ -1230,11 +1230,11 @@ class Members extends CP_Controller
             $heir->updateAuthorStats();
         }
 
-        // If we got this far we're clear to delete the members
-        ee('Model')->get('Member')->filter('member_id', 'IN', $member_ids)->delete();
-
         // Send member deletion notifications
         $this->_member_delete_notifications($member_ids);
+
+        // If we got this far we're clear to delete the members
+        ee('Model')->get('Member')->filter('member_id', 'IN', $member_ids)->delete();
 
         /* -------------------------------------------
         /* 'cp_members_member_delete_end' hook.
