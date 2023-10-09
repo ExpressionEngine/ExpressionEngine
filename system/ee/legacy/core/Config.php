@@ -619,7 +619,8 @@ class EE_Config
             'automatic_frontedit_links',
             'enable_mfa',
             'anonymize_consent_logs',
-            'log_cp_visits'
+            'log_cp_visits',
+            'log_member_deletions'
         );
 
         $member_default = array(

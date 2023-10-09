@@ -299,6 +299,8 @@ $lang = array(
 
     'member_login_as' => 'Member logged in as "%s" (%d)',
 
+    'member_deleted_log' => 'The member was deleted: %s (%s)',
+
     /* Common */
     'by_date' => 'by date',
 
