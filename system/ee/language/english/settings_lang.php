@@ -889,6 +889,10 @@ $lang = array(
 
     'anonymize_consent_logs_desc' => 'Selected fields will be anonymized in Consent Audit logs',
 
+    'log_cp_visits' => 'Log CP Visits',
+
+    'log_cp_visits_desc' => 'Add record each time someone logs in or out of the Control Panel',
+
 );
 
 // EOF

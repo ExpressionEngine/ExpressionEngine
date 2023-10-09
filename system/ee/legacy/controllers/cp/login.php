@@ -716,7 +716,9 @@ class Login extends CP_Controller
 
         $this->input->delete_cookie('read_topics');
 
-        $this->logger->log_action(lang('member_logged_out'));
+        if (ee()->config->item('log_cp_visits') !== 'n') {
+            $this->logger->log_action(lang('member_logged_out'));
+        }
 
         if ($this->input->get('auto_expire')) {
             $this->functions->redirect(ee('CP/URL')->make('login', ['auto_expire' => 'true'])->compile());

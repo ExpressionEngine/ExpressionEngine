@@ -25,6 +25,16 @@ class Logging extends Settings
         $vars['sections'] = array(
             array(
                 array(
+                    'title' => 'log_cp_visits',
+                    'desc' => 'log_cp_visits_desc',
+                    'fields' => array(
+                        'log_cp_visits' => array(
+                            'type' => 'yes_no',
+                            'value' => ee()->config->item('log_cp_visits') ?: true
+                        )
+                    )
+                ),
+                array(
                     'title' => 'anonymize_consent_logs',
                     'desc' => 'anonymize_consent_logs_desc',
                     'fields' => array(
