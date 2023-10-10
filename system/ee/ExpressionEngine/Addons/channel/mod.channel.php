@@ -5290,6 +5290,43 @@ class Channel
 
         return ee('LivePreview')->preview($channel_id, $entry_id, $return, $prefer_system_preview);
     }
+
+    /**
+     * Get information about the field
+     */
+    public function field()
+    {
+        $where = [];
+        if (!empty(ee()->TMPL->fetch_param('field_id'))) {
+            $where['field_id'] = (int) ee()->TMPL->fetch_param('field_id');
+        } elseif (!empty(ee()->TMPL->fetch_param('field_name'))) {
+            $where['field_name'] = (string) ee()->TMPL->fetch_param('field_name');
+        }
+        if (empty($where)) {
+            return ee()->TMPL->no_results();
+        }
+
+        $site_id = !empty(ee()->TMPL->fetch_param('site_id')) ? (int) ee()->TMPL->fetch_param('site_id') : ee()->config->item('site_id');
+
+        $field = ee('Model')->get('ChannelField')->filter(array_key_first($where), reset($where))->filter('site_id', 'IN', [0, $site_id])->first();
+        if (empty($field)) {
+            return ee()->TMPL->no_results();
+        }
+
+        $data = $field->getValues();
+        unset($data['field_settings']);// don't want to expose those, as might contain sensitive data such as API key
+        $data['field_options'] = (array) $field->getPossibleValuesForEvaluation();
+        if (!empty($data['field_options'])) {
+            $data['field_options'] = array_map(function ($value, $label) {
+                return [
+                    'value' => $value,
+                    'label' => $label
+                ];
+            }, array_keys($data['field_options']), $data['field_options']);
+        }
+
+        return ee()->TMPL->parse_variables(ee()->TMPL->tagdata, [$data]);
+    }
 }
 // END CLASS
 
