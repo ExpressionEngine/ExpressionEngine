@@ -2470,9 +2470,6 @@ class Member
             'last_comment_date' => (empty($default_fields['last_comment_date'])) ? '' : $default_fields['last_comment_date']
         );
 
-        ee()->load->library('typography');
-        ee()->typography->initialize();
-
         // parse date variables
         ee()->TMPL->tagdata = ee()->TMPL->parse_date_variables(ee()->TMPL->tagdata, $dates);
 
@@ -2481,10 +2478,6 @@ class Member
         $more_fields['name'] = $this->_convert_special_chars($name);
         //  {member_group}
         $more_fields['member_group'] = $default_fields['group_title'];
-        //  {email}
-        if ($typography) {
-            $more_fields['email'] = ee()->typography->encode_email($default_fields['email']);
-        }
         //  {timezone}
         $more_fields['timezone'] = ($default_fields['timezone'] != '') ? ee()->lang->line($default_fields['timezone']) : '';
         foreach (ee()->TMPL->var_single as $key => $val) {
