@@ -583,8 +583,12 @@ class Edit extends AbstractPublishController
         $entry_names = array_merge($this->removeAllEntries($entry_ids), $this->removeSelfEntries($entry_ids));
 
         if (!empty($entry_names)) {
-            ee()->load->library('logger');
-            ee()->logger->log_action(sprintf(lang('entries_deleted_log'), implode(', ', $entry_names)));
+            if (ee()->config->item('log_entry_deletions') !== 'n') {
+                ee()->load->library('logger');
+                foreach ($entry_names as $title) {
+                    ee()->logger->log_action(sprintf(lang('entry_deleted'), $title));
+                }
+            }
 
             ee('CP/Alert')->makeInline('entries-form')
                 ->asSuccess()

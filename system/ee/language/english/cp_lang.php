@@ -301,7 +301,7 @@ $lang = array(
 
     'member_deleted_log' => 'The member was deleted: %s (%s)',
 
-    'entries_deleted_log' => 'The entries were deleted: %s',
+    'entry_deleted_log' => 'The entry was deleted: %s',
 
     /* Common */
     'by_date' => 'by date',

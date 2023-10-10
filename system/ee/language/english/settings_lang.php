@@ -897,6 +897,10 @@ $lang = array(
 
     'log_member_deletions_desc' => 'Add record each time a member account is deleted. Disable if you need to delete many members and run into performance issues.',
 
+    'log_entry_deletions' => 'Log Entry Deletions',
+
+    'log_entry_deletions_desc' => 'Add record each time a channel entry is deleted. Disable if you need to delete many entries and run into performance issues.',
+
 );
 
 // EOF

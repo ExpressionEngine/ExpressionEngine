@@ -35,6 +35,16 @@ class Logging extends Settings
                     )
                 ),
                 array(
+                    'title' => 'log_entry_deletions',
+                    'desc' => 'logentry_deletions_desc',
+                    'fields' => array(
+                        'log_entry_deletions' => array(
+                            'type' => 'yes_no',
+                            'value' => ee()->config->item('log_entry_deletions') ?: true
+                        )
+                    )
+                ),
+                array(
                     'title' => 'log_member_deletions',
                     'desc' => 'log_member_deletions_desc',
                     'fields' => array(
