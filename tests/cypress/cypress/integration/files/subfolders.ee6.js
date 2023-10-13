@@ -18,6 +18,7 @@ context('Upload Destination Subfolders', () => {
         cy.task('filesystem:delete', '../../images/uploads/*')
 
         //copy templates
+        cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })
         cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' }).then(() => {
             cy.authVisit('admin.php?/cp/design')
         })
