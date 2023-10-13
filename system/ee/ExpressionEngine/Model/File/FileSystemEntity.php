@@ -119,6 +119,7 @@ class FileSystemEntity extends ContentModel
     protected $_baseServerPath;
     protected $_subfolderPath;
     protected $_exists;
+    protected $_filesystem;
 
     /**
      * A link back to the owning group object.
@@ -253,7 +254,7 @@ class FileSystemEntity extends ContentModel
      */
     public function actLocally(callable $callback)
     {
-        $filesystem = $this->getUploadDestination()->getFilesystem();
+        $filesystem = $this->getFilesystem();
         $path = $this->getAbsolutePath();
 
         return $filesystem->actLocally($path, $callback);
@@ -271,6 +272,19 @@ class FileSystemEntity extends ContentModel
     }
 
     /**
+     * Set the filesystem for this file
+     *
+     * @param [type] $filesystem
+     * @return
+     */
+    public function setFilesystem($filesystem)
+    {
+        $this->_filesystem = $filesystem;
+
+        return $this->_filesystem;
+    }
+
+    /**
      * Uses the file's upload destination's server path to compute the absolute
      * path of the file
      *
@@ -279,16 +293,14 @@ class FileSystemEntity extends ContentModel
     public function getFilesystem()
     {
         // If we have already set $this->filesystem, returned cached version of it
-        if ($this->filesystem) {
-            return $this->filesystem;
+        if ($this->_filesystem) {
+            return $this->_filesystem;
         }
 
-        // If this isnt a directory, return the upload path filesystem
+        // If this isn't a directory, return the upload path filesystem
         if (! $this->isDirectory()) {
             // Cache this filesystem
-            $this->filesystem = $this->UploadDestination->getFilesystem();
-
-            return $this->filesystem;
+            return $this->setFilesystem($this->UploadDestination->getFilesystem());
         }
 
         // Do we want to allow variable replacement in adapters that aren't local?
@@ -298,9 +310,7 @@ class FileSystemEntity extends ContentModel
         $filesystem = ee('File')->getPath($path, $adapter);
         $filesystem->setUrl($this->getAbsoluteUrl());
 
-        $this->filesystem = $filesystem;
-
-        return $this->filesystem;
+        return $this->setFilesystem($filesystem);
     }
 
     /**
@@ -346,7 +356,7 @@ class FileSystemEntity extends ContentModel
             return $this->getAbsoluteURL();
         }
 
-        return $filesystem->getUrl($this->getSubfoldersPath() . '_' . $manipulation . '/'  . $this->file_name);
+        return $filesystem->getUrl($this->getSubfoldersPath() . '_' . $manipulation . '/' . $this->file_name);
     }
 
     /**
@@ -367,7 +377,7 @@ class FileSystemEntity extends ContentModel
 
     public function deleteOriginalFile()
     {
-         $this->UploadDestination->deleteOriginalFiles($this->getAbsolutePath());
+        $this->UploadDestination->deleteOriginalFiles($this->getAbsolutePath());
     }
 
     public function deleteGeneratedFiles()
