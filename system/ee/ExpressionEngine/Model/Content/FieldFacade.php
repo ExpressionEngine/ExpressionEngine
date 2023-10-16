@@ -394,6 +394,10 @@ class FieldFacade
             $output = $this->api->apply('replace_tag_catchall', array($data, $params, $tagdata, $modifier));
         }
 
+        if (is_null($output)) {
+            $output = '';
+        }
+
         return $output;
     }
 

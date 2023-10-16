@@ -42,6 +42,12 @@ class Wizard extends CI_Controller
     public $month;
     public $day;
 
+    protected $requirements;
+    protected $db_connect_attempt;
+    protected $shouldBackupDatabase;
+    protected $shouldUpgradeAddons;
+    protected $next_ud_file = false;
+
     // These are the methods that are allowed to be called via $_GET['m']
     // for either a new installation or an update. Note that the function names
     // are prefixed but we don't include the prefix here.
