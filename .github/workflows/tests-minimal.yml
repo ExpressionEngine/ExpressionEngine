@@ -225,7 +225,7 @@ jobs:
               with:
                 browser: electron
                 working-directory: tests/cypress
-                config-file: electron.cypress.json
+                config-file: electron.cypress.config.js
               env:
                 CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
 

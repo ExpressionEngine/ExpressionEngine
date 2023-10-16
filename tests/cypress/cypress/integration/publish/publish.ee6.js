@@ -806,6 +806,7 @@ context('Publish Entry', () => {
         cy.get('.grid-field tbody tr:visible td:visible').eq(2).find('.button:contains("cinco")').should('have.class', 'active')
 
         cy.visit('index.php/entries/grid')
+        cy.hasNoErrors()
         cy.logFrontendPerformance()
         cy.get('.grid_with_buttons .row-1 .col_1').invoke('text').then((text) => {
           expect(text).to.eq('row 1')
@@ -817,6 +818,72 @@ context('Publish Entry', () => {
           expect(text).to.eq('cinco')
         })
         cy.logCPPerformance()
+      })
+
+      it('File Grid', () => {
+        cy.authVisit('admin.php?/cp/fields/create/1')
+        cy.get('[data-input-value=field_type] .select__button.js-dropdown-toggle').should('exist')
+        cy.get('[data-input-value=field_type] .select__button').click()
+        cy.get('[data-input-value=field_type] .select__dropdown-item:contains("File Grid")').last().click()
+        cy.get('input[type="text"][name = "field_label"]').type("Sliderbilder")
+
+        cy.get('.fields-grid-setup:visible [rel=add_new]').last().click()
+        cy.get('[name="file_grid[cols][new_1][col_label]"]:visible').type("Slidertext")
+
+        cy.get('body').type('{ctrl}', {release: false}).type('s')
+        cy.get('p').contains('has been created')
+
+        cy.visit('admin.php?/cp/publish/edit/entry/1')
+        cy.get('.js-file-grid button:contains("Choose Existing"):visible').eq(0).click();
+        cy.get('a[rel="modal-file"]:contains("About"):visible').eq(0).click()
+        cy.get('tr[data-id="1"]').click()
+        cy.get('[data-fieldtype="text"][data-new-row-id="new_row_1"] input[type="text"]').type('row one')
+        cy.wait(1000)
+        cy.get('.js-file-grid button:contains("Choose Existing"):visible').eq(0).click();
+        cy.get('a[rel="modal-file"]:contains("About"):visible').eq(0).click()
+        cy.get('tr[data-id="2"]').click()
+        cy.get('[data-fieldtype="text"][data-new-row-id="new_row_2"] input[type="text"]').type('row two')
+
+        cy.get('body').type('{ctrl}', {release: false}).type('s')
+        cy.get('p').contains('has been updated')
+
+        cy.get('.js-file-grid table.grid-field__table tbody tr:visible').should('have.length', 2)
+
+        cy.visit('index.php/entries/file-grid')
+        cy.hasNoErrors()
+        cy.logFrontendPerformance()
+        cy.get('.file-grid .row-1 .text').invoke('text').then((text) => {
+          expect(text).to.eq('row one')
+        })
+        cy.get('.file-grid .row-1 .file-data').invoke('text').then((text) => {
+          expect(text).to.eq('staff_jane.png')
+        })
+        cy.get('.file-grid .row-2 .text').invoke('text').then((text) => {
+          expect(text).to.eq('row two')
+        })
+        cy.get('.file-grid .row-2 .file-data').invoke('text').then((text) => {
+          expect(text).to.eq('staff_jason.png')
+        })
+        cy.logCPPerformance()
+
+        cy.visit('admin.php?/cp/publish/edit/entry/1')
+        cy.get('.js-file-grid table.grid-field__table tbody tr:visible').first().find('a.remove').click();
+        cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+        cy.visit('index.php/entries/file-grid')
+        cy.hasNoErrors()
+        cy.get('.file-grid .row-1 .text').invoke('text').then((text) => {
+          expect(text).to.eq('row one')
+        })
+        cy.get('.file-grid .row-1 .file-data').invoke('text').then((text) => {
+          expect(text).to.be.empty
+        })
+        cy.get('.file-grid .row-2 .text').invoke('text').then((text) => {
+          expect(text).to.eq('row two')
+        })
+        cy.get('.file-grid .row-2 .file-data').invoke('text').then((text) => {
+          expect(text).to.eq('staff_jason.png')
+        })
       })
     })
 })
