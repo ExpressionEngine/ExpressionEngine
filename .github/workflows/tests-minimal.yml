@@ -285,3 +285,9 @@ jobs:
               with:
                 name: csv-reports.PHP${{ matrix.php }}-${{ matrix.containers }}
                 path: tests/cypress/cypress/downloads/
+
+            - name: Archive EE error logs
+              uses: actions/upload-artifact@v3
+              with:
+                name: ee-error-logs.PHP${{ matrix.php }}-${{ matrix.containers }}
+                path: system/user/logs/
