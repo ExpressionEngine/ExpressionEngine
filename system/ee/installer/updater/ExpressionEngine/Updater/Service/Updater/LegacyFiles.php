@@ -85,7 +85,7 @@ class LegacyFiles
 
             // Try to catch permissions errors before PHP's file I/O functions do
             if (!$filesystem->isWritable($path)) {
-                throw new UpdaterException("Cannot move ${path} to ${new_path}, path is not writable: ${path}", 19);
+                throw new UpdaterException("Cannot move {$path} to {$new_path}, path is not writable: {$path}", 19);
             }
 
             $this->logger->log('Moving ' . $path . ' to ' . $new_path);

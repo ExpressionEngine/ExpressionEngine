@@ -25,6 +25,7 @@ class Fluid_field_parser
     protected $data = [];
     protected $possible_fields = [];
     protected $fluid_fields = [];
+    protected $_prefix;
 
     public function __construct()
     {
