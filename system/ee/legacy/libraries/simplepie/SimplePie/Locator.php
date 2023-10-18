@@ -63,6 +63,7 @@ class SimplePie_Locator
     public $checked_feeds = 0;
     public $max_checked_feeds = 10;
     protected $registry;
+    public $dom;
 
     public function __construct(SimplePie_File $file, $timeout = 10, $useragent = null, $max_checked_feeds = 10)
     {

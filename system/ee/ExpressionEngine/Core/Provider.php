@@ -336,7 +336,7 @@ class Provider extends InjectionBindingDecorator
         }
     }
 
-    
+
     /**
      * Registers cookie settings in memory and database
      *
@@ -465,7 +465,7 @@ class Provider extends InjectionBindingDecorator
         $arguments = func_get_args();
         $arguments[0] = $this->ensurePrefix($arguments[0]);
 
-        return call_user_func_array('parent::make', $arguments);
+        return call_user_func_array(parent::class . "::make", $arguments);
     }
 
     /**

@@ -22,6 +22,7 @@ class EE_Router
     public $directory = '';
     public $default_controller;
     public $namespace_prefix = '';
+    public $uri;
 
     /**
      * Constructor

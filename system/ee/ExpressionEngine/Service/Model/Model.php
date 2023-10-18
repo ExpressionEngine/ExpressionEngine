@@ -840,7 +840,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
             call_user_func_array(array($this, $method), array_slice($args, 1));
         }
 
-        call_user_func_array('parent::emit', $args);
+        call_user_func_array(parent::class . "::emit", $args);
     }
 
     /**

@@ -42,6 +42,12 @@ class Wizard extends CI_Controller
     public $month;
     public $day;
 
+    protected $requirements;
+    protected $db_connect_attempt;
+    protected $shouldBackupDatabase;
+    protected $shouldUpgradeAddons;
+    protected $next_ud_file = false;
+
     // These are the methods that are allowed to be called via $_GET['m']
     // for either a new installation or an update. Note that the function names
     // are prefixed but we don't include the prefix here.
@@ -467,11 +473,6 @@ class Wizard extends CI_Controller
 
             return false;
         }
-
-        // Assign the config and DB arrays to class variables so we don't have
-        // to reload them.
-        $this->_config = $config;
-        $this->_db = $db;
 
         // Set the flag
         $this->is_installed = true;
@@ -1887,7 +1888,6 @@ class Wizard extends CI_Controller
                 }
 
                 $UPD = new $class();
-                $UPD->_ee_path = EE_APPPATH;
 
                 if ($UPD->version > $row->module_version && method_exists($UPD, 'update') && $UPD->update($row->module_version) !== false) {
                     ee()->db->update('modules', array('module_version' => $UPD->version), array('module_name' => ucfirst($module)));

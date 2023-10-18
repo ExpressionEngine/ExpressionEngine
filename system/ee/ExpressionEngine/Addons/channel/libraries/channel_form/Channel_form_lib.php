@@ -1607,13 +1607,13 @@ GRID_FALLBACK;
         }
 
         if (! $this->json && ($this->errors || $this->field_errors) && $this->error_handling == 'inline') {
-            
+
             foreach ($this->field_errors as $field => $error) {
                 if (isset($id_to_name_map[$field])) {
                     $this->field_errors[$id_to_name_map[$field]] = $error;
                 }
             }
-            
+
             $this->entry->set($_POST);
 
             $this->form_error = true;
@@ -1638,13 +1638,13 @@ GRID_FALLBACK;
         }
 
         if ($this->json) {
-            
+
             foreach ($this->field_errors as $field => $error) {
                 if (isset($id_to_name_map[$field])) {
                     $this->field_errors[$id_to_name_map[$field]] = $error;
                 }
             }
-            
+
             return ee()->output->send_ajax_response(
                 array(
                     'success' => (empty($this->errors) && empty($this->field_errors)) ? 1 : 0,
@@ -2594,7 +2594,7 @@ GRID_FALLBACK;
 
             if (! $show_expired) {
                 $t = ee()->db->dbprefix('channel_titles');
-                ee()->db->where("(${t}.expiration_date = 0 OR ${t}.expiration_date > ${now})", null, false);
+                ee()->db->where("({$t}.expiration_date = 0 OR {$t}.expiration_date > {$now})", null, false);
             }
 
             if ($this->entry('entry_id')) {

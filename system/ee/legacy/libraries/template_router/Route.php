@@ -16,6 +16,8 @@ class EE_Route
     public $segments = array();
     public $variables = array();
     public $subpatterns = array();
+    public $required;
+    public $rules;
 
     public $segment_regex = "
 		(\/|

@@ -19,6 +19,8 @@ class Delete extends Query
 {
     const DELETE_BATCH_SIZE = 100;
 
+    protected $delete_list = array();
+
     public function run()
     {
         $builder = $this->builder;

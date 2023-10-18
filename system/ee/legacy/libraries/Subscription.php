@@ -343,7 +343,7 @@ class EE_Subscription
             }
 
             $array = key($current_user) . 's';
-            ${$array}[] = current($current_user);
+            array_push($$array, current($current_user));
         } else {
             if (! is_array($identifiers)) {
                 $identifiers = array($identifiers);

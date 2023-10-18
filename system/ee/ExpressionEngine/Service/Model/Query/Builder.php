@@ -37,6 +37,8 @@ class Builder
 
     protected $futile = false;
 
+    public $model;
+
     /**
      *
      */
@@ -137,7 +139,7 @@ class Builder
                 return $fetched;
             }
         }
-        
+
         if (! $this->filterStackIsEmpty()) {
             throw new \Exception('Unclosed filter group.');
         }
