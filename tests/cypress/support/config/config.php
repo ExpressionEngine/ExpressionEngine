@@ -10,7 +10,12 @@ if (! defined('BASEPATH')) {
 $config['save_tmpl_files'] = 'n';
 $config['legacy_member_templates'] = 'y';
 
-$config['app_version'] = '6.4.14';
+$config['app_version'] = '6.4.15';
+
+// Turn on logging when running tests
+$config['log_date_format'] = 'Y-m-d H:i:s';
+$config['log_threshold'] = '1';
+
 $config['encryption_key'] = '4b9e521eb02751d8466a3e9b764524aff14b91ad';
 $config['session_crypt_key'] = '1f307a8afe66e692c2689508a5d9f783606379a8';
 $config['base_path'] = $_SERVER['DOCUMENT_ROOT'];

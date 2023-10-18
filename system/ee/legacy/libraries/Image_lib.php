@@ -13,39 +13,40 @@
  */
 class EE_Image_lib
 {
-    public $image_library = 'gd2';	// Can be:  imagemagick, netpbm, gd, gd2
+    public $image_library = 'gd2';  // Can be:  imagemagick, netpbm, gd, gd2
     public $library_path = '';
-    public $dynamic_output = false;	// Whether to send to browser or write to disk
+    public $dynamic_output = false; // Whether to send to browser or write to disk
     public $source_image = '';
+    public $dest_image;
     public $new_image = '';
     public $width = '';
     public $height = '';
     public $quality = '90';
     public $create_thumb = false;
     public $thumb_marker = '_thumb';
-    public $maintain_ratio = true;		// Whether to maintain aspect ratio when resizing or use hard values
-    public $master_dim = 'auto';	// auto, height, or width.  Determines what to use as the master dimension
+    public $maintain_ratio = true;      // Whether to maintain aspect ratio when resizing or use hard values
+    public $master_dim = 'auto';    // auto, height, or width.  Determines what to use as the master dimension
     public $rotation_angle = '';
     public $x_axis = '';
     public $y_axis = '';
 
     // Watermark Vars
-    public $wm_text = '';			// Watermark text if graphic is not used
-    public $wm_type = 'text';		// Type of watermarking.  Options:  text/overlay
+    public $wm_text = '';           // Watermark text if graphic is not used
+    public $wm_type = 'text';       // Type of watermarking.  Options:  text/overlay
     public $wm_x_transp = 4;
     public $wm_y_transp = 4;
-    public $wm_overlay_path = '';			// Watermark image path
-    public $wm_font_path = '';			// TT font
-    public $wm_font_size = 17;			// Font size (different versions of GD will either use points or pixels)
-    public $wm_vrt_alignment = 'B';			// Vertical alignment:   T M B
-    public $wm_hor_alignment = 'C';			// Horizontal alignment: L R C
-    public $wm_padding = 0;			// Padding around text
-    public $wm_hor_offset = 0;			// Lets you push text to the right
-    public $wm_vrt_offset = 0;			// Lets you push  text down
-    public $wm_font_color = '#ffffff';	// Text color
-    public $wm_shadow_color = '';			// Dropshadow color
-    public $wm_shadow_distance = 2;			// Dropshadow distance
-    public $wm_opacity = 50;			// Image opacity: 1 - 100  Only works with image
+    public $wm_overlay_path = '';           // Watermark image path
+    public $wm_font_path = '';          // TT font
+    public $wm_font_size = 17;          // Font size (different versions of GD will either use points or pixels)
+    public $wm_vrt_alignment = 'B';         // Vertical alignment:   T M B
+    public $wm_hor_alignment = 'C';         // Horizontal alignment: L R C
+    public $wm_padding = 0;         // Padding around text
+    public $wm_hor_offset = 0;          // Lets you push text to the right
+    public $wm_vrt_offset = 0;          // Lets you push  text down
+    public $wm_font_color = '#ffffff';  // Text color
+    public $wm_shadow_color = '';           // Dropshadow color
+    public $wm_shadow_distance = 2;         // Dropshadow distance
+    public $wm_opacity = 50;            // Image opacity: 1 - 100  Only works with image
 
     // Private Vars
     public $source_folder = '';

@@ -21,6 +21,7 @@ class Api_channel_fields extends Api
 
     public $ee_base_ft = false;
     public $global_settings;
+    public $field_type;
 
     protected $custom_field_modules;
 

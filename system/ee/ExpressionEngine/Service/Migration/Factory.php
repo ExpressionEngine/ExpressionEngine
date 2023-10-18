@@ -22,6 +22,7 @@ class Factory
     public $db;
     public $filesystem;
     public $migration;
+    public $stepsRemaining;
 
     public function __construct(Database\Query $db, Filesystem $filesystem, MigrationModel $migration = null)
     {

@@ -19,6 +19,7 @@ class File
     public $catfields = array();
     public $valid_thumbs = array();
     public $return_data = '';
+    public $enable = array();
 
     /**
       * Constructor

@@ -102,6 +102,9 @@ class EE_Template
     public $realm                 = 'Restricted Content';  // Localize?
     public $marker                = '0o93H7pQ09L8X1t49cHY01Z5j4TT91fGfr'; // Temporary marker used as a place-holder for template data
 
+    public $mb_available;
+    public $annotations;
+
     protected $_tag_cache_prefix  = 'tag_cache'; // Tag cache key namespace
     protected $_page_cache_prefix = 'page_cache'; // Page cache key namespace
 
