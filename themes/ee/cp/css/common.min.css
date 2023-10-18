@@ -34507,6 +34507,42 @@ a.ck.ck-button.ck-on {
   top: 0px;
 }
 
+.js-nestable-categories .js-nested-item {
+  position: relative;
+}
+.js-nestable-categories .js-nested-item > button {
+  width: 15px;
+  height: 15px;
+  border: none;
+  background: none;
+  font-size: 0;
+  padding: 0;
+  cursor: pointer;
+  position: absolute;
+  left: -20px;
+  top: 25px;
+}
+.js-nestable-categories .js-nested-item > button:before {
+  color: var(--ee-text-placeholder);
+  content: "\f078";
+  font-size: 10px;
+  line-height: 0;
+  margin-right: 5px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-family: "Font Awesome 6 Pro";
+  font-weight: 600;
+  transform: translate(-50%, -50%);
+  color: var(--ee-text-normal);
+}
+.js-nestable-categories .js-nested-item > button[data-action=expand]:before {
+  content: "\f054";
+}
+.js-nestable-categories .list-group--nested li li > button {
+  left: 20px;
+}
+
 .fluid {
   padding: 10px 10px 5px;
   background: var(--ee-bg-0);
