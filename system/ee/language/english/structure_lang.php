@@ -72,6 +72,8 @@ $lang = array(
     'setting_redirect_publish'  => 'Redirect to Structure on entry publish/save',
     'split_assets'              => 'Make each entry a single asset (no Add/Edit)',
     'hide_hidden_templates'     => 'Hide hidden templates on publish/edit tab',
+    'show_nav_status'           => 'Show nav status (e.g. "(hidden)") in Pages view',
+    'show_entry_status'         => 'Show entry status (e.g. "Open") in Pages view',
 
     'setting'                       => 'Setting',
     'structure_settings'            => 'Settings',
