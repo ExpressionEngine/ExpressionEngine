@@ -858,6 +858,28 @@ class Fields extends AbstractFieldsController
             'evaluationValues' => []
         ];
 
+        $rulesList = ['matches', 'notMatches', 'contains', 'notContains'];
+        $selectEvaluationRules = [];
+        foreach ($rulesList as $ruleName) {
+            if (isset($evaluationRules[$ruleName])) {
+                $selectEvaluationRules[$ruleName] = $evaluationRules[$ruleName];
+                continue;
+            }
+            $rule = ee('ConditionalFields')->make($ruleName, 'text');
+            $selectEvaluationRules[$ruleName] = [
+                'text'      => lang($rule->getLanguageKey()),
+                'type'      => $rule->getConditionalFieldInputType()
+            ];
+        }
+        $fieldsWithEvaluationRules['status'] = [
+            'field_id' => 'status',
+            'field_label' => lang('status'),
+            'field_name' => 'status',
+            'field_type' => 'select',
+            'evaluationRules' => $selectEvaluationRules,
+            'evaluationValues' => ee('Model')->get('Status')->all(true)->getDictionary('status', 'status')
+        ];
+
         $siteFields = ee('Model')->get('ChannelField')->filter('site_id', 'IN', [0, ee()->config->item('site_id')])->filter('field_id', '!=', (int) $field->getId())->all();
         if ($siteFields) {
             foreach ($siteFields as $siteField) {
