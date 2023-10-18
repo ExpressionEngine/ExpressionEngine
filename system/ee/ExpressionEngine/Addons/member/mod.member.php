@@ -2637,7 +2637,7 @@ class Member
         }
 
         $vars = [];
-        foreach($member->RoleGroups->asArray() as $roleGroup) {
+        foreach ($member->RoleGroups as $roleGroup) {
             if ($roleGroup->group_id === 0 && $roleGroup->name === null) {
                 continue;
             }
@@ -2648,7 +2648,7 @@ class Member
             ];
         };
 
-        if (!$vars) {
+        if (!empty($vars)) {
             return ee()->TMPL->no_results();
         }
 
