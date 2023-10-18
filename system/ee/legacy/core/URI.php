@@ -22,6 +22,7 @@ class EE_URI
     public $query_string = 'index';  // Only the query segment of the URI: 124
     public $page_query_string = '';       // For a Pages request, this contains the Entry ID for the Page
     public $session_id = '';
+    public $config;
 
     // These are reserved words that have special meaning when they are the first
     // segment of a URI string.  Template groups can not be named any of these words

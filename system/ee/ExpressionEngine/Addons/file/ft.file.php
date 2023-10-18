@@ -348,6 +348,8 @@ JSC;
 
             return $full_path;
         }
+
+        return '';
     }
 
     /**

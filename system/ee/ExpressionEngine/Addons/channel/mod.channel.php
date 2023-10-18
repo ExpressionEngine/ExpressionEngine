@@ -32,6 +32,7 @@ class Channel
     public $mfields = array();
     public $pfields = array();
     public $ffields = array();
+    public $tfields = array();
     public $categories = array();
     public $catfields = array();
     public $channel_name = array();
@@ -58,6 +59,9 @@ class Channel
     protected $chunks = array();
 
     protected $preview_conditions = array();
+
+    protected $cat_field_models = array();
+    protected $query_string = '';
 
     // SQL cache key prefix
     protected $_sql_cache_prefix = 'sql_cache';

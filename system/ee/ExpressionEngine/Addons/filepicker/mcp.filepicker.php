@@ -19,6 +19,10 @@ class Filepicker_mcp
 {
     private $images = false;
 
+    public $picker;
+    public $base_url;
+    public $access;
+
     public function __construct()
     {
         $this->picker = new Picker();

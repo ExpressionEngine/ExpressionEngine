@@ -84,6 +84,7 @@ class idna_convert
     public $_ncount = 588;   // _vcount * _tcount
     public $_scount = 11172; // _lcount * _tcount * _vcount
     public $_error = false;
+    public $slast;
 
     // See {@link set_paramter()} for details of how to change the following
     // settings from within your script / application

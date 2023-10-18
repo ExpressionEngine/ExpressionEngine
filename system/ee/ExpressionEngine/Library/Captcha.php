@@ -15,6 +15,8 @@ namespace ExpressionEngine\Library;
  */
 class Captcha
 {
+    public $cached_captcha;
+
     /**
      * Returns a boolean indicating if a CAPTCHA should be displayed or not
      * according to the site's CAPTCHA settings

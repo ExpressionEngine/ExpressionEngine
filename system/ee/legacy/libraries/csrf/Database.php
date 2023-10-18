@@ -103,7 +103,7 @@ class Csrf_database implements Csrf_storage_backend
             // active record cannot do this query
             // delete any csrf tokens whose associated session cannot be
             // found in the session table.
-            ee()->db->query("DELETE sh FROM ${sh} sh LEFT JOIN ${s} s ON s.session_id = sh.session_id WHERE s.session_id IS NULL");
+            ee()->db->query("DELETE sh FROM {$sh} sh LEFT JOIN {$s} s ON s.session_id = sh.session_id WHERE s.session_id IS NULL");
         }
     }
 }

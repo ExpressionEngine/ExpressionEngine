@@ -31,6 +31,8 @@ abstract class EE_Fieldtype
     // Field settings as decided by the user.
     public $settings = array();
 
+    public $field_fmt;
+
     // Field identifiers, new names to differentiate. Also sometimes the field
     // can actually act as an independent content container with no distinct parent.
     // In those cases it's up to the content type implementer to make sure that an

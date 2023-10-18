@@ -83,6 +83,8 @@ class Forum
 
     protected $forum_core; // the "core" class object. Refactor, ho!
 
+    public $MBR;
+
     /**
      * Constructor
      */

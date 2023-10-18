@@ -1111,7 +1111,7 @@ class XML_RPC_Values extends EE_Xmlrpc
         }
 
         if ($typeof != 1) {
-            echo '<strong>XML_RPC_Values</strong>: not a scalar type (${typeof})<br />';
+            echo '<strong>XML_RPC_Values</strong>: not a scalar type ({$typeof})<br />';
 
             return 0;
         }

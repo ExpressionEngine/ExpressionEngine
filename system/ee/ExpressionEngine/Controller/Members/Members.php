@@ -22,6 +22,8 @@ use ExpressionEngine\Service\Model\Collection;
  */
 class Members extends CP_Controller
 {
+    public $base_url;
+
     public function __construct()
     {
         parent::__construct();
@@ -880,7 +882,7 @@ class Members extends CP_Controller
     private function buildTableFromMemberQuery(Builder $members, $checkboxes = null)
     {
         $primary_icon = ' <sup class="icon--primary" title="' . lang('primary_role') . '"></sup>';
-        
+
         $table = $this->initializeTable();
 
         $sort_map = array(
@@ -1453,7 +1455,7 @@ class Members extends CP_Controller
                 $member->save();
 
                 // Get a fresh copy of this member model and update statistics for its roles
-                if (!bool_config_item('ignore_member_stats')) { 
+                if (!bool_config_item('ignore_member_stats')) {
                     ee('Model')->get('Member')->filter('member_id', $member->getId())->first()->updateRoleTotalMembers();
                 }
 
