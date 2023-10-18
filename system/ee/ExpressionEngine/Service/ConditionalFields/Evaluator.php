@@ -29,7 +29,7 @@ class Evaluator
 
     public function evaluate($expression)
     {
-        if ($expression instanceof ConditionalFields\FieldCondition) {
+        if ($expression instanceof ConditionalFields\Condition) {
             return $this->evaluateCondition($expression);
         } elseif ($expression instanceof ConditionalFields\FieldConditionSet) {
             return $this->evaluateConditionSet($expression);
@@ -38,8 +38,18 @@ class Evaluator
         }
     }
 
-    public function evaluateCondition(ConditionalFields\FieldCondition $condition)
+    public function evaluateCondition(ConditionalFields\Condition $condition)
     {
+        if (is_null($condition->condition_field_id)) {
+            // evaluating one of built-in entry properties
+            $property = $condition->condition_field_name;
+            if (!isset($this->channelEntry->$property)) {
+                return false;
+            }
+            $evaluationRule = ee('ConditionalFields')->make($condition->evaluation_rule, 'text');
+            return $evaluationRule->evaluate($this->channelEntry->$property, $condition->value, []);
+        }
+
         // If this field isnt set on the channel entry, then we fail the conditions
         if (!isset($this->channelFields[$condition->condition_field_id])) {
             return false;

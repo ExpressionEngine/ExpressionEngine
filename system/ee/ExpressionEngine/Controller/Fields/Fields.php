@@ -832,6 +832,32 @@ class Fields extends AbstractFieldsController
             }
         }
 
+        $rulesList = ['equal', 'notEqual', 'contains', 'notContains'];
+        $evaluationRules = [];
+        foreach ($rulesList as $ruleName) {
+            $rule = ee('ConditionalFields')->make($ruleName, 'text');
+            $evaluationRules[$ruleName] = [
+                'text'      => lang($rule->getLanguageKey()),
+                'type'      => $rule->getConditionalFieldInputType()
+            ];
+        }
+        $fieldsWithEvaluationRules['title'] = [
+            'field_id' => 'title',
+            'field_label' => lang('title'),
+            'field_name' => 'title',
+            'field_type' => 'text',
+            'evaluationRules' => $evaluationRules,
+            'evaluationValues' => []
+        ];
+        $fieldsWithEvaluationRules['url_title'] = [
+            'field_id' => 'url_title',
+            'field_label' => strip_tags(lang('url_title')),
+            'field_name' => 'url_title',
+            'field_type' => 'text',
+            'evaluationRules' => $evaluationRules,
+            'evaluationValues' => []
+        ];
+
         $siteFields = ee('Model')->get('ChannelField')->filter('site_id', 'IN', [0, ee()->config->item('site_id')])->filter('field_id', '!=', (int) $field->getId())->all();
         if ($siteFields) {
             foreach ($siteFields as $siteField) {

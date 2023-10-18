@@ -189,17 +189,27 @@ abstract class AbstractFields extends CP_Controller
                     if (defined('CLONING_MODE') && CLONING_MODE === true) {
                         $condition_id = 'new_row_' . $condition_id;
                     }
-                    if (!is_numeric($condition_id)) {
-                        $fieldCondition = ee('Model')->make('FieldCondition');
+                    if (!isset($condition_data['condition_field_id']) || is_numeric($condition_data['condition_field_id'])) {
+                        $model_name = 'FieldCondition';
+                    } elseif ($condition_data['condition_field_id'] == 'category') {
+                        $model_name = 'CategoryCondition';
                     } else {
-                        $fieldCondition = ee('Model')->get('FieldCondition', $condition_id)->first();
+                        $model_name = 'PropertyCondition';
+                    }
+                    if (!is_numeric($condition_id)) {
+                        $fieldCondition = ee('Model')->make($model_name);
+                    } else {
+                        $fieldCondition = ee('Model')->get($model_name, $condition_id)->first();
                         if (empty($fieldCondition)) {
-                            $fieldCondition = ee('Model')->make('FieldCondition');
+                            $fieldCondition = ee('Model')->make($model_name);
                         }
                     }
                     $fieldCondition->evaluation_rule = isset($condition_data['evaluation_rule']) ? $condition_data['evaluation_rule'] : '';
                     $fieldCondition->value = isset($condition_data['value']) ? $condition_data['value'] : '';
-                    $fieldCondition->condition_field_id = isset($condition_data['condition_field_id']) ? $condition_data['condition_field_id'] : '';
+                    if ($model_name != 'FieldCondition') {
+                        $fieldCondition->condition_field_name = $condition_data['condition_field_id'];
+                    }
+                    $fieldCondition->condition_field_id = isset($condition_data['condition_field_id']) && is_numeric($condition_data['condition_field_id']) ? $condition_data['condition_field_id'] : null;
                     $fieldCondition->order = $rule_index;
                     $fieldConditionValidation = $fieldCondition->validate();
                     if (!$fieldConditionValidation->isValid()) {

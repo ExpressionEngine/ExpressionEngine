@@ -738,7 +738,9 @@ $setup = [
 
         // ..\ConditionalFields
         'FieldConditionSet' => 'Model\ConditionalFields\FieldConditionSet',
+        'Condition' => 'Model\ConditionalFields\Condition',
         'FieldCondition' => 'Model\ConditionalFields\FieldCondition',
+        'PropertyCondition' => 'Model\ConditionalFields\PropertyCondition',
 
         // ..\Comment
         'Comment' => 'Model\Comment\Comment',
