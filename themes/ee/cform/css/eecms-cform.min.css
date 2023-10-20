@@ -19,7 +19,7 @@
 .ee-cform table .grid-field__column-label { display: none;}
 
 /* RADIO BUTTONS field*/
-.ee-cform .radio-btn-wrap label {
+.ee-cform fieldset.radio-btn-wrap label {
     display: block;
     margin-bottom: 0;
     position: relative;
@@ -34,7 +34,7 @@
     border-radius: 5px;
 }
 
-.ee-cform .radio-btn-wrap label input[type='radio'] {
+.ee-cform fieldset.radio-btn-wrap label input[type='radio'] {
     z-index: 1;
     position: absolute;
     top: 7px;
@@ -54,7 +54,7 @@
     line-height: 1.15;
 }
 
-.ee-cform .radio-btn-wrap label input[type=radio]:after {
+.ee-cform fieldset.radio-btn-wrap label input[type=radio]:after {
     transition: all 100ms ease;
     content: "";
     display: block;
@@ -69,12 +69,12 @@
     opacity: 0;
 }
 
-.ee-cform .radio-btn-wrap label input[type=radio]:checked {
+.ee-cform fieldset.radio-btn-wrap label input[type=radio]:checked {
     background: #5d63f1;
     border-color: #5d63f1;
 }
 
-.ee-cform .radio-btn-wrap label input[type=radio]:checked:after {
+.ee-cform fieldset.radio-btn-wrap label input[type=radio]:checked:after {
     opacity: 1;
     transform: rotate(45deg) scale(1);
 }
