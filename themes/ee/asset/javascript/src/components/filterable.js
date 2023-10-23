@@ -126,7 +126,8 @@ function makeFilterableComponent(WrappedComponent) {
           if (item.children) item.children = _this2.filterItems(item.children, searchTerm);
           var itemFoundInChildren = item.children && item.children.length > 0;
           var itemFound = String(item.label).toLowerCase().includes(searchTerm.toLowerCase());
-          return itemFound || itemFoundInChildren ? item : false;
+          var itemShortName = String(item.instructions).toLowerCase().includes(searchTerm.toLowerCase());
+          return itemFound || itemFoundInChildren || itemShortName ? item : false;
         });
         return items.filter(function (item) {
           return item;

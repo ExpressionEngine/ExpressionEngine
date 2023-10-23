@@ -62,8 +62,9 @@ function makeFilterableComponent(WrappedComponent) {
 
         let itemFoundInChildren = (item.children && item.children.length > 0)
         let itemFound = String(item.label).toLowerCase().includes(searchTerm.toLowerCase())
+        let itemShortName = String(item.instructions).toLowerCase().includes(searchTerm.toLowerCase());
 
-        return (itemFound || itemFoundInChildren) ? item : false
+        return (itemFound || itemFoundInChildren || itemShortName) ? item : false
       })
 
       return items.filter(item => item);
