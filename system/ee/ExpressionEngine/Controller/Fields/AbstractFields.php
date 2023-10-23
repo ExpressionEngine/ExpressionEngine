@@ -191,7 +191,7 @@ abstract class AbstractFields extends CP_Controller
                     }
                     if (!isset($condition_data['condition_field_id']) || is_numeric($condition_data['condition_field_id'])) {
                         $model_name = 'FieldCondition';
-                    } elseif ($condition_data['condition_field_id'] == 'category') {
+                    } elseif (strpos($condition_data['condition_field_id'], 'category[') === 0) {
                         $model_name = 'CategoryCondition';
                     } else {
                         $model_name = 'PropertyCondition';
@@ -206,10 +206,15 @@ abstract class AbstractFields extends CP_Controller
                     }
                     $fieldCondition->evaluation_rule = isset($condition_data['evaluation_rule']) ? $condition_data['evaluation_rule'] : '';
                     $fieldCondition->value = isset($condition_data['value']) ? $condition_data['value'] : '';
-                    if ($model_name != 'FieldCondition') {
+                    if ($model_name == 'PropertyCondition') {
                         $fieldCondition->condition_field_name = $condition_data['condition_field_id'];
                     }
-                    $fieldCondition->condition_field_id = isset($condition_data['condition_field_id']) && is_numeric($condition_data['condition_field_id']) ? $condition_data['condition_field_id'] : null;
+                    if ($model_name == 'CategoryCondition') {
+                        $fieldCondition->condition_category_group_id = str_replace(array('category[', ']'), '', $condition_data['condition_field_id']);
+                    }
+                    if ($model_name == 'FieldCondition') {
+                        $fieldCondition->condition_field_id = isset($condition_data['condition_field_id']) && is_numeric($condition_data['condition_field_id']) ? $condition_data['condition_field_id'] : null;
+                    }
                     $fieldCondition->order = $rule_index;
                     $fieldConditionValidation = $fieldCondition->validate();
                     if (!$fieldConditionValidation->isValid()) {

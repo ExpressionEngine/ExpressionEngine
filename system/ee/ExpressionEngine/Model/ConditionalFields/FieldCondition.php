@@ -20,4 +20,10 @@ class FieldCondition extends Condition
         'evaluation_rule' => 'required',
         'order' => 'integer'
     );
+
+    public function onBeforeSave()
+    {
+        parent::onBeforeSave();
+        $this->setProperty('model_type', 'FieldCondition');
+    }
 }

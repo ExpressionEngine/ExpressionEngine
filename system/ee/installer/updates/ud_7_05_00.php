@@ -46,8 +46,8 @@ class Updater
                 [
                     'model_type' => [
                         'type' => 'enum',
-                        'constraint' => "'Field','Property','Category'",
-                        'default' => 'Field',
+                        'constraint' => "'FieldCondition','PropertyCondition','CategoryCondition'",
+                        'default' => 'FieldCondition',
                         'null' => false
                     ]
                 ],
@@ -64,6 +64,22 @@ class Updater
                         'type' => 'varchar',
                         'constraint' => 32,
                         'null' => true
+                    ]
+                ],
+                'model_type'
+            );
+        }
+
+        if (! ee()->db->field_exists('condition_category_group_id', 'field_conditions')) {
+            ee()->smartforge->add_column(
+                'field_conditions',
+                [
+                    'condition_category_group_id' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'unsigned' => true,
+                        'null' => true,
+                        'default' => null
                     ]
                 ],
                 'model_type'

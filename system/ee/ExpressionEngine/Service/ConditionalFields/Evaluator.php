@@ -40,14 +40,22 @@ class Evaluator
 
     public function evaluateCondition(ConditionalFields\Condition $condition)
     {
-        if (is_null($condition->condition_field_id)) {
+        if ($condition->model_type == 'PropertyCondition') {
             // evaluating one of built-in entry properties
             $property = $condition->condition_field_name;
             if (!isset($this->channelEntry->$property)) {
                 return false;
             }
-            $evaluationRule = ee('ConditionalFields')->make($condition->evaluation_rule, 'text');
+            $evaluationRule = ee('ConditionalFields')->make($condition->evaluation_rule);
             return $evaluationRule->evaluate($this->channelEntry->$property, $condition->value, []);
+        }
+
+        if ($condition->model_type == 'CategoryCondition') {
+            // evaluating category
+            $evaluationRule = ee('ConditionalFields')->make($condition->evaluation_rule);
+            $data = $this->channelEntry->Categories->filter('group_id', $condition->condition_category_group_id)->pluck('cat_id');
+            $value = !empty($condition->value) ? (int) $condition->value : $condition->value;
+            return $evaluationRule->evaluate($data, $value, []);
         }
 
         // If this field isnt set on the channel entry, then we fail the conditions

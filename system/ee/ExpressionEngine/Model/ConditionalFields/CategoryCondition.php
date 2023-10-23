@@ -11,12 +11,12 @@
 namespace ExpressionEngine\Model\ConditionalFields;
 
 /**
- * Property Condition model (title, url_title, etc)
+ * Category Condition model
  */
-class PropertyCondition extends Condition
+class CategoryCondition extends Condition
 {
     protected static $_validation_rules = array(
-        'condition_field_name' => 'required',
+        'condition_category_group_id' => 'required',
         'evaluation_rule' => 'required',
         'order' => 'integer'
     );
@@ -24,6 +24,6 @@ class PropertyCondition extends Condition
     public function onBeforeSave()
     {
         parent::onBeforeSave();
-        $this->setProperty('model_type', 'PropertyCondition');
+        $this->setProperty('model_type', 'CategoryCondition');
     }
 }

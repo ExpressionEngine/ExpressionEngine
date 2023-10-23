@@ -25,6 +25,7 @@ class Condition extends Model
     protected $condition_id;
     protected $condition_set_id;
     protected $model_type;
+    protected $condition_category_group_id;
     protected $condition_field_name;
     protected $condition_field_id;
     protected $evaluation_rule;
@@ -44,7 +45,8 @@ class Condition extends Model
     );
 
     protected static $_events = array(
-        'afterDelete'
+        'afterDelete',
+        'beforeSave'
     );
 
     public function onAfterDelete()
@@ -54,5 +56,10 @@ class Condition extends Model
         if ($check == 0) {
             ee('Model')->get('FieldConditionSet', $this->condition_set_id)->delete();
         }
+    }
+
+    public function onBeforeSave()
+    {
+        // placeholder
     }
 }
