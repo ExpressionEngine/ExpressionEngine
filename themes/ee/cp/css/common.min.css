@@ -29188,7 +29188,7 @@ input[type=button].btn-block {
   margin-bottom: 0px;
 }
 
-.colorpicker {
+.colorpicker__inner_wrapper {
   position: relative;
 }
 
@@ -29234,6 +29234,7 @@ input[type=button].btn-block {
   width: auto;
   z-index: 105;
   border-radius: 8px;
+  top: 100%;
 }
 
 .colorpicker__controls {
