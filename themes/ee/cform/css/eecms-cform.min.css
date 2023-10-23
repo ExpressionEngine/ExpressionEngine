@@ -80,10 +80,11 @@
     padding-top: calc(var(--flip-y) * var(--ticks-gap));
     position: relative;
     z-index: 1;
+    margin-top: 50px;
 }
 .ee-cform  .range-slider[data-ticks-position=top] {
     --flip-y: 1;
-    margin-bottom: 5px;
+    margin-bottom: 20px;
 }
 .ee-cform  .range-slider::before, .range-slider::after {
     --offset: calc(var(--thumb-size)/2);
