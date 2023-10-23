@@ -41,7 +41,7 @@
             <?php
             if (count($conditions)) {
                 foreach ($conditions['conditions'] as $conditionRow) {
-                    $conditionFieldVal['value'] = $conditionRow['condition_field_id'];
+                    $conditionFieldVal['value'] = !empty($conditionRow['condition_field_id']) ? $conditionRow['condition_field_id'] : (!empty($conditionRow['condition_category_group_id']) ? 'category[' . $conditionRow['condition_category_group_id'] . ']' : $conditionRow['condition_field_name']);
                     $rowId = $conditionRow['condition_id'];
                     $conditionFieldVal['field_name'] = 'condition[' . $setId . '][' . $rowId . '][condition_field_id]';
                     $evaluation_rule = $conditionRow['evaluation_rule'];

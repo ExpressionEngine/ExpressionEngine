@@ -632,6 +632,8 @@ class Fields extends AbstractFieldsController
 
             foreach ($conditionSet->FieldConditions as $condition) {
                 $conditions[] = [
+                    'condition_category_group_id' => (int) $condition->condition_category_group_id,
+                    'condition_field_name' => $condition->condition_field_name,
                     'condition_field_id' => (int) $condition->condition_field_id,
                     'evaluation_rule' => $condition->evaluation_rule,
                     'value' => $condition->value,
@@ -832,6 +834,81 @@ class Fields extends AbstractFieldsController
             }
         }
 
+        $rulesList = ['equal', 'notEqual', 'contains', 'notContains'];
+        $evaluationRules = [];
+        foreach ($rulesList as $ruleName) {
+            $rule = ee('ConditionalFields')->make($ruleName);
+            $evaluationRules[$ruleName] = [
+                'text'      => lang($rule->getLanguageKey()),
+                'type'      => $rule->getConditionalFieldInputType()
+            ];
+        }
+        $fieldsWithEvaluationRules['title'] = [
+            'field_id' => 'title',
+            'field_label' => lang('title'),
+            'field_name' => 'title',
+            'field_type' => 'text',
+            'evaluationRules' => $evaluationRules,
+            'evaluationValues' => []
+        ];
+        $fieldsWithEvaluationRules['url_title'] = [
+            'field_id' => 'url_title',
+            'field_label' => strip_tags(lang('url_title')),
+            'field_name' => 'url_title',
+            'field_type' => 'text',
+            'evaluationRules' => $evaluationRules,
+            'evaluationValues' => []
+        ];
+
+        $rulesList = ['matches', 'notMatches', 'contains', 'notContains'];
+        $selectEvaluationRules = [];
+        foreach ($rulesList as $ruleName) {
+            if (isset($evaluationRules[$ruleName])) {
+                $selectEvaluationRules[$ruleName] = $evaluationRules[$ruleName];
+                continue;
+            }
+            $rule = ee('ConditionalFields')->make($ruleName);
+            $selectEvaluationRules[$ruleName] = [
+                'text'      => lang($rule->getLanguageKey()),
+                'type'      => $rule->getConditionalFieldInputType()
+            ];
+        }
+        $fieldsWithEvaluationRules['status'] = [
+            'field_id' => 'status',
+            'field_label' => lang('status'),
+            'field_name' => 'status',
+            'field_type' => 'select',
+            'evaluationRules' => $selectEvaluationRules,
+            'evaluationValues' => ee('Model')->get('Status')->all(true)->getDictionary('status', 'status')
+        ];
+
+        // category groups will be checked individually
+        $categoryGroups = ee('Model')->get('CategoryGroup')->all();
+        if (!empty($categoryGroups)) {
+            $rulesList = ['isEmpty', 'isNotEmpty', 'matches', 'notMatches', 'includes', 'notIncludes'];
+            $categoryEvaluationRules = [];
+            foreach ($rulesList as $ruleName) {
+                if (isset($evaluationRules[$ruleName])) {
+                    $categoryEvaluationRules[$ruleName] = $evaluationRules[$ruleName];
+                    continue;
+                }
+                $rule = ee('ConditionalFields')->make($ruleName);
+                $categoryEvaluationRules[$ruleName] = [
+                    'text'      => lang($rule->getLanguageKey()),
+                    'type'      => $rule->getConditionalFieldInputType()
+                ];
+            }
+            foreach ($categoryGroups as $categoryGroup) {
+                $fieldsWithEvaluationRules['category[' . $categoryGroup->group_id . ']'] = [
+                    'field_id' => 'category[' . $categoryGroup->group_id . ']',
+                    'field_label' => lang('category') . ' [' . $categoryGroup->group_name . ']',
+                    'field_name' => 'category',
+                    'field_type' => 'select',
+                    'evaluationRules' => $categoryEvaluationRules,
+                    'evaluationValues' => ee('Model')->get('Category')->filter('group_id', $categoryGroup->group_id)->all()->getDictionary('cat_id', 'cat_name')
+                ];
+            }
+        }
         $siteFields = ee('Model')->get('ChannelField')->filter('site_id', 'IN', [0, ee()->config->item('site_id')])->filter('field_id', '!=', (int) $field->getId())->all();
         if ($siteFields) {
             foreach ($siteFields as $siteField) {
