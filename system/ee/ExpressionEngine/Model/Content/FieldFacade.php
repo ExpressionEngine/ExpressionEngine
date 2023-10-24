@@ -10,6 +10,8 @@
 
 namespace ExpressionEngine\Model\Content;
 
+use ExpressionEngine\Error\AddonNotFound;
+
 /**
  * Content Field Facade
  */
@@ -275,7 +277,12 @@ class FieldFacade
         ee()->lang->load('fieldtypes');
         $rulesList = [];
         $supportedEvaluationRules = [];
-        $ft = $this->getNativeField();
+        try {
+            $ft = $this->getNativeField();
+        } catch (AddonNotFound $e) {
+            // silently ignore exceptions if the fieldtype is missing
+            return $supportedEvaluationRules;
+        }
         if (!property_exists($ft, 'supportedEvaluationRules')) {
             if (property_exists($ft, 'has_array_data') && $ft->has_array_data === true) {
                 $rulesList = ['isEmpty', 'isNotEmpty'];
@@ -412,13 +419,17 @@ class FieldFacade
             }
         } else {
             $parse_fnc = ($specificModifier) ? 'replace_' . $specificModifier : 'replace_tag';
-            if (method_exists($ft, $parse_fnc) || ee('Variables/Modifiers')->has($modifier)) {
+            if (method_exists($ft, $parse_fnc) || ee('Variables/Modifiers')->has($specificModifier)) {
                 $output = $this->api->apply($parse_fnc, array($data, $params, $tagdata));
             } elseif (method_exists($ft, 'replace_tag_catchall') and $specificModifier !== '') {
                 // Go to catchall and include modifier
                 $modifier = $full_modifier ?: $specificModifier;
                 $output = $this->api->apply('replace_tag_catchall', array($data, $params, $tagdata, $modifier));
             }
+        }
+
+        if (is_null($output)) {
+            $output = '';
         }
 
         return $output;

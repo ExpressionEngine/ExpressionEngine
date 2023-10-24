@@ -763,6 +763,8 @@ class File_field
         $file['file_size:human'] = (string) ee('Format')->make('Number', $file['file_size'])->bytes();
         $file['file_size:human_long'] = (string) ee('Format')->make('Number', $file['file_size'])->bytes(false);
 
+        $file['folder_id'] = $file['directory_id'];
+
         $file['directory_id'] = $file['upload_location_id'];
         $file['directory_title'] = $upload_dir->name;
 
@@ -1011,6 +1013,9 @@ class File_field
                 'lang.file_dnd_uploading_to' => lang('file_dnd_uploading_to'),
                 'lang.file_dnd_upload_new' => lang('file_dnd_upload_new'),
                 'lang.file_dnd_create_directory' => lang('file_dnd_create_directory'),
+                'lang.hidden_input' => lang('hidden_input'),
+                'lang.file_dnd_no_directories' => lang('file_dnd_no_directories'),
+                'lang.file_dnd_no_directories_desc' => lang('file_dnd_no_directories_desc'),
 
                 'dragAndDrop.uploadDesinations' => ee('View/Helpers')->normalizedChoices($upload_destinations),
                 'dragAndDrop.endpoint' => ee('CP/URL')->make('addons/settings/filepicker/ajax-upload')->compile(),

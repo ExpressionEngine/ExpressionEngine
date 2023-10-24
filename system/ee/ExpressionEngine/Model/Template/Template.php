@@ -120,7 +120,8 @@ class Template extends FileSyncedModel
      */
     public function getPath()
     {
-        return $this->getTemplateGroup()->group_name . '/' . $this->template_name;
+        $groupName = !is_null($this->getTemplateGroup()) ? $this->getTemplateGroup()->group_name : '';
+        return $groupName . '/' . $this->template_name;
     }
 
     /**

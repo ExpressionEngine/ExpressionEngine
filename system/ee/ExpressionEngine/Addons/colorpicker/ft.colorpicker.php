@@ -93,7 +93,15 @@ class Colorpicker_ft extends EE_Fieldtype
      */
     public function display_field($data)
     {
+        if (REQ != 'CP') {
+            return '<input type="color" name="' . $this->field_name . '" value="' . $data . '" />';
+        }
+        
         ee()->cp->add_js_script('file', array('library/simplecolor', 'components/colorpicker'));
+
+        ee()->javascript->set_global([
+            'lang.colorpicker_input' => lang('colorpicker_input'),
+        ]);
 
         return $this->createColorPicker([
             'allowedColors' => $this->get_setting('allowed_colors'),
@@ -116,7 +124,7 @@ class Colorpicker_ft extends EE_Fieldtype
 
         $disabled = $disabled ? 'disabled' : '';
 
-        return "<input name=\"{$info['inputName']}\" data-colorpicker-react=\"{$data}\" data-input-value=\"\" {$disabled}/>";
+        return "<input name=\"{$info['inputName']}\" data-colorpicker-react=\"{$data}\" data-input-value=\"\" {$disabled} aria-label='" . lang('color_picker_file') . "'/>";
     }
 
     // -----------------------------------------------------------------------

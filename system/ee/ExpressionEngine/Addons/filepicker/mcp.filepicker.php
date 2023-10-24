@@ -182,9 +182,9 @@ class Filepicker_mcp
         if ($search = ee()->input->get('filter_by_keyword')) {
             $files
                 ->filterGroup()
-                ->filter('title', 'LIKE', '%' . $search . '%')
-                ->orFilter('file_name', 'LIKE', '%' . $search . '%')
-                ->orFilter('mime_type', 'LIKE', '%' . $search . '%')
+                ->filter('title', 'LIKE', '%' . ee()->db->escape_like_str($search) . '%')
+                ->orFilter('file_name', 'LIKE', '%' . ee()->db->escape_like_str($search) . '%')
+                ->orFilter('mime_type', 'LIKE', '%' . ee()->db->escape_like_str($search) . '%')
                 ->endFilterGroup();
         }
     }

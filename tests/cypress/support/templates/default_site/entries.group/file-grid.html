@@ -1,0 +1,14 @@
+{layout="cypress/layout"}
+{exp:channel:entries entry_id="1"}
+<h1>{title}</h1>
+
+<div class="file-grid">
+    {sliderbilder}
+    <div class="row-{sliderbilder:count}">
+        <div class="file"><img src="{sliderbilder:file}"></div>
+        <div class="file-data">{sliderbilder:file}{filename}.{extension}{/sliderbilder:file}</div>
+        <div class="text">{sliderbilder:slidertext}</div>
+    </div>
+    {/sliderbilder}
+</div>
+{/exp:channel:entries}

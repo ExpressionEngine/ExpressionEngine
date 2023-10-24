@@ -360,7 +360,9 @@ class Member_memberlist extends Member
             }
         }
 
-        $result_page = str_replace(trim($search_path, '/'), '', $result_page);
+        if (!empty($result_page)) {
+            $result_page = str_replace(trim($search_path, '/'), '', $result_page);
+        }
 
         /** ----------------------------------------
         /**  Parse the request URI

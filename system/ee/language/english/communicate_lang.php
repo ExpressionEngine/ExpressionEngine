@@ -90,7 +90,7 @@ $lang = array(
 
     'not_allowed_to_email_cache' => 'You are not allowed to view the email cache.',
 
-    'not_allowed_to_email_member_groups' => 'You are not allowed to email Member Groups',
+    'not_allowed_to_email_member_groups' => 'You are not allowed to email Member Roles',
 
     'not_allowed_to_email_members' => 'You are not allowed to email members',
 
@@ -111,8 +111,6 @@ $lang = array(
     'problem_with_id' => 'A problem was encountered with the ID number needed to send emails',
 
     'recipient' => 'Recipient',
-
-    'recipient_group' => 'Send to Member Groups',
 
     'remove' => 'Remove',
 
