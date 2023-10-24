@@ -1488,3 +1488,11 @@ h3.popup-modal-ee-44E4F0E59DFA295EB450397CA40D1169__window-header--title,
   z-index: 1000000;
   opacity: 0;
 }
+
+
+@media print {
+  div[id^='ee-pro'],
+  span.eeFrontEdit {
+    display: none !important;
+  }
+}

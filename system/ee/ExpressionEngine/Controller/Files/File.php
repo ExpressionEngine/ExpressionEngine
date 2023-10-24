@@ -556,6 +556,7 @@ class File extends AbstractFilesController
     public function download($id)
     {
         $file = ee('Model')->get('File', $id)
+            ->with('UploadDestination')
             ->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
             ->first();
 
@@ -568,7 +569,7 @@ class File extends AbstractFilesController
         }
 
         ee()->load->helper('download');
-        force_download($file->file_name, file_get_contents($file->getAbsolutePath()));
+        force_download($file->file_name, $file->UploadDestination->getFilesystem()->read($file->getAbsolutePath()));
     }
 }
 

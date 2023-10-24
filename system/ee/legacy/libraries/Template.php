@@ -237,8 +237,8 @@ class EE_Template
         // Record the New Relic transaction. Use a constant so that separate instances of this
         // class can't accidentally restart the transaction metrics
         if (!defined('EECMS_NEW_RELIC_TRANS_NAME')) {
-            $template = $this->templates_loaded[0];
-            define('EECMS_NEW_RELIC_TRANS_NAME', "{$template['group_name']}/{$template['template_name']}");
+            $templateLoaded = $this->templates_loaded[0];
+            define('EECMS_NEW_RELIC_TRANS_NAME', "{$templateLoaded['group_name']}/{$templateLoaded['template_name']}");
             ee()->core->set_newrelic_transaction(EECMS_NEW_RELIC_TRANS_NAME);
         }
 
@@ -400,7 +400,7 @@ class EE_Template
 
                         $replace = $this->wrapInContextAnnotations(
                             $value,
-                            'Snippet "' . $variable . '"'
+                            'Template Partial "' . $variable . '"'
                         );
 
                         $this->template = str_replace(LD . $variable . RD, $replace, $this->template);
@@ -687,8 +687,28 @@ class EE_Template
      */
     private function parseLayoutVariables($str, $layout_vars)
     {
-        $this->log_item("layout Variables:", $layout_vars);
+        $this->log_item("Layout Variables:", $layout_vars);
         $this->layout_conditionals = [];
+
+        // get all the declared layout variables (excluding layout:contents)
+        if (preg_match_all('/' . LD . 'layout:(?!\bcontents\b)([^!]+?)(' . RD . '|\s|:)/', $str, $matches)) {
+            $undefined_layout_vars = [];
+
+            foreach ($matches[1] as $key) {
+                // ignore if the variable is already defined
+                if (isset($layout_vars[$key])) {
+                    continue;
+                }
+
+                // set the undefined (but declared) variable to an empty string
+                $layout_vars[$key] = '';
+                $undefined_layout_vars[] = $key;
+            }
+
+            if (count($undefined_layout_vars) > 0) {
+                $this->log_item(" -> Undefined Variables:", $undefined_layout_vars);
+            }
+        }
 
         foreach ($layout_vars as $key => $val) {
             if (is_array($val)) {
@@ -930,6 +950,8 @@ class EE_Template
         // Find the first open tag
         $open_tag = LD . 'layout:set';
         $close_tag = LD . '/layout:set' . RD;
+
+        $template = $this->decode_channel_form_ee_tags($template);
 
         $open_tag_len = strlen($open_tag);
         $close_tag_len = strlen($close_tag);
@@ -2418,35 +2440,74 @@ class EE_Template
             $site_id = ee()->config->item('site_id');
         }
 
-        $this->log_item("Retrieving Template from Database: " . $template_group . '/' . $template);
+        $cacheKey = implode('/', [
+            'fetch_template',
+            $template_group,
+            $template,
+            ($show_default ? 'true' : 'false'),
+            $site_id,
+        ]);
 
-        $show_404 = false;
-        $template_group_404 = '';
-        $template_404 = '';
+        $query = isset(ee()->session) ? ee()->session->cache(__CLASS__, $cacheKey) : false;
 
-        /* -------------------------------------------
-        /*  Hidden Configuration Variable
-        /*  - hidden_template_indicator => '.'
-            The character(s) used to designate a template as "hidden"
-        /* -------------------------------------------*/
+        if ($query) {
+            $this->log_item("Using already cached template: " . $template_group . '/' . $template);
+        } else {
+            $this->log_item("Retrieving Template from Database: " . $template_group . '/' . $template);
 
-        $hidden_indicator = (ee()->config->item('hidden_template_indicator') === false) ? '_' : ee()->config->item('hidden_template_indicator');
+            $show_404 = false;
+            $template_group_404 = '';
+            $template_404 = '';
 
-        if (
-            $this->depth == 0
-            and substr($template, 0, 1) == $hidden_indicator
-            and ee()->uri->page_query_string == ''
-        ) { // Allow hidden templates to be used for Pages requests
             /* -------------------------------------------
             /*  Hidden Configuration Variable
-            /*  - hidden_template_404 => y/n
-                If a hidden template is encountered, the default behavior is
-                to throw a 404.  With this set to 'n', the template group's
-                index page will be shown instead
+            /*  - hidden_template_indicator => '.'
+                The character(s) used to designate a template as "hidden"
             /* -------------------------------------------*/
 
-            if (ee()->config->item('hidden_template_404') !== 'n') {
-                $x = explode("/", ee()->config->item('site_404'));
+            $hidden_indicator = (ee()->config->item('hidden_template_indicator') === false) ? '_' : ee()->config->item('hidden_template_indicator');
+
+            if (
+                $this->depth == 0
+                and substr($template, 0, 1) == $hidden_indicator
+                and ee()->uri->page_query_string == ''
+            ) { // Allow hidden templates to be used for Pages requests
+                /* -------------------------------------------
+                /*  Hidden Configuration Variable
+                /*  - hidden_template_404 => y/n
+                    If a hidden template is encountered, the default behavior is
+                    to throw a 404.  With this set to 'n', the template group's
+                    index page will be shown instead
+                /* -------------------------------------------*/
+
+                if (ee()->config->item('hidden_template_404') !== 'n') {
+                    $x = explode("/", ee()->config->item('site_404'));
+
+                    if (isset($x[0]) and isset($x[1])) {
+                        ee()->output->out_type = '404';
+                        $this->template_type = '404';
+
+                        $template_group_404 = ee()->db->escape_str($x[0]);
+                        $template_404 = ee()->db->escape_str($x[1]);
+
+                        ee()->db->where(array(
+                            'template_groups.group_name' => $x[0],
+                            'templates.template_name' => $x[1]
+                        ));
+
+                        $show_404 = true;
+                    } else {
+                        $template = 'index';
+                    }
+                } else {
+                    $template = 'index';
+                }
+            }
+
+            if (($template_group == '' || in_array($template_group, ['system_messages', 'pro-dashboard-widgets'])) && $show_default == false && ee()->config->item('site_404') != '') {
+                $treq = ee()->config->item('site_404');
+
+                $x = explode("/", $treq);
 
                 if (isset($x[0]) and isset($x[1])) {
                     ee()->output->out_type = '404';
@@ -2461,56 +2522,35 @@ class EE_Template
                     ));
 
                     $show_404 = true;
-                } else {
-                    $template = 'index';
                 }
-            } else {
-                $template = 'index';
+            }
+
+            ee()->db->select('templates.*, template_groups.group_name')
+                ->from('templates')
+                ->join('template_groups', 'template_groups.group_id = templates.group_id')
+                ->where('template_groups.site_id', $site_id);
+
+            // If we're not dealing with a 404, what template and group do we need?
+            if ($show_404 === false) {
+                // Definitely need a template
+                if ($template != '') {
+                    ee()->db->where('templates.template_name', $template);
+                }
+
+                // But do we have a template group?
+                if ($show_default == true) {
+                    ee()->db->where('template_groups.is_site_default', 'y');
+                } else {
+                    ee()->db->where('template_groups.group_name', $template_group);
+                }
+            }
+
+            $query = ee()->db->get();
+
+            if (isset(ee()->session)) {
+                ee()->session->set_cache(__CLASS__, $cacheKey, $query);
             }
         }
-
-        if (($template_group == '' || in_array($template_group, ['system_messages', 'pro-dashboard-widgets'])) && $show_default == false && ee()->config->item('site_404') != '') {
-            $treq = ee()->config->item('site_404');
-
-            $x = explode("/", $treq);
-
-            if (isset($x[0]) and isset($x[1])) {
-                ee()->output->out_type = '404';
-                $this->template_type = '404';
-
-                $template_group_404 = ee()->db->escape_str($x[0]);
-                $template_404 = ee()->db->escape_str($x[1]);
-
-                ee()->db->where(array(
-                    'template_groups.group_name' => $x[0],
-                    'templates.template_name' => $x[1]
-                ));
-
-                $show_404 = true;
-            }
-        }
-
-        ee()->db->select('templates.*, template_groups.group_name')
-            ->from('templates')
-            ->join('template_groups', 'template_groups.group_id = templates.group_id')
-            ->where('template_groups.site_id', $site_id);
-
-        // If we're not dealing with a 404, what template and group do we need?
-        if ($show_404 === false) {
-            // Definitely need a template
-            if ($template != '') {
-                ee()->db->where('templates.template_name', $template);
-            }
-
-            // But do we have a template group?
-            if ($show_default == true) {
-                ee()->db->where('template_groups.is_site_default', 'y');
-            } else {
-                ee()->db->where('template_groups.group_name', $template_group);
-            }
-        }
-
-        $query = ee()->db->get();
 
         // Hmm, no template huh?
         if ($query->num_rows() == 0) {
@@ -4329,6 +4369,7 @@ class EE_Template
             $groups = ee('Model')->get('TemplateGroup')
                 ->with('Templates')
                 ->filter('site_id', ee()->config->item('site_id'))
+                ->order('group_id', 'desc') // sort reverse, so that older group IDs would be used
                 ->all();
         } catch (\Exception $e) {
             //if we got SQL error, silently exit

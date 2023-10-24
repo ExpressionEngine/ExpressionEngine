@@ -86,6 +86,9 @@ class Filemanager
         $basename = $filesystem->basename($filename);
         $dirname = ($filesystem->dirname($filename) !== '.') ? $filesystem->dirname($filename) . '/' : '';
 
+        // Remove invisible control characters
+        $basename = preg_replace('#\\p{C}+#u', '', $basename);
+
         // clean up the filename
         if ($parameters['convert_spaces'] === true) {
             $basename = preg_replace("/\s+/", "_", $basename);
@@ -114,7 +117,7 @@ class Filemanager
      * @return string Full path and filename of the file, use `clean_subdir_and_filename` instead to just
      *   get the filename and subdirectory
      */
-    public function clean_filename($filename, $dir_id, $parameters = array()) 
+    public function clean_filename($filename, $dir_id, $parameters = array())
     {
         $filename = $this->clean_subdir_and_filename($filename, $dir_id, $parameters);
 

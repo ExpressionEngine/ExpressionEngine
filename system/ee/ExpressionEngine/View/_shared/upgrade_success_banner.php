@@ -27,6 +27,6 @@
             <p>Manage add-ons, back up the database, change settings, and streamline deployments through the improved Command Line Interface.</p>
         </a>
     </div>
-    <a href="<?=ee('CP/URL')->make('homepage/dismiss-banner')->compile();?>" class="banner-dismiss"></a>
+    <a href="<?=ee('CP/URL')->make('homepage/dismiss-banner')->compile();?>" class="banner-dismiss"><span class="sr-only"><?=lang('close_banner')?></span></a>
 </div>
 <?php endif; ?>

@@ -76,7 +76,9 @@ class SelectList extends React.Component {
           entry_id: items[key].entry_id ? items[key].entry_id : '',
           upload_location_id: items[key].upload_location_id ? items[key].upload_location_id : '',
           path: items[key].path ? items[key].path : '',
-          toggles: items[key].toggles ? items[key].toggles : null
+          toggles: items[key].toggles ? items[key].toggles : null,
+          status: items[key].status ? items[key].status : null,
+          editable: items[key].editable ? items[key].editable : false,
         }
 
         if (items[key].children) {
@@ -624,10 +626,10 @@ class SelectItem extends React.Component {
           <a href="" className={'button button--default extra-flyout-button flyout-' + toggleName + (props.item.toggles[toggleName] == true ? ' active' : '')} onClick={(e) => this.bindToggleChange(e, props.item)} disabled = {checked ? false : true} data-toggle-name={toggleName}>{EE.lang[toggleName]} {(props.item.toggles[toggleName] == true ? this.toggleOn() : this.toggleOff())}</a>
         )}
         {props.editable && (
-          <a href="" className="button button--default flyout-edit flyout-edit-icon" data-id={props.item.value}><i class="fal fa-pencil-alt"></i></a>
+          <a href="" className="button button--default flyout-edit flyout-edit-icon" data-id={props.item.value}><span className="sr-only">{EE.lang.edit_element}</span><i class="fal fa-pencil-alt"></i></a>
         )}
         {props.removable && (
-            <a href="" className="button button--default js-button-delete" onClick={(e) => props.handleRemove(e, props.item)}><i class="fal fa-fw fa-trash-alt"></i></a>
+            <a href="" className="button button--default js-button-delete" onClick={(e) => props.handleRemove(e, props.item)}><span className="sr-only">{EE.lang.remove_btn}</span><i class="fal fa-fw fa-trash-alt"></i></a>
         )}
         </div>
         </div>

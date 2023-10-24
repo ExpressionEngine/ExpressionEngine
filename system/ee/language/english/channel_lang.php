@@ -146,8 +146,6 @@ $lang = array(
 
     'maximum_channels_reached' => 'You have reached the maximum number of Channels allowed.',
 
-    'member_group' => 'Member group',
-
     'rename_tab' => 'Rename tab',
 
     'roles_desc' => 'Choose the member role(s) to apply this layout to.',
@@ -370,7 +368,7 @@ $lang = array(
 
     'moderate_comments' => 'Moderate comments?',
 
-    'moderate_comments_desc' => 'When enabled, submitted comments will be put into a moderation queue, and must be approved by a Super Admin or other member group with moderation permissions.',
+    'moderate_comments_desc' => 'When enabled, submitted comments will be put into a moderation queue, and must be approved by a Super Admin or member with a role that has moderation permissions.',
 
     'notifications' => 'Notifications',
 
@@ -548,8 +546,6 @@ $lang = array(
     'edit_category_field' => 'Edit Category Field',
 
     'edit_category_group' => 'Edit Category Group',
-
-    'edit_member_groups' => 'Edit Member Groups',
 
     'exclude_group_form' => 'Exclude group from?',
 

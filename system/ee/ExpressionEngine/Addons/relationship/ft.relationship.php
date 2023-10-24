@@ -552,6 +552,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             'label' => $entry->title,
             'instructions' => $entry->Channel->channel_title,
             'channel_id' => $entry->Channel->getId(),
+            'editable' => (ee('Permission')->isSuperAdmin() || array_key_exists($entry->Channel->getId(), ee()->session->userdata('assigned_channels'))),
             'status' => $entry->status
         ];
     }

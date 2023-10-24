@@ -322,43 +322,45 @@ class EntryListing
         }
 
         if (! empty($this->search_value)) {
-            // setup content fields to use in search
-            $content_fields = [];
-            if (isset($channel)) {
-                $custom_fields = $channel->getAllCustomFields();
-            } else {
-                $custom_fields = array();
-
-                foreach ($this->getChannels() as $channel) {
-                    $custom_fields = array_merge($custom_fields, $channel->getAllCustomFields()->asArray());
-                }
-            }
-
-            foreach ($custom_fields as $cf) {
-                $content_fields[] = 'field_id_' . $cf->getId();
-            }
-
-            $search_fields = [];
-
-            switch ($this->search_in) {
-                case 'titles_and_content':
-                    $search_fields = array_merge(['title', 'url_title', 'entry_id'], $content_fields);
-
-                    break;
-                case 'content':
-                    $search_fields = $content_fields;
-
-                    break;
-                case 'titles':
-                    $search_fields = ['title', 'url_title', 'entry_id'];
-
-                    break;
-            }
-
             if (is_numeric($this->search_value) && strlen($this->search_value) < 3) {
                 $entries->filter('entry_id', $this->search_value);
             } else {
-                $entries->search($search_fields, $this->search_value);
+                // setup content fields to use in search
+                $content_fields = [];
+                if ($this->search_in == 'titles_and_content' || $this->search_in == 'content') {
+                    if (!empty($channel)) {
+                        $custom_fields = $channel->getAllCustomFields();
+                    } else {
+                        $custom_fields = array();
+
+                        foreach ($this->getChannels() as $channel) {
+                            $custom_fields = array_merge($custom_fields, $channel->getAllCustomFields()->asArray());
+                        }
+                    }
+
+                    foreach ($custom_fields as $cf) {
+                        $content_fields[] = 'field_id_' . $cf->getId();
+                    }
+                }
+
+                $search_fields = [];
+
+                switch ($this->search_in) {
+                    case 'titles_and_content':
+                        $search_fields = array_merge(['title', 'url_title', 'entry_id'], $content_fields);
+
+                        break;
+                    case 'content':
+                        $search_fields = $content_fields;
+
+                        break;
+                    case 'titles':
+                        $search_fields = ['title', 'url_title', 'entry_id'];
+
+                        break;
+                }
+
+                $entries->search(array_unique($search_fields), $this->search_value);
             }
         }
 
@@ -443,7 +445,7 @@ class EntryListing
      */
     protected function getChannels()
     {
-        if (! isset($this->channels)) {
+        if (empty($this->channels)) {
             $allowed_channel_ids = ($this->is_admin) ? null : $this->allowed_channels;
             $this->channels = ee('Model')->get('Channel', $allowed_channel_ids)
                 ->fields('channel_id', 'channel_title')

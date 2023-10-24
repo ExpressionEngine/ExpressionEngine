@@ -133,7 +133,7 @@ class Api_channel_fields extends Api
             }
 
             $opts = get_class_vars($data['class']);
-            $fts[$key] = array_merge($fts[$key], $opts['info']);
+            $fts[$key] = array_merge($fts[$key], (isset($opts['info']) && is_array($opts['info']) ? $opts['info'] : []));
         }
 
         return $fts;

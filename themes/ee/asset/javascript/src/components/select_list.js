@@ -557,7 +557,9 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
             entry_id: items[key].entry_id ? items[key].entry_id : '',
             upload_location_id: items[key].upload_location_id ? items[key].upload_location_id : '',
             path: items[key].path ? items[key].path : '',
-            toggles: items[key].toggles ? items[key].toggles : null
+            toggles: items[key].toggles ? items[key].toggles : null,
+            status: items[key].status ? items[key].status : null,
+            editable: items[key].editable ? items[key].editable : false
           };
 
           if (items[key].children) {
@@ -762,7 +764,9 @@ var SelectItem = /*#__PURE__*/function (_React$Component2) {
         href: "",
         className: "button button--default flyout-edit flyout-edit-icon",
         "data-id": props.item.value
-      }, React.createElement("i", {
+      }, React.createElement("span", {
+        className: "sr-only"
+      }, EE.lang.edit_element), React.createElement("i", {
         "class": "fal fa-pencil-alt"
       })), props.removable && React.createElement("a", {
         href: "",
@@ -770,7 +774,9 @@ var SelectItem = /*#__PURE__*/function (_React$Component2) {
         onClick: function onClick(e) {
           return props.handleRemove(e, props.item);
         }
-      }, React.createElement("i", {
+      }, React.createElement("span", {
+        className: "sr-only"
+      }, EE.lang.remove_btn), React.createElement("i", {
         "class": "fal fa-fw fa-trash-alt"
       })))));
 

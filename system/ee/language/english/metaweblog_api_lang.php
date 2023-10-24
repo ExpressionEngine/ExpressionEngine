@@ -34,7 +34,7 @@ $lang = array(
 
     'edit_metaweblog' => 'Edit MetaWeblog',
 
-    'entry_uneditable' => 'You do not have permission to edit this entry. Please check member group permissions',
+    'entry_uneditable' => 'You do not have permission to edit this entry. Please consult your role permissions',
 
     'invalid_access' => 'Invalid Access',
 
