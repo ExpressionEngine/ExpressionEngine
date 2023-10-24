@@ -423,7 +423,7 @@ $(document).ready(function(){
 	// Ctrls+S to save
 	// -------------------------------------------------------------------
 	window.addEventListener('keydown', function (key) {
-		if (key.ctrlKey || key.metaKey){
+		if ((key.ctrlKey || key.metaKey) && !$('body').hasClass('redactor-body-fullscreen')) {
 			$('.button[data-shortcut]:visible').each(function(e) {
 				$(this).addClass('button--with-shortcut');
 				if (key.key.toLowerCase() == $(this).data('shortcut').toLowerCase()) {

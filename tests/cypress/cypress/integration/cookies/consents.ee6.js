@@ -33,7 +33,7 @@ context('Cookie Consents', () => {
     it('tracker cookie not set if consent not granted', function() {
         cy.authVisit('index.php')
         cy.getCookie('exp_tracker').should('not.exist')
-        cy.logFrontendPerformance()
+        //cy.logFrontendPerformance()
     })
 
     it('require consents in CP', function() {
@@ -74,8 +74,9 @@ context('Cookie Consents', () => {
         cy.get('.app-notice---important').should('not.exist');
     })
 
-    it('tracker cookie set if consent granted', function() {
+    it('check tracker cookie', function() {
 
+        cy.log('tracker cookie set if consent granted')
         cy.authVisit('index.php')
         cy.getCookie('exp_tracker').should('exist')
         cy.getCookie('exp_tracker').then((cookie) => {
@@ -83,11 +84,7 @@ context('Cookie Consents', () => {
             tracker = cookie.value;
         })
 
-
-        Cypress.Cookies.preserveOnce('exp_tracker', 'exp_sessionid', 'exp_csrf_token');
-    })
-
-    it('tracker cookie not updated if consent not granted', function() {
+        cy.log('tracker cookie not updated if consent not granted')
         cy.authVisit('admin.php?/cp/members/profile/consent&id=1');
         //opt out
         cy.get('a[rel=modal-consent-request-1]').click();
@@ -100,18 +97,14 @@ context('Cookie Consents', () => {
         cy.get('.app-notice---important').contains('Cookies consent').should('be.visible');
 
         cy.visit('index.php/about/contact')
-        cy.logFrontendPerformance()
+        //cy.logFrontendPerformance()
         //tracker still exists, but the value is old
         cy.getCookie('exp_tracker').should('exist')
         cy.getCookie('exp_tracker').then((cookie) => {
             expect(cookie.value).to.eq(tracker)
         })
 
-        //stay logged in
-        Cypress.Cookies.preserveOnce('exp_tracker', 'exp_sessionid', 'exp_csrf_token');
-    })
-
-    it('tracker cookie updated if consent granted', function() {
+        cy.log('tracker cookie updated if consent granted')
         //opt in
         cy.visit('admin.php?/cp/members/profile/consent&id=1');
         cy.get('a[rel=modal-consent-request-1]').click();
@@ -123,21 +116,20 @@ context('Cookie Consents', () => {
         cy.get('.app-notice---success').contains('Functionality Cookies')
 
         cy.visit('index.php/about/contact')
-        //tracker still exists, but the value is old
+        //tracker still exists, and the value is different
         cy.getCookie('exp_tracker').should('exist')
         cy.getCookie('exp_tracker').then((cookie) => {
             expect(cookie.value).to.not.eq(tracker)
         })
 
         //stay logged in
-        Cypress.Cookies.preserveOnce('exp_sessionid', 'exp_csrf_token');
-    })
+        cy.clearCookie('exp_tracker')
 
-    it('withdraw consent on FE', function() {
+        cy.log('withdraw consent on FE')
         cy.getCookie('exp_tracker').should('not.exist')
 
         cy.visit('index.php/consents/form')
-        cy.logFrontendPerformance()
+        //cy.logFrontendPerformance()
         cy.getCookie('exp_tracker').should('exist')
         cy.getCookie('exp_tracker').then((cookie) => {
             tracker = cookie.value;
@@ -165,10 +157,9 @@ context('Cookie Consents', () => {
         })
 
         //stay logged in
-        Cypress.Cookies.preserveOnce('exp_sessionid', 'exp_csrf_token');
-    });
+        cy.clearCookie('exp_tracker')
 
-    it('grant consent on FE', function() {
+        cy.log('grant consent on FE') 
         cy.visit('index.php/consents/form')
         cy.getCookie('exp_tracker').should('not.exist')
 
@@ -243,52 +234,48 @@ context('Cookie Consents', () => {
     })
 
 
-    describe('consents when logged out', function() {
-        it('grant consent on FE', function() {
-            cy.visit('index.php/consents/form')
-            cy.getCookie('exp_tracker').should('not.exist')
+    it('consents when logged out', function() {
+        cy.log('grant consent on FE') 
+        cy.visit('index.php/consents/form')
+        cy.getCookie('exp_tracker').should('not.exist')
+
+        cy.intercept("POST", "**/consents/form").as("ajax");
+        cy.get('[name="ee:cookies_functionality"]').check();
+        cy.get('[name="ee:cookies_performance"]').check();
+        cy.get('[name="ee:cookies_targeting"]').check();
+        cy.get('[name=submit]').click();
+        cy.wait('@ajax');
+
+        //check cookies are set
+        cy.visit('index.php/about/contact')
+        cy.getCookie('exp_tracker').should('exist')
+
+        cy.log('edit consents')
+
+        cy.visit('index.php/consents/form')
+        cy.getCookie('exp_tracker').should('exist')
+        cy.getCookie('exp_tracker').then((cookie) => {
+            tracker = cookie.value;
 
             cy.intercept("POST", "**/consents/form").as("ajax");
-            cy.get('[name="ee:cookies_functionality"]').check();
-            cy.get('[name="ee:cookies_performance"]').check();
-            cy.get('[name="ee:cookies_targeting"]').check();
+            cy.get('[name="ee:cookies_functionality"]').uncheck();
             cy.get('[name=submit]').click();
             cy.wait('@ajax');
 
-            //check cookies are set
+            //check cookies are not set
             cy.visit('index.php/about/contact')
-            cy.getCookie('exp_tracker').should('exist')
-
-            Cypress.Cookies.preserveOnce('exp_tracker', 'exp_consents');
-        })
-
-        it('edit consents', function() {
-
-            cy.visit('index.php/consents/form')
+            //tracker still exists, but the value is old
             cy.getCookie('exp_tracker').should('exist')
             cy.getCookie('exp_tracker').then((cookie) => {
-                tracker = cookie.value;
-
-                cy.intercept("POST", "**/consents/form").as("ajax");
-                cy.get('[name="ee:cookies_functionality"]').uncheck();
-                cy.get('[name=submit]').click();
-                cy.wait('@ajax');
-
-                //check cookies are not set
-                cy.visit('index.php/about/contact')
-                //tracker still exists, but the value is old
-                cy.getCookie('exp_tracker').should('exist')
-                cy.getCookie('exp_tracker').then((cookie) => {
-                    expect(cookie.value).to.eq(tracker)
-                })
-
-                // check consent has been removed in CP
-                cy.visit('index.php/consents/form')
-                cy.get('[name="ee:cookies_functionality"]').should('not.be.checked');
-                cy.get('[name="ee:cookies_performance"]').should('be.checked');
-                cy.get('[name="ee:cookies_targeting"]').should('be.checked');
+                expect(cookie.value).to.eq(tracker)
             })
-        });
+
+            // check consent has been removed in CP
+            cy.visit('index.php/consents/form')
+            cy.get('[name="ee:cookies_functionality"]').should('not.be.checked');
+            cy.get('[name="ee:cookies_performance"]').should('be.checked');
+            cy.get('[name="ee:cookies_targeting"]').should('be.checked');
+        })
 
     });
 
