@@ -800,6 +800,13 @@ class ChannelEntry extends ContentModel
             );
         }
 
+        if ($this->Channel->enforce_auto_url_title) {
+            $this->getCustomField('url_title')->setItem(
+                'readonly',
+                true
+            );
+        }
+
         $this->usesCustomFields();
 
         $fields = $this->getCustomFields();

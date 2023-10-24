@@ -117,7 +117,7 @@ class Status extends Model
      */
     public function onAfterUpdate($previous)
     {
-        if ($previous['status'] != $this->status) {
+        if (isset($previous['status']) && $previous['status'] != $this->status) {
             //direct SQL, as we need it to be fast
             ee('db')->where('status', $previous['status'])->update('channel_titles', ['status' => $this->status]);
         }

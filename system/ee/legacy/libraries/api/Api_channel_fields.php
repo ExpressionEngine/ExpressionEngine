@@ -8,6 +8,8 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+use ExpressionEngine\Error\AddonNotFound;
+
 /**
  * Channel Fields API library
  */
@@ -131,7 +133,7 @@ class Api_channel_fields extends Api
             }
 
             $opts = get_class_vars($data['class']);
-            $fts[$key] = array_merge($fts[$key], $opts['info']);
+            $fts[$key] = array_merge($fts[$key], (isset($opts['info']) && is_array($opts['info']) ? $opts['info'] : []));
         }
 
         return $fts;
@@ -250,6 +252,12 @@ class Api_channel_fields extends Api
             }
 
             if (! $found_path) {
+                if (REQ == 'CP') {
+                    throw new AddonNotFound(strip_tags(sprintf(
+                        ee()->lang->line('unable_to_load_field_type'),
+                        strtolower($file)
+                    )));
+                }
                 show_error(sprintf(
                     ee()->lang->line('unable_to_load_field_type'),
                     strtolower($file)

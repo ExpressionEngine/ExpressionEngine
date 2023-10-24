@@ -24,6 +24,8 @@ class EE_Functions
     public $file_paths = array();
     public $conditional_debug = false;
     public $catfields = array();
+    protected $cat_array = array();
+    protected $temp_array = array();
     public static $protected_data = array();
 
     private $temp_array;
@@ -1186,6 +1188,10 @@ class EE_Functions
      */
     public function add_form_security_hash($str)
     {
+        if (!defined('CSRF_TOKEN')) {
+            ee()->security->have_valid_xid();
+        }
+        
         // Add security hash. Need to replace the legacy XID one as well.
         $str = str_replace('{csrf_token}', CSRF_TOKEN, $str);
         $str = str_replace('{XID_HASH}', CSRF_TOKEN, $str);
@@ -1665,14 +1671,14 @@ class EE_Functions
      * Prep conditionals
      *
      * @access public
-     * @param string $str		The template string containing conditionals
-     * @param string $vars	The variables to look for in the conditionals
-     * @param string $safety	If y, make sure conditionals are fully parseable
-     *							by replacing unknown variables with FALSE. This
-     *							defaults to n so that conditionals are slowly
-     *							filled and then turned into safely executable
-     *							ones with the safety on at the end.
-     * @param string $prefix	Prefix for the variables in $vars.
+     * @param string $str   The template string containing conditionals
+     * @param string $vars  The variables to look for in the conditionals
+     * @param string $safety If y, make sure conditionals are fully parseable
+     *                      by replacing unknown variables with FALSE. This
+     *                      defaults to n so that conditionals are slowly
+     *                      filled and then turned into safely executable
+     *                      ones with the safety on at the end.
+     * @param string $prefix Prefix for the variables in $vars.
      * @return string The new template to use instead of $str.
      */
     public function prep_conditionals($str, $vars, $safety = 'n', $prefix = '')

@@ -33,7 +33,25 @@ class Login extends Profile
      */
     public function index()
     {
+        ee()->lang->load('pro');
         $this->base_url = ee('CP/URL')->make($this->base_url, $this->query_string);
+        ee()->view->cp_page_title = sprintf(lang('login_as'), $this->member->screen_name);
+        ee()->view->cp_breadcrumbs = array_merge($this->breadcrumbs, [
+            '' => sprintf(lang('login_as'), '...')
+        ]);
+
+        if ($this->member->enable_mfa === true) {
+            if (ee()->session->getMember()->enable_mfa !== true) {
+                ee('CP/Alert')->makeInline('mfa-required')
+                    ->asIssue()
+                    ->cannotClose()
+                    ->withTitle(lang('mfa_required'))
+                    ->addToBody(lang('mfa_required_login_as'))
+                    ->now();
+                ee()->view->extra_alerts = ['mfa-required'];
+                return ee()->cp->render('settings/page', []);
+            }
+        }
 
         $vars['sections'] = array(
             array(
@@ -122,7 +140,6 @@ class Login extends Profile
 
         ee()->view->base_url = $this->base_url;
         ee()->view->ajax_validate = true;
-        ee()->view->cp_page_title = sprintf(lang('login_as'), $this->member->screen_name);
         ee()->view->save_btn_text = 'btn_authenticate_and_login';
         ee()->view->save_btn_text_working = 'btn_login_working';
         ee()->cp->render('settings/form', $vars);
@@ -170,8 +187,19 @@ class Login extends Profile
             ee()->input->set_cookie(ee()->session->c_anon, 1, $expire);
         }
 
+        $setMfaFlag = false;
+        if ($this->member->enable_mfa === true && ee()->session->getMember()->enable_mfa === true && ee()->session->mfa_flag == 'skip') {
+            $setMfaFlag = true;
+        }
+
         // Create a new session
         $session_id = ee()->session->create_new_session($this->member->member_id, true, true);
+        if ($setMfaFlag) {
+            $session = ee('Model')->get('Session', $session_id)->first();
+            $session->mfa_flag = 'skip';
+            $session->save();
+            ee()->session->mfa_flag = 'skip';
+        }
 
         // Delete old password lockouts
         ee()->session->delete_password_lockout();
@@ -183,7 +211,7 @@ class Login extends Profile
 
         if (! empty($redirect)) {
             if ($redirect == 'cp_index') {
-                $return_path = ee()->config->item('cp_url', false) . '?S=' . ee()->session->session_id();
+                $return_path = $this->member->getCPHomepageURL();
             } elseif ($redirect == 'other' && ! empty($url)) {
                 $return_path = ee('Security/XSS')->clean(strip_tags($url));
             }

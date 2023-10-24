@@ -104,9 +104,13 @@ class Preflight
     {
         $this->logger->log('Checking file permissions needed to complete the update');
 
+        $theme_paths = $this->getThemePaths();
+        foreach ($theme_paths as $theme_path) {
+            $this->validateThemePath($theme_path);
+        }
         $theme_paths = array_map(function ($path) {
             return preg_replace("#/+#", "/", rtrim($path, DIRECTORY_SEPARATOR) . '/ee/');
-        }, $this->getThemePaths());
+        }, $theme_paths);
 
         $paths = array_merge(
             [

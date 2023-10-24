@@ -450,7 +450,7 @@ $lang = array(
 
     'enable_template_routes' => 'Enable Template Routes',
 
-    'enable_template_routes_exp' => 'Disabling template routes will remove the route options from the access panel and templates will only be accesible from the default group/template URL.',
+    'enable_template_routes_exp' => 'Disabling template routes will remove the route options from the access panel and templates will only be accessible from the default group/template URL.',
 
     'export_as' => 'Export files as',
 
@@ -523,8 +523,6 @@ $lang = array(
     'max_tmpl_revisions' => 'Maximum Number of Revisions to Keep',
 
     'medium' => 'Medium',
-
-    'member_group' => 'Member Group',
 
     'missing_name' => 'Your template must have a name',
 
@@ -848,8 +846,6 @@ $lang = array(
     'forgot_form' => 'Forgot Password Form',
 
     'full_profile' => 'Full Profile Page',
-
-    'group_description' => 'Member Group Description',
 
     'home_page' => 'Member Profile Home Page',
 

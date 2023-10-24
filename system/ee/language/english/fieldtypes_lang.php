@@ -81,6 +81,10 @@ $lang = array(
 
     'rel_ft_display_entry_id_desc' => 'When enabled, entry IDs will be displayed together with entry title inside the field.',
 
+    'rel_ft_display_status' => 'Display Status?',
+
+    'rel_ft_display_status_desc' => 'When enabled, colored status badge will be displayed together with entry title inside the field.',
+
     'rel_ft_deferred' => 'Defer field initialization?',
 
     'rel_ft_deferred_desc' => 'When enabled, this field won’t initialize until the Edit Relationships button is clicked on. This can result in faster control panel page load times.',
@@ -147,6 +151,8 @@ $lang = array(
 
     'file_ft_show_files_desc' => 'When enabled, a drop down with existing files will be shown to authors.',
 
+    'file_field_msm_warning' => 'This field is currently set to use the <b>%s</b> upload directory, which is only available in <b>%s</b> MSM site.',
+
     'file_ft_upload_directories' => 'Upload Directories',
 
     /* File Drag and Drop */
@@ -190,6 +196,10 @@ $lang = array(
     'file_dnd_upload_new' => 'Upload New',
 
     'file_dnd_create_directory' => 'Create New Directory',
+
+    'file_dnd_no_directories' => 'No upload directories available',
+
+    'file_dnd_no_directories_desc' => 'This field is limited to upload directory not available for current member and site.',
 
     'file_grid_vertical_layout_title' => 'File Grid layout',
 
@@ -258,7 +268,9 @@ $lang = array(
 
     'grid_min_rows' => 'Minimum rows',
 
-    'grid_min_rows_desc' => 'Sets the minumum amount of data rows this grid will accept',
+    'grid_min_rows_desc' => 'Sets the minimum amount of data rows this grid will accept',
+
+    'grid_min_rows_required' => 'This grid requires at least %d rows.',
 
     'grid_order_by' => 'Order by',
 
@@ -346,6 +358,16 @@ $lang = array(
     /* Notes */
     'notes_note_content' => 'Note Content',
     'notes_note_content_desc' => 'This content will appear as a note on the publish form. Markdown formatting is supported.',
+
+    /* Date */
+
+    'date_localization' => 'Date Localization',
+    'date_localization_desc' => 'Choose how the field data should be localized. <a href="' . DOC_URL . 'fieldtypes/date.html">More info</a>',
+    'always_localized' => 'Always localized',
+    'always_fixed' => 'Always fixed',
+    'ask_each_time' => 'Ask each time',
+    'show_time' => 'Include time?',
+    'show_time_desc' => 'When turned off, only date will be displayed',
 );
 
 // EOF

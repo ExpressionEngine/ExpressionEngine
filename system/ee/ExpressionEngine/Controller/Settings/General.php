@@ -23,6 +23,7 @@ class General extends Settings
     public function index()
     {
         ee()->load->model('admin_model');
+        ee()->lang->loadfile('calendar');
 
         $site = ee('Model')->get('Site')
             ->filter('site_id', ee()->config->item('site_id'))
@@ -64,7 +65,7 @@ class General extends Settings
                         )
                     )
                 ),
-                array(
+                'site_online' => array(
                     'title' => 'site_online',
                     'desc' => 'site_online_desc',
                     'fields' => array(
@@ -151,6 +152,21 @@ class General extends Settings
                     )
                 ),
                 array(
+                    'title' => 'week_start',
+                    'desc' => 'week_start_desc',
+                    'fields' => array(
+                        'week_start' => array(
+                            'type' => 'radio',
+                            'choices' => array(
+                                'friday' => lang('cal_friday'),
+                                'saturday' => lang('cal_saturday'),
+                                'sunday' => lang('cal_sunday'),
+                                'monday' => lang('cal_monday')
+                            )
+                        )
+                    )
+                ),
+                array(
                     'title' => 'include_seconds',
                     'desc' => 'include_seconds_desc',
                     'fields' => array(
@@ -159,6 +175,11 @@ class General extends Settings
                 ),
             ),
         );
+
+        if (bool_config_item('multiple_sites_enabled')) {
+            $vars['sections'][0]['site_online']['title'] = 'system_online';
+            $vars['sections'][0]['site_online']['desc'] = sprintf(lang('system_online_desc'), ee('CP/URL', 'msm')->compile());
+        }
 
         $base_url = ee('CP/URL', 'settings/general');
 
@@ -303,7 +324,7 @@ class General extends Settings
                     ->withTitle(sprintf(lang('version_update_available'), $version_info['version']));
                 if ($isMajorUpdate) {
                     $banner->addToBody(lang('version_update_is_major') . '<br><br>');
-                } else if ($isVitalUpdate) {
+                } elseif ($isVitalUpdate) {
                     $banner->addToBody(lang('version_update_is_vital') . '<br><br>');
                 }
                 if ($version_major < 7) {

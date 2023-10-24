@@ -14,12 +14,12 @@ context('Channels', () => {
         cy.authVisit(page.url);
     })
 
-    it('shows the Channels page', function() {
+    it('Show the Channels page', function() {
         cy.contains('Channels')
     })
 
 
-    it('should list the channels', function() {
+    it('List the channels', function() {
         page.getChannelTitles().then(function(results) {
             let channels = [...page.$('channels').map(function(index, el) {
                 return $(el).find('.list-item__title').text().trim();
@@ -29,7 +29,7 @@ context('Channels', () => {
         })
     })
 
-    it('should delete a channel', function() {
+    it('Delete a channel', function() {
         page.getChannelTitles().then(function(channels) {
             page.get('channels_checkboxes').eq(1).click()
 
@@ -49,7 +49,7 @@ context('Channels', () => {
         })
     })
 
-    it('should bulk delete channels', function() {
+    it('Bulk delete channels', function() {
         page.getChannelTitles().then(function(channels) {
 
             page.get('select_all').click()

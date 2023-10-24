@@ -9,9 +9,11 @@
 		<?php if ($has_custom_value): ?>
 		<div class="dropdown__search">
 			<div class="search-input">
+				<label for="<?=$name?>" class="sr-only"><?=$name?></label>
 			<input
 				type="text"
 				name="<?=$name?>"
+				id="<?=$name?>"
 				value="<?=htmlentities($custom_value, ENT_QUOTES, 'UTF-8')?>"
 				placeholder="<?=htmlentities($placeholder, ENT_QUOTES, 'UTF-8')?>"
 				data-threshold="<?=$threshold?>"
@@ -37,7 +39,7 @@
 	<div class="modal">
 		<div class="col-group">
 			<div class="col w-16">
-				<a class="m-close" href="#"></a>
+				<a class="m-close" href="#"><span class="sr-only"><?=lang('close_modal')?></span></a>
 				<div class="form-standard">
 					<form>
 						<div class="form-btns form-btns-top">
