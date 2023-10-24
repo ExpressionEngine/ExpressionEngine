@@ -763,6 +763,8 @@ class File_field
         $file['file_size:human'] = (string) ee('Format')->make('Number', $file['file_size'])->bytes();
         $file['file_size:human_long'] = (string) ee('Format')->make('Number', $file['file_size'])->bytes(false);
 
+        $file['folder_id'] = $file['directory_id'];
+
         $file['directory_id'] = $file['upload_location_id'];
         $file['directory_title'] = $upload_dir->name;
 

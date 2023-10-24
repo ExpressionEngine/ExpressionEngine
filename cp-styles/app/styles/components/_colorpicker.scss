@@ -3,6 +3,10 @@ $alpha-checks: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGl
 
 
 .colorpicker {
+	// position: relative;
+}
+
+.colorpicker__inner_wrapper {
 	position: relative;
 }
 
@@ -55,6 +59,7 @@ $alpha-checks: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGl
 	width: auto;
 	z-index: 105;
 	border-radius: $corners-big;
+	top: 100%;
 }
 
 .colorpicker__controls {
