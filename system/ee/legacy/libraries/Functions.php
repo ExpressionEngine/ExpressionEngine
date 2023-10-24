@@ -28,9 +28,6 @@ class EE_Functions
     protected $temp_array = array();
     public static $protected_data = array();
 
-    private $temp_array;
-    private $cat_array;
-
     /**
      * Fetch base site index
      *
