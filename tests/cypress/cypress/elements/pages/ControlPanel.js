@@ -149,7 +149,7 @@ class ControlPanel {
         element.closest('fieldset').find('.field-control em.ee-form-error-message').should('exist')
 
         if (message) {
-            element.closest('fieldset').find('.field-control').contains(message)
+            element.closest('fieldset').find('.field-control').should('contain', message)
         }
     }
 

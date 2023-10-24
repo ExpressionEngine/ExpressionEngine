@@ -148,9 +148,9 @@ abstract class AbstractDesign extends CP_Controller
                 if ($group->is_site_default) {
                     $item->asDefaultItem();
                 }
-            }
 
-            $groupNamesListed[] = $group->group_name;
+                $groupNamesListed[] = $group->group_name;
+            }
         }
 
         // System Templates

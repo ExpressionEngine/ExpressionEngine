@@ -341,6 +341,8 @@ JSC;
 
             return $full_path;
         }
+
+        return '';
     }
 
     /**
@@ -782,9 +784,11 @@ JSC;
             if (is_null($tagdata)) {
                 // null means we're chaning modifier to pre-defined manipulation
                 // need to set some data and return array instead of string
-                $data['fs_filename'] = $modifier . '_' . ($data['fs_filename'] ?? $data['model_object']->file_name);
-                $data['source_image'] = $data['path:' . $modifier];
-                $data['url'] = $full_path;
+                if (array_key_exists('path:' . $modifier, $data)) {
+                    $data['fs_filename'] = $modifier . '_' . ($data['fs_filename'] ?? $data['model_object']->file_name);
+                    $data['source_image'] = $data['path:' . $modifier];
+                    $data['url'] = $full_path;
+                }
                 return $data;
             }
 

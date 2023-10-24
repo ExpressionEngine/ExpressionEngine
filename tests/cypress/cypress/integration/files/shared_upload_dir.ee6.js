@@ -28,7 +28,9 @@ context('Shared Upload Directories', () => {
             cy.authVisit('admin.php?/cp/design')
         })
 
-        
+        cy.task('filesystem:delete', '../../uploads/programming.gif')
+        cy.task('filesystem:delete', '../../uploads/_thumbs/programming.gif')
+
         siteManager.load();
         cy.dismissLicenseAlert()
 
@@ -96,7 +98,7 @@ context('Shared Upload Directories', () => {
         })
         cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
         cy.intercept('/admin.php?/cp/files/directory/*').as('table')
-        managerPage.get('file_input').find('.file-field__dropzone').attachFile('../../support/file/programming.gif', { subjectType: 'drag-n-drop' })
+        managerPage.get('file_input').find('.file-field__dropzone').selectFile('support/file/programming.gif', { action: 'drag-drop' })
         cy.wait('@upload')
         cy.wait('@table')
         cy.hasNoErrors()
@@ -185,6 +187,15 @@ context('Shared Upload Directories', () => {
       cy.get('section.w-12 p img').invoke('attr', 'src').then((src) => {
         expect(src).to.contain('programming.gif')
       })
+
+      cy.get(".file_variables .file_name").invoke('text').should('eq', 'programming.gif')
+      cy.get(".file_variables .title").invoke('text').should('contain', 'programming.gif')
+      cy.get(".file_variables .model_type").invoke('text').should('eq', 'File')
+      cy.get(".file_variables .file_type").invoke('text').should('eq', 'img')
+      cy.get(".file_variables .mime_type").invoke('text').should('eq', 'image/gif')
+      cy.get(".file_variables .upload_location_id").invoke('text').should('eq', '7')
+      cy.get(".file_variables .directory_id").invoke('text').should('eq', '7')
+      cy.get(".file_variables .folder_id").invoke('text').should('eq', '0')
 
       //turn on compatibility mode and make sure everything still works
       cy.log('turn on compatibility mode and make sure everything still works')
