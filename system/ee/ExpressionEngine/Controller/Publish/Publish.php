@@ -243,7 +243,7 @@ class Publish extends AbstractPublishController
             ],
         );
 
-        if (ee('Request')->get('modal_form') == 'y') {
+        if (ee('Request')->get('modal_form') == 'y' || ! ee('Permission')->can('edit_self_entries_channel_id_' . $entry->channel_id)) {
             $vars['buttons'] = [[
                 'name' => 'submit',
                 'type' => 'submit',

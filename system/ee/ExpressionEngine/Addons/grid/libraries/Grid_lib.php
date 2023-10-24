@@ -250,14 +250,21 @@ class Grid_lib
         }
 
         if (isset($data['rows'])) {
+            $total_rows = count($data['rows']);
             foreach ($data['rows'] as $key => $row) {
                 if (substr($key, 0, 6) == 'row_id') {
                     $row_key = str_replace('row_id_', '', $key);
 
                     if (! in_array($row_key, $valid_rows)) {
-                        if (ee('Permission')->isSuperAdmin()) {
-                            return array('value' => '', 'error' => lang('not_authorized'));
+                        if (ee('Request')->get('version')) {
+                            //if we have loaded version, restore the fields that are missing
+                            $keys = array_keys($data['rows']);
+                            $values = array_values($data['rows']);
+                            $index = array_search($key, $keys);
+                            $keys[$index] = 'new_row_' . ($total_rows + (int) $row_key);
+                            $data['rows'] = array_combine($keys, $values);
                         } else {
+                            // otherwise assume someone else removed the row, and they know what they are doing
                             unset($data['rows'][$key]);
                         }
                     }
@@ -291,8 +298,16 @@ class Grid_lib
      */
     public function save($data)
     {
+        if (ee('Request')->get('version')) {
+            if (isset($data['rows'])) {
+                // only need to do this once
+                $data['rows'] = ee()->grid_model->remap_revision_rows($data['rows'], $this->field_id, $this->entry_id, $this->fluid_field_data_id, $this->content_type);
+            }
+        }
         $field_data = $this->_process_field_data('save', $data);
 
+        // save the Grid field
+        // and get back the rows that are no longer present
         $deleted_rows = ee()->grid_model->save_field_data(
             $field_data['value'],
             $this->field_id,

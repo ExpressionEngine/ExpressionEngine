@@ -123,7 +123,11 @@ var DropDownButton = /*#__PURE__*/function (_React$Component) {
         className: "dropdown__divider"
       })), React.createElement("div", {
         className: "dropdown__scroll"
-      }, this.props.addInput && React.createElement("input", {
+      }, this.props.addInput && React.createElement("label", {
+        htmlFor: "f_open-filepicker_id",
+        className: "sr-only"
+      }, EE.lang.hidden_input) && React.createElement("input", {
+        id: "f_open-filepicker_id",
         type: "file",
         className: "f_open-filepicker",
         style: {

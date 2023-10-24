@@ -101,7 +101,7 @@ context('Categories', () => {
             console.log(doc);
             cy.log(doc);
             //cy.wrap(doc.find('input[name="file"]')).should('be.visible');
-            cy.wrap(doc.find('input[name="file"]')).attachFile('../../support/file/programming.gif')
+            cy.wrap(doc.find('input[name="file"]')).selectFile('support/file/programming.gif')
             cy.wrap(doc.find('.button.button--primary')).first().click()
         })*/
 
