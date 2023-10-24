@@ -343,14 +343,73 @@ EE.cp.datePicker = {
 				var include_seconds = EE.date.include_seconds;
 
 				if ( ! timestamp) {
-					d = new Date(Date.parse($(this.element).val()));
+					// this part we need to parse date formats like dd/mm/yyyy and dd-mm-yyyy
+					// and don't get NAN as a result, when user put date manualy, not form date_pickare
+					var date_format = $(this.element).data('dateFormat')
+					// Split date to check date format without time
+					var split_date = date_format.split(' ');
+					var only_date = split_date[0];
+					var other_date_info = split_date.splice(1);
+					other_date_info.join(' ')
+
+					var newDay, newDay_index, newMonth, newMonth_index, newYear;
+					var val = $(this.element).val();
+
+					if (only_date == '%j/%n/%Y') {
+						// value without day
+						val = val.substring(val.indexOf('/') + 1);
+
+						// check if DAY has 1 or 2 numbers (1 or 01)
+						newDay_index = $(this.element).val().indexOf('/');
+						// get DAY
+						newDay = $(this.element).val().substring(0, newDay_index);
+
+						// check if MONTH has 1 or 2 numbers (9 or 09)
+						newMonth_index = val.indexOf('/');
+						// get MONTH
+						newMonth = val.substring(0, newMonth_index);
+
+						// get YEAR
+						newYear = val.substring(newMonth_index+1);
+
+						var date = [newMonth + '/' + newDay + '/' + newYear];
+
+						date = date.toString();
+
+						d = new Date(Date.parse(date));
+
+					} else if (only_date == '%j-%n-%Y') {
+						// value without day
+						val = val.substring(val.indexOf('-') + 1);
+
+						// check if DAY has 1 or 2 numbers (1 or 01)
+						newDay_index = $(this.element).val().indexOf('-');
+						// get DAY
+						newDay = $(this.element).val().substring(0, newDay_index);
+
+						// check if MONTH has 1 or 2 numbers (9 or 09)
+						newMonth_index = val.indexOf('-');
+						// get MONTH
+						newMonth = val.substring(0, newMonth_index);
+
+						// get YEAR
+						newYear = val.substring(newMonth_index+1);
+
+						var date = [newMonth + '-' + newDay + '-' + newYear];
+
+						date = date.toString();
+
+						d = new Date(Date.parse(date));
+					} else {
+						d = new Date(Date.parse($(this.element).val()));
+					}
 				} else {
 					d = new Date(timestamp * 1000);
 				}
 
 				selected = d.getDate();
-				year  = d.getUTCFullYear();
-				month = d.getUTCMonth();
+				year  = d.getFullYear();
+				month = d.getMonth();
 
 				var pickedHours = value.substring(0, value.indexOf(':'));
 
@@ -412,6 +471,7 @@ EE.cp.datePicker = {
 				if (selected) {
 					$('.date-picker-item td:contains(' + selected + ')').each(function(){
 						if ($(this).text() == selected) {
+							$('.date-picker-item td.act').removeClass('act');
 							$(this).addClass('act');
 						}
 					});

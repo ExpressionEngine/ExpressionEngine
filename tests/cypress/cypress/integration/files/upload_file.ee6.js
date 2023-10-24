@@ -8,10 +8,10 @@ const returnPage = new EditFile;
 const filePage = new EditFile;
 const { _, $ } = Cypress
 
-const md_file = '../../support/file/README.md'
-const script_file = '../../support/file/script.sh'
-const image_file = '../../support/file/programming.gif'
-const php_file = '../../support/file/clever.php.png'
+const md_file = 'support/file/README.md'
+const script_file = 'support/file/script.sh'
+const image_file = 'support/file/programming.gif'
+const php_file = 'support/file/clever.php.png'
 
 const upload_dir = '../../images/uploads'
 
@@ -80,7 +80,7 @@ context('File Manager / Upload File', () => {
   })
 
   it('Cannot upload a file when mime type is not registered', () => {
-    page.dragAndDropUpload('../../support/file/ubuntu-22.04-live-server-amd64-iso.torrent')
+    page.dragAndDropUpload('support/file/ubuntu-22.04-live-server-amd64-iso.torrent')
 
     cy.get('.file-upload-widget').should('be.visible')
     cy.get('.file-upload-widget').should('contain', 'File not allowed')
@@ -96,15 +96,16 @@ context('File Manager / Upload File', () => {
   })
 
   it('Uploads the file correctly after error', () => {
-    page.dragAndDropUpload('../../support/file/ubuntu-22.04-live-server-amd64-iso.torrent')
+    page.dragAndDropUpload('support/file/ubuntu-22.04-live-server-amd64-iso.torrent')
 
     cy.get('.file-upload-widget').should('be.visible')
     cy.get('.file-upload-widget').should('contain', 'File not allowed')
     cy.get('.file-upload-widget a').should('contain', 'Dismiss')
     cy.get('.file-upload-widget a').contains('Dismiss').click()
+    cy.wait('@table')
     cy.hasNoErrors()
 
-    page.dragAndDropUpload('../../../../LICENSE.txt')
+    page.dragAndDropUpload('../../LICENSE.txt')
     returnPage.get('selected_file').should('exist')
     returnPage.get('selected_file').contains("LICENSE.txt")
     returnPage.get('selected_file').should('contain', 'Document')
@@ -115,7 +116,7 @@ context('File Manager / Upload File', () => {
 
   it('Upload a file when mime type is whitelisted in config', () => {
     cy.task('filesystem:copy', { from: 'support/config/mimes.php', to: '../../system/user/config/' })
-    page.dragAndDropUpload('../../support/file/ubuntu-22.04-live-server-amd64-iso.torrent')
+    page.dragAndDropUpload('support/file/ubuntu-22.04-live-server-amd64-iso.torrent')
     cy.get('.file-upload-widget').should('not.be.visible')
     cy.wait('@table')
     cy.hasNoErrors()
@@ -131,7 +132,7 @@ context('File Manager / Upload File', () => {
     })
     cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
     cy.intercept('/admin.php?/cp/files/directory/*').as('table')
-    page.get('file_input').find('.file-field__dropzone').attachFile('../../support/sql/database_7.0.0.sql', { subjectType: 'drag-n-drop' })
+    page.get('file_input').find('.file-field__dropzone').selectFile('support/sql/database_7.0.0.sql', { action: 'drag-drop' })
     cy.wait('@upload')
     cy.wait('@table')
     cy.hasNoErrors()
@@ -145,7 +146,7 @@ context('File Manager / Upload File', () => {
       $(widget).removeClass('hidden')
     })
     cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
-    page.get('file_input').find('.file-field__dropzone').attachFile(script_file, { subjectType: 'drag-n-drop' })
+    page.get('file_input').find('.file-field__dropzone').selectFile(script_file, { action: 'drag-drop' })
     cy.wait('@upload')
     cy.hasNoErrors()
 
@@ -161,7 +162,7 @@ context('File Manager / Upload File', () => {
     })
     cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
     cy.intercept('/admin.php?/cp/files/directory/*').as('table')
-    page.get('file_input').find('.file-field__dropzone').attachFile(image_file, { subjectType: 'drag-n-drop' })
+    page.get('file_input').find('.file-field__dropzone').selectFile(image_file, { action: 'drag-drop' })
     cy.wait('@upload')
     cy.wait('@table')
     cy.hasNoErrors()
@@ -190,7 +191,7 @@ context('File Manager / Upload File', () => {
     page.dragAndDropUpload(md_file)
 
     page.get('file_input').find('.file-field__dropzone').invoke('show')
-    page.dragAndDropUpload('../../../../themes/ee/asset/fonts/fontawesome-webfont.eot')
+    page.dragAndDropUpload('../../themes/ee/asset/fonts/fontawesome-webfont.eot')
 
     cy.get('.file-upload-widget:contains(fontawesome-webfont.eot)').its('length').should('eq', 1)
   })
@@ -202,7 +203,7 @@ context('File Manager / Upload File', () => {
       $(widget).removeClass('hidden')
     })
     cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
-    page.get('file_input').find('.file-field__dropzone').attachFile(php_file, { subjectType: 'drag-n-drop' })
+    page.get('file_input').find('.file-field__dropzone').selectFile(php_file, { action: 'drag-drop' })
     cy.wait('@upload')
     cy.hasNoErrors()
 

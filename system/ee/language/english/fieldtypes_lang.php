@@ -151,6 +151,8 @@ $lang = array(
 
     'file_ft_show_files_desc' => 'When enabled, a drop down with existing files will be shown to authors.',
 
+    'file_field_msm_warning' => 'This field is currently set to use the <b>%s</b> upload directory, which is only available in <b>%s</b> MSM site.',
+
     'file_ft_upload_directories' => 'Upload Directories',
 
     /* File Drag and Drop */
@@ -194,6 +196,10 @@ $lang = array(
     'file_dnd_upload_new' => 'Upload New',
 
     'file_dnd_create_directory' => 'Create New Directory',
+
+    'file_dnd_no_directories' => 'No upload directories available',
+
+    'file_dnd_no_directories_desc' => 'This field is limited to upload directory not available for current member and site.',
 
     'file_grid_vertical_layout_title' => 'File Grid layout',
 

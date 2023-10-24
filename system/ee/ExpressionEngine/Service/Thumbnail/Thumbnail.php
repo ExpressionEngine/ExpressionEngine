@@ -72,30 +72,30 @@ class Thumbnail
             } else {
                 switch ($file->file_type) {
                     case 'doc':
-                        $this->tag = '<i class="fal fa-file-alt fa-3x"></i>';
+                        $this->tag = '<span class="sr-only">' . lang('file_icon') . '</span><i class="fal fa-file-alt fa-3x"></i>';
                         if (strpos($file->mime_type, 'pdf') !== false) {
-                            $this->tag = '<i class="fal fa-file-pdf fa-3x"></i>';
+                            $this->tag = '<span class="sr-only">' . lang('pdf_file_icon') . '</span><i class="fal fa-file-pdf fa-3x"></i>';
                         } elseif (strpos($file->mime_type, 'html') !== false || strpos($file->mime_type, 'css') !== false || strpos($file->mime_type, 'xml') !== false) {
-                            $this->tag = '<i class="fal fa-file-code fa-3x"></i>';
+                            $this->tag = '<span class="sr-only">' . lang('file_icon') . '</span><i class="fal fa-file-code fa-3x"></i>';
                         } elseif (strpos($file->mime_type, 'excel') !== false || strpos($file->mime_type, 'spreadsheet') !== false || strpos($file->mime_type, 'csv') !== false) {
-                            $this->tag = '<i class="fal fa-file-spreadsheet fa-3x"></i>';
+                            $this->tag = '<span class="sr-only">' . lang('spreadsheet_file_icon') . '</span><i class="fal fa-file-spreadsheet fa-3x"></i>';
                         } elseif (strpos($file->mime_type, 'word') !== false || strpos($file->mime_type, 'document.text') !== false || strpos($file->mime_type, 'richtext') !== false || strpos($file->mime_type, 'rtf') !== false) {
-                            $this->tag = '<i class="fal fa-file-word fa-3x"></i>';
+                            $this->tag = '<span class="sr-only">' . lang('word_icon') . '</span><i class="fal fa-file-word fa-3x"></i>';
                         } elseif (strpos($file->mime_type, 'powerpoint') !== false || strpos($file->mime_type, 'presentation') !== false) {
-                            $this->tag = '<i class="fal fa-file-powerpoint fa-3x"></i>';
+                            $this->tag = '<span class="sr-only">' . lang('powerpoint_icon') . '</span><i class="fal fa-file-powerpoint fa-3x"></i>';
                         }
                         break;
                     case 'archive':
-                        $this->tag = '<i class="fal fa-file-archive fa-3x"></i>';
+                        $this->tag = '<span class="sr-only">' . lang('archive_icon') . '</span><i class="fal fa-file-archive fa-3x"></i>';
                         break;
                     case 'audio':
-                        $this->tag = '<i class="fal fa-file-audio fa-3x"></i>';
+                        $this->tag = '<span class="sr-only">' . lang('audio_icon') . '</span><i class="fal fa-file-audio fa-3x"></i>';
                         break;
                     case 'video':
-                        $this->tag = '<i class="fal fa-file-video fa-3x"></i>';
+                        $this->tag = '<span class="sr-only">' . lang('video_icon') . '</span><i class="fal fa-file-video fa-3x"></i>';
                         break;
                     default:
-                        $this->tag = '<i class="fal fa-file fa-3x"></i>';
+                        $this->tag = '<span class="sr-only">' . lang('text_icon') . '</span><i class="fal fa-file fa-3x"></i>';
                         break;
                 }
             }

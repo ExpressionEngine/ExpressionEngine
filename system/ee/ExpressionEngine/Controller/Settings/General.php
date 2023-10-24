@@ -65,7 +65,7 @@ class General extends Settings
                         )
                     )
                 ),
-                array(
+                'site_online' => array(
                     'title' => 'site_online',
                     'desc' => 'site_online_desc',
                     'fields' => array(
@@ -175,6 +175,11 @@ class General extends Settings
                 ),
             ),
         );
+
+        if (bool_config_item('multiple_sites_enabled')) {
+            $vars['sections'][0]['site_online']['title'] = 'system_online';
+            $vars['sections'][0]['site_online']['desc'] = sprintf(lang('system_online_desc'), ee('CP/URL', 'msm')->compile());
+        }
 
         $base_url = ee('CP/URL', 'settings/general');
 

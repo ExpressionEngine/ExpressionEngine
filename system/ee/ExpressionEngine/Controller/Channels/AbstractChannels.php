@@ -104,6 +104,11 @@ abstract class AbstractChannels extends CP_Controller
             ee('CP/URL', 'channels/sets')->compile()
         );
 
+        ee()->javascript->set_global(array(
+            'lang.edit_element' => lang('edit_element'),
+            'lang.remove_btn' => lang('remove_btn'),
+        ));
+
         ee()->cp->add_js_script(array(
             'file' => array('cp/channel/menu'),
         ));

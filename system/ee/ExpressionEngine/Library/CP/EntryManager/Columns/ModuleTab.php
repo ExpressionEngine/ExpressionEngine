@@ -25,10 +25,14 @@ class ModuleTab extends Column
     public function __construct($identifier)
     {
         parent::__construct($identifier);
-
         if (empty($this->tab)) {
             $module_name = substr($identifier, 4); // strip 'tab_'
             $this->module = ee('Addon')->get($module_name);
+
+            if (!$this->module->isInstalled()) {
+                return;
+            }
+
             include_once($this->module->getPath() . '/tab.' . $module_name . '.php');
             $class_name = ucfirst($module_name) . '_tab';
             $this->tab = new $class_name();

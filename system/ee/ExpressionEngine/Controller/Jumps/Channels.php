@@ -109,7 +109,7 @@ class Channels extends Jumps
             $keywords = explode(' ', $searchString);
 
             foreach ($keywords as $keyword) {
-                $channels->filter('channel_title', 'LIKE', '%' . $keyword . '%');
+                $channels->filter('channel_title', 'LIKE', '%' . ee()->db->escape_like_str($keyword) . '%');
             }
         }
 
@@ -125,7 +125,7 @@ class Channels extends Jumps
             $keywords = explode(' ', $searchString);
 
             foreach ($keywords as $keyword) {
-                $fields->filter('field_label', 'LIKE', '%' . $keyword . '%');
+                $fields->filter('field_label', 'LIKE', '%' . ee()->db->escape_like_str($keyword) . '%');
             }
         }
 

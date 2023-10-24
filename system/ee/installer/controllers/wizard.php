@@ -13,7 +13,7 @@
  */
 class Wizard extends CI_Controller
 {
-    public $version = '7.3.5'; // The version being installed
+    public $version = '7.3.14'; // The version being installed
     public $installed_version = '';  // The version the user is currently running (assuming they are running EE)
     public $schema = null; // This will contain the schema object with our queries
     public $languages = array(); // Available languages the installer supports (set dynamically based on what is in the "languages" folder)
@@ -497,11 +497,6 @@ class Wizard extends CI_Controller
 
             return false;
         }
-
-        // Assign the config and DB arrays to class variables so we don't have
-        // to reload them.
-        $this->_config = $config;
-        $this->_db = $db;
 
         // Set the flag
         $this->is_installed = true;

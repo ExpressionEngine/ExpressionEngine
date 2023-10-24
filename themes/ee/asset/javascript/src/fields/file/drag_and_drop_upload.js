@@ -295,6 +295,11 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
     value: function getDirectoryName(directory) {
       if (directory == 'all') return null;
       var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+
+      if (typeof directory === 'undefined') {
+        return ' ';
+      }
+
       return directory.label;
     }
   }, {
@@ -308,6 +313,14 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
         };
       } else {
         var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
+
+        if (typeof directory === 'undefined') {
+          return {
+            upload_location_id: null,
+            path: '',
+            directory_id: 0
+          };
+        }
 
         if (directory.value == directory.upload_location_id) {
           directory.directory_id = 0;
@@ -628,6 +641,27 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
         subheading = EE.lang.file_dnd_choose_directory_before_uploading;
       }
 
+      var selectedDirectoryNotInList = false;
+
+      if (this.state.directory != 'all') {
+        var dir = this.state.directory;
+
+        if (EE.dragAndDrop.uploadDesinations.length != 0) {
+          selectedDirectoryNotInList = true;
+          var dir_in_list = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, dir);
+
+          if (typeof dir_in_list != 'undefined') {
+            selectedDirectoryNotInList = false;
+          }
+        }
+      }
+
+      if (EE.dragAndDrop.uploadDesinations.length == 0 || selectedDirectoryNotInList) {
+        heading = EE.lang.file_dnd_no_directories;
+        subheading = EE.lang.file_dnd_no_directories_desc;
+        this.props.showActionButtons = false;
+      }
+
       var checkChildren = this.directoryHasChild(this.props.allowedDirectory);
       var uploadDirectoriesForDropdown = EE.dragAndDrop.uploadDesinations;
 
@@ -659,7 +693,7 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
         className: "file-field__dropzone-title"
       }, heading), React.createElement("div", {
         "class": "file-field__dropzone-button"
-      }, subheading, this.state.directory == 'all' && ':', this.state.directory != 'all' && React.createElement("b", null, this.getDirectoryName(this.state.directory)), "\xA0", this.state.directory != 'all' && this.props.allowedDirectory != 'all' && checkChildren && checkChildren.children.length > 0 && React.createElement(DropDownButton, {
+      }, subheading, this.state.directory == 'all' && uploadDirectoriesForDropdown.length > 0 && ':', this.state.directory != 'all' && React.createElement("b", null, this.getDirectoryName(this.state.directory)), "\xA0", this.state.directory != 'all' && this.props.allowedDirectory != 'all' && checkChildren && checkChildren.children.length > 0 && React.createElement(DropDownButton, {
         key: EE.lang.file_dnd_choose_existing,
         action: this.state.directory == 'all',
         center: true,
@@ -674,7 +708,7 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
         createNewDirectory: this.props.createNewDirectory,
         ignoreChild: false,
         addInput: false
-      }), this.state.files.length == 0 && this.props.allowedDirectory == 'all' && React.createElement(DropDownButton, {
+      }), this.state.files.length == 0 && this.props.allowedDirectory == 'all' && uploadDirectoriesForDropdown.length > 0 && React.createElement(DropDownButton, {
         key: EE.lang.file_dnd_choose_existing,
         action: this.state.directory == 'all',
         center: true,
@@ -778,7 +812,11 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
 
           _this5.uploadNew(_this5.state.directory);
         }
-      }, EE.lang.file_dnd_upload_new), React.createElement("input", {
+      }, EE.lang.file_dnd_upload_new), React.createElement("label", {
+        htmlFor: "f_open-filepicker_id",
+        className: "sr-only"
+      }, EE.lang.hidden_input), React.createElement("input", {
+        id: "f_open-filepicker_id",
         type: "file",
         className: "f_open-filepicker",
         style: {
@@ -829,7 +867,11 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
         "data-directory_id": '',
         "data-path": '',
         className: "imitation_button"
-      }, "Imitation"), React.createElement("input", {
+      }, "Imitation"), React.createElement("label", {
+        htmlFor: "f_open-filepicker_id",
+        className: "sr-only"
+      }, EE.lang.hidden_input), React.createElement("input", {
+        id: "f_open-filepicker_id",
         type: "file",
         className: "f_open-filepicker",
         style: {
