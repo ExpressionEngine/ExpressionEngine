@@ -62,7 +62,7 @@ class Text extends Formatter
 
             if (isset($accent_map[$ord])) {
                 $this->content .= $accent_map[$ord];
-            } else {
+            } elseif (mb_ord($char) !== false) { //make sure char is valid character
                 $this->content .= $char;
             }
         }
