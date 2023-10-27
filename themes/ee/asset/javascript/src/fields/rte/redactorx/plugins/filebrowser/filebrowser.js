@@ -5,8 +5,12 @@ RedactorX.add('plugin', 'filebrowser', {
     {
         this.app.toolbar.add('filebrowser', {
             title: this.lang.get('file'),
-            icon: '<i class="re-icon-filebrowser">&nbsp;</i>',
-            command: 'filebrowser.open'
+            icon: '<span class="rx-icon-image"></span>',
+            command: 'filebrowser.open',
+            blocks: {
+                all: 'editable',
+                except: ['image']
+            }
         });
     },
     open: function()

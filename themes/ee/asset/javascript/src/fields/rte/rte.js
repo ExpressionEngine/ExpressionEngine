@@ -147,7 +147,6 @@ window.Rte;
 
             config.plugins = config.plugins.filter(function (plugin) {
                 var removePlugins = [
-                    'rte_definedlinks',
                     'pages',
                     'inlinestyle',
                     'fontcolor',
@@ -170,6 +169,7 @@ window.Rte;
             config.plugins.push('imageposition');
             config.plugins.push('imageresize');
             config.plugins.push('readmore');
+            config.plugins.push('rte_definedlinks');
 
             delete config.buttons;
             //config.buttons = {'editor': ['add', 'html', 'format', 'bold', 'italic', 'deleted', 'link']};

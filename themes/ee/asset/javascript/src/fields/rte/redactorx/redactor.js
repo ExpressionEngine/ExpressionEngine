@@ -7493,8 +7493,6 @@ RedactorX.add('module', 'popup', {
 
     // close
     close: function(e, name) {
-        console.log(e, name);
-        console.log(this.isOpen());
         if (this.autoclose === false) {
             if (e === true) {}
             else if (!name) {
@@ -8556,7 +8554,6 @@ RedactorX.add('class', 'popup.header', {
     _buildClose: function() {
         var $close = this.dom('<span>').addClass(this.prefix + '-popup-close');
         $close.one('click', this._catchClose.bind(this));
-        console.log('built close');
 
         this.$header.append($close);
     },
@@ -8621,10 +8618,8 @@ RedactorX.add('class', 'popup.header', {
         stack.open();
     },
     _catchClose: function(e) {
-        console.log(e);
         e.preventDefault();
         e.stopPropagation();
-        console.log(this.popup);
 
         this.popup.close();
     }
