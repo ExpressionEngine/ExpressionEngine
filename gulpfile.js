@@ -12,7 +12,7 @@ const sourcemaps = require('gulp-sourcemaps');
 const jsSourceFolder = 'themes/ee/cp/js/src/'
 const jsVendorFolder = 'themes/ee/cp/js/src/vendor/'
 const jsBuildFolder = 'themes/ee/cp/js/build/'
-const rteRedactorFolder = 'themes/ee/asset/javascript/src/fields/rte/redactor/';
+const rteRedactorFolder = 'themes/ee/asset/javascript/src/fields/rte/redactorx/';
 
 function cleanJs() {
 	return del([jsBuildFolder + '**/*'])

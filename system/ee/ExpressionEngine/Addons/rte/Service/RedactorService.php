@@ -28,10 +28,10 @@ class RedactorService extends AbstractRteService implements RteService {
             ee()->lang->loadfile('fieldtypes');
             ee()->file_field->loadDragAndDropAssets();
 
-            ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/fields/rte/redactor/redactor.min.css" type="text/css" />');
+            ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/fields/rte/redactorx/redactor.min.css" type="text/css" />');
             
             ee()->cp->add_js_script(['file' => [
-                'fields/rte/redactor/redactor.min',
+                'fields/rte/redactorx/redactor.min',
                 'fields/rte/rte']
             ]);
 
@@ -206,7 +206,7 @@ class RedactorService extends AbstractRteService implements RteService {
 
     public function toolbarInputHtml($config)
     {
-            ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/fields/rte/redactor/redactor.min.css" type="text/css" />');
+            ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/fields/rte/redactorx/redactor.min.css" type="text/css" />');
 
             $selection = [];
             if (is_object($config->settings['toolbar'])) {

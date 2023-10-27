@@ -35,7 +35,9 @@ window.Rte;
         if (this.defer) {
             this.showIframe(this.config.type);
         } else if (this.config.type == 'redactor') {
-            this.initRedactor();
+            this.initRedactorX();
+        } else if (this.config.type == 'redactorx') {
+            this.initRedactorX();
         } else {
             this.initCKEditor();
         }
@@ -71,8 +73,10 @@ window.Rte;
 
             if (type == 'ckeditor') {
                 $(iDoc).click($.proxy(this, 'initCKEditor'));
+            } else if (type == 'redactor') {
+                $(iDoc).click(() => {this.initRedactorX();});
             } else {
-                $(iDoc).click(() => {this.initRedactor();});
+                $(iDoc).click(() => {this.initRedactorX();});
             }
         },
 
@@ -92,6 +96,89 @@ window.Rte;
                 }
             };
             $R('#' + this.id, config);
+
+            if (this.$iframe) {
+                this.$iframe.remove();
+            }
+        },
+
+        /**
+         * Init RedactorX
+         */
+        initRedactorX: function() {
+            var config = typeof this.config === 'string'
+                            ? JSON.parse(this.config)
+                            : this.config;
+            config.callbacks = {
+                blur: function(e) {
+                    $('#' + this.id).trigger('change');
+                },
+                keyup: function(e) {
+                    $("[data-publish] > form").trigger("entry:startAutosave")
+                }
+            };
+
+            // remap some of Redactor settings to RedactorX format
+            if (typeof(config.linkTarget) !== 'undefined' && config.linkTarget == true) {
+                if (typeof(config.link) === 'undefined') config.link = {};
+                config.link.target = '_blank';
+                delete config.linkTarget;
+            }
+
+            if (typeof(config.editor) === 'undefined') config.editor = {};
+
+            if (typeof(config.minHeight) !== 'undefined' && config.minHeight != 0 && config.minHeight != '') {
+                config.editor.minHeight = config.minHeight;
+                delete config.minHeight;
+            }
+            if (typeof(config.maxHeight) !== 'undefined' && config.maxHeight != 0 && config.maxHeight != '') {
+                config.editor.maxHeight = config.maxHeight;
+                delete config.maxHeight;
+            }
+            config.editor.focus = false;
+
+            if (typeof(config.plugins) === 'undefined') config.plugins = [];
+
+            if (typeof(config.buttons) !== 'undefined' && Array.isArray(config.buttons)) {
+                if (config.buttons.includes('underline')) {
+                    config.plugins.push('underline');
+                }
+            }
+
+            config.plugins = config.plugins.filter(function (plugin) {
+                var removePlugins = [
+                    'rte_definedlinks',
+                    'pages',
+                    'inlinestyle',
+                    'fontcolor',
+                    'limiter',
+                    'video',
+                    'widget',
+                    'fullscreen',
+                ];
+                return !removePlugins.includes(plugin);
+            });
+            var index = config.plugins.indexOf('properties');
+            if (index !== -1) {
+                config.plugins[index] = 'selector';
+            }
+            index = config.plugins.indexOf('inlinestyle');
+            if (index !== -1) {
+                config.plugins[index] = 'inlineformat';
+            }
+            config.plugins.push('filelink');
+            config.plugins.push('imageposition');
+            config.plugins.push('imageresize');
+            config.plugins.push('readmore');
+
+            delete config.buttons;
+            //config.buttons = {'editor': ['add', 'html', 'format', 'bold', 'italic', 'deleted', 'link']};
+            /*'html', 
+
+"format""bold""italic""deleted""underline""redo""undo""ol""ul""indent""outdent""sup"'sub""link""line"*/
+            //delete config.plugins;
+            console.log(config);
+            RedactorX('#' + this.id, config);
 
             if (this.$iframe) {
                 this.$iframe.remove();

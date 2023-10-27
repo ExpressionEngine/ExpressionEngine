@@ -1,0 +1,65 @@
+LICENSE AGREEMENT
+
+This license is a legal agreement between you and Imperavi LLC for the use of all present and future versions program applications (the "Software") produced and/or distributed by Imperavi LLC. By downloading any version of the Software, you agree to be legally bound by the terms and conditions of this license agreement. Imperavi LLC reserves the right to alter this agreement at any time, for any reason, without notice.
+
+Revised on: May 23, 2021
+
+Software Installations
+
+The Software License (the "License") purchase allow "live" installations in a production environment and ancillary "development use only" installations as needed to support the live installation (such as development and a staging servers). Every installation regardless of the project type, location or legal form requires valid paid License. If you have specific installation needs not covered by this license, please contact us: support@imperavi.com.
+
+Permitted Use
+
+Holder of the License may use the current version of the Software for a sole purpose of integration it within an unlimited number of applications or an unlimited number of website, located on an unlimited number of domains with unlimited subdomains (*.domain.com) engaging in commercial, for-profit, or non-commercial, non-for-profit activities, including "Software as a Service" products (SaaS), downloadable extensions, plugins and applications. The License do not allow integration of the Software with open source products. Technical support to the License holders is provided in form of Documentation on imperavi.com website only; the License holders also allowed to submit bugs and request features via customer’s account page.
+
+Upgrades, Updates, New Versions
+
+Upgrades of License are available as a purchase with a surcharge up to the amount of the new license. License downgrades for partial refund are not available. All License tiers are only valid for the current major version of the Software (1.x, 2.x, et cetera) and its minor updates. Each new major version of the Software will require purchasing of a new license; existing license holders will receive a continuity discount upon purchasing each new license for each major version of the Software.
+
+Restrictions
+
+Unless you have been granted prior, written explicit consent from Imperavi LLC, you may not:
+
+- Use the Software in Open Source projects.
+- Reproduce, distribute, or transfer the Software as a sole product, or portions thereof, to any third party.
+- Sell, rent, lease, assign, or sublet the Software as a sole product or portions thereof.
+- Grant rights to any other person.
+- Use the software in violation of any European Union or international laws or regulations.
+
+Display of Copyright Notices
+
+All copyright and proprietary notices and logos (if any) of the Software and/or Imperavi LLC within the Software files must remain intact.
+
+Making copies
+
+You may make copies of the Software for backup purposes, provided that you reproduce the Software in its original form and with all proprietary notices on the back-up copy. You may include copies of the Software as an integral part of your product (according to the purchased License and Permitted Use stated above).
+
+Software Modification
+
+You may alter, modify, or extend the Software for use as an integral part of your product or service according to the License tier, or commission a third-party to perform modifications for you, but you may not resell, redistribute or transfer the modified or derivative version of the Software as a sole product without prior written consent from Imperavi LLC. Components from the Software may not be extracted and used in other programs without prior written consent from Imperavi LLC.
+
+Technical Support
+
+Technical support is provided in a form of Documentation on imperavi.com website only; License holders also allowed to submit bugs and suggest features via their customer account page. For the Bug Reports and Feature Suggestions we reserve the right to solely determine best course of action: we can accept, decline or postpone any work in regards to received Bug Reports or Feature Suggestion. We give no guarantee whatsoever that we will fix any particular malfunction, and we reserve the right to determine whether Reported Bug is a malfunction or not. We don’t give any guarantee whatsoever that we will implement any of Suggested Features.
+
+Refund Policy
+
+Imperavi provides a demo for the Software on its page on the imperavi.com website. This allows you to try the product before you buy it and make sure it meets your needs.
+
+If you buy the Software, you will be able to download it. Once you have downloaded the Software, you are no longer eligible for any refund.
+
+We have this refund policy since it it is impossible to fully return a downloaded version of the Software.
+
+Downloading the Software file implies the loss of the right of withdrawal: Article 16m of the directive on Consumer Rights 2011/83/EC.
+
+Indemnity
+
+You agree to indemnify and hold harmless Imperavi LLC for any expenses, liabilities, damages, settlements or fees from third-party claims, actions or suits arising from your misuse of the Software.
+
+Disclaimer Of Warranty
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, WARRANTIES OF QUALITY, PERFORMANCE, NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE. FURTHER, IMPERAVI LLC DOES NOT WARRANT THAT THE SOFTWARE OR ANY RELATED SERVICE WILL ALWAYS BE AVAILABLE.
+
+Limitations Of Liability
+
+YOU ASSUME ALL RISK ASSOCIATED WITH THE INSTALLATION AND USE OF THE SOFTWARE. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS OF THE SOFTWARE BE LIABLE FOR CLAIMS, DAMAGES OR OTHER LIABILITY ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE. LICENSE HOLDERS ARE SOLELY RESPONSIBLE FOR DETERMINING THE APPROPRIATENESS OF USE AND ASSUME ALL RISKS ASSOCIATED WITH ITS USE, INCLUDING BUT NOT LIMITED TO THE RISKS OF PROGRAM ERRORS, DAMAGE TO EQUIPMENT, LOSS OF DATA OR SOFTWARE PROGRAMS, OR UNAVAILABILITY OR INTERRUPTION OF OPERATIONS.
