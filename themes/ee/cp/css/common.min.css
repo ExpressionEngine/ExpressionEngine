@@ -30687,7 +30687,7 @@ fieldset.hide-block {
   margin-bottom: 5px;
 }
 .field-instruct label {
-  display: block;
+  display: inline-block;
   color: var(--ee-text-normal);
   margin-bottom: 5px;
   font-weight: 500;
@@ -31936,7 +31936,7 @@ fieldset .field-control #eye {
   display: none;
 }
 .grid-field__column-label label {
-  display: block;
+  display: inline-block;
   color: var(--ee-text-normal);
   margin-bottom: 5px;
   font-weight: 500;
@@ -34931,6 +34931,40 @@ table .field-no-results {
 .badge--info-alt {
   color: var(--ee-accent);
   background: #fff;
+}
+
+.label-app-badge {
+  display: inline-flex;
+  color: var(--ee-text-secondary);
+  justify-content: center;
+  align-items: center;
+  font-style: italic;
+  margin-left: 5px;
+  font-size: 0.8rem;
+  font-weight: normal;
+  border-radius: 4px;
+  cursor: pointer;
+  -webkit-transition: opacity 0.15s ease-in-out;
+  -moz-transition: opacity 0.15s ease-in-out;
+  -o-transition: opacity 0.15s ease-in-out;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.label-app-badge i {
+  margin-left: 5px;
+  opacity: 0;
+}
+.label-app-badge:hover i {
+  opacity: 1;
+}
+.label-app-badge.success {
+  color: var(--ee-button-success-border);
+  border-color: var(--ee-button-success-border);
+}
+.label-app-badge.success i {
+  color: var(--ee-button-success-border);
 }
 
 .search-input {

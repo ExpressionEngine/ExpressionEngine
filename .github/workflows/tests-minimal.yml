@@ -221,6 +221,15 @@ jobs:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                 COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
 
+            - name: Run Cypress Tests (Electron)
+              uses: cypress-io/github-action@v5
+              with:
+                browser: electron
+                working-directory: tests/cypress
+                config-file: electron.cypress.config.js
+              env:
+                CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+
             - name: Archive screenshots
               uses: actions/upload-artifact@v3
               if: failure()

@@ -307,6 +307,7 @@ else: ?>
 
                             <?php if (isset($settings['required']) && $settings['required']): ?><span class="required"><?php endif; ?>
                             <?=($lang_cols) ? lang($label) : $label ?>
+                            <?php if (isset($settings['badge'])) echo $settings['badge']; ?>
                             <?php if (isset($settings['required']) && $settings['required']): ?></span><?php endif; ?>
                             <?php if (isset($settings['desc']) && ! empty($settings['desc'])): ?>
                                 <span class="grid-instruct"><?=lang($settings['desc'])?></span>
@@ -393,9 +394,11 @@ else: ?>
                                 $column_desc = lang($columns[$key]['desc']);
                             }
 
+                            $column_badge = isset($columns[$key]['badge']) ? $columns[$key]['badge'] : '';
+
                             $column_label = "<div class=\"grid-field__column-label\"  role=\"rowheader\">
                                 <div class=\"grid-field__column-label__instraction\">
-                                    <label>$column_name</label>";
+                                    <label>$column_name</label>" . $column_badge;
                             if (!empty($column_desc)) {
                                 $column_label .= "
                                     <em>$column_desc</em>
