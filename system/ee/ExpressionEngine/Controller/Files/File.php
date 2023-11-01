@@ -27,8 +27,8 @@ class File extends AbstractFilesController
         }
 
         $file = ee('Model')->get('File', $id)
-            ->with('UploadDestination', 'UploadAuthor', 'ModifyAuthor', 'Categories')
-            ->filter('site_id', ee()->config->item('site_id'))
+            ->with('UploadDestination', 'UploadAuthor', 'ModifyAuthor')
+            ->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
             ->all()
             ->first();
 
@@ -87,7 +87,7 @@ class File extends AbstractFilesController
             'file_data' => ee('File')->makeUpload()->getFileDataForm($file, $errors),
             'categories' => ee('File')->makeUpload()->getCategoryForm($file, $errors),
         );
-        if ($file->isEditableImage()) {
+        if ($file->isEditableImage() && ee('Request')->get('modal_form') != 'y') {
             ee()->load->library('image_lib');
             // we should really be storing the image properties in the db during file upload
             $info = $file->actLocally(function ($path) {
@@ -111,7 +111,7 @@ class File extends AbstractFilesController
             'is_image' => $file->isImage(),
             'size' => (string) ee('Format')->make('Number', $file->file_size)->bytes(),
             'download_url' => ee('CP/URL')->make('files/file/download/' . $file->file_id),
-
+            'modal_form' => ee('Request')->get('modal_form') === 'y',
             'ajax_validate' => true,
             'base_url' => ee('CP/URL')->make('files/file/view/' . $id),
             'save_btn_text' => 'btn_edit_file_meta',
@@ -126,17 +126,20 @@ class File extends AbstractFilesController
                     'text' => 'btn_edit_file_meta',
                     'working' => 'btn_saving'
                 ],
-                [
-                    'name' => 'submit',
-                    'type' => 'submit',
-                    'value' => 'save_and_close',
-                    'text' => 'save_and_close',
-                    'working' => 'btn_saving'
-                ],
             ],
             'sections' => array(),
             'hide_top_buttons' => true
         ];
+
+        if (ee('Request')->get('modal_form') !== 'y') {
+            $vars['buttons'][] = [
+                'name' => 'submit',
+                'type' => 'submit',
+                'value' => 'save_and_close',
+                'text' => 'save_and_close',
+                'working' => 'btn_saving'
+            ];
+        }
 
         ee()->view->cp_page_title = lang('edit_file_metadata');
 
@@ -249,7 +252,6 @@ class File extends AbstractFilesController
                     break;
 
                 case 'resize':
-
                     // Preserve proportions if either dimention was omitted
                     if (empty($_POST['resize_width']) or empty($_POST['resize_height'])) {
                         $size = explode(" ", $file->file_hw_original);
@@ -332,9 +334,12 @@ class File extends AbstractFilesController
         $data = array();
         foreach ($file->FileEntries as $entry) {
             $title = ee('Format')->make('Text', $entry->title)->convertToEntities();
-            if (ee('Permission')->can('edit_other_entries_channel_id_' . $entry->channel_id)
-                || (ee('Permission')->can('edit_self_entries_channel_id_' . $entry->channel_id) &&
-                $entry->author_id == ee()->session->userdata('member_id'))) {
+            if (
+                $entry->site_id == ee()->config->item('site_id') && (
+                    ee('Permission')->can('edit_other_entries_channel_id_' . $entry->channel_id) ||
+                    (ee('Permission')->can('edit_self_entries_channel_id_' . $entry->channel_id) && $entry->author_id == ee()->session->userdata('member_id'))
+                )
+            ) {
                 $title = '<a href="' . ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id) . '">' . $title . '</a>';
             }
             $attrs = [];
@@ -369,8 +374,10 @@ class File extends AbstractFilesController
         foreach ($file->FileCategories as $category) {
             $title = ee('Format')->make('Text', $category->cat_name)->convertToEntities();
             $can_edit = explode('|', rtrim((string) $category->CategoryGroup->can_edit_categories, '|'));
-            if (ee('Permission')->isSuperAdmin()
-                || (ee('Permission')->can('edit_categories') && ee('Permission')->hasAnyRole($can_edit))) {
+            if (
+                ee('Permission')->isSuperAdmin() ||
+                (ee('Permission')->can('edit_categories') && ee('Permission')->hasAnyRole($can_edit))
+            ) {
                 $title = '<a href="' . ee('CP/URL')->make('categories/edit/' . $category->group_id . '/' . $category->cat_id) . '">' . $title . '</a>';
             }
             $attrs = [];
@@ -552,7 +559,8 @@ class File extends AbstractFilesController
     public function download($id)
     {
         $file = ee('Model')->get('File', $id)
-            ->filter('site_id', ee()->config->item('site_id'))
+            ->with('UploadDestination')
+            ->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
             ->first();
 
         if (! $file) {
@@ -564,7 +572,7 @@ class File extends AbstractFilesController
         }
 
         ee()->load->helper('download');
-        force_download($file->file_name, file_get_contents($file->getAbsolutePath()));
+        force_download($file->file_name, $file->UploadDestination->getFilesystem()->read($file->getAbsolutePath()));
     }
 }
 

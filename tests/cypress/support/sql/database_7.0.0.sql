@@ -543,11 +543,21 @@ DELETE FROM `exp_entry_versioning`;
 
 
 -- Dumping data for table ee-test.exp_field_groups: ~2 rows (approximately)
-DELETE FROM `exp_field_groups`;
+DROP TABLE IF EXISTS `exp_field_groups`;
+
+CREATE TABLE IF NOT EXISTS `exp_field_groups` (
+  `group_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `site_id` int unsigned DEFAULT '1',
+  `group_name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `short_name` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `group_description` text COLLATE utf8_unicode_ci,
+  PRIMARY KEY (`group_id`),
+  KEY `site_id` (`site_id`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb3 COLLATE = utf8_unicode_ci;
 /*!40000 ALTER TABLE `exp_field_groups` DISABLE KEYS */;
-INSERT INTO `exp_field_groups` (`group_id`, `site_id`, `group_name`) VALUES
-	(1, 1, 'News'),
-	(2, 1, 'About');
+INSERT INTO `exp_field_groups` (`group_id`, `site_id`, `group_name`, `short_name`) VALUES
+	(1, 1, 'News', 'news'),
+	(2, 1, 'About', 'about');
 /*!40000 ALTER TABLE `exp_field_groups` ENABLE KEYS */;
 
 -- Dumping data for table ee-test.exp_files: ~10 rows (approximately)
@@ -822,27 +832,6 @@ DELETE FROM `exp_reset_password`;
 DELETE FROM `exp_revision_tracker`;
 /*!40000 ALTER TABLE `exp_revision_tracker` DISABLE KEYS */;
 /*!40000 ALTER TABLE `exp_revision_tracker` ENABLE KEYS */;
-
--- Dumping structure for table ee-test.exp_rte_toolsets
-DROP TABLE IF EXISTS `exp_rte_toolsets`;
-CREATE TABLE IF NOT EXISTS `exp_rte_toolsets` (
-  `toolset_id` int(6) unsigned NOT NULL AUTO_INCREMENT,
-  `toolset_name` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `toolset_type` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `settings` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`toolset_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
-
--- Dumping data for table ee-test.exp_rte_toolsets: ~4 rows (approximately)
-DELETE FROM `exp_rte_toolsets`;
-/*!40000 ALTER TABLE `exp_rte_toolsets` DISABLE KEYS */;
-INSERT INTO `exp_rte_toolsets` (`toolset_id`, `toolset_name`, `toolset_type`, `settings`) VALUES
-	(1, 'CKEditor Basic', 'ckeditor', 'YTo1OntzOjQ6InR5cGUiO3M6ODoiY2tlZGl0b3IiO3M6NzoidG9vbGJhciI7YTo2OntpOjA7czo0OiJib2xkIjtpOjE7czo2OiJpdGFsaWMiO2k6MjtzOjk6InVuZGVybGluZSI7aTozO3M6MTI6Im51bWJlcmVkTGlzdCI7aTo0O3M6MTI6ImJ1bGxldGVkTGlzdCI7aTo1O3M6NDoibGluayI7fXM6NjoiaGVpZ2h0IjtzOjM6IjIwMCI7czoxMDoidXBsb2FkX2RpciI7czozOiJhbGwiO3M6MTA6Im1lZGlhRW1iZWQiO2E6MTp7czoxNDoicHJldmlld3NJbkRhdGEiO2I6MTt9fQ=='),
-	(2, 'CKEditor Full', 'ckeditor', 'YTo1OntzOjQ6InR5cGUiO3M6ODoiY2tlZGl0b3IiO3M6NzoidG9vbGJhciI7YTozMDp7aTowO3M6NDoiYm9sZCI7aToxO3M6NjoiaXRhbGljIjtpOjI7czoxMzoic3RyaWtldGhyb3VnaCI7aTozO3M6OToidW5kZXJsaW5lIjtpOjQ7czo5OiJzdWJzY3JpcHQiO2k6NTtzOjExOiJzdXBlcnNjcmlwdCI7aTo2O3M6MTA6ImJsb2NrcXVvdGUiO2k6NztzOjQ6ImNvZGUiO2k6ODtzOjc6ImhlYWRpbmciO2k6OTtzOjEyOiJyZW1vdmVGb3JtYXQiO2k6MTA7czo0OiJ1bmRvIjtpOjExO3M6NDoicmVkbyI7aToxMjtzOjEyOiJudW1iZXJlZExpc3QiO2k6MTM7czoxMjoiYnVsbGV0ZWRMaXN0IjtpOjE0O3M6Nzoib3V0ZGVudCI7aToxNTtzOjY6ImluZGVudCI7aToxNjtzOjQ6ImxpbmsiO2k6MTc7czoxMToiZmlsZW1hbmFnZXIiO2k6MTg7czoxMToiaW5zZXJ0VGFibGUiO2k6MTk7czoxMDoibWVkaWFFbWJlZCI7aToyMDtzOjk6Imh0bWxFbWJlZCI7aToyMTtzOjE0OiJhbGlnbm1lbnQ6bGVmdCI7aToyMjtzOjE1OiJhbGlnbm1lbnQ6cmlnaHQiO2k6MjM7czoxNjoiYWxpZ25tZW50OmNlbnRlciI7aToyNDtzOjE3OiJhbGlnbm1lbnQ6anVzdGlmeSI7aToyNTtzOjE0OiJob3Jpem9udGFsTGluZSI7aToyNjtzOjE3OiJzcGVjaWFsQ2hhcmFjdGVycyI7aToyNztzOjg6InJlYWRNb3JlIjtpOjI4O3M6OToiZm9udENvbG9yIjtpOjI5O3M6MTk6ImZvbnRCYWNrZ3JvdW5kQ29sb3IiO31zOjY6ImhlaWdodCI7czozOiIyMDAiO3M6MTA6InVwbG9hZF9kaXIiO3M6MzoiYWxsIjtzOjEwOiJtZWRpYUVtYmVkIjthOjE6e3M6MTQ6InByZXZpZXdzSW5EYXRhIjtiOjE7fX0='),
-	(3, 'Redactor Basic', 'redactor', 'YTo1OntzOjQ6InR5cGUiO3M6ODoiY2tlZGl0b3IiO3M6NzoidG9vbGJhciI7YToyOntzOjc6ImJ1dHRvbnMiO2E6Njp7aTowO3M6NDoiYm9sZCI7aToxO3M6NjoiaXRhbGljIjtpOjI7czo5OiJ1bmRlcmxpbmUiO2k6MztzOjI6Im9sIjtpOjQ7czoyOiJ1bCI7aTo1O3M6NDoibGluayI7fXM6NzoicGx1Z2lucyI7YTowOnt9fXM6NjoiaGVpZ2h0IjtzOjM6IjIwMCI7czoxMDoidXBsb2FkX2RpciI7czozOiJhbGwiO3M6MTA6Im1lZGlhRW1iZWQiO2E6MTp7czoxNDoicHJldmlld3NJbkRhdGEiO2I6MTt9fQ=='),
-	(4, 'Redactor Full', 'redactor', 'YTo1OntzOjQ6InR5cGUiO3M6ODoiY2tlZGl0b3IiO3M6NzoidG9vbGJhciI7YToyOntzOjc6ImJ1dHRvbnMiO2E6MTY6e2k6MDtzOjQ6Imh0bWwiO2k6MTtzOjY6ImZvcm1hdCI7aToyO3M6NDoiYm9sZCI7aTozO3M6NjoiaXRhbGljIjtpOjQ7czo3OiJkZWxldGVkIjtpOjU7czo5OiJ1bmRlcmxpbmUiO2k6NjtzOjQ6InJlZG8iO2k6NztzOjQ6InVuZG8iO2k6ODtzOjI6Im9sIjtpOjk7czoyOiJ1bCI7aToxMDtzOjY6ImluZGVudCI7aToxMTtzOjc6Im91dGRlbnQiO2k6MTI7czozOiJzdXAiO2k6MTM7czozOiJzdWIiO2k6MTQ7czo0OiJsaW5rIjtpOjE1O3M6NDoibGluZSI7fXM6NzoicGx1Z2lucyI7YToxMzp7aTowO3M6OToiYWxpZ25tZW50IjtpOjE7czoxNjoicnRlX2RlZmluZWRsaW5rcyI7aToyO3M6MTE6ImZpbGVicm93c2VyIjtpOjM7czo1OiJwYWdlcyI7aTo0O3M6MTE6ImlubGluZXN0eWxlIjtpOjU7czo3OiJsaW1pdGVyIjtpOjY7czo3OiJjb3VudGVyIjtpOjc7czoxMDoicHJvcGVydGllcyI7aTo4O3M6MTI6InNwZWNpYWxjaGFycyI7aTo5O3M6NToidGFibGUiO2k6MTA7czo1OiJ2aWRlbyI7aToxMTtzOjY6IndpZGdldCI7aToxMjtzOjEwOiJmdWxsc2NyZWVuIjt9fXM6NjoiaGVpZ2h0IjtzOjM6IjIwMCI7czoxMDoidXBsb2FkX2RpciI7czozOiJhbGwiO3M6MTA6Im1lZGlhRW1iZWQiO2E6MTp7czoxNDoicHJldmlld3NJbkRhdGEiO2I6MTt9fQ==');
-/*!40000 ALTER TABLE `exp_rte_toolsets` ENABLE KEYS */;
-
 
 -- Dumping data for table ee-test.exp_search: ~0 rows (approximately)
 DELETE FROM `exp_search`;

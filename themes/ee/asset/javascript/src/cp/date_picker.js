@@ -248,14 +248,73 @@ EE.cp.datePicker = {
 				var timestamp = $(this.element).data('timestamp');
 
 				if ( ! timestamp) {
-					d = new Date(Date.parse($(this.element).val()));
+					// this part we need to parse date formats like dd/mm/yyyy and dd-mm-yyyy
+					// and don't get NAN as a result, when user put date manualy, not form date_pickare
+					var date_format = $(this.element).data('dateFormat')
+					// Split date to check date format without time
+					var split_date = date_format.split(' ');
+					var only_date = split_date[0];
+					var other_date_info = split_date.splice(1);
+					other_date_info.join(' ')
+
+					var newDay, newDay_index, newMonth, newMonth_index, newYear;
+					var val = $(this.element).val();
+
+					if (only_date == '%j/%n/%Y') {
+						// value without day
+						val = val.substring(val.indexOf('/') + 1);
+
+						// check if DAY has 1 or 2 numbers (1 or 01)
+						newDay_index = $(this.element).val().indexOf('/');
+						// get DAY
+						newDay = $(this.element).val().substring(0, newDay_index);
+
+						// check if MONTH has 1 or 2 numbers (9 or 09)
+						newMonth_index = val.indexOf('/');
+						// get MONTH
+						newMonth = val.substring(0, newMonth_index);
+
+						// get YEAR
+						newYear = val.substring(newMonth_index+1);
+
+						var date = [newMonth + '/' + newDay + '/' + newYear];
+
+						date = date.toString();
+
+						d = new Date(Date.parse(date));
+
+					} else if (only_date == '%j-%n-%Y') {
+						// value without day
+						val = val.substring(val.indexOf('-') + 1);
+
+						// check if DAY has 1 or 2 numbers (1 or 01)
+						newDay_index = $(this.element).val().indexOf('-');
+						// get DAY
+						newDay = $(this.element).val().substring(0, newDay_index);
+
+						// check if MONTH has 1 or 2 numbers (9 or 09)
+						newMonth_index = val.indexOf('-');
+						// get MONTH
+						newMonth = val.substring(0, newMonth_index);
+
+						// get YEAR
+						newYear = val.substring(newMonth_index+1);
+
+						var date = [newMonth + '-' + newDay + '-' + newYear];
+
+						date = date.toString();
+
+						d = new Date(Date.parse(date));
+					} else {
+						d = new Date(Date.parse($(this.element).val()));
+					}
 				} else {
 					d = new Date(timestamp * 1000);
 				}
 
-				selected = d.getUTCDate();
-				year  = d.getUTCFullYear();
-				month = d.getUTCMonth();
+				selected = d.getDate();
+				year  = d.getFullYear();
+				month = d.getMonth();
 			} else {
 				d = new Date();
 				year  = d.getFullYear();
@@ -268,6 +327,7 @@ EE.cp.datePicker = {
 				if (selected) {
 					$('.date-picker-item td:contains(' + selected + ')').each(function(){
 						if ($(this).text() == selected) {
+							$('.date-picker-item td.act').removeClass('act');
 							$(this).addClass('act');
 						}
 					});
@@ -295,6 +355,34 @@ EE.cp.datePicker = {
 
 			trailing = (trailing == 7) ? 0 : trailing;
 
+			var daysArr = [];
+			var dayIndex;
+
+			switch (EE.date.week_start) {
+				case 'sunday':
+					dayIndex = 0;
+					break;
+				case 'monday':
+					dayIndex = 1;
+					break;
+				case 'friday':
+					dayIndex = 5;
+					break;
+				case 'saturday':
+					dayIndex = 6;
+					break;
+				default:
+					dayIndex = 0;
+			}
+
+			for (var i = dayIndex; i < EE.lang.date.days.length + dayIndex; i++) {
+				if (i <= 6 ) {
+					daysArr.push('<th>' + EE.lang.date.days[i] + '</th>');
+				} else {
+					daysArr.push('<th>' + EE.lang.date.days[i-7] + '</th>');
+				}
+			}
+
 			var preamble = [
 				'<div class="date-picker-item">',
 				'<div class="date-picker-heading">',
@@ -304,14 +392,17 @@ EE.cp.datePicker = {
 				'</div>',
 				'<table>',
 				'<tr>',
-				'<th>' + EE.lang.date.days[0] + '</th>',
-				'<th>' + EE.lang.date.days[1] + '</th>',
-				'<th>' + EE.lang.date.days[2] + '</th>',
-				'<th>' + EE.lang.date.days[3] + '</th>',
-				'<th>' + EE.lang.date.days[4] + '</th>',
-				'<th>' + EE.lang.date.days[5] + '</th>',
-				'<th>' + EE.lang.date.days[6] + '</th>',
-				'</tr>'
+				// '<th>' + EE.lang.date.days[1] + '</th>',
+				// '<th>' + EE.lang.date.days[2] + '</th>',
+				// '<th>' + EE.lang.date.days[3] + '</th>',
+				// '<th>' + EE.lang.date.days[4] + '</th>',
+				// '<th>' + EE.lang.date.days[5] + '</th>',
+				// '<th>' + EE.lang.date.days[6] + '</th>',
+				// '<th>' + EE.lang.date.days[0] + '</th>',
+				// '</tr>'
+				],
+				closeTr = [
+					'</tr>'
 				],
 				closing = [
 				'</table>',
@@ -363,7 +454,7 @@ EE.cp.datePicker = {
 
 			this.calendars.push(year + '-' + month);
 
-			return preamble.join('') + out.join('') + closing.join('');
+			return preamble.join('') + daysArr.join('') + closeTr.join('') + out.join('') + closing.join('');
 		}
 
 	},
@@ -397,7 +488,25 @@ EE.cp.datePicker = {
 		},
 
 		first_day: function(year, month) {
-			return new Date(year, month, 1).getDay();
+			var day;
+			switch (EE.date.week_start) {
+				case 'sunday':
+					day = 1;
+					break;
+				case 'monday':
+					day = 0;
+					break;
+				case 'friday':
+					day = 3;
+					break;
+				case 'saturday':
+					day = 2;
+					break;
+				default:
+					day = 1;
+			}
+
+			return new Date(year, month, day).getDay();
 		}
 	},
 

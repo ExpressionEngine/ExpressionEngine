@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - '*.dev'
+      - 'release*'
 
 jobs:
 
@@ -84,8 +85,8 @@ jobs:
 
     cypress:
         needs: build-for-testing
-
         runs-on: ${{ matrix.os }}
+        timeout-minutes: 60
 
         strategy:
             fail-fast: false
@@ -216,10 +217,10 @@ jobs:
             #     echo "::set-output name=SPECS::$(node tests/cypress-split.js 4 ${{ matrix.containers }})"
             #   id: specs
 
-            - name: Install Chrome Beta
+            - name: Install Chrome
               uses: browser-actions/setup-chrome@latest
               with:
-                chrome-version: beta
+                chrome-version: stable
 
             - name: Run Cypress Tests
               if: matrix.php != '5.6'
@@ -228,7 +229,6 @@ jobs:
                 # spec: ${{ steps.specs.outputs.SPECS }}
                 browser: chrome
                 working-directory: tests/cypress
-                config-file: cypress.json
                 record: true
                 parallel: true
                 group: PHP${{ matrix.php }}
@@ -243,7 +243,7 @@ jobs:
               with:
                 browser: chrome
                 working-directory: tests/cypress
-                config-file: cypress.without-pro.json
+                config: specPattern=cypress/integration/!(updater|pro)/**.ee6.js
                 record: true
                 parallel: true
                 group: PHP${{ matrix.php }}
@@ -251,6 +251,19 @@ jobs:
                 CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
                 CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Run Cypress Tests (Electron)
+              uses: cypress-io/github-action@v5
+              if: matrix.php == '8.1'
+              with:
+                browser: electron
+                working-directory: tests/cypress
+                config-file: electron.cypress.config.js
+              env:
+                CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+                CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
 
             - name: Archive screenshots
               uses: actions/upload-artifact@v3

@@ -93,7 +93,7 @@ abstract class AbstractFiles extends CP_Controller
         }
 
         $upload_destinations = ee('Model')->get('UploadDestination')
-            ->filter('site_id', ee()->config->item('site_id'))
+            ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
             ->filter('module_id', 0)
             ->order('name', 'asc');
 
@@ -155,6 +155,14 @@ abstract class AbstractFiles extends CP_Controller
         $action = ($is_new) ? 'upload_filedata' : 'edit_file_metadata';
 
         $file->save();
+
+        if (AJAX_REQUEST) {
+            ee()->output->send_ajax_response(array(
+                'success' => true,
+                'file_id' => $file->file_id,
+                'title' => $file->title,
+            ));
+        }
 
         $alert = ee('CP/Alert')->makeInline('shared-form')
             ->asSuccess()

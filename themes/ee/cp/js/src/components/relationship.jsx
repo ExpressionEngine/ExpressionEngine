@@ -334,14 +334,14 @@ class Relationship extends React.Component {
 									<div class="list-item__handle"><i class="fal fa-bars"></i></div>
 									}
                                     <div className="list-item__content">
-                                        <div class="list-item__title">{item.highlight && <span className="status-indicator" style={{backgroundColor: '#'+item.highlight}}></span>}{item.label} {this.state.selected.length > 10 && <small className="meta-info ml-s float-right"> {item.instructions}</small>}</div>
+                                        <div class="list-item__title">{item.label} {this.state.selected.length > 10 && <small className="meta-info ml-s float-right"> {item.instructions}</small>}</div>
                                         {this.state.selected.length <= 10 &&
-                                        <div class="list-item__secondary">{props.display_entry_id && <span> #{item.value} / </span>}{item.instructions}</div>
+                                        <div class="list-item__secondary">{props.display_entry_id && <span> #{item.value} / </span>}{item.instructions}{props.display_status && <span className="status-indicator" style={{borderColor: '#'+ EE.statuses[item.status], color: '#'+ EE.statuses[item.status]}}>{item.status}</span>}</div>
                                         }
                                     </div>
                                     <div class="list-item__content-right">
                                         <div className="button-group">
-                                            {this.props.can_add_items &&
+                                            {this.props.can_add_items && item.editable &&
                                             <button type="button" title={EE.relationship.lang.edit} className="button button--small button--default" onClick={() => this.openPublishEditForm(item.value)}><i class="fal fa-pencil-alt"></i></button>
                                             }
 
@@ -412,7 +412,7 @@ class Relationship extends React.Component {
                         {
                             dropdownItems.map((item) => {
                                 return (
-                                    <a href="" onClick={(e) => { e.preventDefault(); this.selectItem(item)}} className="dropdown__link">{item.label}{props.display_entry_id && <span class="dropdown__link-entryId"> (#{item.value})</span>} <span className="dropdown__link-right">{item.instructions}</span></a>
+                                    <a href="" onClick={(e) => { e.preventDefault(); this.selectItem(item)}} className="dropdown__link">{item.label}{props.display_entry_id && <span class="dropdown__link-entryId"> (#{item.value})</span>}{props.display_status && <span className="dropdown__link-status-indicator" style={{borderColor: '#'+ EE.statuses[item.status], color: '#'+ EE.statuses[item.status]}}>{item.status}</span>} <span className="dropdown__link-right">{item.instructions}</span></a>
                                 )
                             })
                         }

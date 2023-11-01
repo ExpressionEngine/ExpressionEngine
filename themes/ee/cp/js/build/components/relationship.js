@@ -396,20 +396,21 @@ var Relationship = /*#__PURE__*/function (_React$Component) {
           className: "list-item__content"
         }, React.createElement("div", {
           "class": "list-item__title"
-        }, item.highlight && React.createElement("span", {
-          className: "status-indicator",
-          style: {
-            backgroundColor: '#' + item.highlight
-          }
-        }), item.label, " ", _this5.state.selected.length > 10 && React.createElement("small", {
+        }, item.label, " ", _this5.state.selected.length > 10 && React.createElement("small", {
           className: "meta-info ml-s float-right"
         }, " ", item.instructions)), _this5.state.selected.length <= 10 && React.createElement("div", {
           "class": "list-item__secondary"
-        }, props.display_entry_id && React.createElement("span", null, " #", item.value, " / "), item.instructions)), React.createElement("div", {
+        }, props.display_entry_id && React.createElement("span", null, " #", item.value, " / "), item.instructions, props.display_status && React.createElement("span", {
+          className: "status-indicator",
+          style: {
+            borderColor: '#' + EE.statuses[item.status],
+            color: '#' + EE.statuses[item.status]
+          }
+        }, item.status))), React.createElement("div", {
           "class": "list-item__content-right"
         }, React.createElement("div", {
           className: "button-group"
-        }, _this5.props.can_add_items && React.createElement("button", {
+        }, _this5.props.can_add_items && item.editable && React.createElement("button", {
           type: "button",
           title: EE.relationship.lang.edit,
           className: "button button--small button--default",
@@ -511,7 +512,13 @@ var Relationship = /*#__PURE__*/function (_React$Component) {
           className: "dropdown__link"
         }, item.label, props.display_entry_id && React.createElement("span", {
           "class": "dropdown__link-entryId"
-        }, " (#", item.value, ")"), " ", React.createElement("span", {
+        }, " (#", item.value, ")"), props.display_status && React.createElement("span", {
+          className: "dropdown__link-status-indicator",
+          style: {
+            borderColor: '#' + EE.statuses[item.status],
+            color: '#' + EE.statuses[item.status]
+          }
+        }, item.status), " ", React.createElement("span", {
           className: "dropdown__link-right"
         }, item.instructions));
       }), dropdownItems.length == 0 && React.createElement("div", {

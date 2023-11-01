@@ -25,6 +25,8 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
 
     public $has_array_data = true;
 
+    public $can_be_cloned = true;
+
     public $size = 'small';
 
     // used in display_field() below to set
@@ -107,7 +109,7 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
 
     public function grid_display_field($data)
     {
-        return $this->_display_field(form_prep($data), 'grid');
+        return $this->_display_field($data, 'grid');
     }
 
     /**

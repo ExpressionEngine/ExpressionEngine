@@ -36,6 +36,8 @@ $lang = array(
     'rte_advanced_config_warning' => '<p><b>Warning</b>: <b class="no">Advanced users only.</b> Please be careful with using this feature and check your work.</p><p>Providing invalid configuration can make the RTE fields inaccessible.</p><p>Consult editing engine docs: <a href="https://ckeditor.com/docs/ckeditor5/latest/installation/getting-started/configuration.html" target="_blank">CKEditor</a>, <a href="https://imperavi.com/redactor/docs/settings/" target="_blank">Redactor</a>.</p><p>Note that some options might be not available or implemented differently. We suggest using Full configuration as starting base.<p>',
     'rte_config_saved' => 'Configuration Saved!',
     'rte_config_saved_desc' => 'Your configuration saved successfully.',
+    'rte_custom_ckeditor_build' => 'Use custom CKEditor build?',
+    'rte_custom_ckeditor_build_desc' => 'Allows using custom CKEditor build with extra plugins. If enabled, RTE instances running CKEditor will be created using <code>themes/user/rte/javascript/ckeditor.js</code> script. Check the User Guide for <a href="' . DOC_URL . 'add-ons/rte.html#ckeditor" rel="external">building instructions</a>.',
 
     // Delete Config
     'rte_delete_config' => 'Delete Configuration',
@@ -207,7 +209,7 @@ $lang = array(
 
     'toolset_builder_instructions' => 'Select one or more tools and drag them to the desired location.',
 
-    'toolset_builder_label' => 'Which tools should be availble in this Tool set?',
+    'toolset_builder_label' => 'Which tools should be available in this Tool set?',
 
     'toolset_name' => 'Tool set Name',
 
@@ -319,9 +321,15 @@ $lang = array(
 
     'fontBackgroundColor_rte' => 'Font background',
 
+    'codeBlock_rte' => 'Code block',
+
+    'sourceEditing_rte' =>  'Source editing',
+
     'open_in_new_tab' => 'Open in a new tab',
 
     'source_rte' => 'View Source',
+
+    'showBlocks_rte' => 'Show blocks',
 
     'video_rte' => 'Video',
 

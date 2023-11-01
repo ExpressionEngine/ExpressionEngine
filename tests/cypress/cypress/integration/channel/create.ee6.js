@@ -23,7 +23,7 @@ context('Channel Create/Edit', () => {
         cy.contains('New Channel')
     })
 
-    it('should validate regular fields', function() {
+    it('Validates channel title and name', function() {
         //page.submit()
         page.get('save_button').first().click()
 
@@ -56,6 +56,7 @@ context('Channel Create/Edit', () => {
 
         // Invalid channel short name
         page.get('channel_name').clear().type('test test').blur()
+        cy.wait(1000)
         page.hasError(page.get('channel_name'), this.channel_name_error)
         //page.hasErrors()
         cy.get('button[value="save"]').filter('[type=submit]').first().should('be.disabled')
@@ -64,27 +65,28 @@ context('Channel Create/Edit', () => {
         page.hasNoError(page.get('channel_title'))
         //page.hasNoErrors()
 
-
         // Duplicate channel short name
         page.get('channel_name').clear().type('news').blur()
+        cy.wait(1000)
         page.hasError(page.get('channel_name'), page.messages.validation.unique)
         //page.hasErrors()
         cy.get('button[value="save"]').filter('[type=submit]').first().should('be.disabled')
 
         // Duplicate channel title
         page.get('channel_title').clear().type('News').blur()
+        cy.wait(1000)
         page.hasError(page.get('channel_title'), page.messages.validation.unique)
         //page.hasErrors()
         cy.get('button[value="save"]').filter('[type=submit]').first().should('be.disabled')
     })
 
-    it('should reject XSS', function() {
+    it('Rejects XSS in channel title', function() {
         page.get('channel_title').type(page.messages.xss_vector).blur()
         page.hasError(page.get('channel_title'), page.messages.validation.xss)
         page.hasLocalErrors()
     })
 
-    it('should repopulate the form on validation error', function() {
+    it('Repopulates the form on validation error', function() {
         page.get('channel_title').type('Test')
 
         // Channel name should autopopulate
@@ -124,7 +126,7 @@ context('Channel Create/Edit', () => {
         page.get('cat_group').eq(1).should('be.checked')
     })
 
-    it('should save a new channel and load edit form', function() {
+    it('Save new channel and load edit form for it', function() {
         page.get('channel_title').type('Test')
 
         // Channel name should autopopulate
@@ -163,7 +165,7 @@ context('Channel Create/Edit', () => {
         page.get('cat_group').eq(1).should('be.checked')
     })
 
-    it('should edit an existing channel', function() {
+    it('Edit name for existing channel', function() {
         page.load_edit_for_channel(1)
         cy.hasNoErrors()
 
@@ -196,7 +198,7 @@ context('Channel Create/Edit', () => {
         page.get('save_button').first().click()
     })
 
-    it('should duplicate an existing channel', function() {
+    it('Duplicate existing channel', function() {
         // Set some arbitrary settings on the News channel
         page.load_edit_for_channel(2) // 2nd row, not channel id 2
         page.get('settings_tab').click()

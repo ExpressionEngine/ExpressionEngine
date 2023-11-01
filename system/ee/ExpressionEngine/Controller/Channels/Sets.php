@@ -195,10 +195,10 @@ class Sets extends AbstractChannelsController
             $set->cleanUpSourceFiles();
             $errors = $result->getErrors();
             $model_errors = $result->getModelErrors();
-            foreach (array('Channel Field', 'Category', 'Category Group', 'Status') as $type) {
+            foreach (array('Channel Field', 'Category', 'Category Group', 'Status', 'Upload Destination') as $type) {
                 if (isset($model_errors[$type])) {
                     foreach ($model_errors[$type][0][2] as $error) {
-                        $errors[] = $error->getLanguageKey();
+                        $errors[] = $type . ': ' . $model_errors[$type][0][1] . ' &mdash; ' . $error->getLanguageKey();
                     }
                 }
             }

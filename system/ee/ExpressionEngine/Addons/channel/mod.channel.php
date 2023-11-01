@@ -95,7 +95,7 @@ class Channel
         $this->_dynamic_parameters = array('channel', 'entry_id', 'category', 'orderby',
             'sort', 'sticky', 'show_future_entries', 'show_expired', 'entry_id_from',
             'entry_id_to', 'not_entry_id', 'start_on', 'stop_before', 'year', 'month',
-            'day', 'display_by', 'limit', 'username', 'status', 'group_id', 'cat_limit',
+            'day', 'display_by', 'limit', 'username', 'status', 'group_id', 'primary_role_id', 'cat_limit',
             'month_limit', 'offset', 'author_id', 'url_title');
     }
 
@@ -117,7 +117,7 @@ class Channel
 
         $tag .= $this->fetch_dynamic_params();
 
-        return ee()->cache->get('/' . $this->_sql_cache_prefix . '/' . md5($tag . $this->uri));
+        return ee()->cache->get('/' . $this->_sql_cache_prefix . '/' . md5($tag . ee()->uri->uri_string()));
     }
 
     /**
@@ -128,7 +128,7 @@ class Channel
         $tag = ($identifier == '') ? ee()->TMPL->tagproper : ee()->TMPL->tagproper . $identifier;
 
         return ee()->cache->save(
-            '/' . $this->_sql_cache_prefix . '/' . md5($tag . $this->uri),
+            '/' . $this->_sql_cache_prefix . '/' . md5($tag . ee()->uri->uri_string()),
             $sql,
             0   // No TTL, cache lives on till cleared
         );
@@ -1231,7 +1231,9 @@ class Channel
             }
 
             if (empty($channel_ids)) {
-                return '';
+                if ($channelInOperator == 'IN') {
+                    return '';
+                }
             } else {
                 $sql .= "AND t.channel_id " . $channelInOperator . " (" . implode(',', $channel_ids) . ") ";
             }
@@ -1693,7 +1695,8 @@ class Channel
         /**  Add Group ID clause
         /**------*/
 
-        if ($group_id = ee()->TMPL->fetch_param('group_id')) {
+        $group_id = ee()->TMPL->fetch_param('primary_role_id') ?: ee()->TMPL->fetch_param('group_id');
+        if ($group_id) {
             $join_member_table = true;
             $sql .= ee()->functions->sql_andor_string($group_id, 'm.role_id');
         }
@@ -1998,7 +2001,7 @@ class Channel
         /**  Add Limits to query
         /**------*/
 
-        if (ee('LivePreview')->hasEntryData()) {
+        if (isset(ee()->session) && ee('LivePreview')->hasEntryData()) {
             $parts = explode(' WHERE ', $sql);
             $this->preview_conditions = explode(' AND ', $parts[1]);
         }
@@ -2079,8 +2082,10 @@ class Channel
         $this->sql .= $this->generateSQLForEntries($entries, $channel_ids);
 
         //cache the entry_id
-        ee()->session->cache['channel']['entry_ids'] = $entries;
-        ee()->session->cache['channel']['channel_ids'] = $channel_ids;
+        if (isset(ee()->session)) {
+            ee()->session->cache['channel']['entry_ids'] = $entries;
+            ee()->session->cache['channel']['channel_ids'] = $channel_ids;
+        }
 
         $end = "ORDER BY FIELD(t.entry_id, " . implode(',', $entries) . ")";
 
@@ -2234,6 +2239,10 @@ class Channel
     {
         $return = false;
 
+        if (!isset(ee()->session)) {
+            return $return;
+        }
+
         if (ee('LivePreview')->hasEntryData()) {
             $data = ee('LivePreview')->getEntryData();
             if (in_array($this->query_string, [$data['entry_id'], $data['url_title']])) {
@@ -2255,6 +2264,10 @@ class Channel
 
     private function overrideWithPreviewData($result_array)
     {
+        if (!isset(ee()->session)) {
+            return $result_array;
+        }
+
         if (ee('LivePreview')->hasEntryData()) {
             $found = false;
             $show_closed = false;
@@ -2510,7 +2523,9 @@ class Channel
 
         $this->cacheCategoryFieldModels();
 
-        ee()->session->set_cache('mod_channel', 'active', $this);
+        if (isset(ee()->session)) {
+            ee()->session->set_cache('mod_channel', 'active', $this);
+        }
         $this->return_data = $parser->parse($this, $data, $config);
 
         unset($parser, $entries, $data);
@@ -3965,7 +3980,6 @@ class Channel
                 $content = $data[$field_name];
 
                 if (! empty($var_props['modifier'])) {
-                    $parse_fnc = 'replace_' . $var_props['modifier'];
 
                     if ($field_name == 'category_image') {
                         $class = $file_fieldtype;
@@ -3977,19 +3991,40 @@ class Channel
                         $class = $fieldtype;
                     }
 
-                    if (method_exists($class, $parse_fnc)) {
-                        $content = ee()->api_channel_fields->apply($parse_fnc, array(
-                            $content,
-                            $var_props['params'],
-                            false
-                        ));
-                    } elseif (method_exists($class, 'replace_tag_catchall')) {
-                        $content = ee()->api_channel_fields->apply('replace_tag_catchall', array(
-                            $content,
-                            $var_props['params'],
-                            false,
-                            $var_props['modifier']
-                        ));
+                    if (isset($var_props['all_modifiers']) && !empty($var_props['all_modifiers'])) {
+                        foreach ($var_props['all_modifiers'] as $modifier => $params) {
+                            $parse_fnc = 'replace_' . $modifier;
+                            if (method_exists($class, $parse_fnc)) {
+                                $content = ee()->api_channel_fields->apply($parse_fnc, array(
+                                    $content,
+                                    $params,
+                                    false
+                                ));
+                            } elseif (method_exists($class, 'replace_tag_catchall')) {
+                                $content = ee()->api_channel_fields->apply('replace_tag_catchall', array(
+                                    $content,
+                                    $params,
+                                    false,
+                                    $modifier
+                                ));
+                            }
+                        }
+                    } else {
+                        $parse_fnc = 'replace_' . $var_props['modifier'];
+                        if (method_exists($class, $parse_fnc)) {
+                            $content = ee()->api_channel_fields->apply($parse_fnc, array(
+                                $content,
+                                $var_props['params'],
+                                false
+                            ));
+                        } elseif (method_exists($class, 'replace_tag_catchall')) {
+                            $content = ee()->api_channel_fields->apply('replace_tag_catchall', array(
+                                $content,
+                                $var_props['params'],
+                                false,
+                                $var_props['modifier']
+                            ));
+                        }
                     }
                 }
 
@@ -4011,7 +4046,11 @@ class Channel
      */
     private function cacheCategoryFieldModels()
     {
-        $this->cat_field_models = ee()->session->cache(__CLASS__, 'cat_field_models') ?: array();
+        if (isset(ee()->session)) {
+            $this->cat_field_models = ee()->session->cache(__CLASS__, 'cat_field_models') ?: array();
+        } else {
+            $this->cat_field_models = [];
+        }
 
         ee()->load->library('api');
         ee()->legacy_api->instantiate('channel_fields');
@@ -4042,7 +4081,9 @@ class Channel
             ->all()
             ->indexBy('field_id');
 
-        ee()->session->set_cache(__CLASS__, 'cat_field_models', $this->cat_field_models);
+        if (isset(ee()->session)) {
+            ee()->session->set_cache(__CLASS__, 'cat_field_models', $this->cat_field_models);
+        }
     }
 
     /**

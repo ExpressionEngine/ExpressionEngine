@@ -583,10 +583,13 @@ class Spam_mcp
         $result = array();
 
         foreach ($collection as $spam) {
-            $result[] = ee('Model')->make('spam:SpamTraining', array(
+            $trained = ee('Model')->make('spam:SpamTraining', array(
                 'source' => $spam->document,
                 'class' => $class
             ));
+            $trained->Kernel = $this->getKernel();
+            $trained->Author = ee()->session->getMember();
+            $result[] = $trained;
             $spam->delete();
         }
 
@@ -600,11 +603,11 @@ class Spam_mcp
      *
      * @param string $name The name of the kernel
      * @access private
-     * @return int The kernel ID
+     * @return object The kernel model
      */
     private function getKernel($name = 'default')
     {
-        return ee('Model')->get('spam:SpamKernel')->filter('name', $name)->first();
+        return ee('Model')->get('spam:SpamKernel')->filter('name', $name)->first(true);
     }
 
     private function getContentTypes()
@@ -723,11 +726,11 @@ class Spam_mcp
      * Sets the maximum likelihood estimates for a given training set and kernel
      *
      * @param array $training Multi-dimensional array of training data:
-     * 						  $class => array(
-     * 						  	  array($feature0, $feauture1, ...),
-     * 						  	  ...
-     * 						  )
-     * @param string $kernel
+     *                $class => array(
+     *                    array($feature0, $feauture1, ...),
+     *                      ...
+     *                )
+     * @param object $kernel
      * @access private
      * @return void
      */

@@ -57,6 +57,8 @@ class SelectList extends React.Component {
           entry_id: items[key].entry_id ? items[key].entry_id : '',
           upload_location_id: items[key].upload_location_id ? items[key].upload_location_id : '',
           path: items[key].path ? items[key].path : '',
+          status: items[key].status ? items[key].status : null,
+          editable: items[key].editable ? items[key].editable : false,
         }
 
         if (items[key].children) {
@@ -543,10 +545,10 @@ class SelectItem extends React.Component {
         )}
         <div class="button-group button-group-xsmall button-group-flyout-right">
         {props.editable && (
-          <a href="" className="button button--default flyout-edit flyout-edit-icon"><i class="fal fa-pencil-alt"></i></a>
+          <a href="" className="button button--default flyout-edit flyout-edit-icon"><span className="sr-only">{EE.lang.edit_element}</span><i class="fal fa-pencil-alt"></i></a>
         )}
         {props.removable && (
-            <a href="" className="button button--default js-button-delete" onClick={(e) => props.handleRemove(e, props.item)}><i class="fal fa-fw fa-trash-alt"></i></a>
+            <a href="" className="button button--default js-button-delete" onClick={(e) => props.handleRemove(e, props.item)}><span className="sr-only">{EE.lang.remove_btn}</span><i class="fal fa-fw fa-trash-alt"></i></a>
         )}
         </div>
         </div>

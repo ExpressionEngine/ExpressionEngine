@@ -123,7 +123,7 @@ class Members extends Jumps
             $keywords = explode(' ', $searchString);
 
             foreach ($keywords as $keyword) {
-                $fields->filter('m_field_label', 'LIKE', '%' . $keyword . '%');
+                $fields->filter('m_field_label', 'LIKE', '%' . ee()->db->escape_like_str($keyword) . '%');
             }
         }
 
@@ -139,7 +139,7 @@ class Members extends Jumps
             $keywords = explode(' ', $searchString);
 
             foreach ($keywords as $keyword) {
-                $roles->filter('name', 'LIKE', '%' . $keyword . '%');
+                $roles->filter('name', 'LIKE', '%' . ee()->db->escape_like_str($keyword) . '%');
             }
         }
 
@@ -155,8 +155,8 @@ class Members extends Jumps
             $keywords = explode(' ', $searchString);
 
             foreach ($keywords as $keyword) {
-                $members->filter('username', 'LIKE', '%' . $keyword . '%');
-                $members->orFilter('email', 'LIKE', '%' . $keyword . '%');
+                $members->filter('username', 'LIKE', '%' . ee()->db->escape_like_str($keyword) . '%');
+                $members->orFilter('email', 'LIKE', '%' . ee()->db->escape_like_str($keyword) . '%');
             }
         }
 

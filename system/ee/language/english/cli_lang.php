@@ -10,6 +10,8 @@ $lang = array(
     'cli_option_help'                              => 'See help menu for given command',
     'cli_error_the_specified_addon_does_not_exist' => 'The specified add-on does not exist',
     'cli_error_cli_disabled'                       => 'The ExpressionEngine CLI is currently disabled. To use the CLI, you must enable it in the settings.',
+    'cli_no_addons'                                => 'There are no add-ons available',
+    'cli_table_no_results'                         => 'No results found.',
 
     // Lang entries for command cache:clear
     'command_cache_clear_description'              => 'Clears all ExpressionEngine caches',
@@ -17,6 +19,48 @@ $lang = array(
     'command_cache_clear_option_type'              => 'Type of cache to clear (default: all)',
     'command_cache_clear_cache_does_not_exist'     => 'Cache does not exist. Use --help to see available caches.',
     'command_cache_clear_caches_cleared'           => ' caches are cleared!',
+
+    // Lang entries for command addons:install
+    'command_addons_install_description'            => 'Installs add-on and all its components',
+    'command_addons_install_summary'                => '',
+    'command_addons_install_begin'                  => 'Add-on installation is about to begin',
+    'command_addons_install_ask_addon'              => 'Which add-on do you want to install?',
+    'command_addons_install_in_progress'            => 'Performing %s add-on installation',
+    'command_addons_install_complete'               => '%s installed successfully',
+    'command_addons_install_option_addon'           => 'Add-on\'s short name',
+
+    // Lang entries for command addons:uninstall
+    'command_addons_uninstall_description'            => 'Uninstalls add-on and all its components',
+    'command_addons_uninstall_summary'                => '',
+    'command_addons_uninstall_begin'                  => 'Add-on uninstallation is about to begin',
+    'command_addons_uninstall_ask_addon'              => 'Which add-on do you want to uninstall?',
+    'command_addons_uninstall_in_progress'            => 'Performing %s add-on uninstallation',
+    'command_addons_uninstall_complete'               => '%s uninstalled successfully',
+    'command_addons_uninstall_option_addon'           => 'Add-on\'s short name',
+
+    // Lang entries for command addons:update
+    'command_addons_update_description'            => 'Updates an add-on to the latest version',
+    'command_addons_update_summary'                => '',
+    'command_addons_update_begin'                  => 'Add-on update is about to begin.',
+    'command_addons_update_ask_addon'              => 'Which add-on do you want to update?',
+    'command_addons_update_in_progress'            => 'Performing %s add-on update...',
+    'command_addons_update_complete'               => '%s updated successfully.',
+    'command_addons_update_all_complete'           => 'All Add-Ons updated successfully.',
+    'command_addons_update_option_addon'           => 'Add-on\'s short name',
+    'command_addons_update_option_all'             => 'Updates all add-ons that have updates available',
+
+    // Lang entries for command addons:list
+    'command_addons_list_description'                => 'List the add-ons',
+    'command_addons_list_summary'                    => '',
+    'command_addons_list'                            => 'The following add-ons %s',
+    'command_addons_option_available'                => 'are available',
+    'command_addons_option_installed'                => 'are installed',
+    'command_addons_option_uninstalled'              => 'are not installed',
+    'command_addons_option_update'                   => 'can be updated',
+    'command_addons_list_table_header_name'          => 'Name',
+    'command_addons_list_table_header_shortname'     => 'Shortname',
+    'command_addons_list_table_header_version'       => 'Version',
+    'command_addons_list_table_header_installed'     => 'Installed',
 
     // Lang entries for command list
     'command_list_description'                  => 'Lists all available commands',
@@ -130,6 +174,21 @@ $lang = array(
     'command_make_prolet_option_widget_name'           => 'Name of widget',
     'command_make_prolet_option_generate_icon'         => 'Generate a default add-on icon file when creating a prolet',
 
+    // Lang entries for command backup:database
+    'command_backup_database_description'                  => 'Backup the database',
+    'command_backup_database_summary'                      => 'Backup the ExpressionEngine database',
+    'command_backup_database_beginning_database_backup'    => 'Beginning database backup.',
+    'command_backup_database_backing_up_database'          => 'Backing up the database...',
+    'command_backup_database_failed_with_error'            => 'Database backup failed with error message:',
+    'command_backup_database_completed_successfully'       => 'Database backup completed successfully.',
+    'command_backup_database_backup_path'                  => 'Backup path: %s',
+
+    // backup:database options
+    'command_backup_database_option_absolute_path'   => 'Absolute path to the directory the database backup will be stored',
+    'command_backup_database_option_relative_path'   => 'Path to database backup, relative to the cache folder',
+    'command_backup_database_option_file_name'       => 'Name of sql file to be saved',
+    'command_backup_database_option_speed'           => 'Speed of database backup (between 1-10). Setting a lower speed allows for more time between database commands. Default speed is 5.',
+
     // Lang entries for command make:action
     'command_make_action_description'                  => 'Creates a new action for an add-on',
     'command_make_action_summary'                      => 'This interactively generates an EE Action for an existing third-party addon',
@@ -199,6 +258,30 @@ $lang = array(
     // make:fieldtype options
     'command_make_fieldtype_option_addon'                 => 'Folder for third-party add-on you want to add fieldtype to.',
 
+    // Lang entries for command config:config
+    'command_config_config_description'             => 'Updates config values in config.php file',
+    'command_config_config_summary'                 => 'Gives the ability to update config values',
+    'command_config_config_ask_config_variable'     => 'What config item would you like to set?',
+    'command_config_config_ask_config_value'        => 'What value would you like it set to?',
+    'command_config_config_updating_config_variable' => 'Updating config item...',
+    'command_config_config_config_value_saved'      => 'Config item saved.',
+
+    // config:config options
+    'command_config_config_option_config_variable'  => 'The config item to modify',
+    'command_config_config_option_value'            => 'The value to set the config item to',
+
+    // Lang entries for command config:env
+    'command_config_env_description'             => 'Updates env values in .env.php file',
+    'command_config_env_summary'                 => 'Gives the ability to update env values',
+    'command_config_env_ask_config_variable'     => 'What env item would you like to set?',
+    'command_config_env_ask_config_value'        => 'What value would you like it set to?',
+    'command_config_env_updating_config_variable' => 'Updating env item...',
+    'command_config_env_config_value_saved'      => 'Env item saved.',
+
+    // config:env options
+    'command_config_env_option_config_variable'  => 'The env item to set/modify',
+    'command_config_env_option_value'            => 'The value to set the env item to',
+
     // Lang entries for command make:cp-route
     'command_make_cp_route_description'                  => 'Generates a control panel route for a given third-party add-on',
     'command_make_cp_route_summary'                      => 'This interactively generates a control panel route in an existing third-party addon',
@@ -221,7 +304,6 @@ $lang = array(
 
     // make:jump options
     'command_make_jump_file_addon'                 => 'Folder for third-party add-on you want to add Jump Menu file to.',
-
 
     // Lang entries for command make:widget
     'command_make_widget_description'                 => 'Generates widgets for existing add-ons.',
@@ -334,6 +416,12 @@ $lang = array(
     'command_update_option_force_addon_upgrades'                => 'Automatically runs all add-on updaters at end of update (advanced)',
     'command_update_option_y'                                   => 'Skip all confirmations. Don\'t do this.',
     'command_update_option_skip_cleanup'                        => 'Skip cleanup steps after update',
+
+    // Lang entries for command sync:file-usage
+    'command_sync_file_usage_description'     => 'Syncs the file usage for all files',
+    'command_sync_file_usage_summary'         => '',
+    'command_sync_file_usage'                 => 'Updating file usage.',
+    'command_sync_file_usage_done'            => 'File usage updated successfully.',
 
     // Lang entries for command update:prepare
     'command_update_prepare_description'                        => 'Prepare a site to be upgraded using these files',

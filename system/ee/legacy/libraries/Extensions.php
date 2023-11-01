@@ -96,7 +96,9 @@ class EE_Extensions
 
         $this->in_progress = $which;
 
-        ee()->load->library('addons');
+        if (!isset(ee()->addons)) {
+            ee()->load->library('addons');
+        }
         ee()->addons->is_package('');
 
         // Retrieve arguments for function
@@ -135,7 +137,9 @@ class EE_Extensions
      */
     public function call_class($class, $which, $metadata, $args = array())
     {
-        ee()->load->library('addons');
+        if (!isset(ee()->addons)) {
+            ee()->load->library('addons');
+        }
         ee()->addons->is_package('');
 
         // Determine Path of Extension
