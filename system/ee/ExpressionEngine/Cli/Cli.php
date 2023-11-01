@@ -161,6 +161,18 @@ class Cli
      */
     public function process()
     {
+        // -------------------------------------------
+        // 'cli_boot' hook.
+        //  - Runs on every CLI request
+        //  - Intercept CLI call and make it do extra stuff
+        //
+        if (ee()->extensions->active_hook('cli_boot') === true) {
+            ee()->extensions->call('cli_boot', $this);
+            if (ee()->extensions->end_script === true) {
+                $this->complete('');
+            }
+        }
+
         $this->availableCommands = $this->availableCommands();
 
         // Check if command exists
