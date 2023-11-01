@@ -28,6 +28,7 @@ class Updater
         $steps = new \ProgressIterator(
             [
                 'addCategoryGroupPermissions',
+                'addShowFieldNamesSetting',
             ]
         );
 
@@ -62,6 +63,22 @@ class Updater
                 'permission' => 'can_delete_category_groups'
             );
             ee()->db->insert('permissions', $data);
+    }
+      
+    private function addShowFieldNamesSetting()
+    {
+        if (!ee()->db->field_exists('show_field_names', 'role_settings')) {
+            ee()->smartforge->add_column(
+                'role_settings',
+                [
+                    'show_field_names' => [
+                        'type' => 'char',
+                        'constraint' => 1,
+                        'default' => 'y',
+                        'null' => false
+                    ]
+                ]
+            );
         }
     }
 }

@@ -417,7 +417,8 @@ context('Front-end editing', () => {
                 publish.get('title').click()
                 break;
               case 'rte':
-                field.find('.ck-content').type('Lorem ipsum dolor sit amet');
+                field.find('.ck-content').focus()
+                cy.realType('Lorem ipsum dolor sit amet');
                 break;
               case 'multi_select':
                 field.find('input[type=checkbox]').eq(0 + skew).check()

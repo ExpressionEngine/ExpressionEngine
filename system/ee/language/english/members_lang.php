@@ -699,6 +699,10 @@ $lang = array(
 
     'include_members_in_desc' => 'Users with this role will be included in all of the selected list types.',
 
+    'show_field_names' => 'Show field names on Publish',
+
+    'show_field_names_desc' => 'When enabled, copy-able names of fields will be included on Entry Publish & Edit pages',
+
     'mbr_account_privs' => 'Member Account Privileges',
 
     'mbr_delete_notify_emails' => 'Recipient(s) for delete notifications',

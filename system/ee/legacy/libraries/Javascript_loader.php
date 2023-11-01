@@ -72,6 +72,9 @@ class Javascript_loader
             }
 
             foreach ($files as $file) {
+                if (empty($file)) {
+                    continue;
+                }
                 if ($type == 'package' or $type == 'fp_module') {
                     if (strpos($file, ':') !== false) {
                         list($package, $file) = explode(':', $file);
@@ -117,6 +120,12 @@ class Javascript_loader
                     $fullFilePath = PATH_ADDONS . $file . '.js';
                     if (file_exists($fullFilePath)) {
                         $contents .= file_get_contents($fullFilePath) . "\n\n";
+                    } else {
+                        // if still not found, check third-party themes folder
+                        $fullFilePath = PATH_THIRD_THEMES . $file . '.js';
+                        if (file_exists($fullFilePath)) {
+                            $contents .= file_get_contents($fullFilePath) . "\n\n";
+                        }
                     }
                 }
             }
