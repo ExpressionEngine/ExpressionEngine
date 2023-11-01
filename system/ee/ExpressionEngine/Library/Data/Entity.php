@@ -34,7 +34,7 @@ abstract class Entity extends MixableImpl implements Publisher
     protected $_filters = array();
 
     /**
-     * @var Backup of clean values
+     * @var Array Backup of clean values
      */
     protected $_clean_backups = array();
 
@@ -158,8 +158,10 @@ abstract class Entity extends MixableImpl implements Publisher
             }
 
             $child = $class;
-        } while (($class = get_parent_class($class))
-            && $child != 'ExpressionEngine\Service\Model\Model');
+        } while (
+            ($class = get_parent_class($class))
+            && $child != 'ExpressionEngine\Service\Model\Model'
+        );
 
         return array_reverse($values);
     }
