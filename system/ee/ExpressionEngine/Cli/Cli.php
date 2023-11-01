@@ -197,12 +197,12 @@ class Cli
         }
 
         // -------------------------------------------
-        // 'cli_boot' hook.
+        // 'cli_before_handle' hook.
         //  - Runs on every CLI request
         //  - Intercept CLI call and make it do extra stuff
         //
-        if (ee()->extensions->active_hook('cli_boot') === true) {
-            $command = ee()->extensions->call('cli_boot', $this, $commandClass, $command);
+        if (ee()->extensions->active_hook('cli_before_handle') === true) {
+            $command = ee()->extensions->call('cli_before_handle', $this, $command, $commandClass);
             if (ee()->extensions->end_script === true) {
                 $this->complete('');
             }
