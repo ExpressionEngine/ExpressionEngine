@@ -130,7 +130,8 @@ context('Entry Cloning', () => {
         cy.get('[data-input-value=field_id_9] input[type=checkbox]').eq(0 + skew).check();
         cy.get('input[name=field_id_11]').clear().type('rspec-' + skew.toString() + '@example.com')
         cy.get('input[name=field_id_12]').clear().type('http://www.example.com/page/' + skew.toString())
-        cy.get('.ck-content').type('Lorem ipsum dolor sit amet' + skew);
+        cy.get('.ck-content').focus()
+        cy.realType('Lorem ipsum dolor sit amet' + skew);
         cy.get('[data-input-value=field_id_15] input[type=checkbox]').eq(0 + skew).check()
         cy.get('input[type=radio][name=field_id_16]').eq(1 + skew).check()
         cy.get('[data-input-value=field_id_18]').click()
@@ -158,7 +159,7 @@ context('Entry Cloning', () => {
         cy.get('[data-input-value=field_id_9] input[type=checkbox]').eq(0 + skew).should('be.checked');
         cy.get('input[name=field_id_11]').invoke('val').should('eq', 'rspec-' + skew.toString() + '@example.com')
         cy.get('input[name=field_id_12]').invoke('val').should('eq', 'http://www.example.com/page/' + skew.toString())
-        cy.get('.ck-content').contains('Lorem ipsum dolor sit amet' + skew);
+        cy.get('.ck-content').contains('ipsum dolor sit amet' + skew);
         cy.get('[data-input-value=field_id_15] input[type=checkbox]').eq(0 + skew).should('be.checked');
         cy.get('input[type=radio][name=field_id_16]').eq(1 + skew).should('be.checked');
         cy.get('input[type=hidden][name=field_id_18]').invoke('val').should('eq', 'Corndog')

@@ -85,8 +85,8 @@ jobs:
 
     cypress:
         needs: build-for-testing
-
         runs-on: ${{ matrix.os }}
+        timeout-minutes: 60
 
         strategy:
             fail-fast: false
@@ -251,6 +251,19 @@ jobs:
                 CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
                 CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Run Cypress Tests (Electron)
+              uses: cypress-io/github-action@v5
+              if: matrix.php == '8.1'
+              with:
+                browser: electron
+                working-directory: tests/cypress
+                config-file: electron.cypress.config.js
+              env:
+                CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+                CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
 
             - name: Archive screenshots
               uses: actions/upload-artifact@v3

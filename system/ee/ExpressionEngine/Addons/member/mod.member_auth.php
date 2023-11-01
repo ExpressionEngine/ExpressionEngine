@@ -241,6 +241,10 @@ class Member_auth extends Member
     {
         $sess = ee()->auth->authenticate_username($username, $password);
 
+        if ($sess === false) {
+            $sess = ee()->auth->authenticate_email($username, $password);
+        }
+
         if (! $sess) {
             ee()->session->save_password_lockout($username);
 

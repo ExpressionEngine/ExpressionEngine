@@ -531,6 +531,8 @@ class Fluid_field_ft extends EE_Fieldtype
 
         $field_templates = $field_templates->indexByIds();
 
+        $field_name_prefix = (isset($this->settings['field_short_name']) && !empty($this->settings['field_short_name'])) ? $this->settings['field_short_name'] . ':' : '';
+
         if (! is_array($data)) {
             if ($this->content_id) {
                 $fluid_field_data = $this->getFieldData();
@@ -560,7 +562,8 @@ class Fluid_field_ft extends EE_Fieldtype
                         'errors' => $this->errors,
                         'reorderable' => true,
                         'show_field_type' => false,
-                        'field_filters' => $filter_options
+                        'field_filters' => $filter_options,
+                        'field_name_prefix' => $field_name_prefix
                     ];
 
                     if ($is_group) {
@@ -668,7 +671,8 @@ class Fluid_field_ft extends EE_Fieldtype
                     'errors' => $this->errors,
                     'reorderable' => true,
                     'show_field_type' => false,
-                    'field_filters' => $filter_options
+                    'field_filters' => $filter_options,
+                    'field_name_prefix' => $field_name_prefix
                 ];
 
                 if ($is_group) {
@@ -701,6 +705,7 @@ class Fluid_field_ft extends EE_Fieldtype
             $templates .= ee('View')->make('fluid_field:field')->render([
                 'field' => $f,
                 'field_name' => $field->field_name,
+                'field_name_prefix' => $field_name_prefix,
                 'filters' => $filters,
                 'errors' => $this->errors,
                 'reorderable' => true,
@@ -722,6 +727,7 @@ class Fluid_field_ft extends EE_Fieldtype
                     return $f;
                 }),
                 'field_name' => $field_group->short_name,
+                'field_name_prefix' => $field_name_prefix,
                 'filters' => $filters,
                 'errors' => $this->errors,
                 'reorderable' => true,

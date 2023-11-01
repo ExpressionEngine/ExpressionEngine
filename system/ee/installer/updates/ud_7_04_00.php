@@ -27,6 +27,7 @@ class Updater
     {
         $steps = new \ProgressIterator(
             [
+                'addShowFieldNamesSetting',
                 'increaseEmailLength',
             ]
         );
@@ -63,6 +64,23 @@ class Updater
                 )
             )
         );
+    }
+
+    private function addShowFieldNamesSetting()
+    {
+        if (!ee()->db->field_exists('show_field_names', 'role_settings')) {
+            ee()->smartforge->add_column(
+                'role_settings',
+                [
+                    'show_field_names' => [
+                        'type' => 'char',
+                        'constraint' => 1,
+                        'default' => 'y',
+                        'null' => false
+                    ]
+                ]
+            );
+        }
     }
 }
 
