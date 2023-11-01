@@ -142,7 +142,7 @@ class Cli
             $this->fail('cli_error_cli_disabled');
         }
 
-        if (! isset($this->argv[1])) {
+        if (!isset($this->argv[1])) {
             $this->fail('cli_error_no_command_given');
         }
 
@@ -165,13 +165,13 @@ class Cli
 
         // Check if command exists
         // If not, return
-        if (! $this->commandExists()) {
+        if (!$this->commandExists()) {
             return $this->fail('cli_error_command_not_found');
         }
 
         $commandClass = $this->getCommand($this->commandCalled);
 
-        if (! class_exists($commandClass)) {
+        if (!class_exists($commandClass)) {
             return $this->fail('cli_error_command_not_found');
         }
 
@@ -230,7 +230,7 @@ class Cli
     public function fail($messages = null)
     {
         if ($messages) {
-            if (! is_array($messages)) {
+            if (!is_array($messages)) {
                 $messages = [$messages];
             }
 
@@ -369,7 +369,7 @@ class Cli
         }
 
         // If not bool, lets convert string to bool
-        if (! is_bool($answer)) {
+        if (!is_bool($answer)) {
             $answer = get_bool_from_string($answer);
         }
 
@@ -460,7 +460,7 @@ class Cli
      */
     protected function loadOptions()
     {
-        if (! isset($this->commandOptions)) {
+        if (!isset($this->commandOptions)) {
             return [];
         }
 
@@ -555,7 +555,7 @@ class Cli
         $askText = $askText . ' (' . implode(', ', $addonList) . '): ';
 
         // If the default is "first", then return the first element in the array
-        if ($default === 'first' && ! empty($addonList)) {
+        if ($default === 'first' && !empty($addonList)) {
             // Get the first array element
             $default = reset($addonList);
         }
@@ -584,12 +584,12 @@ class Cli
         $addons = [];
         foreach ($this->filesystem->getDirectoryContents(PATH_THIRD) as $name) {
             // Skip non-directories
-            if (! $this->filesystem->isDir($name)) {
+            if (!$this->filesystem->isDir($name)) {
                 continue;
             }
 
             // Skip add-ons without addon.setup.php file
-            if (! $this->filesystem->exists($name . '/addon.setup.php')) {
+            if (!$this->filesystem->exists($name . '/addon.setup.php')) {
                 continue;
             }
 
