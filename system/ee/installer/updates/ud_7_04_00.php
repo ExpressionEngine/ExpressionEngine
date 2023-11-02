@@ -42,8 +42,8 @@ class Updater
     // those that have edit_categories permissions get the new permission automatically
     private function addCategoryGroupPermissions()
     {
-        $query = ee()->db->where('permission', 'can_edit_categories')
-            ->get('permissions');
+        $query = ee()->db->where('permission', 'can_edit_categories')->get('permissions');
+
         foreach ($query->result_array() as $row) {
             $data = array(
                 'site_id' => $row['site_id'],
@@ -63,8 +63,9 @@ class Updater
                 'permission' => 'can_delete_category_groups'
             );
             ee()->db->insert('permissions', $data);
+        }
     }
-      
+
     private function addShowFieldNamesSetting()
     {
         if (!ee()->db->field_exists('show_field_names', 'role_settings')) {
