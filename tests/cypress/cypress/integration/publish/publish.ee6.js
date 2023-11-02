@@ -374,7 +374,7 @@ context('Publish Entry', () => {
           cy.wait('@validation')
           cy.wait(3000)
           cy.get('button[value="save"]').click()
-          
+
           cy.get('.grid-field__table tbody tr:visible').should('have.length', 2)
           cy.get('.grid-field__table tbody tr:visible').contains('README.md')
           cy.get('.grid-field__table tbody tr:visible').contains('LICENSE.txt')
@@ -559,7 +559,7 @@ context('Publish Entry', () => {
         cy.get('p').contains('has been created')
 
         cy.visit('admin.php?/cp/publish/edit/entry/1')
-        cy.get('.js-file-grid button:contains("Choose Existing"):visible').eq(0).click();
+        cy.get('.js-file-grid button:contains("Choose Existing"):visible').last().click();
         cy.get('a[rel="modal-file"]:contains("About"):visible').eq(0).click()
         cy.get('tr[data-id="1"]').click()
         cy.get('[data-fieldtype="text"][data-new-row-id="new_row_1"] input[type="text"]').type('row one')
