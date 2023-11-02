@@ -73,12 +73,12 @@ EE.cp.ModalForm = {
 				options.load(that.modalContentsContainer)
 			})
 
-			var timer = setInterval(function() {
-				if ($('.app-modal .grid-field').length) {
-					new Grid.Publish($('.app-modal .grid-field'))
-					clearInterval(timer);
-				}
-			},50);
+			// var timer = setInterval(function() {
+			// 	if ($('.app-modal .grid-field').length) {
+			// 		new Grid.Publish($('.app-modal .grid-field'))
+			// 		clearInterval(timer);
+			// 	}
+			// },50);
 		}
 	},
 
@@ -115,14 +115,14 @@ EE.cp.ModalForm = {
 
 		$('form', this.modal).on('submit', function() {
 
-			$.post(this.action, $(this).serialize(), function(result) {
+			$.post($(this).attr('action'), $(this).serialize(), function(result) {
 				// Probably a validation error
 				if ($.type(result) === 'string') {
 					that.modalContentsContainer.html(result)
 					that._bindForm(options)
 					options.load(that.modalContentsContainer)
 					return
-				} else {
+				} else if (options.success) {
 					options.success(result)
 				}
 

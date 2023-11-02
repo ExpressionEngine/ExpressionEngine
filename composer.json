@@ -23,7 +23,10 @@
         "vlucas/phpdotenv": "4.*",
         "sabberworm/php-css-parser": "^8.4",
         "bamarni/composer-bin-plugin": "^1.5",
-        "expressionengine/flysystem-cached-adapter": "^1.1"
+        "expressionengine/flysystem-cached-adapter": "^1.1",
+        "mlocati/ip-lib": "^1.18",
+        "bacon/bacon-qr-code": "^2.0",
+        "spomky-labs/otphp": "^10.0"
     },
     "repositories": [
         {
@@ -50,7 +53,8 @@
         ],
         "prefix-dependencies": [
             "vendor/bin/php-scoper add-prefix --output-dir=./system/ee/vendor-build --force --quiet",
-            "COMPOSER_VENDOR_DIR=system/ee/vendor-build composer dump-autoload"
+            "COMPOSER_VENDOR_DIR=system/ee/vendor-build composer dump-autoload",
+            "php scoper.fix.php"
         ]
     }
 }

@@ -28,7 +28,8 @@ class Updater
         $steps = new \ProgressIterator(
             [
                 'addMemberRelationshipTable',
-                'addMembeFieldtype',
+                'addMemberFieldtype',
+                'addShowFieldNamesSetting',
             ]
         );
 
@@ -120,7 +121,7 @@ class Updater
         ee()->dbforge->create_table('member_relationships');
     }
 
-    private function addMembeFieldtype()
+    private function addMemberFieldtype()
     {
         if (ee()->db->where('name', 'member')->get('fieldtypes')->num_rows() > 0) {
             return;
@@ -135,6 +136,23 @@ class Updater
                 'has_global_settings' => 'n'
             )
         );
+    }
+
+    private function addShowFieldNamesSetting()
+    {
+        if (!ee()->db->field_exists('show_field_names', 'role_settings')) {
+            ee()->smartforge->add_column(
+                'role_settings',
+                [
+                    'show_field_names' => [
+                        'type' => 'char',
+                        'constraint' => 1,
+                        'default' => 'y',
+                        'null' => false
+                    ]
+                ]
+            );
+        }
     }
 }
 

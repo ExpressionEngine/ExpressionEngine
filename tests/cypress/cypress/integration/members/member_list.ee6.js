@@ -4,7 +4,7 @@ import Members from '../../elements/pages/members/Members';
 
 const page = new Members
 
-context('Member List', () => {
+context('Member List in CP', () => {
 
   before(function(){
     cy.task('db:seed')
@@ -24,7 +24,7 @@ context('Member List', () => {
   })
 
   // Confirming phrase search
-  it('searches by phrases', () => {
+  it('search members by keyword', () => {
     page.get('keyword_search').clear().type('banned1{enter}')
     cy.hasNoErrors()
 
@@ -74,7 +74,7 @@ context('Member List frontend', () => {
     
   })
 
-  it('can access memberlist', () => {
+  it('check access memberlist permissions', () => {
     cy.visit('index.php/members/memberlist', {failOnStatusCode: false});
     cy.hasNoErrors()
     cy.get('body').should('contain', 'You are not allowed to view member profiles')
@@ -101,6 +101,12 @@ context('Member List frontend', () => {
     cy.get('tbody tr').its('length').should('eq', 2)
     cy.get('tbody tr').should('not.contain', 'Super Admin')
     cy.logFrontendPerformance()
+  })
+
+  it.only('Check backspace parameter for member_rows', () => {
+    cy.auth()
+    cy.visit('index.php/members/memberlist-backspace');
+    cy.get('div').contains("Admin").should('not.contain', 'Admin**')
   })
 
   it('the paths are correct', () => {

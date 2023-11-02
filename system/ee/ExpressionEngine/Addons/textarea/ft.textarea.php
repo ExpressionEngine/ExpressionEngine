@@ -61,6 +61,9 @@ class Textarea_ft extends EE_Fieldtype
             foreach ($buttons as $button) {
                 // Don't let markItUp handle this button
                 if ($button->classname == 'html-upload') {
+                    if (REQ != 'CP') {
+                        continue;
+                    }
                     $button->tag_open = '';
                 }
                 $markItUp['markupSet'][] = $button->prepForJSON();

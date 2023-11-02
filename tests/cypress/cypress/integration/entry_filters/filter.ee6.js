@@ -1,7 +1,7 @@
 import Entries from '../../elements/pages/entries/Entries';
 const entry = new Entries
 const { _, $ } = Cypress
-context('Entry filtering', () => {
+context('Entry Manager', () => {
 
 		before(function(){
 			cy.task('db:seed')
@@ -109,12 +109,10 @@ context('Entry filtering', () => {
 
 		beforeEach(function() {
 			cy.auth()
-
-			cy.server()
 		})
 
-		it('Can sort entries by their channel also tests clear', () => {
-			cy.route("GET", "**/publish/edit**").as("ajax");
+		it('Sort and filter entries by channel', () => {
+			cy.intercept("GET", "**/publish/edit**").as("ajax");
 
 			cy.visit('admin.php?/cp/publish/edit')
 			cy.dismissLicenseAlert()
@@ -144,8 +142,8 @@ context('Entry filtering', () => {
 			cy.get('a').contains('Discover Entry').should('exist')
 		})
 
-		it('Can sort by status of entries (Open or closed) and can combine this sort with channel', () => {
-			cy.route("GET", "**/publish/edit**").as("ajax");
+		it('Sort entries by status and combine this sort with channel', () => {
+			cy.intercept("GET", "**/publish/edit**").as("ajax");
 
 			cy.visit('admin.php?/cp/publish/edit')
 			cy.dismissLicenseAlert()
@@ -162,42 +160,52 @@ context('Entry filtering', () => {
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Closed').click(); //Closed
 			cy.wait("@ajax")
 			cy.get('h3').contains('Entries').click()
+			cy.get('a[class="dropdown__link"]').should('not.be.visible')
 			entry.get('Entries').find('tr').should('have.length',1)
 
 			entry.get('StatusSort').click()
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Open').click(); //Open
 			cy.wait("@ajax")
 			cy.get('h3').contains('Entries').click()
+			cy.get('a[class="dropdown__link"]').should('not.be.visible')
 
+			cy.wait(1000)
 			entry.get('ChannelSort').click()
+			cy.get('a[class="dropdown__link"]').should('be.visible')
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Channel').click();//Channel
 			cy.wait("@ajax")
 			cy.get('h3').contains('Entries').click()
+			cy.get('a[class="dropdown__link"]').should('not.be.visible')
 			//entry.get('Entries').contains('No Entries found')
 			entry.get('Entries').find('tr').should('have.length',1)
 
-
+			cy.wait(1000)
 			entry.get('StatusSort').click()
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Closed').click(); //Closed
 			cy.wait("@ajax")
 			cy.get('h3').contains('Entries').click()
+			cy.get('a[class="dropdown__link"]').should('not.be.visible')
 			entry.get('Entries').find('tr').should('have.length',1)
 
+			cy.wait(1000)
 			entry.get('ChannelSort').click()
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Contact').click();//Contact
 			cy.wait("@ajax")
 			cy.get('h3').contains('Entries').click()
+			cy.get('a[class="dropdown__link"]').should('not.be.visible')
 			entry.get('Entries').contains('No Entries found')
 
+			cy.wait(1000)
 			entry.get('ChannelSort').click()
 			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Discover').click();//Discover
 			cy.wait("@ajax")
 			cy.get('h3').contains('Entries').click()
+			cy.get('a[class="dropdown__link"]').should('not.be.visible')
 			entry.get('Entries').contains('No Entries found')
 		})
 
-		it('can sort by search bar (Searching in Titles)', () =>{
-			cy.route("POST", "**/publish/edit**").as("ajax");
+		it('Search by titles', () =>{
+			cy.intercept("POST", "**/publish/edit**").as("ajax");
 
 			cy.visit('admin.php?/cp/publish/edit')
 			cy.dismissLicenseAlert()
@@ -214,18 +222,18 @@ context('Entry filtering', () => {
 			entry.get('Entries').find('tr').should('have.length',1)
 		})
 
-		it('can change the columns', () => {
+		it('Change columns displayed in entry manager', () => {
 			cy.visit('admin.php?/cp/publish/edit')
 			cy.dismissLicenseAlert()
-			cy.get('a').contains('Author').should('exist')
+			cy.get('th a').contains('Author').should('exist')
 			entry.get('ColumnsSort').click()
 			entry.get('Author').uncheck()
 			cy.get('h3').contains('Entries').click() //need to click out of the columns menu to have the action occur
-			cy.get('a').contains('Author').should('not.exist')
+			cy.get('th a').contains('Author').should('not.exist')
 		})
 
 
-		it('makes a default if all columns are turned off', () => {
+		it('Displays default view when all columns are turned off', () => {
 			cy.visit('admin.php?/cp/publish/edit')
 			cy.dismissLicenseAlert()
 			entry.get('ColumnsSort').click()
@@ -249,8 +257,8 @@ context('Entry filtering', () => {
 			cy.get('a').contains('Status').should('exist')
 		})
 
-		it('Creates a second user to sort by their entries', () => {
-			cy.route("GET", "**/publish/edit**").as("ajax");
+		it('Search and filter by author', () => {
+			cy.intercept("GET", "**/publish/edit**").as("ajax");
 
 		  	cy.visit('admin.php?/cp/publish/edit')
 			cy.dismissLicenseAlert()
@@ -269,8 +277,8 @@ context('Entry filtering', () => {
 
 		})
 
-		it('Can combine all search fields', () =>{
-			cy.route("GET", "**/publish/edit**").as("ajax");
+		it('Combine all search fields', () =>{
+			cy.intercept("GET", "**/publish/edit**").as("ajax");
 
 			cy.visit('admin.php?/cp/publish/edit')
 			cy.dismissLicenseAlert()
@@ -300,8 +308,8 @@ context('Entry filtering', () => {
 			entry.get('Entries').find('tr').should('have.length',1)
 		})
 
-		it('can Search in Content but not title',() => {
-			cy.route("POST", "**/publish/edit**").as("ajax");
+		it('Search in Content',() => {
+			cy.intercept("POST", "**/publish/edit**").as("ajax");
 
 			//Real quick add in a text field to one of our channels
 			cy.visit('admin.php?/cp/fields')
@@ -338,72 +346,4 @@ context('Entry filtering', () => {
 			entry.get('Entries').find('tr').should('have.length',1)
 			cy.get('body').contains('Discover Entry')
 		})
-
-		// it('can sort by amount of entries and paginates correctly', () =>{
-		// 	var i;
-		// 	for(i = 0 ; i < 25 ; i++){
-		// 		let title = "Channel " + i;
-		// 		cy.visit('admin.php?/cp/publish/edit')
-		// 	  	cy.get('button[data-dropdown-pos = "bottom-end"]').eq(0).click()
-		// 	  	cy.get('a').contains('Channel').click()
-		// 	  	cy.get('input[name="title"]').type(title)
-		// 	  	cy.get('body').type('{ctrl}', {release: false}).type('s')
-		// 	  	cy.get('p').contains('has been created')
-		// 	}
-
-		// 	cy.visit('admin.php?/cp/publish/edit')
-		// 	cy.get(':nth-child(2) > .pagination__link').should('exist')
-		// 	entry.get('Entries').should('have.length',25)
-		// 	entry.get('NumberSort').eq(0).click() //there are 2 of them one at the top one at bottom so eq0 is needed
-		// 	cy.get('a').contains('All 29 entries').click()
-		// 	cy.get(':nth-child(2) > .pagination__link').should('not.exist')
-		// 	entry.get('Entries').should('have.length',29)
-
-		// 	entry.get('NumberSort').eq(0).click() //there are 2 of them one at the top one at bottom so eq0 is needed
-		// 	cy.get('a').contains('25 results').click()
-		// 	entry.get('Entries').should('have.length',25)
-		// 	cy.get(':nth-child(2) > .pagination__link').should('exist')
-		// 	cy.get(':nth-child(2) > .pagination__link').click()
-		// 	entry.get('Entries').find('tr').should('have.length',4)
-
-		// 	entry.get('NumberSort').eq(0).click() //there are 2 of them one at the top one at bottom so eq0 is needed
-		// 	cy.get('a').contains('All 29 entries').click()
-		// 	entry.get('Entries').should('have.length',29)
-		// 	entry.get('ChannelSort').click()
-		// 	cy.get('.dropdown--open .dropdown__link:nth-child(1)').click();//Channel
-		// 	entry.get('Entries').should('have.length',27)
-		// 	cy.get(':nth-child(2) > .pagination__link').should('not.exist')
-
-		// })
-
-		it.skip('cleans for reruns', () => {
-			cy.visit('admin.php?/cp/publish/edit')
-			cy.get('input[title="select all"]').click()
-			cy.get('select').select('Delete')
-			cy.get('button[value="submit"]').click()
-			cy.get('[value="Confirm and Delete"]').click()
-
-			cy.visit('admin.php?/cp/channels')
-			cy.get('.ctrl-all').click() //select all channels
-			cy.get('select').select('Delete')
-			cy.get('button[value="submit"]').click()
-			cy.get('[value="Confirm and Delete"]').click()
-
-			cy.visit('admin.php?/cp/members')
-			cy.get('input[data-confirm="Member: <b>user2</b>"]').click()
-			cy.get('select').select('Delete')
-			cy.get('button[value="submit"]').click()
-			cy.wait(800)
-			cy.get('input[name="verify_password"]').type('password')
-			cy.get('[value="Confirm and Delete"]').click()
-
-			cy.visit('admin.php?/cp/fields')
-			cy.get('.ctrl-all').click()
-			cy.get('select').select('Delete')
-			cy.get('button[value="submit"]').click()
-			cy.wait(800)
-			cy.get('[value="Confirm and Delete"]').eq(1).click()
-
-		})
-
 })

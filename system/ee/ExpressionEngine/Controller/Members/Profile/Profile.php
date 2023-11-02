@@ -73,7 +73,8 @@ class Profile extends CP_Controller
         }
 
         ee()->javascript->set_global([
-            'cp.validatePasswordUrl' => ee('CP/URL', 'login/validate_password')->compile()
+            'cp.validatePasswordUrl' => ee('CP/URL', 'login/validate_password')->compile(),
+            'lang.password_icon' => lang('password_icon')
         ]);
 
         $this->breadcrumbs = array(

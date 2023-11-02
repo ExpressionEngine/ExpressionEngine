@@ -420,6 +420,7 @@ class EE_Schema
 			`cp_homepage_channel` int(10) unsigned NOT NULL DEFAULT '0',
 			`cp_homepage_custom` varchar(100) DEFAULT NULL,
 			`require_mfa` char(1) NOT NULL DEFAULT 'n',
+			`show_field_names` char(1) NOT NULL DEFAULT 'y',
 			PRIMARY KEY (`id`),
 			KEY `role_id_site_id` (`role_id`, `site_id`)
 		)";
@@ -1654,7 +1655,8 @@ class EE_Schema
                 'is_locked' => 'y',
                 'exclude_from_moderation' => 'y',
                 'include_in_authorlist' => 'y',
-                'search_flood_control' => '0'
+                'search_flood_control' => '0',
+                'show_field_names' => 'y'
             ),
             array(
                 'name' => 'Banned',

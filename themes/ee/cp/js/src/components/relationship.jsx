@@ -345,7 +345,7 @@ class Relationship extends React.Component {
                                     </div>
                                     <div class="list-item__content-right">
                                         <div className="button-group">
-                                            {this.props.can_edit_items && item.can_edit &&
+                                            {this.props.can_edit_items && item.can_edit && item.editable
                                             <button type="button" title={this.lang.edit} className="button button--small button--default" onClick={() => this.openPublishEditForm(item.value)}><i class="fal fa-pencil-alt"></i></button>
                                             }
 

@@ -24,6 +24,7 @@ class ModelGenerator
     protected $stubPath;
     protected $className;
     protected $namespace;
+    protected $modelPath;
 
     public function __construct(Filesystem $filesystem, Str $str, array $data)
     {

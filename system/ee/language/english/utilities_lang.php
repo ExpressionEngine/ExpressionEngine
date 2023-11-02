@@ -356,8 +356,6 @@ $lang = array(
 
     'mbr_xml_file' => '<abbr title="Extensible Markup Language">XML</abbr> file location',
 
-    'member_group' => 'Member group',
-
     'role' => 'Role',
 
     'member_import_error' => 'Attention: Import not completed',
@@ -631,6 +629,20 @@ Once you are ready to experience the new File Manager features, please run the <
     'debug_tools_all_used_fieldtypes' => 'All used fieldtypes',
 
     'debug_tools_members' => 'Debug Members',
+
+    'debug_tools_debug_duplicate_template_groups' => 'Duplicate Template Groups',
+
+    'duplicate_template_groups_found' => 'We found %s duplicate template groups.',
+
+    'group_name' => 'Group name',
+
+    'group_id' => 'Group ID',
+
+    'no_duplicate_template_groups_found' => 'No duplicate template groups found.',
+
+    'review_duplicate_template_groups' => 'Review duplicate template groups',
+
+    'back_up_db_and_templates' => 'Make sure you have back up of your database and templates before making any changes',
 
 );
 

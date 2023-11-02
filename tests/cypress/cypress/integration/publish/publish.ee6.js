@@ -12,7 +12,9 @@ const edit = new EntryManager;
 const fluid_field = new FluidField;
 let file_modal = new FileModal;
 
-context('Publish Page - Create', () => {
+const { _, $ } = Cypress
+
+context('Publish Entry', () => {
 
     before(function(){
       cy.task('db:seed')
@@ -75,7 +77,7 @@ context('Publish Page - Create', () => {
         page.get('wrap').find('input[type="checkbox"][value=2]').should('be.checked')
     })
 
-    context('when using file fields', () => {
+    context('Create entry with file fields', () => {
 
         beforeEach(function(){
             cy.visit(Cypress._.replace(page.url, '{channel_id}', 1))
@@ -165,6 +167,60 @@ context('Publish Page - Create', () => {
             })
         })
 
+        it('File metadata can be edited in a modal', () => {
+          cy.intercept('/admin.php?/cp/addons/settings/filepicker/modal*').as('filepicker')
+          var field = page.get('file_fields').eq(0);
+          let dd_link = field.find("a:contains('Choose Existing')")
+          dd_link.click()
+          if ($(dd_link).hasClass('has-sub')) {
+            let dir_link = link.next('.dropdown').find("a:contains('About')")
+            cy.get(dir_link).click()
+          }
+          cy.wait('@filepicker')
+          file_modal.get('files').should('be.visible')
+          cy.get('.modal-file table tbody tr:contains(staff_randell.png)').click()
+          cy.wait(5000)
+
+          field = page.get('file_fields').eq(0);
+          field.parents('.field-control').find('.fields-upload-chosen-name').should('be.visible')
+          field.parents('.field-control').find('.fields-upload-chosen-name').invoke('text').then((text) => {
+            expect(text).to.eq('staff_randell.png')
+          })
+
+          page.get('file_fields').eq(0).parents('.field-control').find('.edit-meta').should('be.visible').click()
+
+          cy.get('.app-modal--side').should('be.visible');
+          cy.get('.app-modal--side .title-bar__title').should('contain', 'staff_randell.png')
+
+          cy.get('.app-modal--side [name=title]').invoke('val').then((value) => { expect(value).to.eq('staff_randell.png') })
+          cy.get('.app-modal--side [name=description]').invoke('val').then((value) => { expect(value).to.be.empty })
+          cy.get('.app-modal--side [name=credit]').invoke('val').then((value) => { expect(value).to.be.empty })
+          cy.get('.app-modal--side [name=location]').invoke('val').then((value) => { expect(value).to.be.empty })
+
+          cy.get('.app-modal--side [name=title]').clear().type('Cypress Randell')
+          cy.get('.app-modal--side [name=description]').clear().type('Cypress Description')
+          cy.get('.app-modal--side [name=credit]').clear().type('Cypress Credits')
+          cy.get('.app-modal--side [name=location]').clear().type('Cypress Location')
+
+          cy.get('.app-modal--side [value=save]').click()
+          cy.get('.app-modal--side').should('not.be.visible');
+          cy.wait(5000)
+
+          page.get('file_fields').eq(0).parents('.field-control').find('.fields-upload-chosen-name').invoke('text').then((text) => {
+            expect(text).to.eq('Cypress Randell')
+          })
+
+          page.get('file_fields').eq(0).parents('.field-control').find('.edit-meta').should('be.visible').click()
+
+          cy.get('.app-modal--side').should('be.visible');
+          cy.get('.app-modal--side .title-bar__title').should('contain', 'Cypress Randell')
+
+          cy.get('.app-modal--side [name=title]').invoke('val').then((value) => { expect(value).to.eq('Cypress Randell') })
+          cy.get('.app-modal--side [name=description]').invoke('val').then((value) => { expect(value).to.eq('Cypress Description') })
+          cy.get('.app-modal--side [name=credit]').invoke('val').then((value) => { expect(value).to.eq('Cypress Credits') })
+          cy.get('.app-modal--side [name=location]').invoke('val').then((value) => { expect(value).to.eq('Cypress Location') })
+        })
+
         it('if the file field is limited to directory, it is only available', () => {
             let link = page.get('file_fields').eq(0).find("a:contains('Choose Existing')");
             link.click()
@@ -217,7 +273,7 @@ context('Publish Page - Create', () => {
 
         it('uploads the file into field with drag & drop', () => {
             cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
-            page.get('file_fields').eq(0).find('.file-field__dropzone').attachFile('../../support/file/README.md', { subjectType: 'drag-n-drop' })
+            page.get('file_fields').eq(0).find('.file-field__dropzone').selectFile('support/file/README.md', { action: 'drag-drop' })
             cy.wait('@upload')
             cy.hasNoErrors()
 
@@ -235,7 +291,7 @@ context('Publish Page - Create', () => {
             //try again
             cy.visit(Cypress._.replace(page.url, '{channel_id}', 1))
             cy.wait(1000)
-            page.get('file_fields').eq(0).find('.file-field__dropzone').attachFile('../../support/file/README.md', { subjectType: 'drag-n-drop' })
+            page.get('file_fields').eq(0).find('.file-field__dropzone').selectFile('support/file/README.md', { action: 'drag-drop' })
             cy.wait('@upload')
 
             page.get('chosen_files').should('have.length', 1)
@@ -259,7 +315,7 @@ context('Publish Page - Create', () => {
         })
     })
 
-    context('file grid', () => {
+    context('Create entry with file grid', () => {
 
       beforeEach(function(){
           cy.visit(Cypress._.replace(page.url, '{channel_id}', 1))
@@ -283,10 +339,10 @@ context('Publish Page - Create', () => {
           page.get('url_title').should('exist')
       })
 
-      it('uploads several files', () => {
+      it('uploads several files into same field', () => {
           cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
           cy.intercept('POST', '**/publish/create/**'). as('validation')
-          cy.get('.js-file-grid').eq(0).find('.file-field__dropzone:visible').attachFile(['../../support/file/README.md', '../../../../LICENSE.txt', '../../support/file/script.sh'], { subjectType: 'drag-n-drop' })
+          cy.get('.js-file-grid').eq(0).find('.file-field__dropzone:visible').selectFile(['support/file/README.md', '../../LICENSE.txt', 'support/file/script.sh'], { action: 'drag-drop' })
           //nothing happens until you select upload destination
           cy.wait(3000);
           cy.get('.js-file-grid').eq(0).contains('You must choose a directory to upload files').should('be.visible')
@@ -323,378 +379,108 @@ context('Publish Page - Create', () => {
           cy.get('.grid-field__table tbody tr:visible').contains('README.md')
           cy.get('.grid-field__table tbody tr:visible').contains('LICENSE.txt')
           cy.get('.grid-field__table tbody tr:visible').should('not.contain', 'script.sh')
+
+          // edit file metadata, only one row is updated
+          cy.get('.grid-field__table tbody tr:contains(README)').find('.edit-meta').should('be.visible').click()
+
+          cy.get('.app-modal--side').should('be.visible');
+          cy.get('.app-modal--side .title-bar__title').should('contain', 'README.md')
+
+          cy.get('.app-modal--side [name=title]').invoke('val').then((value) => { expect(value).to.eq('README.md') })
+          cy.get('.app-modal--side [name=description]').invoke('val').then((value) => { expect(value).to.be.empty })
+          cy.get('.app-modal--side [name=credit]').invoke('val').then((value) => { expect(value).to.be.empty })
+          cy.get('.app-modal--side [name=location]').invoke('val').then((value) => { expect(value).to.be.empty })
+
+          cy.get('.app-modal--side [name=title]').clear().type('Cypress README')
+          cy.get('.app-modal--side [name=description]').clear().type('README Description')
+          cy.get('.app-modal--side [name=credit]').clear().type('README Credits')
+          cy.get('.app-modal--side [name=location]').clear().type('README Location')
+
+          cy.get('.app-modal--side [value=save]').click()
+          cy.get('.app-modal--side').should('not.be.visible');
+          cy.wait(5000)
+
+          cy.get('.grid-field__table tbody tr:visible').eq(0).find('.fields-upload-chosen-name').invoke('text').then((text) => {
+            expect(text).to.eq('Cypress README')
+          })
+          cy.get('.grid-field__table tbody tr:visible').eq(1).find('.fields-upload-chosen-name').invoke('text').then((text) => {
+            expect(text).to.contain('LICENSE.txt')
+          })
+
+          cy.get('.grid-field__table tbody tr:contains(README)').find('.edit-meta').should('be.visible').click()
+
+          cy.get('.app-modal--side').should('be.visible');
+          cy.get('.app-modal--side .title-bar__title').should('contain', 'Cypress README')
+
+          cy.get('.app-modal--side [name=title]').invoke('val').then((value) => { expect(value).to.eq('Cypress README') })
+          cy.get('.app-modal--side [name=description]').invoke('val').then((value) => { expect(value).to.eq('README Description') })
+          cy.get('.app-modal--side [name=credit]').invoke('val').then((value) => { expect(value).to.eq('README Credits') })
+          cy.get('.app-modal--side [name=location]').invoke('val').then((value) => { expect(value).to.eq('README Location') })
+      })
+
+      it('File Grid respect min and max rows settings', () => {
+        /**
+         * TODO:
+         * if you don't have any rows, you can still submit the field - that is skipping validation somewhere
+         * we need to find a way to make grid_min_rows: 0 work the same as setting the field required
+         * once that is done, remove 0 from this test - that should really show error
+         */
+        var settings = [
+          {
+            'grid_min_rows': '0',
+            'grid_max_rows': 2,
+            'rows': [0, 1, 2]
+          },
+          {
+            'grid_min_rows': '2',
+            'grid_max_rows': 2,
+            'rows': [0, 2]
+          },
+          {
+            'grid_min_rows': '2',
+            'grid_max_rows': '',
+            'rows': [0, 2, 3]
+          },
+        ];
+        var i = 0;
+        settings.forEach(function(setting) {
+          i++;
+          cy.authVisit('admin.php?/cp/fields');
+          cy.get('.list-item__content:contains("File Grid Field")').click();
+          cy.get('input[name=grid_min_rows]:visible').clear().type(setting.grid_min_rows);
+          cy.get('input[name=grid_max_rows]:visible').clear().type(setting.grid_max_rows + '{end}');
+          cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+          cy.visit(Cypress._.replace(page.url, '{channel_id}', 1))
+          page.get('title').type('File Grid Test ' + i + ' ' + Cypress._.random(1, 99))
+          page.get('url_title').should('exist')
+
+          for (var r = 0; r <= 3; r++) {
+            cy.get('body').type('{ctrl}', {release: false}).type('s')
+            // show error if min rows not met
+            page.hasAlert(setting.rows.includes(r) ? 'success' : 'error')
+
+            if (setting.grid_max_rows != '' && r >= setting.grid_max_rows) {
+              // reached maximum rows
+              cy.get('.js-file-grid').find("button:contains('Choose Existing')").should('not.be.visible')
+              break;
+            }
+
+            // add another row
+            let link = cy.get('.js-file-grid').find("button:contains('Choose Existing'):visible");
+            link.click()
+            link.next('.dropdown').find("a:contains('About')").click()
+            file_modal.get('files').should('be.visible')
+            file_modal.get('files').eq(r).click()
+            file_modal.get('files').should('not.be.visible')
+            cy.get('.grid-field__table tbody tr:visible').should('have.length', r+1)
+            cy.wait(5000); //give JS some extra time
+          }
+        })
       })
   })
 
-    context('when using fluid fields', () => {
-
-      const available_fields = [
-        "A Date",
-        "Checkboxes",
-        "Electronic-Mail Address",
-        "Home Page",
-        "Image",
-        "Item",
-        "Middle Class Text",
-        "Multi Select",
-        "Radio",
-        "Selectable Buttons",
-        "Selection",
-        "Stupid Grid",
-        "Text",
-        "Truth or Dare?",
-        "YouTube URL"
-      ];
-
-      beforeEach(function(){
-        cy.task('db:load', '../../channel_sets/channel-with-fluid-field.sql')
-        cy.visit(Cypress._.replace(page.url, '{channel_id}', 3))
-
-        page.get('title').type("Fluid Field Test the First")
-        page.get('url_title').clear().type("fluid-field-test-first")
-
-        fluid_field.get('actions_menu.fields').then(function($li) {
-          let existing_fields = Cypress._.map($li, function(el) {
-              return Cypress.$(el).text().replace('Add ', '').trim();
-          })
-
-          expect(existing_fields).to.deep.equal(available_fields)
-        })
-
-      })
-
-      function add_content(index, skew = 0) {
-
-        fluid_field.get('items').eq(index).invoke('attr', 'data-field-type').then(data => {
-          const field_type = data;
-          const field = fluid_field.get('items').eq(index).find('.fluid__item-field')
-
-          switch (field_type) {
-            case 'date':
-              field.find('input[type=text][rel=date-picker]').type((9 + skew).toString() + '/14/2017 2:56 PM')
-              page.get('title').click() // Dismiss the date picker
-              break;
-            case 'checkboxes':
-              field.find('input[type=checkbox]').eq(0 + skew).check();
-              break;
-            case 'selectable_buttons':
-              field.find('.button').eq(0 + skew).click();
-              break;
-            case 'email_address':
-              field.find('input').clear().type('rspec-' + skew.toString() + '@example.com')
-              break;
-            case 'url':
-              field.find('input').clear().type('http://www.example.com/page/' + skew.toString())
-              break;
-            case 'file':
-              field.find('button:contains("Choose Existing")').click()
-              cy.wait(500)
-              fluid_field.get('items').eq(index).find('button:contains("Choose Existing")').next('.dropdown').find('a:contains("About")').click()
-              //page.get('modal').should('be.visible')
-              file_modal.get('files').should('be.visible')
-              //page.file_modal.wait_for_files
-              cy.wait(500)
-              file_modal.get('files').eq(0 + skew).click()
-              cy.wait(500)
-              page.get('modal').should('not.exist')
-              //page.wait_until_modal_invisible
-              break;
-            case 'relationship':
-              let rel_link = field.find('.js-dropdown-toggle:contains("Relate Entry")')
-              rel_link.click()
-              rel_link.next('.dropdown.dropdown--open').find('.dropdown__link:visible').eq(0 + skew).click();
-              page.get('title').click()
-              break;
-            case 'rte':
-              field.find('.ck-content').type('Lorem ipsum dolor sit amet' + lorem.generateSentences(Cypress._.random(1, (2 + skew))));
-              break;
-            case 'multi_select':
-              field.find('input[type=checkbox]').eq(0 + skew).check()
-              break;
-            case 'radio':
-              field.find('input[type=radio]').eq(1 + skew).check()
-              break;
-            case 'select':
-              field.find('div[data-dropdown-react]').click()
-              let choice = 'Corndog'
-              if (skew == 1) { choice = 'Burrito' }
-              cy.wait(100)
-              fluid_field.get('items').eq(index).find('.fluid__item-field div[data-dropdown-react] .select__dropdown-items span:contains("'+choice+'")').click({force:true})
-              break;
-            case 'grid':
-              field.find('a[rel="add_row"]').first().click()
-              fluid_field.get('items').eq(index).find('.fluid__item-field input:visible').eq(0).clear().type('Lorem' + skew.toString())
-              fluid_field.get('items').eq(index).find('.fluid__item-field input:visible').eq(1).clear().type('ipsum' + skew.toString())
-              break;
-            case 'textarea':
-              field.find('textarea').type('Lorem ipsum dolor sit amet' + lorem.generateSentences(Cypress._.random(1, (3 + skew))));
-              break;
-            case 'toggle':
-              field.find('.toggle-btn').click()
-              break;
-            case 'text':
-              field.find('input').clear().type('Lorem ipsum dolor sit amet' + skew.toString())
-              break;
-          }
-        })
-      }
-
-      function check_content(index, skew = 0)
-      {
-
-        fluid_field.get('items').eq(index).invoke('attr', 'data-field-type').then(data => {
-          const field_type = data;
-          let field = fluid_field.get('items').eq(index).find('.fluid__item-field')
-
-          switch (field_type) {
-            case 'date':
-              field.find('input[type=text][rel=date-picker]').invoke('val').then((text) => {
-                expect(text).equal((9 + skew).toString() + '/14/2017 2:56 PM')
-              })
-              break;
-            case 'checkboxes':
-              field.find('input[type=checkbox]').eq(0 + skew).should('be.checked')
-              break;
-            case 'selectable_buttons':
-              field.find('.button').eq(0 + skew).should('have.class', 'active')
-              break;
-            case 'email_address':
-              field.find('input').invoke('val').then((text) => {
-                expect(text).equal('rspec-' + skew.toString() + '@example.com')
-              })
-              break;
-            case 'url':
-              field.find('input').invoke('val').then((text) => {
-                expect(text).equal('http://www.example.com/page/' + skew.toString())
-              })
-              break;
-            case 'file':
-              field.contains('staff_jane')
-              break;
-            case 'relationship':
-              let expected_val = 'About the Label';
-              if (skew==1) {
-                expected_val = 'Band Title';
-              }
-              field.contains(expected_val)
-              break;
-            case 'rte':
-              field.find('textarea').contains('Lorem ipsum')// {:visible => false}
-              break;
-            case 'multi_select':
-              field.find('input[type=checkbox]').eq(0 + skew).should('be.checked')
-              break;
-            case 'radio':
-              field.find('input[type=radio]').eq(1 + skew).should('be.checked')
-              break;
-            case 'select':
-              let choice = 'Corndog'
-              if (skew == 1) { choice = 'Burrito' }
-              field.find('div[data-dropdown-react]').contains(choice)
-              break;
-            case 'grid':
-              fluid_field.get('items').eq(index).find('.fluid__item-field input:visible').eq(0).invoke('val').then((text) => {
-                expect(text).equal('Lorem' + skew.toString())
-              })
-              fluid_field.get('items').eq(index).find('.fluid__item-field input:visible').eq(1).invoke('val').then((text) => {
-                expect(text).equal('ipsum' + skew.toString())
-              })
-              break;
-            case 'textarea':
-              field.find('textarea').contains('Lorem ipsum')
-              break;
-            case 'toggle':
-              field.find('.toggle-btn').click()
-              break;
-            case 'text':
-              field.find('input').invoke('val').then((text) => {
-                expect(text).equal('Lorem ipsum dolor sit amet' + skew.toString())
-              })
-              break;
-          }
-        })
-      }
-
-      it('adds field groups', () => {
-
-        cy.authVisit('/admin.php?/cp/fields&group_id=0');
-        cy.get('.list-item__content').contains('Corpse').click()
-
-        cy.wait(5000)
-        cy.get('[data-input-value="field_channel_field_groups"] input[type=checkbox][value=1]').check();
-
-        cy.get('body').type('{ctrl}', {release: false}).type('s')
-
-        cy.visit(Cypress._.replace(page.url, '{channel_id}', 3))
-        page.get('title').type("Fluid Field Test the First")
-        page.get('url_title').clear().type("fluid-field-test-first")
-        cy.hasNoErrors();
-
-        cy.get('.fluid__footer a').contains('Add News').click();
-
-        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-fieldset:visible').contains('News')
-        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').should('have.length', 4);
-        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').eq(0).should('contain', 'Body')
-        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').eq(1).should('contain', 'Extended text')
-        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').eq(2).should('contain', 'Image')
-        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').eq(3).should('contain', 'Item')
-
-        page.get('save').click()
-        //cy.screenshot({capture: 'fullPage'});
-        page.get('alert').contains('Entry Created')
-
-        // Make sure the fields stuck around after save
-        cy.log('Make sure the fields stuck around after save')
-        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-fieldset:visible').contains('News')
-        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').should('have.length', 4);
-        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').eq(0).should('contain', 'Body')
-        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').eq(1).should('contain', 'Extended text')
-        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').eq(2).should('contain', 'Image')
-        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').eq(3).should('contain', 'Item')
-
-        page.get('save').click()
-
-        //cy.screenshot({capture: 'fullPage'});
-
-        page.get('alert').contains('Entry Updated')
-
-        cy.visit('index.php/entries/complex-w-fluid')
-        cy.hasNoErrors();
-      })
-
-      it('adds a field', () => {
-
-        available_fields.forEach(function(field, index) {
-          fluid_field.get('actions_menu.fields').eq(index).click()
-
-          fluid_field.get('items').eq(index).find('label').contains(field)
-        })
-
-        page.get('save').click()
-        //cy.screenshot({capture: 'fullPage'});
-        page.get('alert').contains('Entry Created')
-
-        // Make sure the fields stuck around after save
-        cy.log('Make sure the fields stuck around after save')
-        available_fields.forEach(function(field, index) {
-          fluid_field.get('items').eq(index).find('label').contains(field)
-          fluid_field.add_content(index)
-        })
-
-        page.get('save').click()
-
-        //cy.screenshot({capture: 'fullPage'});
-
-        page.get('alert').contains('Entry Updated')
-
-        available_fields.forEach(function(field, index) {
-          fluid_field.check_content(index)
-        })
-        cy.logCPPerformance()
-
-        cy.visit('index.php/entries/complex-w-fluid')
-        cy.hasNoErrors();
-      })
-
-      it('adds repeat fields', () => {
-        const number_of_fields = available_fields.length
-
-        available_fields.forEach(function(field, index) {
-          fluid_field.get('actions_menu.fields').eq(index).click()
-          fluid_field.add_content(index)
-
-          fluid_field.get('items').eq(index).find('label').contains(field)
-        })
-
-        available_fields.forEach(function(field, index) {
-          fluid_field.get('actions_menu.fields').eq(index).click()
-          fluid_field.add_content((index + number_of_fields), 1)
-
-          fluid_field.get('items').eq(index + number_of_fields).find('label').contains(field)
-        })
-
-        page.get('save').click()
-        page.get('alert').contains('Entry Created')
-
-        // Make sure the fields stuck around after save
-        available_fields.forEach(function(field, index) {
-          fluid_field.get('items').eq(index).find('label').contains(field)
-          fluid_field.check_content(index)
-
-          fluid_field.get('items').eq(index + number_of_fields).find('label').contains(field)
-          fluid_field.check_content((index + number_of_fields), 1)
-        })
-      })
-
-      // This cannot be tested headlessly yet. See test_statuses.rb:37
-      // it('s fields', () => {
-      // }
-
-      it('removes fields', () => {
-        // First: without saving
-        available_fields.forEach(function(field, index) {
-          fluid_field.get('actions_menu.fields').eq(index).click()
-          fluid_field.add_content(index)
-
-          fluid_field.get('items').eq(index).find('label').contains(field)
-        })
-
-        fluid_field.get('items').should('have.length', available_fields.length)
-
-        available_fields.forEach(function(field, index) {
-          let gear = fluid_field.get('items').first().find('.fluid__item-tools').first().find('.js-dropdown-toggle').first()
-          gear.click()
-          gear.next('.dropdown').find('.js-fluid-remove').click()
-        })
-
-        fluid_field.get('items').should('have.length', 0)
-
-        // Second: after saving
-        available_fields.forEach(function(field, index) {
-          fluid_field.get('actions_menu.fields').eq(index).click()
-          fluid_field.add_content(index)
-
-          fluid_field.get('items').eq(index).find('label').contains(field)
-        })
-
-        page.get('save').click()
-        page.get('alert').contains('Entry Created')
-
-        fluid_field.get('items').should('have.length', available_fields.length)
-
-        available_fields.forEach(function(field, index) {
-          let gear = fluid_field.get('items').first().find('.fluid__item-tools').first().find('.js-dropdown-toggle').first()
-          gear.click()
-          gear.next('.dropdown').find('.js-fluid-remove').click()
-        })
-
-        page.get('save').click()
-        page.get('alert').contains('Entry Updated')
-
-        fluid_field.get('items').should('have.length', 0)
-      })
-
-      it('keeps data when the entry is invalid', () => {
-        available_fields.forEach(function(field, index) {
-          fluid_field.get('actions_menu.fields').eq(index).click()
-          fluid_field.add_content(index)
-
-          fluid_field.get('items').eq(index).find('label').contains(field)
-        })
-
-        page.get('title').clear()
-
-        page.get('save').click()
-
-        available_fields.forEach(function(field, index) {
-          fluid_field.check_content(index)
-        })
-      })
-
-
-    })
-
-    context('various Grids', () => {
+    context('Create entry with various Grids', () => {
       it('Grid with Buttons', () => {
         cy.authVisit('admin.php?/cp/fields/create/1')
         cy.get('[data-input-value=field_type] .select__button.js-dropdown-toggle').should('exist')
@@ -745,6 +531,7 @@ context('Publish Page - Create', () => {
         cy.get('.grid-field tbody tr:visible td:visible').eq(2).find('.button:contains("cinco")').should('have.class', 'active')
 
         cy.visit('index.php/entries/grid')
+        cy.hasNoErrors()
         cy.logFrontendPerformance()
         cy.get('.grid_with_buttons .row-1 .col_1').invoke('text').then((text) => {
           expect(text).to.eq('row 1')
@@ -756,6 +543,72 @@ context('Publish Page - Create', () => {
           expect(text).to.eq('cinco')
         })
         cy.logCPPerformance()
+      })
+
+      it('File Grid', () => {
+        cy.authVisit('admin.php?/cp/fields/create/1')
+        cy.get('[data-input-value=field_type] .select__button.js-dropdown-toggle').should('exist')
+        cy.get('[data-input-value=field_type] .select__button').click()
+        cy.get('[data-input-value=field_type] .select__dropdown-item:contains("File Grid")').last().click()
+        cy.get('input[type="text"][name = "field_label"]').type("Sliderbilder")
+
+        cy.get('.fields-grid-setup:visible [rel=add_new]').last().click()
+        cy.get('[name="file_grid[cols][new_1][col_label]"]:visible').type("Slidertext")
+
+        cy.get('body').type('{ctrl}', {release: false}).type('s')
+        cy.get('p').contains('has been created')
+
+        cy.visit('admin.php?/cp/publish/edit/entry/1')
+        cy.get('.js-file-grid button:contains("Choose Existing"):visible').eq(0).click();
+        cy.get('a[rel="modal-file"]:contains("About"):visible').eq(0).click()
+        cy.get('tr[data-id="1"]').click()
+        cy.get('[data-fieldtype="text"][data-new-row-id="new_row_1"] input[type="text"]').type('row one')
+        cy.wait(1000)
+        cy.get('.js-file-grid button:contains("Choose Existing"):visible').eq(0).click();
+        cy.get('a[rel="modal-file"]:contains("About"):visible').eq(0).click()
+        cy.get('tr[data-id="2"]').click()
+        cy.get('[data-fieldtype="text"][data-new-row-id="new_row_2"] input[type="text"]').type('row two')
+
+        cy.get('body').type('{ctrl}', {release: false}).type('s')
+        cy.get('p').contains('has been updated')
+
+        cy.get('.js-file-grid table.grid-field__table tbody tr:visible').should('have.length', 2)
+
+        cy.visit('index.php/entries/file-grid')
+        cy.hasNoErrors()
+        cy.logFrontendPerformance()
+        cy.get('.file-grid .row-1 .text').invoke('text').then((text) => {
+          expect(text).to.eq('row one')
+        })
+        cy.get('.file-grid .row-1 .file-data').invoke('text').then((text) => {
+          expect(text).to.eq('staff_jane.png')
+        })
+        cy.get('.file-grid .row-2 .text').invoke('text').then((text) => {
+          expect(text).to.eq('row two')
+        })
+        cy.get('.file-grid .row-2 .file-data').invoke('text').then((text) => {
+          expect(text).to.eq('staff_jason.png')
+        })
+        cy.logCPPerformance()
+
+        cy.visit('admin.php?/cp/publish/edit/entry/1')
+        cy.get('.js-file-grid table.grid-field__table tbody tr:visible').first().find('a.remove').click();
+        cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+        cy.visit('index.php/entries/file-grid')
+        cy.hasNoErrors()
+        cy.get('.file-grid .row-1 .text').invoke('text').then((text) => {
+          expect(text).to.eq('row one')
+        })
+        cy.get('.file-grid .row-1 .file-data').invoke('text').then((text) => {
+          expect(text).to.be.empty
+        })
+        cy.get('.file-grid .row-2 .text').invoke('text').then((text) => {
+          expect(text).to.eq('row two')
+        })
+        cy.get('.file-grid .row-2 .file-data').invoke('text').then((text) => {
+          expect(text).to.eq('staff_jason.png')
+        })
       })
     })
 })

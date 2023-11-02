@@ -38,7 +38,8 @@ class Members extends CP_Controller
         $this->stdHeader();
 
         ee()->javascript->set_global([
-            'cp.validatePasswordUrl' => ee('CP/URL', 'login/validate_password')->compile()
+            'cp.validatePasswordUrl' => ee('CP/URL', 'login/validate_password')->compile(),
+            'lang.password_icon' => lang('password_icon')
         ]);
     }
 
@@ -948,7 +949,7 @@ class Members extends CP_Controller
 
             $username_display = "
             <div class=\"d-flex align-items-center\">
-            <img src=\"$avatar_url\" alt=\"" . $member->username . "\" class=\"avatar-icon add-mrg-right\">
+            <img src=\"$avatar_url\" alt='" . lang('image_alt') . " " . $member->username . "' class=\"avatar-icon add-mrg-right\">
             <div>$username_display</div>
             </div>
             ";
