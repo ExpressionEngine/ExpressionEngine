@@ -32520,6 +32520,16 @@ fieldset .field-control #eye {
   background: var(--ee-bg-0);
 }
 
+.rx-form-div .select__button {
+  width: 100%;
+  max-width: 100%;
+  text-align: left;
+}
+.rx-form-div .select__button .select__button-label {
+  width: 100%;
+  display: block;
+}
+
 .select-popup, select {
   text-align: initial;
   -webkit-appearance: none;

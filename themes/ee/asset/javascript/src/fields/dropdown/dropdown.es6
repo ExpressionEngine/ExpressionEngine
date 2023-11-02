@@ -70,6 +70,22 @@ class Dropdown extends React.Component {
     if (this.props.conditionalRule == 'operator') {
       EE.cp.check_operator_value(selected, this.input);
     }
+
+    if (this.props.conditionalRule == 'rx-redactor-dropdown') {
+      var $rx_url= selected.value;
+      var $rx_text = selected.label;
+      var $rx_form = $(this.input).parents('.rx-popup-form');
+      var $text = $rx_form.find('input[name=text]');
+      var $url = $rx_form.find('input[name=url]');
+
+        // text
+        if ($text.val() === '') {
+            $text.val($rx_text);
+        }
+
+        // // url
+        $url.val($rx_url);
+    }
   }
 
   componentDidUpdate (prevProps, prevState) {
