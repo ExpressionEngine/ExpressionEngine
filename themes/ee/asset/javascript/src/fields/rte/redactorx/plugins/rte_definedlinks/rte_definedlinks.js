@@ -20,6 +20,7 @@ RedactorX.add('plugin', 'rte_definedlinks', {
 
     // private
     _load: function() {
+        if (this.items.length > 0) return;
         this.ajax.get({
             url: this.opts.definedlinks,
             success: function(response) {
