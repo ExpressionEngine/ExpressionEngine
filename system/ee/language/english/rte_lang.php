@@ -237,6 +237,10 @@ $lang = array(
 
     'image_rte' => 'Image',
 
+    'imageposition_rte' => 'Image position',
+
+    'imageresize_rte' => 'Image resize',
+
     'file_rte' => 'File',
 
     'strikethrough_rte' => 'Strikethrough',
@@ -253,13 +257,21 @@ $lang = array(
 
     'code_rte' => 'Code',
 
+    'blockcode_rte' => 'Code',
+
     'blockquote_rte' => 'Block quote',
+
+    'quote_rte' => 'Quote',
 
     'heading_rte' => 'Heading',
 
     'format_rte' => 'Format',
 
+    'inlineformat_rte' => 'Format',
+
     'removeFormat_rte' => 'Remove formatting',
+
+    'removeformat_rte' => 'Remove formatting',
 
     'undo_rte' => 'Undo',
 
@@ -286,6 +298,8 @@ $lang = array(
     'filemanager_rte' => 'Image',
 
     'insertTable_rte' => 'Table',
+
+    'selector_rte' => 'Class & ID',
 
     'table_rte' => 'Table',
 
@@ -349,6 +363,62 @@ $lang = array(
     'pages_rte' => 'Pages',
 
     'fontcolor_rte' => 'Text color',
+
+    'rte_spellcheck' => 'Spell check',
+
+    'rte_spellcheck_desc' => 'Enable spell check in the editor (needs to be enabled in browser as well)',
+
+    'browser' => 'Browser',
+
+    'grammarly' => 'Grammarly',
+
+    'rte_control_bar' => 'Show control bar?',
+
+    'rte_control_bar_desc' => 'Control bar is the collapsed menu shown at the left of focused element with some common actions',
+
+    'rte_format' => 'Formatting options',
+
+    'rte_format_desc' => 'Tags allowed in the Format dropdown',
+
+    'add_rte' => 'Add',
+
+    'shortcut_rte' => 'Shortcut',
+
+    'embed_rte' => 'Embed',
+
+    'mark_rte' => 'Mark',
+
+    'kbd_rte' => 'kbd',
+
+    'pre_rte' => 'Preformatted',
+
+    'rte_show_context' => 'Show context bar?',
+
+    'rte_show_context_desc' => 'The context bar appears when text is selected',
+
+    'rte_context' => 'Context bar',
+
+    'rte_show_addbar' => 'Show addbar?',
+
+    'rte_show_addbar_desc' => 'The addbar appears when clicking Add button',
+
+    'rte_addbar' => 'Addbar',
+
+    'rte_show_topbar' => 'Show top bar?',
+
+    'rte_show_topbar_desc' => 'Displayed to the right of main toolbar',
+
+    'rte_topbar' => 'Top bar',
+
+    'rte_toolbar_sticky' => 'Make toolbar sticky?',
+
+    'rte_show_main_toolbar_desc' => 'Keeps the toolbar always visible when scrolling',
+
+    'rte_show_main_toolbar' => 'Show main toolbar',
+
+    'rte_show_main_toolbar_desc' => 'Can be disabled while keeping the functionality accessible using other toolbars or keyboard shortcuts',
+
+    'rte_main_toolbar' => 'Main toolbar',
 
     '' => ''
 );
