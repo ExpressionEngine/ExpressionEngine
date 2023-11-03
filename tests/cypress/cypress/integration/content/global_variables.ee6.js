@@ -16,7 +16,7 @@ context('Global Variables', () => {
     })
 
     profile.load()
-    cy.get('input[name="upload_avatar"]').attachFile('pictureUpload.png')
+    cy.get('input[name="upload_avatar"]').selectFile('pictureUpload.png')
     cy.get('body').type('{ctrl}', {release: false}).type('s')
     profile.get('alert').contains("Member Profile Saved")
   })
