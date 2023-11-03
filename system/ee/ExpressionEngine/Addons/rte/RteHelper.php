@@ -253,7 +253,7 @@ class RteHelper
                             'extra' => $channels[$channel_ids[$entry_id]],
                             'href' => '{page_' . $entry_id . '}',
                             'entry_id' => $entry_id,
-                            'uri' => $uri
+                            'uri' => $uri,
                         ];
                     }
                 }

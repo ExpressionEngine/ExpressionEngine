@@ -37,36 +37,47 @@ RedactorX.add('plugin', 'rte_definedlinks', {
 
         $box.append(this.$select);
         $item.before($box);
+        Dropdown.renderFields();
     },
-    _change: function(e) {
-        var url = this.dom(e.target).val();
-        var name = this.dom(e.target).text();
-        var $text = this.app.popup.getInput('text');
-        var $url = this.app.popup.getInput('url');
+    // _change: function(e) {
+    //     var url = this.dom(e.target).val();
+    //     var name = this.dom(e.target).text();
+    //     var $text = this.app.popup.getInput('text');
+    //     var $url = this.app.popup.getInput('url');
 
-        // text
-        if ($text.val() === '') {
-            $text.val(name);
-        }
+    //     // text
+    //     if ($text.val() === '') {
+    //         $text.val(name);
+    //     }
 
-        // url
-        $url.val(url);
-    },
+    //     // url
+    //     $url.val(url);
+    // },
     _create: function() {
-        var $select = this.dom('<select>').addClass(this.prefix + '-form-select');
-        $select.on('change', this._change.bind(this));
+        var $div = this.dom('<div>').addClass(this.prefix + '-form-div');
+        var $choices = {};
 
-        $select.append(this.dom('<option>'));
-        
-        for (var i = 0; i < this.items.length; i++) {
-            var data = this.items[i];
-            var $option = this.dom('<option>');
-            $option.val(data.href);
-            $option.html(data.text);
+        $.each(this.items, function(item, val) {
+            val.label = val.text;
+            val.value = val.href;
+            $choices[item] = val;
+        });
 
-            $select.append($option);
-        }
+        var options = {
+            name: this.prefix + '-form-dropdown-react',
+            items: $choices,
+            initialItems: $choices,
+            disabled: false,
+            tooMany: 8,
+            limit: 100,
+            emptyText: "Select a Page",
+            conditionalRule: "rx-redactor-dropdown",
+        };
 
-        return $select;
+        var dropdownReactAttr = btoa(JSON.stringify(options));
+        $div.attr('data-input-value', this.prefix + '-form-dropdown-react');
+        $div.attr('data-dropdown-react', dropdownReactAttr);
+
+        return $div
     }
 });
