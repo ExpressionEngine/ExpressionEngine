@@ -9,6 +9,9 @@ context('Member List in CP', () => {
   before(function(){
     cy.task('db:seed')
     cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })
+    cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' }).then(() => {
+      cy.authVisit('admin.php?/cp/design')
+    })
   })
   
   beforeEach(function() {
@@ -103,7 +106,7 @@ context('Member List frontend', () => {
     cy.logFrontendPerformance()
   })
 
-  it.only('Check backspace parameter for member_rows', () => {
+  it('Check backspace parameter for member_rows', () => {
     cy.auth()
     cy.visit('index.php/members/memberlist-backspace');
     cy.get('div').contains("Admin").should('not.contain', 'Admin**')

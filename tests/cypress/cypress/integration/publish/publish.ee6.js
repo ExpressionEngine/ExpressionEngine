@@ -562,6 +562,7 @@ context('Publish Entry', () => {
         cy.get('.js-file-grid button:contains("Choose Existing"):visible').eq(0).click();
         cy.get('a[rel="modal-file"]:contains("About"):visible').eq(0).click()
         cy.get('tr[data-id="1"]').click()
+        cy.get('.modal-file').should('not.be.visible')
         cy.get('[data-fieldtype="text"][data-new-row-id="new_row_1"] input[type="text"]').type('row one')
         cy.wait(1000)
         cy.get('.js-file-grid button:contains("Choose Existing"):visible').eq(0).click();
