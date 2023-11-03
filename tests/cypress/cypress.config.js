@@ -375,7 +375,6 @@ module.exports = defineConfig({
         }
     },
     "video": true,
-    "videoUploadOnPasses": false,
     "trashAssetsBeforeRuns": false,
     "taskTimeout": 120000,
     "execTimeout": 120000,
