@@ -93,6 +93,8 @@ context('Publish Entry with Fluid', () => {
         available_fields.forEach(function(field, index) {
           fluid_field.check_content(index)
         })
+
+        cy.wait(1000);
       })
 
 
