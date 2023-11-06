@@ -15,6 +15,7 @@ let file_modal = new FileModal;
 context('Publish Entry with Fluid', () => {
 
     before(function(){
+      Cypress.config('numTestsKeptInMemory', 0)
       cy.task('db:seed')
       cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })
       cy.createEntries({n: 1})
