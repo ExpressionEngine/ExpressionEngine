@@ -559,21 +559,21 @@ context('Publish Entry', () => {
         cy.get('p').contains('has been created')
 
         cy.visit('admin.php?/cp/publish/edit/entry/1')
-        cy.get('.js-file-grid button:contains("Choose Existing"):visible').eq(0).click();
-        cy.get('a[rel="modal-file"]:contains("About"):visible').eq(0).click()
+        cy.get('label:contains("Sliderbilder")').parents('.fieldset-faux').find('.js-file-grid button:contains("Choose Existing"):visible').eq(0).click();
+        cy.get('label:contains("Sliderbilder")').parents('.fieldset-faux').find('a[rel="modal-file"]:contains("About"):visible').eq(0).click()
         cy.get('tr[data-id="1"]').click()
         cy.get('.modal-file').should('not.be.visible')
-        cy.get('[data-fieldtype="text"][data-new-row-id="new_row_1"] input[type="text"]').type('row one')
+        cy.get('label:contains("Sliderbilder")').parents('.fieldset-faux').find('[data-fieldtype="text"][data-new-row-id="new_row_1"] input[type="text"]').type('row one')
         cy.wait(1000)
-        cy.get('.js-file-grid button:contains("Choose Existing"):visible').eq(0).click();
-        cy.get('a[rel="modal-file"]:contains("About"):visible').eq(0).click()
+        cy.get('label:contains("Sliderbilder")').parents('.fieldset-faux').find('.js-file-grid button:contains("Choose Existing"):visible').eq(0).click();
+        cy.get('label:contains("Sliderbilder")').parents('.fieldset-faux').find('a[rel="modal-file"]:contains("About"):visible').eq(0).click()
         cy.get('tr[data-id="2"]').click()
-        cy.get('[data-fieldtype="text"][data-new-row-id="new_row_2"] input[type="text"]').type('row two')
+        cy.get('label:contains("Sliderbilder")').parents('.fieldset-faux').find('[data-fieldtype="text"][data-new-row-id="new_row_2"] input[type="text"]').type('row two')
 
         cy.get('body').type('{ctrl}', {release: false}).type('s')
         cy.get('p').contains('has been updated')
 
-        cy.get('.js-file-grid table.grid-field__table tbody tr:visible').should('have.length', 2)
+        cy.get('label:contains("Sliderbilder")').parents('.fieldset-faux').find('.js-file-grid table.grid-field__table tbody tr:visible').should('have.length', 2)
 
         cy.visit('index.php/entries/file-grid')
         cy.hasNoErrors()
