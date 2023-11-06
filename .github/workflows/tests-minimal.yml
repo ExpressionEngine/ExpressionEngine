@@ -142,6 +142,10 @@ jobs:
                 rm -f .env.php
                 cp -f tests/cypress/support/config/.env.php .env.php
 
+            - name: Copy avatar file
+              run: |
+                cp -f tests/cypress/support/file-sync/images/8bit_kevin.png images/avatars/8bit_kevin.png
+
             - name: Remove installer
               run: |
                 mv system/ee/installer system/ee/_installer
