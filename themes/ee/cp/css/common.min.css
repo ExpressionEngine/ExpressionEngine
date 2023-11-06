@@ -34184,6 +34184,10 @@ a.ck.ck-button.ck-on {
 .rx-container .rx-toolbar-container {
   z-index: 6;
 }
+.rx-container .re-icon-readmore {
+  width: 100%;
+  background-position: center;
+}
 
 /* Do not show the page break element inside the print preview window. */
 @media print {
