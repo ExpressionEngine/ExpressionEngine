@@ -438,11 +438,11 @@
   display: flex;
   flex: 1;
   white-space: nowrap;
-  height: 40px;
+/*  height: 40px;
   overflow-x: scroll;
-  overflow-y: hidden;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  overflow-y: hidden;*/
+/*  scrollbar-width: none;
+  -ms-overflow-style: none;*/
 }
 .rx-toolbar::-webkit-scrollbar {
   width: 0;
@@ -626,7 +626,7 @@
 [class^=rx-icon-], [class*=" rx-icon-"] {
   /* use !important to prevent issues with browser extensions that change fonts */
   font-family: "RedactorX" !important;
-  speak: never;
+  speak: none;
   font-style: normal;
   font-weight: normal;
   font-variant: normal;
@@ -777,38 +777,47 @@
 }
 
 .rx-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: inline-block;
+  box-sizing: border-box;
+  font-size: 14px;
+  text-align: center;
+  padding: 10px 15px 9px 15px;
+  cursor: pointer;
+  outline: 0;
+  border: none;
   vertical-align: middle;
   text-decoration: none;
-  background: none;
-  outline: none;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+  zoom: 1;
+  position: relative;
+  color: var(--ee-button-default-color);
+  border-radius: 2px;
+  background: var(--ee-panel-bg);
+  box-shadow: 0 1px 2px var(--ee-text-placeholder);
+  margin-right: 5px;
+  margin-bottom: 4px;
   font-size: 16px;
-  line-height: 1;
-  cursor: pointer;
+  padding: 9px 15px 6px 15px;
 }
 .rx-button:hover {
+  background: var(--ee-button-primary-bg);
+  color: var(--ee-button-primary-color);
   text-decoration: none;
 }
 .rx-button-icon {
-  display: inline-flex;
+/*  display: inline-flex;*/
 }
 .rx-button-icon svg {
   display: inline-block;
 }
 
-.rx-button-icon {
+/*.rx-button-icon {
   width: 31px;
   height: 30px;
   align-items: center;
   justify-content: center;
   border-radius: 4px;
   border: 1px solid transparent;
-}
+}*/
 
 .rx-button-control {
   width: 20px;
@@ -850,12 +859,12 @@
   border-color: transparent;
 }
 
-.rx-button-toolbar {
+/*.rx-button-toolbar {
   padding-top: 1px;
   width: 40px;
   min-width: 40px;
   height: 41px;
-}
+}*/
 
 .rx-button-topbar {
   width: 36px;
@@ -865,11 +874,12 @@
 
 .rx-button-toolbar,
 .rx-button-topbar {
-  color: rgba(0, 11, 29, 0.8);
+/*  color: rgba(0, 11, 29, 0.8);*/
 }
 .rx-button-toolbar svg,
 .rx-button-topbar svg {
-  fill: rgba(0, 11, 29, 0.8);
+  fill: var(--ee-button-default-color);
+  max-width: 20px;
 }
 .rx-button-toolbar.active .rx-button-icon,
 .rx-button-topbar.active .rx-button-icon {
@@ -885,31 +895,36 @@
 .rx-button-topbar.toggled svg {
   fill: #000B1D;
 }
-.rx-button-toolbar.disable, .rx-button-toolbar.disable:hover,
-.rx-button-topbar.disable,
-.rx-button-topbar.disable:hover {
-  cursor: default;
-  background-color: transparent !important;
-  color: rgba(0, 11, 29, 0.4) !important;
+.rx-button-toolbar.disable,
+.rx-button-topbar.disable {
+  background: var(--ee-panel-bg);
+  color: var(--ee-button-default-color);
 }
+.rx-button-toolbar.disable:hover,
+.rx-button-topbar.disable:hover {
+  background: var(--ee-panel-bg);
+  color: var(--ee-button-default-color);
+}
+
 .rx-button-toolbar.disable svg,
 .rx-button-topbar.disable svg {
-  fill: rgba(0, 11, 29, 0.4) !important;
+  fill: var(--ee-button-default-color);
 }
 .rx-button-toolbar.disable .rx-button-icon,
 .rx-button-topbar.disable .rx-button-icon {
-  background-color: transparent !important;
-  color: rgba(0, 11, 29, 0.4) !important;
+  background: var(--ee-panel-bg);
+  color: var(--ee-button-default-color);
+  opacity: 0.5;
 }
 .rx-button-toolbar:hover,
 .rx-button-topbar:hover {
   transition: all 0.2s linear;
-  background-color: #E4E8ED;
-  color: #000B1D;
+  background-color: var(--ee-button-primary-bg);
+  color: var(--ee-button-primary-color);
 }
 .rx-button-toolbar:hover svg,
 .rx-button-topbar:hover svg {
-  fill: #000B1D;
+  fill: var(--ee-button-primary-color);
 }
 .rx-button-toolbar:hover .rx-button-icon,
 .rx-button-topbar:hover .rx-button-icon {
