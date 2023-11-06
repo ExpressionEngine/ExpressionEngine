@@ -114,7 +114,7 @@ class Rte_upd extends Installer
                 ];
                 ee()->load->dbforge();
                 ee()->dbforge->add_column('rte_toolsets', $fields);
-                
+
                 // Then we'll update each of the models with the setting
                 $configs = ee('Model')->get('rte:Toolset')->all();
 

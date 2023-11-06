@@ -918,8 +918,6 @@ $lang = array(
 
     'maintain_ratio' => 'Maintain Aspect Ratio',
 
-    'member_group' => 'Member Group',
-
     'no_entry_to_update' => 'You have tried to update an entry that does not exist.',
 
     'no_templates' => 'No Templates',

@@ -110,4 +110,7 @@ $lang = array(
 
     'pro_license_check_trial_instructions' => '%s<br><br>Please verify your <a href="%s">Site License Key</a> and visit <a href="https://expressionengine.com/store/licenses" target="_blank">Licenses</a> section at ExpressionEngine.com',
 
+    'pencil_icon' => 'Pencil icon',
+
+    'drag_handle_icon' => 'Drag handle icon',
 );

@@ -76,7 +76,7 @@ $lang = array(
 
     'enable_msm' => 'Enable Site Manager (MSM)?',
 
-    'enable_msm_desc' => 'When enabled, Super Admins and member groups with permissions will be able to manage additional websites from the <abbr title="Control Panel">CP</abbr>.',
+    'enable_msm_desc' => 'When enabled, Super Admins and members with roles that have proper permissions will be able to manage additional websites from the <abbr title="Control Panel">CP</abbr>.',
 
     'error_getting_version' => 'You are using ExpressionEngine %s. Unable to determine if a newer version is available at this time.',
 
@@ -102,7 +102,11 @@ $lang = array(
 
     'site_online' => 'Website online?',
 
-    'site_online_desc' => 'When disabled, only Super Admins and member groups with permissions will be able to browse your website.',
+    'site_online_desc' => 'When disabled, only Super Admins and members with roles that have proper permissions will be able to browse this website.',
+
+    'system_online' => 'System online?',
+
+    'system_online_desc' => 'When turned off, only Super Admins and members with roles that have proper permissions will be able to browse the websites on this ExpressionEngine installation. <br>Individual <code>Website online?</code> settings for MSM sites can be managed under <a href="%s">Sites</a> section of Control Panel',
 
     'site_short_name' => 'Short name',
 

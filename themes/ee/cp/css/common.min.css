@@ -29188,7 +29188,7 @@ input[type=button].btn-block {
   margin-bottom: 0px;
 }
 
-.colorpicker {
+.colorpicker__inner_wrapper {
   position: relative;
 }
 
@@ -29234,6 +29234,7 @@ input[type=button].btn-block {
   width: auto;
   z-index: 105;
   border-radius: 8px;
+  top: 100%;
 }
 
 .colorpicker__controls {
@@ -30686,7 +30687,7 @@ fieldset.hide-block {
   margin-bottom: 5px;
 }
 .field-instruct label {
-  display: block;
+  display: inline-block;
   color: var(--ee-text-normal);
   margin-bottom: 5px;
   font-weight: 500;
@@ -31851,6 +31852,9 @@ fieldset .field-control #eye {
   border: 1px solid var(--ee-border);
   overflow-x: auto;
 }
+.grid-field .ui-sortable-placeholder > * {
+  display: none !important;
+}
 
 .grid-field__table th {
   font-size: 0.9em;
@@ -31932,7 +31936,7 @@ fieldset .field-control #eye {
   display: none;
 }
 .grid-field__column-label label {
-  display: block;
+  display: inline-block;
   color: var(--ee-text-normal);
   margin-bottom: 5px;
   font-weight: 500;
@@ -33900,15 +33904,11 @@ It breaks CKEditor 5 (see how <p><code>[]</code></p> looks). */
 }
 
 .ck.ck-list__item .ck-button.ck-on:not(.ck-switchbutton) {
-  background: var(--ee-button-primary-bg) !important;
+  background: var(--ee-accent-light) !important;
 }
 
 .ck.ck-list__item .ck-button.ck-on.ck-switchbutton {
   background: transparent !important;
-}
-
-.ck.ck-list__item .ck-button.ck-on:not(.ck-switchbutton) .ck.ck-button__label {
-  color: var(--ee-button-primary-color) !important;
 }
 
 .ck.ck-button__label {
@@ -34194,12 +34194,21 @@ a.ck.ck-button.ck-on {
 }
 
 .ck.ck-balloon-panel[class*=arrow_n]:after {
-  border-bottom-color: var(--ee-button-default-bg) !important;
+  border-bottom-color: var(--ee-bg-neutral-dark) !important;
 }
 
 .ck.ck-link-form_layout-vertical .ck-button {
   border-top: 1px solid var(--ee-border-dark) !important;
-  color: var(--ee-button-default-color) !important;
+}
+
+.ck.ck-button.ck-button-save,
+a.ck.ck-button.ck-button-save {
+  color: var(--ck-color-button-save) !important;
+}
+
+.ck.ck-button.ck-button-cancel,
+a.ck.ck-button.ck-button-cancel {
+  color: var(--ck-color-button-cancel) !important;
 }
 
 .ck.ck-link-form_layout-vertical .ck-button:hover {
@@ -34219,9 +34228,20 @@ a.ck.ck-button.ck-on {
   border-color: var(--ee-list-item-border) !important;
 }
 
+.ck.ck-tooltip {
+  color: var(--ee-text-secondary) !important;
+  background: var(--ee-bg-neutral-dark) !important;
+}
+
+.ck.ck-dropdown:not(.ck-disabled):hover,
 .ck.ck-button:not(.ck-disabled):hover,
 a.ck.ck-button:not(.ck-disabled):hover {
   background: var(--ee-bg-5) !important;
+}
+
+.ck.ck-splitbutton.ck-splitbutton_open > .ck-button:not(.ck-on):not(.ck-disabled):not(:hover),
+.ck.ck-splitbutton:hover > .ck-button:not(.ck-on):not(.ck-disabled):not(:hover) {
+  background: var(--ee-button-default-bg) !important;
 }
 
 .ck.ck-button.ck-on,
@@ -34502,6 +34522,42 @@ a.ck.ck-button.ck-on {
 }
 .list-item__checkbox input.checkbox--large {
   top: 0px;
+}
+
+.js-nestable-categories .js-nested-item {
+  position: relative;
+}
+.js-nestable-categories .js-nested-item > button {
+  width: 15px;
+  height: 15px;
+  border: none;
+  background: none;
+  font-size: 0;
+  padding: 0;
+  cursor: pointer;
+  position: absolute;
+  left: -20px;
+  top: 25px;
+}
+.js-nestable-categories .js-nested-item > button:before {
+  color: var(--ee-text-placeholder);
+  content: "\f078";
+  font-size: 10px;
+  line-height: 0;
+  margin-right: 5px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-family: "Font Awesome 6 Pro";
+  font-weight: 600;
+  transform: translate(-50%, -50%);
+  color: var(--ee-text-normal);
+}
+.js-nestable-categories .js-nested-item > button[data-action=expand]:before {
+  content: "\f054";
+}
+.js-nestable-categories .list-group--nested li li > button {
+  left: 20px;
 }
 
 .fluid {
@@ -34875,6 +34931,40 @@ table .field-no-results {
 .badge--info-alt {
   color: var(--ee-accent);
   background: #fff;
+}
+
+.label-app-badge {
+  display: inline-flex;
+  color: var(--ee-text-secondary);
+  justify-content: center;
+  align-items: center;
+  font-style: italic;
+  margin-left: 5px;
+  font-size: 0.8rem;
+  font-weight: normal;
+  border-radius: 4px;
+  cursor: pointer;
+  -webkit-transition: opacity 0.15s ease-in-out;
+  -moz-transition: opacity 0.15s ease-in-out;
+  -o-transition: opacity 0.15s ease-in-out;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.label-app-badge i {
+  margin-left: 5px;
+  opacity: 0;
+}
+.label-app-badge:hover i {
+  opacity: 1;
+}
+.label-app-badge.success {
+  color: var(--ee-button-success-border);
+  border-color: var(--ee-button-success-border);
+}
+.label-app-badge.success i {
+  color: var(--ee-button-success-border);
 }
 
 .search-input {

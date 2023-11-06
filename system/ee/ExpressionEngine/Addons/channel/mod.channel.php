@@ -95,7 +95,7 @@ class Channel
         $this->_dynamic_parameters = array('channel', 'entry_id', 'category', 'orderby',
             'sort', 'sticky', 'show_future_entries', 'show_expired', 'entry_id_from',
             'entry_id_to', 'not_entry_id', 'start_on', 'stop_before', 'year', 'month',
-            'day', 'display_by', 'limit', 'username', 'status', 'group_id', 'cat_limit',
+            'day', 'display_by', 'limit', 'username', 'status', 'group_id', 'primary_role_id', 'cat_limit',
             'month_limit', 'offset', 'author_id', 'url_title');
     }
 
@@ -117,7 +117,7 @@ class Channel
 
         $tag .= $this->fetch_dynamic_params();
 
-        return ee()->cache->get('/' . $this->_sql_cache_prefix . '/' . md5($tag . $this->uri));
+        return ee()->cache->get('/' . $this->_sql_cache_prefix . '/' . md5($tag . ee()->uri->uri_string()));
     }
 
     /**
@@ -128,7 +128,7 @@ class Channel
         $tag = ($identifier == '') ? ee()->TMPL->tagproper : ee()->TMPL->tagproper . $identifier;
 
         return ee()->cache->save(
-            '/' . $this->_sql_cache_prefix . '/' . md5($tag . $this->uri),
+            '/' . $this->_sql_cache_prefix . '/' . md5($tag . ee()->uri->uri_string()),
             $sql,
             0   // No TTL, cache lives on till cleared
         );
@@ -1695,7 +1695,8 @@ class Channel
         /**  Add Group ID clause
         /**------*/
 
-        if ($group_id = ee()->TMPL->fetch_param('group_id')) {
+        $group_id = ee()->TMPL->fetch_param('primary_role_id') ?: ee()->TMPL->fetch_param('group_id');
+        if ($group_id) {
             $join_member_table = true;
             $sql .= ee()->functions->sql_andor_string($group_id, 'm.role_id');
         }

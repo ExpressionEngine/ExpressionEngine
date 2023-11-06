@@ -103,6 +103,12 @@ context('Member List frontend', () => {
     cy.logFrontendPerformance()
   })
 
+  it.only('Check backspace parameter for member_rows', () => {
+    cy.auth()
+    cy.visit('index.php/members/memberlist-backspace');
+    cy.get('div').contains("Admin").should('not.contain', 'Admin**')
+  })
+
   it('the paths are correct', () => {
 
     cy.visit('index.php/members/memberlist');

@@ -425,6 +425,7 @@ context('Updater', () => {
       })*/
 
       page.get('inline_errors').should('not.exist')
+      cy.hasNoErrors();
       page.get('header').invoke('text').then((text) => {
         expect(text).to.match(/ExpressionEngine from \d+\.\d+\.\d+ to \d+\.\d+\.\d+/)
       })

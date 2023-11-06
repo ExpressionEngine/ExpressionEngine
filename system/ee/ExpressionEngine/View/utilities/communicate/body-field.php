@@ -1,4 +1,4 @@
-<textarea class="has-format-options required" name="message" cols="" rows="10"><?=set_value('message', $message)?></textarea>
+<textarea class="has-format-options required" name="message" cols="" rows="10" aria-label="<?=lang('textarea_label')?>"><?=set_value('message', $message)?></textarea>
 <?=form_error('message')?>
 <div class="format-options">
 	<label><?=lang('send_as')?></label>

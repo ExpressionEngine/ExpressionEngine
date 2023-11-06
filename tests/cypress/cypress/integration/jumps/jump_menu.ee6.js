@@ -47,12 +47,10 @@ context('Jump Menu', () => {
 			page.get('jump_menu').contains("Create Entry")
 			page.get('jump_menu').contains("Edit Entry")
 			page.get('jump_menu').contains("View Entries")
-
-			cy.server()
 		})
 
 		it('create entry', function() {
-			cy.route("POST", "**/jumps/**").as("ajax");
+			cy.intercept("POST", "**/jumps/**").as("ajax");
 			page.get('jump_menu').contains("Create Entry").click()
 			cy.wait("@ajax");
 			page.get('jump_menu').contains("Information Pages")
@@ -61,7 +59,7 @@ context('Jump Menu', () => {
 		})
 
 		it('edit entry', function() {
-			cy.route("POST", "**/jumps/**").as("ajax");
+			cy.intercept("POST", "**/jumps/**").as("ajax");
 			page.get('jump_menu').contains("Edit Entry").click()
 			cy.wait("@ajax");
 			page.get('jump_menu').contains("Howard")

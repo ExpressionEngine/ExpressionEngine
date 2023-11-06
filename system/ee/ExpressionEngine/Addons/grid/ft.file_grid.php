@@ -65,6 +65,7 @@ class file_grid_ft extends Grid_ft
 
         $vars = $this->getSettingsVars();
         $vars['group'] = $this->settings_form_field_name;
+        $allowed_directories = isset($data['allowed_directories']) ? $data['allowed_directories'] : 'all';
 
         $settings = [
             'field_options_file_grid' => [
@@ -121,7 +122,7 @@ class file_grid_ft extends Grid_ft
                             'allowed_directories' => [
                                 'type' => 'radio',
                                 'choices' => $directory_choices,
-                                'value' => isset($data['allowed_directories']) ? $data['allowed_directories'] : 'all',
+                                'value' => $allowed_directories,
                                 'no_results' => [
                                     'text' => sprintf(lang('no_found'), lang('file_ft_upload_directories')),
                                     'link_text' => 'add_new',
@@ -153,6 +154,20 @@ class file_grid_ft extends Grid_ft
                 'settings' => [$vars['grid_alert'], ee('View')->make('grid:settings')->render($vars)]
             ]
         ];
+
+        if (!array_key_exists($allowed_directories, $directory_choices)) {
+            $selectedDir = ee('Model')->get('UploadDestination', $allowed_directories)->with('Site')->first();
+            if (!is_null($selectedDir)) {
+                $settings['field_options_file_grid']['settings'][4]['fields']['file_field_msm_warning'] = array(
+                    'type' => 'html',
+                    'content' => ee('CP/Alert')->makeInline('file_field_msm_warning')
+                        ->asImportant()
+                        ->addToBody(sprintf(lang('file_field_msm_warning'), $selectedDir->name, $selectedDir->Site->site_label))
+                        ->cannotClose()
+                        ->render()
+                );
+            }
+        }
 
         $this->loadGridSettingsAssets();
 
@@ -233,7 +248,7 @@ class file_grid_ft extends Grid_ft
     // for File Grid, we need to validate grid_min_rows
     public function validate($data)
     {
-        if (!ee('Request')->isAjax() && !empty($this->settings['grid_min_rows']) && (empty($data) || count($data) < $this->settings['grid_min_rows'])) {
+        if (!ee('Request')->isAjax() && !empty($this->settings['grid_min_rows']) && (empty($data) || !isset($data['rows']) || count($data['rows']) < $this->settings['grid_min_rows'])) {
             return sprintf(lang('grid_min_rows_required'), $this->settings['grid_min_rows']);
         }
 
