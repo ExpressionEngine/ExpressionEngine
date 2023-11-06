@@ -381,7 +381,7 @@ module.exports = defineConfig({
     "defaultCommandTimeout": 6000,
     "animationDistanceThreshold": 40,
     "requestTimeout": 20000,
-    "numTestsKeptInMemory": 1,
+    "numTestsKeptInMemory": 0,
     "watchForFileChanges": false,
     "chromeWebSecurity": false,
     "failOnStatusCode": false,
