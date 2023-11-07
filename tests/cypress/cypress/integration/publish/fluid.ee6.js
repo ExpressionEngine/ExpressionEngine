@@ -159,6 +159,24 @@ context('Publish Entry with Fluid', () => {
         cy.hasNoErrors();
       })
 
+      it('keeps data in Fluid when the entry is invalid', () => {
+        available_fields.forEach(function(field, index) {
+          fluid_field.get('actions_menu.fields').eq(index).click()
+          fluid_field.add_content(index)
+
+          fluid_field.get('items').eq(index).find('label').contains(field)
+        })
+
+        page.get('title').clear()
+
+        page.get('save').click()
+
+        cy.wrap(available_fields).each(($field, $index) => {
+          fluid_field.check_content($index)
+        })
+        cy.hasNoErrors();
+      })
+
       it('adds repeat fields to Fluid', () => {
         const number_of_fields = few_fields.length
 
@@ -235,23 +253,6 @@ context('Publish Entry with Fluid', () => {
         page.get('alert').contains('Entry Updated')
 
         fluid_field.get('items').should('have.length', 0)
-      })
-
-      it('keeps data in Fluid when the entry is invalid', () => {
-        available_fields.forEach(function(field, index) {
-          fluid_field.get('actions_menu.fields').eq(index).click()
-          fluid_field.add_content(index)
-
-          fluid_field.get('items').eq(index).find('label').contains(field)
-        })
-
-        page.get('title').clear()
-
-        page.get('save').click()
-
-        cy.wrap(available_fields).each(($field, $index) => {
-          fluid_field.check_content($index)
-        })
       })
 
 
