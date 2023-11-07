@@ -86,7 +86,7 @@ jobs:
     cypress:
         needs: build-for-testing
         runs-on: ${{ matrix.os }}
-        timeout-minutes: 60
+        timeout-minutes: 45
 
         strategy:
             fail-fast: false

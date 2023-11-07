@@ -249,8 +249,8 @@ context('Publish Entry with Fluid', () => {
 
         page.get('save').click()
 
-        available_fields.forEach(function(field, index) {
-          fluid_field.check_content(index)
+        cy.wrap(available_fields).each(($field, $index) => {
+          fluid_field.check_content($index)
         })
       })
 
