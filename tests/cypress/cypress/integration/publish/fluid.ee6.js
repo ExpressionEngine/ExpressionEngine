@@ -12,7 +12,7 @@ const edit = new EntryManager;
 const fluid_field = new FluidField;
 let file_modal = new FileModal;
 
-context.skip('Publish Entry with Fluid', () => {
+context('Publish Entry with Fluid', () => {
 
     before(function(){
       Cypress.config('numTestsKeptInMemory', 0)
