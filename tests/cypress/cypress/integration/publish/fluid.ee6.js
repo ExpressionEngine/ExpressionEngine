@@ -58,7 +58,9 @@ context('Publish Entry with Fluid', () => {
       const few_fields = [
         "A Date",
         "Checkboxes",
-        "Electronic-Mail Address"
+        "Electronic-Mail Address",
+        "Selectable Buttons",
+        "Stupid Grid"
       ];
 
       beforeEach(function(){
@@ -160,7 +162,7 @@ context('Publish Entry with Fluid', () => {
       })
 
       it('keeps data in Fluid when the entry is invalid', () => {
-        available_fields.forEach(function(field, index) {
+        few_fields.forEach(function(field, index) {
           fluid_field.get('actions_menu.fields').eq(index).click()
           fluid_field.add_content(index)
 
@@ -171,7 +173,7 @@ context('Publish Entry with Fluid', () => {
 
         page.get('save').click()
 
-        cy.wrap(available_fields).each(($field, $index) => {
+        cy.wrap(few_fields).each(($field, $index) => {
           fluid_field.check_content($index)
         })
         cy.hasNoErrors();
