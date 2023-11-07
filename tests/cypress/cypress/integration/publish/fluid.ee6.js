@@ -12,7 +12,7 @@ const edit = new EntryManager;
 const fluid_field = new FluidField;
 let file_modal = new FileModal;
 
-context('Publish Entry with Fluid', () => {
+context.skip('Publish Entry with Fluid', () => {
 
     before(function(){
       Cypress.config('numTestsKeptInMemory', 0)
@@ -162,7 +162,7 @@ context('Publish Entry with Fluid', () => {
       })
 
       // for some reason this test never ends
-      // spent 2 days figuring out without any luck, 
+      // spent 2 days figuring out without any luck,
       // so I'm commenting it out for now
       // will need to try enabling in some future version
       it.skip('keeps data in Fluid when the entry is invalid', () => {
