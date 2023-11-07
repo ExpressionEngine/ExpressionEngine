@@ -55,9 +55,11 @@ class Text extends Formatter
             if ($this->multibyte) {
                 $ord = mb_ord($char);
             } else {
-                $decoded = utf8_decode($char);
-                if ($decoded != '?') {
-                    $char = $decoded;
+                if (function_exists('utf8_decode')) {
+                    $decoded = utf8_decode($char);
+                    if ($decoded != '?') {
+                        $char = $decoded;
+                    }
                 }
                 $ord = ord($char);
             }
