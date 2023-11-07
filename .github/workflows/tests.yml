@@ -86,7 +86,7 @@ jobs:
     cypress:
         needs: build-for-testing
         runs-on: ${{ matrix.os }}
-        timeout-minutes: 60
+        timeout-minutes: 45
 
         strategy:
             fail-fast: false
@@ -163,6 +163,10 @@ jobs:
               run: |
                 rm -f .env.php
                 cp -f tests/cypress/support/config/.env.php .env.php
+
+            - name: Copy avatar file
+              run: |
+                cp -f tests/cypress/support/file-sync/images/8bit_kevin.png images/avatars/8bit_kevin.png
 
             - name: Remove installer
               run: |
