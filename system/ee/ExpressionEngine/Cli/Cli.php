@@ -142,7 +142,7 @@ class Cli
         // Sync
         'sync:conditional-fields' => Commands\CommandSyncConditionalFieldLogic::class,
         'sync:file-usage' => Commands\CommandSyncFileUsage::class,
-        'sync:reindex' => Commands\CommandReindex::class,
+        'sync:reindex' => Commands\CommandSyncReindex::class,
         'sync:upload-directory' => Commands\CommandSyncUploadDirectory::class,
 
         // Update
@@ -193,7 +193,7 @@ class Cli
             $this->fail('cli_error_cli_disabled');
         }
 
-        if (! isset($this->argv[1])) {
+        if (!isset($this->argv[1])) {
             $this->fail('cli_error_no_command_given');
         }
 
@@ -216,13 +216,13 @@ class Cli
 
         // Check if command exists
         // If not, return
-        if (! $this->commandExists()) {
+        if (!$this->commandExists()) {
             return $this->fail('cli_error_command_not_found');
         }
 
         $commandClass = $this->getCommand($this->commandCalled);
 
-        if (! class_exists($commandClass)) {
+        if (!class_exists($commandClass)) {
             return $this->fail('cli_error_command_not_found');
         }
 
@@ -274,7 +274,7 @@ class Cli
     public function fail($messages = null)
     {
         if ($messages) {
-            if (! is_array($messages)) {
+            if (!is_array($messages)) {
                 $messages = [$messages];
             }
 
@@ -483,7 +483,7 @@ class Cli
         }
 
         // If not bool, lets convert string to bool
-        if (! is_bool($answer)) {
+        if (!is_bool($answer)) {
             $answer = get_bool_from_string($answer);
         }
 
@@ -679,7 +679,7 @@ class Cli
         $askText = $askText . " \n - " . implode("\n - ", $addonList) . "\n: ";
 
         // If the default is "first", then return the first element in the array
-        if ($default === 'first' && ! empty($addonList)) {
+        if ($default === 'first' && !empty($addonList)) {
             // Get the first array element
             $default = reset($addonList);
         }
@@ -727,7 +727,7 @@ class Cli
 
                     break;
                 case 'uninstalled':
-                    if (! $info->isInstalled()) {
+                    if (!$info->isInstalled()) {
                         $list[$name] = $addon;
                     }
 

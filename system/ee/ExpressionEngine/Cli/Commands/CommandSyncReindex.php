@@ -15,7 +15,7 @@ use ExpressionEngine\Cli\Cli;
 /**
  * Reindex content
  */
-class CommandReindex extends Cli
+class CommandSyncReindex extends Cli
 {
     /**
      * name of command
