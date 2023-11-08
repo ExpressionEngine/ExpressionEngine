@@ -30,6 +30,7 @@ class Updater
                 'addCategoryGroupPermissions',
                 'ensureBuiltinRoles',
                 'addShowFieldNamesSetting',
+                'increaseEmailLength',
             ]
         );
 
@@ -38,6 +39,33 @@ class Updater
         }
 
         return true;
+    }
+
+    private function increaseEmailLength()
+    {
+        ee()->smartforge->modify_column(
+            'members',
+            array(
+                'email' => array(
+                    'name' => 'email',
+                    'type' => 'varchar',
+                    'constraint' => 254,
+                    'null' => false
+                )
+            )
+        );
+
+        ee()->smartforge->modify_column(
+            'email_cache',
+            array(
+                'from_email' => array(
+                    'name' => 'from_email',
+                    'type' => 'varchar',
+                    'constraint' => 254,
+                    'null' => false
+                )
+            )
+        );
     }
 
     // those that have edit_categories permissions get the new permission automatically

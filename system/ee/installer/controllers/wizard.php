@@ -783,7 +783,7 @@ class Wizard extends CI_Controller
             array(
                 'field' => 'email_address',
                 'label' => 'lang:email_address',
-                'rules' => 'required|email|max_length[' . USERNAME_MAX_LENGTH . ']'
+                'rules' => 'required|email|max_length[254]'
             ),
             array(
                 'field' => 'license_agreement',
