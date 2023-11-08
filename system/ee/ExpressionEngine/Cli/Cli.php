@@ -142,6 +142,7 @@ class Cli
         // Sync
         'sync:conditional-fields' => Commands\CommandSyncConditionalFieldLogic::class,
         'sync:file-usage' => Commands\CommandSyncFileUsage::class,
+        'sync:upload-directory' => Commands\CommandSyncUploadDirectory::class,
 
         // Update
         'update' => Commands\CommandUpdate::class,

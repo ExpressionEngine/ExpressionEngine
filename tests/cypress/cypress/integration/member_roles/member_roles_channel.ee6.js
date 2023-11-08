@@ -48,6 +48,9 @@ context('Member Roles / Channel Permissions ', () => {
    cy.get('#fieldset-channel_category_permissions .checkbox-label:nth-child(1) > input').click();
    cy.get('#fieldset-channel_category_permissions .checkbox-label:nth-child(2) > input').click();
    cy.get('#fieldset-channel_category_permissions .checkbox-label:nth-child(3) > input').click();
+   cy.get('#fieldset-channel_category_permissions .checkbox-label:nth-child(4) > input').click();
+   cy.get('#fieldset-channel_category_permissions .checkbox-label:nth-child(5) > input').click();
+   cy.get('#fieldset-channel_category_permissions .checkbox-label:nth-child(6) > input').click();
    cy.get('#fieldset-channel_status_permissions .checkbox-label:nth-child(1) > input').click();
    cy.get('#fieldset-channel_status_permissions .checkbox-label:nth-child(2) > input').click();
    cy.get('#fieldset-channel_status_permissions .checkbox-label:nth-child(3) > input').click();

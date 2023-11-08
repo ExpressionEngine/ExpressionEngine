@@ -9,7 +9,7 @@
                     <i class="icon--reorder reorder"></i>
                     <?=$field->getItem('field_label')?> <?php if ($show_field_type): ?><span class="faded">(<?=$field->getType()?>)</span><?php endif ?>
                 </label>
-                <?=$field->getNameBadge($field_name_prefix)?>
+                <?=(isset($field_name_prefix) ? $field->getNameBadge($field_name_prefix) : '')?>
                 <em><?=$field->getItem('field_instructions')?></em>
             </div>
         </div>

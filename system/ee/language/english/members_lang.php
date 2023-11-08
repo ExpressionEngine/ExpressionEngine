@@ -1164,6 +1164,12 @@ $lang = array(
 
     'access_overview_can_delete_channel_fields' => 'Delete fields',
 
+    'access_overview_can_create_category_groups' => 'Create category groups',
+
+    'access_overview_can_edit_category_groups' => 'Edit category groups',
+
+    'access_overview_can_delete_category_groups' => 'Delete category groups',
+
     'access_overview_can_create_categories' => 'Create categories',
 
     'access_overview_can_edit_categories' => 'Edit categories',

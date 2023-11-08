@@ -152,6 +152,7 @@ class Api_channel_fields extends Api
         $cfields = array();
         $dfields = array();
         $rfields = array();
+        $msfields = array();
         $gfields = array();
         $pfields = array();
         $ffields = array();
@@ -195,6 +196,8 @@ class Api_channel_fields extends Api
                 $ffields[$row['site_id']][$row['field_name']] = $row['field_id'];
             } elseif ($row['field_type'] == 'toggle') {
                 $tfields[$row['site_id']][$row['field_name']] = $row['field_id'];
+            } elseif ($row['field_type'] == 'member') {
+                $msfields[$row['site_id']][$row['field_name']] = $row['field_id'];
             }
 
             $cfields[$row['site_id']][$row['field_name']] = $row['field_id'];
@@ -205,6 +208,7 @@ class Api_channel_fields extends Api
             'date_fields' => $dfields,
             'relationship_fields' => $rfields,
             'grid_fields' => $gfields,
+            'members_fields' => $msfields,
             'pair_custom_fields' => $pfields,
             'fluid_field_fields' => $ffields,
             'toggle_fields' => $tfields,
