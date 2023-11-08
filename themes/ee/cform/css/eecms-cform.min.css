@@ -23,6 +23,244 @@
 @media print{.redactor-in .readmore{padding:0}.redactor-in .readmore::after{display:none}}
 .ee-cform table .grid-field__column-label { display: none;}
 
+/* date picker */
+.ee-cform .field-option .checkbox-label {
+    margin-right: 5px !important;
+    margin-bottom: 5px !important;
+    display: inline-block !important;
+    position: relative !important;
+    font-weight: normal !important;
+    max-width: 100% !important;
+    display: inline-block !important;
+    position: relative !important;
+    padding: 5px !important;
+    padding-left: 20px !important;
+    cursor: pointer !important;
+    transition: background 100ms ease !important;
+    color: #0d0d19 !important;
+    border-radius: 5px !important;
+}
+
+.ee-cform .field-option .checkbox-label input[type=radio] {
+    z-index: 1 !important;
+    position: absolute !important;
+    top: 7px !important;
+    left: 0px !important;
+    transition: all 100ms ease !important;
+    width: 15px !important;
+    height: 15px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    cursor: pointer !important;
+    border: 1px solid #cbcbda !important;
+    border-radius: 50% !important;
+    font-family: inherit !important;
+    font-size: 100% !important;
+    line-height: 1.15 !important;
+}
+
+.ee-cform .field-option .checkbox-label input[type=radio]:after {
+    transition: all 100ms ease !important;
+    content: "" !important;
+    display: block !important;
+    position: absolute !important;
+    width: 5px !important;
+    height: 5px !important;
+    left: 4px !important;
+    top: 4px !important;
+    border-radius: 50% !important;
+    background: #fff !important;
+    transform: rotate(45deg) scale(0) !important;
+    opacity: 0 !important;
+}
+
+.ee-cform .field-option .checkbox-label input[type=radio]:checked {
+    background: #5d63f1 !important;
+    border-color: #5d63f1 !important;
+}
+
+.ee-cform .field-option .checkbox-label input[type=radio]:checked:after {
+    opacity: 1 !important;
+    transform: rotate(45deg) scale(1) !important;
+}
+
+.ee-cform .date-picker-wrap,
+.ee-cform .date-picker-wrap * {
+    box-sizing: initial !important;
+}
+
+.ee-cform .date-picker-clip-inner{
+    width: 1000em !important;
+}
+
+.ee-cform .date-picker-clip{
+    overflow-x: hidden !important;
+}
+
+.ee-cform .date-picker-item {
+    float: left !important;
+    margin-right: 10px !important;
+    position: relative !important;
+    width: 270px !important;
+}
+
+.ee-cform .date-picker-item a {
+    text-decoration: none !important;
+}
+
+.ee-cform .date-picker-prev,
+.ee-cform .date-picker-next{
+    font-size: 12px !important;
+    position: absolute !important;
+    top: 2px !important;
+    color: #5d63f1 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+}
+
+.ee-cform .date-picker-prev {
+    left: 10px !important;
+}
+
+.ee-cform .date-picker-next{
+    right: 10px !important;
+}
+.ee-cform .date-picker-wrap {
+    box-shadow: 0 1px 4px 0 rgba(0,0,0,0.1) !important;
+    background-color: #fff !important;
+    border: 1px solid #dfe0ef !important;
+    display: none;
+    padding: 10px !important;
+    position: absolute !important;
+    width: 270px !important;
+    z-index: 260 !important;
+    border-radius: 5px !important;
+}
+
+.ee-cform .date-picker-wrap h3{
+    font-size: 14px !important;
+    margin-bottom: 5px !important;
+    text-align: center !important;
+    font-weight: 500 !important;
+}
+
+.ee-cform .date-picker-wrap table {
+    border-collapse: initial !important;
+    margin-bottom: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.ee-cform .date-picker-wrap table th {
+    text-transform: uppercase !important;
+}
+
+.ee-cform .date-picker-wrap table tr:nth-child(2n) td.act {
+    background-color: #5d63f1 !important;
+    font-weight: bold !important;
+}
+
+.ee-cform .date-picker-wrap table tr:nth-child(2n) td.act a {
+    color :#fff !important;
+}
+
+.ee-cform .date-picker-wrap table tr:hover td.empty:hover {
+    background-color: #f7f7fb !important;
+}
+
+.ee-cform .date-picker-wrap table tr:hover td:hover {
+    background-color: #eaebfd !important;
+}
+
+.ee-cform .date-picker-wrap table th,
+.ee-cform .date-picker-wrap table td{
+    font-size: 11px !important;
+    padding: 5px !important;
+    text-align: center !important;
+}
+
+.ee-cform .date-picker-wrap table td {
+    color: #0d0d19 !important;
+    border-right: none !important;
+    padding: 0 !important;
+}
+
+.ee-cform .date-picker-wrap table td a {
+    padding: 5px 12px !important;
+    display: block !important;
+    color: #0d0d19 !important;
+}
+
+.ee-cform .date-picker-wrap table td:nth-child(7n){
+    border-right: 0 !important;
+}
+
+.ee-cform .date-picker-wrap table td.act{
+    background-color: #5D63F1 !important;
+    font-weight: bold !important;
+    border-radius: 3px !important;
+}
+
+.ee-cform .date-picker-wrap table td.act a{
+    color: #fff !important;
+}
+
+.ee-cform .date-picker-wrap table td.empty{
+    background-color: #fff !important;
+}
+
+.ee-cform .date-picker-wrap .date-picker-footer {
+    text-align: center !important;
+    margin-top: 5px !important;
+}
+
+.ee-cform .date-picker-wrap .date-picker-footer .date-picker-today-button {
+    box-shadow: none !important;
+    padding: 5px 15px !important;
+    font-size: 0.8rem !important;
+    line-height: 1.5 !important;
+    border-radius: 4px !important;
+    color: #0d0d19 !important;
+    background: #fff !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    display: inline-block !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+    cursor: pointer !important;
+    white-space: nowrap !important;
+    border: 1px solid #cbcbda !important;
+    font-weight: normal !important;
+    transition: background-color 0.15s ease-in-out !important;
+    font-family: -apple-system, BlinkMacSystemFont, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif !important;
+}
+
+.ee-cform .date-picker-wrap h3{margin:0 !important;padding:0 !important;}
+.ee-cform .date-picker-wrap table{border-spacing:0 !important;width:100% !important;}
+.ee-cform .date-picker-wrap th{text-align:left !important;}
+.ee-cform .date-picker-wrap table{-moz-box-sizing:border-box !important;-webkit-box-sizing:border-box !important;box-sizing:border-box !important;-moz-border-radius:3px !important;-webkit-border-radius:3px !important;border-radius:3px !important;}
+.ee-cform .date-picker-wrap th,
+.ee-cform .date-picker-wrap td{padding:10px !important;white-space:nowrap !important;  font-family: -apple-system, BlinkMacSystemFont, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif !important;}
+.ee-cform .date-picker-wrap th{background-color:transparent !important;border:none !important;color:#5a5b7f !important;font-size:12px !important;position:relative !important;z-index:1 !important;}
+.ee-cform .date-picker-wrap td{background-color:#fff !important;border-bottom:none !important;}
+.ee-cform .date-picker-wrap .date-picker-heading{margin-bottom:10px !important;}
+.ee-cform .date-picker-wrap .date-picker-item{float:left !important;margin-right:10px !important;position:relative !important;width:270px !important;}
+.ee-cform .date-picker-wrap .date-picker-prev,
+.ee-cform .date-picker-wrap .date-picker-next{font-size:12px !important;position:absolute !important;top:2px !important;}
+.ee-cform .date-picker-wrap .date-picker-wrap h3{font-size:14px !important;margin-bottom:5px !important;text-align:center !important;}
+.ee-cform .date-picker-wrap .date-picker-wrap table{margin-bottom:0 !important;}
+.ee-cform .date-picker-wrap tr:first-child th:first-child{-moz-border-radius:3px 0 0 !important;-webkit-border-radius:3px 0 0 !important;border-radius:3px 0 0 !important;}
+.ee-cform .date-picker-wrap tr:first-child th:last-child{-moz-border-radius:0 3px 0 0 !important;-webkit-border-radius:0 3px 0 0 !important;border-radius:0 3px 0 0 !important;}
+.ee-cform .date-picker-wrap tbody tr:last-child td{border-bottom:0 !important;}
+.ee-cform .date-picker-wrap tbody tr:last-child td:first-child{-moz-border-radius:0 0 0 3px !important;-webkit-border-radius:0 0 0 3px !important;border-radius:0 0 0 3px !important;}
+.ee-cform .date-picker-wrap tbody tr:last-child td:last-child{-moz-border-radius:0 0 3px !important;-webkit-border-radius:0 0 3px !important;border-radius:0 0 3px !important;}
+.ee-cform .date-picker-wrap .date-picker-clip::-webkit-scrollbar{width:0 !important;}
+.ee-cform .date-picker-wrap .date-picker-clip::-webkit-scrollbar-track{background-color:#ccc !important;border-radius:0 !important;}
+.ee-cform .date-picker-wrap .date-picker-clip::-webkit-scrollbar-thumb{background-color:gray !important;border-radius:0 !important;}
+
+/* END DATE PICKER field*/
 /*GRID field*/
 .ee-cform .grid-field {
     width: 100%;
