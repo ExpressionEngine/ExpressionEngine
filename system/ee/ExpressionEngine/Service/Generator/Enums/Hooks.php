@@ -18,6 +18,12 @@ class Hooks
 
     public const CLI_BOOT = [
         'name' => 'cli_boot',
+        'params' => '$cli',
+        'library' => 'CLI',
+    ];
+
+    public const CLI_BEFORE_HANDLE = [
+        'name' => 'cli_before_handle',
         'params' => '$cli, $commandClassName, $commandObject',
         'library' => 'CLI',
     ];
