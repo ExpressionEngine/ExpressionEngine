@@ -3,9 +3,10 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
+
 
 (function($) {
 
@@ -188,22 +189,24 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 				appendElem = 'parent';
 			}
 
-			params = {
-				// Fire 'beforeSort' event on sort start
-				beforeSort: function(row) {
-					that._fireEvent('beforeSort', row);
-				},
-				// Fire 'afterSort' event on sort stop
-				afterSort: function(row) {
-					// Jquery sortable sets the display property to table-cell, which breaks the grid styles, so remove it
-					row.removeAttr("style");
+		params = {
+			// Fire 'beforeSort' event on sort start
+			beforeSort: function(row) {
+				that._fireEvent('beforeSort', row);
+			},
+			// Fire 'afterSort' event on sort stop
+			afterSort: function(row) {
+				// Jquery sortable sets the display property to table-cell, which breaks the grid styles, so remove it
+				row.removeAttr("style");
 
-					that._fireEvent('afterSort', row);
-					$(document).trigger('entry:preview');
-				},
-				handle: '.js-grid-reorder-handle',
-				appendTo: appendElem,
-			};
+				that._fireEvent('afterSort', row);
+				$(document).trigger('entry:preview');
+			},
+			handle: '.js-grid-reorder-handle',
+			cancel: '',
+			containment: false,
+			appendTo: appendElem,
+		};
 
 		params = $.extend(params, this.sortableParams);
 

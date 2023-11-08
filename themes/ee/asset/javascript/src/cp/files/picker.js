@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -35,6 +35,10 @@
 
 		$.get(url, function(data) {
 			modal.find('div.box').html(data);
+
+			// function that is responsible for the correct working of 
+			// the search inside filter-search-bar__item 
+			$.fuzzyFilter()
 
 			if (typeof options.selected != 'undefined') {
 				var selected = modal.find('tbody *[data-id="' + options.selected + '"]');

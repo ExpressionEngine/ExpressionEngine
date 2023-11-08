@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -88,8 +88,9 @@ class AddonGenerator
     {
         // Copy the default icon into our addon
         $defaultIcon = PATH_THEMES . 'asset/img/default-addon-icon.svg';
-
-        $this->filesystem->copy($defaultIcon, $this->addonPath . 'icon.svg');
+        if ($this->filesystem->exists($defaultIcon)) {
+            $this->filesystem->copy($defaultIcon, $this->addonPath . 'icon.svg');
+        }
     }
 
     protected function buildModule()

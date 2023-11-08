@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -344,8 +344,15 @@ class Export
     {
         $dir = ee('Model')->get('UploadDestination', $id)->first();
 
+        if (is_null($dir)) {
+            return 'all';
+        }
+
         $result = new StdClass();
         $result->name = $dir->name;
+        $result->adapter = $dir->adapter;
+        $result->server_path = $dir->server_path;
+        $result->url = $dir->url;
 
         $this->upload_destinations[$dir->name] = $result;
 
@@ -478,8 +485,10 @@ class Export
             $result->channels = array();
 
             foreach ($settings['channels'] as $id) {
-                $channel = $this->channels[$id];
-                $result->channels[] = $channel->channel_title;
+                if (array_key_exists($id, $this->channels)) {
+                    $channel = $this->channels[$id];
+                    $result->channels[] = $channel->channel_title;
+                }
             }
         }
 

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -15,6 +15,8 @@ namespace ExpressionEngine\Library;
  */
 class Captcha
 {
+    public $cached_captcha;
+
     /**
      * Returns a boolean indicating if a CAPTCHA should be displayed or not
      * according to the site's CAPTCHA settings

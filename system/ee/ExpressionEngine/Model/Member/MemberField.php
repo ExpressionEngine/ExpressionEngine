@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -87,6 +87,12 @@ class MemberField extends FieldModel
 
     public function set(array $data = array())
     {
+        // getField() requires that we have a fieldtype, but we might be trying
+        // to set it! So, if we are, we'll do that first.
+        if (isset($data['m_field_type'])) {
+            $this->setProperty('m_field_type', $data['m_field_type']);
+        }
+
         parent::set($data);
 
         $field = $this->getField($this->getSettingsValues());
@@ -183,18 +189,6 @@ class MemberField extends FieldModel
         }
 
         return $key;
-    }
-
-    /**
-     * Validate the field name to avoid variable name collisions
-     */
-    public function validateNameIsNotReserved($key, $value, $params, $rule)
-    {
-        if (in_array($value, ee()->cp->invalid_custom_field_names())) {
-            return lang('reserved_word');
-        }
-
-        return true;
     }
 }
 

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -43,9 +43,6 @@ class Status extends Model
             'model' => 'ChannelEntry',
             'weak' => true
         ],
-        'Site' => array(
-            'type' => 'BelongsTo'
-        ),
         'Roles' => array(
             'type' => 'hasAndBelongsToMany',
             'model' => 'Role',
@@ -63,7 +60,9 @@ class Status extends Model
     );
 
     protected static $_events = array(
-        'beforeInsert'
+        'beforeInsert',
+        'afterInsert',
+        'afterUpdate'
     );
 
     protected $status_id;
@@ -96,6 +95,31 @@ class Status extends Model
         if (empty($status_order)) {
             $count = $this->getModelFacade()->get('Status')->count();
             $this->setProperty('status_order', $count + 1);
+        }
+    }
+
+    /**
+     * New status might have same name as the one that was deleted
+     * and the entries were left orphan
+     * In that case, we establish relationship
+     */
+    public function onAfterInsert()
+    {
+        //direct SQL, as we need it to be fast
+        ee('db')->where('status', $this->getProperty('status'))->update('channel_titles', ['status_id' => $this->getId()]);
+    }
+
+    /**
+     * Update the existing entries using this status
+     *
+     * @param array $previous
+     * @return void
+     */
+    public function onAfterUpdate($previous)
+    {
+        if (isset($previous['status']) && $previous['status'] != $this->status) {
+            //direct SQL, as we need it to be fast
+            ee('db')->where('status', $previous['status'])->update('channel_titles', ['status' => $this->status]);
         }
     }
 

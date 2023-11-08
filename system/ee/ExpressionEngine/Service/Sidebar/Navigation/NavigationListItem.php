@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -22,6 +22,8 @@ class NavigationListItem extends ListItem
      * @var URL|string $url The URL to use as an 'add' link
      */
     protected $addlink;
+
+    protected $addlinkAttibutes;
 
     /**
      * @var bool $divider Whether to display divider element below item
@@ -52,9 +54,11 @@ class NavigationListItem extends ListItem
      *   URL for the item.
      * @return self This returns a reference to itself
      */
-    public function withAddLink($url)
+    public function withAddLink($url, $attrs = '')
     {
         $this->addlink = $url;
+
+        $this->addlinkAttibutes = $attrs;
 
         return $this;
     }
@@ -92,6 +96,7 @@ class NavigationListItem extends ListItem
             'text' => $this->text,
             'url' => $this->url,
             'addlink' => $this->addlink,
+            'addlinkAttibutes' => $this->addlinkAttibutes,
             'divider' => $this->divider,
             'attrs' => $attrs,
             'class' => $class,

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -19,6 +19,7 @@ class AlphaDashPeriodEmoji extends ValidationRule
 {
     public function validate($key, $value)
     {
+        $value = (string) $value;
         $emojiless = $this->stripEmojis($value);
 
         // If the only value we were given were emoji(s) then it's valid
@@ -32,8 +33,7 @@ class AlphaDashPeriodEmoji extends ValidationRule
     protected function stripEmojis($value)
     {
         $regex = '/(?:' . ee('Emoji')->emojiRegex . ')/u';
-
-        $value = preg_replace($regex, '', (string) $value);
+        $value = preg_replace($regex, '', $value);
 
         return $value;
     }

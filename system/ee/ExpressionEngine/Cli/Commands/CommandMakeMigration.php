@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -54,6 +54,24 @@ class CommandMakeMigration extends Cli
      * @var string
      */
     public $migration_name;
+
+    /**
+     * Migration location
+     * @var string
+     */
+    public $migration_location;
+
+    /**
+     * Migration category
+     * @var string
+     */
+    public $migrationCategory;
+
+    /**
+     * Migration
+     * @var string
+     */
+    public $migration;
 
     /**
      * Migration action. Options are create, update, and generic

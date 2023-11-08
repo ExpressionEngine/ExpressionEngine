@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -24,6 +24,8 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
     );
 
     public $has_array_data = true;
+
+    public $can_be_cloned = true;
 
     public $size = 'small';
 
@@ -107,7 +109,7 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
 
     public function grid_display_field($data)
     {
-        return $this->_display_field(form_prep($data), 'grid');
+        return $this->_display_field($data, 'grid');
     }
 
     /**
@@ -143,7 +145,8 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
                 'manage_label' => $this->get_setting('manage_toggle_label', lang('manage')),
                 'reorder_ajax_url' => $this->get_setting('reorder_ajax_url', null),
                 'auto_select_parents' => $this->get_setting('auto_select_parents', false),
-                'no_results' => $this->get_setting('no_results', ['text' => sprintf(lang('no_found'), lang('choices'))])
+                'no_results' => $this->get_setting('no_results', ['text' => sprintf(lang('no_found'), lang('choices'))]),
+                'split_for_two' => $this->get_setting('split_for_two', null)
             ]);
         }
 

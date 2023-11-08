@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -28,16 +28,19 @@ class Tfidf implements Vectorizer
     public $stop_words;
     public $document_count;
 
+    private $tfidf_row = array();
+    private $vocabulary_index = array();
+
     /**
      * Get our corpus ready. First we strip out all common words specified in our stop word list,
      * then loop through each document and generate a frequency table.
      *
      * @access public
-     * @param array   	 $source
+     * @param array      $source
      * @param Tokenizer  $tokenizer  Tokenizer object used to split string
-     * @param array   	 $stop_words
-     * @param array   	 $limit  Maximum number of features to select
-     * @param bool    	 $clean  Strip all non alpha-numeric characters
+     * @param array      $stop_words
+     * @param array      $limit  Maximum number of features to select
+     * @param bool       $clean  Strip all non alpha-numeric characters
      * @return void
      */
     public function __construct($source, $tokenizer, $stop_words = array(), $limit = null, $clean = true)

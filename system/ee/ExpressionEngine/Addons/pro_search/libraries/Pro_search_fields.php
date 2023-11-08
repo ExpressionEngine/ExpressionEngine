@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -281,8 +281,12 @@ class Pro_search_fields
         $cols = pro_get_cache(__CLASS__, $table);
 
         if (! isset($cols[$field_id])) {
-            // Init
-            $cols[$field_id] = array();
+            // If $cols is not an array, we need to make it an array first
+            if (!is_array($cols)) {
+                $cols = [];
+            }
+
+            $cols[$field_id] = [];
 
             // Query all columns for this grid/matrix
             $query = ee()->db

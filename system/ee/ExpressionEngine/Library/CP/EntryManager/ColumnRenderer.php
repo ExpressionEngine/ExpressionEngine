@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -15,7 +15,7 @@ namespace ExpressionEngine\Library\CP\EntryManager;
  */
 class ColumnRenderer
 {
-    private $columns = [];
+    protected $columns = [];
 
     /**
      * Constructor
@@ -24,7 +24,13 @@ class ColumnRenderer
      */
     public function __construct(array $columns)
     {
-        $this->columns = $columns;
+        $availableColumnKeys = array_keys(ColumnFactory::getAvailableColumns());
+        foreach ($columns as $key => $column) {
+            if (!in_array($key, $availableColumnKeys)) {
+                continue;
+            }
+            $this->columns[$key] = $column;
+        }
     }
 
     /**
@@ -52,10 +58,10 @@ class ColumnRenderer
      * @param ChannelEntry Entry object we are basing the row on
      * @return array[string]
      */
-    public function getRenderedTableRowForEntry($entry, $viewtype = 'list', $pickerMode = false)
+    public function getRenderedTableRowForEntry($entry, $viewtype = 'list', $pickerMode = false, $addQueryString = [])
     {
-        return array_map(function ($column) use ($entry, $viewtype, $pickerMode) {
-            return $column->renderTableCell(null, null, $entry, $viewtype, $pickerMode);
+        return array_map(function ($column) use ($entry, $viewtype, $pickerMode, $addQueryString) {
+            return $column->renderTableCell(null, null, $entry, $viewtype, $pickerMode, $addQueryString);
         }, $this->columns);
     }
 }

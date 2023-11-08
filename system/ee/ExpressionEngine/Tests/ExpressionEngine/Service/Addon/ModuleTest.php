@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -41,15 +41,18 @@ class ModuleTest extends TestCase
      */
     public function testExceptionThrownOnFailedRequest(Module $controller)
     {
+        if (! defined('REQ')) {
+            define('REQ', 'PAGE');
+        }
         $this->expectException('ExpressionEngine\Service\Addon\Exceptions\ControllerException');
         $controller->badMethod();
     }
 
     public function testBuildObjectReturnsString()
     {
-        $controller = new __stub_mod;
+        $controller = new __stub_mod();
         $controller->setAddonName('test-addon');
-        $this->assertEquals('\\Test\\Namespace\\Module\\Actions\\Foo', $controller->forceBuildObject('foo', true));
-        $this->assertEquals('\\Test\\Namespace\\Module\\Tags\\Foo', $controller->forceBuildObject('foo', false));
+        $this->assertEquals('\\Test\\Namespace\\Actions\\Foo', $controller->forceBuildObject('foo', true));
+        $this->assertEquals('\\Test\\Namespace\\Tags\\Foo', $controller->forceBuildObject('foo', false));
     }
 }

@@ -1,17 +1,5 @@
 <?php
 
-if (! defined('BASEPATH')) {
-    exit('No direct script access allowed');
-}
-
-/**
- * Pro Variables Language file
- *
- * @package        pro_variables
- * @author         ExpressionEngine
- * @link           https://expressionengine.com/
- * @copyright      Copyright (c) 2022, ExpressionEngine
- */
 $lang = array(
 
     //----------------------------------------
@@ -254,7 +242,7 @@ $lang = array(
     'Variable suffix',
 
     'variable_suffix_help' =>
-    'If entered, Low Variables will create a new variable for each given suffix.<br />Separate suffixes with spaces, e.g.: <em>en es nl</em>',
+    'If entered, Pro Variables will create a new variable for each given suffix.<br />Separate suffixes with spaces, e.g.: <em>en es nl</em>',
 
     'wide_field' =>
     'Display wide field',
@@ -592,7 +580,7 @@ $lang = array(
     'Select Variable Managers',
 
     'can_manage_help' =>
-    'Select member groups allowed to manage the variables.',
+    'Select roles allowed to manage the variables.',
 
     'clear_cache' =>
     'Clear cache',

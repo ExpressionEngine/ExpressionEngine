@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -20,6 +20,17 @@ class Structure_ext
 {
     public $settings = array();
     public $settings_exist = 'n';
+
+    public $sql;
+    public $version;
+    public $site_pages;
+    public $entry_id;
+    public $parent_id;
+    public $page_title;
+    public $uri;
+    public $structure;
+    public $segment_1;
+    public $top_id;
 
     public function __construct($settings = '')
     {
@@ -219,7 +230,7 @@ class Structure_ext
         );
     }
 
-    public function entry_save_and_close_redirect($entry)
+    public function entry_save_and_close_redirect($entry, $orig_redirect_url = '')
     {
         $meta['channel_id'] = $entry->channel_id;
 
@@ -228,8 +239,13 @@ class Structure_ext
 
         // EE Does not pass the redirect url in this call nor does it check for null on the call return
         // so we have to create our own default redirect if we're not redirecting.
-        if (empty($redirect_url)) {
+        if (empty($redirect_url) && empty($orig_redirect_url)) {
             $redirect_url = ee('CP/URL')->make('publish/edit/', array('filter_by_channel' => $entry->channel_id));
+        }
+
+        // fallback to passed value
+        if (empty($redirect_url)) {
+            $redirect_url = $orig_redirect_url;
         }
 
         return $redirect_url;
@@ -259,7 +275,7 @@ class Structure_ext
                 $session_id = null;
             }
 
-            $url = new \EllisLab\ExpressionEngine\Library\CP\URL(
+            $url = new \ExpressionEngine\Library\CP\URL(
                 $path,
                 $session_id,
                 '',
@@ -567,6 +583,7 @@ class Structure_ext
 
             if ($entry_id) {
                 $template_id = $this->site_pages['templates'][$entry_id];
+                ee()->uri->page_query_string = $entry_id;
 
                 // TODO:: I think we only need to select the template name and the group name.
                 // This could be a large speed increase -- Matt
@@ -578,7 +595,6 @@ class Structure_ext
                 $result = ee()->db->get();
                 if ($result->num_rows() > 0) {
                     $row = $result->row();
-                    ee()->uri->page_query_string = $entry_id;
 
                     return array($row->group_name, $row->template_name);
                 }

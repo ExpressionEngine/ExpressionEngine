@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -102,14 +102,14 @@ class Channels extends Jumps
 
     private function loadChannels($searchString = false)
     {
-        $channels = ee('Model')->get('Channel');
+        $channels = ee('Model')->get('Channel')->filter('site_id', ee()->config->item('site_id'));
 
         if (!empty($searchString)) {
             // Break the search string into individual keywords so we can partially match them.
             $keywords = explode(' ', $searchString);
 
             foreach ($keywords as $keyword) {
-                $channels->filter('channel_title', 'LIKE', '%' . $keyword . '%');
+                $channels->filter('channel_title', 'LIKE', '%' . ee()->db->escape_like_str($keyword) . '%');
             }
         }
 
@@ -125,7 +125,7 @@ class Channels extends Jumps
             $keywords = explode(' ', $searchString);
 
             foreach ($keywords as $keyword) {
-                $fields->filter('field_label', 'LIKE', '%' . $keyword . '%');
+                $fields->filter('field_label', 'LIKE', '%' . ee()->db->escape_like_str($keyword) . '%');
             }
         }
 

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -15,6 +15,8 @@ class EE_Input
 {
     public $SID = ''; // Session ID extracted from the URI segments
 
+    public $security;
+    public $uni;
     public $ip_address = false;
     public $user_agent = false;
     public $_allow_get_array = true;
@@ -836,14 +838,14 @@ class EE_Input
         foreach (array($_GET, $_POST, $_COOKIE) as $global) {
             if (! is_array($global)) {
                 if (! in_array($global, $protected)) {
-                    global ${$global};
+                    global $$global;
 
                     $$global = null;
                 }
             } else {
                 foreach ($global as $key => $val) {
                     if (! in_array($key, $protected)) {
-                        global ${$key};
+                        global $$key;
 
                         $$key = null;
                     }

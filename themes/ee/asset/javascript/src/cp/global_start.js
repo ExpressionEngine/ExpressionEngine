@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -254,7 +254,8 @@ EE.cp.validateLicense = function() {
 				{
 					site_name: EE.site_name,
 					site_id: EE.site_id,
-					site_url: EE.site_url
+					site_url: EE.site_url,
+					usesPro: EE.cp.usesPro
 				}
 			]
 		},
@@ -423,7 +424,7 @@ EE.cp.setBasePath = function(newBase, skipBroadcast /* internal */) {
 		oldBaseS = EE.BASE.match(sessionIdRegex) || ['', ''];
 
 	var replaceBase = function(i, value) {
-		if (value) {
+		if (value && oldBaseS[1]) {
 			return value.replace(oldBaseS[1], newBaseS[1]);
 		}
 	};
@@ -467,7 +468,7 @@ EE.cp.refreshSessionData = function(event, base) {
 
 	// running the request will return the x-csrf-header, which will trigger
 	// our prefilter. We still need to replace the base though.
-	$.getJSON(EE.BASE + '&C=login&M=refresh_csrf_token', function(result) {
+	$.getJSON(EE.BASE + '/login/refresh_csrf_token', function(result) {
 		EE.cp.setBasePath(result.base);
 	});
 
@@ -705,7 +706,7 @@ EE.cp.broadcastEvents = (function() {
 			if (this.modalThresholdReached()) {
 				Events.modal();
 				$(window).trigger('broadcast.idleState', 'modal');
-				$.get(EE.BASE + '&C=login&M=lock_cp'); // lock them out of the cp in the background to prevent tampering
+				$.get(EE.BASE + '/login/lock_cp'); // lock them out of the cp in the background to prevent tampering
 			}
 			else if (this.hasFocus && this.pingReceived === false) {
 				$(window).trigger('broadcast.idleState', 'active');
@@ -769,16 +770,18 @@ EE.cp.broadcastEvents = (function() {
 		login: function() {
 			State.modalActive = false;
 
-			logoutModal.trigger('modal:close');
+			if (logoutModal) {
+				logoutModal.trigger('modal:close');
 
-			logoutModal.find(':password').val('');
+				logoutModal.find(':password').val('');
+			}
 
 			State.setActiveTime();
 		},
 
 		// received another window's logout event, leave page
 		logout: function() {
-			window.location = EE.BASE + '&C=login&M=logout';
+			window.location = EE.BASE + '/login/logout';
 		}
 	};
 

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -163,9 +163,9 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
 
         if (isset($this->settings['grid_field_id'])) {
             // grid takes the parent grid's field id and sticks it into "grid_field_id"
-            $all_rows_where['grid_col_id'] = $this->settings['col_id'];
-            $all_rows_where['grid_field_id'] = $this->settings['grid_field_id'];
-            $all_rows_where['grid_row_id'] = $this->settings['grid_row_id'];
+            $all_rows_where['grid_col_id'] = $this->settings['col_id'] ?? 0;
+            $all_rows_where['grid_field_id'] = $this->settings['grid_field_id'] ?? 0;
+            $all_rows_where['grid_row_id'] = $this->settings['grid_row_id'] ?? 0;
         }
 
         // clear old stuff
@@ -419,7 +419,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
                 // Cache children for this entry
                 $children_cache[$entry_id] = ee('Model')->get('ChannelEntry', $entry_id)
                     ->with('Children', 'Channel')
-                    ->fields('Channel.channel_title', 'Children.entry_id', 'Children.title', 'Children.channel_id')
+                    ->fields('Channel.channel_title', 'Children.entry_id', 'Children.title', 'Children.channel_id', 'Children.status')
                     ->first()
                     ->Children;
 
@@ -452,7 +452,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
         if (! empty($new_children_ids)) {
             $new_children = ee('Model')->get('ChannelEntry', $new_children_ids)
                 ->with('Channel')
-                ->fields('Channel.*', 'entry_id', 'title', 'channel_id')
+                ->fields('Channel.*', 'entry_id', 'title', 'channel_id', 'status')
                 ->all()
                 ->indexBy('entry_id');
         }
@@ -466,6 +466,11 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
         }
 
         $multiple = (bool) $this->settings['allow_multiple'];
+
+        $statuses = ee('Model')->get('Status')->all('true')->getDictionary('status', 'highlight');
+        ee()->javascript->set_global([
+            'statuses' => $statuses
+        ]);
 
         $choices = [];
         foreach ($entries as $entry) {
@@ -534,6 +539,8 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             'channels' => $channel_choices,
             'in_modal' => ($this->get_setting('in_modal_context') || ee('Request')->get('modal_form') == 'y'),
             'display_entry_id' => isset($this->settings['display_entry_id']) ? (bool) $this->settings['display_entry_id'] : false,
+            'display_status' => isset($this->settings['display_status']) ? (bool) $this->settings['display_status'] : false,
+            'statuses' => $statuses,
             'rel_min' =>  isset($this->settings['rel_min']) ? (int) $this->settings['rel_min'] : 0,
             'rel_max' =>  isset($this->settings['rel_max']) ? (int) $this->settings['rel_max'] : '',
         ]);
@@ -544,7 +551,9 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             'value' => $entry->getId(),
             'label' => $entry->title,
             'instructions' => $entry->Channel->channel_title,
-            'channel_id' => $entry->Channel->getId()
+            'channel_id' => $entry->Channel->getId(),
+            'editable' => (ee('Permission')->isSuperAdmin() || array_key_exists($entry->Channel->getId(), ee()->session->userdata('assigned_channels'))),
+            'status' => $entry->status
         ];
     }
 
@@ -757,6 +766,16 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
                 )
             ),
             array(
+                'title' => 'rel_ft_display_status',
+                'desc' => 'rel_ft_display_status_desc',
+                'fields' => array(
+                    'relationship_display_status' => array(
+                        'type' => 'yes_no',
+                        'value' => ($values['display_status']) ? 'y' : 'n'
+                    )
+                )
+            ),
+            array(
                 'title' => 'rel_ft_deferred',
                 'desc' => 'rel_ft_deferred_desc',
                 'fields' => array(
@@ -797,6 +816,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
         // Boolstring conversion
         $save['allow_multiple'] = get_bool_from_string($save['allow_multiple']);
         $save['display_entry_id'] = get_bool_from_string($save['display_entry_id']);
+        $save['display_status'] = get_bool_from_string($save['display_status']);
         $save['deferred_loading'] = get_bool_from_string($save['deferred_loading']);
 
         foreach ($save as $field => $value) {
@@ -834,6 +854,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             'order_field' => 'title',
             'order_dir' => 'asc',
             'display_entry_id' => false,
+            'display_status' => false,
             'deferred_loading' => false,
             'allow_multiple' => 'y',
             'rel_min' => 0,
@@ -852,6 +873,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
         // any default values that are not the empty ones
         $default_values = array(
             'display_entry_id' => false,
+            'display_status' => false,
             'allow_multiple' => true,
             'deferred_loading' => false,
         );

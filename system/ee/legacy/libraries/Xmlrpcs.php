@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 if (! function_exists('xml_parser_create')) {
@@ -424,8 +424,8 @@ class EE_Xmlrpcs extends EE_Xmlrpc
 
     public function multicall_error($err)
     {
-        $str = is_string($err) ? $this->xmlrpcstr["multicall_${err}"] : $err->faultString();
-        $code = is_string($err) ? $this->xmlrpcerr["multicall_${err}"] : $err->faultCode();
+        $str = is_string($err) ? $this->xmlrpcstr["multicall_{$err}"] : $err->faultString();
+        $code = is_string($err) ? $this->xmlrpcerr["multicall_{$err}"] : $err->faultCode();
 
         $struct['faultCode'] = new XML_RPC_Values($code, 'int');
         $struct['faultString'] = new XML_RPC_Values($str, 'string');

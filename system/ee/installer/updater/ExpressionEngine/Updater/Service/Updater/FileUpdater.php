@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -250,7 +250,7 @@ class FileUpdater
 
             // Try to catch permissions errors before PHP's file I/O functions do
             if (! $this->filesystem->isWritable($path)) {
-                throw new UpdaterException("Cannot move ${path} to ${new_path}, path is not writable: ${path}", 19);
+                throw new UpdaterException("Cannot move {$path} to {$new_path}, path is not writable: {$path}", 19);
             }
 
             $this->logger->log('Moving ' . $path . ' to ' . $new_path);
@@ -289,7 +289,7 @@ class FileUpdater
             }
 
             if (! $this->filesystem->isWritable($path)) {
-                throw new UpdaterException("Cannot delete path ${path}, it is not writable", 20);
+                throw new UpdaterException("Cannot delete path {$path}, it is not writable", 20);
             }
 
             $this->logger->log('Deleting ' . $path);

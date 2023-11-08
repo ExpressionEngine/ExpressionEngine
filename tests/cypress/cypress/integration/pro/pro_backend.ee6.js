@@ -9,7 +9,7 @@ const publish = new Publish;
 let file_modal = new FileModal;
 const fluid_field = new FluidField;
 
-context('Pro', () => {
+context('Front-end editing', () => {
 
     before(function() {
       cy.task('db:seed')
@@ -60,7 +60,7 @@ context('Pro', () => {
       cy.get('.frontedit-conditional-out').should('not.exist')
     })
 
-    it('disable with outside comment', function() {
+    it('disable frontedit with outside comment', function() {
       cy.visit('index.php/pro/disabled-with-comment')
       cy.logFrontendPerformance()
       cy.get('.eeFrontEdit').should('not.exist');
@@ -85,7 +85,7 @@ context('Pro', () => {
         cy.get('#ee-pro-ee-44E4F0E59DFA295EB450397CA40D1169').should('not.exist')
     })
 
-    it('can edit entry title', function() {
+    it('can edit entry title from frontend', function() {
         cy.eeConfig({ item: 'enable_dock', value: 'y' })
         cy.wait(2000)
         cy.eeConfig({ item: 'enable_frontedit', value: 'y' })
@@ -115,7 +115,7 @@ context('Pro', () => {
         cy.get('h1').contains('Getting to Know ExpressionEngine Pro')
     })
 
-    it('edit links work in conditionals', function() {
+    it('front-end edit links work in conditionals', function() {
         cy.eeConfig({ item: 'enable_dock', value: 'y' })
         cy.wait(2000)
         cy.eeConfig({ item: 'enable_frontedit', value: 'y' })
@@ -139,7 +139,7 @@ context('Pro', () => {
         cy.get('#grid-2 .eeFrontEdit').should('have.length', 1);
     })
 
-    it('can edit image', function() {
+    it('can edit image on frontend', function() {
         cy.eeConfig({ item: 'enable_dock', value: 'y' })
         cy.wait(2000)
         cy.eeConfig({ item: 'enable_frontedit', value: 'y' })
@@ -152,6 +152,7 @@ context('Pro', () => {
         cy.wait(15000)
         cy.logFrontendPerformance()
 
+        cy.get('div').should('not.contain', '{')
         cy.get('#img-tag .eeFrontEdit').should('have.length', 1);
         cy.get('#img-tag-2 .eeFrontEdit').should('have.length', 1);
         cy.get('#img-tag-auto .eeFrontEdit').should('have.length', 1);
@@ -161,6 +162,14 @@ context('Pro', () => {
         cy.get('#img-tag-pair-2 .eeFrontEdit').should('have.length', 1);
         cy.get('#img-tag-pair-3 .eeFrontEdit').should('have.length', 1);
         cy.get('#img-tag-pair-4 .eeFrontEdit').should('have.length', 1);
+        cy.get('#img-modifiers-pair-1 .eeFrontEdit').should('have.length', 1);
+        cy.get('#img-modifiers-pair-2 .eeFrontEdit').should('have.length', 1);
+        cy.get('#img-modifiers-pair-3 .eeFrontEdit').should('have.length', 1);
+        cy.get('#img-modifiers-pair-4 .eeFrontEdit').should('have.length', 1);
+        cy.get('#img-modifiers-pair-11 .eeFrontEdit').should('have.length', 1);
+        cy.get('#img-modifiers-pair-12 .eeFrontEdit').should('have.length', 1);
+        cy.get('#img-modifiers-pair-13 .eeFrontEdit').should('have.length', 1);
+        cy.get('#img-modifiers-pair-14 .eeFrontEdit').should('have.length', 1);
         cy.get('#attr-tag-bg .eeFrontEdit').should('have.length', 1);
         cy.get('#attr-tag-pair-bg .eeFrontEdit').should('have.length', 1);
         cy.get('#attr-tag-pair-bg-2 .eeFrontEdit').should('have.length', 1);
@@ -168,7 +177,7 @@ context('Pro', () => {
 
     })
 
-    it('can edit grid', function() {
+    it('can edit grid on frontend', function() {
         cy.eeConfig({ item: 'enable_dock', value: 'y' })
         cy.wait(2000)
         cy.eeConfig({ item: 'enable_frontedit', value: 'y' })
@@ -304,7 +313,7 @@ context('Pro', () => {
         })
     })
 
-    it('test encode tag', () => {
+    it('encode tag does not break front-end editing', () => {
       cy.authVisit('admin.php?/cp/publish/edit/entry/3')
       cy.get('[name=field_id_6]').type('support@expressionengine.com');
       publish.get('save').click()
@@ -319,7 +328,7 @@ context('Pro', () => {
       
     })
 
-    context('when using fluid fields', () => {
+    context('front-end editing fluid fields', () => {
 
         const available_fields = [
           "A Date",
@@ -442,7 +451,7 @@ context('Pro', () => {
         }
 
   
-        it('edit Fluid field', () => {
+        it('Fluid field has front-end edit link', () => {
   
             cy.visit('index.php/pro/fluid')
 
@@ -453,7 +462,7 @@ context('Pro', () => {
             cy.logFrontendPerformance()
         })
 
-        it('test relationships', () => {
+        it('Relationships fields have front-end editing links', () => {
   
             cy.visit('index.php/pro/relationships')
 
@@ -479,7 +488,7 @@ context('Pro', () => {
           cy.get('#disabled-with-param .eeFrontEdit').should('have.length', 1);
       })
 
-        it('test Fluid in relationships', () => {
+        it('Fluid in relationships has front-end editing links', () => {
   
           cy.visit('index.php/pro/relationships-fluid')
 

@@ -34,7 +34,9 @@ input[type='text'],
 input[type='email'],
 input[type='number'],
 input[type='password'],
-input[type='url'] {
+input[type='url'],
+input[type='search'],
+input[type='date'] {
 
   display: block;
   width: 100%;
@@ -193,6 +195,13 @@ em label input[type='checkbox'] {
   margin-top: 5px;
 }
 
+
+input[type=text][dir=rtl][field_content_type=numeric],
+input[type=text][dir=rtl][field_content_type=integer],
+input[type=text][dir=rtl][field_content_type=decimal]{
+  direction: ltr;
+  text-align: right;
+}
 
 
 

@@ -9,7 +9,7 @@ if (! defined('BASEPATH')) {
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 require_once PATH_ADDONS . 'structure/addon.setup.php';
@@ -24,6 +24,12 @@ class Structure_mcp
     public $logging = false;
     public $structure;
     public $sql;
+    public $version;
+    public $nav;
+    public $site_id;
+    public $base_url;
+    public $data;
+
     public $perms = array(
         'perm_admin_structure'         => 'Manage module settings',
         'perm_admin_channels'          => 'Manage channel settings',

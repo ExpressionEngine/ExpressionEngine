@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 if (! defined('BASEPATH')) {
@@ -111,11 +111,11 @@ class Pro_variables
         if (defined('IS_PRO') && IS_PRO) {
             $local_vars = array();
             foreach ($this->vars as $t) {
-                if (strpos($tagdata, "${t['variable_name']}") !== false && $t['is_hidden'] === 'n') {
+                if (strpos($tagdata, "{$t['variable_name']}") !== false && $t['is_hidden'] === 'n') {
                     array_push($local_vars, $t);
                 }
                 //Get the early parsed variables
-                elseif (!empty($t['variable_data']) && strpos($tagdata, "${t['variable_data']}") !== false && $t['is_hidden'] === 'n') {
+                elseif (!empty($t['variable_data']) && strpos($tagdata, "{$t['variable_data']}") !== false && $t['is_hidden'] === 'n') {
                     array_push($local_vars, $t);
                 }
             }

@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -62,7 +62,7 @@ function FilterSearch (props) {
   return (
     <div className="filter-bar__item">
       <div className="search-input">
-        <input type="text" className="search-input__input input--small" placeholder={EE.lang.keyword_search} onChange={props.onSearch} />
+        <input type="text" className="search-input__input input--small" placeholder={EE.lang.keyword_search} onChange={props.onSearch} aria-label={EE.lang.search}/>
       </div>
     </div>
   )

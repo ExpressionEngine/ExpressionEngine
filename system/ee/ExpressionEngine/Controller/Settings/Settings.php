@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -179,6 +179,12 @@ class Settings extends CP_Controller
                 $fields = array_merge($fields, $this->getFieldsForSettings($settings));
             }
         }
+
+        // Any values that are strictly a false boolean should be ignored as this
+        // is only possible as output from ee()->input->post() when a value wasn't sent
+        $fields = array_filter($fields, function ($value) {
+            return $value !== false;
+        });
 
         $config_update = ee()->config->update_site_prefs($fields);
 

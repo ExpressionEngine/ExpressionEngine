@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -25,7 +25,7 @@ class System extends AbstractDesignController
     {
         parent::__construct();
 
-        if (! ee('Permission')->can('access_design')) {
+        if (! ee('Permission')->can('admin_design')) {
             show_error(lang('unauthorized_access'), 403);
         }
 

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -37,7 +37,7 @@ class LocalPath extends SerializedType
     }
 
     /**
-     * readPath will instatiate a collection of file models for every file in
+     * readPath will instantiate a collection of file models for every file in
      * this column's path.
      *
      * @return Collection  A Collection of File objects

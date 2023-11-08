@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -114,7 +114,7 @@ class File_upload_preferences_model extends CI_Model
         $site_id = $upload_destination['site_id'];
         $overrides = array();
 
-        if ($site_id != ee()->config->item('site_id')) {
+        if ($site_id != 0 && $site_id != ee()->config->item('site_id')) {
             $overrides = ee()->config->get_cached_site_prefs($site_id);
         }
 

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -16,6 +16,7 @@
 class EE_Router
 {
     public $config;
+    public $uri;
     public $routes = array();
     public $class = '';
     public $method = 'index';
@@ -54,6 +55,9 @@ class EE_Router
             if (isset($_GET[$this->config->item('directory_trigger')])) {
                 $this->set_directory(trim($this->uri->_filter_uri($_GET[$this->config->item('directory_trigger')])));
                 $segments[] = rtrim($this->fetch_directory(), '/');
+            } elseif (isset($_GET['/cp'])) {
+                // weird mix of old and new routing?
+                $segments[] = 'cp';
             }
 
             if (isset($_GET[$this->config->item('controller_trigger')])) {
@@ -90,7 +94,7 @@ class EE_Router
         $this->uri->_fetch_uri_string();
 
         // Is there a URI string? If not, the default controller specified in the "routes" file will be shown.
-        if ($this->uri->uri_string == '') {
+        if ($this->uri->uri_string == '' || $this->uri->uri_string == 'cp') {
             return $this->_set_default_controller();
         }
 

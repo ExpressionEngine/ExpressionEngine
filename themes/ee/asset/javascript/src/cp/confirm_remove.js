@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -114,6 +114,10 @@ $(document).ready(function () {
 				$.post(ajax_url, $(modalIs + " form").serialize(), function(data) {
 					$(modalIs + " .ajax").html(data);
 					Dropdown.renderFields();
+
+					if ($('div[data-select-react]').length) {
+						SelectField.renderFields();
+					}
 				});
 			}
 			Dropdown.renderFields();

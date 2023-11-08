@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -17,7 +17,7 @@ return array(
     'author_url' => 'https://expressionengine.com/',
     'name' => 'ExpressionEngine Spam Module',
     'description' => 'Block spammy comments, forum posts, and member registrations',
-    'version' => '2.0.0',
+    'version' => '2.1.0',
     'namespace' => 'ExpressionEngine\Addons\Spam',
     'settings_exist' => true,
     'services' => array(

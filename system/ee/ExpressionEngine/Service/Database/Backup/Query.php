@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -50,6 +50,11 @@ class Query
      * @var int Number of bytes to limit INSERT query sizes to
      */
     protected $query_size_limit = 3e+6;
+
+    /**
+     * @var array array of columns
+     */
+    public $columns;
 
     /**
      * Constructor

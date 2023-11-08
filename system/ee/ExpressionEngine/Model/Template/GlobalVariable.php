@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -147,13 +147,15 @@ class GlobalVariable extends FileSyncedModel
             return $basepath . '_global_variables';
         }
 
-        if (! $site = ee()->session->cache('site/id/' . $this->site_id, 'site')) {
+        if (!isset(ee()->session) || ! $site = ee()->session->cache('site/id/' . $this->site_id, 'site')) {
             $sites = ee('Model')->get('Site')
                 ->fields('site_id', 'site_name')
                 ->all(true);
             $site = $sites->filter('site_id', $this->site_id)->first();
 
-            ee()->session->set_cache('site/id/' . $this->site_id, 'site', $site);
+            if (isset(ee()->session)) {
+                ee()->session->set_cache('site/id/' . $this->site_id, 'site', $site);
+            }
         }
 
         return $basepath . $site->site_name . '/_variables';

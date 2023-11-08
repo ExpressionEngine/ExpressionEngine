@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -28,6 +28,7 @@ class EE_Validate
     public $errors = array();
     public $enable_log = false;
     public $log_msg = array();
+    private $cur_password;
 
     /**
      * Construct
@@ -311,7 +312,7 @@ class EE_Validate
         //deprecated, but will not throw deprecation error until 6.4
         //ee()->load->library('logger');
         //ee()->logger->deprecated('6.4');
-        
+
         if (ee()->config->item('allow_dictionary_pw') == 'y') {
             return false;
         }

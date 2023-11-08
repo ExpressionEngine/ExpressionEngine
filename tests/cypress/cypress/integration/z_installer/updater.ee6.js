@@ -389,7 +389,12 @@ context('Updater', () => {
 
       const mailing_list_zip = '../../system/user/cache/mailing_list.zip'
       cy.task('filesystem:delete', mailing_list_zip).then(() => {
-        cy.exec('php ../../system/ee/eecli.php update -v -y --skip-cleanup')
+        cy.exec('php ../../system/ee/eecli.php update -v -y --skip-cleanup').then((result) => {
+            expect(result.code).to.eq(0)
+            expect(result.stderr).to.be.empty
+            expect(result.stdout).to.not.contain('on line')
+            expect(result.stdout).to.not.contain('caught:')
+        })
       })
 
       test_version()
@@ -420,6 +425,7 @@ context('Updater', () => {
       })*/
 
       page.get('inline_errors').should('not.exist')
+      cy.hasNoErrors();
       page.get('header').invoke('text').then((text) => {
         expect(text).to.match(/ExpressionEngine from \d+\.\d+\.\d+ to \d+\.\d+\.\d+/)
       })

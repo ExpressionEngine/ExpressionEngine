@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -15,6 +15,8 @@ use PHPUnit\Framework\TestCase;
 
 class LexerTest extends TestCase
 {
+    public $lexer;
+
     protected $valueTypes = array(
         'bool' => array('token' => array('BOOL', 'TRUE'),									'value' => 'TRUE'),
         'int' => array('token' => array('NUMBER', '5'),									'value' => '5'),

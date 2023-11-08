@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -42,6 +42,7 @@ class CI_DB_driver
     public $trans_strict = true;
     public $_trans_depth = 0;
     public $_trans_status = true; // Used with transactions to determine if a rollback should occur
+    public $_trans_failure = false;
     public $cache_on = false;
     public $cachedir = '';
     public $cache_autodel = false;

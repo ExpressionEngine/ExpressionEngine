@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -33,6 +33,9 @@ class CategoryField extends FieldModel
     );
 
     protected static $_relationships = array(
+        'Site' => array(
+            'type' => 'belongsTo'
+        ),
         'CategoryGroup' => array(
             'type' => 'belongsTo'
         )
@@ -144,18 +147,6 @@ class CategoryField extends FieldModel
     public function getDataTable()
     {
         return 'category_field_data';
-    }
-
-    /**
-     * Validate the field name to avoid variable name collisions
-     */
-    public function validateNameIsNotReserved($key, $value, $params, $rule)
-    {
-        if (in_array($value, ee()->cp->invalid_custom_field_names())) {
-            return lang('reserved_word');
-        }
-
-        return true;
     }
 }
 

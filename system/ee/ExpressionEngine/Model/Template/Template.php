@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -120,7 +120,8 @@ class Template extends FileSyncedModel
      */
     public function getPath()
     {
-        return $this->getTemplateGroup()->group_name . '/' . $this->template_name;
+        $groupName = !is_null($this->getTemplateGroup()) ? $this->getTemplateGroup()->group_name : '';
+        return $groupName . '/' . $this->template_name;
     }
 
     /**
@@ -224,7 +225,11 @@ class Template extends FileSyncedModel
 
         $path = $group->getFolderPath();
         $file = $parts['template_name'];
-        $ext = $this->getFileExtension($parts['template_type']);
+
+        ee()->load->library('api');
+        ee()->legacy_api->instantiate('template_structure');
+
+        $ext = ee()->api_template_structure->file_extensions($parts['template_type'], $parts['template_engine'] ?? null);
 
         if ($path == '' || $file == '' || $ext == '') {
             return null;
@@ -235,8 +240,6 @@ class Template extends FileSyncedModel
 
     /**
      * Saves a new template revision and rotates revisions based on 'max_tmpl_revisions' config item
-     *
-     * @param	Template	$template	Saved template model object
      */
     public function saveNewTemplateRevision()
     {

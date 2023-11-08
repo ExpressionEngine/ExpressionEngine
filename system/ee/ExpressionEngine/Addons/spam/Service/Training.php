@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -40,7 +40,10 @@ class Training
     public function __destruct()
     {
         if (! empty($this->shm_id)) {
-            shmop_close($this->shm_id);
+            // Handle deprecation warnings and future removal, in PHP8+ this happens automatically
+            if (function_exists('shmop_close')) {
+                @shmop_close($this->shm_id);
+            }
         }
     }
 
@@ -107,7 +110,11 @@ class Training
             }
 
             shmop_delete($shm_id);
-            shmop_close($shm_id);
+
+            // Handle deprecation warnings and future removal, in PHP8+ this happens automatically
+            if (function_exists('shmop_close')) {
+                @shmop_close($shm_id);
+            }
         }
     }
 
@@ -194,7 +201,7 @@ class Training
      *
      * @param string $name The name of the kernel
      * @access private
-     * @return int The kernel ID
+     * @return object The kernel model
      */
     private function getKernel($name)
     {

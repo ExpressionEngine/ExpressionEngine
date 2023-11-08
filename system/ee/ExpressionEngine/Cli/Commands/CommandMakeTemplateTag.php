@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -40,7 +40,7 @@ class CommandMakeTemplateTag extends Cli
      * @var array
      */
     public $commandOptions = [
-        'addon,a:'        => 'command_make_tag_option_addon',
+        'addon,a:'        => 'command_make_template_tag_option_addon',
     ];
 
     protected $data = [];
@@ -51,22 +51,22 @@ class CommandMakeTemplateTag extends Cli
      */
     public function handle()
     {
-        $this->info('command_make_tag_lets_build_tag');
+        $this->info('command_make_template_tag_lets_build_tag');
 
         // Gather alll the tag information
-        $this->data['name'] = $this->getFirstUnnamedArgument("command_make_tag_ask_tag_name", null, true);
-        $this->data['addon'] = $this->getOptionOrAskAddon('--addon', "command_make_tag_ask_addon");
+        $this->data['name'] = $this->getFirstUnnamedArgument("command_make_template_tag_ask_tag_name", null, true);
+        $this->data['addon'] = $this->getOptionOrAskAddon('--addon', "command_make_template_tag_ask_addon");
 
-        $this->info('command_make_tag_building_tag');
+        $this->info('command_make_template_tag_building_tag');
 
         try {
             // Build the tag
             $service = ee('TemplateTagGenerator', $this->data);
             $service->build();
         } catch (\Exception $e) {
-            $this->fail($e->getMessage());
+            $this->fail(addslashes($e->getMessage()));
         }
 
-        $this->info('command_make_tag_created_successfully');
+        $this->info('command_make_template_tag_created_successfully');
     }
 }

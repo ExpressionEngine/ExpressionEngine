@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -26,6 +26,8 @@ class Grid_ft extends EE_Fieldtype
     public $size = 'large';
 
     public $settings_form_field_name = 'grid';
+
+    public $can_be_cloned = true;
 
     private $errors;
 
@@ -177,13 +179,13 @@ class Grid_ft extends EE_Fieldtype
         $grid = ee('CP/GridInput', array(
             'field_name' => $this->name(),
             'lang_cols' => false,
-            'grid_min_rows' => $this->settings['grid_min_rows'],
-            'grid_max_rows' => $this->settings['grid_max_rows'],
+            'grid_min_rows' => isset($this->settings['grid_min_rows']) ? $this->settings['grid_min_rows'] : 0,
+            'grid_max_rows' => isset($this->settings['grid_max_rows']) ? $this->settings['grid_max_rows'] : '',
             'reorder' => isset($this->settings['allow_reorder'])
                 ? get_bool_from_string($this->settings['allow_reorder'])
                 : true,
             'vertical_layout' => isset($this->settings['vertical_layout'])
-                ? $this->settings['vertical_layout']
+                ? ($this->settings['vertical_layout'] == 'horizontal_layout' ? 'horizontal' : $this->settings['vertical_layout'])
                 : 'n',
         ));
         $grid->loadAssets();
@@ -616,7 +618,7 @@ class Grid_ft extends EE_Fieldtype
                                     'y' => lang('grid_vertical_layout'),
                                     'horizontal' => lang('grid_horizontal_layout'),
                                 ),
-                                'value' => isset($data['vertical_layout']) ? $data['vertical_layout'] : 'n'
+                                'value' => isset($data['vertical_layout']) ? ($data['vertical_layout'] == 'horizontal_layout' ? 'horizontal' : $data['vertical_layout']) : 'n'
                             )
                         )
                     )
@@ -842,6 +844,7 @@ class Grid_ft extends EE_Fieldtype
         ee()->grid_lib->entry_id = ($this->content_id() == null) ? $entry_id : $this->content_id();
         ee()->grid_lib->field_id = $this->id();
         ee()->grid_lib->field_name = $this->name();
+        ee()->grid_lib->field_required = $this->settings['field_required'] ?? 'n';
         ee()->grid_lib->content_type = $this->content_type();
         ee()->grid_lib->fluid_field_data_id = (isset($this->settings['fluid_field_data_id'])) ? $this->settings['fluid_field_data_id'] : 0;
         ee()->grid_lib->in_modal_context = $this->get_setting('in_modal_context');

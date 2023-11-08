@@ -25,7 +25,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 function FieldTools(props) {
@@ -40,9 +40,7 @@ function FilterBar(props) {
   }, props.children);
 }
 
-var FilterToggleAll =
-/*#__PURE__*/
-function (_React$Component) {
+var FilterToggleAll = /*#__PURE__*/function (_React$Component) {
   _inherits(FilterToggleAll, _React$Component);
 
   function FilterToggleAll(props) {
@@ -105,13 +103,12 @@ function FilterSearch(props) {
     type: "text",
     className: "search-input__input input--small",
     placeholder: EE.lang.keyword_search,
-    onChange: props.onSearch
+    onChange: props.onSearch,
+    "aria-label": EE.lang.search
   })));
 }
 
-var FilterSelect =
-/*#__PURE__*/
-function (_React$Component2) {
+var FilterSelect = /*#__PURE__*/function (_React$Component2) {
   _inherits(FilterSelect, _React$Component2);
 
   function FilterSelect(props) {

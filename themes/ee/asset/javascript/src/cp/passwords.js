@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -19,7 +19,7 @@ $(document).ready(function() {
         var passwordInputContainer = passwordInput.closest('fieldset'),
             eyeOpen = EE.PATH_CP_GBL_IMG + 'eye-open.svg',
             eyeClosed = EE.PATH_CP_GBL_IMG + 'eye-closed.svg',
-            eyeImg = '<img src="' + eyeOpen + '" class="eye js-show-password" />',
+            eyeImg = '<img src="' + eyeOpen + '" class="eye js-show-password" alt="'+EE.lang.password_icon+'"/>', 
             eyeIsOpen = false
 
         $(passwordInputContainer).css({'position': 'relative'})

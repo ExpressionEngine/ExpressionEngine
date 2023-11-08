@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -21,12 +21,17 @@ abstract class EE_Fieldtype
     public $field_id;
     public $field_name;
 
+    public $row;
+    public $var_id;
+
     // EE super object
     // @deprecated - use ee()
     protected $EE;
 
     // Field settings as decided by the user.
     public $settings = array();
+
+    public $field_fmt;
 
     // Field identifiers, new names to differentiate. Also sometimes the field
     // can actually act as an independent content container with no distinct parent.
@@ -268,10 +273,10 @@ abstract class EE_Fieldtype
      *
      * @param mixed   stored data
      * @return mixed  several options:
-     *		return TRUE			      - no error, continue
-     *		return $string		      - error message
-     *		array('value' => $mixed)  - override the value
-     *		array('error' => $string) - same as the error options, but can be combined with the value override.
+     *  return TRUE			      - no error, continue
+     *  return $string		      - error message
+     *  array('value' => $mixed)  - override the value
+     *  array('error' => $string) - same as the error options, but can be combined with the value override.
      */
     public function validate($data)
     {
@@ -330,8 +335,8 @@ abstract class EE_Fieldtype
      * If you want to store data in your own table, please use post_save
      * when the entry/content id is available.
      *
-     * @param	mixed  data submitted with the field_name, arrays allowed
-     * @return	string data to store
+     * @param   mixed  data submitted with the field_name, arrays allowed
+     * @return  string data to store
      */
     public function save($data)
     {
@@ -358,7 +363,7 @@ abstract class EE_Fieldtype
      *
      * Please be sure to check the content_type when you delete.
      *
-     * @param	array  array of id's
+     * @param   array  array of id's
      * @return  void
      */
     public function delete($ids)
@@ -405,8 +410,8 @@ abstract class EE_Fieldtype
     /**
      * Display Field Settings
      *
-     * @param	array   Currently saved settings for this field
-     * @return	string  Settings form display
+     * @param   array   Currently saved settings for this field
+     * @return  string  Settings form display
      */
     public function display_settings($data)
     {
@@ -416,8 +421,8 @@ abstract class EE_Fieldtype
     /**
      * Save Settings
      *
-     * @param	array  Any settings $_POST'ed with the $field_name.'_' prefix
-     * @return	mixed  Settings to store
+     * @param   array  Any settings $_POST'ed with the $field_name.'_' prefix
+     * @return  mixed  Settings to store
      */
     public function save_settings($data)
     {
@@ -430,8 +435,8 @@ abstract class EE_Fieldtype
      * Same as settings(), but saved settings are used as defaults for
      * the settings page.
      *
-     * @param	array  Any settings $_POST'ed with the $field_name.'_' prefix
-     * @return	mixed  Settings to store
+     * @param   array  Any settings $_POST'ed with the $field_name.'_' prefix
+     * @return  mixed  Settings to store
      */
     public function save_global_settings()
     {
@@ -444,8 +449,8 @@ abstract class EE_Fieldtype
      * Called after the settings are saved. Gives you access to the id
      * for this field.
      *
-     * @param	array  Full settings array, including the id()
-     * @return	void
+     * @param   array  Full settings array, including the id()
+     * @return  void
      */
     public function post_save_settings($data)
     {
@@ -457,11 +462,11 @@ abstract class EE_Fieldtype
      *
      * Specify the type of columns you need for the field data and formatting.
      *
-     * @param	array
-     *		- field_id: id of the current field
-     *		- ee_action: add, delete, get_data (asks for information)
-     * @return	array
-     *		- column_name's => array('type' => 'db_type', 'null' => TRUE/FALSE)
+     * @param   array
+     *      - field_id: id of the current field
+     *      - ee_action: add, delete, get_data (asks for information)
+     * @return  array
+     *      - column_name's => array('type' => 'db_type', 'null' => TRUE/FALSE)
      */
     public function settings_modify_column($data)
     {
@@ -482,9 +487,9 @@ abstract class EE_Fieldtype
     /**
      * Grid Settings Modify Column
      *
-     * @access	public
-     * @param	array
-     * @return	array
+     * @access  public
+     * @param   array
+     * @return  array
      */
     public function grid_settings_modify_column($data)
     {
@@ -504,7 +509,7 @@ abstract class EE_Fieldtype
      *
      * Note: The fieldtype table is populated automatically.
      *
-     * @return	array	global settings
+     * @return  array   global settings
      */
     public function install()
     {
@@ -517,7 +522,7 @@ abstract class EE_Fieldtype
      * Do any processing you need to remove the fieldtype. The fieldtype
      * table is cleaned up automatically.
      *
-     * @return	void
+     * @return  void
      */
     public function uninstall()
     {
@@ -531,7 +536,7 @@ abstract class EE_Fieldtype
      *
      * @param   array   data array passed to display_settings()
      * @param   string  A prefix to use, typically the field name
-     * @return	void
+     * @return  void
      */
     public function field_formatting_row($data, $prefix = false)
     {
@@ -578,7 +583,7 @@ abstract class EE_Fieldtype
      *
      * @param   array   data array passed to display_settings()
      * @param   string  A prefix to use, typically the field name
-     * @return	void
+     * @return  void
      */
     public function text_direction_row($data, $prefix = false)
     {
@@ -604,7 +609,7 @@ abstract class EE_Fieldtype
      *
      * @param   array   data array passed to display_settings()
      * @param   string  A prefix to use, typically the field name
-     * @return	void
+     * @return  void
      */
     public function field_content_type_row($data, $prefix = false)
     {
@@ -641,7 +646,7 @@ abstract class EE_Fieldtype
      *
      * @param   array   data array passed to display_settings()
      * @param   string  A prefix to use, typically the field name
-     * @return	void
+     * @return  void
      */
     public function multi_item_row($data, $prefix = false)
     {
@@ -685,7 +690,7 @@ abstract class EE_Fieldtype
      *
      * @param   array   data array passed to display_settings()
      * @param   string  A prefix to use, typically the field name
-     * @return	void
+     * @return  void
      */
     public function field_show_smileys_row($data, $prefix = false)
     {
@@ -700,7 +705,7 @@ abstract class EE_Fieldtype
      * @deprecated 3.0.0
      * @param   array   data array passed to display_settings()
      * @param   string  A prefix to use, typically the field name
-     * @return	void
+     * @return  void
      */
     public function field_show_spellcheck_row($data, $prefix = false)
     {
@@ -718,7 +723,7 @@ abstract class EE_Fieldtype
      * @deprecated 3.0.0
      * @param   array   data array passed to display_settings()
      * @param   string  A prefix to use, typically the field name
-     * @return	void
+     * @return  void
      */
     public function field_show_glossary_row($data, $prefix = false)
     {
@@ -735,7 +740,7 @@ abstract class EE_Fieldtype
      *
      * @param   array   data array passed to display_settings()
      * @param   string  A prefix to use, typically the field name
-     * @return	void
+     * @return  void
      */
     public function field_show_file_selector_row($data, $prefix = false)
     {
@@ -749,7 +754,7 @@ abstract class EE_Fieldtype
      *
      * @param   array   data array passed to display_settings()
      * @param   string  A prefix to use, typically the field name
-     * @return	void
+     * @return  void
      */
     public function field_show_formatting_btns_row($data, $prefix = false)
     {
@@ -764,7 +769,7 @@ abstract class EE_Fieldtype
      * @deprecated 3.0.0
      * @param   array   data array passed to display_settings()
      * @param   string  A prefix to use, typically the field name
-     * @return	void
+     * @return  void
      */
     public function field_show_writemode_row($data, $prefix = false)
     {
@@ -784,7 +789,7 @@ abstract class EE_Fieldtype
      * @param   string  Name of the setting in the form
      * @param   string  A prefix to use, typically the field name
      * @param   bool    In a grid field? [internal - use grid_yes_no_row()]
-     * @return	void
+     * @return  void
      */
     public function _yes_no_row($data, $lang, $data_key, $prefix = false, $grid = false)
     {
@@ -811,11 +816,11 @@ abstract class EE_Fieldtype
      * Creates an array of field options
      *
      * Returns an array of field options, either manually populated in the
-     *	  settings or dynamically populated from existing entries.
+     * settings or dynamically populated from existing entries.
      *
      * @param   array   $data array passed to display_field()
      * @param   string  optional content to show for a no selection/empty option
-     * @return	array   array of field options
+     * @return  array   array of field options
      */
     protected function _get_field_options($data, $show_empty = '')
     {

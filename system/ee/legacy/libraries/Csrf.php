@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -24,7 +24,7 @@ class Csrf
 
     public function __construct()
     {
-        $session_id = ee()->session->userdata('session_id');
+        $session_id = isset(ee()->session) ? ee()->session->userdata('session_id') : 0;
         $backend = ($session_id === 0) ? 'cookie' : 'database';
 
         require_once APPPATH . 'libraries/csrf/Storage_backend_interface.php';

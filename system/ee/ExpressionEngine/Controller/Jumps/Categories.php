@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -83,14 +83,14 @@ class Categories extends Jumps
 
     private function loadCategoryGroups($searchString = false)
     {
-        $categoryGroups = ee('Model')->get('CategoryGroup');
+        $categoryGroups = ee('Model')->get('CategoryGroup')->filter('site_id', ee()->config->item('site_id'));
 
         if (!empty($searchString)) {
             // Break the search string into individual keywords so we can partially match them.
             $keywords = explode(' ', $searchString);
 
             foreach ($keywords as $keyword) {
-                $categoryGroups->filter('group_name', 'LIKE', '%' . $keyword . '%');
+                $categoryGroups->filter('group_name', 'LIKE', '%' . ee()->db->escape_like_str($keyword) . '%');
             }
         }
 
@@ -101,6 +101,7 @@ class Categories extends Jumps
     {
         $categories = ee('Model')->get('Category')
             ->with('CategoryGroup')
+            ->filter('CategoryGroup.site_id', ee()->config->item('site_id'))
             ->fields('cat_id', 'cat_name', 'CategoryGroup.group_name');
 
         if (!empty($searchString)) {
@@ -108,7 +109,7 @@ class Categories extends Jumps
             $keywords = explode(' ', $searchString);
 
             foreach ($keywords as $keyword) {
-                $categories->filter('cat_name', 'LIKE', '%' . $keyword . '%');
+                $categories->filter('cat_name', 'LIKE', '%' . ee()->db->escape_like_str($keyword) . '%');
             }
         }
 

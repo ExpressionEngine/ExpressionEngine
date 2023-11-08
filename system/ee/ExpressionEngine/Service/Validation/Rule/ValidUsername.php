@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -21,6 +21,7 @@ class ValidUsername extends ValidationRule
 
     public function validate($key, $username)
     {
+        $username = (string) $username;
         if (preg_match("/[\|'\"!<>\{\}]/", $username)) {
             $this->last_error = 'invalid_characters_in_username';
             return false;

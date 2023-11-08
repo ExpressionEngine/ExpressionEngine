@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -23,6 +23,8 @@ class Select_ft extends OptionFieldtype
 
     public $has_array_data = true;
 
+    public $can_be_cloned = true;
+
     public $entry_manager_compatible = true;
 
     public $size = 'small';
@@ -33,7 +35,7 @@ class Select_ft extends OptionFieldtype
      * @var array
      */
     public $supportedEvaluationRules = ['matches', 'notMatches', 'isEmpty', 'isNotEmpty'];
-    
+
     public function validate($data)
     {
         $valid = false;
@@ -77,7 +79,8 @@ class Select_ft extends OptionFieldtype
                 'choices' => $this->_get_field_options($data),
                 'value' => $data,
                 'empty_text' => lang('choose_wisely'),
-                'field_disabled' => $this->get_setting('field_disabled')
+                'field_disabled' => $this->get_setting('field_disabled'),
+                'ignoreSectionLabel' => $this->get_setting('ignore_section_label')
             ]);
         }
 
@@ -134,8 +137,8 @@ class Select_ft extends OptionFieldtype
     {
         if ($tagdata) {
             return $this->_parse_multi([$data], $params, $tagdata);
-        } 
-        
+        }
+
         return parent::replace_tag($data, $params, $tagdata);
     }
 
@@ -182,6 +185,11 @@ class Select_ft extends OptionFieldtype
     public function update($version)
     {
         return true;
+    }
+
+    public function renderTableCell($data, $field_id, $entry)
+    {
+        return $this->_parse_single([$data], []);
     }
 }
 

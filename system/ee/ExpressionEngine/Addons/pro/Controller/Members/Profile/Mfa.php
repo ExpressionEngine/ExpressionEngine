@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -83,7 +83,7 @@ class Mfa extends Profile\Pro
         }
         ee()->form_validation->set_rules($rules);
 
-        if (ee()->form_validation->run() !== false) {
+        if (ee('Request')->isPost() && (ee()->form_validation->run() !== false || empty($rules))) {
             $sessions = ee('Model')
                 ->get('Session')
                 ->filter('member_id', ee()->session->userdata('member_id'))
@@ -118,7 +118,7 @@ class Mfa extends Profile\Pro
                 $this->member->save();
 
                 foreach ($sessions as $session) {
-                    $session->mfa_flag = 'show';
+                    $session->mfa_flag = 'skip';
                     $session->save();
                 }
 
@@ -128,7 +128,7 @@ class Mfa extends Profile\Pro
                     ->addToBody(lang('mfa_disabled_desc'))
                     ->now();
             }
-        } elseif (ee()->form_validation->errors_exist()) {
+        } elseif (ee('Request')->isPost() && ee()->form_validation->errors_exist()) {
             ee('CP/Alert')->makeInline('shared-form')
                 ->asIssue()
                 ->withTitle(lang('settings_save_error'))

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -12,12 +12,31 @@ namespace ExpressionEngine\Service\Formatter\Formats;
 
 use ExpressionEngine\Service\Formatter\Formatter;
 use NumberFormatter;
+use EE_Lang;
+use EE_Session;
 
 /**
  * Formatter\Number
  */
 class Number extends Formatter
 {
+    /**
+     * Modify the constructor to enforce the content be number
+     *
+     * @param [type] $content
+     * @param EE_Lang $lang
+     * @param EE_Session $session
+     * @param [type] $config
+     * @param [type] $options
+     */
+    public function __construct($content, EE_Lang $lang, EE_Session $session, $config, $options)
+    {
+        parent::__construct($content, $lang, $session, $config, $options);
+        if (!is_numeric($this->content)) {
+            $this->content = 0;
+        }
+    }
+
     /**
      * Format the memory to a sane byte format
      *

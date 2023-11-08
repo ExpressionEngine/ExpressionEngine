@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -22,6 +22,7 @@ class Tools_model extends CI_Model
      */
     public function get_search_replace_options()
     {
+        ee()->lang->load('design');
         $options = array();
 
         // site prefs
@@ -92,6 +93,10 @@ class Tools_model extends CI_Model
         }
 
         $options['template_groups'] = array('name' => $this->lang->line('template_groups'), 'choices' => $templates);
+
+        $options['template_partials'] = array('name' => $this->lang->line('template_partials'));
+        $options['template_variables'] = array('name' => $this->lang->line('template_variables'));
+        $options['template_system'] = array('name' => $this->lang->line('system_templates'));
 
         return $options;
     }

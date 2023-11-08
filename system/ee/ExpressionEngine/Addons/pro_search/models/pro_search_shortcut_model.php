@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -181,7 +181,12 @@ class Pro_search_shortcut_model extends Pro_search_model
         // Trim input
         // --------------------------------------
 
-        $data = array_map('trim', $data);
+        $data = array_map(function ($str) {
+            if (! empty($str)) {
+                $str = trim($str);
+            }
+            return $str;
+        }, $data);
 
         // --------------------------------------
         // Validate saved_id
@@ -255,6 +260,11 @@ class Pro_search_shortcut_model extends Pro_search_model
 
         if (empty($data['shortcut_label'])) {
             $data['shortcut_label'] = $data['shortcut_name'];
+        }
+
+        // ensure sort order for new shortcuts
+        if (is_null($data['shortcut_id']) && !isset($data['sort_order'])) {
+            $data['sort_order'] = 0;
         }
 
         // --------------------------------------

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -213,7 +213,7 @@ class TemplateGroup extends Model
         $return = parent::validateUnique($key, $value, $params);
         if (is_bool($return)) {
             // Don't allow case insensitive matches on template group names
-            if (strcasecmp($value, (string) $this->getBackup($key)) == 0) {
+            if (strcasecmp((string) $value, (string) $this->getBackup($key)) == 0) {
                 return 'template_group_taken';
             }
 

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -40,6 +40,9 @@ class ChannelField extends FieldModel
     );
 
     protected static $_relationships = array(
+        'Site' => array(
+            'type' => 'belongsTo'
+        ),
         'ChannelFieldGroups' => array(
             'type' => 'hasAndBelongsToMany',
             'model' => 'ChannelFieldGroup',
@@ -81,13 +84,19 @@ class ChannelField extends FieldModel
             'model' => 'FieldCondition',
             'from_key' => 'field_id',
             'to_key' => 'condition_field_id'
+        ),
+        'GridColumns' => array(
+            'type' => 'hasMany',
+            'model' => 'grid:GridColumn',
+            'from_key' => 'field_id',
+            'to_key' => 'field_id'
         )
     );
 
     protected static $_validation_rules = array(
         'site_id' => 'required|integer',
-        'field_name' => 'required|alphaDash|unique|validateNameIsNotReserved|maxLength[32]',
-        'field_label' => 'required|maxLength[50]',
+        'field_name' => 'required|alphaDash|unique|validateNameIsNotReserved|maxLength[32]|validateUniqueAmongFieldGroups',
+        'field_label' => 'required|xss|noHtml|maxLength[50]',
         'field_type' => 'validateIsCompatibleWithPreviousValue',
         //	'field_list_items'     => 'required',
         'field_pre_populate' => 'enum[y,n,v]',
@@ -179,13 +188,18 @@ class ChannelField extends FieldModel
 
     public function onBeforeInsert()
     {
-        if ($this->field_order) {
-            return;
+        if ($this->getProperty('field_list_items') == null) {
+            $this->setProperty('field_list_items', '');
         }
 
-        $this->field_order = $this->getModelFacade()->get('ChannelField')
-            ->filter('site_id', 'IN', array(0, $this->site_id))
-            ->count() + 1;
+        $field_order = $this->getProperty('field_order');
+
+        if (empty($field_order)) {
+            $field_order = $this->getModelFacade()->get('ChannelField')
+                ->filter('site_id', 'IN', array(0, $this->site_id))
+                ->count() + 1;
+            $this->setProperty('field_order', $field_order);
+        }
     }
 
     public function onAfterInsert()
@@ -301,12 +315,24 @@ class ChannelField extends FieldModel
     }
 
     /**
-     * Validate the field name to avoid variable name collisions
+     * The field name must not intersect witch Field Group short names
+     *
      */
-    public function validateNameIsNotReserved($key, $value, $params, $rule)
+    public function validateUniqueAmongFieldGroups($key, $value, array $params = array())
     {
-        if (in_array($value, ee()->cp->invalid_custom_field_names())) {
-            return lang('reserved_word');
+        // Check to see if we can find a channel field that matches the short name
+        $channelFieldGroups = $this->getModelFacade()
+            ->get('ChannelFieldGroup')
+            ->filter('short_name', $value);
+
+        // Make sure group short name is unique among channel fields
+        foreach ($params as $field) {
+            $channelFieldGroups->filter($field, $this->getProperty($field));
+        }
+
+        // If there are any matches, return the lang key of the error
+        if ($channelFieldGroups->count() > 0) {
+            return 'unique_among_field_groups';
         }
 
         return true;

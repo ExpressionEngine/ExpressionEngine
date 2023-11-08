@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -386,7 +386,7 @@ class Comment extends Variables
                 return true;
             }
 
-            $time_limit_sec = 60 * ee()->config->item('comment_edit_time_limit');
+            $time_limit_sec = 60 * (int) ee()->config->item('comment_edit_time_limit');
 
             return $this->comment->comment_date > (ee()->localize->now - $time_limit_sec);
         }

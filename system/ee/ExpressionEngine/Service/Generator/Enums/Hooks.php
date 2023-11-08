@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -150,7 +150,7 @@ class Hooks
 
     public const RELATIONSHIPS_QUERY = [
         'name' => 'relationships_query',
-        'params' => '$field_name, $entry',
+        'params' => '$field_name, $entry_ids, $depths, $sql',
         'library' => 'Relationships Fieldtype Extension Hooks_ids, $depths, $sql',
     ];
 

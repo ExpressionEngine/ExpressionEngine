@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -34,7 +34,7 @@ class Addon
         $this->shortname = $provider->getPrefix();
 
         $files = $this->getFilesMatching('*' . $this->getPrefix() . '.php');
-        $possibleComponents = ['upd', 'mcp', 'mod', 'pi', 'ext', 'rtefb', 'upgrade', 'spam', 'jump'];
+        $possibleComponents = ['upd', 'mcp', 'mod', 'pi', 'ext', 'tab', 'rtefb', 'upgrade', 'spam', 'jump'];
         foreach ($possibleComponents as $type) {
             if (in_array($this->getPath() . "/{$type}." . $this->getPrefix() . '.php', $files)) {
                 $this->_components[] = $type;
@@ -514,6 +514,17 @@ class Addon
     public function hasSpam()
     {
         return $this->hasFile('spam');
+    }
+
+
+    /**
+     * Has a tab.* file?
+     *
+     * @return bool TRUE of it does, FALSE if not
+     */
+    public function hasTab()
+    {
+        return $this->hasFile('tab');
     }
 
     /**

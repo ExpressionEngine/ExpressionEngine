@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -525,7 +525,7 @@ EOT;
                             'type' => 'select',
                             'choices' => ee('Model')->get('UploadDestination')
                                 ->fields('site_id', 'module_id', 'id', 'name')
-                                ->filter('site_id', ee()->config->item('site_id'))
+                                ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
                                 ->filter('module_id', 0)
                                 ->all()
                                 ->getDictionary('id', 'name'),
@@ -575,8 +575,8 @@ EOT;
      * Creates some javascript functions that are used to switch
      * various pull-down menus
      *
-     * @access	public
-     * @return	void
+     * @access public
+     * @return void
      */
     public function _filtering_menus($form_name)
     {

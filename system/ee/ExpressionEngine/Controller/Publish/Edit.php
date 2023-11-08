@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -94,10 +94,6 @@ class Edit extends AbstractPublishController
         }
         $columns = array_filter($columns);
 
-        if (! ee('Permission')->hasAny($this->permissions['others'])) {
-            $entries->filter('author_id', ee()->session->userdata('member_id'));
-        }
-
         $count = $entry_listing->getEntryCount();
 
         // if no entries check to see if we have any channels
@@ -170,8 +166,11 @@ class Edit extends AbstractPublishController
             }
         }
         $sort_field = $columns[$sort_col]->getEntryManagerColumnSortField();
-        $entries->order($sort_field, $table->sort_dir)
-            ->limit($filter_values['perpage'])
+        $entries->order($sort_field, $table->sort_dir);
+        if ($sort_col != 'entry_id') {
+            $entries->order('entry_id', $table->sort_dir);
+        }
+        $entries->limit($filter_values['perpage'])
             ->offset($offset);
         $entries = $entries->all();
 
@@ -180,6 +179,14 @@ class Edit extends AbstractPublishController
         $entry_id = ee()->session->flashdata('entry_id');
 
         $statuses = ee('Model')->get('Status')->all(true)->indexBy('status');
+
+        $addQueryString = ee('CP/URL')->getCurrentUrl()->qs;
+        if ($page != 1) {
+            $addQueryString['page'] = $page;
+        }
+        if (isset($addQueryString['page']) && isset($addQueryString['sort_col']) && $addQueryString['sort_col'] == 'edit_date') {
+            unset($addQueryString['page']);
+        }
 
         foreach ($entries as $entry) {
             // wW had a delete cascade issue that could leave entries orphaned and
@@ -203,7 +210,7 @@ class Edit extends AbstractPublishController
 
             $data[] = array(
                 'attrs' => $attrs,
-                'columns' => $column_renderer->getRenderedTableRowForEntry($entry)
+                'columns' => $column_renderer->getRenderedTableRowForEntry($entry, 'list', false, $addQueryString)
             );
         }
 
@@ -355,7 +362,7 @@ class Edit extends AbstractPublishController
         }
 
         $entry = ee('Model')->get('ChannelEntry', $id)
-            ->with('Channel', 'Autosaves')
+            ->with('Channel', 'Status', 'Autosaves')
             ->all()
             ->first();
 
@@ -370,12 +377,14 @@ class Edit extends AbstractPublishController
                 ee()->cp->switch_site($entry->site_id, $base_url);
             } else {
                 //but we only auto-switch if we're saving
-                show_error(lang('no_entries_matching_that_criteria'));
+                show_error(lang('no_entries_on_this_site'));
             }
         }
 
-        if (! ee('Permission')->can('edit_other_entries_channel_id_' . $entry->channel_id)
-            && $entry->author_id != ee()->session->userdata('member_id')) {
+        if (
+            ($entry->author_id != ee()->session->userdata('member_id') && ! ee('Permission')->can('edit_other_entries_channel_id_' . $entry->channel_id)) ||
+            ($entry->author_id == ee()->session->userdata('member_id') && ! ee('Permission')->can('edit_self_entries_channel_id_' . $entry->channel_id))
+        ) {
             show_error(lang('unauthorized_access'), 403);
         }
 

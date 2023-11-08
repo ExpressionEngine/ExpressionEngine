@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -302,8 +302,10 @@ class ColorPicker extends React.Component<ColorPickerProps, ColorPickerState> {
 
         return (
             <div className="colorpicker">
-                <input className="colorpicker__input" type="text" id={this.props.inputId} name={this.props.inputName} value={this.state.inputValue} onChange={this.onInputChange} onFocus={this.showColorPanel} onBlur={this.hideColorPanel} autoComplete="off"/>
-                <span className="colorpicker__input-color" style={{borderColor: currentColor.shade(-15).rgbaStr}}><span style={{background: currentColor.rgbaStr}}></span></span>
+                <div className="colorpicker__inner_wrapper">
+                    <input className="colorpicker__input js-dropdown-toggle" type="text" id={this.props.inputId} name={this.props.inputName} value={this.state.inputValue} onChange={this.onInputChange} onFocus={this.showColorPanel} onBlur={this.hideColorPanel} autoComplete="off" aria-label={EE.lang.colorpicker_input}/>
+                    <span className="colorpicker__input-color" style={{borderColor: currentColor.shade(-15).rgbaStr}}><span style={{background: currentColor.rgbaStr}}></span></span>
+                </div>
 
                 <div className="colorpicker__panel" style={{display: this.state.showPanel ? 'block' : 'none'}} onMouseDown={e => { e.stopPropagation(); e.preventDefault() }}>
                     { (allowedColors == 'any') &&

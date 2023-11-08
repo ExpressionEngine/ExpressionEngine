@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -200,7 +200,7 @@ class Tag
     {
         $tag_info = $this->variable_parser_delegate->parseVariableProperties($tag);
 
-        return $field->replaceTag(false, $tag_info['params'], $tag_info['modifier'], $tag_info['full_modifier']);
+        return $field->replaceTag(false, $tag_info['params'], $tag_info['modifier'], $tag_info['full_modifier'], $tag_info['all_modifiers'] ?: []);
     }
 
     /**

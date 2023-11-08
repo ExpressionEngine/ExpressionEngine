@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -141,6 +141,11 @@ class EE_Exceptions
      */
     public function show_error($heading, $message, $template = 'error_general', $status_code = 500)
     {
+        if (REQ == 'CLI') {
+            $cli = new \ExpressionEngine\Cli\Cli();
+            $cli->fail($message);
+        }
+
         set_status_header($status_code);
 
         // Ajax Requests get a reasonable response

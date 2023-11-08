@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -102,14 +102,14 @@ class Files extends Jumps
 
     private function loadDirectories($searchString = false)
     {
-        $directories = ee('Model')->get('UploadDestination');
+        $directories = ee('Model')->get('UploadDestination')->filter('site_id', 'IN', [0, ee()->config->item('site_id')]);
 
         if (!empty($searchString)) {
             // Break the search string into individual keywords so we can partially match them.
             $keywords = explode(' ', $searchString);
 
             foreach ($keywords as $keyword) {
-                $directories->filter('name', 'LIKE', '%' . $keyword . '%');
+                $directories->filter('name', 'LIKE', '%' . ee()->db->escape_like_str($keyword) . '%');
             }
         }
 

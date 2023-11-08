@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -74,6 +74,8 @@ class Installer
         if ($current == '' or version_compare($current, $this->version, '==')) {
             return false;
         }
+
+        $classname = $this->addon->getModuleClass();
 
         // Loop through each action and insert it if it doesnt exist, update if it does
         foreach ($this->actions as $action) {

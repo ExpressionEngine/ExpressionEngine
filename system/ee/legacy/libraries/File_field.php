@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -27,11 +27,11 @@ class File_field
      *
      * @param string $field_name The name of the field
      * @param string $data The data stored in the file field
-     * 		e.g. {filedir_x}filename.ext
+     *              e.g. {filedir_x}filename.ext
      * @param string $allowed_file_dirs The allowed file directory
-     * 		Either 'all' or ONE directory ID
+     *              Either 'all' or ONE directory ID
      * @param string $content_type The content type allowed.
-     * 		Either 'all' or 'image'
+     *              Either 'all' or 'image'
      * @return string Fully rendered file field
      */
     public function field($field_name, $data = '', $allowed_file_dirs = 'all', $content_type = 'all', $filebrowser = true, $existing_limit = null)
@@ -115,6 +115,7 @@ class File_field
         $vars['filebrowser'] = $filebrowser;
 
         $existing_files = null;
+        $compatibilityMode = bool_config_item('file_manager_compatibility_mode');
 
         if (! $filebrowser && isset($existing_limit) && $specified_directory != 'all') {
             $options = array(
@@ -138,7 +139,11 @@ class File_field
             // Put database files into list
             if ($files_from_db['results'] !== false) {
                 foreach ($files_from_db['results']->result() as $file) {
-                    $files[$file->file_name] = $file->file_name;
+                    if ($compatibilityMode) {
+                        $files[$file->file_name] = $file->file_name;
+                    } else {
+                        $files[$file->file_id] = $file->file_name;
+                    }
                 }
             }
 
@@ -157,11 +162,11 @@ class File_field
      *
      * @param string $field_name The name of the field
      * @param string $data The data stored in the file field
-     * 		e.g. {filedir_x}filename.ext
+     *              e.g. {filedir_x}filename.ext
      * @param string $allowed_file_dirs The allowed file directory
-     * 		Either 'all' or ONE directory ID
+     *              Either 'all' or ONE directory ID
      * @param string $content_type The content type allowed.
-     * 		Either 'all' or 'image'
+     *              Either 'all' or 'image'
      * @return string Fully rendered file field
      */
     public function dragAndDropField($field_name, $data = '', $allowed_file_dirs = 'all', $content_type = 'all')
@@ -236,7 +241,8 @@ class File_field
         ee()->cp->add_js_script(array(
             'file' => array(
                 'fields/file/control_panel',
-                'fields/file/file_field_drag_and_drop'
+                'fields/file/file_field_drag_and_drop',
+                'cp/publish/entry-list'
             ),
         ));
 
@@ -278,15 +284,13 @@ class File_field
         // If file field is just a file ID
         if (! empty($data) && is_numeric($data)) {
             $file = ee('Model')->get('File', $data)->with('UploadDestination')->first(true);
-        }
-        // If the file field is in the "{file:XX:url}" format
-        elseif (is_string($data) && preg_match('/^{file\:(\d+)\:url}/', $data, $matches)) {
+        } elseif (is_string($data) && preg_match('/^{file\:(\d+)\:url}/', $data, $matches)) {
+            // If the file field is in the "{file:XX:url}" format
             // Set upload directory ID and file name
             $file_id = $matches[1];
             $file = ee('Model')->get('File', $file_id)->with('UploadDestination')->first(true);
-        }
-        // If the file field is in the "{filedir_n}image.jpg" format
-        elseif (is_string($data) && preg_match('/^{filedir_(\d+)}/', $data, $matches)) {
+        } elseif (is_string($data) && preg_match('/^{filedir_(\d+)}/', $data, $matches)) {
+            // If the file field is in the "{filedir_n}image.jpg" format
             // Set upload directory ID and file name
             $dir_id = $matches[1];
             $file_name = str_replace($matches[0], '', $data);
@@ -305,18 +309,18 @@ class File_field
     /**
      * Initialize the file browser given a configuration array and an endpoint url
      * @param array $config Associative array containing five different keys and values:
-     * 		- publish: set to TRUE if you're on the publish page, optionally
-     * 			just pass an empty array or none at all for the same behavior
-     * 		- trigger: the selector to pass to jQuery to create a trigger for
-     * 			the file browser
-     * 		- field_name: the field you're operating on. If undefined, it will
-     * 			assume the name is userfile
-     * 		- settings: JSON object defining the content type and directory
-     * 			e.g. {"content_type": "all/image", "directory": "all/<directory_id>"}
-     * 		- callback: Javascript function that will be called when an image
-     * 			is selected. e.g. function (file, field) { console.log(file, field); }
-     * 			file is an object of the selected file's data, and field is a
-     * 			jQuery object representing the field from the field_name given
+     *  - publish: set to TRUE if you're on the publish page, optionally
+     *      just pass an empty array or none at all for the same behavior
+     *  - trigger: the selector to pass to jQuery to create a trigger for
+     *      the file browser
+     *  - field_name: the field you're operating on. If undefined, it will
+     *      assume the name is userfile
+     *  - settings: JSON object defining the content type and directory
+     *      e.g. {"content_type": "all/image", "directory": "all/<directory_id>"}
+     *  - callback: Javascript function that will be called when an image
+     *      is selected. e.g. function (file, field) { console.log(file, field); }
+     *      file is an object of the selected file's data, and field is a
+     *      jQuery object representing the field from the field_name given
      * @param string $endpoint_url The URL the file browser will hit
      */
     public function browser($config = array(), $endpoint_url = 'addons/settings/filepicker/modal')
@@ -331,9 +335,8 @@ class File_field
                     'publish' => true
                 )
             ));
-        }
-        // No? Make sure we at least have a trigger and a callback
-        elseif (isset($config['trigger'], $config['callback'])) {
+        } elseif (isset($config['trigger'], $config['callback'])) {
+            // No? Make sure we at least have a trigger and a callback
             $field_name = (isset($config['field_name'])) ? "'{$config['field_name']}'," : '';
 
             $settings = (isset($config['settings'])) ? $config['settings'] . ', ' : '';
@@ -360,7 +363,7 @@ class File_field
      * @param string $required Set to 'y' if the field is required
      * @param array  $grid Array of data needed to validate a Grid field
      * @return array Associative array containing ONLY the name of the
-     * 		file uploaded or an empty value and an error if not valid
+     *              file uploaded or an empty value and an error if not valid
      */
     public function validate($data, $field_name, $required = 'n', $grid = array())
     {
@@ -401,7 +404,11 @@ class File_field
             if (array_key_exists('error', $data)) {
                 return $data['error'];
             } else {
-                $filename = $data['file_name'];
+                if (bool_config_item('file_manager_compatibility_mode')) {
+                    $filename = $data['file_name'];
+                } else {
+                    $filename = $data['file_id'];
+                }
             }
         } else {
             // Check we're not exceeding PHP's post_max_size
@@ -447,7 +454,7 @@ class File_field
                 return array('value' => '', 'error' => lang('directory_no_access'));
             }
 
-            if ('{filedir_' . $hidden_dir . '}' . $filename != $query->row($field_name)) {
+            if ('{filedir_' . $hidden_dir . '}' . $filename != $query->row($field_name) || (is_numeric($filename) && '{file:' . $filename . ':url}' != $query->row($field_name))) {
                 return array('value' => '', 'error' => lang('directory_no_access'));
             }
         }
@@ -472,6 +479,9 @@ class File_field
     public function format_data($file_name, $directory_id = 0)
     {
         if ($file_name != '') {
+            if (is_numeric($file_name) && !bool_config_item('file_manager_compatibility_mode')) {
+                return '{file:' . $file_name . ':url}';
+            }
             if (! empty($directory_id)) {
                 return '{filedir_' . $directory_id . '}' . $file_name;
             }
@@ -485,7 +495,7 @@ class File_field
      * for individual files inside the entries loop, we'll query for everything we need
      * before the loop starts, significantly reducing queries.
      *
-     * @param array $data	Array of file field data we're going to query for
+     * @param array $data   Array of file field data we're going to query for
      * @return void
      */
     public function cache_data($data = array())
@@ -508,14 +518,12 @@ class File_field
             // If the file field is in the "{file:XX:url}" format
             if (preg_match('/^{file\:(\d+)\:url}/', (string) $field_data, $matches)) {
                 $file_ids[] = $matches[1];
-            }
-            // If the file field is in the "{filedir_n}image.jpg" format
-            elseif (preg_match('/^{filedir_(\d+)}/', (string) $field_data, $matches)) {
+            } elseif (preg_match('/^{filedir_(\d+)}/', (string) $field_data, $matches)) {
+                // If the file field is in the "{filedir_n}image.jpg" format
                 $dir_ids[] = $matches[1];
                 $file_names[] = str_replace($matches[0], '', $field_data);
-            }
-            // If file field is just a file ID, much simpler
-            elseif (! empty($field_data) && is_numeric($field_data)) {
+            } elseif (! empty($field_data) && is_numeric($field_data)) {
+                // If file field is just a file ID, much simpler
                 $file_ids[] = $field_data;
             }
         }
@@ -550,9 +558,9 @@ class File_field
      * Queries for files based on file name using the Models and returns a
      * File_field library-compatible array of file information
      *
-     * @param	array	$file_names	Array of file names to search for
-     * @param	int 	$dir_ids	Array of directory IDs to search in
-     * @return 	array	File data as array, with model object accessible on 'model_object' key
+     * @param   array   $file_names Array of file names to search for
+     * @param   int     $dir_ids    Array of directory IDs to search in
+     * @return  array   File data as array, with model object accessible on 'model_object' key
      */
     private function get_files_by_name($file_names, $dir_ids)
     {
@@ -587,9 +595,9 @@ class File_field
      * Searches the local _files array for a particular file based on a specific
      * key and value, and queries the database for the file if it doesn't exist.
      *
-     * @param mixed $file_reference	File ID or file name of file to return
-     * @param string $dir_id		Directory ID file is in, if searching by file name
-     * @return array				File information
+     * @param mixed $file_reference File ID or file name of file to return
+     * @param string $dir_id        Directory ID file is in, if searching by file name
+     * @return array                File information
      */
     public function get_file($file_reference = null, $dir_id = null)
     {
@@ -609,12 +617,14 @@ class File_field
                 // See if key exists
                 if (isset($file[$key])) {
                     // If value exists, return the file and stop the search
-                    if (($key == 'file_id' and $file[$key] == $file_reference) or
+                    if (
+                        ($key == 'file_id' and $file[$key] == $file_reference) or
                         // If we're searching by file name, make sure we're grabbing the
                         // correct file in the case that we cached two files with the same
                         // name but in different upload directories.
                         ($key == 'file_name' and $file[$key] == $file_reference
-                            and $file['upload_location_id'] == $dir_id)) {
+                            and $file['upload_location_id'] == $dir_id)
+                    ) {
                         return $file;
                     }
                 }
@@ -627,7 +637,7 @@ class File_field
                 ->with('UploadDestination')
                 ->filter('file_id', '=', $file_reference);
 
-                if($dir_id) {
+                if ($dir_id) {
                     $query->filter('upload_location_id', '=', $dir_id);
                 }
 
@@ -635,9 +645,8 @@ class File_field
                 if (!empty($file)) {
                     $file = array_merge($file->toArray(), array('model_object' => $file));
                 }
-            }
-            // Query based on file name and directory ID
-            else {
+            } else {
+                // Query based on file name and directory ID
                 $files = $this->get_files_by_name($file_reference, $dir_id);
                 $file = array_shift($files);
             }
@@ -652,10 +661,9 @@ class File_field
      * Parse field contents, which may be in the {filedir_n} format for may be
      * a file ID.
      *
-     * @access	public
-     * @param	string $data Field contents
-     * @return	array|boolean Information about file and upload directory, false
-     * 		if there is no file
+     * @access  public
+     * @param   string $data Field contents
+     * @return  array|boolean Information about file and upload directory, false if there is no file
      */
     public function parse_field($data)
     {
@@ -666,15 +674,13 @@ class File_field
         // If file field is just a file ID
         if (is_numeric($data)) {
             $file = $this->get_file($data);
-        }
-        // If the file field is in the "{file:XX:url}" format
-        elseif (is_string($data) && preg_match('/^{file\:(\d+)\:url}/', $data, $matches)) {
+        } elseif (is_string($data) && preg_match('/^{file\:(\d+)\:url}/', $data, $matches)) {
+            // If the file field is in the "{file:XX:url}" format
             // Set upload directory ID and file name
             $file_id = $matches[1];
             $file = $this->get_file($file_id);
-        }
-        // If the file field is in the "{filedir_n}image.jpg" format
-        elseif (is_string($data) && preg_match('/^{filedir_(\d+)}/', (string) $data, $matches)) {
+        } elseif (is_string($data) && preg_match('/^{filedir_(\d+)}/', (string) $data, $matches)) {
+            // If the file field is in the "{filedir_n}image.jpg" format
             // Set upload directory ID and file name
             $dir_id = $matches[1];
             $file_name = str_replace($matches[0], '', $data);
@@ -733,7 +739,7 @@ class File_field
             try {
                 $file['path'] = $filesystem->getUrl();
                 $file['url'] = $filesystem->getUrl($file['file_name']);
-            }catch(\Exception $e){
+            } catch (\Exception $e) {
                 $file['path'] = '';
                 $file['url'] = $file['file_name'];
             }
@@ -757,18 +763,33 @@ class File_field
         $file['file_size:human'] = (string) ee('Format')->make('Number', $file['file_size'])->bytes();
         $file['file_size:human_long'] = (string) ee('Format')->make('Number', $file['file_size'])->bytes(false);
 
+        $file['folder_id'] = $file['directory_id'];
+
         $file['directory_id'] = $file['upload_location_id'];
         $file['directory_title'] = $upload_dir->name;
 
         $manipulations = $this->_get_dimensions_by_dir_id($file['upload_location_id']);
 
         if (! empty($manipulations)) {
+
+            $isManipulated = isset($file['mime_type']) && strpos($file['mime_type'], 'image/') === 0 && strpos($file['mime_type'], 'image/svg') !== 0;
+
             foreach ($manipulations as $manipulation) {
-                $file['url:' . $manipulation->short_name] = $file['path'] . '_' . $manipulation->short_name . '/' . $file['file_name'];
+                $manipulationDir = $isManipulated ? '_' . $manipulation->short_name . '/' : '';
+                $file['url:' . $manipulation->short_name] = $file['path'] . $manipulationDir . $file['file_name'];
+                if (!empty($file['model_object'])) {
+                    if ($upload_dir->getFilesystem()->exists($file['model_object']->getAbsoluteManipulationPath($manipulation->short_name))) {
+                        $file['path:' . $manipulation->short_name] = $file['model_object']->getAbsoluteManipulationPath($manipulation->short_name);
+                    } else {
+                        $file['path:' . $manipulation->short_name] = $file['model_object']->getAbsolutePath();
+                    }
+                } else {
+                    $file['path:' . $manipulation->short_name] = '';
+                }
 
                 $dimensions = $manipulation->getNewDimensionsOfFile($file['model_object']);
 
-                $size = $upload_dir->getFilesystem()->getSize('_' . $manipulation->short_name . '/' . $fs_file_name);
+                $size = $upload_dir->getFilesystem()->getSize($manipulationDir . $fs_file_name);
 
                 $file['width:' . $manipulation->short_name] = $manipulation->width;
                 $file['height:' . $manipulation->short_name] = $manipulation->height;
@@ -796,11 +817,11 @@ class File_field
      * Unlike parse(), this parses all occurances of {filedir_n} from a given
      * string to their actual values and returns the processed string.
      *
-     * @access	public
-     * @param	string $data The string to parse {filedir_n} in
+     * @access  public
+     * @param   string $data The string to parse {filedir_n} in
      * @param   bool   $parse_encoded  Set to TRUE to parse encoded (e.g. &123;)
      *                                 tags
-     * @return	string The original string with all {filedir_n}'s parsed
+     * @return  string The original string with all {filedir_n}'s parsed
      */
     public function parse_string($data, $parse_encoded = false)
     {
@@ -808,7 +829,7 @@ class File_field
             return '';
         }
 
-        if (strpos((string) $data, 'file:') !== false ) {
+        if (strpos((string) $data, 'file:') !== false) {
             if (preg_match_all('/{file\:(\d+)\:url}/', (string) $data, $matches, PREG_SET_ORDER)) {
                 $file_ids = [];
                 foreach ($matches as $match) {
@@ -934,8 +955,8 @@ class File_field
     /**
      * Gets dimensions for an upload directory and caches them
      *
-     * @param int $dir_id	ID of upload directory
-     * @return array		Array of image manipulation settings
+     * @param int $dir_id   ID of upload directory
+     * @return array        Array of image manipulation settings
      */
     private function _get_dimensions_by_dir_id($dir_id)
     {
@@ -957,8 +978,10 @@ class File_field
 
         $upload_destinations = [];
         foreach ($upload_prefs as $upload_pref) {
-            if ($upload_pref->site_id == ee()->config->item('site_id') &&
-                $upload_pref->module_id == 0) {
+            if (
+                ($upload_pref->site_id == 0 || $upload_pref->site_id == ee()->config->item('site_id')) &&
+                $upload_pref->module_id == 0
+            ) {
                 $upload_destinations[$upload_pref->id] = [
                     'label' => $upload_pref->name,
                     'path' => '',
@@ -990,6 +1013,9 @@ class File_field
                 'lang.file_dnd_uploading_to' => lang('file_dnd_uploading_to'),
                 'lang.file_dnd_upload_new' => lang('file_dnd_upload_new'),
                 'lang.file_dnd_create_directory' => lang('file_dnd_create_directory'),
+                'lang.hidden_input' => lang('hidden_input'),
+                'lang.file_dnd_no_directories' => lang('file_dnd_no_directories'),
+                'lang.file_dnd_no_directories_desc' => lang('file_dnd_no_directories_desc'),
 
                 'dragAndDrop.uploadDesinations' => ee('View/Helpers')->normalizedChoices($upload_destinations),
                 'dragAndDrop.endpoint' => ee('CP/URL')->make('addons/settings/filepicker/ajax-upload')->compile(),

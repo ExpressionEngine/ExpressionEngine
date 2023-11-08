@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -152,7 +152,7 @@ var DropdownController = (function() {
 
  	// Gets a dropdown for a element, and makes sure its initialized
 	function getDropdownForElement(element) {
-		var dropdown = $(element).next('.dropdown').get(0) || $(`[data-dropdown='${element.dataset.toggleDropdown}']`).get(0)
+		var dropdown = $(element).next('.dropdown').get(0) || $(`[data-dropdown='${element.dataset.toggleDropdown}']`).get(0) || $(element).parent('.colorpicker__inner_wrapper').next('.colorpicker__panel').get(0)
 
 		// Should the dropdown be moved to the root of the page?
 		var useRoot = element.dataset.dropdownUseRoot || false

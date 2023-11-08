@@ -4,15 +4,13 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 namespace ExpressionEngine\Controller\Publish;
 
 use CP_Controller;
-use ExpressionEngine\Library\CP\Table;
-
 use ExpressionEngine\Model\Channel\ChannelEntry;
 
 /**
@@ -103,6 +101,9 @@ abstract class AbstractPublish extends CP_Controller
             'lang.close' => lang('close'),
             'lang.confirm_exit' => lang('confirm_exit'),
             'lang.loading' => lang('loading'),
+            'lang.extra_title' => lang('extra_title'),
+            'lang.edit_element' => lang('edit_element'),
+            'lang.remove_btn' => lang('remove_btn'),
             'publish.autosave.interval' => (int) $autosave_interval_seconds,
             'publish.autosave.URL' => ee('CP/URL')->make('publish/autosave/' . $channel_id . '/' . $entry_id)->compile(),
             'publish.channel_title' => ee('Format')->make('Text', $entry->Channel->channel_title)
@@ -123,7 +124,6 @@ abstract class AbstractPublish extends CP_Controller
             'publish.word_separator' => ee()->config->item('word_separator') != "dash" ? '_' : '-',
             'publish.has_conditional_fields' => $usesConditionalFields,
             'user.can_edit_html_buttons' => ee('Permission')->can('edit_html_buttons'),
-            'user.foo' => false,
             'user_id' => ee()->session->userdata('member_id'),
             'fileManager.fileDirectory.createUrl' => ee('CP/URL')->make('files/uploads/create')->compile(),
         ));
@@ -178,7 +178,7 @@ abstract class AbstractPublish extends CP_Controller
                     'toolbar_items' => array(
                         'txt-only' => array(
                             'href' => ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id, array('version' => $version->version_id)),
-                            'title' => lang('view'),
+                            'title' => lang('load_revision'),
                             'content' => lang('view')
                         ),
                     )
@@ -191,7 +191,7 @@ abstract class AbstractPublish extends CP_Controller
                 'attrs' => $attrs,
                 'columns' => array(
                     $i,
-                    ee()->localize->human_time($version->version_date->format('U')),
+                    ee()->localize->human_time($version->version_date->format('U'), true, true),
                     $authors[$version->author_id],
                     $toolbar
                 )
@@ -206,7 +206,7 @@ abstract class AbstractPublish extends CP_Controller
 
             // Current
             $edit_date = ($entry->edit_date)
-                ? ee()->localize->human_time($entry->edit_date->format('U'))
+                ? ee()->localize->human_time($entry->edit_date->format('U'), true, true)
                 : null;
 
             array_unshift(
@@ -217,7 +217,7 @@ abstract class AbstractPublish extends CP_Controller
                         $current_id,
                         $edit_date,
                         $current_author_id,
-                        '<span class="st-open">' . lang('current') . '</span>'
+                        '<a href="' . ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id) . '"><span class="st-open">' . lang('current') . '</span></a>'
                     ))
             );
         }
@@ -257,7 +257,7 @@ abstract class AbstractPublish extends CP_Controller
 
         $data = array();
         $authors = array();
-        $i = $entry->getAutosaves()->count();
+        $i = $entry->getAutosaves()->filter('channel_id', $entry->channel_id)->count();
 
         if (! $entry->isNew()) {
             $i++;
@@ -269,7 +269,7 @@ abstract class AbstractPublish extends CP_Controller
 
             // Current
             $edit_date = ($entry->edit_date)
-                ? ee()->localize->human_time($entry->edit_date->format('U'))
+                ? ee()->localize->human_time($entry->edit_date->format('U'), true, true)
                 : null;
 
             $data[] = array(
@@ -285,7 +285,7 @@ abstract class AbstractPublish extends CP_Controller
         }
 
         $currentAutosaveId = null;
-        foreach ($entry->getAutosaves()->sortBy('edit_date')->reverse() as $autosave) {
+        foreach ($entry->getAutosaves()->filter('channel_id', $entry->channel_id)->sortBy('edit_date')->reverse() as $autosave) {
             if (! isset($authors[$autosave->author_id]) && $autosave->Author) {
                 $authors[$autosave->author_id] = $autosave->Author->getMemberName();
             }
@@ -313,7 +313,7 @@ abstract class AbstractPublish extends CP_Controller
                 'attrs' => $attrs,
                 'columns' => array(
                     $i,
-                    ee()->localize->human_time($autosave->edit_date),
+                    ee()->localize->human_time($autosave->edit_date, true, true),
                     isset($authors[$autosave->author_id]) ? $authors[$autosave->author_id] : '-',
                     $toolbar
                 )
@@ -321,7 +321,7 @@ abstract class AbstractPublish extends CP_Controller
             $i--;
         }
 
-        if ($autosave_id && empty($currentAutosaveId)) {
+        if ($autosave_id && ! empty($data) && empty($currentAutosaveId)) {
             $data[0]['attrs'] = ['class' => 'selected'];
         }
 
@@ -385,8 +385,9 @@ abstract class AbstractPublish extends CP_Controller
 
         if (defined('CLONING_MODE') && CLONING_MODE === true && $this->entryCloningEnabled($entry)) {
             $entry->setId(null);
+            $word_separator = ee()->config->item('word_separator') != "dash" ? '_' : '-';
             while (true !== $entry->validateUniqueUrlTitle('url_title', $_POST['url_title'], ['channel_id'], null)) {
-                $_POST['url_title'] = 'copy_' . $_POST['url_title'];
+                $_POST['url_title'] = 'copy' . $word_separator . $_POST['url_title'];
             }
             if ($_POST['title'] == $entry->title) {
                 $_POST['title'] = lang('copy_of') . ' ' . $_POST['title'];
@@ -395,6 +396,13 @@ abstract class AbstractPublish extends CP_Controller
             $entry->set($_POST);
             $entry->markAsDirty();
         } else {
+            if ($entry->isNew() && $entry->Channel->enforce_auto_url_title) {
+                $_POST['url_title'] = ee('Format')->make('Text',  $entry->Channel->url_title_prefix . ee()->input->post('title', true))->urlSlug()->compile();
+                $word_separator = ee()->config->item('word_separator') != "dash" ? '_' : '-';
+                while (true !== $entry->validateUniqueUrlTitle('url_title', $_POST['url_title'], ['channel_id'], null)) {
+                    $_POST['url_title'] = $_POST['url_title'] . $word_separator . uniqid();
+                }
+            }
             $entry->set($_POST);
         }
 
@@ -453,12 +461,20 @@ abstract class AbstractPublish extends CP_Controller
             ? ee('CP/Alert')->makeStandard()
             : ee('CP/Alert')->makeInline('entry-form');
 
-        $lang_string = sprintf(lang($action . '_entry_success_desc'), htmlentities($edit_entry_url, ENT_QUOTES, 'UTF-8'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8'), ee()->localize->human_time($entry->edit_date));
+        $lang_string = sprintf(lang($action . '_entry_success_desc'), htmlentities($edit_entry_url, ENT_QUOTES, 'UTF-8'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8'), ee()->localize->human_time($entry->edit_date, true, true));
 
         $alert->asSuccess()
             ->withTitle(lang($action . '_entry_success'))
             ->addToBody($lang_string)
             ->defer();
+
+        $qs = $_GET;
+        unset($qs['S'], $qs['D'], $qs['C'], $qs['M'], $qs['version']);
+
+        // Loop through and clean GET values
+        foreach ($qs as $key => $value) {
+            $qs[$key] = ee('Security/XSS')->clean($value);
+        }
 
         if (ee('Request')->get('modal_form') == 'y') {
             $next_entry_id = ee('Request')->get('next_entry_id');
@@ -480,7 +496,6 @@ abstract class AbstractPublish extends CP_Controller
 
             return $result;
         } elseif (ee()->input->post('submit') == 'save' || (defined('CLONING_MODE') && CLONING_MODE === true)) {
-
             // If we just cloned an entry, we set the "status changed" warning banner
             if ((defined('CLONING_MODE') && CLONING_MODE === true)) {
                 $cloneAlert = (ee('Request')->get('modal_form') == 'y' && ee('Request')->get('next_entry_id'))
@@ -498,11 +513,15 @@ abstract class AbstractPublish extends CP_Controller
             } elseif (ee()->input->post('return') != '') {
                 $redirect_url = ee()->input->post('return');
             } else {
-                $redirect_url = ee('CP/URL')->make('publish/edit/entry/' . $entry->getId());
+                $redirect_url = ee('CP/URL')->make('publish/edit/entry/' . $entry->getId(), $qs);
             }
             ee()->functions->redirect($redirect_url);
         } elseif (ee()->input->post('submit') == 'save_and_close') {
-            $redirect_url = ee('CP/URL')->make('publish/edit/', array('filter_by_channel' => $entry->channel_id));
+            if (! empty($qs)) {
+                $redirect_url = ee('CP/URL')->make('publish/edit/', $qs);
+            } else {
+                $redirect_url = ee('CP/URL')->make('publish/edit/', array('filter_by_channel' => $entry->channel_id));
+            }
 
             /* -------------------------------------
             /*  'entry_save_and_close_redirect' hook.
@@ -510,7 +529,7 @@ abstract class AbstractPublish extends CP_Controller
             /*  - Added 4.0.0
             */
             if (ee()->extensions->active_hook('entry_save_and_close_redirect')) {
-                $redirect_url = ee()->extensions->call('entry_save_and_close_redirect', $entry);
+                $redirect_url = ee()->extensions->call('entry_save_and_close_redirect', $entry, $redirect_url);
             }
             /*
             /* -------------------------------------*/
@@ -560,7 +579,7 @@ abstract class AbstractPublish extends CP_Controller
             ]
         ];
 
-        if (ee('Permission')->has('can_create_entries')) {
+        if (ee('Permission')->has('can_create_entries') && !$entry->Channel->maxEntriesLimitReached()) {
             $buttons[] = [
                 'name' => 'submit',
                 'type' => 'submit',
@@ -580,7 +599,7 @@ abstract class AbstractPublish extends CP_Controller
             'attrs' => 'disabled="disabled"'
         ];
 
-        if (!$entry->isNew() && $this->entryCloningEnabled($entry)) {
+        if (!$entry->isNew() && $this->entryCloningEnabled($entry) && !$entry->Channel->maxEntriesLimitReached()) {
             $buttons[] = [
                 'name' => 'submit',
                 'type' => 'submit',
@@ -589,11 +608,6 @@ abstract class AbstractPublish extends CP_Controller
                 'working' => 'btn_saving',
                 'attrs' => 'disabled="disabled"'
             ];
-        }
-
-        // get rid of Save & New button if we've reached the max entries for this channel
-        if ($entry->Channel->maxEntriesLimitReached()) {
-            unset($buttons[1]);
         }
 
         if ($livePreviewSetup === true) {
@@ -635,7 +649,7 @@ abstract class AbstractPublish extends CP_Controller
 
     protected function createLivePreviewModal(ChannelEntry $entry)
     {
-        if ($entry->isLivePreviewable() || ee()->input->get('return') != '') {
+        if (($entry->livePreviewAllowed() && $entry->isLivePreviewable()) || ee()->input->get('return') != '') {
             $lp_domain_mismatch = false;
             if (isset($_SERVER['HTTP_HOST']) && !empty($_SERVER['HTTP_HOST'])) {
                 $lp_domain_mismatch = true;
@@ -696,6 +710,9 @@ abstract class AbstractPublish extends CP_Controller
 
                 return true;
             }
+        } elseif (!$entry->livePreviewAllowed()) {
+            // if preview is disabled on channel, we do not show banner
+            return null;
         } elseif (ee('Permission')->hasAll('can_admin_channels', 'can_edit_channels')) {
             $lp_setup_alert = ee('CP/Alert')->makeBanner('live-preview-setup')
                 ->asIssue()
@@ -703,16 +720,6 @@ abstract class AbstractPublish extends CP_Controller
                 ->withTitle(lang('preview_url_not_set'))
                 ->addToBody(sprintf(lang('preview_url_not_set_desc'), ee('CP/URL')->make('channels/edit/' . $entry->channel_id)->compile() . '#tab=t-4&id=fieldset-preview_url'));
             ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
-
-            if (!$entry->livePreviewAllowed()) {
-                $lp_setup_alert = ee('CP/Alert')->makeBanner('live-preview-setup')
-                    ->asIssue()
-                    ->canClose()
-                    ->withTitle(lang('preview_not_allowed'))
-                    ->addToBody(sprintf(lang('preview_not_allowed_desc'), ee('CP/URL')->make('channels/edit/' . $entry->channel_id)->compile() . '#tab=t-4&id=fieldset-allow_preview'));
-                ee()->javascript->set_global('alert.lp_setup', $lp_setup_alert->render());
-            }
-
             return false;
         }
 

@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -15,6 +15,8 @@ class Rte_ft extends EE_Fieldtype
 {
 
     public $has_array_data = true;
+
+    public $can_be_cloned = true;
 
     public $entry_manager_compatible = true;
 
@@ -183,7 +185,7 @@ class Rte_ft extends EE_Fieldtype
                     ? true
                     : false;
 
-        if (strpos($id, '_new_') === false) {
+        if (strpos($id, '_new_field_0') === false && strpos($id, '_new_row_0') === false) {
             ee()->cp->add_to_foot('<script type="text/javascript">new Rte("' . $id . '", "' . $configHandle . '", ' . ($defer ? 'true' : 'false') . ');</script>');
         }
 
@@ -279,7 +281,7 @@ class Rte_ft extends EE_Fieldtype
     }
 
     /**
-     * Display the field for Low Variables
+     * Display the field for Pro Variables
      *
      * @param mixed $data field data
      *
@@ -287,10 +289,6 @@ class Rte_ft extends EE_Fieldtype
      */
     public function var_display_field($data)
     {
-        // Low Variables doesn't mix in the fieldtype's global settings,
-        // so we'll do it manually here
-        $this->settings = array_merge($this->settings, RteHelper::getGlobalSettings());
-
         return $this->display_field($data);
     }
 

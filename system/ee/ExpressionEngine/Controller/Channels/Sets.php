@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -195,10 +195,10 @@ class Sets extends AbstractChannelsController
             $set->cleanUpSourceFiles();
             $errors = $result->getErrors();
             $model_errors = $result->getModelErrors();
-            foreach (array('Channel Field', 'Category', 'Category Group', 'Status') as $type) {
+            foreach (array('Channel Field', 'Category', 'Category Group', 'Status', 'Upload Destination') as $type) {
                 if (isset($model_errors[$type])) {
                     foreach ($model_errors[$type][0][2] as $error) {
-                        $errors[] = $error->getLanguageKey();
+                        $errors[] = $type . ': ' . $model_errors[$type][0][1] . ' &mdash; ' . $error->getLanguageKey();
                     }
                 }
             }

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -61,6 +61,7 @@ use ExpressionEngine\Service\Generator\CpRouteGenerator;
 use ExpressionEngine\Service\Generator\ExtensionHookGenerator;
 use ExpressionEngine\Service\Generator\ExtensionGenerator;
 use ExpressionEngine\Service\Generator\FieldtypeGenerator;
+use ExpressionEngine\Service\Generator\JumpsGenerator;
 use ExpressionEngine\Service\Generator\ModelGenerator;
 use ExpressionEngine\Service\Generator\ProletGenerator;
 use ExpressionEngine\Service\Generator\SidebarGenerator;
@@ -394,6 +395,13 @@ $setup = [
             return new FieldtypeGenerator($filesystem, $str, $data);
         },
 
+        'JumpsGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
+
+            return new JumpsGenerator($filesystem, $str, $data);
+        },
+
         'ModelGenerator' => function ($ee, $data) {
             $filesystem = $ee->make('Filesystem');
             $str = $ee->make('Str');
@@ -562,6 +570,10 @@ $setup = [
             return new File\Factory();
         },
 
+        'FileUsage' => function ($ee) {
+            return new File\Usage();
+        },
+
         'Filesystem' => function ($ee) {
             return new Filesystem\Filesystem();
         },
@@ -614,15 +626,15 @@ $setup = [
         },
 
         'Permission' => function ($ee, $site_id = null) {
-            $userdata = ee()->session->all_userdata();
-            $member = ee()->session->getMember();
+            $userdata = (REQ !== 'CLI') ? ee()->session->all_userdata() : [];
+            $member = (REQ !== 'CLI') ? ee()->session->getMember() : false;
             $site_id = ($site_id) ?: ee()->config->item('site_id');
 
             return new Permission\Permission(
                 $ee->make('Model'),
                 $userdata,
                 ($member) ? $member->getPermissions() : [],
-                ($member) ? $member->Roles->getDictionary('role_id', 'name') : [],
+                ($member) ? $member->Roles->getDictionary('role_id', 'name') : (REQ === 'CLI' ? [1 => 'SuperAdmin'] : []),
                 $site_id
             );
         },
@@ -647,6 +659,10 @@ $setup = [
 
         'Validation' => function ($ee) {
             return new Validation\Factory();
+        },
+
+        'Variables/Modifiers' => function ($ee) {
+            return new Template\Variables\Modifiers();
         },
 
         'View/Helpers' => function ($ee) {

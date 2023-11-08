@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -143,7 +143,7 @@ class Comment extends Model
                 ->order('comment_date', 'desc')
                 ->first();
 
-            // There are times, espcially when deleting a ChannelEntry, that
+            // There are times, especially when deleting a ChannelEntry, that
             // the related entry object isn't fully loaded, so we'll need
             // to reload it before working on it.
             if (is_null($this->Entry->Channel)) {

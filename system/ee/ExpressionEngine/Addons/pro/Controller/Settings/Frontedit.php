@@ -3,7 +3,7 @@
 /**
  * ExpressionEngine Pro
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
 */
 
 namespace ExpressionEngine\Addons\Pro\Controller\Settings;
@@ -53,7 +53,7 @@ class Frontedit extends Settings\Pro
                     ->defer();
             }
 
-            ee()->functions->redirect(ee('CP/URL')->make('settings/pro/general'));
+            ee()->functions->redirect($this->base_url);
         }
 
         $settings = [];

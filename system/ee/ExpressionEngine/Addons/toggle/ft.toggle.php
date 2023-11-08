@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -195,6 +195,16 @@ class Toggle_ft extends EE_Fieldtype
     public function save_settings($data)
     {
         $all = array_merge($this->settings_vars, $data);
+
+        if (is_null($this->field_id)) {
+            ee('CP/Alert')->makeInline('search-reindex')
+                ->asImportant()
+                ->withTitle(lang('search_reindex_tip'))
+                ->addToBody(sprintf(lang('search_reindex_tip_desc'), ee('CP/URL')->make('utilities/reindex')->compile()))
+                ->defer();
+
+            ee()->config->update_site_prefs(['search_reindex_needed' => ee()->localize->now], 0);
+        }
 
         return array_intersect_key($all, $this->settings_vars);
     }

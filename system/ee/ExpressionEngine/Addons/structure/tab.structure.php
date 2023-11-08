@@ -13,11 +13,16 @@ use ExpressionEngine\Structure\Conduit\PersistentCache;
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 class Structure_tab
 {
+    public $version;
+    public $sql;
+    public $structure;
+    public $nset;
+
     public function __construct()
     {
         $this->version = STRUCTURE_VERSION;
@@ -47,6 +52,23 @@ class Structure_tab
         return $settings;
     }
 
+    public function renderTableCell($data, $field_id, $entry)
+    {
+        $site_pages = $this->sql->get_site_pages(true);
+        $uri = array_key_exists($entry->entry_id, $site_pages['uris']) ? $site_pages['uris'][$entry->entry_id] : '';
+        if (!empty($uri)) {
+            return '<a href="' . Structure_Helper::remove_double_slashes(ee()->functions->fetch_site_index(0, 0) . $uri) . '" target="_blank"><i class="fal fa-link"></i></a>';
+        }
+        return '';
+    }
+
+    public function getTableColumnConfig()
+    {
+        return [
+            'encode' => false
+        ];
+    }
+
     public function display($channel_id, $entry_id = '')
     {
         return $this->publish_tabs($channel_id, $entry_id);
@@ -68,7 +90,7 @@ class Structure_tab
             StaticCache::set('publish_tabs__get_structure_channels', $structure_channels);
         }
 
-        $channel_type = $structure_channels[$channel_id]['type'];
+        $channel_type = $structure_channels[$channel_id]['type'] ?? null;
 
         ee()->lang->loadfile('structure');
 
@@ -544,7 +566,7 @@ class Structure_tab
         }
 
         $structure_channels = $this->structure->get_structure_channels();
-        $channel_type = $structure_channels[$channel_id]['type'];
+        $channel_type = $structure_channels[$channel_id]['type'] ?? null;
         $allow_dupes = false;
 
         if ($channel_type == 'page' || $channel_type == 'listing') {

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -25,6 +25,7 @@ require_once BASEPATH . "database/drivers/mysqli/mysqli_driver.php";
 class Query extends \CI_DB_mysqli_driver
 {
     protected $connection;
+    public $save_queries;
 
     public function __construct(Connection $connection)
     {

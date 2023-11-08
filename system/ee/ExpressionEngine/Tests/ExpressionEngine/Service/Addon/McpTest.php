@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -130,7 +130,7 @@ class McpTest extends TestCase
         $controller = new __stub_mcp;
         $controller->setRouteNamespace('TestAddon');
         $controller->forceParseParams(['my-action']);
-        $this->assertEquals('\\TestAddon\\Mcp\\TestDomain', $controller->forceBuildObject('test-domain'));
+        $this->assertEquals('\\TestAddon\\ControlPanel\\Routes\\TestDomain', $controller->forceBuildObject('test-domain'));
         return $controller;
     }
 
@@ -138,7 +138,7 @@ class McpTest extends TestCase
     {
         $controller = new __stub_mcp;
         $controller->setRouteNamespace('TestAddon');
-        $this->assertEquals('\\TestAddon\\Mcp\\TestDomain', $controller->forceBuildObject('test-domain'));
+        $this->assertEquals('\\TestAddon\\ControlPanel\\Routes\\TestDomain', $controller->forceBuildObject('test-domain'));
         return $controller;
     }
 

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -21,6 +21,8 @@ class EE_Schema
     public $default_entry = '';
     public $theme_path = '';
     public $version;
+    public $userdata;
+
 
     private $default_engine = 'InnoDB';
 
@@ -332,6 +334,7 @@ class EE_Schema
 			timezone varchar(50) NULL DEFAULT NULL,
 			time_format char(2) NULL DEFAULT NULL,
 			date_format varchar(8) NULL DEFAULT NULL,
+			week_start varchar(8) NULL DEFAULT NULL,
 			include_seconds char(1) NULL DEFAULT NULL,
 			profile_theme varchar(32) NULL DEFAULT NULL,
 			forum_theme varchar(32) NULL DEFAULT NULL,
@@ -380,7 +383,8 @@ class EE_Schema
         $Q[] = "CREATE TABLE `exp_roles_role_groups` (
 			`role_id` int(10) unsigned NOT NULL,
 			`group_id` int(10) unsigned NOT NULL,
-			PRIMARY KEY (`role_id`,`group_id`)
+			PRIMARY KEY (`role_id`,`group_id`),
+			KEY `group_id_idx` (`group_id`)
 		)";
 
         $Q[] = "CREATE TABLE `exp_members_role_groups` (
@@ -547,6 +551,7 @@ class EE_Schema
 			title_field_label varchar(100) NOT NULL DEFAULT 'Title',
 			title_field_instructions TEXT NULL,
 			url_title_prefix varchar(80) NULL DEFAULT NULL,
+			enforce_auto_url_title char(1) NOT NULL default 'n',
 			preview_url varchar(100) NULL DEFAULT NULL,
 			allow_preview char(1) NOT NULL default 'y',
 			max_entries int(10) unsigned NOT NULL DEFAULT '0',
@@ -655,6 +660,8 @@ class EE_Schema
 			group_id int(4) unsigned NOT NULL auto_increment,
 			site_id INT(4) UNSIGNED NULL DEFAULT 1,
 			group_name varchar(50) NOT NULL,
+			short_name varchar(50) NOT NULL,
+			group_description text NULL,
 			PRIMARY KEY `group_id` (`group_id`),
 			KEY `site_id` (`site_id`)
 		)";
@@ -1390,7 +1397,9 @@ class EE_Schema
 			`entry_id` int(11) unsigned NOT NULL,
 			`field_id` int(11) unsigned NOT NULL,
 			`field_data_id` int(11) unsigned NOT NULL,
+			`field_group_id` int(11) unsigned DEFAULT NULL,
 			`order` int(5) unsigned NOT NULL DEFAULT '0',
+			`group` int(11) unsigned DEFAULT NULL,
 			PRIMARY KEY (`id`),
 			KEY `fluid_field_id_entry_id` (`fluid_field_id`,`entry_id`)
 		)";

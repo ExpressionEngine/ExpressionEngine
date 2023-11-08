@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -104,9 +104,13 @@ class Preflight
     {
         $this->logger->log('Checking file permissions needed to complete the update');
 
+        $theme_paths = $this->getThemePaths();
+        foreach ($theme_paths as $theme_path) {
+            $this->validateThemePath($theme_path);
+        }
         $theme_paths = array_map(function ($path) {
             return preg_replace("#/+#", "/", rtrim($path, DIRECTORY_SEPARATOR) . '/ee/');
-        }, $this->getThemePaths());
+        }, $theme_paths);
 
         $paths = array_merge(
             [

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -15,6 +15,7 @@ class Member
 {
     public $trigger = 'member';
     public $member_template = true;
+    public $member_fields;
     public $theme_class = 'profile_theme';
     public $request = 'public_profile';
     public $no_menu = array(
@@ -455,7 +456,7 @@ class Member
         }
 
         if (! EE_Messages::can_send_pm()) {
-            return;
+            return '';
         }
 
         $MESS = new EE_Messages();
@@ -2714,13 +2715,36 @@ class Member
                     $result['errors'] = $validation->getAllErrors();
                 }
             } else {
+                $validationRules = [];
                 foreach (['username', 'password', 'email', 'screen_name'] as $field) {
                     if (in_array($field, $fields)) {
-                        $fn = 'validate' . ($field == 'screen_name' ? 'ScreenName' : ucfirst($field));
-                        if (($fieldValidation = $member->{$fn}($field, ee('Request')->post($field))) !== true) {
-                            $result['success'] = false;
-                            $result['errors'][$field] = lang($fieldValidation);
+                        switch ($field) {
+                            case 'username':
+                                $validationRules[$field] = 'uniqueUsername|validUsername|notBanned';
+                                break;
+                            case 'password':
+                                $validationRules[$field] = 'validPassword|passwordMatchesSecurityPolicy';
+                                break;
+                            case 'email':
+                                $validationRules[$field] = 'email|uniqueEmail|max_length[' . USERNAME_MAX_LENGTH . ']|notBanned';
+                                break;
+                            case 'screen_name':
+                                $validationRules[$field] = 'validScreenName|notBanned';
+                                break;
+                            default:
+                                break;
                         }
+                    }
+                }
+                if (!empty($validationRules)) {
+                    $validation = ee('Validation')->make($validationRules)->validate($_POST);
+                    if (!$validation->isValid()) {
+                        $errors = [];
+                        foreach ($validation->getAllErrors() as $field => $fieldErrors) {
+                            $errors[$field] = implode("\r\n", $fieldErrors);
+                        }
+                        $result['success'] = false;
+                        $result['errors'] = $errors;
                     }
                 }
             }

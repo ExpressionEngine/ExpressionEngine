@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -31,7 +31,7 @@ class EE extends EE_Controller
 
         if ($this->config->item('is_system_on') == 'y' &&
             ($this->config->item('multiple_sites_enabled') != 'y' or $this->config->item('is_site_on') == 'y')) {
-            if ($this->session->userdata('can_view_online_system') == 'y') {
+            if ($this->session->userdata('can_view_online_system') != 'n') {
                 $can_view_system = true;
             }
         } else {

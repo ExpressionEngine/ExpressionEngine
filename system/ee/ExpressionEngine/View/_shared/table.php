@@ -56,7 +56,7 @@
                                     <?php if (isset($settings['content'])): ?>
                                         <?=$settings['content']?>
                                     <?php else: ?>
-                                        <label for="<?=$table_id?>-select-all" class="hidden"><?=lang('select_all_files')?></label>
+                                        <label for="<?=$table_id?>-select-all" class="sr-only"><?=lang('select_all_files')?></label>
                                         <input id="<?=$table_id?>-select-all" class="input--no-mrg" type="checkbox" title="<?=lang('select_all_files')?>">
                                     <?php endif ?>
                                 <?php endif ?>
@@ -80,6 +80,15 @@
                             }
                             ?>
                             <th<?php if (! empty($header_class)): ?> class="<?=trim($header_class)?>"<?php endif ?><?php foreach ($attrs as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
+
+                                <?php if (empty($settings['label']) && $settings['name'] == 'thumbnail') {?>
+                                    <span class="sr-only"><?=lang('thumbnail_column')?></span>
+                                <?php } ?>
+
+                                <?php if (empty($settings['label']) && $settings['name'] == 'manage') {?>
+                                    <span class="sr-only"><?=lang('toolbar_column')?></span>
+                                <?php } ?>
+
                                 <?php if ($header_sorts): ?>
                                     <?php
                                     $url = clone $base_url;
@@ -167,7 +176,7 @@
     								</td>
     							<?php elseif ($column['type'] == Table::COL_CHECKBOX): ?>
     								<td class="app-listing__cell app-listing__cell--input text--center checkbox-column">
-    									<label class="hidden" for="<?=$table_id . '-' . $i . '-' . $row_id?>"><?=lang('select_row')?></label>
+    									<label class="sr-only" for="<?=$table_id . '-' . $i . '-' . $row_id?>"><?=lang('select_row')?></label>
     									<input
     										id="<?=$table_id . '-' . $i . '-' . $row_id?>"
     										class="input--no-mrg<?php if (isset($column['hidden']) && $column['hidden']):?> hidden<?php endif; ?>"
@@ -317,7 +326,7 @@ else: ?>
     <?php endif ?>
 
         <tbody>
-            <tr class="no-results<?php if (! empty($action_buttons) || ! empty($action_content)): ?> last<?php endif?> <?php if (!empty($data)): ?>hidden<?php endif?>"><td colspan="<?=(count($columns) + intval($header_sorts))?>">
+            <tr class="no-results<?php if (! empty($action_buttons) || ! empty($action_content)): ?> last<?php endif?> <?php if (!empty($data)): ?>hidden<?php endif?>"><td colspan="<?=(count($columns) + @intval($header_sorts))?>">
             <?php
             // Output this if Grid input so we can dynamically show it via JS
             ?>
@@ -345,7 +354,7 @@ else: ?>
                     }
                 ?>
                     <tr class="<?=$row_class?>" <?php foreach ($row['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
-                        <?php if (isset($vertical_layout) && ($vertical_layout !== 'horizontal')):?>
+                        <?php if (REQ == 'CP' && isset($vertical_layout) && ($vertical_layout !== 'horizontal')):?>
                         <td class="grid-field__item-fieldset" style="display: none;">
                             <div class="grid-field__item-tools grid-field__item-tools--item-open">
                                 <a href class="grid-field__item-tool js-toggle-grid-item">

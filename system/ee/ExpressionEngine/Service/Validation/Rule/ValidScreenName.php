@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -21,6 +21,7 @@ class ValidScreenName extends ValidationRule
 
     public function validate($key, $screen_name)
     {
+        $screen_name = (string) $screen_name;
         if (preg_match('/[\{\}<>]/', $screen_name)) {
             $this->last_error = 'disallowed_screen_chars';
             return false;

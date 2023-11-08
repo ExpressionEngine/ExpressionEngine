@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -64,7 +64,7 @@ class CommandMakeCpRoute extends Cli
             $service = ee('CpRouteGenerator', $this->data);
             $service->build();
         } catch (\Exception $e) {
-            $this->fail($e->getMessage());
+            $this->fail(addslashes($e->getMessage()));
         }
 
         $this->info('command_make_cp_route_created_successfully');

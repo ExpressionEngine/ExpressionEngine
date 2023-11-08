@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -41,7 +41,7 @@ class Updater
     private function syncMemberStats()
     {
         if (ee()->config->item('ignore_member_stats') != 'y') {
-            foreach (ee('Model')->get('Role')->all() as $role) {
+            foreach (ee('Model')->get('Role')->fields('total_members')->all() as $role) {
                 $role->total_members = null;
                 $role->save();
             }

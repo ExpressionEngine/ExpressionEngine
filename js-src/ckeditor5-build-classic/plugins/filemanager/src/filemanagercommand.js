@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -94,9 +94,9 @@ export default class FileManagerCommand extends Command {
 			} else if (file.file_id) {
 				const file_url = EE.Rte.filedirUrls[file.upload_location_id] + file.file_name;
 				if (!file.isImage && !file.isSVG) {
-					editor.execute( 'link', file_url );
+					editor.execute( 'link', file.path );
 				} else {
-					insertImages( editor, [file_url] );
+					insertImages( editor, [file.path] );
 				}
 			}
 			window.document.removeEventListener( 'filepicker:pick', pickFile );

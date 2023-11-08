@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -79,6 +79,10 @@ class EE_Session
     public $cookies_exist = false;
     public $session_exists = false;
 
+    public $mfa_flag = 'skip';
+
+    public $validation;
+
     // Garbage collection probability. Used to kill expired sessions.
     public $gc_probability = 5;
 
@@ -100,6 +104,14 @@ class EE_Session
         // dependencies are all here. This can happen in the cp_js_end hook.
         ee()->load->library('remember');
         ee()->load->library('localize');
+
+        if (ee()->config->item('website_session_length')) {
+            $this->user_session_len = ee()->config->item('website_session_length');
+        }
+
+        if (ee()->config->item('cp_session_length')) {
+            $this->cpan_session_len = ee()->config->item('cp_session_length');
+        }
 
         $this->session_length = $this->_setup_session_length();
 
@@ -281,6 +293,7 @@ class EE_Session
             return false;
         }
 
+        $match = (string) $match;
         foreach (explode('|', $ban) as $val) {
             if ($val == '*') {
                 continue;
@@ -585,7 +598,7 @@ class EE_Session
 
         // Turn the query rows into array values
         foreach ($member_query->row_array() as $key => $val) {
-            if (in_array($key, ['timezone', 'date_format', 'time_format', 'include_seconds']) && $val === '') {
+            if (in_array($key, ['timezone', 'date_format', 'time_format', 'week_start', 'include_seconds']) && $val === '') {
                 $val = null;
             }
 
@@ -648,6 +661,7 @@ class EE_Session
             $this->userdata['timezone'] = ee()->config->item('default_site_timezone');
             $this->userdata['date_format'] = ee()->config->item('date_format') ? ee()->config->item('date_format') : '%n/%j/%Y';
             $this->userdata['time_format'] = ee()->config->item('time_format') ? ee()->config->item('time_format') : '12';
+            $this->userdata['week_start'] = ee()->config->item('week_start') ? ee()->config->item('week_start') : 'sunday';
             $this->userdata['include_seconds'] = ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n';
         }
 
@@ -1207,10 +1221,13 @@ class EE_Session
     private function _setupMemberModel($memberId)
     {
         $memberQuery = ee('Model')->get('Member', $memberId)
-                ->with('PrimaryRole', 'Roles', 'RoleGroups');
+            ->with(['PrimaryRole' => 'RoleSettings'])
+            ->with('Roles')
+            ->with('RoleGroups');
         if (REQ == 'CP') {
             $memberQuery->with('EntryManagerViews');
         }
+        $memberQuery->filter('RoleSettings.site_id', ee()->config->item('site_id'));
         $this->member_model = $memberQuery->all()->first();
     }
 
@@ -1252,6 +1269,7 @@ class EE_Session
             'timezone' => ee()->config->item('default_site_timezone'),
             'date_format' => ee()->config->item('date_format') ? ee()->config->item('date_format') : '%n/%j/%Y',
             'time_format' => ee()->config->item('time_format') ? ee()->config->item('time_format') : '12',
+            'week_start' => ee()->config->item('week_start') ? ee()->config->item('week_start') : 'sunday',
             'include_seconds' => ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n',
             'role_id' => '3',
             'access_cp' => 0,

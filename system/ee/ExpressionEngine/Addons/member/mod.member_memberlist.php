@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -360,7 +360,9 @@ class Member_memberlist extends Member
             }
         }
 
-        $result_page = str_replace(trim($search_path, '/'), '', $result_page);
+        if (!empty($result_page)) {
+            $result_page = str_replace(trim($search_path, '/'), '', $result_page);
+        }
 
         /** ----------------------------------------
         /**  Parse the request URI
@@ -702,8 +704,12 @@ class Member_memberlist extends Member
                     /** ----------------------------------------
                     /**  parse custom member fields
                     /** ----------------------------------------*/
-                    if (isset($fields[$val]) and isset($row['m_field_id_' . $fields[$val]])) {
-                        $temp = $this->_var_swap_single($val, $row['m_field_id_' . $fields[$val]], $temp);
+                    if (isset($fields[$val])) {
+                        if (isset($row['m_field_id_' . $fields[$val]])) {
+                            $temp = $this->_var_swap_single($val, $row['m_field_id_' . $fields[$val]], $temp);
+                        } else {
+                            $temp = $this->_var_swap_single($val, '', $temp);
+                        }
                     }
                 }
 
@@ -859,13 +865,20 @@ class Member_memberlist extends Member
         }
 
         if ($is_search_form && !empty($tagdata)) {
-            $template = ee()->functions->form_declaration(array(
-                'hidden_fields' => array(
-                    'ACT' => ee()->functions->fetch_action_id('Member', 'do_member_search'),
-                    'RET' => ee()->TMPL->fetch_param('return') != '' ? ee()->TMPL->fetch_param('return') : str_replace($search_path, '', $result_page),
-                    'no_result_page' => ee()->TMPL->fetch_param('no_result_page')
-                )
-            )) . $template . '</form>';
+            $data = [];
+            if (ee()->TMPL->fetch_param('form_name', '') != "") {
+                $data['name'] = ee()->TMPL->fetch_param('form_name');
+            }
+
+            $data['id'] = ee()->TMPL->form_id;
+            $data['class'] = ee()->TMPL->form_class;
+
+            $data['hidden_fields'] = array(
+                'ACT' => ee()->functions->fetch_action_id('Member', 'do_member_search'),
+                'RET' => ee()->TMPL->fetch_param('return') != '' ? ee()->TMPL->fetch_param('return') : str_replace($search_path, '', $result_page),
+                'no_result_page' => ee()->TMPL->fetch_param('no_result_page'));
+
+            $template = ee()->functions->form_declaration($data) . $template . '</form>';
         } else {
             $template = str_replace(LD . "form_declaration" . RD, $form_open, $template);
             $form_open_member_search = ee()->functions->form_declaration(array(

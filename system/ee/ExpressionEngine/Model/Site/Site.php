@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -85,6 +85,10 @@ class Site extends Model
             'model' => 'UploadDestination',
             'type' => 'hasMany'
         ),
+        'FileDimensions' => array(
+            'model' => 'FileDimension',
+            'type' => 'hasMany'
+        ),
         'Permissions' => array(
             'model' => 'Permission',
             'type' => 'hasMany'
@@ -103,6 +107,26 @@ class Site extends Model
         ),
         'RoleSettings' => array(
             'model' => 'RoleSetting',
+            'type' => 'hasMany'
+        ),
+        'CategoryGroups' => array(
+            'model' => 'CategoryGroup',
+            'type' => 'hasMany'
+        ),
+        'Categories' => array(
+            'model' => 'Category',
+            'type' => 'hasMany'
+        ),
+        'ChannelFieldGroups' => array(
+            'model' => 'ChannelFieldGroup',
+            'type' => 'hasMany'
+        ),
+        'ChannelFields' => array(
+            'model' => 'ChannelField',
+            'type' => 'hasMany'
+        ),
+        'ChannelLayouts' => array(
+            'model' => 'ChannelLayout',
             'type' => 'hasMany'
         ),
     );
@@ -130,7 +154,7 @@ class Site extends Model
 
     public function validateShortName($key, $value, $params, $rule)
     {
-        if (preg_match('/[^a-z0-9\-\_]/i', $value)) {
+        if (preg_match('/[^a-z0-9\-\_]/i', (string) $value)) {
             return 'invalid_short_name';
         }
 

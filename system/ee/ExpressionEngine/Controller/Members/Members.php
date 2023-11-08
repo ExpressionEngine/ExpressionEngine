@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -15,12 +15,15 @@ use ExpressionEngine\Library\CP;
 use ExpressionEngine\Library\CP\Table;
 use ExpressionEngine\Service\Model\Query\Builder;
 use ExpressionEngine\Service\Member\Member;
+use ExpressionEngine\Service\Model\Collection;
 
 /**
  * Members Controller
  */
 class Members extends CP_Controller
 {
+    public $base_url;
+
     public function __construct()
     {
         parent::__construct();
@@ -35,7 +38,8 @@ class Members extends CP_Controller
         $this->stdHeader();
 
         ee()->javascript->set_global([
-            'cp.validatePasswordUrl' => ee('CP/URL', 'login/validate_password')->compile()
+            'cp.validatePasswordUrl' => ee('CP/URL', 'login/validate_password')->compile(),
+            'lang.password_icon' => lang('password_icon')
         ]);
     }
 
@@ -945,7 +949,7 @@ class Members extends CP_Controller
 
             $username_display = "
             <div class=\"d-flex align-items-center\">
-            <img src=\"$avatar_url\" alt=\"" . $member->username . "\" class=\"avatar-icon add-mrg-right\">
+            <img src=\"$avatar_url\" alt='" . lang('image_alt') . " " . $member->username . "' class=\"avatar-icon add-mrg-right\">
             <div>$username_display</div>
             </div>
             ";
@@ -1089,29 +1093,23 @@ class Members extends CP_Controller
      */
     public function heirFilter($group_ids = null, $selected = null)
     {
-        $search_term = ee('Request')->get('search') ?: '';
-        $group_ids = $group_ids ?: explode('|', ee('Request')->get('group_ids'));
         $selected = $selected ?: explode('|', ee('Request')->get('selected'));
 
-        $members = ee('Model')->get('Member')
-            ->fields('screen_name', 'username')
-            ->search(
-                ['screen_name', 'username', 'email', 'member_id'],
-                $search_term
-            )
-            ->filter('role_id', 'IN', $group_ids)
-            ->filter('member_id', 'NOT IN', $selected)
-            ->order('screen_name')
-            ->limit(100)
-            ->all();
+        $search = null;
+        if (!empty(ee('Request')->get('search'))) {
+            $search = ee('Request')->get('search');
+        }
+        $authors = ee('Member')->getAuthors($search);
 
-        $heirs = [];
-        foreach ($members as $heir) {
-            $name = ($heir->screen_name != '') ? 'screen_name' : 'username';
-            $heirs[$heir->getId()] = $heir->$name;
+        if (!empty($selected)) {
+            foreach ($selected as $selectedMemberId) {
+                if (array_key_exists($selectedMemberId, $authors)) {
+                    unset($authors[$selectedMemberId]);
+                }
+            }
         }
 
-        return ee('View/Helpers')->normalizedChoices($heirs);
+        return ee('View/Helpers')->normalizedChoices($authors);
     }
 
     /**
@@ -1743,7 +1741,7 @@ class Members extends CP_Controller
                     continue;
                 }
             }
-            $role = ee('Model')->get('Role', $role_id)->fields('role_id', 'name', 'is_locked')->first();
+            $role = ee('Model')->get('Role', $role_id)->first();
             if (empty($role)) {
                 $errors[] = sprintf(lang('cannot_activate_member_role_not_exists'), $member->username, $role->name);
                 continue;
@@ -1752,6 +1750,7 @@ class Members extends CP_Controller
                 $errors[] = sprintf(lang('cannot_activate_member_role_is_locked'), $member->username, $role->name);
                 continue;
             }
+            $member->Roles = new Collection([$role]);
             $member->role_id = $role_id;
             $member->save();
             $approvedCount++;

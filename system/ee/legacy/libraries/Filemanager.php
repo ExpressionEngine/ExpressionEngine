@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -30,7 +30,7 @@ class Filemanager
     /**
      * Constructor
      *
-     * @access	public
+     * @access public
      */
     public function __construct()
     {
@@ -49,19 +49,22 @@ class Filemanager
     }
 
     /**
+     * A compatibility version of the `clean_subdir_and_filename` function
+     * Does not include server path (but may include subdirectories)
+     * Safe to use in EE7 for compatibility with subdirs and cloud storages
+     *
      * Cleans the filename to prep it for the system, mostly removing spaces
      * sanitizing the file name and checking for duplicates.
      *
      * @param string $filename The filename to clean the name of
      * @param integer $dir_id The ID of the directory in which we'll check for duplicates
      * @param array $parameters Associative array containing optional parameters
-     * 		'convert_spaces' (Default: TRUE) Setting this to FALSE will not remove spaces
-     * 		'ignore_dupes' (Default: TRUE) Setting this to FALSE will check for duplicates
+     *   'convert_spaces' (Default: TRUE) Setting this to FALSE will not remove spaces
+     *   'ignore_dupes' (Default: TRUE) Setting this to FALSE will check for duplicates
      *
-     * @return string Full path and filename of the file, use basepath() to just
-     * 		get the filename
+     * @return string Subdirectory path and filename of the file
      */
-    public function clean_filename($filename, $dir_id, $parameters = array())
+    public function clean_subdir_and_filename($filename, $dir_id, $parameters = array())
     {
         // at one time the third parameter was (bool) $dupe_check
         if (! is_array($parameters)) {
@@ -83,6 +86,8 @@ class Filemanager
         $basename = $filesystem->basename($filename);
         $dirname = ($filesystem->dirname($filename) !== '.') ? $filesystem->dirname($filename) . '/' : '';
 
+        // Remove invisible control characters
+        $basename = preg_replace('#\\p{C}+#u', '', $basename);
 
         // clean up the filename
         if ($parameters['convert_spaces'] === true) {
@@ -92,8 +97,34 @@ class Filemanager
         $basename = ee()->security->sanitize_filename($basename);
         $filename = $dirname . $basename;
 
-        if($parameters['ignore_dupes'] === false) {
+        if ($parameters['ignore_dupes'] === false) {
             $filename = $prefs['directory']->getFilesystem()->getUniqueFilename($filename);
+        }
+
+        return $filename;
+    }
+
+    /**
+     * Cleans the filename to prep it for the system, mostly removing spaces
+     * sanitizing the file name and checking for duplicates.
+     *
+     * @param string $filename The filename to clean the name of
+     * @param integer $dir_id The ID of the directory in which we'll check for duplicates
+     * @param array $parameters Associative array containing optional parameters
+     *   'convert_spaces' (Default: TRUE) Setting this to FALSE will not remove spaces
+     *   'ignore_dupes' (Default: TRUE) Setting this to FALSE will check for duplicates
+     *
+     * @return string Full path and filename of the file, use `clean_subdir_and_filename` instead to just
+     *   get the filename and subdirectory
+     */
+    public function clean_filename($filename, $dir_id, $parameters = array())
+    {
+        $filename = $this->clean_subdir_and_filename($filename, $dir_id, $parameters);
+
+        $prefs = $this->fetch_upload_dir_prefs($dir_id, true);
+
+        if ($prefs['adapter'] == 'local') {
+            $filename = $prefs['server_path'] . $filename;
         }
 
         return $filename;
@@ -133,7 +164,7 @@ class Filemanager
      * Get the upload directory preferences for an individual directory
      *
      * @param integer $dir_id ID of the directory to get preferences for
-     * @param	bool $ignore_site_id If TRUE, returns upload destinations for all sites
+     * @param bool $ignore_site_id If TRUE, returns upload destinations for all sites
      */
     public function fetch_upload_dir_prefs($dir_id, $ignore_site_id = false)
     {
@@ -144,7 +175,7 @@ class Filemanager
         $dir = ee('Model')->get('UploadDestination', $dir_id);
 
         if (! $ignore_site_id) {
-            $dir->filter('site_id', ee()->config->item('site_id'));
+            $dir->filter('site_id', 'IN', [0, ee()->config->item('site_id')]);
         }
 
         if ($dir->count() < 1) {
@@ -196,9 +227,9 @@ class Filemanager
     /**
      * Checks to see if the image is an editable/resizble image
      *
-     * @param	string	$file_path	The full path to the file to check
-     * @param	string	$mime		The file's mimetype
-     * @return	boolean	TRUE if the image is editable, FALSE otherwise
+     * @param string $file_path The full path to the file to check
+     * @param string $mime  The file's mimetype
+     * @return boolean TRUE if the image is editable, FALSE otherwise
      */
     public function is_editable_image($file_path, $mime)
     {
@@ -234,12 +265,12 @@ class Filemanager
     /**
      * Gets Image Height and Width
      *
-     * @param	string	$file_path	The full path to the file to check
-     * @return	mixed	False if function not available, associative array otherwise
+     * @param string $file_path The full path to the file to check
+     * @return mixed False if function not available, associative array otherwise
      */
     public function get_image_dimensions($file_path, $filesystem = null)
     {
-        if(!$filesystem) {
+        if (!$filesystem) {
             // Set the filesystem to basedir of $file_path to accommodate tmp dir
             $adapter = new \ExpressionEngine\Library\Filesystem\Adapter\Local(['path' => dirname($file_path)]);
             $filesystem = new \ExpressionEngine\Library\Filesystem\Filesystem($adapter);
@@ -249,10 +280,15 @@ class Filemanager
             return false;
         }
 
+        $mime = $filesystem->getMimetype($file_path);
+        if (! $this->is_image($mime)) {
+            return false;
+        }
+
         // PHP7.4 does not come with GD JPEG processing by default
         // So, we need to run this check.
         if (function_exists('getimagesize')) {
-            $imageSize = $filesystem->actLocally($file_path, function($path) {
+            $imageSize = $filesystem->actLocally($file_path, function ($path) {
                 return @getimagesize($path);
             });
 
@@ -273,8 +309,8 @@ class Filemanager
     /**
      * Save File
      *
-     * @access	public
-     * @param	boolean	$check_permissions	Whether to check permissions or not
+     * @access public
+     * @param boolean $check_permissions Whether to check permissions or not
      */
     public function save_file($file_path, $directory, $prefs = array(), $check_permissions = true)
     {
@@ -333,6 +369,7 @@ class Filemanager
                 foreach ($prefs['allowed_types'] as $allowed_type) {
                     if (ee('MimeType')->isOfKind($mime, $allowed_type)) {
                         $safeForUpload = true;
+
                         break;
                     }
                 }
@@ -363,20 +400,27 @@ class Filemanager
                 return $this->_save_file_response(false, lang('gd_not_installed'));
             }
 
-            // Check and fix orientation
-            $orientation = $this->orientation_check($image_path, $prefs);
+            if(!($prefs['image_processed'] ?? false)) {
+                // Check and fix orientation
+                $orientation = $this->orientation_check($image_path, $prefs);
 
-            if (! empty($orientation)) {
-                $prefs = $orientation;
+                if (! empty($orientation)) {
+                    $prefs = $orientation;
+                }
+
+                $prefs = $this->max_hw_check($image_path, array_merge($prefs, [
+                    // If we're using a temp image we need to pass along a null filesystem in some cases
+                    'filesystem' => isset($prefs['temp_file']) && !empty($prefs['temp_file']) ? null : $directory['upload_destination']->getFilesystem()
+                ]));
             }
-
-            $prefs = $this->max_hw_check($image_path, array_merge($prefs, [
-                 // If we're using a temp image we need to pass along a null filesystem in some cases
-                'filesystem' => isset($prefs['temp_file']) && !empty($prefs['temp_file']) ? null : $directory['upload_destination']->getFilesystem()
-            ]));
 
             if (! $prefs) {
                 return $this->_save_file_response(false, lang('image_exceeds_max_size'));
+            }
+
+            // Write $image_path to $file_path
+            if($image_path !== $file_path) {
+                $directory['upload_destination']->getFilesystem()->write($file_path, file_get_contents($image_path), true);
             }
 
             // It is important to use the same upload destination object because of filesystem caching
@@ -425,8 +469,8 @@ class Filemanager
     /**
      * Reorient main image if exif info indicates we should
      *
-     * @access	public
-     * @return	void
+     * @access public
+     * @return void
      */
     public function orientation_check($file_path, $prefs)
     {
@@ -513,8 +557,8 @@ class Filemanager
     /**
      * Resizes main image if it exceeds max heightxwidth- adds metadata to file_data array
      *
-     * @access	public
-     * @return	void
+     * @access public
+     * @return void
      */
     public function max_hw_check($file_path, $prefs)
     {
@@ -613,9 +657,9 @@ class Filemanager
      * Checks the permissions of the current user and directory
      * Returns TRUE if they have access FALSE otherwise
      *
-     * @access	private
-     * @param	int|string	$dir_id		Directory to check permissions on
-     * @return	boolean		TRUE if current user has access, FALSE otherwise
+     * @access private
+     * @param int|string $dir_id  Directory to check permissions on
+     * @return boolean  TRUE if current user has access, FALSE otherwise
      */
     private function _check_permissions($dir_id)
     {
@@ -641,9 +685,9 @@ class Filemanager
     /**
      * Send save_file response
      *
-     * @param	boolean		$status		TRUE if save_file passed, FALSE otherwise
-     * @param	string		$message	Message to send
-     * @return	array		Associative array containing the status and message/file_id
+     * @param boolean  $status  TRUE if save_file passed, FALSE otherwise
+     * @param string  $message Message to send
+     * @return array  Associative array containing the status and message/file_id
      */
     private function _save_file_response($status, $message = '')
     {
@@ -666,9 +710,9 @@ class Filemanager
      *
      * Main Backend Handler
      *
-     * @access	public
-     * @param	mixed	configuration options
-     * @return	void
+     * @access public
+     * @param mixed configuration options
+     * @return void
      */
     public function process_request($config = array())
     {
@@ -725,9 +769,9 @@ class Filemanager
     /**
      * Initialize
      *
-     * @access	private
-     * @param	mixed	configuration options
-     * @return	void
+     * @access private
+     * @param mixed configuration options
+     * @return void
      */
     public function _initialize($config)
     {
@@ -744,9 +788,9 @@ class Filemanager
      *
      * The real filebrowser bootstrapping function. Generates the required html.
      *
-     * @access	private
-     * @param	mixed	configuration options
-     * @return	void
+     * @access private
+     * @param mixed configuration options
+     * @return void
      */
     public function setup()
     {
@@ -777,7 +821,7 @@ class Filemanager
             $vars['filemanager_backend_url'] = ee()->cp->get_safe_refresh();
         }
 
-        unset($_GET['action']);	// current url == get_safe_refresh()
+        unset($_GET['action']); // current url == get_safe_refresh()
 
         $vars['filemanager_directories'] = $this->directories(false);
 
@@ -800,7 +844,7 @@ class Filemanager
         $filebrowser_html = ee()->load->ee_view('_shared/file/browser', $vars, true);
 
         ee()->output->send_ajax_response(array(
-            'manager' => str_replace(array("\n", "\t"), '', $filebrowser_html),	// reduces transfer size
+            'manager' => str_replace(array("\n", "\t"), '', $filebrowser_html), // reduces transfer size
             'directories' => $vars['filemanager_directories']
         ));
     }
@@ -913,15 +957,15 @@ class Filemanager
      *
      * Get information for a single directory
      *
-     * @access	public
-     * @param	int		directory id
-     * @param	bool	ajax request (optional)
-     * @param	bool	return all info (optional)
-     * @return	mixed	directory information
+     * @access public
+     * @param int  directory id
+     * @param bool ajax request (optional)
+     * @param bool return all info (optional)
+     * @return mixed directory information
      */
     public function directory($dir_id, $ajax = false, $return_all = false, $ignore_site_id = false)
     {
-        $return_all = ($ajax) ? false : $return_all;		// safety - ajax calls can never get all info!
+        $return_all = ($ajax) ? false : $return_all;  // safety - ajax calls can never get all info!
 
         $dirs = $this->directories(false, $return_all, $ignore_site_id);
 
@@ -939,10 +983,10 @@ class Filemanager
      *
      * Get all directory information
      *
-     * @access	public
-     * @param	bool	ajax request (optional)
-     * @param	bool	return all info (optional)
-     * @return	mixed	directory information
+     * @access public
+     * @param bool ajax request (optional)
+     * @param bool return all info (optional)
+     * @return mixed directory information
      */
     public function directories($ajax = false, $return_all = false, $ignore_site_id = false)
     {
@@ -957,7 +1001,7 @@ class Filemanager
             $dirs = call_user_func($this->config['directories_callback'], array('ignore_site_id' => $ignore_site_id));
         }
 
-        if ($return_all and ! $ajax) {	// safety - ajax calls can never get all info!
+        if ($return_all and ! $ajax) { // safety - ajax calls can never get all info!
             $return = $dirs;
         } else {
             foreach ($dirs as $dir_id => $info) {
@@ -977,8 +1021,8 @@ class Filemanager
      *
      * Get all files in a directory
      *
-     * @access	public
-     * @return	mixed	directory information
+     * @access public
+     * @return mixed directory information
      */
     public function directory_contents()
     {
@@ -1048,11 +1092,11 @@ class Filemanager
      *
      * Upload a files
      *
-     * @access	public
-     * @param	int		$dir_id		Upload Directory ID
-     * @param	string	$field		Upload Field Name (optional - defaults to first upload field)
-     * @param 	boolean $image_only	Override to restrict uploads to images
-     * @return	mixed	uploaded file info
+     * @access public
+     * @param int  $dir_id  Upload Directory ID
+     * @param string $field  Upload Field Name (optional - defaults to first upload field)
+     * @param  boolean $image_only Override to restrict uploads to images
+     * @return mixed uploaded file info
      */
     public function upload_file($dir_id = '', $field = false, $image_only = false, $subfolder_id = 0)
     {
@@ -1115,16 +1159,16 @@ class Filemanager
      *
      * Create Thumbnails for a file
      *
-     * @access	public
-     * @param	string	file path
-     * @param	array	file and directory information
-     * @param	bool	Whether or not to create a thumbnail; will do so
-     *		regardless of missing_only setting because directory syncing
-     *		needs to update thumbnails even if no image manipulations are
-     *		updated.
-     * @param	bool	Whether or not to replace missing image
-     *		manipulations only (TRUE) or replace them all (FALSE).
-     * @return	bool	success / failure
+     * @access public
+     * @param string file path
+     * @param array file and directory information
+     * @param bool Whether or not to create a thumbnail; will do so
+     *  regardless of missing_only setting because directory syncing
+     *  needs to update thumbnails even if no image manipulations are
+     *  updated.
+     * @param bool Whether or not to replace missing image
+     *  manipulations only (TRUE) or replace them all (FALSE).
+     * @return bool success / failure
      */
     public function create_thumb($file_path, $prefs, $thumb = true, $missing_only = true)
     {
@@ -1132,10 +1176,10 @@ class Filemanager
         ee()->load->helper('file');
 
         $filesystem = $prefs['directory']->getFilesystem();
-        $file_path =  str_replace('\\', '/', $filesystem->absolute($file_path));
+        $file_path = str_replace('\\', '/', $filesystem->absolute($file_path));
 
         $img_path = ($prefs['directory']->adapter == 'local') ? rtrim(str_replace('\\', '/', $prefs['server_path']), '/') . '/' : '';
-        $dirname =  rtrim(str_replace('\\', '/', $filesystem->absolute($filesystem->subdirectory($file_path))), '/') . '/';
+        $dirname = rtrim(str_replace('\\', '/', $filesystem->absolute($filesystem->subdirectory($file_path))), '/') . '/';
         if (empty($img_path) || strpos($dirname, $img_path) === 0) {
             $img_path = $dirname;
         }
@@ -1229,10 +1273,10 @@ class Filemanager
                 $size['resize_type'] = 'none';
             }
 
-            if($size['short_name'] == 'thumbs') {
-                if($prefs['width'] > $prefs['height']) {
+            if ($size['short_name'] == 'thumbs') {
+                if ($prefs['width'] > $prefs['height']) {
                     $size['height'] = 0;
-                }else{
+                } else {
                     $size['width'] = 0;
                 }
             }
@@ -1368,10 +1412,10 @@ class Filemanager
      *
      * Create a Watermarked Image
      *
-     * @access	public
-     * @param	string	full path to image
-     * @param	array	file information
-     * @return	bool	success / failure
+     * @access public
+     * @param string full path to image
+     * @param array file information
+     * @return bool success / failure
      */
     public function create_watermark($image_path, $data)
     {
@@ -1398,10 +1442,10 @@ class Filemanager
      *
      * Create a Thumbnail for a file
      *
-     * @access	public
-     * @param	mixed	directory information
-     * @param	mixed	file information
-     * @return	bool	success / failure
+     * @access public
+     * @param mixed directory information
+     * @param mixed file information
+     * @return bool success / failure
      */
     public function ajax_create_thumb()
     {
@@ -1422,11 +1466,11 @@ class Filemanager
      * This assumes the thumbnail has already been created
      *
      * @param array $file Response from save_file, should be an associative array
-     * 	and minimally needs to contain the file_name and the mime_type/file_type
-     * 	Optionally, you can use the file name in the event you don't have the
-     * 	full response from save_file
+     *  and minimally needs to contain the file_name and the mime_type/file_type
+     *  Optionally, you can use the file name in the event you don't have the
+     *  full response from save_file
      * @param integer $directory_id The ID of the upload directory the file is in
-     * @param	bool $ignore_site_id If TRUE, returns upload destinations for all sites
+     * @param bool $ignore_site_id If TRUE, returns upload destinations for all sites
      * @return string URL to the thumbnail
      */
     public function get_thumb($file, $directory_id, $ignore_site_id = false, $filesystem = null)
@@ -1474,10 +1518,10 @@ class Filemanager
      *
      * Creates a list of available thumbnails based on the supplied information
      *
-     * @access	public
-     * @param	mixed	directory information
-     * @param	mixed	list of files
-     * @return	mixed	list of files with added 'has_thumb' boolean key
+     * @access public
+     * @param mixed directory information
+     * @param mixed list of files
+     * @return mixed list of files with added 'has_thumb' boolean key
      */
     public function find_thumbs($dir, $files)
     {
@@ -1589,14 +1633,14 @@ class Filemanager
 
         return $config;
     }
-    //	Default Callbacks
+    // Default Callbacks
     /**
      * Directories Callback
      *
      * The function that retrieves the actual directory information
      *
-     * @access	private
-     * @return	mixed	directory list
+     * @access private
+     * @return mixed directory list
      */
     private function _directories($params = array())
     {
@@ -1605,7 +1649,7 @@ class Filemanager
         $directories = ee('Model')->get('UploadDestination');
 
         if (!$ignore_site_id) {
-            $directories->filter('site_id', ee()->config->item('site_id'));
+            $directories->filter('site_id', 'IN', [0, ee()->config->item('site_id')]);
         }
 
         $dirs = $directories->all()->indexBy('id');
@@ -1621,8 +1665,8 @@ class Filemanager
      *
      * The function that retrieves the actual files from a directory
      *
-     * @access	private
-     * @return	mixed	directory list
+     * @access private
+     * @return mixed directory list
      */
     public function _directory_contents($dir, $limit, $offset)
     {
@@ -1640,7 +1684,7 @@ class Filemanager
      * @param integer $offset Where to start
      *
      * @access private
-     * @return array	List of files
+     * @return array List of files
      */
     private function _browser_get_files($dir, $limit = 15, $offset = 0)
     {
@@ -1682,12 +1726,12 @@ class Filemanager
 
             // Setup the link
             $file['file_name'] = '
-				<a href="#"
-					title="' . $file['file_name'] . '"
-					onclick="$.ee_filebrowser.placeImage(' . $file['file_id'] . '); return false;"
-				>
-					' . urldecode($file['file_name']) . '
-				</a>';
+                <a href="#"
+                    title="' . $file['file_name'] . '"
+                    onclick="$.ee_filebrowser.placeImage(' . $file['file_id'] . '); return false;"
+                >
+                    ' . urldecode($file['file_name']) . '
+                </a>';
 
             $file['short_name'] = ellipsize($file['title'], 13, 0.5);
             $file['file_size'] = byte_format($file['file_size']);
@@ -1705,7 +1749,7 @@ class Filemanager
      * @access private
      * @param $dir Directory array, containing at least the id
      * @return array Array with the category group name as the key and the
-     *		categories as the values (see above)
+     *  categories as the values (see above)
      */
     private function _get_category_dropdown($dir)
     {
@@ -1735,7 +1779,7 @@ class Filemanager
      * the content-length of the request is larger than PHP's post_max_size
      *
      *
-     * @return	bool
+     * @return bool
      */
     public function validate_post_data()
     {
@@ -1817,18 +1861,18 @@ class Filemanager
      *
      * The function that handles the file upload logic (allowed upload? etc.)
      *
-     *	1. Establish the allowed types for the directory
-     *		- If the field is a custom field, make sure it's permissions aren't stricter
-     *	2. Upload the file
-     *		- Checks to see if XSS cleaning needs to be on
-     *		- Returns errors
-     *	3. Send file to save_file, which does more security, creates thumbs
-     *		and adds it to the database.
+     * 1. Establish the allowed types for the directory
+     *  - If the field is a custom field, make sure it's permissions aren't stricter
+     * 2. Upload the file
+     *  - Checks to see if XSS cleaning needs to be on
+     *  - Returns errors
+     * 3. Send file to save_file, which does more security, creates thumbs
+     *  and adds it to the database.
      *
-     * @access	private
-     * @param	object 	$dir 		Directory information from the database in array form
-     * @param	string	$field_name	Provide the field name in case it's a custom field
-     * @return 	array 	Array of file_data sent to Filemanager->save_file
+     * @access private
+     * @param object  $dir   Directory information from the database in array form
+     * @param string $field_name Provide the field name in case it's a custom field
+     * @return  array  Array of file_data sent to Filemanager->save_file
      */
     private function _upload_file($dir, $field_name, $directory_id = 0)
     {
@@ -1859,7 +1903,7 @@ class Filemanager
 
         $field = ($field_name) ? $field_name : 'userfile';
         $original_filename = $_FILES[$field]['name'];
-        $clean_filename = basename($this->clean_filename(
+        $clean_filename = basename($this->clean_subdir_and_filename(
             $_FILES[$field]['name'],
             $dir['id'],
             array('ignore_dupes' => true)
@@ -1898,8 +1942,8 @@ class Filemanager
         }
 
         /* -------------------------------------------
-        /*	Hidden Configuration Variable
-        /*	- channel_form_overwrite => Allow authors to overwrite their own files via Channel Form
+        /* Hidden Configuration Variable
+        /* - channel_form_overwrite => Allow authors to overwrite their own files via Channel Form
         /* -------------------------------------------*/
 
         if (bool_config_item('channel_form_overwrite')) {
@@ -1974,8 +2018,8 @@ class Filemanager
         );
 
         /* -------------------------------------------
-        /*	Hidden Configuration Variable
-        /*	- channel_form_overwrite => Allow authors to overwrite their own files via Channel Form
+        /* Hidden Configuration Variable
+        /* - channel_form_overwrite => Allow authors to overwrite their own files via Channel Form
         /* -------------------------------------------*/
 
         if (isset($config['overwrite']) && $config['overwrite'] === true) {
@@ -2004,8 +2048,10 @@ class Filemanager
                     )
                 );
             }
+
+            $file_data['image_processed'] = true;
         }
-        
+
         // Save file to database
         $saved = $this->save_file($file_data['relative_path'], $dir, $file_data);
 
@@ -2061,7 +2107,7 @@ class Filemanager
     /**
      * Overwrite OR Rename Files Manually
      *
-     * @access	public
+     * @access public
      * @param integer $file_id The ID of the file in exp_files
      * @param string $new_file_name The new file name for the file
      * @param string $replace_file_name The temporary replacement name for the file
@@ -2172,7 +2218,7 @@ class Filemanager
      *
      * @param object $new_file The data coming from the database for the deleted file
      * @param string $file_name The file name, the existing files are deleted
-     * 	and the new files are renamed within Filemanager::rename_file
+     *  and the new files are renamed within Filemanager::rename_file
      * @param integer $directory_id The directory ID where the file is located
      * @return object Object from database representing the data of the old item
      */
@@ -2227,7 +2273,7 @@ class Filemanager
     public function _rename_raw_file($old_file_name, $new_file_name, $directory_id)
     {
         // Make sure the filename is clean
-        $new_file_name = $this->clean_filename($new_file_name, $directory_id);
+        $new_file_name = $this->clean_subdir_and_filename($new_file_name, $directory_id);
 
         // Check they have permission for this directory and get directory info
         $upload_directory = $this->fetch_upload_dir_prefs($directory_id);
@@ -2242,7 +2288,7 @@ class Filemanager
             return ['error' => lang('file_exists') ?? 'file_exists'];
         }
 
-        if(!$upload_directory['directory']->getFilesystem()->rename($old_file_name, $new_file_name)) {
+        if (!$upload_directory['directory']->getFilesystem()->rename($old_file_name, $new_file_name)) {
             return ['error' => lang('copy_error') ?? 'copy_error'];
         }
 
@@ -2252,8 +2298,8 @@ class Filemanager
     /**
      * Handle the edit actions
      *
-     * @access	public
-     * @return	mixed
+     * @access public
+     * @return mixed
      */
     public function edit_image()
     {
@@ -2330,7 +2376,7 @@ class Filemanager
             $config['new_image'] = $new_filename;
         }
 
-        //		$config['dynamic_output'] = TRUE;
+        //  $config['dynamic_output'] = TRUE;
 
         ee()->load->library('image_lib', $config);
 
@@ -2454,7 +2500,7 @@ class Filemanager
         $new_depth = $directory_depth - 1;
         $indexFiles = array('index.html', 'index.htm', 'index.php');
 
-        foreach($source->getDirectoryContents() as $path) {
+        foreach ($source->getDirectoryContents() as $path) {
             // Remove '.', '..', and hidden files [optional]
             if (!trim($path, '.') || ($hidden == false && $path[0] == '.')) {
                 continue;
@@ -2469,10 +2515,10 @@ class Filemanager
             } elseif (($directory_depth < 1 || $new_depth > 0) && $source->isDir($path)) {
                 $filedata[$path] = $source->getDirectoryContents($path, false, $hidden); //directory_map($source_dir . $file . DIRECTORY_SEPARATOR, $new_depth, $hidden);
             }
-
         }
 
         sort($filedata);
+
         return $filedata;
     }
 
@@ -2481,10 +2527,10 @@ class Filemanager
      *
      * This is a helper wrapper around the zip lib and download helper
      *
-     * @param 	mixed   string or array of urlencoded file names
-     * @param 	string	file directory the files are located in.
-     * @param 	string	optional name of zip file to download
-     * @return 	mixed 	nuttin' or boolean false if everything goes wrong.
+     * @param  mixed   string or array of urlencoded file names
+     * @param  string file directory the files are located in.
+     * @param  string optional name of zip file to download
+     * @return  mixed  nuttin' or boolean false if everything goes wrong.
      */
     public function download_files($files, $zip_name = 'downloaded_files.zip')
     {
@@ -2548,8 +2594,8 @@ class Filemanager
      * It's here to make things forward compatible for if/when image uploads
      * could be tossed in the database.
      *
-     * @param 	string		full system path to the image to examine
-     * @return 	array
+     * @param  string  full system path to the image to examine
+     * @return  array
      */
     public function get_file_info($file)
     {
@@ -2564,8 +2610,8 @@ class Filemanager
      * This function has been lifted from the CI file upload class, and tweaked
      * just a bit.
      *
-     * @param 	string 		path to file
-     * @return 	boolean		TRUE if image, FALSE if not
+     * @param  string   path to file
+     * @return  boolean  TRUE if image, FALSE if not
      */
     public function is_image($mime)
     {
@@ -2577,7 +2623,7 @@ class Filemanager
      *
      * Retrieves available font file names, returns associative array
      *
-     * @return 	array
+     * @return  array
      */
     public function fetch_fontlist()
     {
@@ -2608,9 +2654,9 @@ class Filemanager
      * method to process the image.
      *
      * Needs a few POST variables:
-     * 	- file_id: ID of the file
-     * 	- file_name: name of the file without full path
-     * 	- upload_dir: Directory ID
+     *  - file_id: ID of the file
+     *  - file_name: name of the file without full path
+     *  - upload_dir: Directory ID
      */
     public function _do_image_processing($redirect = true)
     {
@@ -2721,8 +2767,12 @@ class Filemanager
     /**
      * Image crop
      */
-    public function _do_crop($file_path)
+    public function _do_crop($file_path, $filesystem = null)
     {
+        $filesystem = ($filesystem) ?: ee('Filesystem');
+        $source = $filesystem->copyToTempFile($file_path);
+        $new = $filesystem->createTempFile();
+
         $config = array(
             'width' => ee()->input->post('crop_width'),
             'maintain_ratio' => false,
@@ -2732,8 +2782,8 @@ class Filemanager
             'master_dim' => 'width',
             'library_path' => ee()->config->item('image_library_path'),
             'image_library' => ee()->config->item('image_resize_protocol'),
-            'source_image' => $file_path,
-            'new_image' => $file_path
+            'source_image' => $source['path'],
+            'new_image' => $new['path']
         );
 
         // Must initialize seperately in case image_lib was loaded previously
@@ -2748,16 +2798,17 @@ class Filemanager
             }
         }
 
-        $reponse = array();
+        $response = array();
 
         if (isset($errors)) {
             $response['errors'] = $errors;
         } else {
             ee()->load->helper('file');
             $response = array(
-                'dimensions' => ee()->image_lib->get_image_properties('', true),
-                'file_info' => get_file_info($file_path)
+                'dimensions' => ee()->image_lib->get_image_properties($new['path'], true),
+                'file_info' => get_file_info($new['path'])
             );
+            ee('Filesystem')->forceCopy($new['path'], $file_path, $filesystem);
         }
 
         ee()->image_lib->clear();
@@ -2768,14 +2819,18 @@ class Filemanager
     /**
      * Do image rotation.
      */
-    public function _do_rotate($file_path)
+    public function _do_rotate($file_path, $filesystem = null)
     {
+        $filesystem = ($filesystem) ?: ee('Filesystem');
+        $source = $filesystem->copyToTempFile($file_path);
+        $new = $filesystem->createTempFile();
+
         $config = array(
             'rotation_angle' => ee()->input->post('rotate'),
             'library_path' => ee()->config->item('image_library_path'),
             'image_library' => ee()->config->item('image_resize_protocol'),
-            'source_image' => $file_path,
-            'new_image' => $file_path
+            'source_image' => $source['path'],
+            'new_image' => $new['path']
         );
 
         // Must initialize seperately in case image_lib was loaded previously
@@ -2790,16 +2845,17 @@ class Filemanager
             }
         }
 
-        $reponse = array();
+        $response = array();
 
         if (isset($errors)) {
             $response['errors'] = $errors;
         } else {
             ee()->load->helper('file');
             $response = array(
-                'dimensions' => ee()->image_lib->get_image_properties('', true),
-                'file_info' => get_file_info($file_path)
+                'dimensions' => ee()->image_lib->get_image_properties($new['path'], true),
+                'file_info' => get_file_info($new['path'])
             );
+            ee('Filesystem')->forceCopy($new['path'], $file_path, $filesystem);
         }
 
         ee()->image_lib->clear();
@@ -2810,15 +2866,19 @@ class Filemanager
     /**
      * Do image resizing.
      */
-    public function _do_resize($file_path)
+    public function _do_resize($file_path, $filesystem = null)
     {
+        $filesystem = ($filesystem) ?: ee('Filesystem');
+        $source = $filesystem->copyToTempFile($file_path);
+        $new = $filesystem->createTempFile();
+
         $config = array(
             'width' => ee()->input->get_post('resize_width'),
             'maintain_ratio' => ee()->input->get_post('constrain'),
             'library_path' => ee()->config->item('image_library_path'),
             'image_library' => ee()->config->item('image_resize_protocol'),
-            'source_image' => $file_path,
-            'new_image' => $file_path
+            'source_image' => $source['path'],
+            'new_image' => $new['path']
         );
 
         if (ee()->input->get_post('resize_height') != '') {
@@ -2846,9 +2906,10 @@ class Filemanager
         } else {
             ee()->load->helper('file');
             $response = array(
-                'dimensions' => ee()->image_lib->get_image_properties('', true),
-                'file_info' => get_file_info($file_path)
+                'dimensions' => ee()->image_lib->get_image_properties($new['path'], true),
+                'file_info' => get_file_info($new['path'])
             );
+            ee('Filesystem')->forceCopy($new['path'], $file_path, $filesystem);
         }
 
         ee()->image_lib->clear();

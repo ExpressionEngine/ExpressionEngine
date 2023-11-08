@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -103,6 +103,11 @@ abstract class AbstractChannels extends CP_Controller
             'sets.importUrl',
             ee('CP/URL', 'channels/sets')->compile()
         );
+
+        ee()->javascript->set_global(array(
+            'lang.edit_element' => lang('edit_element'),
+            'lang.remove_btn' => lang('remove_btn'),
+        ));
 
         ee()->cp->add_js_script(array(
             'file' => array('cp/channel/menu'),

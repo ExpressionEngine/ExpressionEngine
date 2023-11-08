@@ -11,6 +11,13 @@ class UnpackerTest extends TestCase
 {
     use \Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
+    public $filesystem;
+    public $zip_archive;
+    public $verifier;
+    public $logger;
+    public $requirements;
+    public $unpacker;
+
     public function setUp(): void
     {
         $this->filesystem = Mockery::mock('ExpressionEngine\Library\Filesystem\Filesystem');

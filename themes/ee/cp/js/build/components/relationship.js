@@ -33,12 +33,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-var Relationship =
-/*#__PURE__*/
-function (_React$Component) {
+var Relationship = /*#__PURE__*/function (_React$Component) {
   _inherits(Relationship, _React$Component);
 
   function Relationship(props) {
@@ -257,8 +255,7 @@ function (_React$Component) {
         iframe: true,
         success: this.entryWasCreated,
         load: function load(modal) {
-          var entryTitle = _this2.field.closest('[data-publish]').find('input[name=title]').val();
-
+          var entryTitle = $(_this2.field.closest('[data-publish]')).find('input[name=title]').val();
           var title = EE.relationship.lang.creatingNew.replace('#to_channel#', channelTitle).replace('#from_channel#', EE.publish.channel_title);
 
           if (entryTitle) {
@@ -403,11 +400,17 @@ function (_React$Component) {
           className: "meta-info ml-s float-right"
         }, " ", item.instructions)), _this5.state.selected.length <= 10 && React.createElement("div", {
           "class": "list-item__secondary"
-        }, props.display_entry_id && React.createElement("span", null, " #", item.value, " / "), item.instructions)), React.createElement("div", {
+        }, props.display_entry_id && React.createElement("span", null, " #", item.value, " / "), item.instructions, props.display_status && React.createElement("span", {
+          className: "status-indicator",
+          style: {
+            borderColor: '#' + EE.statuses[item.status],
+            color: '#' + EE.statuses[item.status]
+          }
+        }, item.status))), React.createElement("div", {
           "class": "list-item__content-right"
         }, React.createElement("div", {
           className: "button-group"
-        }, _this5.props.can_add_items && React.createElement("button", {
+        }, _this5.props.can_add_items && item.editable && React.createElement("button", {
           type: "button",
           title: EE.relationship.lang.edit,
           className: "button button--small button--default",
@@ -509,7 +512,13 @@ function (_React$Component) {
           className: "dropdown__link"
         }, item.label, props.display_entry_id && React.createElement("span", {
           "class": "dropdown__link-entryId"
-        }, " (#", item.value, ")"), " ", React.createElement("span", {
+        }, " (#", item.value, ")"), props.display_status && React.createElement("span", {
+          className: "dropdown__link-status-indicator",
+          style: {
+            borderColor: '#' + EE.statuses[item.status],
+            color: '#' + EE.statuses[item.status]
+          }
+        }, item.status), " ", React.createElement("span", {
           className: "dropdown__link-right"
         }, item.instructions));
       }), dropdownItems.length == 0 && React.createElement("div", {

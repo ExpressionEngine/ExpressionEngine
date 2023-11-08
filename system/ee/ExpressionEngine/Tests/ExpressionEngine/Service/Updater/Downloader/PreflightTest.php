@@ -9,6 +9,12 @@ use PHPUnit\Framework\TestCase;
 
 class PreflightTest extends TestCase
 {
+    public $filesystem;
+    public $config;
+    public $logger;
+    public $theme_paths;
+    public $preflight;
+
     public function setUp(): void
     {
         $this->filesystem = Mockery::mock('ExpressionEngine\Library\Filesystem\Filesystem');
@@ -124,6 +130,7 @@ class PreflightTest extends TestCase
             ->andReturn(true)
             ->once();
 
+        $this->filesystem->shouldReceive('exists')->andReturn(true);
         $this->preflight->checkPermissions();
 
         $this->filesystem->shouldReceive('isWritable')

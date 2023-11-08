@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -79,7 +79,7 @@ class Filepicker_upd
         $existing = ee('Model')->get('UploadDestination')
             ->fields('name')
             ->filter('name', 'IN', array_keys($member_directories))
-            ->filter('site_id', $site_id)
+            ->filter('site_id', 'IN', [0, $site_id])
             ->all()
             ->pluck('name');
 

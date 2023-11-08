@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -22,6 +22,9 @@ class ModelGenerator
     protected $generatorPath;
     protected $addonPath;
     protected $stubPath;
+    protected $className;
+    protected $namespace;
+    protected $modelPath;
 
     public function __construct(Filesystem $filesystem, Str $str, array $data)
     {
@@ -33,10 +36,19 @@ class ModelGenerator
         $this->className = $this->str->studly($data['name']);
         $this->addon = $data['addon'];
 
+        $this->verifyAddonExists();
+
         $this->init();
 
         $addonSetupArray = require $this->addonPath . 'addon.setup.php';
         $this->namespace = $addonSetupArray['namespace'];
+    }
+
+    private function verifyAddonExists()
+    {
+        if (is_null(ee('Addon')->get($this->addon))) {
+            throw new \Exception("Add-on does not exists: " . $this->addon, 1);
+        }
     }
 
     private function init()

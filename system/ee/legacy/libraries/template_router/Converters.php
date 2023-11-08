@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 if (defined('EE_APPPATH')) {
@@ -80,7 +80,7 @@ class EE_Template_router_converters
     /**
      * Register a converter
      *
-     * @param String	Class name of new converter
+     * @param string Class name of new converter
      */
     public function register($name, $class)
     {
@@ -97,7 +97,7 @@ interface EE_Template_router_converter
      * Return a regular expression for validation
      *
      * @access public
-     * @return string	The compiled regular expression
+     * @return string The compiled regular expression
      */
     public function validator();
 }

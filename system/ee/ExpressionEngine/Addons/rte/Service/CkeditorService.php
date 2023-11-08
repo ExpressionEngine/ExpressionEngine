@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -178,7 +178,7 @@ class CkeditorService extends AbstractRteService implements RteService
         static::$_includedConfigs[] = $configHandle;
 
         if (isset($config['height']) && !empty($config['height'])) {
-            ee()->cp->add_to_head('<style type="text/css">.ck-editor__editable_inline { min-height: ' . $config['height'] . 'px; }</style>');
+            ee()->cp->add_to_head('<style type="text/css">.rte_' . $configHandle . '.ck-editor__editable_inline { min-height: ' . $config['height'] . 'px; }</style>');
         }
 
         if (isset($config['css_template']) && !empty($config['css_template'])) {

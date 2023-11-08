@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -368,7 +368,7 @@ class EE_Lang
         }
 
         if (! isset($lang)) {
-            log_message('error', 'Language file contains no data: language/' . $idiom . '/' . $langfile);
+            log_message('debug', 'Language file contains no data: language/' . $idiom . '/' . $langfile);
 
             return;
         }

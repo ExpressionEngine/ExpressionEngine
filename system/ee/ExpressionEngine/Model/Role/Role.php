@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -184,8 +184,11 @@ class Role extends Model
             $query->where('members_roles.role_id', $this->getId());
         }
         if (in_array($mode, ['all', 'primary'])) {
-            foreach ($this->RoleGroups as $role_group) {
-                $query->or_where('members_role_groups.group_id', $role_group->getId());
+            $roleGroupsQuery = ee('db')->select('group_id')->from('roles_role_groups')->where('role_id', $this->getId())->get();
+            if ($roleGroupsQuery->num_rows() > 0) {
+                foreach ($roleGroupsQuery->result_array() as $roleGroup) {
+                    $query->or_where('members_role_groups.group_id', $roleGroup['group_id']);
+                }
             }
         }
 

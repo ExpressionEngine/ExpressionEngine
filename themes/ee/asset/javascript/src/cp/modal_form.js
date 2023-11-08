@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -73,12 +73,12 @@ EE.cp.ModalForm = {
 				options.load(that.modalContentsContainer)
 			})
 
-			var timer = setInterval(function() {
-				if ($('.app-modal .grid-field').length) {
-					new Grid.Publish($('.app-modal .grid-field'))
-					clearInterval(timer);
-				}
-			},50);
+			// var timer = setInterval(function() {
+			// 	if ($('.app-modal .grid-field').length) {
+			// 		new Grid.Publish($('.app-modal .grid-field'))
+			// 		clearInterval(timer);
+			// 	}
+			// },50);
 		}
 	},
 

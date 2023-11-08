@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -13,7 +13,7 @@ namespace ExpressionEngine\Cli\Commands;
 use ExpressionEngine\Cli\Cli;
 
 /**
- * Command to clear selected caches
+ * Command to make action files for addons
  */
 class CommandMakeAction extends Cli
 {
@@ -67,7 +67,7 @@ class CommandMakeAction extends Cli
             $service = ee('ActionGenerator', $this->data);
             $service->build();
         } catch (\Exception $e) {
-            $this->fail($e->getMessage());
+            $this->fail(addslashes($e->getMessage()));
         }
 
         $this->info('command_make_action_created_successfully');

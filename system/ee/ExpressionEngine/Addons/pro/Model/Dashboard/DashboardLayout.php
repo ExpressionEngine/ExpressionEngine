@@ -3,7 +3,7 @@
 /**
  * ExpressionEngine Pro
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
 */
 
 namespace ExpressionEngine\Addons\Pro\Model\Dashboard;
@@ -26,12 +26,12 @@ class DashboardLayout extends Core\DashboardLayout
             )
         ),
         'Members' => array(
-            'model' => 'Member',
+            'model' => 'ee:Member',
             'type' => 'belongsTo',
             'from_key' => 'member_id'
         ),
         'Roles' => array(
-            'model' => 'Role',
+            'model' => 'ee:Role',
             'type' => 'belongsTo',
             'from_key' => 'role_id'
         ),

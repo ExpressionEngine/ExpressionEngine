@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -21,7 +21,7 @@
 		$('.overlay').fadeIn('slow').css('height',heightIs);
 		$('.modal-wrap' + modal).fadeIn('slow');
 		e.preventDefault();
-		$('#top').animate({ scrollTop: 0 }, 100);
+		$('#top, html').animate({ scrollTop: 0 }, 500);
 
 		modal = $(modal);
 		modal.find('.date').html($(this).data('date'));

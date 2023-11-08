@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -260,7 +260,7 @@ class Upload
     public function uploadTo($upload_location_id, $directory_id = 0)
     {
         $uploadLocation = ee('Model')->get('UploadDestination', $upload_location_id)
-            ->filter('site_id', ee()->config->item('site_id'))
+            ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
             ->first();
 
         if (! $uploadLocation) {
@@ -473,10 +473,12 @@ class Upload
 
                 $file->getFilesystem()->forceCopy($src, $file->getAbsolutePath());
             } else {
-                if (($file->description && ($file->description != $original->description))
+                if (
+                    ($file->description && ($file->description != $original->description))
                     || ($file->credit && ($file->credit != $original->credit))
                     || ($file->location && ($file->location != $original->location))
-                    || ($file->Categories->count() > 0 && ($file->Categories->count() != $file->Categories->count()))) {
+                    || ($file->Categories->count() > 0 && ($file->Categories->count() != $original->Categories->count()))
+                ) {
                     $result['warning'] = lang('replace_no_metadata');
                 }
 

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -52,7 +52,7 @@ class Text extends Formatter
 
         $this->content = '';
         foreach ($chars as $index => $char) {
-            $decoded = utf8_decode($char);
+            $decoded = mb_convert_encoding($char, 'ISO-8859-1', 'UTF-8');
 
             if ($decoded != '?') {
                 $char = $decoded;
@@ -157,7 +157,7 @@ class Text extends Formatter
                 return $this;
             }
 
-            $censored = preg_split('/[\n|\|]/', $censored, null, PREG_SPLIT_NO_EMPTY);
+            $censored = preg_split('/[\n|\|]/', $censored, 0, PREG_SPLIT_NO_EMPTY);
 
             foreach ($censored as $key => $bad) {
                 $length = strlen($bad);
@@ -256,7 +256,7 @@ class Text extends Formatter
                 $emoji_map = ee('Emoji')->emojiMap;
                 $short_names = array_keys($emoji_map);
             }
-                $short_names = array_keys($emoji_map);
+            $short_names = array_keys($emoji_map);
 
             $shorthand_regex = '/:(' . str_replace('+', '\+', implode('|', $short_names)) . '):/';
         }
@@ -300,7 +300,6 @@ class Text extends Formatter
                         $this->content = str_replace($match[0], $emoji_map[$match[1]], $this->content);
                     }
                 }
-
             }
         }
 
@@ -379,7 +378,7 @@ class Text extends Formatter
 
         $json_options = 0;
         if (isset($options['options'])) {
-            foreach (preg_split('/[\s\|]/', $options['options'], null, PREG_SPLIT_NO_EMPTY) as $param) {
+            foreach (preg_split('/[\s\|]/', $options['options'], 0, PREG_SPLIT_NO_EMPTY) as $param) {
                 $json_options += constant($param);
             }
         }
@@ -483,7 +482,7 @@ class Text extends Formatter
         }
 
         $find = $this->removeEvalModifier($find);
-        $valid = @preg_match($find, null);
+        $valid = @preg_match($find, '');
 
         // valid regex only, unless DEBUG is enabled
         if ($valid !== false or DEBUG) {

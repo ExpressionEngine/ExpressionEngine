@@ -9,7 +9,7 @@ require_once PATH_ADDONS . 'structure/helper.php';
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 class Structure_upd
@@ -17,6 +17,11 @@ class Structure_upd
     public $has_cp_backend = 'y';
     public $has_publish_fields = 'n';
     public $ext_settings = 'n';
+
+    public $sql;
+    public $version;
+    public $page_title;
+    public $nset;
 
     public function __construct($switch = true)
     {

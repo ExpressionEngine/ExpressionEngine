@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 require_once PATH_ADDONS . 'structure/addon.setup.php';
@@ -22,6 +22,8 @@ class Structure_acc
     public $structure;
     public $installed = false;
     public $data = array();
+    public $version;
+    public $cache;
 
     /**
      * Constructor

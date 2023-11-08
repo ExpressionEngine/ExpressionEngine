@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -241,7 +241,7 @@ class RteHelper
                 $entries = ee('Model')->get('ChannelEntry', $entry_ids)
                     ->fields('entry_id', 'title', 'url_title', 'channel_id');
                 if (!empty($search)) {
-                    $entries->filter('title', 'LIKE', '%' . $search . '%');
+                    $entries->filter('title', 'LIKE', '%' . ee()->db->escape_like_str($search) . '%');
                 }
                 $titles = $entries->all()->getDictionary('entry_id', 'title');
                 $channel_ids = $entries->all()->getDictionary('entry_id', 'channel_id');

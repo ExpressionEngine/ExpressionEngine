@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -126,7 +126,7 @@ class Templates extends Jumps
             $keywords = explode(' ', $searchString);
 
             foreach ($keywords as $keyword) {
-                $groups->filter('group_name', 'LIKE', '%' . $keyword . '%');
+                $groups->filter('group_name', 'LIKE', '%' . ee()->db->escape_like_str($keyword) . '%');
             }
         }
 
@@ -142,7 +142,7 @@ class Templates extends Jumps
             $keywords = explode(' ', $searchString);
 
             foreach ($keywords as $keyword) {
-                $templates->filter('template_name', 'LIKE', '%' . $keyword . '%');
+                $templates->filter('template_name', 'LIKE', '%' . ee()->db->escape_like_str($keyword) . '%');
             }
         }
 

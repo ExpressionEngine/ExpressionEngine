@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -17,13 +17,13 @@ use ExpressionEngine\Library\CP\EntryManager;
  */
 class Title extends EntryManager\Columns\Title
 {
-    public function renderTableCell($data, $field_id, $file, $viewtype = 'list')
+    public function renderTableCell($data, $field_id, $file, $viewtype = 'list', $pickerMode = false, $addQueryString = [])
     {
         $title = $file->title;
 
         if ($viewtype == 'list') {
             if ($file->isDirectory()) {
-                $url = ee('CP/URL')->make('files/directory/' . $file->upload_location_id, ['directory_id' => $file->file_id]);
+                $url = ee('CP/URL')->make('files/directory/' . $file->upload_location_id, array_merge($addQueryString, ['directory_id' => $file->file_id]));
                 $title = '<a href="' . $url . '">' . $title . '</a>';
             } elseif (ee('Permission')->can('edit_files')) {
                 $title = '<a href="' . ee('CP/URL')->make('files/file/view/' . $file->file_id) . '">' . $title . '</a>';

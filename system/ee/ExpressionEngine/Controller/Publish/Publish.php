@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -243,7 +243,7 @@ class Publish extends AbstractPublishController
             ],
         );
 
-        if (ee('Request')->get('modal_form') == 'y') {
+        if (ee('Request')->get('modal_form') == 'y' || ! ee('Permission')->can('edit_self_entries_channel_id_' . $entry->channel_id)) {
             $vars['buttons'] = [[
                 'name' => 'submit',
                 'type' => 'submit',

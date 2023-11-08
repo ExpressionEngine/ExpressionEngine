@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -92,7 +92,7 @@ class DbBackup extends Utilities
 
         // Create a filename with the database name and timestamp
         if (empty($file_path)) {
-            $date = ee()->localize->format_date('%Y-%m-%d_%Hh%im%T');
+            $date = ee()->localize->format_date('%Y-%m-%d_%Hh%im%ss%T');
             $file_path = PATH_CACHE . ee()->db->database . '_' . $date . '.sql';
         } else {
             // The path we get from POST will be truncated for security,

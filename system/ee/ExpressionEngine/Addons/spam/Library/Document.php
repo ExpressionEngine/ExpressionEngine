@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -119,11 +119,13 @@ class Document implements Iterator
         $this->position = 0;
     }
 
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->frequency[$this->words[$this->position]];
     }
 
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->words[$this->position];

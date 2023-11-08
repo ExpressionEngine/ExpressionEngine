@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -103,7 +103,7 @@ class Csrf_database implements Csrf_storage_backend
             // active record cannot do this query
             // delete any csrf tokens whose associated session cannot be
             // found in the session table.
-            ee()->db->query("DELETE sh FROM ${sh} sh LEFT JOIN ${s} s ON s.session_id = sh.session_id WHERE s.session_id IS NULL");
+            ee()->db->query("DELETE sh FROM {$sh} sh LEFT JOIN {$s} s ON s.session_id = sh.session_id WHERE s.session_id IS NULL");
         }
     }
 }

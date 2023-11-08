@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2022, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -154,12 +154,12 @@ class Pagination
         $links['current_page'] = $this->current_page;
         $links['first'] = $base_url->compile();
         foreach (array('prev', 'next', 'last') as $key) {
-            if (${$key} === null) {
+            if ($$key === null) {
                 continue;
             }
 
             $url = clone $base_url;
-            $url->setQueryStringVariable((string) $this->page_variable, ${$key});
+            $url->setQueryStringVariable((string) $this->page_variable, $$key);
             $url->setQueryStringVariable('perpage', $this->per_page);
             $links[$key] = $url->compile();
         }
