@@ -699,6 +699,10 @@ $lang = array(
 
     'include_members_in_desc' => 'Users with this role will be included in all of the selected list types.',
 
+    'show_field_names' => 'Show field names on Publish',
+
+    'show_field_names_desc' => 'When enabled, copy-able names of fields will be included on Entry Publish & Edit pages',
+
     'mbr_account_privs' => 'Member Account Privileges',
 
     'mbr_delete_notify_emails' => 'Recipient(s) for delete notifications',
@@ -1159,6 +1163,12 @@ $lang = array(
     'access_overview_can_edit_channel_fields' => 'Edit fields',
 
     'access_overview_can_delete_channel_fields' => 'Delete fields',
+
+    'access_overview_can_create_category_groups' => 'Create category groups',
+
+    'access_overview_can_edit_category_groups' => 'Edit category groups',
+
+    'access_overview_can_delete_category_groups' => 'Delete category groups',
 
     'access_overview_can_create_categories' => 'Create categories',
 

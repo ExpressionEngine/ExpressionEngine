@@ -511,20 +511,24 @@ class Wizard extends CI_Controller
      */
     private function postflight()
     {
+        // clear all caches
         ee()->functions->clear_caching('all');
 
         // reset the flag for dismissed banner for members
         ee('db')->update('members', ['dismissed_banner' => 'n']);
 
+        // update entry stats
         foreach (ee('Model')->get('Channel')->all() as $channel) {
             $channel->updateEntryStats();
         }
 
+        // synchronize all channel layouts
         ee('Model')->get('ChannelLayout')
             ->with('Channel')
             ->all()
             ->synchronize();
 
+        // check if any fieldtypes are missing, or template tags broken
         $advisor = new \ExpressionEngine\Library\Advisor\Advisor();
 
         return $advisor->postUpdateChecks();
@@ -779,7 +783,7 @@ class Wizard extends CI_Controller
             array(
                 'field' => 'email_address',
                 'label' => 'lang:email_address',
-                'rules' => 'required|email|max_length[' . USERNAME_MAX_LENGTH . ']'
+                'rules' => 'required|email|max_length[254]'
             ),
             array(
                 'field' => 'license_agreement',

@@ -359,6 +359,8 @@ $lang = array(
 
     'edit_entry' => 'Edit Entry',
 
+    'edit_member' => 'Edit Member',
+
     'edit_selected' => 'Edit Selected',
 
     'edit_this_entry' => 'Edit This Entry',
@@ -852,6 +854,8 @@ $lang = array(
     'expand_all' => 'Expand All',
 
     'creating_new_in_rel' => 'Creating new entry in <b>#to_channel#</b> for a relationship with <b>#from_channel#</b>',
+
+    'creating_member_in_rel' => 'Creating new member for a relationship with <b>#from_channel#</b>',
 
     'hide' => 'Hide',
 

@@ -97,6 +97,15 @@ class ChannelEntry extends ContentModel
                 'right' => 'child_id'
             )
         ),
+        'Members' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'Member',
+            'pivot' => array(
+                'table' => 'member_relationships',
+                'left' => 'parent_id',
+                'right' => 'child_id'
+            )
+        ),
         'Versions' => array(
             'type' => 'hasMany',
             'model' => 'ChannelEntryVersion'
