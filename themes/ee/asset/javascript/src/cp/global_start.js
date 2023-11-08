@@ -424,7 +424,7 @@ EE.cp.setBasePath = function(newBase, skipBroadcast /* internal */) {
 		oldBaseS = EE.BASE.match(sessionIdRegex) || ['', ''];
 
 	var replaceBase = function(i, value) {
-		if (value) {
+		if (value && oldBaseS[1]) {
 			return value.replace(oldBaseS[1], newBaseS[1]);
 		}
 	};

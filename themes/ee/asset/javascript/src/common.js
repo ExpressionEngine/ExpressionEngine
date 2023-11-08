@@ -423,7 +423,7 @@ $(document).ready(function(){
 	// Ctrls+S to save
 	// -------------------------------------------------------------------
 	window.addEventListener('keydown', function (key) {
-		if (key.ctrlKey || key.metaKey){
+		if ((key.ctrlKey || key.metaKey) && !$('body').hasClass('redactor-body-fullscreen')) {
 			$('.button[data-shortcut]:visible').each(function(e) {
 				$(this).addClass('button--with-shortcut');
 				if (key.key.toLowerCase() == $(this).data('shortcut').toLowerCase()) {
@@ -1243,5 +1243,32 @@ $(document).ready(function(){
 				}
 			});
 		}
+
+		$('body').on('click', '.js-app-badge', function(e) {
+			var el = $(this);
+			// copy asset link to clipboard
+			var copyText = el.find('.txt-only').text();
+
+			document.addEventListener('copy', function(e) {
+				e.clipboardData.setData('text/plain', copyText);
+				e.preventDefault();
+			}, true);
+
+			document.execCommand('copy');
+
+			// show notification
+			el.addClass('success');
+			el.find('.fa-copy').addClass('hidden');
+			el.find('.fa-circle-check').removeClass('hidden');
+
+			// // hide notification in 10 sec
+			setTimeout(function() {
+				el.removeClass('success');
+				el.find('.fa-copy').removeClass('hidden');
+				el.find('.fa-circle-check').addClass('hidden');
+			}, 10000);
+
+			return false;
+		})
 
 }); // close (document).ready
