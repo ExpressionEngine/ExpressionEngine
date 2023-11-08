@@ -26,7 +26,7 @@ class FluidField extends ControlPanel {
     })
   }
 
-  
+
   add_content(index, skew = 0) {
 
     this.get('items').eq(index).invoke('attr', 'data-field-type').then(data => {
@@ -50,7 +50,7 @@ class FluidField extends ControlPanel {
         case 'file':
           field.find('button:contains("Choose Existing")').click()
           cy.wait(500)
-          this.get('items').eq(index).find('button:contains("Choose Existing")').next('.dropdown').find('a:contains("About")').click()
+          this.get('items').eq(index).find('button:contains("Choose Existing")').next('.dropdown').find('a:contains("About")').click({force: true})
           //page.get('modal').should('be.visible')
           cy.get('.modal-file table tbody td').should('be.visible')
           //page.file_modal.wait_for_files
@@ -67,8 +67,9 @@ class FluidField extends ControlPanel {
           cy.get('[name=title]').click()
           break;
         case 'rte':
-          field.find('.ck-content').focus()
-          cy.realType('Lorem ipsum dolor sit amet' + lorem.generateParagraphs(Cypress._.random(1, (2 + skew))));
+
+          field.find('.ck-content').ckType('Lorem ipsum dolor sit amet' + lorem.generateParagraphs(1));
+
           break;
         case 'multi_select':
           field.find('input[type=checkbox]').eq(0 + skew).check()
@@ -89,7 +90,7 @@ class FluidField extends ControlPanel {
           this.get('items').eq(index).find('.fluid__item-field input:visible').eq(1).clear().type('ipsum' + skew.toString())
           break;
         case 'textarea':
-          field.find('textarea').type('Lorem ipsum dolor sit amet' + lorem.generateParagraphs(Cypress._.random(1, (3 + skew))));
+          field.find('textarea').type('Lorem ipsum dolor sit amet' + lorem.generateParagraphs(1));
           break;
         case 'toggle':
           field.find('.toggle-btn').click()
@@ -173,6 +174,6 @@ class FluidField extends ControlPanel {
       }
     })
   }
-  
+
 }
 export default FluidField;

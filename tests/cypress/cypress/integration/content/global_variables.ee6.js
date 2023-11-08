@@ -16,7 +16,7 @@ context('Global Variables', () => {
     })
 
     profile.load()
-    cy.get('input[name="upload_avatar"]').attachFile('pictureUpload.png')
+    cy.get('input[name="upload_avatar"]').selectFile('cypress/fixtures/pictureUpload.png')
     cy.get('body').type('{ctrl}', {release: false}).type('s')
     profile.get('alert').contains("Member Profile Saved")
   })
@@ -130,7 +130,7 @@ context('Global Variables', () => {
         cy.get("#logged_in_total_entries").should('have.text', "0")
         cy.get("#logged_in_total_comments").should('have.text', "0")
         cy.get("#logged_in_mfa_enabled").should('be.empty')
-    
+
     })
 
 

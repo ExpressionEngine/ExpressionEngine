@@ -17,13 +17,13 @@
         "find-test-names": "^1.28.12"
     },
     "dependencies": {
-        "cypress": "^13.0.0",
+        "cypress": "^13.4",
         "cypress-audit": "^1.1.0",
         "cypress-maildev": "^1.1.0",
         "cypress-otp": "^1.0.3",
         "cypress-xpath": "^1.6.2",
         "cypress-log-to-output": "^1.1.2",
-        "cypress-real-events": "^1.10.3",
+        "cypress-real-events": "^1.11",
         "del": "^6.0.0",
         "fs-extra": "^11.0.0",
         "glob": "^8.0.1",

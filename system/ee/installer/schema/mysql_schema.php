@@ -23,6 +23,161 @@ class EE_Schema
     public $version;
     public $userdata;
 
+    public $roles = array(
+        1 => array(
+            'name' => 'Super Admin',
+            'short_name' => 'super_admin',
+            'role_id' => 1,
+            'is_locked' => 'y',
+            'exclude_from_moderation' => 'y',
+            'include_in_authorlist' => 'y',
+            'search_flood_control' => '0',
+            'show_field_names' => 'y'
+        ),
+        2 => array(
+            'name' => 'Banned',
+            'short_name' => 'banned',
+            'role_id' => 2,
+            'is_locked' => 'n',
+            'include_in_memberlist' => 'n',
+            'search_flood_control' => '60'
+        ),
+        3 => array(
+            'name' => 'Guests',
+            'short_name' => 'guests',
+            'role_id' => 3,
+            'is_locked' => 'n',
+            'search_flood_control' => '10'
+        ),
+        4 => array(
+            'name' => 'Pending',
+            'short_name' => 'pending',
+            'role_id' => 4,
+            'is_locked' => 'n',
+            'search_flood_control' => '10'
+        ),
+        5 => array(
+            'name' => 'Members',
+            'short_name' => 'members',
+            'role_id' => 5,
+            'is_locked' => 'n',
+            'search_flood_control' => '10'
+        )
+    );
+
+    public $role_permissions = [
+        1 => [
+            'can_view_offline_system',
+            'can_access_cp',
+            'can_access_dock',
+            'can_access_footer_report_bug',
+            'can_access_footer_new_ticket',
+            'can_access_footer_user_guide',
+            'can_view_homepage_news',
+            'can_upload_new_files',
+            'can_edit_files',
+            'can_delete_files',
+            'can_upload_new_toolsets',
+            'can_edit_toolsets',
+            'can_delete_toolsets',
+            'can_create_upload_directories',
+            'can_edit_upload_directories',
+            'can_delete_upload_directories',
+            'can_access_files',
+            'can_access_design',
+            'can_access_addons',
+            'can_access_members',
+            'can_access_sys_prefs',
+            'can_access_comm',
+            'can_access_utilities',
+            'can_access_data',
+            'can_access_logs',
+            'can_admin_channels',
+            'can_create_channels',
+            'can_edit_channels',
+            'can_delete_channels',
+            'can_create_channel_fields',
+            'can_edit_channel_fields',
+            'can_delete_channel_fields',
+            'can_create_statuses',
+            'can_delete_statuses',
+            'can_edit_statuses',
+            'can_create_categories',
+            'can_create_category_groups',
+            'can_create_roles',
+            'can_delete_roles',
+            'can_edit_roles',
+            'can_admin_design',
+            'can_create_members',
+            'can_edit_members',
+            'can_delete_members',
+            'can_admin_roles',
+            'can_admin_mbr_templates',
+            'can_ban_users',
+            'can_admin_addons',
+            'can_create_templates',
+            'can_edit_templates',
+            'can_delete_templates',
+            'can_create_template_groups',
+            'can_edit_template_groups',
+            'can_delete_template_groups',
+            'can_create_template_partials',
+            'can_edit_template_partials',
+            'can_delete_template_partials',
+            'can_create_template_variables',
+            'can_delete_template_variables',
+            'can_edit_template_variables',
+            'can_edit_categories',
+            'can_edit_category_groups',
+            'can_delete_categories',
+            'can_delete_category_groups',
+            'can_view_other_entries',
+            'can_edit_other_entries',
+            'can_assign_post_authors',
+            'can_delete_self_entries',
+            'can_delete_all_entries',
+            'can_view_other_comments',
+            'can_edit_own_comments',
+            'can_delete_own_comments',
+            'can_edit_all_comments',
+            'can_delete_all_comments',
+            'can_moderate_comments',
+            'can_send_cached_email',
+            'can_email_roles',
+            'can_email_from_profile',
+            'can_view_profiles',
+            'can_edit_html_buttons',
+            'can_post_comments',
+            'can_delete_self',
+            'can_send_private_messages',
+            'can_attach_in_private_messages',
+            'can_send_bulletins',
+            'can_search',
+            'can_create_entries',
+            'can_edit_self_entries',
+            'can_access_security_settings',
+            'can_access_translate',
+            'can_access_import',
+            'can_access_sql_manager',
+            'can_moderate_spam',
+            'can_manage_consents',
+        ],
+        3 => [
+            'can_view_online_system',
+        ],
+        4 => [
+            'can_view_online_system',
+        ],
+        5 => [
+            'can_view_online_system',
+            'can_email_from_profile',
+            'can_view_profiles',
+            'can_edit_html_buttons',
+            'can_delete_self',
+            'can_send_private_messages',
+            'can_attach_in_private_messages',
+        ]
+    ];
 
     private $default_engine = 'InnoDB';
 
@@ -1626,54 +1781,11 @@ class EE_Schema
 
         $Q[] = ee()->db->insert_string('sites', $site);
 
-        // Roles
-        $roles = array(
-            array(
-                'name' => 'Super Admin',
-                'short_name' => 'super_admin',
-                'role_id' => 1,
-                'is_locked' => 'y',
-                'exclude_from_moderation' => 'y',
-                'include_in_authorlist' => 'y',
-                'search_flood_control' => '0',
-                'show_field_names' => 'y'
-            ),
-            array(
-                'name' => 'Banned',
-                'short_name' => 'banned',
-                'role_id' => 2,
-                'is_locked' => 'n',
-                'include_in_memberlist' => 'n',
-                'search_flood_control' => '60'
-            ),
-            array(
-                'name' => 'Guests',
-                'short_name' => 'guests',
-                'role_id' => 3,
-                'is_locked' => 'n',
-                'search_flood_control' => '10'
-            ),
-            array(
-                'name' => 'Pending',
-                'short_name' => 'pending',
-                'role_id' => 4,
-                'is_locked' => 'n',
-                'search_flood_control' => '10'
-            ),
-            array(
-                'name' => 'Members',
-                'short_name' => 'members',
-                'role_id' => 5,
-                'is_locked' => 'n',
-                'search_flood_control' => '10'
-            )
-        );
-
         $add_quotes = function ($value) {
             return (is_string($value)) ? "'{$value}'" : $value;
         };
 
-        foreach ($roles as $role) {
+        foreach ($this->roles as $role) {
             $Q[] = "INSERT INTO exp_roles
 				(role_id, name, short_name, is_locked)
 				VALUES (" . $role['role_id'] . ", '" . $role['name'] . "', '" . $role['short_name'] . "', '" . $role['is_locked'] . "')";
@@ -1687,118 +1799,7 @@ class EE_Schema
 				VALUES (" . implode(', ', array_map($add_quotes, $role)) . ")";
         }
 
-        $role_permissions = [
-            1 => [
-                'can_view_offline_system',
-                'can_access_cp',
-                'can_access_dock',
-                'can_access_footer_report_bug',
-                'can_access_footer_new_ticket',
-                'can_access_footer_user_guide',
-                'can_view_homepage_news',
-                'can_upload_new_files',
-                'can_edit_files',
-                'can_delete_files',
-                'can_upload_new_toolsets',
-                'can_edit_toolsets',
-                'can_delete_toolsets',
-                'can_create_upload_directories',
-                'can_edit_upload_directories',
-                'can_delete_upload_directories',
-                'can_access_files',
-                'can_access_design',
-                'can_access_addons',
-                'can_access_members',
-                'can_access_sys_prefs',
-                'can_access_comm',
-                'can_access_utilities',
-                'can_access_data',
-                'can_access_logs',
-                'can_admin_channels',
-                'can_create_channels',
-                'can_edit_channels',
-                'can_delete_channels',
-                'can_create_channel_fields',
-                'can_edit_channel_fields',
-                'can_delete_channel_fields',
-                'can_create_statuses',
-                'can_delete_statuses',
-                'can_edit_statuses',
-                'can_create_categories',
-                'can_create_roles',
-                'can_delete_roles',
-                'can_edit_roles',
-                'can_admin_design',
-                'can_create_members',
-                'can_edit_members',
-                'can_delete_members',
-                'can_admin_roles',
-                'can_admin_mbr_templates',
-                'can_ban_users',
-                'can_admin_addons',
-                'can_create_templates',
-                'can_edit_templates',
-                'can_delete_templates',
-                'can_create_template_groups',
-                'can_edit_template_groups',
-                'can_delete_template_groups',
-                'can_create_template_partials',
-                'can_edit_template_partials',
-                'can_delete_template_partials',
-                'can_create_template_variables',
-                'can_delete_template_variables',
-                'can_edit_template_variables',
-                'can_edit_categories',
-                'can_delete_categories',
-                'can_view_other_entries',
-                'can_edit_other_entries',
-                'can_assign_post_authors',
-                'can_delete_self_entries',
-                'can_delete_all_entries',
-                'can_view_other_comments',
-                'can_edit_own_comments',
-                'can_delete_own_comments',
-                'can_edit_all_comments',
-                'can_delete_all_comments',
-                'can_moderate_comments',
-                'can_send_cached_email',
-                'can_email_roles',
-                'can_email_from_profile',
-                'can_view_profiles',
-                'can_edit_html_buttons',
-                'can_post_comments',
-                'can_delete_self',
-                'can_send_private_messages',
-                'can_attach_in_private_messages',
-                'can_send_bulletins',
-                'can_search',
-                'can_create_entries',
-                'can_edit_self_entries',
-                'can_access_security_settings',
-                'can_access_translate',
-                'can_access_import',
-                'can_access_sql_manager',
-                'can_moderate_spam',
-                'can_manage_consents',
-            ],
-            3 => [
-                'can_view_online_system',
-            ],
-            4 => [
-                'can_view_online_system',
-            ],
-            5 => [
-                'can_view_online_system',
-                'can_email_from_profile',
-                'can_view_profiles',
-                'can_edit_html_buttons',
-                'can_delete_self',
-                'can_send_private_messages',
-                'can_attach_in_private_messages',
-            ]
-        ];
-
-        foreach ($role_permissions as $role_id => $permissions) {
+        foreach ($this->role_permissions as $role_id => $permissions) {
             foreach ($permissions as $permission) {
                 $Q[] = "INSERT INTO exp_permissions (site_id, role_id, permission) VALUES(1, $role_id, '$permission')";
             }

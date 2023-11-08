@@ -288,8 +288,16 @@ class Fluid_field_ft extends EE_Fieldtype
                     }
                 }
                 // New field
-                if (strpos($key, 'new_field_') === 0 || (defined('CLONING_MODE') && CLONING_MODE === true)) {
+                if (strpos($key, 'new_field_') === 0) {
                     $field_id = str_replace('field_id_', '', $fieldKey);
+                }
+                // cloning mode
+                if (defined('CLONING_MODE') && CLONING_MODE === true) {
+                    $field_id = str_replace('field_id_', '', $fieldKey);
+                    $fluidField = ee('Model')->get('fluid_field:FluidField')->filter('field_id', $field_id)->first();
+                    if (!empty($fluidField)) {
+                        $group_key = 'group_' . $fluidField->group;
+                    }
                 }
 
                 // If the field_group is null we do not have a group and are always incrementing
