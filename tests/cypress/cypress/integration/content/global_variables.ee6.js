@@ -130,7 +130,7 @@ context('Global Variables', () => {
         cy.get("#logged_in_total_entries").should('have.text', "0")
         cy.get("#logged_in_total_comments").should('have.text', "0")
         cy.get("#logged_in_mfa_enabled").should('be.empty')
-    
+
     })
 
 

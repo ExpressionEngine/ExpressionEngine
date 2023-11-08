@@ -179,7 +179,7 @@ context('Publish Entry', () => {
           cy.wait('@filepicker')
           file_modal.get('files').should('be.visible')
           cy.get('.modal-file table tbody tr:contains(staff_randell.png)').click()
-          cy.wait(5000)
+          cy.wait(1000)
 
           field = page.get('file_fields').eq(0);
           field.parents('.field-control').find('.fields-upload-chosen-name').should('be.visible')
@@ -204,7 +204,7 @@ context('Publish Entry', () => {
 
           cy.get('.app-modal--side [value=save]').click()
           cy.get('.app-modal--side').should('not.be.visible');
-          cy.wait(5000)
+          cy.wait(1000)
 
           page.get('file_fields').eq(0).parents('.field-control').find('.fields-upload-chosen-name').invoke('text').then((text) => {
             expect(text).to.eq('Cypress Randell')
@@ -374,7 +374,7 @@ context('Publish Entry', () => {
           cy.wait('@validation')
           cy.wait(3000)
           cy.get('button[value="save"]').click()
-          
+
           cy.get('.grid-field__table tbody tr:visible').should('have.length', 2)
           cy.get('.grid-field__table tbody tr:visible').contains('README.md')
           cy.get('.grid-field__table tbody tr:visible').contains('LICENSE.txt')
@@ -398,7 +398,7 @@ context('Publish Entry', () => {
 
           cy.get('.app-modal--side [value=save]').click()
           cy.get('.app-modal--side').should('not.be.visible');
-          cy.wait(5000)
+          cy.wait(1000)
 
           cy.get('.grid-field__table tbody tr:visible').eq(0).find('.fields-upload-chosen-name').invoke('text').then((text) => {
             expect(text).to.eq('Cypress README')
@@ -474,7 +474,7 @@ context('Publish Entry', () => {
             file_modal.get('files').eq(r).click()
             file_modal.get('files').should('not.be.visible')
             cy.get('.grid-field__table tbody tr:visible').should('have.length', r+1)
-            cy.wait(5000); //give JS some extra time
+            cy.wait(1000); //give JS some extra time
           }
         })
       })

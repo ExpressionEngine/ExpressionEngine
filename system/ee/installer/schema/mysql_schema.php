@@ -31,7 +31,8 @@ class EE_Schema
             'is_locked' => 'y',
             'exclude_from_moderation' => 'y',
             'include_in_authorlist' => 'y',
-            'search_flood_control' => '0'
+            'search_flood_control' => '0',
+            'show_field_names' => 'y'
         ),
         2 => array(
             'name' => 'Banned',
@@ -102,6 +103,7 @@ class EE_Schema
             'can_delete_statuses',
             'can_edit_statuses',
             'can_create_categories',
+            'can_create_category_groups',
             'can_create_roles',
             'can_delete_roles',
             'can_edit_roles',
@@ -126,7 +128,9 @@ class EE_Schema
             'can_delete_template_variables',
             'can_edit_template_variables',
             'can_edit_categories',
+            'can_edit_category_groups',
             'can_delete_categories',
+            'can_delete_category_groups',
             'can_view_other_entries',
             'can_edit_other_entries',
             'can_assign_post_authors',
