@@ -12,7 +12,6 @@ namespace ExpressionEngine\Cli\Commands;
 
 use ExpressionEngine\Cli\Cli;
 use ExpressionEngine\Cli\Commands\Upgrade\UpgradeMap;
-use ExpressionEngine\Library\Filesystem\Filesystem;
 
 class CommandUpdatePrepare extends Cli
 {
