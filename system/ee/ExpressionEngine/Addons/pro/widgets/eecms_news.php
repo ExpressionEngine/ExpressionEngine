@@ -41,7 +41,7 @@ class Eecms_news extends Dashboard\AbstractDashboardWidget implements Dashboard\
                     $news[] = array(
                         'title'   => strip_tags($item->get_title()),
                         'date'    => ee()->localize->format_date(
-                            "%j%S %M, %Y",
+                            ee()->session->userdata('date_format', ee()->config->item('date_format')),
                             $item->get_date('U')
                         ),
                         'content' => ee('Security/XSS')->clean(
