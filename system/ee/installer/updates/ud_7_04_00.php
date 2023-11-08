@@ -139,6 +139,8 @@ class Updater
                 'has_global_settings' => 'n'
             )
         );
+    }
+
     private function increaseEmailLength()
     {
         ee()->smartforge->modify_column(
