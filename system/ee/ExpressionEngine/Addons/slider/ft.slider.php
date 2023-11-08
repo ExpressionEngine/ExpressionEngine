@@ -66,9 +66,17 @@ class Slider_ft extends Text_ft
             $field['value'] = $field['max'];
         }
 
-        if (REQ == 'CP') {
-            return ee('View')->make('slider:single')->render($field);
-        }
+        ee()->javascript->output("
+            $('.ee-slider-field.range-slider').each(function() {
+                var minValue = $(this).find('input[type=range]').attr('min');
+                var maxValue = $(this).find('input[type=range]').attr('max');
+
+                $(this).attr('data-min', minValue);
+                $(this).attr('data-max', maxValue);
+            });
+        ");
+
+        return ee('View')->make('slider:single')->render($field);
 
         return form_range($field);
     }
