@@ -62,6 +62,10 @@ class ChannelFieldForm extends ControlPanel {
                     cy.get("textarea[name=" +field + "][value='" + value + "']:visible").clear().type(value);
                 } else if (body.find("select[name=" +field + "][value='" + value + "']:visible").length > 0) {
                     cy.get("select[name=" +field + "][value='" + value + "']:visible").select();
+                } else if (body.find("button:visible input[type=hidden][name=" +field + "]").length > 0) {
+                    cy.get("button:visible input[type=hidden][name=" +field + "]").then(elem => {
+                        elem.val(value);
+                    });
                 }
             });
         }
