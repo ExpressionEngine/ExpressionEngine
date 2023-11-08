@@ -26,7 +26,7 @@ class FluidField extends ControlPanel {
     })
   }
 
-  
+
   add_content(index, skew = 0) {
 
     this.get('items').eq(index).invoke('attr', 'data-field-type').then(data => {
@@ -67,8 +67,9 @@ class FluidField extends ControlPanel {
           cy.get('[name=title]').click()
           break;
         case 'rte':
-          field.find('.ck-content').focus()
-          cy.realType('Lorem ipsum dolor sit amet' + lorem.generateParagraphs(1));
+
+          field.find('.ck-content').ckType('Lorem ipsum dolor sit amet' + lorem.generateParagraphs(1));
+
           break;
         case 'multi_select':
           field.find('input[type=checkbox]').eq(0 + skew).check()
@@ -173,6 +174,6 @@ class FluidField extends ControlPanel {
       }
     })
   }
-  
+
 }
 export default FluidField;

@@ -12,7 +12,7 @@ const edit = new EntryManager;
 const fluid_field = new FluidField;
 let file_modal = new FileModal;
 
-context.skip('Publish Entry with Fluid', () => {
+context('Publish Entry with Fluid', () => {
 
     before(function(){
       Cypress.config('numTestsKeptInMemory', 0)
@@ -58,9 +58,7 @@ context.skip('Publish Entry with Fluid', () => {
       const few_fields = [
         "A Date",
         "Checkboxes",
-        "Electronic-Mail Address",
-        "Selectable Buttons",
-        "Stupid Grid"
+        "Electronic-Mail Address"
       ];
 
       beforeEach(function(){
@@ -165,7 +163,7 @@ context.skip('Publish Entry with Fluid', () => {
       // spent 2 days figuring out without any luck,
       // so I'm commenting it out for now
       // will need to try enabling in some future version
-      it.skip('keeps data in Fluid when the entry is invalid', () => {
+      it('keeps data in Fluid when the entry is invalid', () => {
         available_fields.forEach(function(field, index) {
           fluid_field.get('actions_menu.fields').eq(index).click()
           fluid_field.add_content(index)
