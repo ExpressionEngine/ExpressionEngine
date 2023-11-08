@@ -17,3 +17,75 @@
 .ee-cform .redactor-in a{font-size:revert}
 @media print{.redactor-in .readmore{padding:0}.redactor-in .readmore::after{display:none}}
 .ee-cform table .grid-field__column-label { display: none;}
+.ee-cform .sr-only, .ee-cform .fa-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+.ee-cform .sr-only-focusable:not(:focus), .ee-cform .fa-sr-only-focusable:not(:focus) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+/* Toggle field */
+.ee-cform .toggle-btn {
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+    position: relative;
+    display: inline-block;
+    height: 26px;
+    width: 48px !important;
+    transition: all 100ms ease;
+    border-radius: 13px;
+    background: #cbcbda;
+    text-decoration: none;
+    border: 1px solid transparent;
+}
+.ee-cform .toggle-btn .slider {
+    position: absolute;
+    display: block;
+    left: 2px;
+    top: 2px;
+    width: 20px;
+    height: 20px;
+    transition: all 200ms ease;
+    box-shadow: 0 2px 5px rgba(120, 119, 140, 0.077);
+    border-radius: 50%;
+    background: #fff;
+}
+.ee-cform .toggle-btn.on {
+    background: #5D63F1;
+}
+.ee-cform .toggle-btn.on .slider {
+    transform: translateX(22px);
+    background: #fff;
+}
+.ee-cform .toggle-btn.disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+.ee-cform .toggle-btn:focus {
+    outline: none;
+    border: 1px solid  #5D63F1;
+    box-shadow: none;
+}
+.ee-cform .toggle-btn.off:focus .slider {
+    width: 18px;
+    height: 18px;
+    left: 3px;
+    top: 3px;
+}
+/* END Toggle field */

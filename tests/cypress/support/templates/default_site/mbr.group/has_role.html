@@ -1,0 +1,12 @@
+{layout="cypress/layout"}
+
+{exp:member:has_role role_id="5|1" member_id="1"}
+<p>Is either Member or SuperAdmin</p>
+{/exp:member:has_role}
+
+{exp:member:has_role role_id="5" member_id="1"}
+<p>Is Member</p>
+{if no_results}
+    <p>Is not Member</p>
+{/if}
+{/exp:member:has_role}

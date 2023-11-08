@@ -87,7 +87,7 @@ class File extends AbstractFilesController
             'file_data' => ee('File')->makeUpload()->getFileDataForm($file, $errors),
             'categories' => ee('File')->makeUpload()->getCategoryForm($file, $errors),
         );
-        if ($file->isEditableImage()) {
+        if ($file->isEditableImage() && ee('Request')->get('modal_form') != 'y') {
             ee()->load->library('image_lib');
             // we should really be storing the image properties in the db during file upload
             $info = $file->actLocally(function ($path) {
@@ -111,7 +111,7 @@ class File extends AbstractFilesController
             'is_image' => $file->isImage(),
             'size' => (string) ee('Format')->make('Number', $file->file_size)->bytes(),
             'download_url' => ee('CP/URL')->make('files/file/download/' . $file->file_id),
-
+            'modal_form' => ee('Request')->get('modal_form') === 'y',
             'ajax_validate' => true,
             'base_url' => ee('CP/URL')->make('files/file/view/' . $id),
             'save_btn_text' => 'btn_edit_file_meta',
@@ -126,17 +126,20 @@ class File extends AbstractFilesController
                     'text' => 'btn_edit_file_meta',
                     'working' => 'btn_saving'
                 ],
-                [
-                    'name' => 'submit',
-                    'type' => 'submit',
-                    'value' => 'save_and_close',
-                    'text' => 'save_and_close',
-                    'working' => 'btn_saving'
-                ],
             ],
             'sections' => array(),
             'hide_top_buttons' => true
         ];
+
+        if (ee('Request')->get('modal_form') !== 'y') {
+            $vars['buttons'][] = [
+                'name' => 'submit',
+                'type' => 'submit',
+                'value' => 'save_and_close',
+                'text' => 'save_and_close',
+                'working' => 'btn_saving'
+            ];
+        }
 
         ee()->view->cp_page_title = lang('edit_file_metadata');
 

@@ -571,6 +571,7 @@ class EE_Schema
 			`cp_homepage_channel` int(10) unsigned NOT NULL DEFAULT '0',
 			`cp_homepage_custom` varchar(100) DEFAULT NULL,
 			`require_mfa` char(1) NOT NULL DEFAULT 'n',
+			`show_field_names` char(1) NOT NULL DEFAULT 'y',
 			PRIMARY KEY (`id`),
 			KEY `role_id_site_id` (`role_id`, `site_id`)
 		)";
