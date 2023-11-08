@@ -363,6 +363,7 @@ gulp.task('_delete_files', function (cb) {
 		'system/ee/legacy/libraries/Ldap.php',
 
 		'scoper.inc.php',
+		'scoper.fix.php',
 		'composer.json',
 		'composer.lock',
 

@@ -753,6 +753,19 @@ class Roles extends AbstractRolesController
                     ]
                 ]
             ]);
+
+            $section = array_merge($section, [
+                [
+                    'title' => 'show_field_names',
+                    'desc' => 'show_field_names_desc',
+                    'fields' => [
+                        'show_field_names' => [
+                            'type' => 'yes_no',
+                            'value' => $role->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->show_field_names,
+                        ]
+                    ]
+                ],
+            ]);
         }
 
         return ee('View')->make('_shared/form/section')
@@ -1136,6 +1149,16 @@ class Roles extends AbstractRolesController
                             'auto_select_parents' => true,
                             'choices' => $channel_access['choices'],
                             'value' => $channel_access['values'],
+                        ]
+                    ]
+                ],
+                [
+                    'title' => 'show_field_names',
+                    'desc' => 'show_field_names_desc',
+                    'fields' => [
+                        'show_field_names' => [
+                            'type' => 'yes_no',
+                            'value' => $role->isNew() ? 'n' : $role->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->show_field_names,
                         ]
                     ]
                 ],
@@ -1716,6 +1739,9 @@ class Roles extends AbstractRolesController
                     'can_delete_channel_fields' => lang('delete_channel_fields')
                 ],
                 'channel_category_permissions' => [
+                    'can_create_category_groups' => lang('access_overview_can_create_category_groups'),
+                    'can_edit_category_groups' => lang('access_overview_can_edit_category_groups'),
+                    'can_delete_category_groups' => lang('access_overview_can_delete_category_groups'),
                     'can_create_categories' => lang('create_categories'),
                     'can_edit_categories' => lang('edit_categories'),
                     'can_delete_categories' => lang('delete_categories')

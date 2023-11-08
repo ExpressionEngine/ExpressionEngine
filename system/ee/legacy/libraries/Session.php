@@ -293,6 +293,7 @@ class EE_Session
             return false;
         }
 
+        $match = (string) $match;
         foreach (explode('|', $ban) as $val) {
             if ($val == '*') {
                 continue;
@@ -1264,6 +1265,9 @@ class EE_Session
             'email' => ee('Cookie')->getSignedCookie('my_email', true),
             'url' => ee('Cookie')->getSignedCookie('my_url', true),
             'location' => ee('Cookie')->getSignedCookie('my_location', true),
+            'avatar_filename' => '',
+            'avatar_width' => '',
+            'avatar_height' => '',
             'language' => '',
             'timezone' => ee()->config->item('default_site_timezone'),
             'date_format' => ee()->config->item('date_format') ? ee()->config->item('date_format') : '%n/%j/%Y',
