@@ -49,14 +49,16 @@ class Rte_mcp
         if (ee('Request')->isPost()) {
             $rules = array(
                 'rte_default_toolset' => 'required|enum[' . implode(',', $toolset_ids) . ']',
-                'rte_file_browser' => 'required|enum[' . implode(',', array_keys($file_browser_choices)) . ']'
+                'rte_file_browser' => 'required|enum[' . implode(',', array_keys($file_browser_choices)) . ']',
+                'rte_custom_ckeditor_build' => 'required|enum[y,n]'
             );
             $validationResult = ee('Validation')->make($rules)->validate($_POST);
 
             if ($validationResult->passed()) {
                 $prefs = [
                     'rte_default_toolset' => ee()->input->post('rte_default_toolset', true),
-                    'rte_file_browser' => ee()->input->post('rte_file_browser', true)
+                    'rte_file_browser' => ee()->input->post('rte_file_browser', true),
+                    'rte_custom_ckeditor_build' => ee()->input->post('rte_custom_ckeditor_build', true) === 'y' ? 'y' : 'n'
                 ];
                 ee()->config->update_site_prefs($prefs);
 
@@ -77,7 +79,8 @@ class Rte_mcp
         if (empty($prefs)) {
             $prefs = [
                 'rte_default_toolset' => ee()->config->item('rte_default_toolset') ? ee()->config->item('rte_default_toolset') : reset($toolset_ids),
-                'rte_file_browser' => ee()->config->item('rte_file_browser') ? ee()->config->item('rte_file_browser') : reset($file_browser_choices)
+                'rte_file_browser' => ee()->config->item('rte_file_browser') ? ee()->config->item('rte_file_browser') : reset($file_browser_choices),
+                'rte_custom_ckeditor_build' => ee()->config->item('rte_custom_ckeditor_build') ? ee()->config->item('rte_custom_ckeditor_build') : 'n'
             ];
         }
 
@@ -165,6 +168,16 @@ class Rte_mcp
                                 'choices' => $file_browser_choices
                             )
                         )
+                    ),
+                    array(
+                        'title' => 'rte_custom_ckeditor_build',
+                        'desc' => 'rte_custom_ckeditor_build_desc',
+                        'fields' => array(
+                            'rte_custom_ckeditor_build' => array(
+                                'type' => 'yes_no',
+                                'value' => $prefs['rte_custom_ckeditor_build'],
+                            )
+                        )
                     )
                 )
             )
@@ -209,7 +222,7 @@ class Rte_mcp
     public function edit_toolset()
     {
         $toolsetType = ee('Security/XSS')->clean(ee('Request')->post('toolset_type', 'ckeditor'));
-        
+
         if (ee('Request')->isPost()) {
             $settings = ee('Security/XSS')->clean(ee('Request')->post('settings'));
 
@@ -577,7 +590,7 @@ class Rte_mcp
         ]);
         ee()->javascript->set_global(
             'editor.height',
-            ee()->config->item('codemirror_height') !== false ? ee()->config->item('codemirror_height') : 200
+            ee()->config->item('codemirror_height') !== false ? ee()->config->item('codemirror_height') : 400
         );
         $fontSize = ee()->config->item('codemirror_fontsize');
         if ($fontSize !== false) {
@@ -586,7 +599,7 @@ class Rte_mcp
         if (isset($config->settings['rte_advanced_config']) && $config->settings['rte_advanced_config'] == 'y') {
             //json editor is visible, initialize immediately
             ee()->javascript->output("
-                $('textarea[name=\"settings[rte_config_json]\"]').toggleCodeMirror();
+                $('textarea[name=\"settings[rte_config_json]\"]').toggleCodeMirror({name: 'javascript', json: true});
                 $('fieldset[data-group=ckeditor_toolbar]').hide();
                 $('fieldset[data-group=redactor_toolbar]').hide();
             ");
@@ -601,7 +614,7 @@ class Rte_mcp
                     } else {
                         $('fieldset[data-group=' + $('select[name=toolset_type]').children('option:selected').val() + '_toolbar]').show();
                     }
-                    $('textarea[name=\"settings[rte_config_json]\"]').toggleCodeMirror();
+                    $('textarea[name=\"settings[rte_config_json]\"]').toggleCodeMirror({name: 'javascript', json: true});
                 }
             });
         ");
