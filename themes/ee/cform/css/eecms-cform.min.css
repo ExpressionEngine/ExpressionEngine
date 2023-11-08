@@ -23,6 +23,108 @@
 @media print{.redactor-in .readmore{padding:0}.redactor-in .readmore::after{display:none}}
 .ee-cform table .grid-field__column-label { display: none;}
 
+/* Selectable buttons */
+.ee-cform .selectable_buttons {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+}
+.ee-cform .selectable_buttons .button{
+    position: relative;
+    float: left;
+}
+
+.ee-cform .selectable_buttons .button:hover,
+.ee-cform .selectable_buttons .button:focus,
+.ee-cform .selectable_buttons .button:active,
+.ee-cform .selectable_buttons .button.active{
+    z-index: 2;
+}
+
+.ee-cform .selectable_buttons {
+    display: flex;
+    flex-wrap:wrap;
+}
+
+.ee-cform .selectable_buttons .button + .button,
+.ee-cform .selectable_buttons .button + .button-group,
+.ee-cform .selectable_buttons .selectable_buttons + .button,
+.ee-cform .selectable_buttons .selectable_buttons + .selectable_buttons {
+    margin-left: 1px;
+}
+
+.ee-cform .selectable_buttons .button.button--default + .button.button--default,
+.ee-cform .selectable_buttons .button.button--default + .button-group,
+.ee-cform .selectable_buttons .selectable_buttons + .button.button--default,
+.ee-cform .selectable_buttons .selectable_buttons + .selectable_buttons {
+    margin-left: -1px;
+}
+
+.ee-cform .selectable_buttons > .button:not(:first-of-type):not(:last-of-type):not(.dropdown-toggle) {
+    border-radius: 0;
+}
+
+.ee-cform .selectable_buttons > .button:first-of-type {
+    margin-left: 0;
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+
+}
+
+.ee-cform .selectable_buttons > .button:last-of-type:not(:first-of-type) {
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+}
+
+.ee-cform .selectable_buttons label{
+    max-width: 100%;
+    margin-bottom: 5px;
+}
+
+.ee-cform .selectable_buttons .button {
+    -webkit-appearance: none;
+    display: inline-block;
+    font-weight: 500;
+    text-align: center;
+    vertical-align: middle;
+    touch-action: manipulation;
+    background-image: none;
+    cursor: pointer;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    -webkit-transition: background-color 0.15s ease-in-out;
+    -moz-transition: background-color 0.15s ease-in-out;
+    -o-transition: background-color 0.15s ease-in-out;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    box-shadow: 0 1px 2px 0 var(--ee-shadow-button);
+    padding: 8px 20px !important;
+    font-size: 1rem;
+    line-height: 1.6;
+    border-radius: 5px;
+}
+
+.ee-cform .selectable_buttons > .button--default {
+    color: #0d0d19;
+    background-color: #fff;
+    border-color: #cbcbda;
+    font-weight: normal;
+}
+
+.ee-cform .selectable_buttons > .button--default:hover {
+    color: #0d0d19;
+    background-color: #f7f7fb;
+    border-color: #cbcbda;
+    text-decoration: none;
+}
+
+.ee-cform .selectable_buttons .button.active {
+    background: #eaebfd;
+}
+/* End Selectable buttons */
+
 /* date picker */
 .ee-cform .field-option .checkbox-label {
     margin-right: 5px !important;
