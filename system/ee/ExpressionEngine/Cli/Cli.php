@@ -142,6 +142,7 @@ class Cli
         // Sync
         'sync:conditional-fields' => Commands\CommandSyncConditionalFieldLogic::class,
         'sync:file-usage' => Commands\CommandSyncFileUsage::class,
+        'sync:reindex' => Commands\CommandSyncReindex::class,
         'sync:upload-directory' => Commands\CommandSyncUploadDirectory::class,
 
         // Update
@@ -751,7 +752,7 @@ class Cli
 
                     break;
                 case 'uninstalled':
-                    if (! $info->isInstalled()) {
+                    if (!$info->isInstalled()) {
                         $list[$name] = $addon;
                     }
 

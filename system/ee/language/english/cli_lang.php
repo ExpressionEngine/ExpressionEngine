@@ -423,6 +423,10 @@ $lang = array(
     'command_sync_file_usage'                 => 'Updating file usage.',
     'command_sync_file_usage_done'            => 'File usage updated successfully.',
 
+    // Lang entries for command sync:reindex
+    'command_reindex_description'                               => 'Content Reindex',
+    'command_reindex_summary'                                   => 'The searchable content might become stale if you have recently changed properties of some fields. Reindexing will re-populate the data used by complex fields in search and Entry Manager.',
+    'command_reindex_option_site_id'                            => 'Site ID. Skip this parameter to reindex content on all sites',
     // Lang entries for command sync:upload-directory
     'command_sync_upload_directory_description'     => 'Synchronize upload directory',
     'command_sync_upload_directory_summary'         => '',
