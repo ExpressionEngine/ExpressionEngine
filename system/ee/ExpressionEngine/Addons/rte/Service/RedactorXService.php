@@ -259,6 +259,9 @@ class RedactorXService extends RedactorService implements RteService {
                 static::defaultToolbars()['RedactorX Full']['topbar']
             );
         }
+        if (empty($config->toolset_id)) {
+            $selection = ($toolbar != 'hide') ? static::defaultToolbars()['RedactorX Full'][$toolbar] : [];
+        }
         $fullToolbar = array_merge($selection, $allButtons);//merge to get the right order
         $fullToolset = [];
         foreach ($fullToolbar as $i => $tool) {
