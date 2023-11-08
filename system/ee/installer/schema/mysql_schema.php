@@ -912,6 +912,26 @@ class EE_Schema
 			KEY `grid_row_id` (`grid_row_id`)
 		)";
 
+        // Member Relationships table
+
+        $Q[] = "CREATE TABLE exp_member_relationships (
+			relationship_id int(6) UNSIGNED NOT NULL auto_increment,
+			parent_id int(10) UNSIGNED NOT NULL default 0,
+			child_id int(10) UNSIGNED NOT NULL default 0,
+			field_id int(10) UNSIGNED NOT NULL default 0,
+			fluid_field_data_id int(10) UNSIGNED NOT NULL default 0,
+			grid_field_id int(10) UNSIGNED NOT NULL default 0,
+			grid_col_id int(10) UNSIGNED NOT NULL default 0,
+			grid_row_id int(10) UNSIGNED NOT NULL default 0,
+			`order` int(10) UNSIGNED NOT NULL default 0,
+			PRIMARY KEY `relationship_id` (`relationship_id`),
+			KEY `parent_id` (`parent_id`),
+			KEY `child_id` (`child_id`),
+			KEY `field_id` (`field_id`),
+			KEY `fluid_field_data_id` (`fluid_field_data_id`),
+			KEY `grid_row_id` (`grid_row_id`)
+		)";
+
         // Channel data
         $Q[] = "CREATE TABLE exp_channel_data (
 			entry_id int(10) unsigned NOT NULL,
@@ -1823,7 +1843,7 @@ class EE_Schema
         }
 
         // Default fieldtypes
-        $default_fts = array('select', 'text', 'number', 'textarea', 'date', 'duration', 'email_address', 'file', 'fluid_field', 'grid', 'file_grid', 'multi_select', 'checkboxes', 'radio', 'relationship', 'rte', 'slider', 'range_slider', 'toggle', 'url', 'colorpicker', 'selectable_buttons', 'notes');
+        $default_fts = array('select', 'text', 'number', 'textarea', 'date', 'duration', 'email_address', 'file', 'fluid_field', 'grid', 'file_grid', 'multi_select', 'checkboxes', 'radio', 'relationship', 'rte', 'slider', 'range_slider', 'toggle', 'url', 'colorpicker', 'selectable_buttons', 'notes', 'member');
 
         foreach ($default_fts as $name) {
             $addon_setup_path = SYSPATH . '/ee/ExpressionEngine/Addons/' . $name . '/addon.setup.php';

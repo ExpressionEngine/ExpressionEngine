@@ -147,7 +147,7 @@ EE.cp.ModalForm = {
 	 * Creates the form submit handler for a form loaded into an iframe
 	 */
 	_bindIframeForm: function(iframe, options) {
-		$(iframe).contents().find('[data-publish] > form').on('submit', function() {
+		$(iframe).contents().find(':not(.modal) form').on('submit', function() {
 			var params = $(this).serialize() + '&modal_form=y';
 
 			$.post(this.action, params, function(result) {
