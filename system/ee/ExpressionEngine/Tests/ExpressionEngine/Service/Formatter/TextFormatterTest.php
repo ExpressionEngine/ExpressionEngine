@@ -501,6 +501,9 @@ And if you made it to this &#x1F573;&#xFE0F; you did pretty good.']
                 ],
                 'Sample-Title-to-Turn-Into-a-Slug-including-💩-tags-quotes-and-high-ascii-ssae-and-seps____in....content'
             ],
+            // ['ExpressionEngine®', [], 'expressionengine'],
+            ['Anča', [], 'anca'],
+            ['The General’s Room', [], 'the-generals-room'],
         ];
     }
 
