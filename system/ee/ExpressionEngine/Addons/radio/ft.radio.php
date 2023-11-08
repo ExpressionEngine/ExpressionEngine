@@ -130,7 +130,6 @@ class Radio_ft extends OptionFieldtype
         $selected = $data;
 
         $r = '';
-        $class = 'choice mr';
 
         foreach ($field_options as $key => $value) {
             $selected = ($key == $data);
@@ -145,7 +144,7 @@ class Radio_ft extends OptionFieldtype
                 break;
 
             default:
-                $r = form_fieldset('') . $r . form_fieldset_close();
+                $r = form_fieldset('', ['class' => 'radio-btn-wrap']) . $r . form_fieldset_close();
 
                 break;
         }

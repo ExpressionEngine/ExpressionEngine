@@ -230,7 +230,7 @@ class Member extends ContentModel
         'role_id' => 'required|isNatural|validateRoles',
         'username' => 'required|unique|validUsername|validateWhenIsNew|notBanned',
         'screen_name' => 'validScreenName|notBanned',
-        'email' => 'required|email|uniqueEmail|max_length[' . USERNAME_MAX_LENGTH . ']|notBanned',
+        'email' => 'required|email|uniqueEmail|max_length[254]|notBanned',
         'password' => 'required|validPassword|passwordMatchesSecurityPolicy',
         'timezone' => 'validateTimezone',
         'date_format' => 'validateDateFormat',

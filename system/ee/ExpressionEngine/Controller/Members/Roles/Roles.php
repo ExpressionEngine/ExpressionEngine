@@ -1739,6 +1739,9 @@ class Roles extends AbstractRolesController
                     'can_delete_channel_fields' => lang('delete_channel_fields')
                 ],
                 'channel_category_permissions' => [
+                    'can_create_category_groups' => lang('access_overview_can_create_category_groups'),
+                    'can_edit_category_groups' => lang('access_overview_can_edit_category_groups'),
+                    'can_delete_category_groups' => lang('access_overview_can_delete_category_groups'),
                     'can_create_categories' => lang('create_categories'),
                     'can_edit_categories' => lang('edit_categories'),
                     'can_delete_categories' => lang('delete_categories')
