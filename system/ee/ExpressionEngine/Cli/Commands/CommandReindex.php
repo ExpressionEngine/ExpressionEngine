@@ -55,13 +55,15 @@ class CommandReindex extends Cli
         'site_id,s:'        => 'command_reindex_option_site_id',
     ];
 
-
     /**
      * Run the command
      * @return mixed
      */
     public function handle()
     {
+        // Load the session library (necessary for some field types)
+        ee()->load->library('session');
+
         ee()->lang->loadfile('utilities');
 
         $this->info('search_reindexed_started');
