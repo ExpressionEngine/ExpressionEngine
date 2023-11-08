@@ -128,9 +128,19 @@ class MetaDataReader
 
         $prefix = $this->getNamespacePrefix();
 
-        foreach ($gateway_names as $name) {
+        foreach ($gateway_names as $i => $name) {
             $gateway_class = $prefix . '\\Gateway\\' . $name;
-            $gateways[$name] = new $gateway_class();
+            $gateway = new $gateway_class();
+            $gateway_model = $gateway->getGatewayModel();
+            if ($i > 0 && ! is_null($gateway_model) && $gateway_model != 'ChannelField') {
+                // if the gateway model is defined, check if it has any objects (e.g. custom fields)
+                // if none defined, no reason to query on this gateway
+                $fieldsExist = ee('Model')->get($gateway_model)->count(true);
+                if ($fieldsExist == 0) {
+                    continue;
+                }
+            }
+            $gateways[$name] = $gateway;
         }
 
         return $gateways;
