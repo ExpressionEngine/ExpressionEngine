@@ -311,7 +311,7 @@ class CommandUpdatePrepare extends Cli
 
     private function copyNewEEFiles()
     {
-        $filesystem->copy(
+        ee('Filesystem')->copy(
             SYSPATH,
             $this->upgradeConfig['new_system_path']
         );
