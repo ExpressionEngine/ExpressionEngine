@@ -17,6 +17,68 @@
 .ee-cform .redactor-in a{font-size:revert}
 @media print{.redactor-in .readmore{padding:0}.redactor-in .readmore::after{display:none}}
 .ee-cform table .grid-field__column-label { display: none;}
+
+/* RADIO BUTTONS field*/
+.ee-cform fieldset.radio-btn-wrap label {
+    display: block;
+    margin-bottom: 0;
+    position: relative;
+    font-weight: normal;
+    max-width: 100%;
+    position: relative;
+    padding: 5px;
+    padding-left: 25px;
+    cursor: pointer;
+    transition: background 100ms ease;
+    color: #0d0d19;
+    border-radius: 5px;
+}
+
+.ee-cform fieldset.radio-btn-wrap label input[type='radio'] {
+    z-index: 1;
+    position: absolute;
+    top: 7px;
+    left: 0px;
+    transition: all 100ms ease;
+    width: 15px;
+    height: 15px;
+    margin: 0;
+    padding: 0;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+    border: 1px solid #cbcbda;
+    border-radius: 50%;
+    font-family: inherit;
+    font-size: 100%;
+    line-height: 1.15;
+}
+
+.ee-cform fieldset.radio-btn-wrap label input[type=radio]:after {
+    transition: all 100ms ease;
+    content: "";
+    display: block;
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    left: 4px;
+    top: 4px;
+    border-radius: 50%;
+    background: #fff;
+    transform: rotate(45deg) scale(0);
+    opacity: 0;
+}
+
+.ee-cform fieldset.radio-btn-wrap label input[type=radio]:checked {
+    background: #5d63f1;
+    border-color: #5d63f1;
+}
+
+.ee-cform fieldset.radio-btn-wrap label input[type=radio]:checked:after {
+    opacity: 1;
+    transform: rotate(45deg) scale(1);
+}
+/*	END RADIO BUTTONS field*/
 .ee-cform .sr-only, .ee-cform .fa-sr-only {
   position: absolute;
   width: 1px;
