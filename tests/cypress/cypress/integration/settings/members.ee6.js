@@ -17,11 +17,7 @@ context('Member Settings', () => {
     cy.hasNoErrors()
   })
 
-  it('shows the Member Settings page', () => {
-    //page.all_there?.should == true
-  })
-
-  it('should load current settings into form fields', () => {
+  it('Load current Member Settings into form fields', () => {
 
     cy.eeConfig({item: 'allow_member_registration'}) .then((config) => {
       page.get('allow_member_registration').invoke('val').then((val) => {
@@ -68,7 +64,7 @@ context('Member Settings', () => {
     })
   })
 
-  it('should validate the form', () => {
+  it('Validate Member Settings form', () => {
     const emails_error = 'This field must contain all valid email addresses.'
 
     page.get('mbr_notification_emails').clear().type('sdfsdfsd')
@@ -82,7 +78,7 @@ context('Member Settings', () => {
     page.hasError(page.get('mbr_notification_emails'), emails_error)
   })
 
-  it('AJAX form validation', () => {
+  it('AJAX Member Settings form validation', () => {
     const emails_error = 'This field must contain all valid email addresses.'
     page.load()
     page.get('mbr_notification_emails').clear().type('sdfsdfsd')
@@ -98,7 +94,7 @@ context('Member Settings', () => {
     page.hasNoError(page.get('mbr_notification_emails'))
   })
 
-  it('should save and load the settings', () => {
+  it('Save and load Member Settings', () => {
 
     let allow_member_registration, require_terms_of_service, allow_member_localization, new_member_notification
     cy.eeConfig({item: 'allow_member_registration'}) .then((config) => {

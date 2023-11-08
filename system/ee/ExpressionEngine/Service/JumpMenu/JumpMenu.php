@@ -1811,6 +1811,14 @@ class JumpMenu extends AbstractJumpMenu
                 'target' => 'utilities/debug-tools/debug-fieldtypes',
                 'permission' => 'is_super_admin'
             ),
+            'systemUtilitiesDebugDuplicateTemplateGroups' => array(
+                'icon' => 'fa-hammer',
+                'command' => 'system_utilities debug_tools_debug_duplicate_template_groups',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'utilities/debug-tools/duplicate-template-groups',
+                'permission' => 'is_super_admin'
+            ),
             'systemUtilitiesFileConverter' => array(
                 'icon' => 'fa-hammer',
                 'command' => 'system_utilities member_tools import_converter',

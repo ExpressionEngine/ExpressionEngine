@@ -4,7 +4,7 @@ import HitTracking from '../../elements/pages/settings/HitTracking';
 
 const page = new HitTracking
 
-context('Tracking', () => {
+context('Tracking Settings', () => {
 
   before(function(){
     cy.task('db:seed')
@@ -14,10 +14,6 @@ context('Tracking', () => {
     cy.auth();
     page.load()
     cy.hasNoErrors()
-  })
-
-  it('shows the Tracking page', () => {
-    //page.all_there?.should == true
   })
 
   it('validates the suspend threshold field', () => {
@@ -48,7 +44,7 @@ context('Tracking', () => {
     page.hasError(page.get('dynamic_tracking_disabling'), is_numeric_error)
   })
 
-  it('saves settings on page load', () => {
+  it('Saves Tracking settings on page load', () => {
 
     let enable_online_user_tracking, enable_hit_tracking, enable_entry_view_tracking
     cy.eeConfig({item: 'enable_online_user_tracking'}) .then((config) => {

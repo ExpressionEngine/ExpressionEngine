@@ -25,14 +25,15 @@ class Channel
     public $return_data = '';       // Final data
     public $hit_tracking_id = false;
     public $sql = false;
-    public $cfields = array();
-    public $dfields = array();
-    public $rfields = array();
-    public $gfields = array();
-    public $mfields = array();
-    public $pfields = array();
-    public $ffields = array();
-    public $tfields = array();
+    public $cfields = array(); // Custom fields
+    public $dfields = array(); // Date fields
+    public $rfields = array(); // Relationship fields
+    public $gfields = array(); // Grid fields
+    public $msfields = array(); // Member select fields
+    public $mfields = array(); // Custom member fields
+    public $pfields = array(); // Pair custom fields
+    public $ffields = array(); // Fluid fields
+    public $tfields = array(); // Toggle fields
     public $categories = array();
     public $catfields = array();
     public $channel_name = array();
@@ -95,7 +96,7 @@ class Channel
         $this->_dynamic_parameters = array('channel', 'entry_id', 'category', 'orderby',
             'sort', 'sticky', 'show_future_entries', 'show_expired', 'entry_id_from',
             'entry_id_to', 'not_entry_id', 'start_on', 'stop_before', 'year', 'month',
-            'day', 'display_by', 'limit', 'username', 'status', 'group_id', 'cat_limit',
+            'day', 'display_by', 'limit', 'username', 'status', 'group_id', 'primary_role_id', 'cat_limit',
             'month_limit', 'offset', 'author_id', 'url_title');
     }
 
@@ -117,7 +118,7 @@ class Channel
 
         $tag .= $this->fetch_dynamic_params();
 
-        return ee()->cache->get('/' . $this->_sql_cache_prefix . '/' . md5($tag . $this->uri));
+        return ee()->cache->get('/' . $this->_sql_cache_prefix . '/' . md5($tag . ee()->uri->uri_string()));
     }
 
     /**
@@ -128,7 +129,7 @@ class Channel
         $tag = ($identifier == '') ? ee()->TMPL->tagproper : ee()->TMPL->tagproper . $identifier;
 
         return ee()->cache->save(
-            '/' . $this->_sql_cache_prefix . '/' . md5($tag . $this->uri),
+            '/' . $this->_sql_cache_prefix . '/' . md5($tag . ee()->uri->uri_string()),
             $sql,
             0   // No TTL, cache lives on till cleared
         );
@@ -308,6 +309,7 @@ class Channel
             isset(ee()->session->cache['channel']['date_fields']) &&
             isset(ee()->session->cache['channel']['relationship_fields']) &&
             isset(ee()->session->cache['channel']['grid_fields']) &&
+            isset(ee()->session->cache['channel']['members_fields']) &&
             isset(ee()->session->cache['channel']['pair_custom_fields']) &&
             isset(ee()->session->cache['channel']['fluid_field_fields']) &&
             isset(ee()->session->cache['channel']['toggle_fields'])
@@ -316,6 +318,7 @@ class Channel
             $this->dfields = ee()->session->cache['channel']['date_fields'];
             $this->rfields = ee()->session->cache['channel']['relationship_fields'];
             $this->gfields = ee()->session->cache['channel']['grid_fields'];
+            $this->msfields = ee()->session->cache['channel']['members_fields'];
             $this->pfields = ee()->session->cache['channel']['pair_custom_fields'];
             $this->ffields = ee()->session->cache['channel']['fluid_field_fields'];
             $this->tfields = ee()->session->cache['channel']['toggle_fields'];
@@ -331,6 +334,7 @@ class Channel
         $this->cfields = $fields['custom_channel_fields'];
         $this->dfields = $fields['date_fields'];
         $this->rfields = $fields['relationship_fields'];
+        $this->msfields = $fields['members_fields'];
         $this->gfields = $fields['grid_fields'];
         $this->pfields = $fields['pair_custom_fields'];
         $this->ffields = $fields['fluid_field_fields'];
@@ -343,7 +347,7 @@ class Channel
                 ->all(true);
             $site_ids = $sites->getIds();
 
-            foreach (['cfields', 'dfields', 'rfields', 'gfields', 'pfields', 'ffields', 'tfields'] as $custom_fields) {
+            foreach (['cfields', 'dfields', 'rfields', 'gfields', 'msfields', 'pfields', 'ffields', 'tfields'] as $custom_fields) {
                 $tmp = $this->$custom_fields;
 
                 if (! isset($tmp[0])) {
@@ -365,6 +369,7 @@ class Channel
         ee()->session->cache['channel']['custom_channel_fields'] = $this->cfields;
         ee()->session->cache['channel']['date_fields'] = $this->dfields;
         ee()->session->cache['channel']['relationship_fields'] = $this->rfields;
+        ee()->session->cache['channel']['members_fields'] = $this->msfields;
         ee()->session->cache['channel']['grid_fields'] = $this->gfields;
         ee()->session->cache['channel']['pair_custom_fields'] = $this->pfields;
         ee()->session->cache['channel']['fluid_field_fields'] = $this->ffields;
@@ -1695,7 +1700,8 @@ class Channel
         /**  Add Group ID clause
         /**------*/
 
-        if ($group_id = ee()->TMPL->fetch_param('group_id')) {
+        $group_id = ee()->TMPL->fetch_param('primary_role_id') ?: ee()->TMPL->fetch_param('group_id');
+        if ($group_id) {
             $join_member_table = true;
             $sql .= ee()->functions->sql_andor_string($group_id, 'm.role_id');
         }
@@ -2000,7 +2006,7 @@ class Channel
         /**  Add Limits to query
         /**------*/
 
-        if (ee('LivePreview')->hasEntryData()) {
+        if (isset(ee()->session) && ee('LivePreview')->hasEntryData()) {
             $parts = explode(' WHERE ', $sql);
             $this->preview_conditions = explode(' AND ', $parts[1]);
         }
@@ -2081,8 +2087,10 @@ class Channel
         $this->sql .= $this->generateSQLForEntries($entries, $channel_ids);
 
         //cache the entry_id
-        ee()->session->cache['channel']['entry_ids'] = $entries;
-        ee()->session->cache['channel']['channel_ids'] = $channel_ids;
+        if (isset(ee()->session)) {
+            ee()->session->cache['channel']['entry_ids'] = $entries;
+            ee()->session->cache['channel']['channel_ids'] = $channel_ids;
+        }
 
         $end = "ORDER BY FIELD(t.entry_id, " . implode(',', $entries) . ")";
 
@@ -2236,6 +2244,10 @@ class Channel
     {
         $return = false;
 
+        if (!isset(ee()->session)) {
+            return $return;
+        }
+
         if (ee('LivePreview')->hasEntryData()) {
             $data = ee('LivePreview')->getEntryData();
             if (in_array($this->query_string, [$data['entry_id'], $data['url_title']])) {
@@ -2257,6 +2269,10 @@ class Channel
 
     private function overrideWithPreviewData($result_array)
     {
+        if (!isset(ee()->session)) {
+            return $result_array;
+        }
+
         if (ee('LivePreview')->hasEntryData()) {
             $found = false;
             $show_closed = false;
@@ -2512,7 +2528,9 @@ class Channel
 
         $this->cacheCategoryFieldModels();
 
-        ee()->session->set_cache('mod_channel', 'active', $this);
+        if (isset(ee()->session)) {
+            ee()->session->set_cache('mod_channel', 'active', $this);
+        }
         $this->return_data = $parser->parse($this, $data, $config);
 
         unset($parser, $entries, $data);
@@ -4033,7 +4051,11 @@ class Channel
      */
     private function cacheCategoryFieldModels()
     {
-        $this->cat_field_models = ee()->session->cache(__CLASS__, 'cat_field_models') ?: array();
+        if (isset(ee()->session)) {
+            $this->cat_field_models = ee()->session->cache(__CLASS__, 'cat_field_models') ?: array();
+        } else {
+            $this->cat_field_models = [];
+        }
 
         ee()->load->library('api');
         ee()->legacy_api->instantiate('channel_fields');
@@ -4064,7 +4086,9 @@ class Channel
             ->all()
             ->indexBy('field_id');
 
-        ee()->session->set_cache(__CLASS__, 'cat_field_models', $this->cat_field_models);
+        if (isset(ee()->session)) {
+            ee()->session->set_cache(__CLASS__, 'cat_field_models', $this->cat_field_models);
+        }
     }
 
     /**

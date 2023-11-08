@@ -46,7 +46,7 @@ class ChannelFieldGroup extends Model
     );
 
     protected static $_validation_rules = array(
-        'group_name' => 'required|unique|maxLength[50]|validateName',
+        'group_name' => 'required|xss|noHtml|unique|maxLength[50]',
         'short_name' => 'unique|maxLength[50]|alphaDash|validateNameIsNotReserved|validateUniqueAmongFields',
     );
 
@@ -67,15 +67,6 @@ class ChannelFieldGroup extends Model
     public function createChannelField($data)
     {
         return $this->createChannelFields($data);
-    }
-
-    public function validateName($key, $value, $params, $rule)
-    {
-        if (! preg_match("#^[a-zA-Z0-9_\-/\s]+$#i", (string) $value)) {
-            return 'illegal_characters';
-        }
-
-        return true;
     }
 
     /**
@@ -143,6 +134,17 @@ class ChannelFieldGroup extends Model
         }
 
         return new Collection($channels);
+    }
+
+    public function getNameBadge($prefix = '')
+    {
+        if (ee()->session->userdata('member_id') == 0) {
+            return '';
+        }
+        if (ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->show_field_names == 'y') {
+            return ee('View')->make('publish/partials/field_name_badge')->render(['name' => $prefix . $this->short_name]);
+        }
+        return '';
     }
 }
 

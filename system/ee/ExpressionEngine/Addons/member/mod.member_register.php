@@ -40,9 +40,10 @@ class Member_register extends Member
         // Fetch the registration form
         $tagdata = trim(ee()->TMPL->tagdata);
 
+        $reg_form = '';
         if (! empty($tagdata)) {
             $reg_form = ee()->TMPL->tagdata;
-        } else {
+        } elseif (ee('Config')->getFile()->getBoolean('legacy_member_templates')) {
             $reg_form = $this->_load_element('registration_form');
         }
 
@@ -121,11 +122,13 @@ class Member_register extends Member
             // the two choices are to escape them and use preg_replace() or to
             // match the pattern and use str_replace().  This way happens
             // to be faster in this case.
-            if (preg_match(
-                "/" . LD . "custom_fields" . RD . ".*?" . LD . "\/custom_fields" . RD . "/s",
-                $reg_form,
-                $match
-            )) {
+            if (
+                preg_match(
+                    "/" . LD . "custom_fields" . RD . ".*?" . LD . "\/custom_fields" . RD . "/s",
+                    $reg_form,
+                    $match
+                )
+            ) {
                 $reg_form = str_replace($match[0], $str, $reg_form);
             }
         }
@@ -254,8 +257,10 @@ class Member_register extends Member
         }
 
         // Blocked/Allowed List Check
-        if (ee()->blockedlist->blocked == 'y' &&
-            ee()->blockedlist->allowed == 'n') {
+        if (
+            ee()->blockedlist->blocked == 'y' &&
+            ee()->blockedlist->allowed == 'n'
+        ) {
             return ee()->output->show_user_error(
                 'general',
                 array(lang('not_authorized'))
@@ -331,7 +336,7 @@ class Member_register extends Member
                     // Ensure their selection is actually a valid choice
                     if (! in_array(htmlentities($_POST[$field_name]), $options)) {
                         $valid = false;
-                        $cust_errors['error:'.$field_name] = lang('mbr_field_invalid') . '&nbsp;' . $row['m_field_label'];
+                        $cust_errors['error:' . $field_name] = lang('mbr_field_invalid') . '&nbsp;' . $row['m_field_label'];
                     }
                 }
 
@@ -405,8 +410,10 @@ class Member_register extends Member
             ee()->output->show_user_error('submission', lang('mbr_cannot_register_role_is_locked'));
         }
 
-        if (ee()->config->item('req_mbr_activation') == 'manual' or
-            ee()->config->item('req_mbr_activation') == 'email') {
+        if (
+            ee()->config->item('req_mbr_activation') == 'manual' or
+            ee()->config->item('req_mbr_activation') == 'email'
+        ) {
             $data['role_id'] = Mbr::PENDING;
             $data['pending_role_id'] = $roleId;
         } else {
@@ -485,18 +492,18 @@ class Member_register extends Member
                 $field_errors[] = "<b>{$label}: </b>{$error}";
 
                 // add data for inline errors
-                $error_tags['error:'.$field] = $error;
+                $error_tags['error:' . $field] = $error;
             }
         }
 
 
         // if we don't have a link we'll give them errors for core ee error screen
-        if(empty($return_error_link)) {
+        if (empty($return_error_link)) {
             $errors = array_merge($field_errors, $cust_errors, $this->errors);
         }
 
         // do we have a link?  If so we're giving them the inline errors
-        if(!empty($return_error_link)) {
+        if (!empty($return_error_link)) {
             $errors = array_merge($error_tags, $cust_errors);
 
             // populate flash data for custom error tags
@@ -541,8 +548,10 @@ class Member_register extends Member
         $member_id = $member->member_id;
 
         // Send admin notifications
-        if (ee()->config->item('new_member_notification') == 'y' &&
-            ee()->config->item('mbr_notification_emails') != '') {
+        if (
+            ee()->config->item('new_member_notification') == 'y' &&
+            ee()->config->item('mbr_notification_emails') != ''
+        ) {
             $name = ($data['screen_name'] != '') ? $data['screen_name'] : $data['username'];
 
             $swap = array(
@@ -659,8 +668,10 @@ class Member_register extends Member
 
     private function _do_form_query()
     {
-        if (ee()->input->get_post('board_id') !== false &&
-            is_numeric(ee()->input->get_post('board_id'))) {
+        if (
+            ee()->input->get_post('board_id') !== false &&
+            is_numeric(ee()->input->get_post('board_id'))
+        ) {
             return ee()->db->select('board_forum_url, board_id, board_label')
                 ->where('board_id', (int) ee()->input->get_post('board_id'))
                 ->get('forum_boards');

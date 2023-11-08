@@ -355,6 +355,8 @@ $lang = array(
 
     'edit_entry' => 'Edit Entry',
 
+    'edit_member' => 'Edit Member',
+
     'edit_selected' => 'Edit Selected',
 
     'edit_this_entry' => 'Edit This Entry',
@@ -849,6 +851,8 @@ $lang = array(
 
     'creating_new_in_rel' => 'Creating new entry in <b>#to_channel#</b> for a relationship with <b>#from_channel#</b>',
 
+    'creating_member_in_rel' => 'Creating new member for a relationship with <b>#from_channel#</b>',
+
     'hide' => 'Hide',
 
     'item_to_relate_with' => 'Item to <strong>relate with</strong> this entry.',
@@ -917,8 +921,6 @@ $lang = array(
     'layout_success' => 'Layout successfully saved.',
 
     'maintain_ratio' => 'Maintain Aspect Ratio',
-
-    'member_group' => 'Member Group',
 
     'no_entry_to_update' => 'You have tried to update an entry that does not exist.',
 

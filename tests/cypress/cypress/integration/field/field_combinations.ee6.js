@@ -17,7 +17,7 @@ var options = ["Checkboxes", "Color Picker", "Date","Duration","Email Address","
 var GroupName = ["Checkboxes", "ColorPicker", "Date","Duration","EmailAddress","File","FileGrid","Fluid", "Notes", "Relationships","RichTextEditor", "SelectDropdown","Textarea","Toggle","URL", "Number", "SelectableButtons", "ValueSlider", "RangeSlider"];
 
 //grid is tested in a seperate test
-context('Create combinations of field', () => {
+context('Fields of different types', () => {
 
 	before(function(){
 		cy.task('db:seed')
@@ -26,9 +26,9 @@ context('Create combinations of field', () => {
 
 		cy.auth()
 
-		cy.window().then((win) => { 
+		/*cy.window().then((win) => {
 			win.parent.document.getElementsByClassName('reporter-wrap')[0].style.width = '70%';
-		});
+		});*/
 
 		cy.log('verifies fields page exists')
 		cy.visit('admin.php?/cp/fields')
@@ -88,7 +88,7 @@ context('Create combinations of field', () => {
 		cy.auth()
 	})
 
-	describe('Test Notes fieldtype', function() {
+	describe('Notes fieldtype', function() {
 		it('saves note to fieldtype settings', () => {
 			// Define note text
 			var noteText = '**Note to editor:** Lorem *italics* dolor sit amet, `code goes here` adipiscing elit.'
@@ -147,7 +147,7 @@ context('Create combinations of field', () => {
 			cy.get('div.tab.t-0 > fieldset:nth-child(1) div.field-control div').first().should('have.class','note-fieldtype')
 		})
 	})
-	it('Tests Checkboxes', () => {
+	it('Checkboxes field', () => {
 		cy.visit('admin.php?/cp/fields')
 		cy.dismissLicenseAlert()
 		cy.get('div').contains('AA Checkboxes Test').click()
@@ -194,7 +194,7 @@ context('Create combinations of field', () => {
 		cy.get('body').contains('Hi')
 	})
 
-	it('Tests Date', () => {
+	it('Date field', () => {
 		cy.visit('admin.php?/cp/publish/edit')
 		cy.get('div').contains('AA Test Entry').eq(0).click()
 		cy.get('input[data-date-format= "%n/%j/%Y %g:%i %A"]').eq(0).type('6/17/2020 12:33 PM')
@@ -216,7 +216,7 @@ context('Create combinations of field', () => {
 		cy.get('body').contains('17 June 2020')
 	})
 
-	it('Tests Duration', () => {
+	it('Duration field', () => {
 		cy.visit('admin.php?/cp/publish/edit')
 		cy.get('div').contains('AA Test Entry').eq(0).click()
 		cy.get('input[placeholder="Duration in Minutes (or hh:mm)"]').type('1:13')
@@ -236,7 +236,7 @@ context('Create combinations of field', () => {
 		cy.get('body').contains('Lap 1: 1:13:00')
 	})
 
-	it('Tests Email Address', () =>{
+	it('Email Address field', () =>{
 		cy.visit('admin.php?/cp/publish/edit')
 		cy.get('div').contains('AA Test Entry').eq(0).click()
 
@@ -258,7 +258,7 @@ context('Create combinations of field', () => {
 		cy.get('body').contains('This is xqcs email: xqc@gmail.com')
 	})
 
-	it('Tests File', () => {
+	it('File field', () => {
 		cy.visit('admin.php?/cp/publish/edit')
 		cy.get('div').contains('AA Test Entry').eq(0).click()
 		cy.get('.file-field__buttons').should('exist')
@@ -282,7 +282,7 @@ context('Create combinations of field', () => {
 		 cy.get('a').contains('staff_jane')
 	})
 
-	it('Tests Relationships' , () =>{
+	it('Relationships field' , () =>{
 
 		cy.visit('admin.php?/cp/design')
 		cy.get('a').contains('aaRelationships').eq(0).click()
@@ -296,7 +296,7 @@ context('Create combinations of field', () => {
 		cy.get('body').contains('AA Test Entry')
 	})
 
-	it.skip('Tests Rich Text Editor', ()=> {
+	it.skip('Rich Text Editor field', ()=> {
 		// Edit the template
 		cy.visit('admin.php?/cp/design')
 		cy.get('a').contains('aaRichTextEditor').eq(0).click()
@@ -311,19 +311,19 @@ context('Create combinations of field', () => {
 		// Edit the entry and add the text stuff
 		cy.visit('admin.php?/cp/publish/edit')
 		cy.get('div').contains('AA Test Entry').eq(0).click()
-		cy.get('.ck-content').type('This is paragraph{enter}')
+		cy.get('.ck-content').ckType('This is paragraph{enter}')
 
 		// Type something in BOLD
 		cy.get('button.ck-button').contains('Bold').click()
-		cy.get('.ck-content').type('This is bold!')
+		cy.get('.ck-content').ckType('This is bold!')
 		cy.get('button.ck-button').contains('Bold').click()
-		cy.get('.ck-content').type('{enter}')
+		cy.get('.ck-content').ckType('{enter}')
 
 		// Type something in italics
 		cy.get('button.ck-button').contains('Italic').click()
-		cy.get('.ck-content').type('This is italic!')
+		cy.get('.ck-content').ckType('This is italic!')
 		cy.get('button.ck-button').contains('Italic').click()
-		cy.get('.ck-content').type('{enter}')
+		cy.get('.ck-content').ckType('{enter}')
 
 		// cy.get('select').select('heading 1')
 		// cy.get('.ck-content').type('This is heading 1{enter}')
@@ -341,7 +341,7 @@ context('Create combinations of field', () => {
 		cy.get('body').contains('p', 'This is paragraph');
 	})
 
-	it('Tests Select', () => {
+	it('Select dropdown field', () => {
 		cy.visit('admin.php?/cp/fields')
 		cy.get('div').contains('AA Select').click()
 		cy.get('div.checkbox-label__text').contains('Value/Label Pairs').click()
@@ -378,7 +378,7 @@ context('Create combinations of field', () => {
 		cy.get('body').contains('2two')
 	})
 
-	it('Tests Textarea', () => {
+	it('Textarea field', () => {
 		cy.visit('admin.php?/cp/publish/edit')
 		cy.get('div').contains('AA Test Entry').eq(0).click()
 
@@ -399,7 +399,7 @@ context('Create combinations of field', () => {
 		cy.get('body').contains('Hello There')
 	})
 
-	it('Test Toggle', () => {
+	it('Toggle field', () => {
 		cy.visit('admin.php?/cp/design')
 		cy.get('a').contains('aaToggle').eq(0).click()
 		cy.get('a').contains('index').click()
@@ -422,7 +422,7 @@ context('Create combinations of field', () => {
 		cy.get('body').contains('The sale is on')
 	})
 
-	it('Test URL' , () => {
+	it('URL field' , () => {
 		cy.visit('admin.php?/cp/publish/edit')
 		cy.get('div').contains('AA Test Entry').eq(0).click()
 
@@ -451,7 +451,7 @@ context('Create combinations of field', () => {
 		cy.get('a').contains('Visit us').invoke('attr', 'href').should('eq', 'https://expressionengine.com')
 	})
 
-	context('Number Input', function() {
+	context('Number Input field', function() {
 
 		it('edit number input', () => {
 			cy.visit('admin.php?/cp/fields')
@@ -476,13 +476,13 @@ context('Create combinations of field', () => {
 			cy.get('[name=field_max_value]:visible').invoke('val').should('eq', '10')
 			cy.get('[name=field_step]:visible').invoke('val').should('eq', '2')
 			cy.get('[name=datalist_items]:visible').invoke('val').should('eq', "0\n5")
-			
+
 		})
 
 		it('Number input in entry' , () => {
 			cy.visit('admin.php?/cp/publish/edit')
 			cy.get('div').contains('AA Test Entry').eq(0).click()
-	
+
 			cy.get('input[type=number]').clear().type('183')
 			cy.get('body').type('{ctrl}', {release: false}).type('s')
 			cy.get('[type="number"]').then(($input) => {
@@ -499,33 +499,33 @@ context('Create combinations of field', () => {
 			cy.get('input[type=number]').clear().type('0.6').blur()
 			cy.wait('@validation')
 			page.hasError(cy.get('[type=number]'), page.messages.validation.integer)
-			
+
 			cy.get('input[type=number]').clear().type('-4').blur()
 			cy.wait('@validation')
 			cy.get('body').type('{ctrl}', {release: false}).type('s')
-	
+
 			cy.visit('admin.php?/cp/design')
 			cy.get('a').contains('aaNumber').eq(0).click()
 			cy.get('a').contains('index').click()
 			cy.get('.CodeMirror-scroll').type('{exp:channel:entries channel="AATestChannel"}{aa_number_test}{/exp:channel:entries}',{ parseSpecialCharSequences: false })
 			cy.get('body').type('{ctrl}', {release: false}).type('s')
 
-			
-	
+
+
 			cy.visit('index.php/aaNumber')
 			cy.get('body').contains('-4')
-	
-	
+
+
 		})
 	})
 
-	it('Test Buttons' , () => {
+	it('Selectable Buttons field' , () => {
 		cy.visit('admin.php?/cp/design')
 		cy.get('a').contains('aaSelectableButtons').eq(0).click()
 		cy.get('a').contains('index').click()
 		cy.get('.CodeMirror-scroll').type('{exp:channel:entries channel="AATestChannel"}<h2> {title} </h2>{aa_selectable_buttons_test}{item:value}<br>{/aa_selectable_buttons_test}{/exp:channel:entries}',{ parseSpecialCharSequences: false })
 		cy.get('body').type('{ctrl}', {release: false}).type('s')
-		
+
 		cy.visit('admin.php?/cp/fields')
 		cy.get('div').contains('AA Selectable Buttons Test').click()
 		cy.get('div.checkbox-label__text').contains('Value/Label Pairs').click()
@@ -577,7 +577,7 @@ context('Create combinations of field', () => {
 		cy.get('body').type('{ctrl}', {release: false}).type('s')
 		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("three")').should('have.class', 'active')
 		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("five")').should('have.class', 'active')
-		
+
 		cy.visit('index.php/aaSelectableButtons')
 		cy.get('body').should('contain', 'tres')
 		cy.get('body').should('contain', 'cinco')
@@ -637,9 +637,9 @@ context('Create combinations of field', () => {
 		cy.get('#single_tag').should('contain', 'four')*/
 	})
 
-	context("Slider", () => {
+	context("Value / Range Slider field", () => {
 
-		it('Test Slider' , () => {
+		it('Value Slider field' , () => {
 			cy.visit('admin.php?/cp/fields')
 			cy.get('div').contains('AA Value Slider').click()
 			cy.get('[name=field_min_value]:visible').first().clear({force: true}).type('10');
@@ -647,17 +647,17 @@ context('Create combinations of field', () => {
 			cy.get('[name=field_step]:visible').clear().type('5');
 			cy.get('[name=field_prefix]:visible').clear().type('$')
 			cy.get('body').type('{ctrl}', {release: false}).type('s')
-			
+
 			cy.visit('admin.php?/cp/publish/edit')
 			cy.get('div').contains('AA Test Entry').eq(0).click()
 			cy.get('.range-slider').not('.flat').find('input[type=range]').eq(0).as('range').invoke('val', 25).trigger('change')
 			cy.get('body').type('{ctrl}', {release: false}).type('s')
-	
+
 			cy.get('.range-slider').not('.flat').find('input[type=range]').eq(0).as('range').invoke('val').should('eq', '25')
 			cy.get('@range').invoke('val', 23).trigger('change')
 			cy.get('@range').invoke('val').should('eq', '25')
 			cy.get('button').contains('Save').eq(0).click()
-	
+
 			cy.visit('admin.php?/cp/design')
 			cy.get('a').contains('aaValueSlider').eq(0).click()
 			cy.get('a').contains('index').click()
@@ -667,8 +667,8 @@ context('Create combinations of field', () => {
 			cy.visit('index.php/aaValueSlider')
 			cy.get('body').should('contain', '$25')
 		})
-	
-		it('Test Range Slider' , () => {
+
+		it('Range Slider field' , () => {
 			cy.visit('admin.php?/cp/fields')
 			cy.get('div').contains('AA Range Slider').click()
 			cy.get('[name=field_min_value]:visible').first().clear({force: true}).type('10');
@@ -676,19 +676,19 @@ context('Create combinations of field', () => {
 			cy.get('[name=field_step]:visible').clear().type('5');
 			cy.get('[name=field_suffix]:visible').clear().type('%')
 			cy.get('body').type('{ctrl}', {release: false}).type('s')
-			
+
 			cy.visit('admin.php?/cp/publish/edit')
 			cy.get('div').contains('AA Test Entry').eq(0).click()
 			cy.get('.range-slider.flat').find('input[type=range]').eq(0).as('range1').invoke('val', 25).trigger('change', {force: true})
 			cy.get('.range-slider.flat').find('input[type=range]').eq(1).as('range2').invoke('val', 35).trigger('change', {force: true})
 			cy.get('body').type('{ctrl}', {release: false}).type('s')
-	
+
 			cy.get('.range-slider.flat').find('input[type=range]').eq(0).as('range1').invoke('val').should('eq', '25')
 			cy.get('.range-slider.flat').find('input[type=range]').eq(1).as('range2').invoke('val').should('eq', '35')
 			cy.get('@range1').invoke('val', 23).trigger('change', {force: true})
 			cy.get('@range1').invoke('val').should('eq', '25')
 			cy.get('button').contains('Save').eq(0).click()
-	
+
 			cy.visit('admin.php?/cp/design')
 			cy.get('a').contains('aaRangeSlider').eq(0).click()
 			cy.get('a').contains('index').click()
@@ -698,7 +698,7 @@ context('Create combinations of field', () => {
 			cy.visit('index.php/aaRangeSlider')
 			cy.get('body').should('contain', '25% — 35%')
 		})
-	
+
 		it('Switch between slider types', () => {
 			cy.visit('admin.php?/cp/fields')
 			cy.get('div').contains('AA Value Slider').click()
@@ -712,15 +712,15 @@ context('Create combinations of field', () => {
 			cy.get('[name=field_step]:visible').invoke('val').should('eq', '5');
 			cy.get('[name=field_prefix]:visible').invoke('val').should('eq', '$')
 			cy.get('body').type('{ctrl}', {release: false}).type('s')
-	
+
 			cy.visit('admin.php?/cp/publish/edit')
 			cy.get('div').contains('AA Test Entry').eq(0).click()
 			cy.get('.range-slider').eq(0).find('input[type=range]').eq(0).as('range1').invoke('val').should('eq', '25')
 			cy.get('.range-slider').eq(0).find('input[type=range]').eq(1).as('range2').invoke('val').should('eq', '50')
-	
+
 			cy.visit('index.php/aaValueSlider')
 			cy.get('body').should('contain', '$25 — 50')
-	
+
 			//------------------------------------
 			cy.visit('admin.php?/cp/fields')
 			cy.get('div').contains('AA Range Slider').click()
@@ -732,12 +732,12 @@ context('Create combinations of field', () => {
 			cy.get('[name=field_step]:visible').invoke('val').should('eq', '5');
 			cy.get('[name=field_suffix]:visible').invoke('val').should('eq', '%')
 			cy.get('body').type('{ctrl}', {release: false}).type('s')
-	
+
 			cy.visit('admin.php?/cp/publish/edit')
 			cy.get('div').contains('AA Test Entry').eq(0).click()
 			cy.get('.range-slider').eq(1).find('input[type=range]').eq(0).as('range1').invoke('val').should('eq', '25')
 			cy.get('.range-slider').eq(1).find('input[type=range]').eq(1).should('not.exist')
-	
+
 			cy.visit('index.php/aaRangeSlider')
 			cy.get('body').should('contain', '25%')
 		})

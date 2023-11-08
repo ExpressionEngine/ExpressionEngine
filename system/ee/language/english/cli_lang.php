@@ -427,6 +427,14 @@ $lang = array(
     'command_reindex_description'                               => 'Content Reindex',
     'command_reindex_summary'                                   => 'The searchable content might become stale if you have recently changed properties of some fields. Reindexing will re-populate the data used by complex fields in search and Entry Manager.',
     'command_reindex_option_site_id'                            => 'Site ID. Skip this parameter to reindex content on all sites',
+    // Lang entries for command sync:upload-directory
+    'command_sync_upload_directory_description'     => 'Synchronize upload directory',
+    'command_sync_upload_directory_summary'         => '',
+    'command_sync_upload_directory_started'         => 'Synchronizing',
+    'command_sync_upload_directory_option_id'       => 'Upload Directory ID',
+    'command_sync_upload_directory_ask_id'          => 'Enter Upload Directory ID',
+    'command_sync_upload_directory_option_regenerate_manipulations' => 'Image manipulations to regenerate. Comma separated list of manipulation IDs. \'all\' to regenerate all manipulations, empty value to skip.',
+    'command_sync_upload_directory_ask_regenerate_manipulations' => 'Enter comma-separated IDs of manipulations to regenerate. Enter \'all\' to regenerate all manipulations, empty to skip.',
 
     // Lang entries for command update:prepare
     'command_update_prepare_description'                        => 'Prepare a site to be upgraded using these files',

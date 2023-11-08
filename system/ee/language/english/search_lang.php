@@ -44,7 +44,7 @@ $lang = array(
 
     'search_by_keyword' => 'Search by Keyword',
 
-    'search_by_member_group' => 'Search by Member Group',
+    'search_by_member_group' => 'Search by Primary Role',
 
     'search_by_member_name' => 'Search by Member Name',
 

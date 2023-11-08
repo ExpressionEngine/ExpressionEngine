@@ -4,7 +4,7 @@ const page = new MemberGroups;
 const member = new MemberCreate;
 
 
-context('Test Member roles Channels ', () => {
+context('Member Roles / Channel Permissions ', () => {
 
   before(function(){
     cy.task('db:seed')
@@ -48,6 +48,9 @@ context('Test Member roles Channels ', () => {
    cy.get('#fieldset-channel_category_permissions .checkbox-label:nth-child(1) > input').click();
    cy.get('#fieldset-channel_category_permissions .checkbox-label:nth-child(2) > input').click();
    cy.get('#fieldset-channel_category_permissions .checkbox-label:nth-child(3) > input').click();
+   cy.get('#fieldset-channel_category_permissions .checkbox-label:nth-child(4) > input').click();
+   cy.get('#fieldset-channel_category_permissions .checkbox-label:nth-child(5) > input').click();
+   cy.get('#fieldset-channel_category_permissions .checkbox-label:nth-child(6) > input').click();
    cy.get('#fieldset-channel_status_permissions .checkbox-label:nth-child(1) > input').click();
    cy.get('#fieldset-channel_status_permissions .checkbox-label:nth-child(2) > input').click();
    cy.get('#fieldset-channel_status_permissions .checkbox-label:nth-child(3) > input').click();
@@ -92,42 +95,6 @@ context('Test Member roles Channels ', () => {
     cy.dismissLicenseAlert()
     cy.get('a').contains('New Channel').click()
     cy.hasNoErrors()
- })
-
-
-
- it.skip('cleans for reruns', () => {
-   cy.auth()
-
-   cy.visit('admin.php?/cp/members/roles')
-
-    cy.get('.list-item:nth-child(2) input').click();
-    cy.pause()
-
-    cy.get('select').select('Delete')
-    cy.get('.bulk-action-bar > .button').click()
-    cy.get('.modal-confirm-delete > .modal > form > .dialog__actions > .dialog__buttons > .button-group > .button').click()
-
-
-    cy.visit('admin.php?/cp/members')
-
-
-    cy.get('tr:nth-child(1) > td > input').click();
-    cy.get('select').select('Delete');
-    cy.get('.button--primary').click();
-
-    cy.get("body").then($body => {
-          if ($body.find("#fieldset-verify_password > .field-control > input").length > 0) {   //evaluates as true if verify is needed
-              cy.get("#fieldset-verify_password > .field-control > input").type('password');
-          }
-    });
-    //Sometimes it asks for password to delete users and sometimes it does not.
-
-    cy.get('.button--danger').click();
-    cy.get('.modal-confirm-delete form').submit();
-
-
-
  })
 
 })

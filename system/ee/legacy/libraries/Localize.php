@@ -261,10 +261,10 @@ class Localize
 
         // Localize to member's timezone or leave as GMT
         if (is_bool($timezone)) {
-            if (isset(ee()->session)) {
-                $timezone = ($timezone) ? ee()->session->userdata('timezone', ee()->config->item('default_site_timezone')) : 'UTC';
+            if ($timezone) {
+                $timezone = isset(ee()->session) ? ee()->session->userdata('timezone', ee()->config->item('default_site_timezone')) : ee()->config->item('default_site_timezone');
             } else {
-                $timezone = ($timezone) ? ee()->config->item('default_site_timezone') : 'UTC';
+                $timezone = 'UTC';
             }
         }
 

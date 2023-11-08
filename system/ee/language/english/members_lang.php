@@ -470,7 +470,7 @@ $lang = array(
 
     'username_banning_instructions' => '<b>Place each username on a separate line</b><br> These usernames will not be allowed.',
 
-    /* Member group settings */
+    /* Role settings */
     'access_privilege_caution' => 'Any setting marked with <span class="icon--caution" title="exercise caution"></span> should only be granted to people you trust implicitly.',
 
     'access_privilege_warning' => '<b>Warning</b>: Please be very careful with the access privileges you grant.',
@@ -561,7 +561,7 @@ $lang = array(
 
     'can_admin_design' => 'Global template settings',
 
-    'can_admin_design_desc' => 'When enabled, users assigned to this group may access the global template settings and template routes.',
+    'can_admin_design_desc' => 'When enabled, users assigned to this group may access the global template settings, system templates, and template routes.',
 
     'can_admin_mbr_groups' => 'Access roles',
 
@@ -698,6 +698,10 @@ $lang = array(
     'include_members_in' => 'Include members in',
 
     'include_members_in_desc' => 'Users with this role will be included in all of the selected list types.',
+
+    'show_field_names' => 'Show field names on Publish',
+
+    'show_field_names_desc' => 'When enabled, copy-able names of fields will be included on Entry Publish & Edit pages',
 
     'mbr_account_privs' => 'Member Account Privileges',
 
@@ -1159,6 +1163,12 @@ $lang = array(
     'access_overview_can_edit_channel_fields' => 'Edit fields',
 
     'access_overview_can_delete_channel_fields' => 'Delete fields',
+
+    'access_overview_can_create_category_groups' => 'Create category groups',
+
+    'access_overview_can_edit_category_groups' => 'Edit category groups',
+
+    'access_overview_can_delete_category_groups' => 'Delete category groups',
 
     'access_overview_can_create_categories' => 'Create categories',
 

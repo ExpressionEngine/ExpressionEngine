@@ -89,6 +89,7 @@ jobs:
         if: github.event.pull_request.draft == false
         needs: [cancel-running-tests, build-for-testing]
         runs-on: ${{ matrix.os }}
+        timeout-minutes: 45
 
         strategy:
             fail-fast: false
@@ -140,6 +141,10 @@ jobs:
               run: |
                 rm -f .env.php
                 cp -f tests/cypress/support/config/.env.php .env.php
+
+            - name: Copy avatar file
+              run: |
+                cp -f tests/cypress/support/file-sync/images/8bit_kevin.png images/avatars/8bit_kevin.png
 
             - name: Remove installer
               run: |
@@ -197,7 +202,6 @@ jobs:
                 spec: ${{ steps.specs.outputs.SPECS }}
                 browser: chrome
                 working-directory: tests/cypress
-                config-file: cypress.json
               env:
                 CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
 
@@ -212,7 +216,6 @@ jobs:
               with:
                 browser: chrome
                 working-directory: tests/cypress
-                config-file: cypress.json
                 record: true
                 parallel: true
                 group: PHP${{ matrix.php }}
@@ -221,6 +224,15 @@ jobs:
                 CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                 COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
+
+            - name: Run Cypress Tests (Electron)
+              uses: cypress-io/github-action@v5
+              with:
+                browser: electron
+                working-directory: tests/cypress
+                config-file: electron.cypress.config.js
+              env:
+                CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
 
             - name: Archive screenshots
               uses: actions/upload-artifact@v3

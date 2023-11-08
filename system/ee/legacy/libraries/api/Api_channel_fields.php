@@ -8,6 +8,8 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+use ExpressionEngine\Error\AddonNotFound;
+
 /**
  * Channel Fields API library
  */
@@ -131,7 +133,7 @@ class Api_channel_fields extends Api
             }
 
             $opts = get_class_vars($data['class']);
-            $fts[$key] = array_merge($fts[$key], $opts['info']);
+            $fts[$key] = array_merge($fts[$key], (isset($opts['info']) && is_array($opts['info']) ? $opts['info'] : []));
         }
 
         return $fts;
@@ -150,6 +152,7 @@ class Api_channel_fields extends Api
         $cfields = array();
         $dfields = array();
         $rfields = array();
+        $msfields = array();
         $gfields = array();
         $pfields = array();
         $ffields = array();
@@ -193,6 +196,8 @@ class Api_channel_fields extends Api
                 $ffields[$row['site_id']][$row['field_name']] = $row['field_id'];
             } elseif ($row['field_type'] == 'toggle') {
                 $tfields[$row['site_id']][$row['field_name']] = $row['field_id'];
+            } elseif ($row['field_type'] == 'member') {
+                $msfields[$row['site_id']][$row['field_name']] = $row['field_id'];
             }
 
             $cfields[$row['site_id']][$row['field_name']] = $row['field_id'];
@@ -203,6 +208,7 @@ class Api_channel_fields extends Api
             'date_fields' => $dfields,
             'relationship_fields' => $rfields,
             'grid_fields' => $gfields,
+            'members_fields' => $msfields,
             'pair_custom_fields' => $pfields,
             'fluid_field_fields' => $ffields,
             'toggle_fields' => $tfields,
@@ -250,6 +256,12 @@ class Api_channel_fields extends Api
             }
 
             if (! $found_path) {
+                if (REQ == 'CP') {
+                    throw new AddonNotFound(strip_tags(sprintf(
+                        ee()->lang->line('unable_to_load_field_type'),
+                        strtolower($file)
+                    )));
+                }
                 show_error(sprintf(
                     ee()->lang->line('unable_to_load_field_type'),
                     strtolower($file)
