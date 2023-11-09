@@ -460,7 +460,9 @@ class Member_ft extends EE_Fieldtype implements ColumnInterface
             'value' => $member->getId(),
             'label' => !empty($member->screen_name) ? $member->screen_name : $member->username,
             'instructions' => $member->PrimaryRole->name,
-            'channel_id' => $member->role_id
+            'channel_id' => $member->role_id,
+            'can_edit' => ee('Permission')->can('edit_members'),
+            'editable' => (ee('Permission')->isSuperAdmin() || ! $member->isSuperAdmin())
         ];
     }
 
