@@ -9,6 +9,9 @@ context('Member List in CP', () => {
   before(function(){
     cy.task('db:seed')
     cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })
+    cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' }).then(() => {
+      cy.authVisit('admin.php?/cp/design')
+    })
   })
   
   beforeEach(function() {
@@ -100,6 +103,12 @@ context('Member List frontend', () => {
     cy.logFrontendPerformance()
   })
 
+  it('Check backspace parameter for member_rows', () => {
+    cy.auth()
+    cy.visit('index.php/members/memberlist-backspace');
+    cy.get('div').contains("Admin").should('not.contain', 'Admin**')
+  })
+
   it('the paths are correct', () => {
 
     cy.visit('index.php/members/memberlist');
@@ -110,7 +119,7 @@ context('Member List frontend', () => {
     cy.get('tbody tr').its('length').should('eq', 2)
     cy.get('tbody tr').eq(1).find('img').should('exist')
     cy.get('tbody tr').eq(1).find('img').invoke('attr', 'src').then((src) => {
-      expect(src).to.contain('procotopus.png')
+      expect(src).to.contain('8bit_kevin.png')
     })
     cy.get('tbody tr').should('not.contain', 'Member')
     cy.logFrontendPerformance()

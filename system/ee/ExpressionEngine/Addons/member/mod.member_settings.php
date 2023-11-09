@@ -139,9 +139,10 @@ class Member_settings extends Member
         $tagdata = trim(ee()->TMPL->tagdata);
 
         // If there is tag data, it's a tag pair, otherwise it's a single tag which means it's a legacy speciality template.
+        $content = '';
         if (! empty($tagdata)) {
             $content = ee()->TMPL->tagdata;
-        } else {
+        } elseif (ee('Config')->getFile()->getBoolean('legacy_member_templates')) {
             $content = $this->_load_element('public_profile');
         }
 
@@ -724,9 +725,10 @@ class Member_settings extends Member
         $tagdata = trim(ee()->TMPL->tagdata);
 
         // If there is tag data, it's a tag pair, otherwise it's a single tag which means it's a legacy speciality template.
+        $template = '';
         if (! empty($tagdata)) {
             $template = ee()->TMPL->tagdata;
-        } else {
+        } elseif (ee('Config')->getFile()->getBoolean('legacy_member_templates')) {
             $template = $this->_load_element('edit_profile_form');
         }
 
@@ -761,9 +763,9 @@ class Member_settings extends Member
 
         // $result_row = $result->row_array()
 
-        $this->member = ee()->session->getMember();
+        $member = ee()->session->getMember();
 
-        if (empty($this->member)) {
+        if (empty($member)) {
             if (! empty($tagdata)) {
                 return ee()->TMPL->no_results();
             } else {
@@ -771,7 +773,7 @@ class Member_settings extends Member
             }
         }
 
-        $result_row = $this->member->getValues();
+        $result_row = $member->getValues();
 
         ee()->load->library('api');
         ee()->legacy_api->instantiate('channel_fields');
@@ -1241,9 +1243,10 @@ class Member_settings extends Member
         $tagdata = trim(ee()->TMPL->tagdata);
 
         // If there is tag data, it's a tag pair, otherwise it's a single tag which means it's a legacy speciality template.
+        $template = '';
         if (! empty($tagdata)) {
             $template = ee()->TMPL->tagdata;
-        } else {
+        } elseif (ee('Config')->getFile()->getBoolean('legacy_member_templates')) {
             $template = $this->_load_element('email_prefs_form');
         }
 
@@ -1357,9 +1360,10 @@ class Member_settings extends Member
         $tagdata = trim(ee()->TMPL->tagdata);
 
         // If there is tag data, it's a tag pair, otherwise it's a single tag which means it's a legacy speciality template.
+        $template = '';
         if (! empty($tagdata)) {
             $template = ee()->TMPL->tagdata;
-        } else {
+        } elseif (ee('Config')->getFile()->getBoolean('legacy_member_templates')) {
             $template = $this->_load_element('username_password_form');
         }
 
@@ -1741,7 +1745,10 @@ class Member_settings extends Member
         /** -------------------------------------
         /**  Parse the $_POST data
         /** -------------------------------------*/
-        if (ee('Request')->post('screen_name') == '' && ee('Request')->post('email') == '') {
+        if (
+            ee('Request')->post('screen_name') == '' &&
+            ee('Request')->post('email') == ''
+        ) {
             ee()->functions->redirect($redirect_url);
             exit;
         }

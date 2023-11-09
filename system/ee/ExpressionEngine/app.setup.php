@@ -68,6 +68,7 @@ use ExpressionEngine\Service\Generator\SidebarGenerator;
 use ExpressionEngine\Service\Generator\TemplateTagGenerator;
 use ExpressionEngine\Service\Generator\WidgetGenerator;
 use ExpressionEngine\Model\Channel\ChannelEntry;
+use ExpressionEngine\Model\Channel\Reindex;
 
 // TODO should put the version in here at some point ...
 $setup = [
@@ -482,6 +483,10 @@ $setup = [
 
         'Channel/ChannelEntry' => function ($ee) {
             return new Channel\ChannelEntry();
+        },
+
+        'Channel/Reindex' => function ($ee) {
+            return new Channel\Reindex();
         },
 
         'ChannelSet' => function ($ee) {

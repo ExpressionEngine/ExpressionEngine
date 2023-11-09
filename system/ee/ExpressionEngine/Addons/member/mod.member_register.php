@@ -40,9 +40,10 @@ class Member_register extends Member
         // Fetch the registration form
         $tagdata = trim(ee()->TMPL->tagdata);
 
+        $reg_form = '';
         if (! empty($tagdata)) {
             $reg_form = ee()->TMPL->tagdata;
-        } else {
+        } elseif (ee('Config')->getFile()->getBoolean('legacy_member_templates')) {
             $reg_form = $this->_load_element('registration_form');
         }
 
@@ -290,7 +291,10 @@ class Member_register extends Member
         }
 
         // Blocked/Allowed List Check
-        if (ee()->blockedlist->blocked == 'y' && ee()->blockedlist->allowed == 'n') {
+        if (
+            ee()->blockedlist->blocked == 'y' &&
+            ee()->blockedlist->allowed == 'n'
+        ) {
             return ee()->output->show_user_error(
                 'general',
                 array(lang('not_authorized'))
