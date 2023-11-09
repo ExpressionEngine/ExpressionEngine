@@ -183,8 +183,8 @@
   font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, Courier, monospace;
   font-size: 90%;
   line-height: 1.5;
-  color: var(--ee-button-default-color);
-  background-color: var(--ee-panel-bg);
+  color: #262F3F;
+  background-color: #F5F5F6;
   padding: 1em;
 }
 .rx-content pre code {
@@ -196,14 +196,14 @@
   line-height: inherit;
 }
 .rx-content blockquote {
-  color: var(--ee-button-default-color);
+  color: #262F3F;
   font-style: italic;
   font-weight: normal;
   padding: 0;
   background: transparent;
 }
 .rx-content blockquote p {
-  color: var(--ee-button-default-color);
+  color: #262F3F;
   font-size: 125%;
   line-height: 1.5;
 }
@@ -215,8 +215,7 @@
   font-style: inherit;
   font-size: 14px;
   line-height: 1.5;
-  color: var(--ee-button-default-color);
-  opacity: 0.7;
+  color: rgba(38, 47, 63, 0.7);
 }
 .rx-content caption {
   text-align: left;
@@ -235,7 +234,7 @@
   font-size: 95%;
   line-height: 1.5;
   padding: 0.75em;
-  border: 1px solid var(--ee-button-default-color);
+  border: 1px solid rgba(217, 219, 221, 0.5);
 }
 .rx-content th {
   font-weight: normal;
@@ -271,8 +270,7 @@
   font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, Courier, monospace;
   font-style: normal;
   line-height: 1;
-  color: var(--ee-button-default-color);
-  opacity: 0.85;
+  color: rgba(0, 11, 29, 0.85);
   vertical-align: baseline;
 }
 .rx-content samp,
@@ -432,24 +430,19 @@
 .rx-container {
   box-sizing: border-box;
   border-radius: 2px;
-  background-color: var(--ee-input-bg);
-  border: 1px solid var(--ee-input-border);
-}
-
-.rx-container .rx-toolbar {
-  flex-wrap: wrap;
-  max-width: 48%;
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 11, 29, 0.1);
 }
 
 .rx-toolbar {
   display: flex;
   flex: 1;
   white-space: nowrap;
-/*  height: 40px;
+  height: 40px;
   overflow-x: scroll;
-  overflow-y: hidden;*/
-/*  scrollbar-width: none;
-  -ms-overflow-style: none;*/
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 .rx-toolbar::-webkit-scrollbar {
   width: 0;
@@ -462,19 +455,17 @@
   padding: 0;
   box-sizing: border-box;
   display: flex;
-  align-items: start;
 }
 .rx-toolbar-container.is-rx-toolbar {
   border-top-left-radius: 2px;
   border-top-right-radius: 2px;
-  background-color: var(--ee-input-bg);
+  background-color: rgba(255, 255, 255, 0.98);
+  border-bottom: 1px solid rgba(0, 11, 29, 0.1);
 }
 .rx-toolbar-container.is-rx-toolbar .rx-topbar {
   position: relative;
   margin-left: auto;
   display: flex;
-  flex-wrap: wrap;
-  max-width: 48%;
 }
 .rx-toolbar-sticky {
   position: -webkit-sticky;
@@ -499,8 +490,7 @@
   margin: 0;
   line-height: 1;
   border-radius: 99px;
-  background-color: var(--ee-panel-bg);
-  border: 1px solid var(--ee-input-border);
+  background-color: #000B1D;
 }
 
 .rx-control {
@@ -636,7 +626,7 @@
 [class^=rx-icon-], [class*=" rx-icon-"] {
   /* use !important to prevent issues with browser extensions that change fonts */
   font-family: "RedactorX" !important;
-  speak: none;
+  speak: never;
   font-style: normal;
   font-weight: normal;
   font-variant: normal;
@@ -787,55 +777,45 @@
 }
 
 .rx-button {
-  display: inline-block;
-  box-sizing: border-box;
-  text-align: center;
-  cursor: pointer;
-  outline: 0;
-  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   vertical-align: middle;
   text-decoration: none;
-  zoom: 1;
-  position: relative;
-  color: var(--ee-button-default-color);
-  border-radius: 2px;
-  background: var(--ee-panel-bg);
-  margin-right: 5px;
-  margin-bottom: 4px;
+  background: none;
+  outline: none;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
   font-size: 16px;
-  padding: 9px 15px 6px 15px;
-}
-
-.rx-container .rx-button {
-    font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
 }
 .rx-button:hover {
-  background: var(--ee-button-primary-bg);
-  color: var(--ee-button-primary-color);
   text-decoration: none;
 }
 .rx-button-icon {
-/*  display: inline-flex;*/
+  display: inline-flex;
 }
 .rx-button-icon svg {
   display: inline-block;
 }
 
-/*.rx-button-icon {
+.rx-button-icon {
   width: 31px;
   height: 30px;
   align-items: center;
   justify-content: center;
   border-radius: 4px;
   border: 1px solid transparent;
-}*/
+}
 
 .rx-button-control {
   width: 20px;
-  color: var(--ee-button-default-color);
+  color: rgba(0, 11, 29, 0.4);
 }
 .rx-button-control:hover {
-  color: var(--ee-button-primary-color);
+  color: #000B1D;
 }
 
 .rx-button-context, .rx-button-context:active, .rx-button-context:focus {
@@ -843,7 +823,7 @@
   min-width: 36px;
   height: 34px;
   background-color: transparent;
-  color: var(--ee-button-default-color);
+  color: rgba(255, 255, 255, 0.85);
 }
 .rx-button-context:first-child {
   padding-left: 6px;
@@ -852,93 +832,84 @@
   padding-right: 6px;
 }
 .rx-button-context svg {
-  fill: var(--ee-button-default-color);
-  opacity: 0.85;
+  fill: rgba(255, 255, 255, 0.85);
 }
 .rx-button-context.active {
-  background-color: var(--ee-panel-bg);
-  color: var(--ee-button-default-color);
-  opacity: 0.5;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.85);
 }
 .rx-button-context:hover {
   transition: all 0.2s linear;
-  background-color: var(--ee-button-primary-bg);
-  color: var(--ee-button-default-color);
+  background-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
 }
 .rx-button-context:hover svg {
-  fill: var(--ee-button-default-color);
+  fill: #ffffff;
 }
 .rx-button-context:hover .rx-button-icon {
   border-color: transparent;
 }
 
-/*.rx-button-toolbar {
+.rx-button-toolbar {
   padding-top: 1px;
   width: 40px;
   min-width: 40px;
   height: 41px;
-}*/
+}
 
-/*.rx-button-topbar {
+.rx-button-topbar {
   width: 36px;
   height: 40px;
   padding-top: 1px;
 }
-*/
+
 .rx-button-toolbar,
 .rx-button-topbar {
-/*  color: rgba(0, 11, 29, 0.8);*/
+  color: rgba(0, 11, 29, 0.8);
 }
 .rx-button-toolbar svg,
 .rx-button-topbar svg {
-  fill: var(--ee-button-default-color);
-  max-width: 20px;
+  fill: rgba(0, 11, 29, 0.8);
 }
 .rx-button-toolbar.active .rx-button-icon,
 .rx-button-topbar.active .rx-button-icon {
-/*  border-color: #e4e8ed;
-  background-color: rgba(228, 232, 237, 0.5);*/
+  border-color: #e4e8ed;
+  background-color: rgba(228, 232, 237, 0.5);
 }
 .rx-button-toolbar.toggled,
 .rx-button-topbar.toggled {
-  background-color: var(--ee-panel-bg);
-  color: var(--ee-button-default-color);
-  opacity: 0.5;
+  background-color: #E4E8ED;
+  color: #000B1D;
 }
 .rx-button-toolbar.toggled svg,
 .rx-button-topbar.toggled svg {
-  fill: var(--ee-button-default-color);
+  fill: #000B1D;
 }
-.rx-button-toolbar.disable,
-.rx-button-topbar.disable {
-  background: var(--ee-panel-bg);
-  color: var(--ee-button-default-color);
-}
-.rx-button-toolbar.disable:hover,
+.rx-button-toolbar.disable, .rx-button-toolbar.disable:hover,
+.rx-button-topbar.disable,
 .rx-button-topbar.disable:hover {
-  background: var(--ee-panel-bg);
-  color: var(--ee-button-default-color);
+  cursor: default;
+  background-color: transparent !important;
+  color: rgba(0, 11, 29, 0.4) !important;
 }
-
 .rx-button-toolbar.disable svg,
 .rx-button-topbar.disable svg {
-  fill: var(--ee-button-default-color);
+  fill: rgba(0, 11, 29, 0.4) !important;
 }
 .rx-button-toolbar.disable .rx-button-icon,
 .rx-button-topbar.disable .rx-button-icon {
-  background: var(--ee-panel-bg);
-  color: var(--ee-button-default-color);
-  opacity: 0.5;
+  background-color: transparent !important;
+  color: rgba(0, 11, 29, 0.4) !important;
 }
 .rx-button-toolbar:hover,
 .rx-button-topbar:hover {
   transition: all 0.2s linear;
-  background-color: var(--ee-button-primary-bg);
-  color: var(--ee-button-primary-color);
+  background-color: #E4E8ED;
+  color: #000B1D;
 }
 .rx-button-toolbar:hover svg,
 .rx-button-topbar:hover svg {
-  fill: var(--ee-button-primary-color);
+  fill: #000B1D;
 }
 .rx-button-toolbar:hover .rx-button-icon,
 .rx-button-topbar:hover .rx-button-icon {
@@ -964,7 +935,7 @@
   padding: 8px 10px;
   position: relative;
   overflow: hidden;
-  background-color: var(--ee-panel-bg);
+  background-color: #F5F5F6;
   box-sizing: border-box;
   border: none;
 }
@@ -977,8 +948,8 @@
   padding: 0 10px;
   margin: 0;
   line-height: 16px;
-  color: var(--ee-input-color);
-  border-right: 1px solid var(--ee-button-default-border);
+  color: rgba(0, 11, 29, 0.5);
+  border-right: 1px solid rgba(0, 11, 29, 0.1);
 }
 .rx-statusbar-item:last-child {
   border-right-color: transparent;
@@ -1092,7 +1063,7 @@
 .rx-popup {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Helvetica Neue", Arial, sans-serif;
   border-radius: 4px;
-  background-color: var(--ee-panel-bg);
+  background-color: #ffffff;
   box-shadow: 0 14px 28px rgba(0, 11, 29, 0.25), 0 10px 10px rgba(0, 11, 29, 0.1);
   position: absolute;
   top: 0;
@@ -1105,7 +1076,6 @@
 .rx-popup-body {
   box-sizing: border-box;
   padding: 0;
-  background-color: var(--ee-panel-bg);
 }
 .rx-popup-body form {
   padding-bottom: 16px;
@@ -1132,8 +1102,8 @@
   text-align: center;
   justify-content: center;
   align-items: center;
-  border: 1px solid var(--ee-button-default-color);
-  color: var(--ee-button-default-color);
+  border: 1px solid #D9DBDD;
+  color: #000B1D;
   border-left-color: transparent;
   border-top-color: transparent;
 }
@@ -1145,10 +1115,9 @@
 .rx-popup-header {
   font-size: 14px;
   font-weight: bold;
-  color: var(--ee-button-default-color);
+  color: #000B1D;
   padding: 0 16px;
   position: relative;
-  background-color: var(--ee-panel-bg);
 }
 .rx-popup-header:empty {
   display: none;
@@ -1159,7 +1128,7 @@
 .rx-popup-header-item {
   position: relative;
   display: inline-block;
-  color: var(--ee-button-default-color);
+  color: #000B1D;
   font-weight: bold;
   padding-top: 16px;
   padding-bottom: 16px;
@@ -1202,7 +1171,6 @@
   margin-top: 8px;
   padding: 16px;
   padding-bottom: 20px;
-  background-color: var(--ee-panel-bg);
 }
 .rx-popup-footer .rx-form-button {
   margin-right: 4px;
@@ -1220,13 +1188,7 @@
   align-items: center;
   cursor: pointer;
   position: relative;
-  color: var(--ee-button-default-color);
 }
-
-.rx-popup-item svg {
-  fill: var(--ee-button-default-color);
-}
-
 .rx-popup-item-container {
   width: 92px;
   height: 76px;
@@ -1241,7 +1203,7 @@
 .rx-popup-item-container .rx-popup-item-title {
   flex: none;
   font-size: 12px;
-  color: var(--ee-button-default-color);
+  color: rgba(0, 11, 29, 0.6);
 }
 .rx-popup-item-container .rx-popup-item-icon {
   font-size: 16px;
@@ -1263,8 +1225,7 @@
 .rx-popup-item-shortcut {
   font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, Courier, monospace;
   font-size: 11px;
-/*  color: rgba(0, 11, 29, 0.5);*/
-  opacity: 0.5;
+  color: rgba(0, 11, 29, 0.5);
   margin-left: auto;
   padding-top: 1px;
   text-align: right;
@@ -1300,7 +1261,7 @@
   display: none;
 }
 .rx-popup-item:hover {
-  background-color: var(--ee-button-primary-bg);
+  background-color: #E4E8ED;
 }
 .rx-popup-item.active {
   background-color: rgba(0, 88, 251, 0.65);
@@ -1349,7 +1310,7 @@
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%) rotate(45deg);
-  background-color: var(--ee-button-default-color);
+  background-color: #000B1D;
 }
 .rx-popup-close::before {
   height: 1px;
@@ -1429,7 +1390,7 @@
   padding: 0;
   margin: 0;
   padding-bottom: 6px;
-  color: var(--ee-button-default-color);
+  color: rgba(0, 11, 29, 0.65);
 }
 
 .rx-form-container-flex {
@@ -1507,9 +1468,9 @@
   border-radius: 4px;
   box-shadow: none;
   line-height: 1.3;
-  color: var(--ee-button-default-color);
-  background-color: var(--ee-panel-bg);
-  border: 1px solid var(--ee-button-default-color);
+  color: #000B1D;
+  background-color: #F5F5F6;
+  border: 1px solid #D9DBDD;
 }
 .rx-form-input:focus,
 .rx-form-select:focus,
@@ -1554,13 +1515,13 @@
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Helvetica Neue", Arial, sans-serif;
   font-size: 14px;
   font-weight: normal;
-  color: var(--ee-button-default-color);
+  color: #000B1D;
 }
 
 .rx-form-segment {
   display: flex;
   flex-wrap: wrap;
-  background-color: var(--ee-panel-bg);
+  background-color: #F0F1F1;
   border-radius: 4px;
   padding: 2px;
   gap: 4px;
@@ -1576,18 +1537,17 @@
   text-align: center;
   border-radius: 4px;
   min-width: 32px;
-  color: var(--ee-button-default-color);
+  color: rgba(0, 11, 29, 0.6);
 }
 .rx-form-segment-item:hover {
-  background-color: var(--ee-button-primary-bg);
-  color: var(--ee-button-default-color);
+  background-color: #ffffff;
+  color: #000B1D;
 }
 .rx-form-segment-item.active {
   cursor: default;
-  background-color:var(--ee-panel-bg);
+  background-color: #ffffff;
   box-shadow: 0 1px 3px rgba(0, 11, 29, 0.12), 0 1px 2px rgba(0, 11, 29, 0.2);
-  color: var(--ee-button-default-color);
-  opacity: 0.5;
+  color: #000B1D;
 }
 
 .rx-form-upload-box {
@@ -1740,7 +1700,7 @@
 .rx-popup-shortcut-title {
   font-size: 14px;
   line-height: 20px;
-  color: var(--ee-button-default-color);
+  color: #000B1D;
   margin-right: 16px;
 }
 
