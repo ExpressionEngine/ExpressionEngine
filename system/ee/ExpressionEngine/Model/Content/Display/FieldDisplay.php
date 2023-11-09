@@ -20,6 +20,7 @@ class FieldDisplay
     protected $visible = true;
     protected $conditional = false;
     protected $width = 100;
+    protected $label;
 
     public function __construct($field)
     {
@@ -68,9 +69,19 @@ class FieldDisplay
         return $this->field->getStatus();
     }
 
+    public function setLabel($label)
+    {
+        if (!empty($label)) {
+            $this->label = $label;
+        } else {
+            $this->label = null;
+        }
+        return $this;
+    }
+
     public function getLabel()
     {
-        return $this->field->getItem('field_label');
+        return !is_null($this->label) ? $this->label : $this->field->getItem('field_label');
     }
 
     public function getForm()

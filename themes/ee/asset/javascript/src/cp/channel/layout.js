@@ -411,11 +411,8 @@ $(document).ready(function () {
 		if ( !value.length ) {
 			$(this).hide().siblings('.title').show();
 		} else {
-			$.each(EE.publish_layout[open_tab_index].fields, function(i, el) {
-				if (el.title != undefined && el.title === old_text) {
-					EE.publish_layout[open_tab_index].fields[i]['title'] = value;
-				}
-			});
+			var field = getFieldIndex(this);
+			EE.publish_layout[open_tab_index].fields[field].label = value;
 			$(this).hide().siblings('.title').text(value).show();
 		}
 	}).hide();

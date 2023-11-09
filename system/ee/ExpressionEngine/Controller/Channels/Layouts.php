@@ -191,7 +191,6 @@ class Layouts extends AbstractChannelsController
                     'visible' => true,
                     'collapsed' => false,
                     'width' => 100,
-                    'title' => $custom_field->field_label,
                 );
             }
 
