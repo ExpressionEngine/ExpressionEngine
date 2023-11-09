@@ -17,7 +17,10 @@ return array(
     ),
     'fieldtypes' => array(
         'rte' => array(
-            'compatibility' => 'text'
+            'compatibility' => 'text',
+            'use' => array(
+                'MemberField'
+            )
         )
     )
 );

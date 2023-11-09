@@ -199,7 +199,7 @@ class JumpMenu extends AbstractJumpMenu
                 'command' => 'manage_bans ip_address_banning email_address_banning username_banning screen_name_banning ban_options',
                 'dynamic' => false,
                 'addon' => false,
-                'target' => 'members/ban-settings',
+                'target' => 'settings/ban',
                 'permission' => 'ban_users'
             ),
             //categories

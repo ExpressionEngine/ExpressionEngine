@@ -47,7 +47,7 @@ context('Member List in CP', () => {
   })
 
    it('displays an itemized modal when attempting to remove 1 member', () => {
-    page.get('usernames').first().invoke('text').then((member_name) => {
+    cy.get('.ee-main__content form .table-responsive table tr td:nth-child(2) div > div > span').first().invoke('text').then((member_name) => {
       page.get('members').first().find('input[type="checkbox"]').check()
       page.get('bulk_action').should('be.visible')
       page.get('bulk_action').select("Delete")
@@ -65,16 +65,13 @@ context('Member List in CP', () => {
 
 context('Member List frontend', () => {
   before(function() {
+    cy.wait(1000)
     cy.task('db:seed')
     //copy templates
     cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' }).then(() => {
       cy.authVisit('admin.php?/cp/design')
     })
     cy.logout()
-  })
-
-  beforeEach(function() {
-    
   })
 
   it('check access memberlist permissions', () => {

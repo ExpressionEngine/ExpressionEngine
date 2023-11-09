@@ -159,6 +159,11 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
         ]);
 
         if (REQ == 'CP') {
+            ee()->cp->add_js_script(array(
+                'file' => array(
+                    'cp/publish/entry-list',
+                ),
+            ));
             return ee()->file_field->dragAndDropField($this->field_name, $data, $allowed_file_dirs, $content_type);
         }
 

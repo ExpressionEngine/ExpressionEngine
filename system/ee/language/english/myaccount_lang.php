@@ -260,10 +260,6 @@ $lang = array(
 
     'location_desc' => 'Your physical location.',
 
-    'login_as' => 'Login as %s',
-
-    'login_as_member' => 'Login as Member',
-
     'login_as_warning' => "<b>Warning</b>: You will be logged in as the member '%s' and redirected to the page below.",
 
     'main_menu_manager' => 'Main Menu Manager',

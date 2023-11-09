@@ -31,6 +31,7 @@ class Channel
     public $gfields = array(); // Grid fields
     public $msfields = array(); // Member select fields
     public $mfields = array(); // Custom member fields
+    public $mpfields = array(); // Member pair fields
     public $pfields = array(); // Pair custom fields
     public $ffields = array(); // Fluid fields
     public $tfields = array(); // Toggle fields
@@ -381,26 +382,23 @@ class Channel
       */
     public function fetch_custom_member_fields()
     {
-        ee()->db->select('m_field_id, m_field_name, m_field_fmt, m_legacy_field_data');
-        $query = ee()->db->get('member_fields');
-
-        $fields_present = false;
-
-        $t1 = microtime(true);
-
-        foreach ($query->result_array() as $row) {
-            if (strpos(ee()->TMPL->tagdata, $row['m_field_name']) !== false) {
-                $fields_present = true;
-            }
-
-            $this->mfields[$row['m_field_name']] = array($row['m_field_id'], $row['m_field_fmt'], $row['m_legacy_field_data']);
+        if (
+            isset(ee()->session->cache['channel']['custom_member_fields']) &&
+            isset(ee()->session->cache['channel']['custom_member_field_pairs'])
+        ) {
+            $this->mfields = ee()->session->cache['channel']['custom_member_fields'];
+            $this->mpfields = ee()->session->cache['channel']['custom_member_field_pairs'];
+            return;
         }
+        
+        ee()->load->library('api');
+        ee()->legacy_api->instantiate('channel_fields');
 
-        // If we can find no instance of the variable, then let's not process them at all.
+        $this->mfields = ee()->api_channel_fields->fetch_custom_member_fields();
+        $this->mpfields = ee()->api_channel_fields->custom_member_field_pairs;
 
-        if ($fields_present === false) {
-            $this->mfields = array();
-        }
+        ee()->session->cache['channel']['custom_member_fields'] = $this->mfields;
+        ee()->session->cache['channel']['custom_member_fields'] = $this->mpfields;
     }
 
     /**

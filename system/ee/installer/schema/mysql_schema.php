@@ -518,8 +518,10 @@ class EE_Schema
 			`name` varchar(100) NOT NULL,
 			`short_name` varchar(50) NOT NULL,
 			`description` text,
+			`site_color` varchar(6) NOT NULL default '',
 			`total_members` mediumint(8) unsigned NOT NULL DEFAULT '0',
 			`is_locked` char(1) NOT NULL DEFAULT 'n',
+            `highlight` varchar(6) NOT NULL default '',
 			PRIMARY KEY (`role_id`)
 		)";
 
@@ -615,7 +617,7 @@ class EE_Schema
 			m_field_name varchar(32) NOT NULL,
 			m_field_label varchar(50) NOT NULL,
 			m_field_description text NOT NULL,
-			m_field_type varchar(12) NOT NULL default 'text',
+			m_field_type varchar(50) NOT NULL default 'text',
 			m_field_list_items text NOT NULL,
 			m_field_ta_rows tinyint(2) default '8',
 			m_field_maxl smallint(3) NULL DEFAULT NULL,
@@ -1752,6 +1754,17 @@ class EE_Schema
 			`columns` text NOT NULL,
 			PRIMARY KEY (`view_id`),
 			KEY `viewtype_upload_id_member_id` (`viewtype`, `upload_id`, `member_id`)
+		);";
+
+        // member manager
+        $Q[] = "CREATE TABLE `exp_member_manager_views` (
+			`view_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`role_id` int(6) unsigned NOT NULL,
+			`member_id` int(10) unsigned NOT NULL,
+			`name` varchar(128) NOT NULL DEFAULT '',
+			`columns` text NOT NULL,
+			PRIMARY KEY (`view_id`),
+			KEY `role_id_member_id` (`role_id`, `member_id`)
 		);";
 
         // Default menu set
