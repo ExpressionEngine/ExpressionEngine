@@ -123,6 +123,11 @@ class FieldFacade
         return $this->hidden;
     }
 
+    public function getAlertText()
+    {
+        return isset($this->metadata['alertText']) ? $this->metadata['alertText'] : null;
+    }
+
 
     public function getSettings()
     {

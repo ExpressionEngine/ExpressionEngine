@@ -78,7 +78,7 @@ class Groups extends AbstractCategoriesController
     /**
      * Category group creation/edit form
      *
-     * @param	int	$group_id	ID of category group to edit
+     * @param   int $group_id   ID of category group to edit
      */
     private function form($group_id = null)
     {
@@ -198,7 +198,7 @@ class Groups extends AbstractCategoriesController
             unset($vars['buttons'][2]);
         }
 
-        if (! $cat_group->isNew()) {
+        if (! $cat_group->isNew() && !AJAX_REQUEST) {
             $vars['tabs']['fields'] = $this->renderFieldsTab($cat_group, $errors);
 
             ee()->javascript->set_global([
@@ -428,8 +428,8 @@ class Groups extends AbstractCategoriesController
     /**
      * Saves a category group
      *
-     * @param	int $group_id ID of category group to save
-     * @return	int ID of category group saved
+     * @param   int $group_id ID of category group to save
+     * @return  object category group to be saved
      */
     private function setWithPost($cat_group)
     {

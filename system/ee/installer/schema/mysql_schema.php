@@ -878,6 +878,13 @@ class EE_Schema
 			PRIMARY KEY `channel_id_status_id` (`channel_id`, `status_id`)
 		)";
 
+        $Q[] = "CREATE TABLE exp_channel_category_groups (
+			channel_id int(6) unsigned NOT NULL,
+			group_id int(6) unsigned NOT NULL,
+			PRIMARY KEY `channel_id_group_id` (`channel_id`, `group_id`),
+			KEY `group_id` (`group_id`)
+		)";
+
         // Frontend Channel Form Settings
 
         $Q[] = "CREATE TABLE `exp_channel_form_settings` (
@@ -971,6 +978,21 @@ class EE_Schema
 			`can_delete_categories` TEXT NULL,
 			PRIMARY KEY `group_id` (`group_id`),
 			KEY `site_id` (`site_id`)
+		)";
+
+        // Category Group Settings
+
+        $Q[] = "CREATE TABLE exp_category_group_settings (
+			category_group_settings_id int(10) unsigned NOT NULL auto_increment,
+			site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
+			channel_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
+			group_id INT(6) UNSIGNED NOT NULL DEFAULT 1,
+			cat_required char(1) NOT NULL default 'n',
+			cat_allow_multiple char(1) NOT NULL default 'y',
+			PRIMARY KEY `category_group_settings_id` (`category_group_settings_id`),
+			KEY `channel_id_group_id` (`channel_id`, `group_id`),
+			KEY `site_id` (`site_id`),
+			KEY `group_id` (`group_id`)
 		)";
 
         // Category data
@@ -1243,6 +1265,13 @@ class EE_Schema
 			module_id int(4) NOT NULL DEFAULT 0,
 			PRIMARY KEY `id` (`id`),
 			KEY `site_id` (`site_id`)
+		)";
+
+        $Q[] = "CREATE TABLE exp_upload_prefs_category_groups (
+			upload_location_id int(4) unsigned NOT NULL,
+			group_id int(6) unsigned NOT NULL,
+			PRIMARY KEY `upload_location_id_group_id` (`upload_location_id`, `group_id`),
+			KEY `group_id` (`group_id`)
 		)";
 
         // Upload "no access"
