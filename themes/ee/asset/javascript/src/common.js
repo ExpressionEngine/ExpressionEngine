@@ -1240,6 +1240,11 @@ $(document).ready(function(){
 						$(this).css('pointer-events', 'none');
 						$(this).find('.checkbox-label__text').css('pointer-events', 'auto');
 						$(this).find('input').css('pointer-events', 'auto');
+
+						if ($(this).find('.checkbox-label__text-editable').length) {
+							$(this).find('.checkbox-label__text-editable').css('pointer-events', 'none');
+							$(this).find('.checkbox-label__text-editable .button').css('pointer-events', 'auto')
+						}
 				}
 			});
 		}

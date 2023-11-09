@@ -241,6 +241,10 @@ $lang = array(
 
     'calendar' => 'Calendar',
 
+    'cat_selection_is_multiple_categories_assigned' => 'The selection should be limited to one category, but the entry already has multiple categories assigned.',
+
+    'cat_selection_is_multiple_auto_select_parent' => 'The selection should be limited to one category, but category group contains child categories and <code>Assign category parents</code> setting is on.',
+
     'close_preview' => 'Close Preview',
 
     'cancel_preview' => 'Cancel Preview',

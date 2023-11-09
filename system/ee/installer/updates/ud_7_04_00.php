@@ -31,6 +31,9 @@ class Updater
                 'addMemberManagerViewsTable',
                 'addEditMemberFieldsPermission',
                 'addRoleHighlightColumn',
+                'normalizeUploadDirectoryCategoryGroups',
+                'normalizeChannelCategoryGroups',
+                'addCategoryGroupSettings',
                 'addMemberRelationshipTable',
                 'addMemberFieldtype',
                 'addCategoryGroupPermissions',
@@ -118,6 +121,138 @@ class Updater
                 ee('db')->insert('permissions', $insert);
             }
         }
+    }
+
+    private function normalizeUploadDirectoryCategoryGroups()
+    {
+        if (ee()->db->table_exists('upload_prefs_category_groups')) {
+            return;
+        }
+
+        ee()->dbforge->add_field(
+            [
+                'upload_location_id' => [
+                    'type' => 'int',
+                    'constraint' => 4,
+                    'unsigned' => true,
+                    'null' => false
+                ],
+                'group_id' => [
+                    'type' => 'int',
+                    'constraint' => 6,
+                    'unsigned' => true,
+                    'null' => false
+                ]
+            ]
+        );
+        ee()->dbforge->add_key(['upload_location_id', 'group_id'], true);
+        ee()->dbforge->add_key('group_id');
+        ee()->smartforge->create_table('upload_prefs_category_groups');
+
+        $records = ee()->db->select('id, cat_group')->get('upload_prefs')->result();
+        foreach ($records as $record) {
+            if (!empty($record->cat_group)) {
+                $cat_groups = explode('|', $record->cat_group);
+                foreach ($cat_groups as $cat_group) {
+                    ee('db')->insert('upload_prefs_category_groups', [
+                        'upload_location_id' => $record->id,
+                        'group_id' => $cat_group
+                    ]);
+                }
+            }
+        }
+    }
+
+    private function normalizeChannelCategoryGroups()
+    {
+        if (ee()->db->table_exists('channel_category_groups')) {
+            return;
+        }
+
+        ee()->dbforge->add_field(
+            [
+                'channel_id' => [
+                    'type' => 'int',
+                    'constraint' => 4,
+                    'unsigned' => true,
+                    'null' => false
+                ],
+                'group_id' => [
+                    'type' => 'int',
+                    'constraint' => 6,
+                    'unsigned' => true,
+                    'null' => false
+                ]
+            ]
+        );
+        ee()->dbforge->add_key(['channel_id', 'group_id'], true);
+        ee()->dbforge->add_key('group_id');
+        ee()->smartforge->create_table('channel_category_groups');
+
+        $records = ee()->db->select('channel_id, cat_group')->get('channels')->result();
+        foreach ($records as $record) {
+            if (!empty($record->cat_group)) {
+                $cat_groups = explode('|', $record->cat_group);
+                foreach ($cat_groups as $cat_group) {
+                    ee('db')->insert('channel_category_groups', [
+                        'channel_id' => $record->channel_id,
+                        'group_id' => $cat_group
+                    ]);
+                }
+            }
+        }
+    }
+
+    private function addCategoryGroupSettings()
+    {
+        if (ee()->db->table_exists('category_group_settings')) {
+            return;
+        }
+
+        ee()->dbforge->add_field(
+            [
+                'category_group_settings_id' => [
+                    'type' => 'int',
+                    'constraint' => 10,
+                    'unsigned' => true,
+                    'null' => false,
+                    'auto_increment' => true
+                ],
+                'site_id' => [
+                    'type' => 'int',
+                    'constraint' => 4,
+                    'unsigned' => true,
+                    'null' => false
+                ],
+                'channel_id' => [
+                    'type' => 'int',
+                    'constraint' => 4,
+                    'unsigned' => true,
+                    'null' => false
+                ],
+                'group_id' => [
+                    'type' => 'int',
+                    'constraint' => 6,
+                    'unsigned' => true,
+                    'null' => false
+                ],
+                'cat_required' => [
+                    'type' => 'CHAR(1)',
+                    'null' => false,
+                    'default' => 'n'
+                ],
+                'cat_allow_multiple' => [
+                    'type' => 'CHAR(1)',
+                    'null' => false,
+                    'default' => 'y'
+                ]
+            ]
+        );
+        ee()->dbforge->add_key('category_group_settings_id', true);
+        ee()->dbforge->add_key(['channel_id', 'group_id'], true);
+        ee()->dbforge->add_key('group_id');
+        ee()->dbforge->add_key('site_id');
+        ee()->smartforge->create_table('category_group_settings');
     }
 
     private function addMemberRelationshipTable()
