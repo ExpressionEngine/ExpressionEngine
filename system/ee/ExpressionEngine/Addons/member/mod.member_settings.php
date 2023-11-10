@@ -782,7 +782,7 @@ class Member_settings extends Member
 
         if (strpos($template, '{/custom_profile_fields}') !== false) {
             if ($query->num_rows() > 0) {
-                foreach ($this->member->getDisplay()->getFields() as $field) {
+                foreach ($member->getDisplay()->getFields() as $field) {
                     if (! ee('Permission')->isSuperAdmin() && $field->get('field_public') != 'y') {
                         continue;
                     }
@@ -876,7 +876,7 @@ class Member_settings extends Member
         }
 
         if (strpos($template, LD . 'field:') !== false) {
-            foreach ($this->member->getDisplay()->getFields() as $field) {
+            foreach ($member->getDisplay()->getFields() as $field) {
                 if (ee('Permission')->isSuperAdmin() || $field->get('field_public') == 'y') {
                     $template = str_replace(LD . 'field:' . $field->get('field_name') . RD, $field->getForm(), $template);
                 }
@@ -1008,7 +1008,6 @@ class Member_settings extends Member
                 } else {
                     if ($post !== false) {
                         $member->$fname = ee('Security/XSS')->clean($post);
-                        dump($member->$fname);
                     }
                 }
 

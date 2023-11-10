@@ -89,6 +89,7 @@ context('Publish Entry', () => {
 
         before(function() {
             cy.auth();
+            cy.visit('admin.php?/cp/fields/create/1')
             channel_field_form.createField({
                 group_id: 1,
                 type: 'File',
@@ -326,6 +327,7 @@ context('Publish Entry', () => {
 
       before(function() {
           cy.auth();
+          cy.visit('admin.php?/cp/fields/create/1')
           channel_field_form.createField({
               group_id: 1,
               type: 'File Grid',
@@ -617,6 +619,7 @@ context('Publish Entry', () => {
         var date_val, grid_date_val, entry_date_val;
         cy.auth();
         cy.log('create date field, no time shown')
+        cy.visit('admin.php?/cp/fields/create/1')
         channel_field_form.createField({
             group_id: 1,
             type: 'Date',

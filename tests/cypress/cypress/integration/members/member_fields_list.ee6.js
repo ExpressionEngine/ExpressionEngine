@@ -149,7 +149,7 @@ context('Member Field List', () => {
       cy.get('#password_confirm').clear().type('1Password');
       cy.get('#accept_terms').check();
 
-      cy.get('label:contains("My Buttons")').parents('fieldset').find('select').select('two')
+      cy.get('label:contains("My Buttons")').parents('fieldset').find('.button:contains("two")').click()
       cy.get('label:contains("Member URL")').parents('fieldset').find('input[type=text]').clear().type('https://google.com/')
 
       cy.get('#submit').click();
@@ -201,7 +201,7 @@ context('Member Field List', () => {
       cy.get('input[name=password]').clear().type('1Password')
       cy.get('input[name="submit"').click()
       cy.visit('index.php/mbr/profile-edit');
-      cy.get('label:contains("My Buttons")').parents('fieldset').find('select').select('three')
+      cy.get('label:contains("My Buttons")').parents('fieldset').find('.button:contains("three")').click()
       cy.get('label:contains("Member URL")').parents('fieldset').find('input[type=text]').clear().type('https://packettide.com/')
       cy.get('#submit').click();
 
@@ -235,7 +235,7 @@ context('Member Field List', () => {
       cy.get('.member_url span').invoke('text').should('eq', 'https://packettide.com/')
 
       cy.visit('index.php/mbr/profile-edit');
-      cy.get('label:contains("My Buttons")').parents('fieldset').find('select option[value=three]').should('be.selected')
+      cy.get('label:contains("My Buttons")').parents('fieldset').find('.button:contains("three")').should('have.class', 'active')
       cy.get('label:contains("Member URL")').parents('fieldset').find('input[type=text]').should('have.value', 'https://packettide.com/')
     })
   })

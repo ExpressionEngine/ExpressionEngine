@@ -93,6 +93,11 @@ class EE_Channel_custom_member_field_parser implements EE_Channel_parser_compone
                     $data['m_field_id_' . $field_id]
                 ));
 
+                if ($ft_api->field_type == 'date') {
+                    // Set 0 to NULL, kill any formatting
+                    $data = ($data == 0) ? null : $data;
+                }
+
                 if (method_exists($obj, $parse_fnc)) {
                     $entry = (string) $ft_api->apply($parse_fnc, array(
                         $data,
