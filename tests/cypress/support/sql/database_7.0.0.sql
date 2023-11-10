@@ -75,8 +75,8 @@ INSERT INTO `exp_channels` (`channel_id`, `site_id`, `channel_name`, `channel_ti
 /*!40000 ALTER TABLE `exp_channels` ENABLE KEYS */;
 
 -- Dumping data for table ee-test.exp_channel_category_groups: ~0 rows (approximately)
-DELETE FROM `exp_channel_category_groups`;
-INSERT INTO `exp_channel_category_groups` (`channel_id`, `group_id`) VALUES
+DELETE IGNORE FROM `exp_channel_category_groups`;
+INSERT IGNORE INTO `exp_channel_category_groups` (`channel_id`, `group_id`) VALUES
 	(1, 1),
 	(2, 2);
 
