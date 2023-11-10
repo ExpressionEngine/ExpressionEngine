@@ -415,7 +415,7 @@ var Relationship = /*#__PURE__*/function (_React$Component) {
           "class": "list-item__content-right"
         }, React.createElement("div", {
           className: "button-group"
-        }, _this5.props.can_add_items && item.can_edit && item.editable && React.createElement("button", {
+        }, _this5.props.can_edit_items && item.can_edit && item.editable && React.createElement("button", {
           type: "button",
           title: _this5.lang.edit,
           className: "button button--small button--default",
