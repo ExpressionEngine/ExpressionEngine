@@ -273,7 +273,7 @@ context('Member Field List', () => {
       cy.get('#password_confirm').clear().type('1Password');
       cy.get('#accept_terms').check();
 
-      cy.get('label:contains("My RTE")').parents('fieldset').find('.ck-content').type('This is text that is slightly longer than twenty characters, so we will need to cut it off')
+      cy.get('label:contains("My RTE")').parents('fieldset').find('.ck-content').ckType('This is text that is slightly longer than twenty characters, so we will need to cut it off')
       cy.get('label:contains("My Date")').parents('fieldset').find('input').should('not.exist')
 
       cy.get('#submit').click();
@@ -323,7 +323,7 @@ context('Member Field List', () => {
       cy.hasNoErrors()
       cy.get('label:contains("My Date")').should('exist')
       cy.get('label:contains("My RTE")').should('exist')
-      cy.get('label:contains("My RTE")').parents('fieldset').find('.ck-content').clear().type('This is another text that is slightly longer than twenty characters, so we will need to cut it off').blur()
+      cy.get('label:contains("My RTE")').parents('fieldset').find('.ck-content').clear().ckType('This is another text that is slightly longer than twenty characters, so we will need to cut it off').blur()
       cy.get('label:contains("My Date")').parents('fieldset').find('input[type=text]').clear().type('7/28/2023 12:19 PM').blur()
       cy.get('label:contains("My Date")').click()
       cy.get('#submit').click();
