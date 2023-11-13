@@ -828,7 +828,11 @@ class Channel
                                 }
                                 $channel_cat_groups[$row['channel_id']][] = $row['group_id'];
                             }
-                            $valid_cats = call_user_func_array('array_intersect', $channel_cat_groups);
+                            if (count($channel_cat_groups) == 1) {
+                                $valid_cats = $channel_cat_groups[array_keys($channel_cat_groups)[0]];
+                            } else {
+                                $valid_cats = call_user_func_array('array_intersect', $channel_cat_groups);
+                            }
                         }
 
                         $valid_cats = array_unique($valid_cats);
@@ -4204,7 +4208,13 @@ class Channel
                         }
                         $channel_cat_groups[$row['channel_id']][] = $row['group_id'];
                     }
-                    $valid_cats = call_user_func_array('array_intersect', $channel_cat_groups);
+                    // if there's just one channel specified, use it's categories group;
+                    // if multiple channels, only use the =categories groups that they share
+                    if (count($channel_cat_groups) == 1) {
+                        $valid_cats = $channel_cat_groups[array_keys($channel_cat_groups)[0]];
+                    } else {
+                        $valid_cats = call_user_func_array('array_intersect', $channel_cat_groups);
+                    }
                 }
 
                 $valid_cats = array_unique($valid_cats);
