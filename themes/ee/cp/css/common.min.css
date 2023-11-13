@@ -34372,6 +34372,15 @@ a.ck.ck-button.ck-on {
 .rx-topbar .rx-button-topbar.toggled .rx-button-icon svg {
   fill: var(--ee-text-primary);
 }
+.rx-toolbar .rx-button-toolbar .re-icon-readmore,
+.rx-toolbar .rx-button-topbar .re-icon-readmore,
+.rx-topbar .rx-button-toolbar .re-icon-readmore,
+.rx-topbar .rx-button-topbar .re-icon-readmore {
+  background: none;
+  opacity: 1;
+  width: auto;
+  text-align: center;
+}
 
 .rx-popup {
   background-color: var(--ee-bg-dropdown) !important;
@@ -34396,6 +34405,9 @@ a.ck.ck-button.ck-on {
 .rx-popup .rx-popup-items .rx-popup-item {
   color: var(--ee-text-primary);
   border-color: var(--ee-dropdown-border);
+}
+.rx-popup .rx-popup-items .rx-popup-item svg {
+  fill: var(--ee-text-primary);
 }
 .rx-popup .rx-popup-items .rx-popup-item .rx-popup-item-shortcut {
   color: var(--ee-text-primary);
@@ -34440,6 +34452,31 @@ a.ck.ck-button.ck-on {
   box-shadow: 0 1px 2px 0 var(--ee-shadow-input);
   background-color: var(--ee-input-bg);
   color: var(--ee-input-color);
+}
+.rx-popup .rx-popup-body .rx-form-input {
+  color: var(--ee-input-color);
+  background-color: var(--ee-input-bg);
+  border: 1px solid var(--ee-input-border);
+}
+.rx-popup .rx-form-button {
+  color: var(--ee-button-danger-color);
+  background-color: var(--ee-button-danger-bg);
+  border-color: var(--ee-button-danger-border);
+}
+.rx-popup .rx-form-button:hover {
+  color: var(--ee-button-danger-color);
+  background-color: var(--ee-button-danger-hover-bg);
+  border-color: var(--ee-button-danger-hover-border);
+}
+.rx-popup .rx-form-button.rx-form-button-primary {
+  color: var(--ee-button-primary-color);
+  background-color: var(--ee-button-primary-bg);
+  border-color: var(--ee-button-primary-border);
+}
+.rx-popup .rx-form-button.rx-form-button-primary:hover {
+  color: var(--ee-button-primary-color);
+  background-color: var(--ee-button-primary-hover-bg);
+  border-color: var(--ee-button-primary-hover-border);
 }
 
 .rx-editor-container .rx-content blockquote {
