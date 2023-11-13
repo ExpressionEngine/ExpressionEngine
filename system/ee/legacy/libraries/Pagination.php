@@ -438,8 +438,12 @@ class Pagination_object
         // Prepare the template
         if (ee()->TMPL->fetch_param('paginate') == 'hidden') {
             $this->paginate = true;
-        } elseif (strpos($template, LD . 'paginate' . RD) !== false
-            && preg_match_all("/" . LD . "paginate" . RD . "(.+?)" . LD . '\/' . "paginate" . RD . "/s", $template, $paginate_match)) {
+        } elseif (
+                (strpos($template, LD . 'paginate' . RD) !== false &&
+                preg_match_all("/" . LD . "paginate" . RD . "(.+?)" . LD . '\/' . "paginate" . RD . "/s", $template, $paginate_match)) ||
+                (strpos($template, LD . 'paginate:') !== false &&
+                preg_match_all("/" . LD . "paginate:(?:top|bottom)" . RD . "(.+?)" . LD . '\/' . "paginate:(top|bottom)" . RD . "/s", $template, $paginate_match))
+            ) {
             if (ee()->TMPL->fetch_param('paginate_type') == 'field') {
                 // If we're supposed to paginate over fields, check to see if
                 // {multi_field="..."} exists. If it does capture the conetents
@@ -483,8 +487,12 @@ class Pagination_object
 
             // If {paginate} exists store the pagination template
             $this->paginate = true;
-            foreach ($paginate_match[1] as $current_match) {
-                $hash = md5($current_match);
+            foreach ($paginate_match[1] as $i => $current_match) {
+                if (isset($paginate_match[2]) && in_array($paginate_match[2][$i], ['top', 'bottom'])) {
+                    $hash = $paginate_match[2][$i];
+                } else {
+                    $hash = md5($current_match);
+                }
                 $this->_template_data[$hash] = $current_match;
             }
 
@@ -498,8 +506,9 @@ class Pagination_object
 
             // Remove pagination tags from template since we'll just
             // append/prepend it later
+            $extra = in_array($hash, ['top', 'bottom']) ? ':' . $hash : '';
             $template = str_replace(
-                LD . 'paginate' . RD . $template_partial . LD . '/paginate' . RD,
+                LD . 'paginate' . $extra . RD . $template_partial . LD . '/paginate' . $extra . RD,
                 $replace_tag,
                 $template
             );
@@ -712,6 +721,9 @@ class Pagination_object
             // pagination_marker
             if ($this->_position == 'inline') {
                 foreach ($this->_template_data as $hash => $template_partial) {
+                    if (in_array($hash, ['top', 'bottom'])) {
+                        continue;
+                    }
                     $return_data = ee()->TMPL->swap_var_single(
                         $this->_pagination_marker . ':' . $hash,
                         '',
@@ -723,6 +735,7 @@ class Pagination_object
             return $return_data;
         }
 
+        $pagination_all = [];
         foreach ($this->_template_data as $hash => &$template_data) {
             $parse_array = array();
 
@@ -768,21 +781,28 @@ class Pagination_object
                 $template_data,
                 array('total_pages' => $this->total_pages)
             );
+            if (!in_array($hash, ['top', 'bottom'])) {
+                $pagination_all[$hash] = $template_data;
+            }
         }
 
-        // die(var_dump($this->_template_data));
+        $pagination_top = (array_key_exists('top', $this->_template_data) ? $this->_template_data['top'] : implode($pagination_all));
+        $pagination_bottom = (array_key_exists('bottom', $this->_template_data) ? $this->_template_data['bottom'] : implode($pagination_all));
 
         switch ($this->_position) {
             case "top":
-                return implode($this->_template_data) . $return_data;
+                return $pagination_top . $return_data;
 
                 break;
             case "both":
-                return implode($this->_template_data) . $return_data . implode($this->_template_data);
+                return $pagination_top . $return_data . $pagination_bottom;
 
                 break;
             case "inline":
                 foreach ($this->_template_data as $hash => $template_partial) {
+                    if (in_array($hash, ['top', 'bottom'])) {
+                        continue;
+                    }
                     $return_data = ee()->TMPL->swap_var_single(
                         $this->_pagination_marker . ':' . $hash,
                         $template_partial,
@@ -799,7 +819,7 @@ class Pagination_object
             break;
             case "bottom":
             default:
-                return $return_data . implode($this->_template_data);
+                return $return_data . $pagination_bottom;
 
                 break;
         }
