@@ -190,7 +190,7 @@ $lang = array(
 
     'email_taken' => 'The email you chose is not available',
 
-    'email_too_long' => 'Your email address cannot be over ' . USERNAME_MAX_LENGTH . ' characters in length',
+    'email_too_long' => 'Your email address cannot be over 254 characters in length',
 
     'email_username' => 'Email %s',
 
