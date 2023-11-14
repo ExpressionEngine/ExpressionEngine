@@ -93,10 +93,6 @@ class Response
      */
     public function send()
     {
-        if (ee()->extensions->active_hook('response_send_output') === true) {
-            $this->body = ee()->extensions->call('response_send_output', $this->body);
-        }
-
         if (! $this->body) {
             foreach ($this->headers as $name => $value) {
                 $GLOBALS['OUT']->headers[] = array($name . ': ' . $value, true);
