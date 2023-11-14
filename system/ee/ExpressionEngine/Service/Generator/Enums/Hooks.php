@@ -24,7 +24,7 @@ class Hooks
 
     public const CLI_BEFORE_HANDLE = [
         'name' => 'cli_before_handle',
-        'params' => '$cli, $commandClassName, $commandObject',
+        'params' => '$cli, $commandObject, $commandClassName',
         'library' => 'CLI',
     ];
 
