@@ -128,7 +128,7 @@ class Member_ft extends EE_Fieldtype implements ColumnInterface
 
         if (isset($model) && is_object($model)) {
             $name = $this->field_name;
-            $model->$name = '';
+            $model->$name = null;
         }
 
         ee()->session->set_cache(__CLASS__, $cache_name, array(
