@@ -33141,6 +33141,17 @@ body[data-theme=dark] .select-popup {
 .layout-item__title span.title {
   margin: 0;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+}
+.layout-item__title span.title i {
+  font-size: 10px;
+  margin-left: 5px;
+  display: none;
+}
+.layout-item__title span.title:hover i {
+  display: block;
 }
 
 .layout-item__options {

@@ -66,6 +66,21 @@
     &.title {
     	margin: 0;
     	cursor: pointer;
+			display: inline-flex;
+			align-items: center;
+			position: relative;
+
+			i {
+				font-size: 10px;
+				margin-left: 5px;
+				display: none;
+			}
+
+			&:hover {
+				i {
+					display: block;
+				}
+			}
     }
   }
 }

@@ -58,7 +58,7 @@
 								<div class="layout-item__content">
 									<label class="layout-item__title">
 										<span class="faded float-right"><?=$field->getTypeName()?></span>
-										<span class="title"><?=$field->getLabel()?></span>
+										<span class="title"><?=$field->getLabel()?><i class="fal fa-pencil-alt"></i></span>
 										<input type="text" value="" style="display: none;"> 
 										<span class="faded"><?=(($tab->id != 'categories') ? '(' . $field->getShortName() . ')' : '') ?></span>
 									</label>
