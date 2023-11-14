@@ -355,7 +355,7 @@ class Member_ft extends EE_Fieldtype implements ColumnInterface
             $options[''] = '--';
 
             foreach ($members as $member) {
-                $options[$member->member_id] = $member->name;
+                $options[$member->member_id] = $member->screen_name;
             }
 
             if ($this->settings['allow_multiple'] == 0) {
