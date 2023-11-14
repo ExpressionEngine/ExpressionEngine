@@ -884,7 +884,7 @@ $lang = array(
 
     'remove_set' => 'Remove set button',
 
-    'toggle_buton' => 'toggle buton',
+    'toggle_buton' => 'toggle button',
 
     'reorder_row' => 'Reorder row button',
 

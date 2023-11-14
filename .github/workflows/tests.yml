@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - '*.dev'
-      - 'release/**'
+      #- 'release/**'
 
 jobs:
 
