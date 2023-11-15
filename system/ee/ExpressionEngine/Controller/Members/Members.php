@@ -96,7 +96,7 @@ class Members extends CP_Controller
         $vars['toolbar_items'] = [];
         if (ee('Permission')->can('edit_member_fields')) {
             $vars['toolbar_items']['fields'] = [
-                'href' => ee('CP/URL')->make('members/fields'),
+                'href' => ee('CP/URL')->make('settings/member-fields'),
                 'class' => 'button--secondary fal fa-pen-field',
                 'title' => lang('custom_member_fields')
             ];
@@ -297,6 +297,11 @@ class Members extends CP_Controller
     public function banSettings()
     {
         ee()->functions->redirect(ee('CP/URL')->make('settings/ban'));
+    }
+
+    public function fields()
+    {
+        ee()->functions->redirect(ee('CP/URL')->make('settings/member-fields'));
     }
 
     public function pending()
