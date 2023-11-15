@@ -2585,7 +2585,7 @@ class Member
             ];
         };
 
-        if (!empty($vars)) {
+        if (empty($vars)) {
             return ee()->TMPL->no_results();
         }
 
