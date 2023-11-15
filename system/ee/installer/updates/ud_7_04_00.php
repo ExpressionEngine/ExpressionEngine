@@ -40,6 +40,7 @@ class Updater
                 'ensureBuiltinRoles',
                 'addShowFieldNamesSetting',
                 'increaseEmailLength',
+                'addMissingPrimaryKeys',
             ]
         );
 
@@ -68,7 +69,7 @@ class Updater
 
     private function addMemberManagerViewsTable()
     {
-        if (! ee()->db->table_exists('member_manager_views')) {
+        if (!ee()->db->table_exists('member_manager_views')) {
             ee()->dbforge->add_field(
                 [
                     'view_id' => [
@@ -462,7 +463,7 @@ class Updater
 
     private function addRoleHighlightColumn()
     {
-        if (! ee()->db->field_exists('highlight', 'roles')) {
+        if (!ee()->db->field_exists('highlight', 'roles')) {
             ee()->smartforge->add_column(
                 'roles',
                 array(
@@ -475,6 +476,7 @@ class Updater
                 )
             );
         }
+
         return true;
     }
 
@@ -492,6 +494,25 @@ class Updater
                     ]
                 ]
             );
+        }
+    }
+
+    private function addMissingPrimaryKeys()
+    {
+        $tables = [
+            'consent_request_version_cookies',
+            'dashboard_layout_widgets',
+            'dock_prolets',
+            'file_usage'
+        ];
+
+        foreach($tables as $table) {
+            $column = "{$table}_id";
+
+            if (!ee()->db->field_exists($column, $table)) {
+                $table = ee()->db->dbprefix($table);
+                ee()->db->query("ALTER TABLE $table ADD COLUMN `$column` INT(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT FIRST");
+            }
         }
     }
 }
