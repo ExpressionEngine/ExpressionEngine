@@ -316,6 +316,33 @@
 .ee-cform .date-picker-wrap .date-picker-footer {
     text-align: center !important;
     margin-top: 5px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.ee-cform .date-picker-wrap .date-picker-footer.include_time {
+    justify-content: space-between;
+}
+
+.ee-cform .date-picker-wrap .date-picker-footer #date-picker-time-block {
+    display: none;
+}
+
+.ee-cform .date-picker-wrap .date-picker-footer.include_time #date-picker-time-block {
+    display: block;
+}
+
+.ee-cform .date-picker-wrap .date-picker-footer input[type=time] {
+    padding: 5px 15px !important;
+    font-size: 0.8rem !important;
+    line-height: 1.5 !important;
+    border-radius: 4px !important;
+    color: #0d0d19 !important;
+    background-color: #fff !important;
+    border: 1px solid #cbcbda !important;
+    font-weight: normal !important;
+    box-shadow: none !important;
+    box-sizing: border-box !important;
 }
 
 .ee-cform .date-picker-wrap .date-picker-footer .date-picker-today-button {
