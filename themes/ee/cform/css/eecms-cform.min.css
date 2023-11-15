@@ -821,6 +821,23 @@
     content: var(--prefix, "") var(--text-value-b) var(--suffix, "");
     font: var(--value-font);
 }
+
+.ee-cform .range-slider {
+  font-family: -apple-system, BlinkMacSystemFont, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
+  color: var(--ee-text-normal);
+}
+
+
+.ee-cform .range-slider > input {
+    background: none !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.ee-cform .range-slider > input + output {
+  padding: 2px 11px !important;
+}
 /* End slider */
 
 /* RADIO BUTTONS field*/
