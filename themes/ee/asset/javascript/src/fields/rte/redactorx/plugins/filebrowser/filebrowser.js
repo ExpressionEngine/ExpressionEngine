@@ -4,7 +4,7 @@ RedactorX.add('plugin', 'filebrowser', {
     start: function()
     {
         this.app.toolbar.add('filebrowser', {
-            title: this.lang.get('file'),
+            title: this.app.lang.get('popup.image'),
             icon: '<span class="rx-icon-image"></span>',
             command: 'filebrowser.open',
             blocks: {
@@ -12,9 +12,15 @@ RedactorX.add('plugin', 'filebrowser', {
                 except: ['image']
             }
         });
+        this.app.addbar.add('filebrowser', {
+            title: this.app.lang.get('popup.image'),
+            icon: '<span class="rx-icon-image"></span>',
+            command: 'filebrowser.open'
+        });
     },
     open: function()
     {
+        this.app.addbar.hide();
         function pickFile(that) {
             that.app.selection.save();
             return function insertFile(evt) {

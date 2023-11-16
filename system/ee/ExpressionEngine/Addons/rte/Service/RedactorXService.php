@@ -297,7 +297,7 @@ class RedactorXService extends RedactorService implements RteService {
                 ],
                 'addbar' => [
                     'paragraph',
-                    'image',
+                    //'image',
                     'embed',
                     'table',
                     'quote',
@@ -328,6 +328,7 @@ class RedactorXService extends RedactorService implements RteService {
                 ],
                 'plugins' => [
                     'underline',
+                    'filebrowser',
                     'rte_definedlinks',
                     'pages',
                 ]
@@ -346,7 +347,7 @@ class RedactorXService extends RedactorService implements RteService {
                 ],
                 'addbar' => [
                     'paragraph',
-                    'image',
+                    //'image',
                     'embed',
                     'table',
                     'quote',
