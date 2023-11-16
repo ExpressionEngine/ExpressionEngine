@@ -90,7 +90,7 @@ class CommandSyncUploadDirectory extends Cli
 
         $fileDimensions = ee('Model')->get('FileDimension')->filter('upload_location_id', $upload_location_id)->all();
         $manipulations = '';
-        if (!empty($fileDimensions)) {
+        if (!empty($fileDimensions) && $fileDimensions->count() > 0) {
             $manipulationsList = "\n";
             foreach ($fileDimensions as $fileDimension) {
                 $manipulationsList .= $fileDimension->getId() . ' - ' . $fileDimension->short_name . ' [' . lang($fileDimension->resize_type) . ', ' . $fileDimension->width . 'px ' . lang('by') . ' ' . $fileDimension->height . 'px' . "]\n";
@@ -103,6 +103,10 @@ class CommandSyncUploadDirectory extends Cli
             $replaceSizeIds = $fileDimensions->pluck('id');
         } else {
             $replaceSizeIds = array_map('trim', explode(',', $manipulations));
+        }
+
+        if ($uploadLocation->adapter == 'local' && is_object($uploadLocation->getRawProperty('server_path')) && strpos($uploadLocation->getRawProperty('server_path')->path, '{base_path}') !== false) {
+            $this->fail('cli_error_sync_upload_directory_base_path_is_empty');
         }
 
         // Get a listing of raw files in the directory
@@ -121,6 +125,7 @@ class CommandSyncUploadDirectory extends Cli
         }
 
         $errors = [];
+        $this->write('command_sync_upload_directory_started');
         foreach ($filesChunks as $files) {
             $synced = $uploadLocation->syncFiles($files, $allSizes, $replaceSizeIds);
             if ($synced !== true) {

@@ -233,6 +233,10 @@ class Filemanager
      */
     public function is_editable_image($file_path, $mime)
     {
+        if (!file_exists($file_path)) {
+            return false;
+        }
+
         if (! $this->is_image($mime)) {
             return false;
         }
