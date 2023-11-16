@@ -800,8 +800,6 @@ a.ck.ck-button.ck-on {
     .rx-button-topbar {
         color: var(--ee-text-primary);
 
-
-
         svg {
             fill: var(--ee-text-primary);
         }
@@ -851,6 +849,13 @@ a.ck.ck-button.ck-on {
                 }
             }
         }
+
+        .re-icon-readmore {
+            background: none;
+            opacity: 1;
+            width: auto;
+            text-align: center;
+        }
     }
 }
 
@@ -887,6 +892,10 @@ a.ck.ck-button.ck-on {
         .rx-popup-item{
             color: var(--ee-text-primary);
             border-color: var(--ee-dropdown-border);
+
+            svg {
+                fill: var(--ee-text-primary);
+            }
 
 
             .rx-popup-item-shortcut {
@@ -948,6 +957,38 @@ a.ck.ck-button.ck-on {
             box-shadow: 0 1px 2px 0 var(--ee-shadow-input);
             background-color: var(--ee-input-bg);
             color: var(--ee-input-color);
+        }
+    }
+
+    .rx-popup-body {
+        .rx-form-input {
+            color: var(--ee-input-color);
+            background-color: var(--ee-input-bg);
+            border: 1px solid var(--ee-input-border);
+        }
+    }
+
+    .rx-form-button {
+        color: var(--ee-button-danger-color);
+        background-color: var(--ee-button-danger-bg);
+        border-color: var(--ee-button-danger-border);
+
+        &:hover {
+            color: var(--ee-button-danger-color);
+            background-color: var(--ee-button-danger-hover-bg);
+            border-color: var(--ee-button-danger-hover-border);
+        }
+
+        &.rx-form-button-primary {
+            color: var(--ee-button-primary-color);
+            background-color: var(--ee-button-primary-bg);
+            border-color: var(--ee-button-primary-border);
+
+            &:hover {
+                color: var(--ee-button-primary-color);
+                background-color: var(--ee-button-primary-hover-bg);
+                border-color: var(--ee-button-primary-hover-border);
+            }
         }
     }
 }
