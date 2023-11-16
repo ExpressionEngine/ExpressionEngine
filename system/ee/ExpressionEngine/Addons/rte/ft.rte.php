@@ -422,7 +422,7 @@ class Rte_ft extends EE_Fieldtype
         }
 
         //strip "read more" separator
-        $data = preg_replace('/(<figure>)?<div class=\"readmore"><span[^<]+<\/span><\/div>(<\/figure>)?/', '', $data);
+        $data = preg_replace('/(<figure>)?<div class=\"readmore"><span[^<]+<\/span><\/div>(<\/figure>)?/', '', (string) $data);
 
         // return images only?
         if (isset($params['images_only']) && $params['images_only'] == 'yes') {

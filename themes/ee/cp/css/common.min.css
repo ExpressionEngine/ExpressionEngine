@@ -30612,6 +30612,37 @@ ul.field-nested ul li ul::before {
   right: 15px;
 }
 
+#fieldset-cat_group.channel-statuses .checkbox-label {
+  background-color: var(--ee-bg-0);
+  border: 1px solid var(--ee-border);
+  box-shadow: 0 1px 2px 0 var(--ee-shadow-input);
+  border-radius: 5px;
+  position: relative;
+  margin-bottom: 8px;
+}
+#fieldset-cat_group.channel-statuses .checkbox-label .checkbox-label__text {
+  height: 45px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding-left: 35px;
+}
+#fieldset-cat_group.channel-statuses .checkbox-label .checkbox-label__text a {
+  color: var(--ee-text-primary);
+}
+#fieldset-cat_group.channel-statuses .checkbox-label input[type=checkbox] {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 10px;
+}
+#fieldset-cat_group.channel-statuses .checkbox-label .button-group.button-group-flyout-right {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 15px;
+}
+
 div[data-input-value=category_fields] .lots-of-checkboxes__selection {
   display: none;
 }
@@ -30621,6 +30652,22 @@ div[data-input-value=category_fields] .lots-of-checkboxes .checkbox-label__text 
 div[data-input-value=category_fields] .checkbox-label:hover .checkbox-label__text {
   background: var(--ee-bg-0);
   border-radius: 5px;
+}
+
+.extra-flyout-button {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+}
+.extra-flyout-button svg {
+  width: 1.2rem;
+  margin-left: 4px;
+}
+.extra-flyout-button[disabled] {
+  pointer-events: none !important;
+}
+.extra-flyout-button[disabled] svg {
+  opacity: 0.55;
 }
 
 .fieldset-group {
@@ -30687,7 +30734,7 @@ fieldset.hide-block {
   margin-bottom: 5px;
 }
 .field-instruct label {
-  display: block;
+  display: inline-block;
   color: var(--ee-text-normal);
   margin-bottom: 5px;
   font-weight: 500;
@@ -31936,7 +31983,7 @@ fieldset .field-control #eye {
   display: none;
 }
 .grid-field__column-label label {
-  display: block;
+  display: inline-block;
   color: var(--ee-text-normal);
   margin-bottom: 5px;
   font-weight: 500;
@@ -33914,15 +33961,11 @@ It breaks CKEditor 5 (see how <p><code>[]</code></p> looks). */
 }
 
 .ck.ck-list__item .ck-button.ck-on:not(.ck-switchbutton) {
-  background: var(--ee-button-primary-bg) !important;
+  background: var(--ee-accent-light) !important;
 }
 
 .ck.ck-list__item .ck-button.ck-on.ck-switchbutton {
   background: transparent !important;
-}
-
-.ck.ck-list__item .ck-button.ck-on:not(.ck-switchbutton) .ck.ck-button__label {
-  color: var(--ee-button-primary-color) !important;
 }
 
 .ck.ck-button__label {
@@ -34239,12 +34282,21 @@ a.ck.ck-button.ck-on {
 }
 
 .ck.ck-balloon-panel[class*=arrow_n]:after {
-  border-bottom-color: var(--ee-button-default-bg) !important;
+  border-bottom-color: var(--ee-bg-neutral-dark) !important;
 }
 
 .ck.ck-link-form_layout-vertical .ck-button {
   border-top: 1px solid var(--ee-border-dark) !important;
-  color: var(--ee-button-default-color) !important;
+}
+
+.ck.ck-button.ck-button-save,
+a.ck.ck-button.ck-button-save {
+  color: var(--ck-color-button-save) !important;
+}
+
+.ck.ck-button.ck-button-cancel,
+a.ck.ck-button.ck-button-cancel {
+  color: var(--ck-color-button-cancel) !important;
 }
 
 .ck.ck-link-form_layout-vertical .ck-button:hover {
@@ -34264,9 +34316,20 @@ a.ck.ck-button.ck-on {
   border-color: var(--ee-list-item-border) !important;
 }
 
+.ck.ck-tooltip {
+  color: var(--ee-text-secondary) !important;
+  background: var(--ee-bg-neutral-dark) !important;
+}
+
+.ck.ck-dropdown:not(.ck-disabled):hover,
 .ck.ck-button:not(.ck-disabled):hover,
 a.ck.ck-button:not(.ck-disabled):hover {
   background: var(--ee-bg-5) !important;
+}
+
+.ck.ck-splitbutton.ck-splitbutton_open > .ck-button:not(.ck-on):not(.ck-disabled):not(:hover),
+.ck.ck-splitbutton:hover > .ck-button:not(.ck-on):not(.ck-disabled):not(:hover) {
+  background: var(--ee-button-default-bg) !important;
 }
 
 .ck.ck-button.ck-on,
@@ -35175,6 +35238,40 @@ table .field-no-results {
 .badge--info-alt {
   color: var(--ee-accent);
   background: #fff;
+}
+
+.label-app-badge {
+  display: inline-flex;
+  color: var(--ee-text-secondary);
+  justify-content: center;
+  align-items: center;
+  font-style: italic;
+  margin-left: 5px;
+  font-size: 0.8rem;
+  font-weight: normal;
+  border-radius: 4px;
+  cursor: pointer;
+  -webkit-transition: opacity 0.15s ease-in-out;
+  -moz-transition: opacity 0.15s ease-in-out;
+  -o-transition: opacity 0.15s ease-in-out;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.label-app-badge i {
+  margin-left: 5px;
+  opacity: 0;
+}
+.label-app-badge:hover i {
+  opacity: 1;
+}
+.label-app-badge.success {
+  color: var(--ee-button-success-border);
+  border-color: var(--ee-button-success-border);
+}
+.label-app-badge.success i {
+  color: var(--ee-button-success-border);
 }
 
 .search-input {
@@ -37372,6 +37469,29 @@ body[data-theme="dark"] {
 .date-picker-wrap .date-picker-footer {
   text-align: center;
   margin-top: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.date-picker-wrap .date-picker-footer #date-picker-time-block {
+  display: none;
+}
+.date-picker-wrap .date-picker-footer.include_time {
+  justify-content: space-between;
+}
+.date-picker-wrap .date-picker-footer.include_time #date-picker-time-block {
+  display: block;
+}
+.date-picker-wrap .date-picker-footer input[type=time] {
+  padding: 5px 15px !important;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  border-radius: 4px;
+  color: var(--ee-button-default-color);
+  background-color: var(--ee-button-default-bg);
+  border: 1px solid var(--ee-button-default-border);
+  font-weight: normal;
+  box-shadow: none;
 }
 .date-picker-wrap .date-picker-today-button {
   box-shadow: none;
@@ -39643,6 +39763,53 @@ body[data-theme="dark"] {
 @media (max-width: 767px) {
   .modal-wrap .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item:first-child .dropdown, .modal-wrap .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item:first-child .select__dropdown {
     width: 100%;
+  }
+}
+
+.member_manager-wrapper .dropdown a.edit:before, .member_manager-wrapper .select__dropdown a.edit:before,
+.member_manager-wrapper .dropdown a.download:before,
+.member_manager-wrapper .select__dropdown a.download:before,
+.member_manager-wrapper .dropdown a.approve:before,
+.member_manager-wrapper .select__dropdown a.approve:before,
+.member_manager-wrapper .dropdown a.link:before,
+.member_manager-wrapper .select__dropdown a.link:before {
+  display: none;
+}
+@media (max-width: 1080px) {
+  .member_manager-wrapper .members--filter-search-bar .filter-search-bar__filter-row {
+    flex-wrap: wrap;
+  }
+}
+.member_manager-wrapper .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item {
+  flex: auto;
+  margin-bottom: 0;
+}
+.member_manager-wrapper .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item:last-child {
+  margin-right: 0;
+}
+.member_manager-wrapper .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item-no-search {
+  flex-grow: 0;
+}
+.member_manager-wrapper .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item-search {
+  flex-grow: 3;
+}
+@media (max-width: 1200px) {
+  .member_manager-wrapper .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item-search {
+    flex-grow: 2;
+  }
+}
+@media (max-width: 1080px) {
+  .member_manager-wrapper .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item {
+    margin-bottom: 10px;
+  }
+  .member_manager-wrapper .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item:last-child {
+    margin-bottom: 0;
+  }
+}
+@media (max-width: 767px) {
+  .member_manager-wrapper .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item {
+    margin-bottom: 5px;
+    margin-right: 0;
   }
 }
 

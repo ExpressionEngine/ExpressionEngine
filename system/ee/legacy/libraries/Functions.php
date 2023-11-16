@@ -490,10 +490,13 @@ class EE_Functions
         // Load the form helper
         ee()->load->helper('form');
 
+        // Load the default values for parameters that can be provided via $data array variable
+        // NB. secure and hidden_fields are not legit HTML form tags, and so excluded from pass_thru
         $deft = array(
             'hidden_fields' => array(),
             'action' => '',
             'id' => '',
+            'name' => '',
             'class' => '',
             'secure' => true,
             'enctype' => '',
@@ -502,6 +505,7 @@ class EE_Functions
             'target' => ''
         );
 
+        // Set values for 'missing' default keys in $data to their default values
         foreach ($deft as $key => $val) {
             if (! isset($data[$key])) {
                 $data[$key] = $val;
@@ -549,7 +553,17 @@ class EE_Functions
             $data['action'] = substr($data['action'], 0, -1);
         }
 
-        $data['name'] = (isset($data['name']) && $data['name'] != '') ? 'name="' . $data['name'] . '" ' : '';
+        if (isset(ee()->TMPL)) {
+            // set form ID and class, if set by tagparam
+            if (empty($data['id'])) {
+                $data['id'] = ee()->TMPL->form_id;
+            }
+            if (empty($data['class'])) {
+                $data['form_class'] = ee()->TMPL->form_class;
+            }
+        }
+
+        $data['name'] = ($data['name'] != '') ? 'name="' . $data['name'] . '" ' : '';
         $data['id'] = ($data['id'] != '') ? 'id="' . $data['id'] . '" ' : '';
         $data['class'] = ($data['class'] != '') ? 'class="' . $data['class'] . '" ' : '';
         $data['target'] = ($data['target'] != '') ? 'target="' . $data['target'] . '" ' : '';
@@ -559,12 +573,46 @@ class EE_Functions
         }
 
         foreach ($data as $key => $val) {
-            if (strpos($key, 'data-') === 0) {
+            if (strpos($key, 'data-') === 0 || strpos($key, 'aria-') === 0) {
                 $data['data_attributes'] .= ee('Security/XSS')->clean($key) . '="' . htmlentities(ee('Security/XSS')->clean($val), ENT_QUOTES, 'UTF-8') . '" ';
             }
         }
 
-        $form = '<form ' . $data['id'] . $data['class'] . $data['name'] . $data['target'] . $data['data_attributes'] . 'method="post" action="' . $data['action'] . '" ' . $data['onsubmit'] . ' ' . $data['enctype'] . ">\n";
+        // Next section is for the 'pass-through' functionality
+        $_pass_thru = array();
+        $valid_form_attributes = array();
+        $_pass_thru_string = '';
+
+        /**
+         * Valid HTML Form attributes are determined based on the list in
+         * on the config/valid_form_attributes.php file .
+         */
+
+        $valid_form_attributes = ee()->config->loadFile('valid_form_attributes');
+
+        if (isset(ee()->TMPL) && ! empty(ee()->TMPL->tagparams) && ! empty($valid_form_attributes)) {
+            foreach (ee()->TMPL->tagparams as $key => $val) {
+                // Ignore the parameter if $key is defined in $deft (and so already being processed by function)
+                // or if the parameter is not in the list of approved attributes
+                // or if the parameter begins with either aria- or data-
+                if (! array_key_exists(strtolower($key), $deft) && in_array(strtolower($key), $valid_form_attributes)) {
+                    // Append the key to end of the $_pass_thru variable
+                    // If the attribute has a value set then add this value to the key enclosed within an ="" construct
+                    $_pass_thru[$key] = (strlen($val) > 0) ? '="' . htmlentities(ee('Security/XSS')->clean($val), ENT_QUOTES, 'UTF-8') . '"' : '';
+                }
+                // data- and aria- attributes can also be passed through
+                if (strpos($key, 'data-') === 0 || strpos($key, 'aria-') === 0) {
+                    $data['data_attributes'] .= ee('Security/XSS')->clean(strip_tags($key)) . '="' . htmlentities(ee('Security/XSS')->clean($val), ENT_QUOTES, 'UTF-8') . '" ';
+                }
+            }
+        }
+        // Build pass-through attribute string
+        foreach ($_pass_thru as $key => $val) {
+            $_pass_thru_string .= " " . $key . (strlen($val) > 0 ? $val : '');
+        }
+
+        // Construct the opening form tag - including appending any pass_thru parameters
+        $form = '<form ' . $data['id'] . $data['class'] . $data['name'] . $data['target'] . $data['data_attributes'] . 'method="post" action="' . $data['action'] . '" ' . $data['onsubmit'] . ' ' . $data['enctype'] . $_pass_thru_string . ">\n";
 
         if ($data['secure'] == true) {
             unset($data['hidden_fields']['XID']);
@@ -1657,7 +1705,7 @@ class EE_Functions
         }
 
         /* ---------------------------------
-        /*  Hidden Configuration Variables
+        /* Hidden Configuration Variables
         /*  - protect_javascript => Prevents advanced conditional parser from processing anything in <script> tags
         /* ---------------------------------*/
 

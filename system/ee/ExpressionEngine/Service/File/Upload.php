@@ -138,9 +138,7 @@ class Upload
             )
         );
 
-        $cat_groups = ee('Model')->get('CategoryGroup')
-            ->filter('group_id', 'IN', explode('|', (string) $file->UploadDestination->cat_group))
-            ->all();
+        $cat_groups = $file->UploadDestination->CategoryGroups;
 
         if (count($cat_groups) == 0) {
             $url = ee('CP/URL', 'files/uploads/edit/' . $file->UploadDestination->getId())->compile();
@@ -538,6 +536,220 @@ class Upload
         }
 
         return $result;
+    }
+
+    public function syncUploadDirectory($id, $sizes = [], $db_sync = false) {
+        $uploadDestination = ee('Model')->get('UploadDestination', $id)->first();
+
+        if (empty($uploadDestination)) {
+            return ee()->output->send_ajax_response([
+                'message_type' => 'failure',
+                'errors' => lang('unauthorized_access'),
+            ]);
+        }
+
+        // Final run through, it syncs the db, removing stray records and thumbs
+        if ($db_sync == 'y') {
+            if (AJAX_REQUEST) {
+                $errors = ee()->input->post('errors');
+                if (empty($errors)) {
+                    ee()->view->set_message('success', lang('directory_synced'), lang('directory_synced_desc'), true);
+                }
+
+                return ee()->output->send_ajax_response(array(
+                    'message_type' => 'success'
+                ));
+            }
+
+            return;
+        }
+
+        /*ee()->filemanager->xss_clean_off();
+        $dir_data['dimensions'] = (is_array($sizes[$id])) ? $sizes[$id] : array();
+        ee()->filemanager->set_upload_dir_prefs($id, $dir_data);*/
+
+        // Now for everything NOT forcably replaced
+
+        $missing_only_sizes = (is_array($sizes[$id])) ? $sizes[$id] : array();
+
+        // Check for resize_ids
+        $resize_ids = ee()->input->post('resize_ids');
+
+        if (is_array($resize_ids)) {
+            foreach ($resize_ids as $resize_id) {
+                if (!empty($resize_id)) {
+                    $replace_sizes[$resize_id] = $sizes[$id][$resize_id];
+                    unset($missing_only_sizes[$resize_id]);
+                }
+            }
+        }
+
+        $mimes = ee()->config->loadFile('mimes');
+        $fileTypes = array_filter(array_keys($mimes), 'is_string');
+
+        $filesystem = $uploadDestination->getFilesystem();
+
+        foreach ($current_files as $filePath) {
+            $fileInfo = $filesystem->getWithMetadata($filePath);
+            if (!isset($fileInfo['basename'])) {
+                $fileInfo['basename'] = basename($fileInfo['path']);
+            }
+            $mime = ($fileInfo['type'] != 'dir') ? $filesystem->getMimetype($filePath) : 'directory';
+
+            if ($mime == 'directory' && (!$uploadDestination->allow_subfolders || bool_config_item('file_manager_compatibility_mode'))) {
+                //silently continue on subfolders if those are not allowed
+                continue;
+            }
+
+            if (empty($mime)) {
+                $errors[$fileInfo['basename']] = lang('invalid_mime');
+
+                continue;
+            }
+
+            $file = $uploadDestination->getFileByPath($filePath);
+
+            // Clean filename
+            $clean_filename = ee()->filemanager->clean_subdir_and_filename($fileInfo['path'], $id, array(
+                'convert_spaces' => false,
+                'ignore_dupes' => true
+            ));
+
+            if ($fileInfo['path'] != $clean_filename) {
+                // Make sure clean filename is unique
+                $clean_filename = ee()->filemanager->clean_subdir_and_filename($clean_filename, $id, array(
+                    'convert_spaces' => false,
+                    'ignore_dupes' => false
+                ));
+                // Rename the file
+                if (! $filesystem->rename($fileInfo['path'], $clean_filename)) {
+                    $errors[$fileInfo['path']] = lang('invalid_filename');
+                    continue;
+                }
+
+                $filesystem->delete($fileInfo['path']);
+                $fileInfo['basename'] = $filesystem->basename($clean_filename);
+            }
+
+            if (! empty($file)) {
+                // It exists, but do we need to change sizes or add a missing thumb?
+
+                if (! $file->isEditableImage()) {
+                    continue;
+                }
+
+                // Note 'Regular' batch needs to check if file exists- and then do something if so
+                if (! empty($replace_sizes)) {
+                    $thumb_created = ee()->filemanager->create_thumb(
+                        $file->getAbsolutePath(),
+                        array(
+                            'directory' => $uploadDestination,
+                            'server_path' => $uploadDestination->server_path,
+                            'file_name' => $fileInfo['basename'],
+                            'dimensions' => $replace_sizes,
+                            'mime_type' => $mime
+                        ),
+                        true,	// Create thumb
+                        false	// Overwrite existing thumbs
+                    );
+
+                    if (! $thumb_created) {
+                        $errors[$fileInfo['basename']] = lang('thumb_not_created');
+                    }
+                }
+
+                // Now for anything that wasn't forcably replaced- we make sure an image exists
+                $thumb_created = ee()->filemanager->create_thumb(
+                    $file->getAbsolutePath(),
+                    array(
+                        'directory' => $uploadDestination,
+                        'server_path' => $uploadDestination->server_path,
+                        'file_name' => $fileInfo['basename'],
+                        'dimensions' => $missing_only_sizes,
+                        'mime_type' => $mime
+                    ),
+                    true, 	// Create thumb
+                    true 	// Don't overwrite existing thumbs
+                );
+
+                // Update dimensions
+                $image_dimensions = $file->actLocally(function($path) {
+                    return ee()->filemanager->get_image_dimensions($path);
+                });
+                $file->setRawProperty('file_hw_original', $image_dimensions['height'] . ' ' . $image_dimensions['width']);
+                $file->file_size = $fileInfo['size'];
+                if ($file->file_type === null) {
+                    $file->setProperty('file_type', 'other'); // default
+                    foreach ($fileTypes as $fileType) {
+                        if (in_array($file->getProperty('mime_type'), $mimes[$fileType])) {
+                            $file->setProperty('file_type', $fileType);
+                            break;
+                        }
+                    }
+                }
+                $file->save();
+
+                continue;
+            }
+
+            $file = ee('Model')->make('FileSystemEntity');
+            $file_data = [
+                'upload_location_id' => $uploadDestination->getId(),
+                'site_id' => ee()->config->item('site_id'),
+                'model_type' => ($mime == 'directory') ? 'Directory' : 'File',
+                'mime_type' => $mime,
+                'file_name' => $fileInfo['basename'],
+                'file_size' => isset($fileInfo['size']) ? $fileInfo['size'] : 0,
+                'uploaded_by_member_id' => ee()->session->userdata('member_id'),
+                'modified_by_member_id' => ee()->session->userdata('member_id'),
+                'upload_date' => $fileInfo['timestamp'],
+                'modified_date' => $fileInfo['timestamp']
+            ];
+            $pathInfo = explode('/', trim(str_replace(DIRECTORY_SEPARATOR, '/', $filePath), '/'));
+            //get the subfolder info, but at the same time, skip if no subfolder are allowed
+            if (count($pathInfo) > 1) {
+                if (!$uploadDestination->allow_subfolders || bool_config_item('file_manager_compatibility_mode')) {
+                    continue;
+                }
+                array_pop($pathInfo);
+                $directory = $uploadDestination->getFileByPath(implode('/', $pathInfo));
+                $file_data['directory_id'] = $directory->getId();
+            }
+            $file->set($file_data);
+            if ($file->isEditableImage()) {
+                $image_dimensions = $file->actLocally(function ($path) {
+                    return ee()->filemanager->get_image_dimensions($path);
+                });
+                $file_data['file_hw_original'] =  $image_dimensions['height'] . ' ' . $image_dimensions['width'];
+                $file->setRawProperty('file_hw_original', $file_data['file_hw_original']);
+            }
+            //$file->save(); need to fallback to old saving because of the checks
+
+            $saved = ee()->filemanager
+                ->save_file(
+                    $file->getAbsolutePath(),
+                    $id,
+                    $file_data,
+                    false
+                );
+
+            if (! $saved['status']) {
+                $errors[$fileInfo['basename']] = $saved['message'];
+            }
+        }
+
+        if (AJAX_REQUEST) {
+            if (count($errors)) {
+                return ee()->output->send_ajax_response(array(
+                    'message_type' => 'failure',
+                    'errors' => $errors
+                ));
+            }
+
+            return ee()->output->send_ajax_response(array(
+                'message_type' => 'success'
+            ));
+        }
     }
 }
 

@@ -90,6 +90,62 @@ class Publish extends AbstractPublishController
     }
 
     /**
+     * AJAX endpoint for member relationships filter
+     *
+     * @return void
+     */
+    public function memberRelationshipFilter()
+    {
+        $settings = ee('Encrypt')->decode(
+            ee('Request')->get('settings'),
+            ee()->config->item('session_crypt_key')
+        );
+        $settings = json_decode($settings, true);
+
+        if (empty($settings)) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
+        $settings['search'] = ee('Request')->isPost() ? ee('Request')->post('search') : ee('Request')->get('search');
+        $settings['channel_id'] = ee('Request')->isPost() ? ee('Request')->post('channel_id') : ee('Request')->get('channel_id');
+        $settings['selected'] = ee('Request')->isPost() ? ee('Request')->post('selected') : ee('Request')->get('selected');
+
+        if (! AJAX_REQUEST or ! ee()->session->userdata('member_id')) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
+        $response = array();
+        $members = ee('Model')->get('Member')->with('PrimaryRole');
+        if (!empty($settings['limit'])) {
+            $members->limit((int) $settings['limit']);
+        }
+        if (!empty($settings['selected'])) {
+            $members->filter('member_id', 'NOT IN', explode('|', $settings['selected']));
+        }
+        if (!empty($settings['channel_id'])) {
+            $members->filter('PrimaryRole.role_id', $settings['channel_id']);
+        } elseif (!empty($settings['roles'])) {
+            $members->filter('PrimaryRole.role_id', 'IN', $settings['roles']);
+        }
+        if (!empty($settings['search'])) {
+            $members->search(['screen_name', 'username', 'email', 'member_id'], $settings['search']);
+        }
+        if (!empty($settings['order_field'])) {
+            $members->order($settings['order_field'], $settings['order_dir'] == 'asc' ? 'asc' : 'desc');
+        }
+        foreach ($members->all() as $member) {
+            $response[] = [
+                'value' => $member->getId(),
+                'label' => !empty($member->screen_name) ? $member->screen_name : $member->username,
+                'instructions' => $member->PrimaryRole->name,
+                'channel_id' => $member->role_id
+            ];
+        }
+
+        ee()->output->send_ajax_response($response);
+    }
+
+    /**
      * Autosaves a channel entry
      *
      * @param int $channel_id The Channel ID

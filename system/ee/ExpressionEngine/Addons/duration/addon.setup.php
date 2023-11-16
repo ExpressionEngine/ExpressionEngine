@@ -9,4 +9,12 @@ return array(
     'namespace' => 'ExpressionEngine\Addons\Duration',
     'settings_exist' => false,
     'built_in' => true,
+    'fieldtypes' => array(
+        'duration' => array(
+            'compatibility' => 'text',
+            'use' => array(
+                'MemberField'
+            )
+        )
+    )
 );
