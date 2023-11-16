@@ -1266,12 +1266,12 @@ $(document).ready(function(){
 			el.find('.fa-copy').addClass('hidden');
 			el.find('.fa-circle-check').removeClass('hidden');
 
-			// // hide notification in 10 sec
+			// hide notification in 2 sec
 			setTimeout(function() {
 				el.removeClass('success');
 				el.find('.fa-copy').removeClass('hidden');
 				el.find('.fa-circle-check').addClass('hidden');
-			}, 10000);
+			}, 2000);
 
 			return false;
 		})

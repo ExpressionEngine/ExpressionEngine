@@ -2565,6 +2565,7 @@ class Member
 
         $member = ee('Model')
             ->get('Member', $member_id)
+            ->with(['Roles' => 'RoleGroups AS GroupsByRole'])
             ->with('RoleGroups')
             ->all()
             ->first();
@@ -2574,22 +2575,41 @@ class Member
         }
 
         $vars = [];
+        // Role groups that are assigned directly to member
         foreach ($member->RoleGroups as $roleGroup) {
             if ($roleGroup->group_id === 0 && $roleGroup->name === null) {
                 continue;
             }
 
-            $vars[] = [
+            $vars[$roleGroup->group_id] = [
                 'role_group_id' => $roleGroup->group_id,
                 'role_group_name' => $roleGroup->name,
             ];
         };
 
+        // Role groups that are assigned via Roles
+        foreach ($member->Roles as $role) {
+            foreach ($role->RoleGroups as $roleGroup) {
+                if ($roleGroup->group_id === 0 && $roleGroup->name === null) {
+                    continue;
+                }
+
+                if (isset($vars[$roleGroup->group_id])) {
+                    continue;
+                }
+
+                $vars[$roleGroup->group_id] = [
+                    'role_group_id' => $roleGroup->group_id,
+                    'role_group_name' => $roleGroup->name,
+                ];
+            }
+        }
+
         if (empty($vars)) {
             return ee()->TMPL->no_results();
         }
 
-        return ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $vars);
+        return ee()->TMPL->parse_variables(ee()->TMPL->tagdata, array_values($vars));
     }
 
     /**
