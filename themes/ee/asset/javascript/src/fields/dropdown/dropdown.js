@@ -28,9 +28,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
-var Dropdown =
-/*#__PURE__*/
-function (_React$Component) {
+var Dropdown = /*#__PURE__*/function (_React$Component) {
   _inherits(Dropdown, _React$Component);
 
   function Dropdown(props) {
@@ -62,13 +60,14 @@ function (_React$Component) {
         var $rx_url = selected.value;
         var $rx_text = selected.label;
         var $rx_form = $(_this.input).parents('.rx-popup-form');
+        var $rx_react_parent = $(_this.input).parents('.rx-form-div').parent();
+        var $rx_url_input = $($rx_react_parent).next('input.rx-form-input');
         var $text = $rx_form.find('input[name=text]');
-        var $url = $rx_form.find('input[name=url]'); // text
-
-        if ($text.val() === '') {
-          $text.val($rx_text);
-        } // // url
-
+        var $url = $rx_url_input; // text
+        // if ($text.val() === '') {
+        //     $text.val($rx_text);
+        // }
+        // // url
 
         $url.val($rx_url);
       }

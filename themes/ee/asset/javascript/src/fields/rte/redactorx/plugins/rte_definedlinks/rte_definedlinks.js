@@ -43,20 +43,6 @@ RedactorX.add('plugin', 'rte_definedlinks', {
         $item.before($box);
         Dropdown.renderFields();
     },
-    // _change: function(e) {
-    //     var url = this.dom(e.target).val();
-    //     var name = this.dom(e.target).text();
-    //     var $text = this.app.popup.getInput('text');
-    //     var $url = this.app.popup.getInput('url');
-
-    //     // text
-    //     if ($text.val() === '') {
-    //         $text.val(name);
-    //     }
-
-    //     // url
-    //     $url.val(url);
-    // },
     _create: function() {
         var $div = this.dom('<div>').addClass(this.prefix + '-form-div');
         var $choices = {};
