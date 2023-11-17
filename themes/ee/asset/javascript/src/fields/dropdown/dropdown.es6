@@ -72,21 +72,9 @@ class Dropdown extends React.Component {
     }
 
     if (this.props.conditionalRule == 'rx-redactor-dropdown') {
-      var $rx_url= selected.value;
-      var $rx_text = selected.label;
-      var $rx_form = $(this.input).parents('.rx-popup-form');
       var $rx_react_parent = $(this.input).parents('.rx-form-div').parent();
       var $rx_url_input = $($rx_react_parent).next('input.rx-form-input');
-      var $text = $rx_form.find('input[name=text]');
-      var $url = $rx_url_input;
-
-        // text
-        // if ($text.val() === '') {
-        //     $text.val($rx_text);
-        // }
-
-        // // url
-        $url.val($rx_url);
+      $rx_url_input.val(selected.value);
     }
   }
 
