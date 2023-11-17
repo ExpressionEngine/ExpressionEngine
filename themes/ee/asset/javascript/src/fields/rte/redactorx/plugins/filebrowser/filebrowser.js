@@ -20,7 +20,9 @@ RedactorX.add('plugin', 'filebrowser', {
     },
     open: function()
     {
-        this.app.addbar.hide();
+        if (typeof(this.app.addbar) !== 'undefined') {
+            this.app.popup.close();
+        }
         function pickFile(that) {
             that.app.selection.save();
             return function insertFile(evt) {

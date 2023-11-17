@@ -128,7 +128,6 @@ window.Rte;
                 }
             };
 
-            console.log(config);
             RedactorX('#' + this.id, config);
 
             if (this.$iframe) {

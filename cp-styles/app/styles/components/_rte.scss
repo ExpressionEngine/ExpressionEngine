@@ -741,11 +741,21 @@ a.ck.ck-button.ck-on {
 }
 
 .ck.ck-balloon-panel[class*=arrow_n]:before {
-    border-bottom-color: var(--ee-list-item-border)!important;
+    border-color: transparent transparent var(--ee-list-item-border) !important;
 }
-.ck.ck-balloon-panel[class*=arrow_n]:after {
-    border-bottom-color: var(--ee-bg-neutral-dark)!important;
+
+.ck.ck-balloon-panel[class*=arrow_n]:after{
+    border-color: transparent transparent var(--ee-button-default-bg) transparent !important;
 }
+
+.ck.ck-balloon-panel[class*=arrow_s]:before {
+    border-color: var(--ee-list-item-border) transparent transparent !important;
+}
+
+.ck.ck-balloon-panel[class*=arrow_s]:after {
+    border-color: var(--ee-button-default-bg) transparent transparent transparent!important;
+}
+
 .ck.ck-link-form_layout-vertical .ck-button {
     border-top: 1px solid var(--ee-border-dark) !important;
     // color: var(--ee-button-default-color) !important;
@@ -808,6 +818,23 @@ a.ck.ck-button.ck-on {
 
 .ck.ck-button.ck-switchbutton.ck-on .ck-button__toggle {
     background: var(--ee-input-toggle-active-bg) !important;
+}
+
+.ck-balloon-rotator__content .ck.ck-list__item .ck-button.ck-on {
+    background: var(--ee-brand-primary) !important;
+}
+
+.ck-dropdown__panel .ck.ck-list__item .ck-button.ck-on {
+    background: var(--ee-brand-primary) !important;
+    color: var(--ee-button-primary-color) !important;
+}
+
+.ck-dropdown__panel .ck.ck-list__item .ck-button.ck-on .ck-button__label {
+    color: var(--ee-button-primary-color) !important;
+}
+
+.ck-balloon-rotator__content .ck.ck-list__item .ck-button.ck-on.ck-switchbutton {
+    background: transparent !important;
 }
 
 // REDACTORX STYLES

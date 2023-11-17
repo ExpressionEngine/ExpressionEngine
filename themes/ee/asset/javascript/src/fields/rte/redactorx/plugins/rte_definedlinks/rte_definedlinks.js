@@ -8,7 +8,7 @@ RedactorX.add('plugin', 'rte_definedlinks', {
     subscribe: {
         'popup.open': function() {
             var name = this.app.popup.getName();
-            if (name === 'link') {
+            if (name === 'link' || name === 'image-edit') {
                 if (this.items.length === 0) {
                     this._load();
                 }
@@ -30,8 +30,11 @@ RedactorX.add('plugin', 'rte_definedlinks', {
         });
     },
     _build: function() {
-        var $item = this.app.popup.getFormItem('text');
-        var $box = this.dom('<div>').addClass(this.prefix + '-form-item');
+        var $item = this.app.popup.getFormItem('link').find('input');
+        if ($item.nodes.length == 0) {
+            $item = this.app.popup.getFormItem('url').find('input');
+        }
+        var $box = this.dom('<div>').addClass(this.prefix + '-form-item').css('padding', '0px 0px 16px 0px');
 
         // select
         this.$select = this._create();
