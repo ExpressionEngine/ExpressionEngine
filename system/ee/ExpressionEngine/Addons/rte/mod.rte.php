@@ -32,7 +32,7 @@ class Rte
 
         if (ee('Request')->get('structured') == 'y' && ee('Addon')->get('structure')->isInstalled()) {
             $cache_key = 'rte_' . ee()->config->item('site_id') . '_structured';
-            $pages = ee()->cache->get('/site_pages/' . md5($cache_key), \Cache::GLOBAL_SCOPE);
+            $pages = false;// ee()->cache->get('/site_pages/' . md5($cache_key), \Cache::GLOBAL_SCOPE);
             if ($pages === false) {
                 $pages = [];
                 require_once PATH_ADDONS . 'structure/sql.structure.php';
@@ -60,10 +60,10 @@ class Rte
                         $options[$page['entry_id']] = $page['title'];
                     }
                     $pages[] = (object) [
-                        'id' => '@' . $entry_data['entry_id'],
+                        'id' => '@' . $page['entry_id'],
                         'text' => $options[$page['entry_id']],
-                        'href' => '{page_' . $entry_data['entry_id'] . '}',
-                        'entry_id' => $entry_data['entry_id'],
+                        'href' => '{page_' . $page['entry_id'] . '}',
+                        'entry_id' => $page['entry_id'],
                     ];
                 }
                 ee()->cache->save('/site_pages/' . md5($cache_key), $pages, 0, \Cache::GLOBAL_SCOPE);

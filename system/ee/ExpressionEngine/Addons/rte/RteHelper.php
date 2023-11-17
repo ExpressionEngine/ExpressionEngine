@@ -254,7 +254,6 @@ class RteHelper
                         $pages[] = (object) [
                             'id' => '@' . $entry_id,
                             'text' => $titles[$entry_id],
-                            'label' => $titles[$entry_id],
                             'extra' => $channels[$channel_ids[$entry_id]],
                             'href' => '{page_' . $entry_id . '}',
                             'entry_id' => $entry_id,
