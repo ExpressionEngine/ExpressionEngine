@@ -67,11 +67,11 @@
 	}
 
 	&.success {
-		color: var(--ee-button-success-border);
-		border-color: var(--ee-button-success-border);
+		color: var(--ee-accent);
+		border-color: var(--ee-accent);
 
 		i {
-			color: var(--ee-button-success-border);
+			color: var(--ee-accent);
 		}
 	}
 }

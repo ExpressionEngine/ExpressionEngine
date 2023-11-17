@@ -105,8 +105,12 @@ class CommandSyncUploadDirectory extends Cli
             $replaceSizeIds = array_map('trim', explode(',', $manipulations));
         }
 
-        if ($uploadLocation->adapter == 'local' && is_object($uploadLocation->getRawProperty('server_path')) && strpos($uploadLocation->getRawProperty('server_path')->path, '{base_path}') !== false) {
+        if ($uploadLocation->adapter == 'local' && is_object($uploadLocation->getRawProperty('server_path')) && strpos($uploadLocation->getRawProperty('server_path')->path, '{base_path}') !== false && empty(ee()->config->item('base_path'))) {
             $this->fail('cli_error_sync_upload_directory_base_path_is_empty');
+        }
+
+        if (! $uploadLocation->exists()) {
+            $this->fail(strip_tags(sprintf(lang('directory_not_found'), addslashes($uploadLocation->server_path))));
         }
 
         // Get a listing of raw files in the directory

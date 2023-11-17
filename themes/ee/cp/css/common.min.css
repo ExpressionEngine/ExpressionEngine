@@ -35007,11 +35007,11 @@ table .field-no-results {
   opacity: 1;
 }
 .label-app-badge.success {
-  color: var(--ee-button-success-border);
-  border-color: var(--ee-button-success-border);
+  color: var(--ee-accent);
+  border-color: var(--ee-accent);
 }
 .label-app-badge.success i {
-  color: var(--ee-button-success-border);
+  color: var(--ee-accent);
 }
 
 .search-input {
