@@ -238,7 +238,7 @@ class RedactorXService extends RedactorService implements RteService {
 
     public function toolbarInputHtml($config, $toolbar = 'buttons')
     {
-        ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/fields/rte/' . static::$type . '/redactor.min.css" type="text/css" />');
+        ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.css" type="text/css" />');
 
         $selection = [];
         if (is_object($config->settings['toolbar'])) {
