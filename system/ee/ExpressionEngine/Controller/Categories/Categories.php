@@ -97,12 +97,13 @@ class Categories extends AbstractCategoriesController
             'can_delete_categories' => ee('Permission')->can('delete_categories')
         );
 
+        $roleIds = ee()->session->getMember()->getAllRoles()->pluck('role_id');
         $can_edit = explode('|', rtrim((string) $cat_group->can_edit_categories, '|'));
-        if ($data['can_edit_categories'] === true && ! ee('Permission')->isSuperAdmin() and ! ee('Permission')->hasAnyRole($can_edit)) {
+        if ($data['can_edit_categories'] === true && ! ee('Permission')->isSuperAdmin() && empty(array_intersect($can_edit, $roleIds))) {
             $data['can_edit_categories'] = false;
         }
         $can_delete = explode('|', rtrim((string) $cat_group->can_delete_categories, '|'));
-        if ($data['can_delete_categories'] === true && ! ee('Permission')->isSuperAdmin() and ! ee('Permission')->hasAnyRole($can_delete)) {
+        if ($data['can_delete_categories'] === true && ! ee('Permission')->isSuperAdmin() && empty(array_intersect($can_delete, $roleIds))) {
             $data['can_delete_categories'] = false;
         }
 
@@ -341,9 +342,10 @@ class Categories extends AbstractCategoriesController
 			');
         } else {
             //  Check discrete privileges when editig (we have no discrete create permissions)
+            $roleIds = ee()->session->getMember()->getAllRoles()->pluck('role_id');
             $can_edit = explode('|', rtrim((string) $cat_group->can_edit_categories, '|'));
 
-            if (! ee('Permission')->isSuperAdmin() and ! ee('Permission')->hasAnyRole($can_edit)) {
+            if (! ee('Permission')->isSuperAdmin() && empty(array_intersect($can_edit, $roleIds))) {
                 show_error(lang('unauthorized_access'), 403);
             }
 
