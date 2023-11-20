@@ -346,7 +346,7 @@ class Categories extends AbstractCategoriesController
             $can_edit = explode('|', rtrim((string) $cat_group->can_edit_categories, '|'));
 
             if (! ee('Permission')->isSuperAdmin() && empty(array_intersect($can_edit, $roleIds))) {
-                show_error(lang('unauthorized_access'), 403);
+                show_error(lang('category_group_no_permissions'), 403);
             }
 
             $category = ee('Model')->get('Category')->filter('cat_id', (int) $category_id)->first();

@@ -449,6 +449,8 @@ $lang = array(
 
     'category_ajax_reorder_fail_desc' => 'We failed to save your new categories order. Refresh the page and make sure you\'re logged in.',
 
+    'category_group_no_permissions' => 'You do not have permissions to modify categories in this group.',
+
     'category_created' => 'Category Created',
 
     'category_created_desc' => 'The category <b>%s</b> has been created.',
