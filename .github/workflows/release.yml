@@ -19,7 +19,7 @@ jobs:
       - name: Checkout RedactorX
         uses: actions/checkout@v3
         with:
-          repository: packettide/RedactorX
+          repository: ExpressionEngine/RedactorX
           token: ${{ secrets.ORG_ACCESS_TOKEN }}
           path: __redactorx
 
