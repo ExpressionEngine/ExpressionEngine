@@ -259,6 +259,13 @@ class RedactorXService extends RedactorService implements RteService {
                 static::defaultToolbars()['RedactorX Full']['topbar']
             );
         }
+        $allButtons = array_unique($allButtons);
+        if ($toolbar == 'addbar') {
+            unset($allButtons[array_search('addbar', $allButtons)]);
+            unset($allButtons[array_search('link', $allButtons)]);
+            unset($allButtons[array_search('paragraph', $allButtons)]);
+            unset($allButtons[array_search('shortcut', $allButtons)]);
+        }
         if (empty($config->toolset_id)) {
             $selection = ($toolbar != 'hide') ? static::defaultToolbars()['RedactorX Full'][$toolbar] : [];
         }

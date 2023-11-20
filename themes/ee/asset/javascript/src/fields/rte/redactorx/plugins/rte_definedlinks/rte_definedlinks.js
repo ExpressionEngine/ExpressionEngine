@@ -1,30 +1,32 @@
 RedactorX.add('plugin', 'rte_definedlinks', {
     defaults: {
-        items: false
+        items: null
     },
     init: function() {
-        this.items = [];
+        this.items = null;
     },
     subscribe: {
         'popup.open': function() {
             var name = this.app.popup.getName();
             if (name === 'link' || name === 'image-edit') {
-                if (this.items.length === 0) {
+                if (this.items === null) {
                     this._load();
+                } else {
+                    if (this.items.length === 0) return;
+                    this._build();
                 }
-                if (this.items.length === 0) return;
-                this._build();
             }
         }
     },
 
     // private
     _load: function() {
-        if (this.items.length > 0) return;
+        if (this.items !== null && this.items.length > 0) return;
         this.ajax.get({
             url: this.opts.definedlinks,
             success: function(response) {
-                this.items = response
+                this.items = response;
+                if (this.items.length === 0) return;
                 this._build()
             }.bind(this)
         });
