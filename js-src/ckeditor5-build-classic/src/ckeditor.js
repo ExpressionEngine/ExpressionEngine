@@ -54,6 +54,7 @@ import { Mention } from '@ckeditor/ckeditor5-mention';
 import ReadMore from '../plugins/readmore/src/readmore';
 import FileManager from '../plugins/filemanager/src/filemanager';
 import PageLinks from '../plugins/pagelinks/src/pagelinks';
+import Pages from '../plugins/pages/src/pages';
 
 export default class ClassicEditor extends ClassicEditorBase {}
 
@@ -112,6 +113,7 @@ ClassicEditor.builtinPlugins = [
 	GeneralHtmlSupport,
 	Mention,
 	PageLinks,
+	Pages,
 	EditorClassPlugin,
 	WordCount,
 	SourceEditing,
