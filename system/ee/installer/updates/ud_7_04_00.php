@@ -36,7 +36,6 @@ class Updater
                 'addCategoryGroupSettings',
                 'addMemberRelationshipTable',
                 'addMemberFieldtype',
-                'addCategoryGroupPermissions',
                 'ensureBuiltinRoles',
                 'addShowFieldNamesSetting',
                 'increaseEmailLength',
@@ -379,33 +378,6 @@ class Updater
                 )
             )
         );
-    }
-
-    // those that have edit_categories permissions get the new permission automatically
-    private function addCategoryGroupPermissions()
-    {
-        $query = ee()->db->where('permission', 'can_edit_categories')->get('permissions');
-
-        foreach ($query->result_array() as $row) {
-            $data = array(
-                'site_id' => $row['site_id'],
-                'role_id' => $row['role_id'],
-                'permission' => 'can_create_category_groups'
-            );
-            ee()->db->insert('permissions', $data);
-            $data = array(
-                'site_id' => $row['site_id'],
-                'role_id' => $row['role_id'],
-                'permission' => 'can_edit_category_groups'
-            );
-            ee()->db->insert('permissions', $data);
-            $data = array(
-                'site_id' => $row['site_id'],
-                'role_id' => $row['role_id'],
-                'permission' => 'can_delete_category_groups'
-            );
-            ee()->db->insert('permissions', $data);
-        }
     }
 
     // in some very old EE versions is was possible to delete built-in member groups

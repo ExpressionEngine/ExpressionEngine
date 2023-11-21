@@ -22,7 +22,7 @@ class Groups extends AbstractCategoriesController
      */
     public function remove()
     {
-        if (! ee('Permission')->can('delete_category_groups')) {
+        if (! ee('Permission')->can('delete_categories')) {
             show_error(lang('unauthorized_access'), 403);
         }
 
@@ -56,7 +56,7 @@ class Groups extends AbstractCategoriesController
      */
     public function create()
     {
-        if (! ee('Permission')->can('create_category_groups')) {
+        if (! ee('Permission')->can('create_categories')) {
             show_error(lang('unauthorized_access'), 403);
         }
 
@@ -68,7 +68,7 @@ class Groups extends AbstractCategoriesController
      */
     public function edit($group_id)
     {
-        if (! ee('Permission')->can('edit_category_groups')) {
+        if (! ee('Permission')->can('edit_categories')) {
             show_error(lang('unauthorized_access'), 403);
         }
 
@@ -89,9 +89,6 @@ class Groups extends AbstractCategoriesController
             ee()->view->cp_page_title = lang('create_category_group');
             ee()->view->base_url = ee('CP/URL')->make('categories/groups/create');
             $cat_group = ee('Model')->make('CategoryGroup');
-            // select roles that have default "edit_categories" permission
-            $cat_group->can_edit_categories = implode('|', ee('Permission')->rolesThatHave('can_edit_categories'));
-            $cat_group->can_delete_categories = implode('|', ee('Permission')->rolesThatHave('can_delete_categories'));
         } else {
             $cat_group = ee('Model')->get('CategoryGroup')
                 ->filter('group_id', $group_id)
@@ -342,7 +339,7 @@ class Groups extends AbstractCategoriesController
                     'can_delete_categories' => array(
                         'type' => 'checkbox',
                         'choices' => $can_delete_categories ? ee('Model')->get('Role')->filter('role_id', 'IN', $can_delete_categories)->all()->getDictionary('role_id', 'name') : [],
-                        'value' => explode('|', rtrim((string) $cat_group->can_delete_categories, '|')),
+                        'value' => explode('|', rtrim((string) $cat_group->can_edit_categories, '|')),
                         'no_results' => array(
                             'text' => 'cat_group_no_roles_found'
                         )
