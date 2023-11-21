@@ -45,6 +45,7 @@ class ChannelTitleGateway extends Gateway
     public $expiration_date;
     public $comment_expiration_date;
     public $edit_date;
+    public $edit_member_id;
     public $recent_comment_date;
     public $comment_total;
 }
