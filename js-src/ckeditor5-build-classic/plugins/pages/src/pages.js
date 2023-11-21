@@ -13,7 +13,8 @@
 
 import Plugin from '@ckeditor/ckeditor5-core/src/plugin';
 import LinkUI from '@ckeditor/ckeditor5-link/src/linkui';
-import { LabeledFieldView, createLabeledDropdown } from '@ckeditor/ckeditor5-ui';
+import { Collection } from '@ckeditor/ckeditor5-utils';
+import { LabeledFieldView, createLabeledDropdown, addListToDropdown, Model, SearchTextView } from '@ckeditor/ckeditor5-ui';
 
 /**
  * The page break feature.
@@ -52,19 +53,55 @@ export default class Pages extends Plugin {
     }
 
     _createDropdown() {
-        var dropdown = button.set( {
+        const items = new Collection();
+
+        items.add( {
+            type: 'button',
+            model: new Model( {
+                withText: true,
+                label: 'First item',
+                labelStyle: 'color: red'
+            } )
+        } );
+        
+        items.add( {
+          type: 'button',
+          model: new Model( {
+            withText: true,
+            label: 'Second item',
+            labelStyle: 'color: green',
+            class: 'foo'
+          } )
+        } );
+
+      /*var dropdown = button.set( {
           label: 'A dropdown',
           withText: true
         } );
         .buttonView.set( {
           label: 'A dropdown',
           withText: true
-        } );
+        } );*/
         const extraFieldView = new LabeledFieldView(
             this.editor.locale,
             createLabeledDropdown,
         );
         extraFieldView.label = 'Page Link';
+
+        /*const searchView = new SearchTextView( this.editor.locale, {
+            filteredView: items,
+            infoView: new Collection(),
+            queryView: {
+                label: 'Search list items'
+            }
+        } );*/
+        
+        extraFieldView.fieldView.buttonView.set( {
+          label: 'A dropdown',
+          withText: true
+        } );
+        addListToDropdown( extraFieldView.fieldView, items );
+        console.log(extraFieldView);
 
 
         return extraFieldView;
