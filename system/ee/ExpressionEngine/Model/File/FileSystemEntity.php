@@ -118,6 +118,7 @@ class FileSystemEntity extends ContentModel
 
     protected $_baseServerPath;
     protected $_subfolderPath;
+    protected $_subfolderMap = [];
     protected $_exists;
 
     /**
@@ -207,6 +208,7 @@ class FileSystemEntity extends ContentModel
                 if (!empty($parent)) {
                     $directory_id = $parent->directory_id;
                     array_unshift($subfolders, $parent->file_name . '/');
+                    $this->_subfolderMap[$parent->file_id] = $parent->file_name;
                 } else {
                     $directory_id = 0;
                 }
@@ -215,6 +217,18 @@ class FileSystemEntity extends ContentModel
         }
 
         return $this->_subfolderPath;
+    }
+
+    /**
+     * Get the map of [subfolder_id => subfolder name] for the given file
+     *
+     * @return string
+     */
+    public function getSubfoldersMap()
+    {
+        $this->getSubfoldersPath();
+
+        return $this->_subfolderMap;
     }
 
     /**
