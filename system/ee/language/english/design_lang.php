@@ -34,7 +34,7 @@ $lang = array(
 
     'btn_update_and_finish_editing' => 'Save &amp; Finish Editing',
 
-    'create_new_template' => 'Create New Template',
+    'create_new_template' => 'Add Template',
 
     'create_new_template_group' => 'Create a New Template Group',
 

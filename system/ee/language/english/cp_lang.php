@@ -643,7 +643,7 @@ $lang = array(
 
     /* Members Menu */
 
-    'new_member' => 'New Member',
+    'new_member' => 'Add Member',
 
     'all_members' => 'All Members',
 

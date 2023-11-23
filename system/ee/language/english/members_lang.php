@@ -1018,7 +1018,7 @@ $lang = array(
 
     'role_group' => 'Role Group',
 
-    'new_role' => 'New Role',
+    'new_role' => 'Add Role',
 
     'group_roles_desc' => 'Assign one of more roles to this group.',
 

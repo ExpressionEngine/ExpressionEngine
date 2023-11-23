@@ -424,12 +424,16 @@ $(document).ready(function(){
 	// -------------------------------------------------------------------
 	window.addEventListener('keydown', function (key) {
 		if ((key.ctrlKey || key.metaKey) && !$('body').hasClass('redactor-body-fullscreen')) {
-			$('.button[data-shortcut]:visible').each(function(e) {
+			$('.button[data-shortcut]:visible, a[data-shortcut]:visible').each(function(e) {
 				$(this).addClass('button--with-shortcut');
 				if (key.key.toLowerCase() == $(this).data('shortcut').toLowerCase()) {
 					$(this).removeClass('button--with-shortcut');
 					key.preventDefault();
-					$(this).trigger('click');
+					if ($(this).prop("tagName").toLowerCase() == 'a') {
+						$(this)[0].click();
+					} else {
+						$(this).trigger('click');
+					}
 					return false;
 				}
 			});
@@ -438,7 +442,7 @@ $(document).ready(function(){
 
 	window.addEventListener('keyup', function (key) {
 		if (key.ctrlKey || key.metaKey || key.key == 'Control' || key.key == 'Meta'){
-			$('.button[data-shortcut]').removeClass('button--with-shortcut');
+			$('.button[data-shortcut], a[data-shortcut]').removeClass('button--with-shortcut');
 		}
 	});
 

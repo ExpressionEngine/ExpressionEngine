@@ -1820,7 +1820,8 @@ class Members extends CP_Controller
             ],
             'action_button' => ee('Permission')->can('create_members') ? [
                 'text' => lang('new_member'),
-                'href' => ee('CP/URL')->make('members/create')
+                'href' => ee('CP/URL')->make('members/create'),
+                'shortcut' => 'a'
             ] : null
         ];
 
