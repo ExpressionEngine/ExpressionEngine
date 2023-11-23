@@ -61,7 +61,7 @@ class Rte
                     }
                     $pages[] = (object) [
                         'id' => '@' . $page['entry_id'],
-                        'text' => $options[$page['entry_id']],
+                        'text' => ee('Format')->make('Text', $options[$page['entry_id']])->convertToEntities()->compile(),
                         'href' => '{page_' . $page['entry_id'] . '}',
                         'entry_id' => $page['entry_id'],
                     ];
