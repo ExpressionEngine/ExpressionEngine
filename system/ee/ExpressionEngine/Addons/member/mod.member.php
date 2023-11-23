@@ -15,7 +15,7 @@ class Member
 {
     public $trigger = 'member';
     public $member_template = true;
-    public $member_fields;
+    public $member_fields = [];
     public $theme_class = 'profile_theme';
     public $request = 'public_profile';
     public $no_menu = array(
@@ -236,8 +236,10 @@ class Member
         // There are a few exceptions like the memberlist page and the
         // subscriptions page
 
-        if (! in_array($this->request, $this->id_override) &&
-            $this->cur_id != '' && ! is_numeric($this->cur_id)) {
+        if (
+            ! in_array($this->request, $this->id_override) &&
+            $this->cur_id != '' && ! is_numeric($this->cur_id)
+        ) {
             return false;
         }
 
@@ -269,9 +271,11 @@ class Member
         // -------------------------------------------
 
         // Is the user logged in?
-        if ($this->request != 'login' &&
+        if (
+            $this->request != 'login' &&
             ! in_array($this->request, $this->no_login) &&
-            ee()->session->userdata('member_id') == 0) {
+            ee()->session->userdata('member_id') == 0
+        ) {
             return $this->_final_prep($this->profile_login_form('self'));
         }
 
@@ -1440,8 +1444,10 @@ class Member
         // trying to delete their account from an off-site form or
         // after logging out.
 
-        if (ee()->session->userdata('member_id') == 0 or
-             ! ee('Permission')->can('delete_self')) {
+        if (
+            ee()->session->userdata('member_id') == 0 or
+            ! ee('Permission')->can('delete_self')
+        ) {
             return ee()->output->show_user_error('general', ee()->lang->line('not_authorized'));
         }
 
@@ -1472,10 +1478,12 @@ class Member
         // else's computer being mean?!
         ee()->load->library('auth');
 
-        if (! ee()->auth->authenticate_id(
-            ee()->session->userdata('member_id'),
-            ee()->input->post('password')
-        )) {
+        if (
+            ! ee()->auth->authenticate_id(
+                ee()->session->userdata('member_id'),
+                ee()->input->post('password')
+            )
+        ) {
             ee()->session->save_password_lockout(ee()->session->userdata('username'));
 
             return ee()->output->show_user_error('general', ee()->lang->line('invalid_pw'));
@@ -1574,16 +1582,20 @@ class Member
             'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->TMPL->fetch_param('return') : '-2'
         );
 
-        if (ee()->TMPL->fetch_param('name') !== false &&
-            preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('name'), $match)) {
+        if (
+            ee()->TMPL->fetch_param('name') !== false &&
+            preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('name'), $match)
+        ) {
             $data['name'] = ee()->TMPL->fetch_param('name');
             ee()->TMPL->log_item('Member Login Form:  The \'name\' parameter has been deprecated.  Please use form_name');
         } elseif (ee()->TMPL->fetch_param('form_name') && ee()->TMPL->fetch_param('form_name') != "") {
             $data['name'] = ee()->TMPL->fetch_param('form_name');
         }
 
-        if (ee()->TMPL->fetch_param('id') !== false &&
-            preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('id'))) {
+        if (
+            ee()->TMPL->fetch_param('id') !== false &&
+            preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('id'))
+        ) {
             $data['id'] = ee()->TMPL->fetch_param('id');
             ee()->TMPL->log_item('Member Login Form:  The \'id\' parameter has been deprecated.  Please use form_id');
         } else {
@@ -2127,8 +2139,10 @@ class Member
         }
 
         // Parse the self deletion conditional
-        if (ee('Permission')->can('delete_self') &&
-            ! ee('Permission')->isSuperAdmin()) {
+        if (
+            ee('Permission')->can('delete_self') &&
+            ! ee('Permission')->isSuperAdmin()
+        ) {
             $str = $this->_allow_if('can_delete', $str);
         } else {
             $str = $this->_deny_if('can_delete', $str);
@@ -2169,7 +2183,7 @@ class Member
 
         // Parse old style path variables
         // This is here for backward compatibility for people with older templates
-        $str = preg_replace_callback("/" . LD . "\s*path=(.*?)" . RD . "/", array(&ee()->functions, 'create_url'), $str);
+        $str = preg_replace_callback("/" . LD . "\s*path=(.*?)" . RD . "/", array( & ee()->functions, 'create_url'), $str);
 
         if (preg_match_all("#" . LD . "\s*(profile_path\s*=.*?)" . RD . "#", $str, $matches)) {
             $i = 0;
@@ -2370,11 +2384,17 @@ class Member
      */
     public function custom_profile_data($typography = true)
     {
-        $member_id = (! ee()->TMPL->fetch_param('member_id')) ? ee()->session->userdata('member_id') : ee()->TMPL->fetch_param('member_id');
-
-        $member = ee('Model')
-            ->get('Member', $member_id)
-            ->first();
+        if (ee()->TMPL->fetch_param('username')) {
+            $member = ee('Model')
+                ->get('Member')
+                ->filter('username', ee('Security/XSS')->clean(ee()->TMPL->fetch_param('username')))
+                ->first();
+        } else {
+            $member_id = (! ee()->TMPL->fetch_param('member_id')) ? ee()->session->userdata('member_id') : ee()->TMPL->fetch_param('member_id');
+            $member = ee('Model')
+                ->get('Member', $member_id)
+                ->first();
+        }
 
         if (! $member) {
             return ee()->TMPL->tagdata = '';
@@ -2386,6 +2406,7 @@ class Member
         unset($results['crypt_key']);
         unset($results['authcode']);
         unset($results['salt']);
+        unset($results['backup_mfa_code']);
 
         $default_fields = $results;
 
@@ -2436,12 +2457,14 @@ class Member
         }
 
         $more_fields = array(
-            'send_private_message' => $this->_member_path('messages/pm/' . $member_id),
+            'send_private_message' => $this->_member_path('messages/pm/' . $member->getId()),
             'search_path' => $search_path,
+            'avatar' => $avatar,
             'avatar_url' => $avatar_path,
             'avatar_filename' => $results['avatar_filename'],
             'avatar_width' => $avatar_width,
             'avatar_height' => $avatar_height,
+            'photo' => $photo,
             'photo_url' => $photo_path,
             'photo_filename' => $results['photo_filename'],
             'photo_width' => $photo_width,
@@ -2452,171 +2475,141 @@ class Member
             'signature_image_height' => $sig_img_height
         );
 
-        $default_fields = array_merge($default_fields, $more_fields);
+        $dates = array(
+            'last_visit' => (empty($default_fields['last_visit'])) ? '' : $default_fields['last_visit'],
+            'last_activity' => (empty($default_fields['last_activity'])) ? '' : $default_fields['last_activity'],
+            'join_date' => (empty($default_fields['join_date'])) ? '' : $default_fields['join_date'],
+            'last_entry_date' => (empty($default_fields['last_entry_date'])) ? '' : $default_fields['last_entry_date'],
+            'last_forum_post_date' => (empty($default_fields['last_forum_post_date'])) ? '' : $default_fields['last_forum_post_date'],
+            'last_comment_date' => (empty($default_fields['last_comment_date'])) ? '' : $default_fields['last_comment_date']
+        );
 
-        // Fetch the custom member field definitions
-        $fields = array();
+        // parse date variables
+        ee()->TMPL->tagdata = ee()->TMPL->parse_date_variables(ee()->TMPL->tagdata, $dates);
 
-        ee()->db->select('m_field_id, m_field_name, m_field_fmt');
-        $query = ee()->db->get('member_fields');
+        //  {name}
+        $name = (! $default_fields['screen_name']) ? $default_fields['username'] : $default_fields['screen_name'];
+        $more_fields['name'] = $this->_convert_special_chars($name);
+        //  {member_group}
+        $more_fields['member_group'] = $default_fields['group_title'];
+        //  {timezone}
+        $more_fields['timezone'] = ($default_fields['timezone'] != '') ? ee()->lang->line($default_fields['timezone']) : '';
+        foreach (ee()->TMPL->var_single as $key => $val) {
+            //  {local_time}
+            if (strncmp($key, 'local_time', 10) == 0) {
+                $locale = false;
 
-        if ($query->num_rows() > 0) {
-            foreach ($query->result_array() as $row) {
-                $fields[$row['m_field_name']] = array($row['m_field_id'], $row['m_field_fmt']);
-            }
-        }
+                if (ee()->session->userdata('member_id') != $this->cur_id) {
+                    // Default is UTC?
+                    $locale = ($default_fields['timezone'] == '') ? 'UTC' : $default_fields['timezone'];
+                }
 
-        ee()->load->library('typography');
-        ee()->typography->initialize();
-
-        ee()->load->library('api');
-        ee()->legacy_api->instantiate('channel_fields');
-
-        $cond = $default_fields;
-
-        // Get field names present in the template, sans modifiers
-        $clean_field_names = array_map(function ($field) {
-            $field = ee('Variables/Parser')->parseVariableProperties($field);
-
-            return $field['field_name'];
-        }, array_flip(ee()->TMPL->var_single));
-
-        // Get field IDs for the member fields we need to fetch
-        $member_field_ids = array();
-        foreach ($clean_field_names as $field_name) {
-            if (isset($fields[$field_name][0])) {
-                $member_field_ids[] = $fields[$field_name][0];
-            }
-        }
-
-        // Cache member fields here before we start parsing
-        if (! empty($member_field_ids)) {
-            $this->member_fields = ee('Model')->get('MemberField', array_unique($member_field_ids))
-                ->all()
-                ->indexBy('field_id');
-        }
-
-        foreach (array($results) as $row) {
-            $cond['avatar'] = $avatar;
-            $cond['photo'] = $photo;
-
-            foreach ($fields as $key => $value) {
-                $cond[$key] = ee()->typography->parse_type(
-                    $row['m_field_id_' . $value['0']],
-                    array(
-                        'text_format' => $value['1'],
-                        'html_format' => 'safe',
-                        'auto_links' => 'y',
-                        'allow_img_url' => 'n'
-                    )
+                ee()->TMPL->tagdata = $this->_var_swap_single(
+                    $key,
+                    ee()->localize->format_date($val, null, $locale),
+                    ee()->TMPL->tagdata
                 );
             }
+        }
 
-            ee()->TMPL->tagdata = ee()->functions->prep_conditionals(ee()->TMPL->tagdata, $cond);
+        // Special consideration for {total_forum_replies}, and
+        // {total_forum_posts} whose meanings do not match the
+        // database field names
+        $more_fields['total_forum_replies'] = $default_fields['total_forum_posts'];
+        $more_fields['total_forum_posts'] = $default_fields['total_forum_topics'] + $default_fields['total_forum_posts'];
 
-            $dates = array(
-                'last_visit' => (empty($default_fields['last_visit'])) ? '' : $default_fields['last_visit'],
-                'last_activity' => (empty($default_fields['last_activity'])) ? '' : $default_fields['last_activity'],
-                'join_date' => (empty($default_fields['join_date'])) ? '' : $default_fields['join_date'],
-                'last_entry_date' => (empty($default_fields['last_entry_date'])) ? '' : $default_fields['last_entry_date'],
-                'last_forum_post_date' => (empty($default_fields['last_forum_post_date'])) ? '' : $default_fields['last_forum_post_date'],
-                'last_comment_date' => (empty($default_fields['last_comment_date'])) ? '' : $default_fields['last_comment_date']
-            );
+        $default_fields = array_merge($default_fields, $more_fields);
 
-            // parse date variables
-            ee()->TMPL->tagdata = ee()->TMPL->parse_date_variables(ee()->TMPL->tagdata, $dates);
+        if (! class_exists('Channel')) {
+            require PATH_ADDONS . 'channel/mod.channel.php';
+        }
+        $channel = new Channel();
+        $channel->fetch_custom_member_fields();
 
-            // Swap Variables
-            foreach (ee()->TMPL->var_single as $key => $val) {
-                // parse default member data
+        // Load the parser
+        ee()->load->library('channel_entries_parser');
+        $parser = ee()->channel_entries_parser->create(ee()->TMPL->tagdata);
 
-                //  {name}
-                $name = (! $default_fields['screen_name']) ? $default_fields['username'] : $default_fields['screen_name'];
+        $data = [
+            'entries' => [array_merge(
+                [
+                    'site_id' => ee()->config->item('site_id'),
+                    'entry_id' => $results['member_id'],
+                    'entry_date' => null,
+                    'edit_date' => null,
+                    'recent_comment_date' => null,
+                    'expiration_date' => null,
+                    'comment_expiration_date' => null,
+                    'allow_comments' => null,
+                    'channel_title' => null,
+                    'channel_name' => null,
+                    'entry_site_id' => null,
+                    'channel_url' => null,
+                    'comment_url' => null,
+                ],
+                $default_fields
+            )]
+        ];
 
-                $name = $this->_convert_special_chars($name);
+        ee()->TMPL->tagdata = $parser->parse($channel, $data);
 
-                if ($key == "name") {
-                    ee()->TMPL->tagdata = $this->_var_swap_single($val, $name, ee()->TMPL->tagdata);
+        return ee()->TMPL->tagdata;
+    }
+
+    /**
+     * Member Role Groups list
+     */
+    public function role_groups()
+    {
+        $member_id = (!ee()->TMPL->fetch_param('member_id')) ? ee()->session->userdata('member_id') : ee()->TMPL->fetch_param('member_id');
+
+        $member = ee('Model')
+            ->get('Member', $member_id)
+            ->with(['Roles' => 'RoleGroups AS GroupsByRole'])
+            ->with('RoleGroups')
+            ->all()
+            ->first();
+
+        if (!$member) {
+            return ee()->TMPL->no_results();
+        }
+
+        $vars = [];
+        // Role groups that are assigned directly to member
+        foreach ($member->RoleGroups as $roleGroup) {
+            if ($roleGroup->group_id === 0 && $roleGroup->name === null) {
+                continue;
+            }
+
+            $vars[$roleGroup->group_id] = [
+                'role_group_id' => $roleGroup->group_id,
+                'role_group_name' => $roleGroup->name,
+            ];
+        };
+
+        // Role groups that are assigned via Roles
+        foreach ($member->Roles as $role) {
+            foreach ($role->RoleGroups as $roleGroup) {
+                if ($roleGroup->group_id === 0 && $roleGroup->name === null) {
+                    continue;
                 }
 
-                //  {member_group}
-                if ($key == "member_group") {
-                    ee()->TMPL->tagdata = $this->_var_swap_single($val, $default_fields['group_title'], ee()->TMPL->tagdata);
+                if (isset($vars[$roleGroup->group_id])) {
+                    continue;
                 }
 
-                //  {email}
-                if ($key == "email" && $typography) {
-                    ee()->TMPL->tagdata = $this->_var_swap_single($val, ee()->typography->encode_email($default_fields['email']), ee()->TMPL->tagdata, false);
-                }
-
-                //  {timezone}
-                if ($key == "timezone") {
-                    $timezone = ($default_fields['timezone'] != '') ? ee()->lang->line($default_fields['timezone']) : '';
-
-                    ee()->TMPL->tagdata = $this->_var_swap_single($val, $timezone, ee()->TMPL->tagdata);
-                }
-
-                //  {local_time}
-                if (strncmp($key, 'local_time', 10) == 0) {
-                    $locale = false;
-
-                    if (ee()->session->userdata('member_id') != $this->cur_id) {
-                        // Default is UTC?
-                        $locale = ($default_fields['timezone'] == '') ? 'UTC' : $default_fields['timezone'];
-                    }
-
-                    ee()->TMPL->tagdata = $this->_var_swap_single(
-                        $key,
-                        ee()->localize->format_date($val, null, $locale),
-                        ee()->TMPL->tagdata
-                    );
-                }
-
-                // Special consideration for {total_forum_replies}, and
-                // {total_forum_posts} whose meanings do not match the
-                // database field names
-                if ($key == 'total_forum_replies') {
-                    ee()->TMPL->tagdata = $this->_var_swap_single($key, $default_fields['total_forum_posts'], ee()->TMPL->tagdata);
-                }
-
-                if ($key == 'total_forum_posts') {
-                    $total_posts = $default_fields['total_forum_topics'] + $default_fields['total_forum_posts'];
-                    ee()->TMPL->tagdata = $this->_var_swap_single($key, $total_posts, ee()->TMPL->tagdata);
-                }
-
-                // parse basic fields (username, screen_name, etc.)
-                if (array_key_exists($key, $default_fields)) {
-                    ee()->TMPL->tagdata = $this->_var_swap_single($val, $default_fields[$val], ee()->TMPL->tagdata);
-                }
-
-                // Custom member fields
-                $field = ee('Variables/Parser')->parseVariableProperties($key);
-                $val = $field['field_name'];
-
-                // parse custom member fields
-                if (isset($fields[$val])) {
-                    if (array_key_exists('m_field_id_' . $fields[$val]['0'], $row)) {
-                        ee()->TMPL->tagdata = $this->parseField(
-                            $fields[$val]['0'],
-                            $field,
-                            $row['m_field_id_' . $fields[$val]['0']],
-                            ee()->TMPL->tagdata,
-                            $member_id,
-                            array(),
-                            $key
-                        );
-                    } else {
-                        ee()->TMPL->tagdata = ee()->TMPL->swap_var_single(
-                            $key,
-                            '',
-                            ee()->TMPL->tagdata
-                        );
-                    }
-                }
+                $vars[$roleGroup->group_id] = [
+                    'role_group_id' => $roleGroup->group_id,
+                    'role_group_name' => $roleGroup->name,
+                ];
             }
         }
 
-        return ee()->TMPL->tagdata;
+        if (empty($vars)) {
+            return ee()->TMPL->no_results();
+        }
+
+        return ee()->TMPL->parse_variables(ee()->TMPL->tagdata, array_values($vars));
     }
 
     /**
@@ -2624,13 +2617,21 @@ class Member
      */
     public function roles()
     {
-        $member_id = (!ee()->TMPL->fetch_param('member_id')) ? ee()->session->userdata('member_id') : ee()->TMPL->fetch_param('member_id');
-
-        $member = ee('Model')
-            ->get('Member', $member_id)
-            ->with('PrimaryRole', 'Roles', 'RoleGroups')
-            ->all()
-            ->first();
+        if (ee()->TMPL->fetch_param('username')) {
+            $member = ee('Model')
+                ->get('Member')
+                ->with('PrimaryRole', 'Roles', 'RoleGroups')
+                ->filter('username', ee('Security/XSS')->clean(ee()->TMPL->fetch_param('username')))
+                ->all()
+                ->first();
+        } else {
+            $member_id = (! ee()->TMPL->fetch_param('member_id')) ? ee()->session->userdata('member_id') : ee()->TMPL->fetch_param('member_id');
+            $member = ee('Model')
+                ->get('Member', $member_id)
+                ->with('PrimaryRole', 'Roles', 'RoleGroups')
+                ->all()
+                ->first();
+        }
 
         if (!$member) {
             return ee()->TMPL->no_results();
@@ -2675,7 +2676,9 @@ class Member
 
         $roles = $member->getAllRoles()->pluck('role_id');
 
-        if (in_array(ee()->TMPL->fetch_param('role_id'), $roles)) {
+        $rolesToCheck = explode('|', ee()->TMPL->fetch_param('role_id'));
+
+        if (array_intersect($rolesToCheck, $roles)) {
             return ee()->TMPL->tagdata;
         }
 
@@ -2726,7 +2729,7 @@ class Member
                                 $validationRules[$field] = 'validPassword|passwordMatchesSecurityPolicy';
                                 break;
                             case 'email':
-                                $validationRules[$field] = 'email|uniqueEmail|max_length[' . USERNAME_MAX_LENGTH . ']|notBanned';
+                                $validationRules[$field] = 'email|uniqueEmail|max_length[254]|notBanned';
                                 break;
                             case 'screen_name':
                                 $validationRules[$field] = 'validScreenName|notBanned';

@@ -866,7 +866,7 @@ $lang = array(
 
     'toggle_default_value_desc' => 'The default position of the toggle switch for this field when publishing new entries.',
 
-    'toggle_default_value_desc_cont' => '<b>Note</b>: To assign default value to existing entries, search reindex will need to be run after associating this field to channels.',
+    'toggle_default_value_desc_cont' => '<b>Note</b>: To assign default value to existing entries, content reindex will need to be run after associating this field to channels.',
 
     'unauthorized_for_this_channel' => 'You are not authorized to post in this channel',
 

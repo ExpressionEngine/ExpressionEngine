@@ -20,6 +20,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Checkout RedactorX
+        uses: actions/checkout@v3
+        with:
+          repository: ExpressionEngine/RedactorX
+          token: ${{ secrets.ORG_ACCESS_TOKEN }}
+          path: __redactorx
+
+      - name: Copy over RedactorX
+        run: |
+          mv __redactorx/themes/ee/asset/javascript/src/fields/rte/redactorx themes/ee/asset/javascript/src/fields/rte/redactorx
+          rm -rf __redactorx
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:

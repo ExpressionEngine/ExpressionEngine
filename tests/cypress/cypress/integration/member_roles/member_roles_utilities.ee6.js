@@ -61,7 +61,7 @@ context('Member Roles / Utilities Permissions', () => {
 	   cy.get('.box').contains('Query Form')
 
 	   cy.get('.box').contains('Cache Manager')
-	   cy.get('.box').contains('Search Reindex')
+	   cy.get('.box').contains('Content Reindex')
 	   cy.get('.box').contains('Statistics')
 	   cy.get('.box').contains('Search and Replace')
 
@@ -105,7 +105,7 @@ context('Member Roles / Utilities Permissions', () => {
 	   cy.get('.box').contains('Query Form')
 
 	   cy.get('.box').contains('Cache Manager')
-	   cy.get('.box').contains('Search Reindex')
+	   cy.get('.box').contains('Content Reindex')
 	   cy.get('.box').contains('Statistics')
 	   cy.get('.box').contains('Search and Replace')
 
@@ -152,7 +152,7 @@ context('Member Roles / Utilities Permissions', () => {
 	   cy.get('.box').contains('Query Form')
 
 	   cy.get('.box').contains('Cache Manager')
-	   cy.get('.box').contains('Search Reindex')
+	   cy.get('.box').contains('Content Reindex')
 	   cy.get('.box').contains('Statistics')
 	   cy.get('.box').contains('Search and Replace')
 
@@ -200,7 +200,7 @@ context('Member Roles / Utilities Permissions', () => {
 	   cy.get('.box').contains('Query Form')
 
 	   cy.get('.box').contains('Cache Manager')
-	   cy.get('.box').contains('Search Reindex')
+	   cy.get('.box').contains('Content Reindex')
 	   cy.get('.box').contains('Statistics')
 	   cy.get('.box').contains('Search and Replace')
 
@@ -250,7 +250,7 @@ context('Member Roles / Utilities Permissions', () => {
 
 
 	   cy.get('.box').contains('Cache Manager')
-	   cy.get('.box').contains('Search Reindex')
+	   cy.get('.box').contains('Content Reindex')
 	   cy.get('.box').contains('Statistics')
 	   cy.get('.box').contains('Search and Replace')
 

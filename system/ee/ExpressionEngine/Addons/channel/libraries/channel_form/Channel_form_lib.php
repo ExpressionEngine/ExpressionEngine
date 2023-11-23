@@ -1494,7 +1494,7 @@ GRID_FALLBACK;
         $this->switch_site($this->site_id);
 
         // Structure category data the way the ChannelEntry model expects it
-        $cat_groups = explode('|', (string) $this->entry->Channel->cat_group);
+        $cat_groups = $this->entry->Channel->CategoryGroups->pluck('group_id');
         if (! empty($cat_groups) && isset($_POST['category'])) {
             $_POST['categories'] = array('cat_group_id_' . $cat_groups[0] => (is_array($_POST['category'])) ? $_POST['category'] : [$_POST['category']]);
         }
@@ -1851,7 +1851,7 @@ GRID_FALLBACK;
     public function fetch_categories()
     {
         //exit if already loaded, or if there is no category group
-        if ($this->categories || ! $this->channel('cat_group')) {
+        if ($this->categories || empty($this->channel->CategoryGroups)) {
             return;
         }
 
@@ -1861,7 +1861,7 @@ GRID_FALLBACK;
         ee()->load->library(array('api', 'file_field'));
         ee()->legacy_api->instantiate('channel_categories');
         $category_list = ee()->api_channel_categories->category_tree(
-            $this->channel('cat_group'),
+            $this->channel->CategoryGroups->pluck('group_id'),
             $selected
         );
 
@@ -1910,7 +1910,7 @@ GRID_FALLBACK;
         //If two forms are on the same template, $this->channel needs to be redefined
 
         $query = ee('Model')->get('Channel')
-            ->with('ChannelFormSettings');
+            ->with('ChannelFormSettings', 'CategoryGroups');
 
         if ($channel_id) {
             $query->filter('channel_id', $channel_id);
