@@ -27,7 +27,8 @@ class Updater
     {
         $steps = new \ProgressIterator(
             [
-                'modifyDateColumns'
+                'modifyDateColumns',
+                'modifyDateFieldColumns'
             ]
         );
 
@@ -40,8 +41,6 @@ class Updater
 
     /**
      * Modify built-in date columns to hold greater numbers, so we could allow dates past 2038
-     * We're not running the migration for the custom fields
-     * If there are any date fields that need to support greater numbers, they need to re-save field settings
      */
     private function modifyDateColumns()
     {
@@ -137,6 +136,33 @@ class Updater
         foreach ($dateColumns as $table => $columns) {
             foreach ($columns as $column => $properties) {
                 ee()->db->query("ALTER TABLE " . ee()->db->dbprefix($table) . " CHANGE COLUMN `" . $column . "` `" . $column . "` " . $properties);
+            }
+        }
+    }
+
+    private function modifyDateFieldColumns()
+    {
+        $fieldsQuery = ee('db')->select('field_id, legacy_field_data')
+            ->from('channel_fields')
+            ->where('field_type', 'date')
+            ->get();
+        if ($fieldsQuery->num_rows() > 0) {
+            foreach ($fieldsQuery->result_array() as $row) {
+                $table = ($row['legacy_field_data'] == 'y') ? 'channel_data' : 'channel_data_field_' . $row['field_id'];
+                $column = 'field_id_' . $row['field_id'];
+                ee()->db->query("ALTER TABLE " . ee()->db->dbprefix($table) . " CHANGE COLUMN `" . $column . "` `" . $column . "` bigint(10) DEFAULT 0");
+            }
+        }
+
+        $fieldsQuery = ee('db')->select('m_field_id, m_legacy_field_data')
+            ->from('member_fields')
+            ->where('m_field_type', 'date')
+            ->get();
+        if ($fieldsQuery->num_rows() > 0) {
+            foreach ($fieldsQuery->result_array() as $row) {
+                $table = ($row['m_legacy_field_data'] == 'y') ? 'member_data' : 'member_data_field_' . $row['m_field_id'];
+                $column = 'm_field_id_' . $row['m_field_id'];
+                ee()->db->query("ALTER TABLE " . ee()->db->dbprefix($table) . " CHANGE COLUMN `" . $column . "` `" . $column . "` bigint(10) DEFAULT 0");
             }
         }
     }
