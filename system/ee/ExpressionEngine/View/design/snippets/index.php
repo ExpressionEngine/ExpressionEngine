@@ -7,7 +7,7 @@
 		<div class="title-bar">
 			<h3 class="title-bar__title"><?=$cp_heading?></h3>
 			<div class="title-bar__extra-tools">
-				<a class="button button--primary" href="<?=ee('CP/URL')->make('design/snippets/create')?>"><?=lang('create_new')?></a>
+				<a class="button button--primary" href="<?=ee('CP/URL')->make('design/snippets/create')?>" data-shortcut="a"><?=lang('create_partial')?></a>
 			</div>
       <?php if (isset($filters)) {
     echo $filters;
