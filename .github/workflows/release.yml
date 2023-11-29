@@ -23,11 +23,6 @@ jobs:
           token: ${{ secrets.ORG_ACCESS_TOKEN }}
           path: __redactorx
 
-      - name: Copy over RedactorX
-        run: |
-          mv __redactorx/themes/ee/asset/javascript/src/fields/rte/redactorx themes/ee/asset/javascript/src/fields/rte/redactorx
-          rm -rf __redactorx
-
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -58,6 +53,7 @@ jobs:
           RELEASE_PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
           APP_REPO_PATH: ${{ github.workspace }}
+          REDACTORX_REPO_PATH: ${{ github.workspace }}/__redactorx
         run: |
           gulp app --local --head --skip-lint --skip-pro --version=${{ steps.tagName.outputs.tag }}
   
