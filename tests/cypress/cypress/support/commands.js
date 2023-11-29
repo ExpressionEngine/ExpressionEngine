@@ -101,7 +101,7 @@ Cypress.Commands.add("addRole", (role) => {
     cy.auth();
     cy.visit('admin.php?/cp/members/roles')
     cy.dismissLicenseAlert()
-    cy.get('a').contains('New Role').click()
+    cy.get('a').contains('Add Role').click()
     cy.get('input[name="name"]').clear().type(role)
     cy.get('.form-btns-top .saving-options').click()
     cy.get('button').contains('Save & Close').eq(0).click()
