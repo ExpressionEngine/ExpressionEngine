@@ -36416,10 +36416,7 @@ body[data-theme="dark"] {
   font-weight: inherit;
   text-transform: inherit;
   letter-spacing: inherit;
-  border: inherit;
   background-color: inherit !important;
-  padding: inherit;
-  color: inherit !important;
   background: inherit;
   display: inherit;
   border-radius: inherit;
@@ -36453,6 +36450,54 @@ body[data-theme="dark"] {
     background-color: color(danger);
   }
   */
+}
+
+[data-input-value=status] .select__button .status-tag, [data-input-value=status] .select__button .st-spam,
+[data-input-value=status] .select__button .st-error,
+[data-input-value=status] .select__button .st-closed,
+[data-input-value=status] .select__button .st-banned,
+[data-input-value=status] .select__button .st-open,
+[data-input-value=status] .select__button .st-draft,
+[data-input-value=status] .select__button .st-pending,
+[data-input-value=status] .select__button .st-info,
+[data-input-value=status] .select__button .st-note,
+[data-input-value=status] .select__button .st-warning,
+[data-input-value=status] .select__button .st-locked,
+[data-input-value=status] .select__button .st-unlocked,
+[data-input-value=status] .select__button .st-enable,
+[data-input-value=status] .select__button .st-disable,
+[data-input-value=status] .select__button .st-status {
+  border: inherit;
+  padding: inherit;
+}
+[data-input-value=status] .select__dropdown .select__dropdown-item {
+  padding: 0;
+  min-height: 0;
+  margin-bottom: 5px;
+  border-radius: 1000px;
+}
+[data-input-value=status] .select__dropdown .select__dropdown-item > span {
+  width: 100%;
+}
+[data-input-value=status] .select__dropdown .status-tag, [data-input-value=status] .select__dropdown .st-spam,
+[data-input-value=status] .select__dropdown .st-error,
+[data-input-value=status] .select__dropdown .st-closed,
+[data-input-value=status] .select__dropdown .st-banned,
+[data-input-value=status] .select__dropdown .st-open,
+[data-input-value=status] .select__dropdown .st-draft,
+[data-input-value=status] .select__dropdown .st-pending,
+[data-input-value=status] .select__dropdown .st-info,
+[data-input-value=status] .select__dropdown .st-note,
+[data-input-value=status] .select__dropdown .st-warning,
+[data-input-value=status] .select__dropdown .st-locked,
+[data-input-value=status] .select__dropdown .st-unlocked,
+[data-input-value=status] .select__dropdown .st-enable,
+[data-input-value=status] .select__dropdown .st-disable,
+[data-input-value=status] .select__dropdown .st-status {
+  min-height: 38px;
+  padding: 7px 15px;
+  width: 100%;
+  border-radius: 1000px;
 }
 
 .icon--add:before {

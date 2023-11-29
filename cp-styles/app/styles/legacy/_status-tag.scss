@@ -154,10 +154,10 @@ body[data-theme="dark"] {
     font-weight: inherit;
     text-transform: inherit;
     letter-spacing: inherit;
-    border: inherit;
+    // border: inherit;
     background-color: inherit !important;
-    padding: inherit;
-    color: inherit !important;
+    // padding: inherit;
+    // color: inherit !important;
     background: inherit;
     display: inherit;
     border-radius: inherit;
@@ -195,4 +195,33 @@ body[data-theme="dark"] {
     }
     */
   }
+}
+
+[data-input-value="status"] {
+	.select__button {
+		.status-tag {
+			border: inherit;
+			padding: inherit;
+		}
+	}
+
+	.select__dropdown {
+		.select__dropdown-item {
+			padding: 0;
+			min-height: 0;
+			margin-bottom: 5px;
+			border-radius: 1000px;
+
+			& > span {
+				width: 100%;
+			}
+		}
+
+		.status-tag {
+			min-height: 38px;
+			padding: 7px 15px;
+			width: 100%;
+			border-radius: 1000px;
+		}
+	}
 }
