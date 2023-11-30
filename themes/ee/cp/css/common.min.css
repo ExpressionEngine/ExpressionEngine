@@ -36336,31 +36336,6 @@ ul.field-reorder-drop,
   background: #ee0707;
 }
 
-/*
-body[data-theme="dark"] {
-	.st-open,
-	.st-enable,
-	.st-status,
-	.st-unlocked,
-
-	.status-tag--open {
-		background: rgba(231, 250, 240, 0.925);
-		color: #00b533;
-	}
-
-	.st-spam,
-	.st-error,
-	.st-closed,
-	.st-banned,
-	.st-locked,
-	.st-disable,
-
-	.status-tag--closed {
-		background: rgba(254, 237, 240, 0.925);
-		color: #ee0707;
-	}
-}
-*/
 .st-draft {
   background-color: var(--ee-bg-blank);
   border-color: #CCCCCC;
@@ -36420,36 +36395,6 @@ body[data-theme="dark"] {
   background: inherit;
   display: inherit;
   border-radius: inherit;
-  /*
-  &::before {
-    content: "";
-    width: 13px;
-    height: 13px;
-    display: block;
-    position: absolute;
-    left: 20px;
-    top: calc(50% - 7px);
-    border-radius: $border-radius-full;
-  }
-
-  &.st-open::before,
-  &.st-enable::before,
-  &.st-status::before,
-  &.st-unlocked::before,
-  &.status-tag--open::before {
-  	background-color: color(success);
-  }
-
-  &.st-spam::before,
-  &.st-error::before,
-  &.st-closed::before,
-  &.st-banned::before,
-  &.st-locked::before,
-  &.st-disable::before,
-  &.status-tag--closed::before {
-    background-color: color(danger);
-  }
-  */
 }
 
 [data-input-value=status] .select__button .status-tag, [data-input-value=status] .select__button .st-spam,
