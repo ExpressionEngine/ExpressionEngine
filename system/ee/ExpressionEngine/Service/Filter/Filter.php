@@ -219,6 +219,7 @@ abstract class Filter
         $options = array();
         $base_url->removeQueryStringVariable('columns');
         foreach ($this->options as $show => $label) {
+            $label = !is_null($label) ? $label : $show;
             $url = clone $base_url;
             $url->setQueryStringVariable($this->name, $show);
             $options[$url->compile()] = htmlentities($label, ENT_QUOTES, 'UTF-8');
