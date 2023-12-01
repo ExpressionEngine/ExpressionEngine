@@ -43,6 +43,11 @@ class Advisor
             $messages[] = sprintf(lang('debug_tools_found_missing_fieldtypes'), $missing_fieldtype_count);
         }
 
+        $configAdvisor = new \ExpressionEngine\Library\Advisor\ConfigAdvisor();
+        if ($configAdvisor->checkBasePath() === false) {
+            $messages[] = lang('debug_tools_invalid_base_path_used');
+        }
+
         return $messages;
     }
 }
