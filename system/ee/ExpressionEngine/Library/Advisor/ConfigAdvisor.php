@@ -23,7 +23,7 @@ class ConfigAdvisor
 
         $configValues = ee()->config->get_cached_site_prefs(ee()->config->item('site_id'));
         foreach ($configValues as $key => $value) {
-            if (strpos($value, 'base_path') !== false) {
+            if (is_string($value) && strpos($value, 'base_path') !== false) {
                 return false;
             }
         }
