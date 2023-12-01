@@ -251,7 +251,7 @@ class Rte_mcp
             $jsonError = false;
             if ($settings['rte_advanced_config'] == 'y' && !empty($settings['rte_config_json'])) {
                 //override with JSON
-                $json = json_decode($settings['rte_config_json']);
+                $json = json_decode(ee('Request')->post('settings')['rte_config_json']);
                 if (empty($json)) {
                     $jsonError = true;
                     $settings['toolbar'] = $settings[$toolsetType . '_toolbar'];
