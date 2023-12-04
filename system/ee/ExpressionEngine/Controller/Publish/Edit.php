@@ -72,7 +72,7 @@ class Edit extends AbstractPublishController
         $entry_listing = ee(
             'CP/EntryListing',
             ee()->input->get_post('filter_by_keyword'),
-            ee()->input->get_post('search_in') ?: 'titles_and_content',
+            ee()->input->get_post('search_in') ?: 'titles',
             false,
             null, //ee()->input->get_post('view') ?: '',//view is not used atm
             $extra_filters
