@@ -40,6 +40,8 @@ class Updater
                 'addShowFieldNamesSetting',
                 'increaseEmailLength',
                 'addMissingPrimaryKeys',
+                'addUUIDColumns',
+                'addPortageImportLogTables',
             ]
         );
 
@@ -485,6 +487,130 @@ class Updater
                 $table = ee()->db->dbprefix($table);
                 ee()->db->query("ALTER TABLE $table ADD COLUMN `$column` INT(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT FIRST");
             }
+        }
+    }
+
+    private function addUUIDColumns()
+    {
+        $models = [
+            'CategoryGroup' => 'category_groups',
+            'Category' => 'categories',
+            'CategoryField' => 'category_fields',
+            'Channel' => 'channels',
+            'ChannelField' => 'channel_fields',
+            'ChannelFieldGroup' => 'field_groups',
+            'ChannelLayout' => 'layout_publish',
+            'Status' => 'statuses',
+            'FieldCondition' => 'field_conditions',
+            'FieldConditionSet' => 'field_condition_sets',
+            'GridColumn' => 'grid_columns',
+            'UploadDestination' => 'upload_prefs',
+            'FileDimension' => 'file_dimensions',
+            'Watermark' => 'file_watermarks',
+            'Role' => 'roles',
+            'RoleGroup' => 'role_groups',
+            'RoleSetting' => 'role_settings',
+            'MemberField' => 'member_fields',
+            'TemplateRoute' => 'template_routes',
+            'Site' => 'sites'
+        ];
+        foreach ($models as $model => $table) {
+            $uuidField = ($model == 'MemberField') ? 'm_uuid' : 'uuid';
+            if (!ee()->db->field_exists($uuidField, $table)) {
+                ee()->db->query("ALTER TABLE exp_" . $table . " ADD " . $uuidField . " varchar(36) NULL DEFAULT NULL");
+                ee()->db->query("ALTER TABLE exp_" . $table . " ADD UNIQUE (" . $uuidField . ")");
+            }
+        }
+    }
+
+    private function addPortageImportLogTables()
+    {
+        if (! ee()->db->table_exists('portage_imports')) {
+            ee()->dbforge->add_field(
+                [
+                    'import_id' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'unsigned' => true,
+                        'null' => false,
+                        'auto_increment' => true
+                    ],
+                    'import_date' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'null' => false,
+                        'default' => 0
+                    ],
+                    'member_id' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'unsigned' => true,
+                        'null' => false,
+                    ],
+                    'uniqid' => [
+                        'type' => 'varchar',
+                        'constraint' => 36,
+                        'null' => false
+                    ],
+                    'version' => [
+                        'type' => 'varchar',
+                        'constraint' => 20,
+                        'null' => true,
+                        'default' => null
+                    ],
+                    'components' => [
+                        'type' => 'text',
+                        'null' => false
+                    ]
+                ]
+            );
+            ee()->dbforge->add_key('import_id', true);
+            ee()->dbforge->add_key('member_id');
+            ee()->smartforge->create_table('portage_imports');
+        }
+
+        if (! ee()->db->table_exists('portage_import_logs')) {
+            ee()->dbforge->add_field(
+                [
+                    'log_id' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'unsigned' => true,
+                        'null' => false,
+                        'auto_increment' => true
+                    ],
+                    'import_id' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'unsigned' => true,
+                        'null' => false,
+                    ],
+                    'portage_action' => [
+                        'type' => 'varchar',
+                        'constraint' => 20,
+                        'null' => true,
+                        'default' => null
+                    ],
+                    'model_name' => [
+                        'type' => 'varchar',
+                        'constraint' => 50,
+                        'null' => false
+                    ],
+                    'model_uuid' => [
+                        'type' => 'varchar',
+                        'constraint' => 36,
+                        'null' => false
+                    ],
+                    'model_prev_state' => [
+                        'type' => 'text',
+                        'null' => false
+                    ]
+                ]
+            );
+            ee()->dbforge->add_key('log_id', true);
+            ee()->dbforge->add_key('import_id');
+            ee()->dbforge->add_key('model_uuid');
+            ee()->smartforge->create_table('portage_import_logs');
         }
     }
 }
