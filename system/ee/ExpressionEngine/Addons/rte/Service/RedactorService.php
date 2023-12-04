@@ -212,7 +212,7 @@ class RedactorService extends AbstractRteService implements RteService {
             if (is_object($config->settings['toolbar'])) {
                 $selection = (array) $config->settings['toolbar'];
             } else {
-                $selection = isset($config->settings['toolbar']['buttons']) ? $config->settings['toolbar']['buttons'] : $config->settings['toolbar'];
+                $selection = isset($config->settings['toolbar']['buttons']) && is_array($config->settings['toolbar']['buttons']) ? $config->settings['toolbar']['buttons'] : $config->settings['toolbar'];
             }
 
             $fullToolbar = array_merge($selection, static::defaultToolbars()['Redactor Full']['buttons']);//merge to get the right order

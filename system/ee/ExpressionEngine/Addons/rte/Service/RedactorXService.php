@@ -49,24 +49,29 @@ class RedactorXService extends RedactorService implements RteService {
             return $configHandle;
         }
 
-        $config['toolbar']['editor'] = [];
+        if (!isset($config['toolbar']['editor']) || !is_object($config['toolbar']['editor'])) {
+            $config['toolbar']['editor'] = new \stdClass();
+        }
 
         // language
         $language = isset(ee()->session) ? ee()->session->get_language() : ee()->config->item('deft_lang');
-        $config['toolbar']['editor']['lang'] = ee()->lang->code($language);
+        $config['toolbar']['editor']->lang = ee()->lang->code($language);
         if (isset($config['field_text_direction']) && $config['field_text_direction'] == 'rtl') {
-            $config['toolbar']['editor']['direction'] = 'rtl';
+            $config['toolbar']['editor']->direction = 'rtl';
         }
 
-        $config['toolbar']['editor']['focus'] = false;
-        $config['toolbar']['editor']['drop'] = false;
+        $config['toolbar']['editor']->focus = false;
+        $config['toolbar']['editor']->drop = false;
         $config['toolbar']['reorder'] = true;
 
         // toolbars
-        $config['toolbar']['toolbar']['stickyTopOffset'] = 60;
+        if (!isset($config['toolbar']['toolbar']) || !is_object($config['toolbar']['toolbar'])) {
+            $config['toolbar']['toolbar'] = new \stdClass();
+        }
+        $config['toolbar']['toolbar']->stickyTopOffset = 60;
 
         if (isset($config['toolbar']['hide'])) {
-            $config['toolbar']['toolbar']['hide'] = $config['toolbar']['hide'];
+            $config['toolbar']['toolbar']->hide = $config['toolbar']['hide'];
         }
 
         if (isset($config['toolbar']['toolbar_hide'])) {
@@ -75,8 +80,11 @@ class RedactorXService extends RedactorService implements RteService {
             }
         }
 
+        if (!isset($config['toolbar']['buttons']) || !is_object($config['toolbar']['buttons'])) {
+            $config['toolbar']['buttons'] = new \stdClass();
+        }
         if (isset($config['toolbar']['topbar'])) {
-            $config['toolbar']['buttons']['topbar'] = $config['toolbar']['topbar'];
+            $config['toolbar']['buttons']->topbar = $config['toolbar']['topbar'];
         }
         unset($config['toolbar']['topbar']);
         if (isset($config['toolbar']['toolbar_topbar'])) {
@@ -86,7 +94,7 @@ class RedactorXService extends RedactorService implements RteService {
         }
 
         if (isset($config['toolbar']['addbar'])) {
-            $config['toolbar']['buttons']['addbar'] = $config['toolbar']['addbar'];
+            $config['toolbar']['buttons']->addbar = $config['toolbar']['addbar'];
         }
         unset($config['toolbar']['addbar']);
         if (isset($config['toolbar']['toolbar_addbar'])) {
@@ -96,7 +104,7 @@ class RedactorXService extends RedactorService implements RteService {
         }
 
         if (isset($config['toolbar']['context'])) {
-            $config['toolbar']['buttons']['context'] = $config['toolbar']['context'];
+            $config['toolbar']['buttons']->context = $config['toolbar']['context'];
         }
         unset($config['toolbar']['context']);
         if (isset($config['toolbar']['toolbar_context'])) {
@@ -118,15 +126,15 @@ class RedactorXService extends RedactorService implements RteService {
         if (isset($config['toolbar']['spellcheck'])) {
             switch ($config['toolbar']['spellcheck']) {
                 case 'browser':
-                    $config['toolbar']['editor']['spellcheck'] = true;
+                    $config['toolbar']['editor']->spellcheck = true;
                     break;
                 case 'grammarly':
-                    $config['toolbar']['editor']['spellcheck'] = false;
-                    $config['toolbar']['editor']['grammarly'] = true;
+                    $config['toolbar']['editor']->spellcheck = false;
+                    $config['toolbar']['editor']->grammarly = true;
                     break;
                 case 'none':
                 default:
-                    $config['toolbar']['editor']['spellcheck'] = false;
+                    $config['toolbar']['editor']->spellcheck = false;
                     break;
             }
             unset($config['toolbar']['spellcheck']);
@@ -142,7 +150,7 @@ class RedactorXService extends RedactorService implements RteService {
             $config['toolbar']['handle'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id->row('action_id') . '&t=' . ee()->localize->now;
         }
 
-        $config['toolbar']['editor']['classname'] = 'content redactor-styles rte_' . $configHandle;
+        $config['toolbar']['editor']->classname = 'content redactor-styles rte_' . $configHandle;
 
         // -------------------------------------------
         //  File Browser Config
@@ -179,10 +187,10 @@ class RedactorXService extends RedactorService implements RteService {
         }
 
         if (isset($config['height']) && !empty($config['height']) && is_numeric($config['height'])) {
-            $config['toolbar']['editor']['minHeight'] = (int) $config['height'] . 'px';
+            $config['toolbar']['editor']->minHeight = (int) $config['height'] . 'px';
         }
         if (isset($config['max_height']) && !empty($config['max_height']) && is_numeric($config['max_height'])) {
-            $config['toolbar']['editor']['maxHeight'] = (int) $config['max_height'] . 'px';
+            $config['toolbar']['editor']->maxHeight = (int) $config['max_height'] . 'px';
         }
 
         //link
