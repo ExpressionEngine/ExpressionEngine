@@ -31,11 +31,6 @@ class LocalPath extends StaticType
         return $this;
     }
 
-    public function store($data)
-    {
-        return $data;
-    }
-
     /**
      * readPath will instantiate a collection of file models for every file in
      * this column's path.
