@@ -8,6 +8,8 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+use ExpressionEngine\Dependency\IPLib;
+
 /**
  * Core Input
  */
@@ -59,10 +61,10 @@ class EE_Input
      * from the configuation file, as will domain and path.  Httponly must be
      * must be equal to the value used when setting the cookie.
      *
-     * @param	string	The name of the cookie to be deleted.
+     * @param   string  The name of the cookie to be deleted.
      *
-     * @return	boolean FALSE if output has already been sent (and thus the
-     * 						cookie not set), TRUE otherwise.
+     * @return  boolean FALSE if output has already been sent (and thus the
+     *                  cookie not set), TRUE otherwise.
      */
     public function delete_cookie($name)
     {
@@ -87,22 +89,20 @@ class EE_Input
      * given a time in seconds to indicate that a cookie should expire that
      * many seconds from the moment it is set.
      *
-     * @param	string	The name to assign the cookie.  This will be prefixed with
-     * 						the value from the config file or exp_.
-     * @param	string	The value to assign the cookie. This will be
-     * 						automatically URL encoded when set and decoded
-     * 						when retrieved.
-     * @param	string	A time in seconds after which the cookie should expire.
-     * 						The cookie will be set to expire this many seconds
-     * 						after it is set.
-     * @param	string	The domain.  IGNORED  Kept only for consistency with
-     *						CI_Input::set_cookie(). Set from config.
-     * @param	string	The path.  IGNORED  Kept only for consistency with
-     *						CI_Input::set_cookie(). Set from config.
-     * @param	string	The prefix.  IGNORED  Kept only for consistency with
-     *						CI_Input::set_cookie(). Set from config.
+     * @param   string  The name to assign the cookie.
+     *                  This will be prefixed with the value from the config file or exp_.
+     * @param   string  The value to assign the cookie.
+     *                  This will be automatically URL encoded when set and decoded when retrieved.
+     * @param   string  A time in seconds after which the cookie should expire.
+     *                  The cookie will be set to expire this many seconds after it is set.
+     * @param   string  The domain. IGNORED
+     *                  Kept only for consistency with CI_Input::set_cookie(). Set from config.
+     * @param   string  The path.  IGNORED
+     *                  Kept only for consistency with CI_Input::set_cookie(). Set from config.
+     * @param   string  The prefix.  IGNORED
+     *                  Kept only for consistency with CI_Input::set_cookie(). Set from config.
      *
-     * @return	boolean	FALSE if output has already been sent, TRUE otherwise.
+     * @return  boolean FALSE if output has already been sent, TRUE otherwise.
      */
     public function set_cookie($name = '', $value = '', $expire = '', $domain = '', $path = '/', $prefix = '')
     {
@@ -184,12 +184,11 @@ class EE_Input
      * Must recieve name, value, and expire in the parameter array or
      * will throw an exception.
      *
-     * @param	mixed[]	The array of data containing name, value, expire and
-     * 						httponly.  Must contain those parameters.
-     * @return	bool	If output exists prior to calling this method it will
-     * 						fail with FALSE, otherwise it will return TRUE.
-     * 						This does not indicate whether the user accepts the
-     * 						cookie.
+     * @param   mixed   The array of data containing name, value, expire and httponly.
+     *                  Must contain those parameters.
+     * @return  bool    If output exists prior to calling this method it will
+     *                  fail with FALSE, otherwise it will return TRUE.
+     *                  This does not indicate whether the user accepts the cookie.
      */
     protected function _set_cookie(array $data)
     {
@@ -346,11 +345,11 @@ class EE_Input
      *
      * This is a helper function to retrieve values from global arrays
      *
-     * @access	private
-     * @param	array
-     * @param	string
-     * @param	bool
-     * @return	string
+     * @access  private
+     * @param   array
+     * @param   string
+     * @param   bool
+     * @return  string
      */
     public function _fetch_from_array(&$array, $index = '', $xss_clean = false)
     {
@@ -368,10 +367,10 @@ class EE_Input
     /**
     * Fetch an item from the GET array
     *
-    * @access	public
-    * @param	string
-    * @param	bool
-    * @return	string
+    * @access   public
+    * @param    string
+    * @param    bool
+    * @return   string
     */
     public function get($index = '', $xss_clean = false)
     {
@@ -381,10 +380,10 @@ class EE_Input
     /**
     * Fetch an item from the POST array
     *
-    * @access	public
-    * @param	string
-    * @param	bool
-    * @return	string
+    * @access   public
+    * @param    string
+    * @param    bool
+    * @return   string
     */
     public function post($index = '', $xss_clean = false)
     {
@@ -394,10 +393,10 @@ class EE_Input
     /**
     * Fetch an item from either the GET array or the POST
     *
-    * @access	public
-    * @param	string	The index key
-    * @param	bool	XSS cleaning
-    * @return	string
+    * @access   public
+    * @param    string  The index key
+    * @param    bool    XSS cleaning
+    * @return   string
     */
     public function get_post($index = '', $xss_clean = false)
     {
@@ -411,10 +410,10 @@ class EE_Input
     /**
     * Fetch an item from the SERVER array
     *
-    * @access	public
-    * @param	string
-    * @param	bool
-    * @return	string
+    * @access   public
+    * @param    string
+    * @param    bool
+    * @return   string
     */
     public function server($index = '', $xss_clean = false)
     {
@@ -424,8 +423,8 @@ class EE_Input
     /**
     * Fetch the IP Address
     *
-    * @access	public
-    * @return	string
+    * @access   public
+    * @return   string
     */
     public function ip_address()
     {
@@ -437,31 +436,59 @@ class EE_Input
             return '0.0.0.0';
         }
 
-        $proxy_ips = config_item('proxy_ips');
-        if (! empty($proxy_ips)) {
-            $proxy_ips = explode(',', str_replace(' ', '', $proxy_ips));
-            foreach (array('HTTP_X_FORWARDED_FOR', 'HTTP_CLIENT_IP', 'HTTP_X_CLIENT_IP', 'HTTP_X_CLUSTER_CLIENT_IP') as $header) {
-                if (($spoof = $this->server($header)) !== false) {
-                    // Some proxies typically list the whole chain of IP
-                    // addresses through which the client has reached us.
-                    // e.g. client_ip, proxy_ip1, proxy_ip2, etc.
-                    if (strpos($spoof, ',') !== false) {
-                        $spoof = explode(',', $spoof, 2);
-                        $spoof = $spoof[0];
-                    }
+        $this->ip_address = $_SERVER['REMOTE_ADDR'];
 
-                    if (! $this->valid_ip($spoof)) {
-                        $spoof = false;
-                    } else {
-                        break;
-                    }
+        // is the server behind reverse proxy or load balancer?
+        $proxy_ips = ee()->config->loadFile('proxy');
+        if (empty($proxy_ips)) {
+            // legacy config, deprecated
+            $proxy_ips = config_item('proxy_ips');
+            if (! empty($proxy_ips)) {
+                $proxy_ips = explode(',', str_replace(' ', '', $proxy_ips));
+            }
+        }
+
+        if (!empty($proxy_ips)) {
+            // does the IP address that we got actuall belong to proxy/balancer?
+            $proxyIsValid = false;
+            $address = IPLib\Factory::parseAddressString($this->ip_address);
+            foreach ($proxy_ips as $proxy_ip) {
+                $range = IPLib\Factory::parseRangeString($proxy_ip);
+                if ($range->contains($address)) {
+                    $proxyIsValid = true;
+                    break;
                 }
             }
 
-            $this->ip_address = ($spoof !== false && in_array($_SERVER['REMOTE_ADDR'], $proxy_ips, true))
-                ? $spoof : $_SERVER['REMOTE_ADDR'];
-        } else {
-            $this->ip_address = $_SERVER['REMOTE_ADDR'];
+            if ($proxyIsValid) {
+                $possibleIpHeaders = [
+                    'HTTP_X_CLIENT_IP',
+                    'HTTP_CLIENT_IP',
+                    'HTTP_X_FORWARDED_FOR',
+                    'HTTP_FORWARDED_FOR',
+                    'HTTP_X_FORWARDED',
+                    'HTTP_FORWARDED',
+                    'HTTP_CF_CONNECTING_IP',
+                    'HTTP_X_CLUSTER_CLIENT_IP'
+                ];
+
+                foreach ($possibleIpHeaders as $header) {
+                    if (($spoof = $this->server($header)) !== false) {
+                        // Some proxies typically list the whole chain of IP
+                        // addresses through which the client has reached us.
+                        // e.g. client_ip, proxy_ip1, proxy_ip2, etc.
+                        if (strpos($spoof, ',') !== false) {
+                            $spoof = explode(',', $spoof, 2);
+                            $spoof = $spoof[0];
+                        }
+
+                        if ($this->valid_ip($spoof)) {
+                            $this->ip_address = $spoof;
+                            break;
+                        }
+                    }
+                }
+            }
         }
 
         if (! $this->valid_ip($this->ip_address)) {
@@ -474,10 +501,10 @@ class EE_Input
     /**
     * Validate IP Address
     *
-    * @access	public
-    * @param	string
-    * @param	string	ipv4 or ipv6
-    * @return	bool
+    * @access   public
+    * @param    string
+    * @param    string  ipv4 or ipv6
+    * @return   bool
     */
     public function valid_ip($ip, $which = '')
     {
@@ -526,9 +553,9 @@ class EE_Input
     *
     * Updated version suggested by Geert De Deckere
     *
-    * @access	protected
-    * @param	string
-    * @return	bool
+    * @access   protected
+    * @param    string
+    * @return   bool
     */
     protected function _valid_ipv4($ip)
     {
@@ -558,9 +585,9 @@ class EE_Input
     /**
     * Validate IPv6 Address
     *
-    * @access	protected
-    * @param	string
-    * @return	bool
+    * @access   protected
+    * @param    string
+    * @return   bool
     */
     protected function _valid_ipv6($str)
     {
@@ -572,7 +599,7 @@ class EE_Input
         $collapsed = false;
 
         $chunks = array_filter(
-            preg_split('/(:{1,2})/', $str, null, PREG_SPLIT_DELIM_CAPTURE)
+            preg_split('/(:{1,2})/', $str, -1, PREG_SPLIT_DELIM_CAPTURE)
         );
 
         // Rule out easy nonsense
@@ -594,16 +621,16 @@ class EE_Input
         while ($seg = array_pop($chunks)) {
             if ($seg[0] == ':') {
                 if (--$groups == 0) {
-                    return false;	// too many groups
+                    return false;   // too many groups
                 }
 
                 if (strlen($seg) > 2) {
-                    return false;	// long separator
+                    return false;   // long separator
                 }
 
                 if ($seg == '::') {
                     if ($collapsed) {
-                        return false;	// multiple collapsed
+                        return false;   // multiple collapsed
                     }
 
                     $collapsed = true;
@@ -621,7 +648,7 @@ class EE_Input
      *
      * @param string $ip IP address to compare to current address
      * @param int $accuracy The number of octets you want to check, 4 being full
-     *		accuracy, 0 being no check at all
+     *              accuracy, 0 being no check at all
      * @return boolean TRUE if they match up, FALSE otherwise
      */
     public function compare_ip($ip, $accuracy = 4)
@@ -653,8 +680,8 @@ class EE_Input
     /**
     * User Agent
     *
-    * @access	public
-    * @return	string
+    * @access   public
+    * @return   string
     */
     public function user_agent()
     {
@@ -672,10 +699,10 @@ class EE_Input
      *
      * This method overrides the one in the CI class since EE cookies have a particular prefix
      *
-     * @access	public
-     * @param	string
-     * @param	bool
-     * @return	string
+     * @access  public
+     * @param   string
+     * @param   bool
+     * @return  string
      */
     public function cookie($index = '', $xss_clean = false)
     {
@@ -724,9 +751,9 @@ class EE_Input
      *
      * Returns the value of a single member of the headers class member
      *
-     * @param 	string		array key for $this->headers
-     * @param	boolean		XSS Clean or not
-     * @return 	mixed		FALSE on failure, string on success
+     * @param   string  array key for $this->headers
+     * @param   boolean XSS Clean or not
+     * @return  mixed   FALSE on failure, string on success
      */
     public function get_request_header($index, $xss_clean = false)
     {
@@ -750,7 +777,7 @@ class EE_Input
      *
      * Test to see if a request contains the HTTP_X_REQUESTED_WITH header
      *
-     * @return 	boolean
+     * @return  boolean
      */
     public function is_ajax_request()
     {
@@ -762,9 +789,9 @@ class EE_Input
      *
      * Filters GET data for security
      *
-     * @access	public
-     * @param	string
-     * @return	void
+     * @access  public
+     * @param   string
+     * @return  void
      */
     public function filter_get_data($request_type = 'PAGE')
     {
@@ -797,8 +824,8 @@ class EE_Input
      * This function is used mainly by the Input class to strip
      * session IDs if they are used in public pages.
      *
-     * @param	string
-     * @return	string
+     * @param   string
+     * @return  string
      */
     public function remove_session_id($str)
     {
@@ -820,8 +847,8 @@ class EE_Input
      * an exception in EE_Config. For css, we only need that one and it's a
      * path, so we'll do some stricter cleaning.
      *
-     * @param	string
-     * @return	string
+     * @param   string
+     * @return  string
      */
     public function _sanitize_globals()
     {
@@ -906,10 +933,10 @@ class EE_Input
      * If the GET value is disallowed, we show an error to superadmins
      * For non-super, we unset the variable and let them go on their merry way
      *
-     * @param	string Variable's key
-     * @param	mixed Variable's value- may be string or array
+     * @param   string Variable's key
+     * @param   mixed Variable's value- may be string or array
      * @deprecated 5.2.3
-     * @return	string
+     * @return  string
      */
     public function _clean_get_input_data($str)
     {
@@ -926,9 +953,9 @@ class EE_Input
     * from trying to exploit keys we make sure that keys are
     * only named with alpha-numeric text and a few other items.
     *
-    * @access	private
-    * @param	string
-    * @return	string
+    * @access   private
+    * @param    string
+    * @return   string
     */
     public function _clean_input_keys($str)
     {
@@ -946,9 +973,9 @@ class EE_Input
     * This is a helper function. It escapes data and
     * standardizes newline characters to \n
     *
-    * @access	private
-    * @param	string
-    * @return	string
+    * @access   private
+    * @param    string
+    * @return   string
     */
     public function _clean_input_data($str)
     {

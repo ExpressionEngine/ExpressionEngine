@@ -25,14 +25,16 @@ class Channel
     public $return_data = '';       // Final data
     public $hit_tracking_id = false;
     public $sql = false;
-    public $cfields = array();
-    public $dfields = array();
-    public $rfields = array();
-    public $gfields = array();
-    public $mfields = array();
-    public $pfields = array();
-    public $ffields = array();
-    public $tfields = array();
+    public $cfields = array(); // Custom fields
+    public $dfields = array(); // Date fields
+    public $rfields = array(); // Relationship fields
+    public $gfields = array(); // Grid fields
+    public $msfields = array(); // Member select fields
+    public $mfields = array(); // Custom member fields
+    public $mpfields = array(); // Member pair fields
+    public $pfields = array(); // Pair custom fields
+    public $ffields = array(); // Fluid fields
+    public $tfields = array(); // Toggle fields
     public $categories = array();
     public $catfields = array();
     public $channel_name = array();
@@ -95,7 +97,7 @@ class Channel
         $this->_dynamic_parameters = array('channel', 'entry_id', 'category', 'orderby',
             'sort', 'sticky', 'show_future_entries', 'show_expired', 'entry_id_from',
             'entry_id_to', 'not_entry_id', 'start_on', 'stop_before', 'year', 'month',
-            'day', 'display_by', 'limit', 'username', 'status', 'group_id', 'cat_limit',
+            'day', 'display_by', 'limit', 'username', 'status', 'group_id', 'primary_role_id', 'cat_limit',
             'month_limit', 'offset', 'author_id', 'url_title');
     }
 
@@ -308,6 +310,7 @@ class Channel
             isset(ee()->session->cache['channel']['date_fields']) &&
             isset(ee()->session->cache['channel']['relationship_fields']) &&
             isset(ee()->session->cache['channel']['grid_fields']) &&
+            isset(ee()->session->cache['channel']['members_fields']) &&
             isset(ee()->session->cache['channel']['pair_custom_fields']) &&
             isset(ee()->session->cache['channel']['fluid_field_fields']) &&
             isset(ee()->session->cache['channel']['toggle_fields'])
@@ -316,6 +319,7 @@ class Channel
             $this->dfields = ee()->session->cache['channel']['date_fields'];
             $this->rfields = ee()->session->cache['channel']['relationship_fields'];
             $this->gfields = ee()->session->cache['channel']['grid_fields'];
+            $this->msfields = ee()->session->cache['channel']['members_fields'];
             $this->pfields = ee()->session->cache['channel']['pair_custom_fields'];
             $this->ffields = ee()->session->cache['channel']['fluid_field_fields'];
             $this->tfields = ee()->session->cache['channel']['toggle_fields'];
@@ -331,6 +335,7 @@ class Channel
         $this->cfields = $fields['custom_channel_fields'];
         $this->dfields = $fields['date_fields'];
         $this->rfields = $fields['relationship_fields'];
+        $this->msfields = $fields['members_fields'];
         $this->gfields = $fields['grid_fields'];
         $this->pfields = $fields['pair_custom_fields'];
         $this->ffields = $fields['fluid_field_fields'];
@@ -343,7 +348,7 @@ class Channel
                 ->all(true);
             $site_ids = $sites->getIds();
 
-            foreach (['cfields', 'dfields', 'rfields', 'gfields', 'pfields', 'ffields', 'tfields'] as $custom_fields) {
+            foreach (['cfields', 'dfields', 'rfields', 'gfields', 'msfields', 'pfields', 'ffields', 'tfields'] as $custom_fields) {
                 $tmp = $this->$custom_fields;
 
                 if (! isset($tmp[0])) {
@@ -365,6 +370,7 @@ class Channel
         ee()->session->cache['channel']['custom_channel_fields'] = $this->cfields;
         ee()->session->cache['channel']['date_fields'] = $this->dfields;
         ee()->session->cache['channel']['relationship_fields'] = $this->rfields;
+        ee()->session->cache['channel']['members_fields'] = $this->msfields;
         ee()->session->cache['channel']['grid_fields'] = $this->gfields;
         ee()->session->cache['channel']['pair_custom_fields'] = $this->pfields;
         ee()->session->cache['channel']['fluid_field_fields'] = $this->ffields;
@@ -376,26 +382,23 @@ class Channel
       */
     public function fetch_custom_member_fields()
     {
-        ee()->db->select('m_field_id, m_field_name, m_field_fmt, m_legacy_field_data');
-        $query = ee()->db->get('member_fields');
-
-        $fields_present = false;
-
-        $t1 = microtime(true);
-
-        foreach ($query->result_array() as $row) {
-            if (strpos(ee()->TMPL->tagdata, $row['m_field_name']) !== false) {
-                $fields_present = true;
-            }
-
-            $this->mfields[$row['m_field_name']] = array($row['m_field_id'], $row['m_field_fmt'], $row['m_legacy_field_data']);
+        if (
+            isset(ee()->session->cache['channel']['custom_member_fields']) &&
+            isset(ee()->session->cache['channel']['custom_member_field_pairs'])
+        ) {
+            $this->mfields = ee()->session->cache['channel']['custom_member_fields'];
+            $this->mpfields = ee()->session->cache['channel']['custom_member_field_pairs'];
+            return;
         }
+        
+        ee()->load->library('api');
+        ee()->legacy_api->instantiate('channel_fields');
 
-        // If we can find no instance of the variable, then let's not process them at all.
+        $this->mfields = ee()->api_channel_fields->fetch_custom_member_fields();
+        $this->mpfields = ee()->api_channel_fields->custom_member_field_pairs;
 
-        if ($fields_present === false) {
-            $this->mfields = array();
-        }
+        ee()->session->cache['channel']['custom_member_fields'] = $this->mfields;
+        ee()->session->cache['channel']['custom_member_fields'] = $this->mpfields;
     }
 
     /**
@@ -811,7 +814,6 @@ class Channel
                     $query = ee()->db->query($sql);
 
                     if ($query->num_rows() > 0) {
-
                         $valid_cats = [];
 
                         if (ee()->TMPL->fetch_param('relaxed_categories') == 'yes') {
@@ -826,7 +828,11 @@ class Channel
                                 }
                                 $channel_cat_groups[$row['channel_id']][] = $row['group_id'];
                             }
-                            $valid_cats = call_user_func_array('array_intersect', $channel_cat_groups);
+                            if (count($channel_cat_groups) == 1) {
+                                $valid_cats = $channel_cat_groups[array_keys($channel_cat_groups)[0]];
+                            } else {
+                                $valid_cats = call_user_func_array('array_intersect', $channel_cat_groups);
+                            }
                         }
 
                         $valid_cats = array_unique($valid_cats);
@@ -1703,7 +1709,8 @@ class Channel
         /**  Add Group ID clause
         /**------*/
 
-        if ($group_id = ee()->TMPL->fetch_param('group_id')) {
+        $group_id = ee()->TMPL->fetch_param('primary_role_id') ?: ee()->TMPL->fetch_param('group_id');
+        if ($group_id) {
             $join_member_table = true;
             $sql .= ee()->functions->sql_andor_string($group_id, 'm.role_id');
         }
@@ -2769,8 +2776,10 @@ class Channel
             $channel_ids[] = $group['channel_id'];
             $group_ids[] = $group['group_id'];
         }
+
         $channel_ids = array_unique($channel_ids);
         $group_ids = array_unique($group_ids);
+        $group_ids_str = implode("','", $group_ids);
 
         if ($category_group = ee()->TMPL->fetch_param('category_group')) {
             if (substr($category_group, 0, 4) == 'not ') {
@@ -2809,7 +2818,7 @@ class Channel
 
         if (ee()->TMPL->fetch_param('style') == '' or ee()->TMPL->fetch_param('style') == 'nested') {
             $this->category_tree(array(
-                'group_id' => $group_ids,
+                'group_id' => implode('|', $group_ids),
                 'channel_ids' => $channel_ids,
                 'template' => ee()->TMPL->tagdata,
                 'path' => $path,
@@ -3135,13 +3144,20 @@ class Channel
             $channel_ids[] = $group['channel_id'];
             $group_ids[] = $group['group_id'];
         }
+<<<<<<< HEAD
+=======
+
+>>>>>>> release/7.4.0
         $channel_ids = array_unique($channel_ids);
         $group_ids = array_unique($group_ids);
 
         if ($category_group = ee()->TMPL->fetch_param('category_group')) {
             if (substr($category_group, 0, 4) == 'not ') {
                 $x = explode('|', substr($category_group, 4));
+<<<<<<< HEAD
 
+=======
+>>>>>>> release/7.4.0
                 $group_ids = array_diff($group_ids, $x);
             } else {
                 $x = explode('|', $category_group);
@@ -3328,7 +3344,7 @@ class Channel
             }
 
             $this->category_tree(array(
-                'group_id' => $group_ids,
+                'group_id' => implode('|', $group_ids),
                 'channel_ids' => $channel_ids,
                 'path' => $c_path,
                 'template' => $cat_chunk,
@@ -4185,7 +4201,6 @@ class Channel
 
             if ($query->num_rows() > 0) {
                 $valid = 'y';
-
                 $valid_cats = [];
 
                 if (ee()->TMPL->fetch_param('relaxed_categories') == 'yes') {
@@ -4200,7 +4215,13 @@ class Channel
                         }
                         $channel_cat_groups[$row['channel_id']][] = $row['group_id'];
                     }
-                    $valid_cats = call_user_func_array('array_intersect', $channel_cat_groups);
+                    // if there's just one channel specified, use it's categories group;
+                    // if multiple channels, only use the =categories groups that they share
+                    if (count($channel_cat_groups) == 1) {
+                        $valid_cats = $channel_cat_groups[array_keys($channel_cat_groups)[0]];
+                    } else {
+                        $valid_cats = call_user_func_array('array_intersect', $channel_cat_groups);
+                    }
                 }
 
                 $valid_cats = array_unique($valid_cats);

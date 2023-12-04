@@ -997,6 +997,12 @@ class Pro_search_mcp
                 foreach ($channel->CategoryGroups as $group) {
 
                     $group_id = $group->getId();
+                    // Skip references to non-existent category groups
+                    if (! in_array($group_id, $catgroups->getDictionary('group_id', 'group_id'))) {
+                        continue;
+                    }
+
+                    $group_id = $group->getId();
                     $category_fields = array();
 
                     // Get this group

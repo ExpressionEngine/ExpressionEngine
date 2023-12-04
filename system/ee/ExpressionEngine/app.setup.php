@@ -68,6 +68,7 @@ use ExpressionEngine\Service\Generator\SidebarGenerator;
 use ExpressionEngine\Service\Generator\TemplateTagGenerator;
 use ExpressionEngine\Service\Generator\WidgetGenerator;
 use ExpressionEngine\Model\Channel\ChannelEntry;
+use ExpressionEngine\Model\Channel\Reindex;
 
 // TODO should put the version in here at some point ...
 $setup = [
@@ -496,6 +497,16 @@ $setup = [
             );
         },
 
+        'Channel/Reindex' => function ($ee) {
+            return new Channel\Reindex();
+        },
+
+        'ChannelSet' => function ($ee) {
+            return new ChannelSet\Factory(
+                ee()->config->item('site_id')
+            );
+        },
+
         'Cookie' => function ($ee) {
             return new Cookie\Cookie();
         },
@@ -695,6 +706,7 @@ $setup = [
         // ..\Category
         'CategoryGroup' => 'Model\Category\CategoryGroup',
         'Category' => 'Model\Category\Category',
+        'CategoryGroupSettings' => 'Model\Category\CategoryGroupSettings',
         'CategoryField' => 'Model\Category\CategoryField',
 
         // ..\File
@@ -814,6 +826,8 @@ $setup = [
         // ..\Portage
         'PortageImport' => 'Model\Portage\PortageImport',
         'PortageImportLog' => 'Model\Portage\PortageImportLog',
+        // ..\FileManager
+        'MemberManagerView' => 'Model\Member\MemberManagerView',
     ),
 
     'cookies.necessary' => [

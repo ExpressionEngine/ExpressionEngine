@@ -86,6 +86,9 @@ class Filemanager
         $basename = $filesystem->basename($filename);
         $dirname = ($filesystem->dirname($filename) !== '.') ? $filesystem->dirname($filename) . '/' : '';
 
+        // Remove invisible control characters
+        $basename = preg_replace('#\\p{C}+#u', '', $basename);
+
         // clean up the filename
         if ($parameters['convert_spaces'] === true) {
             $basename = preg_replace("/\s+/", "_", $basename);
@@ -230,6 +233,10 @@ class Filemanager
      */
     public function is_editable_image($file_path, $mime)
     {
+        if (!file_exists($file_path)) {
+            return false;
+        }
+
         if (! $this->is_image($mime)) {
             return false;
         }
@@ -1738,35 +1745,6 @@ class Filemanager
         }
 
         return $files;
-    }
-
-    /**
-     * Build a dropdown list of categories
-     *
-     * @access private
-     * @param $dir Directory array, containing at least the id
-     * @return array Array with the category group name as the key and the
-     *  categories as the values (see above)
-     */
-    private function _get_category_dropdown($dir)
-    {
-        ee()->load->helper('form');
-
-        $raw_categories = $this->_get_categories($dir);
-        $category_dropdown_array = array('all' => lang('all_categories'));
-
-        // Build the array of categories
-        foreach ($raw_categories as $category_group) {
-            $categories = array();
-
-            foreach ($category_group['categories'] as $category) {
-                $categories[$category['cat_id']] = $category['cat_name'];
-            }
-
-            $category_dropdown_array[$category_group['group_name']] = $categories;
-        }
-
-        return form_dropdown('category', $category_dropdown_array);
     }
 
     /**

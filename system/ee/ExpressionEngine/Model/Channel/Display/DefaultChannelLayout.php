@@ -62,7 +62,7 @@ class DefaultChannelLayout extends DefaultLayout
             )
         );
 
-        $channel = ee('Model')->get('Channel', $this->channel_id)->with('CategoryGroups')->first();
+        $channel = ee('Model')->get('Channel', $this->channel_id)->with('CategoryGroups')->all()->first();
 
         // Date Tab ------------------------------------------------------------
 

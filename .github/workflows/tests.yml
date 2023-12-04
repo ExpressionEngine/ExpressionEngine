@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - '*.dev'
-      - 'release*'
+      #- 'release/**'
 
 jobs:
 
@@ -32,7 +32,7 @@ jobs:
             with:
               path: .git
               key: cache-ee-git-${{ github.sha }}
-          
+
           - name: Setup PHP
             uses: shivammathur/setup-php@v2
             with:
@@ -40,6 +40,13 @@ jobs:
                 extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
                 coverage: none
                 ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
+
+          - name: Checkout RedactorX
+            uses: actions/checkout@v3
+            with:
+              repository: ExpressionEngine/RedactorX
+              token: ${{ secrets.ORG_ACCESS_TOKEN }}
+              path: __redactorx
 
           - name: Setup node
             uses: actions/setup-node@v3
@@ -63,6 +70,7 @@ jobs:
               RELEASE_PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
               RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
               APP_REPO_PATH: ${{ github.workspace }}
+              REDACTORX_REPO_PATH: ${{ github.workspace }}/__redactorx
             run: gulp build-app --local --nogit --head --skip-lint --skip-pro --version=${{ steps.build_json.outputs.BUILD_VERSION }}
 
           - name: Rename build directory
@@ -85,8 +93,8 @@ jobs:
 
     cypress:
         needs: build-for-testing
-
         runs-on: ${{ matrix.os }}
+        timeout-minutes: 45
 
         strategy:
             fail-fast: false
@@ -163,6 +171,10 @@ jobs:
               run: |
                 rm -f .env.php
                 cp -f tests/cypress/support/config/.env.php .env.php
+
+            - name: Copy avatar file
+              run: |
+                cp -f tests/cypress/support/file-sync/images/8bit_kevin.png images/avatars/8bit_kevin.png
 
             - name: Remove installer
               run: |
@@ -251,6 +263,19 @@ jobs:
                 CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
                 CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Run Cypress Tests (Electron)
+              uses: cypress-io/github-action@v5
+              if: matrix.php == '8.1'
+              with:
+                browser: electron
+                working-directory: tests/cypress
+                config-file: electron.cypress.config.js
+              env:
+                CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+                CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
 
             - name: Archive screenshots
               uses: actions/upload-artifact@v3

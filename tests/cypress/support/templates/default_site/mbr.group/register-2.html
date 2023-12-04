@@ -1,0 +1,147 @@
+{layout="cypress/layout"}
+{exp:member:registration_form return="mbr" primary_role="{segment_3}" include_assets="yes"}
+
+        <p>* Required fields</p>
+
+        <h4>Login details</h4>
+
+        <p>
+            <label for="username">Username*:</label><br />
+            <input type="text" name="username" id="username" value="{if username}{username}{/if}"/><br />
+            <a href="javascript:validate_username()">validate username</a>
+        </p>
+
+        <p>
+            <label for="email">Email*:</label><br />
+            <input type="text" name="email" id="email" value="{if email}{email}{/if}"/><br />
+        </p>
+
+        <p>
+            <label for="password">Password*:</label><br />
+            <input type="password" name="password" id="password" value="{if password}{password}{/if}"/>
+        </p>
+
+        <p>
+            <label for="password_confirm">Confirm password*:</label><br />
+            <input type="password" name="password_confirm" id="password_confirm" value="{if password_confirm}{password_confirm}{/if}"/>
+        </p>
+
+        <fieldset>
+            <label>My Date</label><br>
+
+            {field:my_date}
+
+        </fieldset>
+
+        <fieldset>
+            <label>My RTE</label><br>
+
+            {field:my_rte}
+
+        </fieldset>
+
+        <p>
+            <label for="terms_of_service">Terms of service:</label><br />
+            <div>All messages posted at this site express the views of the author, and do not necessarily reflect the views of the owners and administrators
+                of this site.By registering at this site you agree not to post any messages that are obscene, vulgar, slanderous, hateful, threatening, or that violate any laws. We will
+                permanently ban all users who do so.We reserve the right to remove, edit, or move any messages for any reason.</div>
+        </p>
+
+        <p>
+            <label><input type="checkbox" name="accept_terms" id="accept_terms" value="y" {if accept_terms == 'y'}checked="checked"{/if} /> I accept these terms</label>
+        </p>
+
+        {if captcha}
+        <p>
+            <label for="captcha">{lang:captcha}*</label>
+            {captcha}<br/>
+            <input type="text" id="captcha" name="captcha" value="" size="20" maxlength="20" style="width:140px;"/>
+        </p>
+        {/if}
+
+        {form_assets}
+
+    <input type="submit" value="Register" id="submit" class="btn btn-primary" />
+{/exp:member:registration_form}
+
+<script type="text/javascript">
+    var validationUrl = '{exp:member:validation_url fields="password_rank"}';
+
+    // Creat visual password strength meter block
+    var rankWrap = '<div class="rank-wrap"><p class="status-tag "><span class="rank_text"></span></p></div>';
+
+    // Find password input
+    var passwordInput = document.querySelector('input[name="password"]');
+
+    // Create wrapper container. It can be added in the html part and needed for the correct positioning of the password strength meter block on the page 
+    var wrapper = document.createElement('span');
+
+    passwordInput.parentNode.insertBefore(wrapper, passwordInput);
+
+    // move passwordInput into wrapper
+    wrapper.appendChild(passwordInput);
+
+    // Closest parent for password input
+    var passwordInputContainer = passwordInput.parentElement;
+
+    passwordInputContainer.style.position = 'relative';
+    passwordInputContainer.style.display = 'block';
+
+    // Insert visual password strength meter block after password input
+    passwordInput.insertAdjacentHTML('afterend', rankWrap);
+
+    document.getElementsByName('password')[0].addEventListener('keyup', function(e){
+        var inputValLength = this.value.length;
+
+        //create a new XMLHttpRequest object
+        var request = new XMLHttpRequest();
+
+        //configure it to do an asynchronous GET request for some URL
+        request.open("POST", validationUrl, true);
+        request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+
+        //add a listener for the "load" event, which
+        //will happen when the data returns
+        request.addEventListener("load", function() {
+            if (request.status >= 200 && request.status < 400) {
+                var data = JSON.parse(request.responseText);
+                if (inputValLength == 0) {
+                    document.querySelector('.rank-wrap').style.display = 'none';
+                    document.querySelector('.rank-wrap > p').className = '';
+                    document.querySelector('.rank-wrap .rank_text').textContent = '';
+                } else {
+                    var rank_text = data['rank_text'].toLowerCase();
+                    var classList = 'status-tag ' + rank_text;
+                    document.querySelector('.rank-wrap > p').className = classList;
+                    document.querySelector('.rank-wrap .rank_text').textContent = rank_text;
+                    document.querySelector('.rank-wrap').style.display = 'block';
+                }
+            } else {
+
+            }
+        });
+
+        //finally, send the request to the server
+        request.send('password=' + e.target.value);
+    });
+
+function validate_username() {
+
+    var url = '{exp:member:validation_url fields="username"}';
+
+    //create a new XMLHttpRequest object
+    var request = new XMLHttpRequest();
+
+    //configure it to do an asynchronous GET request for some URL
+    request.open("POST", url, true);
+    request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+
+
+    //finally, send the request to the server
+    request.send('username=' + document.getElementsByName('username')[0].value);
+
+    return false;
+}
+</script>

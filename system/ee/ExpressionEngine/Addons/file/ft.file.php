@@ -158,7 +158,16 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
         $show_existing = (isset($this->settings['show_existing'])) ? $this->settings['show_existing'] : 'n';
         $filebrowser = (REQ == 'CP');
 
+        ee()->javascript->set_global([
+            'file.publishCreateUrl' => ee('CP/URL')->make('files/file/view/###', ['modal_form' => 'y'])->compile(),
+        ]);
+
         if (REQ == 'CP') {
+            ee()->cp->add_js_script(array(
+                'file' => array(
+                    'cp/publish/entry-list',
+                ),
+            ));
             return ee()->file_field->dragAndDropField($this->field_name, $data, $allowed_file_dirs, $content_type);
         }
 
@@ -345,6 +354,8 @@ JSC;
 
             return $full_path;
         }
+
+        return '';
     }
 
     /**
@@ -786,9 +797,11 @@ JSC;
             if (is_null($tagdata)) {
                 // null means we're chaning modifier to pre-defined manipulation
                 // need to set some data and return array instead of string
-                $data['fs_filename'] = $modifier . '_' . ($data['fs_filename'] ?? $data['model_object']->file_name);
-                $data['source_image'] = $data['path:' . $modifier];
-                $data['url'] = $full_path;
+                if (array_key_exists('path:' . $modifier, $data)) {
+                    $data['fs_filename'] = $modifier . '_' . ($data['fs_filename'] ?? $data['model_object']->file_name);
+                    $data['source_image'] = $data['path:' . $modifier];
+                    $data['url'] = $full_path;
+                }
                 return $data;
             }
 
@@ -983,9 +996,9 @@ JSC;
      * Help simplify the form building and enforces a strict layout. If
      * you think this table needs to look different, go bug James.
      *
-     * @param   left cell content
-     * @param   right cell content
-     * @param   vertical alignment of left column
+     * @param string  left cell content
+     * @param string  right cell content
+     * @param string  vertical alignment of left column
      *
      * @return  void - adds a row to the EE table class
      */

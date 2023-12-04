@@ -1022,6 +1022,9 @@ class Filesystem
      */
     public function actLocally($path, callable $callback)
     {
+        // Remove invisible control characters
+        $path = preg_replace('#\\p{C}+#u', '', $path);
+
         if ($this->isLocal()) {
             return $callback($path);
         }
@@ -1045,6 +1048,9 @@ class Filesystem
         if (empty($path)) {
             return '';
         }
+
+        // Remove invisible control characters
+        $path = preg_replace('#\\p{C}+#u', '', $path);
 
         return str_replace('//', '/', implode([
             in_array(substr($path, 0, 1), ['/', '\\']) ? '/' : '',

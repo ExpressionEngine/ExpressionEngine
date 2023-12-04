@@ -153,7 +153,7 @@ class Roles extends Profile
 
         ee()->form_validation->set_rules($rules);
 
-        if (AJAX_REQUEST) {
+        if (AJAX_REQUEST && ee()->input->post('ee_fv_field') !== false) {
             ee()->form_validation->run_ajax();
             exit;
         } elseif (ee()->form_validation->run() !== false) {
@@ -172,6 +172,18 @@ class Roles extends Profile
 
             $this->member->save();
 
+            if (ee('Request')->get('modal_form') == 'y') {
+                $result = [
+                    'saveId' => $this->member->getId(),
+                    'item' => [
+                        'value' => $this->member->getId(),
+                        'label' => $this->member->screen_name,
+                        'instructions' => $this->member->username
+                    ]
+                ];
+                return $result;
+            }
+
             ee('CP/Alert')->makeInline('shared-form')
                 ->asSuccess()
                 ->withTitle(lang('member_updated'))
@@ -186,11 +198,20 @@ class Roles extends Profile
                 ->now();
         }
 
-        ee()->view->base_url = $this->base_url;
-        ee()->view->ajax_validate = true;
-        ee()->view->cp_page_title = lang('member_role_assignment');
-        ee()->view->save_btn_text = 'btn_authenticate_and_save';
-        ee()->view->save_btn_text_working = 'btn_saving';
+        $vars['base_url'] = $this->base_url;
+        $vars['ajax_validate'] = true;
+        $vars['cp_page_title'] = lang('member_role_assignment');
+        $vars['save_btn_text'] = 'btn_authenticate_and_save';
+        $vars['save_btn_text_working'] = 'btn_saving';
+
+        if (ee('Request')->get('modal_form') == 'y') {
+            $sidebar = ee('CP/Sidebar')->render();
+            if (! empty($sidebar)) {
+                $vars['left_nav'] = $sidebar;
+                $vars['left_nav_collapsed'] = ee('CP/Sidebar')->collapsedState;
+            }
+            return ee('View')->make('settings/modal-form')->render($vars);
+        }
         ee()->cp->render('settings/form', $vars);
     }
 
