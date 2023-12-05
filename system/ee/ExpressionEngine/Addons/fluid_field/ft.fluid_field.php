@@ -422,7 +422,8 @@ class Fluid_field_ft extends EE_Fieldtype
             $values = ee()->extensions->call(
                 'fluid_field_add_field',
                 $fluid_field->ChannelField->getTableName(),
-                $values
+                $values,
+                $fluid_field
             );
         }
 
