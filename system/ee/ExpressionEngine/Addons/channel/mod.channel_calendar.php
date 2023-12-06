@@ -62,13 +62,13 @@ class Channel_calendar extends Channel
         /** ----------------------------------------
         /**  Set Unix timestamp for the given month/year
         /** ----------------------------------------*/
-        $date = gmmktime(12, 0, 0, intVal($month), 1, intVal($year));
+        $date = gmmktime(12, 0, 0, (int)$month, 1, (int)$year);
 
         /** ----------------------------------------
         /**  Determine the total days in the month
         /** ----------------------------------------*/
         ee()->load->library('calendar');
-        $adjusted_date = ee()->calendar->adjust_date(intVal($month), intVal($year));
+        $adjusted_date = ee()->calendar->adjust_date((int)$month, (int)$year);
 
         $month = $adjusted_date['month'];
         $year = $adjusted_date['year'];
