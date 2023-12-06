@@ -513,6 +513,14 @@ $lang = array(
 
     'req_mbr_activation_opt_none' => 'No activation required',
 
+    'activation_auto_login' => 'Auto-login upon activation?',
+
+    'activation_auto_login_desc' => 'Automatically log member in after clicking activation link in email message.',
+
+    'activation_redirect' => 'Activation redirect URL',
+
+    'activation_redirect_desc' => 'Template path or route to redirect members to after clicking activation link in email message. When omited, system message will be shown instead',
+
     'require_terms_of_service' => 'Require terms of service?',
 
     'require_terms_of_service_desc' => 'When enabled, users must agree to terms of service during registration.',

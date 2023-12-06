@@ -760,14 +760,31 @@ class Member_register extends Member
         //
         // -------------------------------------------
 
-        // Upate Stats
+        $loginStateMessage = lang('mbr_may_now_log_in');
 
+        if (bool_config_item('activation_auto_login')) {
+            // Log user in (the extra query is a little annoying)
+            ee()->load->library('auth');
+            $member_data_q = ee()->db->get_where('members', array('member_id' => $member->getId()));
+
+            $incoming = new Auth_result($member_data_q->row());
+            $incoming->remember_me();
+            $incoming->start_session();
+
+            $loginStateMessage = lang('mbr_your_are_logged_in');
+        }
+
+        if (!empty(ee()->config->item('activation_redirect'))) {
+            return ee()->functions->redirect(ee()->functions->create_url(ee()->config->item('activation_redirect')));
+        }
+
+        // Upate Stats
         ee()->stats->update_member_stats();
 
         // Show success message
         $data = array('title' => lang('mbr_activation'),
             'heading' => lang('thank_you'),
-            'content' => lang('mbr_activation_success') . "\n\n" . lang('mbr_may_now_log_in'),
+            'content' => lang('mbr_activation_success') . "\n\n" . $loginStateMessage,
             'link' => array($return, $site_name)
         );
 

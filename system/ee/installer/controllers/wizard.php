@@ -1674,6 +1674,8 @@ class Wizard extends CI_Controller
             'allow_member_localization' => 'y',
             'req_mbr_activation' => 'email',
             'new_member_notification' => 'n',
+            'activation_auto_login' => 'n',
+            'activation_redirect' => '',
             'mbr_notification_emails' => '',
             'require_terms_of_service' => 'y',
             'default_primary_role' => '5',
