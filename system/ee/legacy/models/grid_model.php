@@ -501,11 +501,15 @@ class Grid_model extends CI_Model
         $condition = str_replace("  ", " ", trim(trim($condition, ') '), ' ('));
         // when the check is using IS_EMPTY we check for both empty string and NULL
         // here we just grab the IS NULL part for simplicity
-        if (strpos($condition, ' OR ') !== false) {
+        if (strpos($condition, 'IS NULL') !== false && strpos($condition, ' OR ') !== false) {
             $conditions = explode(' OR ', $condition);
             $condition = end($conditions);
         }
-        list($column, $comparison, $value) = explode(' ', trim($condition));
+        if (strpos($condition, 'IS NOT NULL') !== false && strpos($condition, ' AND ') !== false) {
+            $conditions = explode(' AND ', $condition);
+            $condition = end($conditions);
+        }
+        list($column, $comparison, $value) = explode(' ', trim($condition), 3);
         if (strpos($column, '.') !== false) {
             list($table, $key) = explode('.', $column);
         } else {
@@ -574,6 +578,8 @@ class Grid_model extends CI_Model
             case 'IS':
                 if ($value == 'NULL') {
                     $passes = is_null($datum) || $datum === '';
+                } elseif ($value == 'NOT NULL') {
+                    $passes = !is_null($datum) && $datum !== '';
                 }
 
                 break;
