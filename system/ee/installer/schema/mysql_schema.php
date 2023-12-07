@@ -509,6 +509,7 @@ class EE_Schema
 			channel_url varchar(100) NOT NULL,
 			channel_description varchar(255) NULL DEFAULT NULL,
 			channel_lang varchar(12) NOT NULL,
+			channel_order int(3) unsigned NOT NULL DEFAULT 0,
 			total_entries mediumint(8) default '0' NOT NULL,
 			total_records mediumint(8) unsigned NOT NULL DEFAULT '0',
 			total_comments mediumint(8) default '0' NOT NULL,

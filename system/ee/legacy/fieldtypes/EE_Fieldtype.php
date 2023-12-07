@@ -1081,6 +1081,7 @@ abstract class EE_Fieldtype
             ->with('CustomFields as CF')
             ->fields('C.channel_title', 'C.channel_id', 'CF.field_id', 'CF.field_label', 'CF.field_name', 'CF.field_type')
             ->filter('site_id', ee()->config->item('site_id'))
+            ->order('channel_order', 'ASC')
             ->order('channel_title', 'asc')
             ->all();
 

@@ -123,7 +123,7 @@ class Publish extends Jumps
             }
         }
 
-        $channels = $channels->order('channel_title', 'ASC')->limit(11)->all();
+        $channels = $channels->order('channel_order', 'ASC')->order('channel_title', 'ASC')->limit(11)->all();
 
         if ($can_create) {
             foreach ($channels as $i => $channel) {

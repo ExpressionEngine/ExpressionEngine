@@ -822,6 +822,7 @@ class Pro_search_mcp
         $channels = ee('Model')
             ->get('Channel')
             ->filter('site_id', $this->site_id)
+            ->order('channel_order', 'ASC')
             ->order('channel_title', 'ASC')
             ->all();
 

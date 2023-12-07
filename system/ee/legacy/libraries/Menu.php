@@ -135,6 +135,7 @@ class EE_Menu
     {
         $channels_query = ee('Model')->get('Channel')
             ->fields('channel_id', 'channel_title', 'max_entries', 'total_records')
+            ->order('channel_order', 'ASC')
             ->order('channel_title', 'ASC');
 
         $allowed_channels = ee()->session->userdata('assigned_channels');
