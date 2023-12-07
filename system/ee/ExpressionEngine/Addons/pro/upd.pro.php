@@ -184,6 +184,13 @@ class Pro_upd extends Installer
             if (!ee()->db->table_exists('dock_prolets')) {
                 ee()->dbforge->add_field(
                     [
+                        'dock_prolets_id' => [
+                            'type' => 'int',
+                            'constraint' => 10,
+                            'null' => false,
+                            'unsigned' => true,
+                            'auto_increment' => true
+                        ],
                         'dock_id' => [
                             'type' => 'int',
                             'constraint' => 10,
@@ -198,6 +205,7 @@ class Pro_upd extends Installer
                         ]
                     ]
                 );
+                ee()->dbforge->add_key('dock_prolets_id', true);
                 ee()->smartforge->create_table('dock_prolets');
                 ee()->smartforge->add_key('dock_prolets', ['dock_id', 'prolet_id'], 'dock_prolets');
             }

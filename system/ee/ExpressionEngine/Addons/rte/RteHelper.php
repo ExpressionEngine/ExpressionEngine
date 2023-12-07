@@ -163,10 +163,10 @@ class RteHelper
      *
      * @param string &$data
      */
-    public static function replacePageTags(&$data)
+    public static function replacePageTags(&$data, $site_id = null, $buildFullUrls = false)
     {
-        if ( !empty($data) && strpos($data, LD . 'page_') !== false) {
-            $tags = static::_getPageTags();
+        if (!empty($data) && strpos($data, LD . 'page_') !== false) {
+            $tags = static::_getPageTags($site_id);
 
             foreach ($tags[0] as $key => $pageTag) {
                 $pattern = '/(?!&quot;|\")(' . preg_quote($pageTag) . ')(&quot;|\"|\/)?/u';
@@ -181,6 +181,10 @@ class RteHelper
                         // If there is not a trailing quote or slash, we're going to add one.
                         if (empty($match)) {
                             $replace .= '/';
+                        }
+
+                        if ($buildFullUrls) {
+                            $replace = ee()->functions->create_url($replace);
                         }
 
                         $data = preg_replace($search, $replace, $data);
@@ -253,7 +257,7 @@ class RteHelper
                             'extra' => $channels[$channel_ids[$entry_id]],
                             'href' => '{page_' . $entry_id . '}',
                             'entry_id' => $entry_id,
-                            'uri' => $uri
+                            'uri' => $uri,
                         ];
                     }
                 }

@@ -14,6 +14,8 @@
  */
 class Member_settings extends Member
 {
+    public $member;
+
     /** ----------------------------------------
     /**  Member Profile - Menu
     /** ----------------------------------------*/
@@ -137,9 +139,10 @@ class Member_settings extends Member
         $tagdata = trim(ee()->TMPL->tagdata);
 
         // If there is tag data, it's a tag pair, otherwise it's a single tag which means it's a legacy speciality template.
+        $content = '';
         if (! empty($tagdata)) {
             $content = ee()->TMPL->tagdata;
-        } else {
+        } elseif (ee('Config')->getFile()->getBoolean('legacy_member_templates')) {
             $content = $this->_load_element('public_profile');
         }
 
@@ -722,9 +725,10 @@ class Member_settings extends Member
         $tagdata = trim(ee()->TMPL->tagdata);
 
         // If there is tag data, it's a tag pair, otherwise it's a single tag which means it's a legacy speciality template.
+        $template = '';
         if (! empty($tagdata)) {
             $template = ee()->TMPL->tagdata;
-        } else {
+        } elseif (ee('Config')->getFile()->getBoolean('legacy_member_templates')) {
             $template = $this->_load_element('edit_profile_form');
         }
 
@@ -759,9 +763,9 @@ class Member_settings extends Member
 
         // $result_row = $result->row_array()
 
-        $this->member = ee()->session->getMember();
+        $member = ee()->session->getMember();
 
-        if (empty($this->member)) {
+        if (empty($member)) {
             if (! empty($tagdata)) {
                 return ee()->TMPL->no_results();
             } else {
@@ -769,40 +773,74 @@ class Member_settings extends Member
             }
         }
 
-        $result_row = $this->member->getValues();
+        $result_row = $member->getValues();
 
         ee()->load->library('api');
         ee()->legacy_api->instantiate('channel_fields');
         // we need to reset this, because might have already been populated by channel:entries tag
         ee()->api_channel_fields->custom_fields = array();
 
-        if ($query->num_rows() > 0) {
-            foreach ($this->member->getDisplay()->getFields() as $field) {
-                if (! ee('Permission')->isSuperAdmin() && $field->get('field_public') != 'y') {
-                    continue;
+        if (strpos($template, '{/custom_profile_fields}') !== false) {
+            if ($query->num_rows() > 0) {
+                foreach ($member->getDisplay()->getFields() as $field) {
+                    if (! ee('Permission')->isSuperAdmin() && $field->get('field_public') != 'y') {
+                        continue;
+                    }
+
+                    $temp = $profile_fields_template;
+
+                    /** ----------------------------------------
+                    /**  Assign the data to the field
+                    /** ----------------------------------------*/
+                    $temp = str_replace('{field_id}', $field->getId(), $temp);
+
+                    $required = $field->isRequired() ? "<span class='alert'>*</span>&nbsp;" : '';
+
+                    $fieldForm = $field->getForm();
+
+                    $temp = str_replace(
+                        [
+                            '{lang:profile_field}',
+                            '{lang:profile_field_description}',
+                            '{form:custom_profile_field}',
+                            '{field_name}',
+                            '{field_label}',
+                            '{field_id}',
+                            '{field_instructions}',
+                            '{display_field}',
+                            '{field_data}',
+                            '{text_direction}',
+                            '{maxlength}',
+                            '{field_required}',
+                            '{field_type}',
+                        ],
+                        [
+                            $required . $field->getLabel(),
+                            $field->get('field_description'),
+                            $fieldForm,
+                            $field->getName(),
+                            $field->getLabel(),
+                            $field->getId(),
+                            $field->get('field_description'),
+                            $fieldForm,
+                            $result_row[$field->getName()],
+                            $field->get('field_text_direction'),
+                            $field->get('field_maxl'),
+                            $field->isRequired(),
+                            $field->getType()
+                        ],
+                        $temp
+                    );
+
+                    /** ----------------------------------------
+                    /**  Render textarea fields
+                    /** ----------------------------------------*/
+                    if ($field->getTypeName() == 'textarea') {
+                        $temp = str_replace('<td ', "<td valign='top' ", $temp);
+                    }
+
+                    $r .= $temp;
                 }
-
-                $temp = $profile_fields_template;
-
-                /** ----------------------------------------
-                /**  Assign the data to the field
-                /** ----------------------------------------*/
-                $temp = str_replace('{field_id}', $field->getId(), $temp);
-
-                $required = $field->isRequired() ? "<span class='alert'>*</span>&nbsp;" : '';
-
-                $temp = str_replace('{lang:profile_field}', $required . $field->getLabel(), $temp);
-                $temp = str_replace('{lang:profile_field_description}', $field->get('field_description'), $temp);
-                $temp = str_replace('{form:custom_profile_field}', $field->getForm(), $temp);
-
-                /** ----------------------------------------
-                /**  Render textarea fields
-                /** ----------------------------------------*/
-                if ($field->getTypeName() == 'textarea') {
-                    $temp = str_replace('<td ', "<td valign='top' ", $temp);
-                }
-
-                $r .= $temp;
             }
         }
 
@@ -837,6 +875,14 @@ class Member_settings extends Member
             $template = str_replace(LD . "custom_profile_fields" . RD, $r, $template);
         }
 
+        if (strpos($template, LD . 'field:') !== false) {
+            foreach ($member->getDisplay()->getFields() as $field) {
+                if (ee('Permission')->isSuperAdmin() || $field->get('field_public') == 'y') {
+                    $template = str_replace(LD . 'field:' . $field->get('field_name') . RD, $field->getForm(), $template);
+                }
+            }
+        }
+
         //if we run EE template parser, do some things differently
         if (! empty($tagdata)) {
             ee()->load->add_package_path(PATH_ADDONS . 'channel');
@@ -849,19 +895,25 @@ class Member_settings extends Member
                 $data['name'] = ee()->TMPL->fetch_param('form_name');
             }
 
-            $data['id'] = 'cform';
-            $data['class'] = ee()->TMPL->form_class;
+            $data['id'] = !empty(ee()->TMPL->form_id) ? ee()->TMPL->form_id : 'cform';
+            $data['class'] = (get_bool_from_string(ee()->TMPL->fetch_param('include_assets', 'n') || strpos($template, LD . 'form_assets' . RD) !== false) ? 'ee-cform ' : '');
+            $data['class'] .= ee()->TMPL->form_class;
 
             $data['hidden_fields'] = array(
                 'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->functions->create_url(ee()->TMPL->fetch_param('return')) : ee()->functions->fetch_current_uri(),
                 'ACT' => ee()->functions->fetch_action_id('Member', 'update_profile')
             );
 
+            // check the template for file fields
+            if (strpos($template, '_hidden_file') !== false) {
+                $data['enctype'] = 'multi';
+            }
+
             $return = ee()->functions->form_declaration($data) . $template . '</form>';
             //make head appear by default
-            if (preg_match('/' . LD . 'form_assets' . RD . '/', $return)) {
+            if (strpos($return, LD . 'form_assets' . RD) !== false) {
                 $return = ee()->TMPL->swap_var_single('form_assets', ee()->channel_form_lib->head, $return);
-            } elseif (get_bool_from_string(ee()->TMPL->fetch_param('include_assets'), 'y')) {
+            } elseif (get_bool_from_string(ee()->TMPL->fetch_param('include_assets'), 'n')) {
                 // Head should only be there if the param is there
                 $return .= ee()->channel_form_lib->head;
             }
@@ -928,27 +980,45 @@ class Member_settings extends Member
         $member = ee('Model')->get('Member', ee()->session->userdata('member_id'))->first();
 
         if ($query->num_rows() > 0) {
+            ee()->load->library(array('api', 'file_field'));
             foreach ($query->result_array() as $row) {
                 $fname = 'm_field_id_' . $row['m_field_id'];
                 $post = ee()->input->post($fname);
 
-                // Handle arrays of checkboxes as a special case;
-                if ($row['m_field_type'] == 'checkbox') {
-                    foreach ($row['choices']  as $property => $label) {
+                // file field is a special case
+                if ($row['m_field_type'] == 'file') {
+                    if (ee()->input->post($fname . '_hidden_file') === '') {
+                        $member->$fname = '';
+                    }
+                    // trick validation into calling the file fieldtype
+                    if (isset($_FILES[$fname]['name'])) {
+                        $img = ee()->file_field->validate($_FILES[$fname]['name'], $fname);
+
+                        if (isset($img['value'])) {
+                            $member->$fname = $img['value'];
+                        } else {
+                            $member->$fname = '';
+                        }
+                    }
+                } elseif ($row['m_field_type'] == 'checkbox') {
+                    // Handle arrays of checkboxes as a special case;
+                    foreach ($row['choices'] as $property => $label) {
                         $member->$fname = in_array($property, $post) ? 'y' : 'n';
                     }
                 } else {
                     if ($post !== false) {
-                        // Check with Seth
                         $member->$fname = ee('Security/XSS')->clean($post);
-                        //$member->$fname = $post;
                     }
                 }
 
                 // Set custom field format override if available, too
                 $ft_name = 'm_field_ft_' . $row['m_field_id'];
                 if (ee()->input->post($ft_name)) {
-                    $member->{$ft_name} = ee()->input->post($ft_name);
+                    $member->{$ft_name} = ee('Security/XSS')->clean(ee('Request')->post($ft_name));
+                }
+                $dt_name = 'm_field_dt_' . $row['m_field_id'];
+                if (ee()->input->post($dt_name)) {
+                    $member->{$dt_name} = ee('Security/XSS')->clean(ee('Request')->post($dt_name));
                 }
             }
         }
@@ -957,7 +1027,6 @@ class Member_settings extends Member
 
         //if this request initiated from regular EE template, we'll process some additional stuff here
         if (REQ === 'ACTION') {
-
             //email update
             if (ee()->input->post('email') != '' && ee()->input->post('email') != $member->email) {
                 $validator = ee('Validation')->make();
@@ -1173,9 +1242,10 @@ class Member_settings extends Member
         $tagdata = trim(ee()->TMPL->tagdata);
 
         // If there is tag data, it's a tag pair, otherwise it's a single tag which means it's a legacy speciality template.
+        $template = '';
         if (! empty($tagdata)) {
             $template = ee()->TMPL->tagdata;
-        } else {
+        } elseif (ee('Config')->getFile()->getBoolean('legacy_member_templates')) {
             $template = $this->_load_element('email_prefs_form');
         }
 
@@ -1289,9 +1359,10 @@ class Member_settings extends Member
         $tagdata = trim(ee()->TMPL->tagdata);
 
         // If there is tag data, it's a tag pair, otherwise it's a single tag which means it's a legacy speciality template.
+        $template = '';
         if (! empty($tagdata)) {
             $template = ee()->TMPL->tagdata;
-        } else {
+        } elseif (ee('Config')->getFile()->getBoolean('legacy_member_templates')) {
             $template = $this->_load_element('username_password_form');
         }
 
@@ -1673,9 +1744,10 @@ class Member_settings extends Member
         /** -------------------------------------
         /**  Parse the $_POST data
         /** -------------------------------------*/
-        if (ee('Request')->post('screen_name') == '' &&
+        if (
+            ee('Request')->post('screen_name') == '' &&
             ee('Request')->post('email') == ''
-            ) {
+        ) {
             ee()->functions->redirect($redirect_url);
             exit;
         }

@@ -1089,7 +1089,7 @@ class Cp
             'if', 'else', 'elseif'
         );
 
-        return array_unique(array_merge(
+        return $invalid_fields = array_unique(array_merge(
             $channel_vars,
             $global_vars,
             $orderby_vars,

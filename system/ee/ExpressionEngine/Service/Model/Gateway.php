@@ -17,6 +17,7 @@ class Gateway
 {
     protected static $_field_list_cache;
     protected $_values = array();
+    protected static $_gateway_model;
 
     /**
      *
@@ -73,6 +74,14 @@ class Gateway
     public function getPrimaryKey()
     {
         return static::$_primary_key;
+    }
+
+    /**
+     * model that defines elements fetched by this gateway
+     */
+    public function getGatewayModel()
+    {
+        return static::$_gateway_model;
     }
 
     /**

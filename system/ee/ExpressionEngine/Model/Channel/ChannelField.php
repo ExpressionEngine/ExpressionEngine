@@ -335,6 +335,19 @@ class ChannelField extends FieldModel
             return 'unique_among_field_groups';
         }
 
+        // check member fields
+        $unique = $this->getModelFacade()
+            ->get('MemberField')
+            ->filter('m_' . $key, $value);
+
+        foreach ($params as $field) {
+            $unique->filter('m_' . $field, $this->getProperty($field));
+        }
+
+        if ($unique->count() > 0) {
+            return 'unique_among_member_fields'; // lang key
+        }
+
         return true;
     }
 

@@ -178,6 +178,11 @@ class Validator
                     continue;
                 }
 
+                // categories are special case, we'll take care of them separately
+                if (strpos($key, 'categories[cat_group_id_') === 0 && $rule instanceof Rule\Required) {
+                    continue;
+                }
+
                 $rule->setAllValues($values);
 
                 $rule_return = $rule->validate($key, $value);

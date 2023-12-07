@@ -62,7 +62,7 @@ class DefaultChannelLayout extends DefaultLayout
             )
         );
 
-        $channel = ee('Model')->get('Channel', $this->channel_id)->first();
+        $channel = ee('Model')->get('Channel', $this->channel_id)->with('CategoryGroups')->all()->first();
 
         // Date Tab ------------------------------------------------------------
 
@@ -99,12 +99,8 @@ class DefaultChannelLayout extends DefaultLayout
 
         // Category Tab --------------------------------------------------------
 
-        $cat_groups = ee('Model')->get('CategoryGroup')
-            ->filter('group_id', 'IN', explode('|', (string) $channel->cat_group))
-            ->all();
-
         $category_group_fields = array();
-        foreach ($cat_groups as $cat_group) {
+        foreach ($channel->CategoryGroups as $cat_group) {
             $category_group_fields[] = array(
                 'field' => 'categories[cat_group_id_' . $cat_group->getId() . ']',
                 'visible' => true,
