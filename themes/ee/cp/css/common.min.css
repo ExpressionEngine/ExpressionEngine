@@ -34275,6 +34275,7 @@ a.ck.ck-button.ck-on {
   background: var(--ee-button-default-bg) !important;
   color: var(--ee-button-default-color) !important;
   border-color: var(--ee-list-item-border) !important;
+  z-index: 2000 !important;
 }
 
 .ck.ck-balloon-panel[class*=arrow_n]:before {

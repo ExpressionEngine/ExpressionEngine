@@ -973,3 +973,7 @@
     top: 3px;
 }
 /* END Toggle field */
+
+.ck.ck-balloon-panel.ck-balloon-panel_visible {
+    z-index: 2000 !important;
+}
