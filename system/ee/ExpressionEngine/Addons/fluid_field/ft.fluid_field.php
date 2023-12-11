@@ -405,17 +405,17 @@ class Fluid_field_ft extends EE_Fieldtype
             );
         }
 
-//        if (!empty($values)) {
-            $fluid_field->field_group_id = array_key_exists('id', $group) ? $group['id'] : null;
-            $fluid_field->group = array_key_exists('order', $group) ? $group['order'] : null;
-            $fluid_field->order = $order;
-            $fluid_field->save();
+        $fluid_field->field_group_id = array_key_exists('id', $group) ? $group['id'] : null;
+        $fluid_field->group = array_key_exists('order', $group) ? $group['order'] : null;
+        $fluid_field->order = $order;
+        $fluid_field->save();
 
+        if (!empty($values)) {
             $query = ee('db');
             $query->set($values);
             $query->where('id', $fluid_field->field_data_id);
             $query->update($fluid_field->ChannelField->getTableName());
-//        }
+        }
 
         if (ee()->extensions->active_hook('fluid_field_after_update_field') === true) {
             ee()->extensions->call(
@@ -446,17 +446,20 @@ class Fluid_field_ft extends EE_Fieldtype
         ));
 
         if (ee()->extensions->active_hook('fluid_field_add_field') === true) {
+            // The parameter order is different from fluid_field_update_field because
+            // $fluid_field was added as a 3rd parameter after this was released, and
+            // we want to ensure backwards compatibility with anyone using this hook.
             $values = ee()->extensions->call(
                 'fluid_field_add_field',
-                $fluid_field,
                 $fluid_field->ChannelField->getTableName(),
-                $values
+                $values,
+                $fluid_field,
             );
         }
 
         $field = ee('Model')->get('ChannelField', $field_id)->first();
 
-//        if (!empty($values)) {
+        if (!empty($values)) {
             $query = ee('db');
             $query->set($values);
             $query->insert($field->getTableName());
@@ -464,7 +467,7 @@ class Fluid_field_ft extends EE_Fieldtype
 
             $fluid_field->field_data_id = $id;
             $fluid_field->save();
-//        }
+        }
 
         if (ee()->extensions->active_hook('fluid_field_after_add_field') === true) {
             ee()->extensions->call(
