@@ -187,8 +187,8 @@ class Fields extends AbstractFieldsController
             $reorder_ajax_fail = ee('CP/Alert')->makeBanner('reorder-ajax-fail')
                 ->asIssue()
                 ->canClose()
-                ->withTitle(lang('fields_ajax_reorder_fail'))
-                ->addToBody(lang('fields_ajax_reorder_fail_desc'));
+                ->withTitle(sprintf(lang('ajax_reorder_fail'), lang('fields')))
+                ->addToBody(sprintf(lang('ajax_reorder_fail_desc'), lang('fields')));
 
             ee()->javascript->set_global('fields.reorder_url', ee('CP/URL')->make('fields/reorder/' . $group_id)->compile());
             ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());

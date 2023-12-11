@@ -2064,7 +2064,7 @@ class JumpMenu extends AbstractJumpMenu
             );
         }
 
-        $channels = ee('Model')->get('Channel')->order('channel_title', 'ASC')->limit(11)->all();
+        $channels = ee('Model')->get('Channel')->order('channel_order', 'ASC')->order('channel_title', 'ASC')->limit(11)->all();
         foreach ($channels as $channel) {
             $items[1]['viewEntriesInChannel' . $channel->getId()] = array(
                 'icon' => 'fa-eye',

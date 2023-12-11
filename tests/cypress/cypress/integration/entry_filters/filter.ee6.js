@@ -296,13 +296,13 @@ context('Entry Manager', () => {
 			entry.get('Entries').find('tr').should('have.length',11)
 
 			entry.get('ChannelSort').click()
-			cy.get('.dropdown--open .dropdown__link:nth-child(1)').click();
+			cy.get('.dropdown--open .dropdown__link:contains("Channel")').click();
 			cy.wait("@ajax")
 			cy.get('h3').contains('Entries').click()
 			entry.get('Entries').contains('No Entries found')
 
 			entry.get('ChannelSort').click()
-			cy.get('.dropdown--open .dropdown__link:nth-child(2)').click();
+			cy.get('.dropdown--open .dropdown__link:contains("Contact")').click();
 			cy.wait("@ajax")
 			cy.get('h3').contains('Entries').click()
 			entry.get('Entries').find('tr').should('have.length',1)

@@ -24,6 +24,7 @@ class Channel extends StructureModel
     protected static $_hook_id = 'channel';
 
     protected static $_typed_columns = array(
+        'channel_order' => 'int',
         'deft_comments' => 'boolString',
         'channel_require_membership' => 'boolString',
         'channel_allow_img_urls' => 'boolString',
@@ -113,6 +114,7 @@ class Channel extends StructureModel
         'site_id' => 'required|isNatural',
         'channel_title' => 'required|maxLength[100]|unique[site_id]|xss',
         'channel_name' => 'required|maxLength[40]|unique[site_id]|alphaDash',
+        'channel_order' => 'integer',
         'channel_url' => 'maxLength[100]|xss',
         'preview_url' => 'xss|validatePreviewURL',
         'allow_preview' => 'enum[y,n]',
@@ -151,6 +153,7 @@ class Channel extends StructureModel
     );
 
     protected static $_events = array(
+        'beforeInsert',
         'beforeSave',
         'afterInsert',
         'afterUpdate',
@@ -172,6 +175,7 @@ class Channel extends StructureModel
     protected $channel_url;
     protected $channel_description;
     protected $channel_lang;
+    protected $channel_order;
     protected $total_entries;
     protected $total_records;
     protected $total_comments;
@@ -354,6 +358,18 @@ class Channel extends StructureModel
             if ($channel->$rel) {
                 $this->$rel = clone $channel->$rel;
             }
+        }
+    }
+
+    public function onBeforeInsert()
+    {
+        $order = $this->getProperty('channel_order');
+
+        if (empty($order)) {
+            $order = $this->getModelFacade()->get('Channel')
+                ->filter('site_id', $this->site_id)
+                ->count() + 1;
+            $this->setProperty('channel_order', $order);
         }
     }
 

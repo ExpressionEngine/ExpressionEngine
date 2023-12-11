@@ -449,6 +449,7 @@ class EntryListing
             $this->channels = ee('Model')->get('Channel', $allowed_channel_ids)
                 ->fields('channel_id', 'channel_title')
                 ->filter('site_id', ee()->config->item('site_id'))
+                ->order('channel_order', 'asc')
                 ->order('channel_title', 'asc')
                 ->all();
         }

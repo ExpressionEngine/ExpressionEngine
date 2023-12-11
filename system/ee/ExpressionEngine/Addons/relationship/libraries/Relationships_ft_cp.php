@@ -47,6 +47,7 @@ class Relationships_ft_cp
 
         $channels = ee('Model')->get('Channel')
             ->with('Site')
+            ->order('channel_order', 'ASC')
             ->order('channel_title', 'asc');
 
         if (! $from_all_sites) {
