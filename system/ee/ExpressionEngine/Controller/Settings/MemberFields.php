@@ -365,6 +365,18 @@ class MemberFields extends Settings
                     )
                 ),
                 array(
+                    'title' => 'field_notes',
+                    'desc' => 'field_notes_desc',
+                    'wide' => true,
+                    'fields' => array(
+                        'm_field_notes' => array(
+                            'type' => 'textarea',
+                            'attrs' => 'class="textarea--large"',
+                            'value' => $field->field_notes,
+                        )
+                    )
+                ),
+                array(
                     'title' => 'require_field',
                     'desc' => 'cat_require_field_desc',
                     'fields' => array(

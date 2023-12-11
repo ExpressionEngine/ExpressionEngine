@@ -125,6 +125,7 @@ class ChannelField extends FieldModel
     protected $field_name;
     protected $field_label;
     protected $field_instructions;
+    protected $field_notes;
     protected $field_type;
     protected $field_list_items;
     protected $field_pre_populate;

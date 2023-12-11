@@ -182,6 +182,18 @@ class Fields extends AbstractCategoriesController
                     )
                 ),
                 array(
+                    'title' => 'field_notes',
+                    'desc' => 'field_notes_desc',
+                    'wide' => true,
+                    'fields' => array(
+                        'field_notes' => array(
+                            'type' => 'textarea',
+                            'attrs' => 'class="textarea--large"',
+                            'value' => $cat_field->field_notes,
+                        )
+                    )
+                ),
+                array(
                     'title' => 'require_field',
                     'desc' => 'cat_require_field_desc',
                     'fields' => array(

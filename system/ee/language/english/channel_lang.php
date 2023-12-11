@@ -585,6 +585,10 @@ $lang = array(
 
     'fields_ajax_reorder_fail_desc' => 'We failed to save your new fields order. You may try to refresh the page and try again.',
 
+    'field_notes' => 'Field Notes',
+
+    'field_notes_desc' => 'Use this form field to store notes and information about this field',
+
     /* Statuses */
     'create_status' => 'New Status',
 
