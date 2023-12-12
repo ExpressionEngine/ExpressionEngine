@@ -712,6 +712,9 @@ class EE_Template
         }
 
         foreach ($layout_vars as $key => $val) {
+            if ($val === '' && strpos($str, LD . '/layout:' . $key . RD) !== false) {
+                $val = []; // undefined or empty value that is supposed to be an array
+            }
             if (is_array($val)) {
                 $layout_conditionals['layout:' . $key] = true;
 
