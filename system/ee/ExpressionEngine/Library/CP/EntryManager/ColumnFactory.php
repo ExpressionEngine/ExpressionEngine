@@ -90,7 +90,7 @@ class ColumnFactory
     {
         $structureColumnAvailable = false;
         $structure = ee('Addon')->get('structure');
-        if (version_compare($structure->getInstalledVersion(), '6.1.0', '>=')) {
+        if (version_compare((string) $structure->getInstalledVersion(), '6.1.0', '>=')) {
             $structureColumnAvailable = true;
         }
         return array_filter(
