@@ -1,8 +1,8 @@
 <?php
 
-namespace ExpressionEngine\Structure\Conduit;
+namespace ExpressionEngine\Addons\Structure\Conduit;
 
-use ExpressionEngine\Structure\Conduit\FluxNav;
+use ExpressionEngine\Addons\Structure\Conduit\FluxNav;
 
 class McpNav extends FluxNav
 {

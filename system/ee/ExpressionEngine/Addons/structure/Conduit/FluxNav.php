@@ -1,6 +1,6 @@
 <?php
 
-namespace ExpressionEngine\Structure\Conduit;
+namespace ExpressionEngine\Addons\Structure\Conduit;
 
 @include_once PATH_ADDONS . 'structure/Conduit/McpNav.php';
 

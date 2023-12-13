@@ -19,6 +19,7 @@ class ColumnFactory
         'entry_id' => Columns\EntryId::class,
         'title' => Columns\Title::class,
         'url_title' => Columns\UrlTitle::class,
+        'structure_uri' => Columns\StructureUri::class,
         'author' => Columns\Author::class,
         'status' => Columns\Status::class,
         'sticky' => Columns\Sticky::class,
@@ -87,9 +88,17 @@ class ColumnFactory
      */
     private static function getStandardColumns()
     {
+        $structureColumnAvailable = false;
+        $structure = ee('Addon')->get('structure');
+        if (version_compare($structure->getInstalledVersion(), '6.1.0', '>=')) {
+            $structureColumnAvailable = true;
+        }
         return array_filter(
-            array_map(function ($identifier, $column) {
-                if ($identifier != 'comments' || bool_config_item('enable_comments')) {
+            array_map(function ($identifier, $column) use ($structureColumnAvailable) {
+                if (
+                    ($identifier != 'comments' || bool_config_item('enable_comments')) &&
+                    ($identifier != 'structure_uri' || $structureColumnAvailable)
+                ) {
                     return static::getColumn($identifier);
                 }
             }, array_keys(static::$standard_columns), static::$standard_columns),

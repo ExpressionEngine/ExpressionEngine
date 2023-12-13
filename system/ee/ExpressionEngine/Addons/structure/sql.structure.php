@@ -11,8 +11,8 @@
 require_once PATH_ADDONS . 'structure/helper.php';
 require_once PATH_ADDONS . 'structure/addon.setup.php';
 
-use ExpressionEngine\Structure\Conduit\StaticCache;
-use ExpressionEngine\Structure\Conduit\PersistentCache;
+use ExpressionEngine\Addons\Structure\Conduit\StaticCache;
+use ExpressionEngine\Addons\Structure\Conduit\PersistentCache;
 
 class Sql_structure
 {
