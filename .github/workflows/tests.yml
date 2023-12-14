@@ -139,6 +139,24 @@ jobs:
                   - php: 8.2
                     os: ubuntu-latest
                     containers: 5
+                  - php: 8.3
+                    os: ubuntu-latest
+                    containers: 0
+                  - php: 8.3
+                    os: ubuntu-latest
+                    containers: 1
+                  - php: 8.3
+                    os: ubuntu-latest
+                    containers: 2
+                  - php: 8.3
+                    os: ubuntu-latest
+                    containers: 3
+                  - php: 8.3
+                    os: ubuntu-latest
+                    containers: 4
+                  - php: 8.3
+                    os: ubuntu-latest
+                    containers: 5
 
         name: Cypress Tests, PHP${{ matrix.php }} - ${{ matrix.os }} ${{ matrix.containers }}
 
