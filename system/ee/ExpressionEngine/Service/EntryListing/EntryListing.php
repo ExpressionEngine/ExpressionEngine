@@ -108,6 +108,13 @@ class EntryListing
     protected $channels;
 
     /**
+     * Aliases on models for third-party add-ons that we need to set up
+     *
+     * @var array [alias => model]
+     */
+    public $aliases = [];
+
+    /**
      * Constructor
      * @param int $site_id Current site ID
      * @param boolean $is_admin Whether or not a Super Admin is making this
@@ -255,6 +262,13 @@ class EntryListing
                         foreach ($column->getEntryManagerColumnModels() as $with) {
                             if (!empty($with)) {
                                 $entries->with($with);
+                            }
+                        }
+                    }
+                    if (!empty($column->getEntryManagerModelAliases())) {
+                        foreach ($column->getEntryManagerModelAliases() as $alias => $model) {
+                            if (!empty($alias) && !empty($model)) {
+                                $this->aliases[$model] = $alias;
                             }
                         }
                     }

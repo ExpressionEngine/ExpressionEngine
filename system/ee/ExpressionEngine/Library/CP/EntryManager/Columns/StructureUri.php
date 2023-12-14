@@ -27,6 +27,11 @@ class StructureUri extends Column
         return ['Structure.structure_uri', 'StructureListing.structure_uri'];
     }
 
+    public function getEntryManagerModelAliases()
+    {
+        return ['Structure' => 'structure:Structure', 'StructureListing' => 'structure:StructureListing'];
+    }
+
     public function getEntryManagerColumnSortField()
     {
         return 'structure_uri';

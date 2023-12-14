@@ -173,8 +173,11 @@ class Edit extends AbstractPublishController
         $entries->limit($filter_values['perpage'])
             ->offset($offset);
         $entries = $entries->all();
-        $entries->alias('structure:Structure', 'Structure');
-        $entries->alias('structure:StructureListing', 'StructureListing');
+        if (!empty($entry_listing->aliases)) {
+            foreach ($entry_listing->aliases as $alias => $model) {
+                $entries->alias($alias, $model);
+            }
+        }
 
         $data = array();
 

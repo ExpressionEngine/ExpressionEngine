@@ -58,6 +58,13 @@ class ColumnFactory
             return null;
         }
 
+        // in order to avoid calls to non-existing tables
+        // we check if the columns are still available
+        $availableColumns = static::getAvailableColumns();
+        if (!isset($availableColumns[$identifier])) {
+            return null;
+        }
+
         return self::$instances[$identifier];
     }
 
