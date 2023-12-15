@@ -870,7 +870,7 @@ class File_field
     private function _get_upload_prefs()
     {
         if (empty($this->_upload_prefs)) {
-            $this->_upload_prefs = $directories = ee('Model')->get('UploadDestination')->all()->indexBy('id');
+            $this->_upload_prefs = $directories = ee('Model')->get('UploadDestination')->order('name', 'asc')->all()->indexBy('id');
         }
 
         return $this->_upload_prefs;
