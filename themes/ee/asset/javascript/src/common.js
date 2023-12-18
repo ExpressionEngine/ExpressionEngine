@@ -676,6 +676,9 @@ $(document).ready(function(){
 			// reveal the modal
 			if ($(this).hasClass('modal-wrap')) {
 				$(this).fadeIn('slow');
+				if ($(this).find('input:visible').length) {
+					$(this).find('input:visible').focus();
+				}
 			} else {
 				$(this).removeClass('app-modal---closed')
 					.addClass('app-modal---open');
