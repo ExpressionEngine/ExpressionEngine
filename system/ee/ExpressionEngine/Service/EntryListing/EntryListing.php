@@ -108,6 +108,11 @@ class EntryListing
     protected $channels;
 
     /**
+     * @var array $category_options Category options for the category filter
+     */
+    protected $category_options = array();
+
+    /**
      * Constructor
      * @param int $site_id Current site ID
      * @param boolean $is_admin Whether or not a Super Admin is making this
@@ -463,26 +468,39 @@ class EntryListing
     {
         $cat_id = ($channel) ? explode('|', (string) $channel->cat_group) : null;
 
+        ee()->load->library('datastructures/tree');
+
         $category_groups = ee('Model')->get('CategoryGroup', $cat_id)
             ->with('Categories')
             ->filter('site_id', ee()->config->item('site_id'))
             ->filter('exclude_group', '!=', 1)
             ->all();
 
-        $category_options = array();
         foreach ($category_groups as $group) {
-            $sort_column = ($group->sort_order == 'a') ? 'cat_name' : 'cat_order';
-            foreach ($group->Categories->sortBy($sort_column) as $category) {
-                $category_options[$category->cat_id] = $category->cat_name;
+            $tree = $group->getCategoryTree(ee()->tree);
+            foreach ($tree->children() as $category) {
+                $this->setCategoryOptions($category);
             }
         }
 
-        $categories = ee('CP/Filter')->make('filter_by_category', 'filter_by_category', $category_options);
+        $categories = ee('CP/Filter')->make('filter_by_category', 'filter_by_category', $this->category_options);
         $categories->setPlaceholder(lang('filter_categories'));
         $categories->setLabel(lang('category'));
         $categories->useListFilter(); // disables custom values
 
         return $categories;
+    }
+
+    /**
+     * Recursively sets category options for the category filter
+     */
+    private function setCategoryOptions($category) {
+        $this->category_options[$category->data->cat_id] = str_repeat('-- ', $category->depth() - 1) . $category->data->cat_name;
+        if (count($category->children())) {
+            foreach ($category->children() as $subcategory) {
+                $this->setCategoryOptions($subcategory);
+            }
+        }
     }
 
     /**
