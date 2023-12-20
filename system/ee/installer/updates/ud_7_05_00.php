@@ -45,8 +45,8 @@ class Updater
                 'field_conditions',
                 [
                     'model_type' => [
-                        'type' => 'enum',
-                        'constraint' => "'FieldCondition','PropertyCondition','CategoryCondition'",
+                        'type' => 'varchar',
+                        'constraint' => 32,
                         'default' => 'FieldCondition',
                         'null' => false
                     ]

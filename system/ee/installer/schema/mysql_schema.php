@@ -1422,7 +1422,7 @@ class EE_Schema
         $Q[] = "CREATE TABLE `exp_field_conditions` (
 			`condition_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`condition_set_id` int(10) unsigned NOT NULL,
-			`model_type` ENUM('FieldCondition','PropertyCondition','CategoryCondition') NOT NULL DEFAULT 'FieldCondition',
+			`model_type` varchar(32) NOT NULL DEFAULT 'FieldCondition',
 			`condition_category_group_id` int(10) unsigned DEFAULT NULL,
 			`condition_field_name` varchar(32) DEFAULT NULL,
 			`condition_field_id` int(10) unsigned DEFAULT NULL,
