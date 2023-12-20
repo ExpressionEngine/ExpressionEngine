@@ -108,6 +108,13 @@ class EntryListing
     protected $channels;
 
     /**
+     * Aliases on models for third-party add-ons that we need to set up
+     *
+     * @var array [alias => model]
+     */
+    public $aliases = [];
+
+    /**
      * Constructor
      * @param int $site_id Current site ID
      * @param boolean $is_admin Whether or not a Super Admin is making this
@@ -245,6 +252,7 @@ class EntryListing
             ->fields('entry_id', 'title', 'Channel.channel_title', 'Channel.preview_url', 'Channel.status_group', 'comment_total', 'entry_date', 'status', 'sticky')
             ->filter('site_id', $this->site_id);
 
+        $columnFields = [];
         if (in_array('Columns', $this->extra_filters)) {
             $columns = array_map(function ($identifier) {
                 return EntryManager\ColumnFactory::getColumn($identifier);
@@ -258,10 +266,22 @@ class EntryListing
                             }
                         }
                     }
+                    if (!empty($column->getEntryManagerModelAliases())) {
+                        foreach ($column->getEntryManagerModelAliases() as $alias => $model) {
+                            if (!empty($alias) && !empty($model)) {
+                                $this->aliases[$model] = $alias;
+                            }
+                        }
+                    }
                     if (!empty($column->getEntryManagerColumnFields())) {
                         foreach ($column->getEntryManagerColumnFields() as $field) {
                             if (!empty($field)) {
                                 $entries->fields($field);
+                                if (is_array($field)) {
+                                    $columnFields = array_merge($columnFields, $field);
+                                } else {
+                                    $columnFields[] = $field;
+                                }
                             }
                         }
                     } else {
@@ -347,11 +367,11 @@ class EntryListing
 
                 switch ($this->search_in) {
                     case 'titles_and_content':
-                        $search_fields = array_merge(['title', 'url_title', 'entry_id'], $content_fields);
+                        $search_fields = array_merge(['title', 'url_title', 'entry_id'], $content_fields, $columnFields);
 
                         break;
                     case 'content':
-                        $search_fields = $content_fields;
+                        $search_fields = array_merge($content_fields, $columnFields);
 
                         break;
                     case 'titles':
