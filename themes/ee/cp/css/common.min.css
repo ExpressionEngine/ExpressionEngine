@@ -34594,6 +34594,109 @@ a.ck.ck-button.ck-on {
   border-color: var(--ee-dropdown-border);
 }
 
+.field-control .redactor-styles h1, .field-control .redactor-styles h2, .field-control .redactor-styles h3, .field-control .redactor-styles h4, .field-control .redactor-styles h5, .field-control .redactor-styles h6,
+.field-control .rx-content h1,
+.field-control .rx-content h2,
+.field-control .rx-content h3,
+.field-control .rx-content h4,
+.field-control .rx-content h5,
+.field-control .rx-content h6,
+.field-control .ck-content h1,
+.field-control .ck-content h2,
+.field-control .ck-content h3,
+.field-control .ck-content h4,
+.field-control .ck-content h5,
+.field-control .ck-content h6 {
+  font-weight: 700;
+  color: var(--ee-text-primary);
+  text-rendering: optimizeLegibility;
+  margin: 0;
+  padding: 0;
+  margin-bottom: 0.5em;
+  line-height: 1.2;
+  font-family: -apple-system, BlinkMacSystemFont, segoe ui, helvetica neue, helvetica, Cantarell, Ubuntu, roboto, noto, arial, sans-serif;
+}
+.field-control .redactor-styles h1,
+.field-control .rx-content h1,
+.field-control .ck-content h1 {
+  font-size: 2.0736em;
+}
+.field-control .redactor-styles h2,
+.field-control .rx-content h2,
+.field-control .ck-content h2 {
+  font-size: 1.728em;
+}
+.field-control .redactor-styles h3,
+.field-control .rx-content h3,
+.field-control .ck-content h3 {
+  font-size: 1.44em;
+}
+.field-control .redactor-styles h4,
+.field-control .rx-content h4,
+.field-control .ck-content h4 {
+  font-size: 1.2em;
+}
+.field-control .redactor-styles h5,
+.field-control .rx-content h5,
+.field-control .ck-content h5 {
+  font-size: 1em;
+}
+.field-control .redactor-styles h6,
+.field-control .rx-content h6,
+.field-control .ck-content h6 {
+  font-size: 0.83333em;
+  text-transform: uppercase;
+  letter-spacing: 0.035em;
+}
+.field-control .redactor-styles p,
+.field-control .rx-content p,
+.field-control .ck-content p {
+  line-height: 1.5;
+  font-size: 16px;
+  margin-top: 0;
+  margin-bottom: 1em;
+}
+.field-control .redactor-styles a,
+.field-control .rx-content a,
+.field-control .ck-content a {
+  color: var(--ee-link);
+  cursor: pointer;
+}
+.field-control .redactor-styles a:hover,
+.field-control .rx-content a:hover,
+.field-control .ck-content a:hover {
+  color: var(--ee-link-hover);
+}
+.field-control .redactor-styles ol, .field-control .redactor-styles ul,
+.field-control .rx-content ol,
+.field-control .rx-content ul,
+.field-control .ck-content ol,
+.field-control .ck-content ul {
+  padding: 0;
+  margin: 0 0 0 1.5em;
+}
+.field-control .redactor-styles ol li, .field-control .redactor-styles ul li,
+.field-control .rx-content ol li,
+.field-control .rx-content ul li,
+.field-control .ck-content ol li,
+.field-control .ck-content ul li {
+  font-size: 16px;
+  line-height: 1.5;
+}
+.field-control .redactor-styles code,
+.field-control .rx-content code,
+.field-control .ck-content code {
+  background-color: var(--ee-bg-5);
+  padding: 0;
+  top: 0;
+  display: block;
+  line-height: 1.5;
+  color: var(--ee-text-primary);
+  overflow: none;
+  white-space: pre-wrap;
+  padding: 1rem;
+}
+
 .color-drop-container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
