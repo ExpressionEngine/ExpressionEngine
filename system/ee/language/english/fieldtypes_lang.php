@@ -341,6 +341,9 @@ $lang = array(
     'greaterOrEqualThan' => 'greater than or equal to',
     'lessThan' => 'less than',
     'lessOrEqualThan' => 'less than or equal to',
+    'lessOrEqualThan' => 'less than or equal to',
+    'isStructureDescendantOf' => 'is descendant of',
+    'isNotStructureDescendantOf' => 'is not descendant of',
 
     'turnedOn' => 'is turned on',
     'turnedOff' => 'is turned off',

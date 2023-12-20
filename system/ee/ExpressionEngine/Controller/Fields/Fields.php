@@ -882,6 +882,56 @@ class Fields extends AbstractFieldsController
             'evaluationValues' => ee('Model')->get('Status')->all(true)->getDictionary('status', 'status')
         ];
 
+        $structure = ee('Addon')->get('structure');
+        if (version_compare($structure->getInstalledVersion(), '6.1.0', '>=')) {
+            $cache_key = 'conditional_fields_pages_' . ee()->config->item('site_id');
+            $pages = ee()->cache->get('/site_pages/' . md5($cache_key), \Cache::GLOBAL_SCOPE);
+            if ($pages === false) {
+                $pages = [];
+                require_once PATH_ADDONS . 'structure/sql.structure.php';
+                $sql = new \Sql_structure();
+                $structure_data = $sql->get_data();
+
+                $exclude_status_list[] = "closed";
+                $closed_parents = array();
+
+                foreach ($structure_data as $key => $entry_data) {
+                    if (in_array(strtolower($entry_data['status']), $exclude_status_list) || (isset($entry_data['parent_id']) && in_array($entry_data['parent_id'], $closed_parents))) {
+                        $closed_parents[] = $entry_data['entry_id'];
+                        unset($structure_data[$key]);
+                    }
+                }
+
+                $structure_data = array_values($structure_data);
+
+                foreach ($structure_data as $page) {
+                    if (isset($page['depth'])) {
+                        $pages['_' . $page['entry_id']] = str_repeat('--', $page['depth']) . $page['title'];
+                    } else {
+                        $pages['_' . $page['entry_id']] = $page['title'];
+                    }
+                }
+                ee()->cache->save('/site_pages/' . md5($cache_key), $pages, 0, \Cache::GLOBAL_SCOPE);
+            }
+            $rulesList = ['isStructureDescendantOf', 'isNotStructureDescendantOf'];
+            $selectEvaluationRules = [];
+            foreach ($rulesList as $ruleName) {
+                $rule = ee('ConditionalFields')->make($ruleName);
+                $selectEvaluationRules[$ruleName] = [
+                    'text'      => lang($rule->getLanguageKey()),
+                    'type'      => $rule->getConditionalFieldInputType()
+                ];
+                $fieldsWithEvaluationRules['entry_id'] = [
+                    'field_id' => 'entry_id',
+                    'field_label' => lang('structure_uri'),
+                    'field_name' => 'entry_id',
+                    'field_type' => 'select',
+                    'evaluationRules' => $selectEvaluationRules,
+                    'evaluationValues' => $pages
+                ];
+            }
+        }
+
         // category groups will be checked individually
         $categoryGroups = ee('Model')->get('CategoryGroup')->all();
         if (!empty($categoryGroups)) {
