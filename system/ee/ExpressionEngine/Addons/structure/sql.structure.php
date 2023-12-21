@@ -1891,12 +1891,7 @@ class Sql_structure
     public function get_member_groups()
     {
         foreach (['can_create_entries', 'can_edit_other_entries', 'can_edit_self_entries'] as $permission) {
-            $$permission = ee('Model')->get('Permission')
-                ->fields('role_id')
-                ->filter('permission', 'LIKE', $permission . '%')
-                ->filter('site_id', ee()->config->item('site_id'))
-                ->all()
-                ->pluck('role_id');
+            $$permission = ee('Permission')->rolesThatHave($permission, null, true);
         }
 
         if (empty($can_create_entries) || empty($can_edit_other_entries) || empty($can_edit_self_entries)) {
@@ -2882,18 +2877,26 @@ class Sql_structure
     {
         $site_id = ee()->config->item('site_id');
         $group_id = ee()->session->userdata['group_id'];
+        $admin_perm = 'perm_admin_structure_' . $group_id;
+        $this_perm = $perm . '_' . $group_id;
 
-        // super admins always have access
+        // super admins always have access, unless it's view preference
         if ($group_id == 1) {
             if ($perm == 'perm_delete' || $perm == 'perm_reorder') {
                 return 'all';
             }
 
-            return true;
+            // and if it's view preference, default to true if not set
+            if (strpos($perm, 'perm_view_') === 0) {
+                if (! isset($settings[$this_perm])) {
+                    return true;
+                } else {
+                    return $settings[$this_perm] == 'y';
+                }
+            } else {
+                return true;
+            }
         }
-
-        $admin_perm = 'perm_admin_structure_' . $group_id;
-        $this_perm = $perm . '_' . $group_id;
 
         if ($settings !== array()) {
             if (isset($settings[$this_perm])) {

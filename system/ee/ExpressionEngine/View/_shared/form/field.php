@@ -230,7 +230,7 @@ case 'html':
     <em><?=$field['note']?></em>
 </div>
 <?php endif ?>
-<?php if (! $grid): ?>
+<?php if (!isset($grid) || ! $grid): ?>
     <?=form_error(str_replace('[]', '', $field_name))?>
     <?php if (isset($errors)) {
         echo $errors->renderError($field_name);
