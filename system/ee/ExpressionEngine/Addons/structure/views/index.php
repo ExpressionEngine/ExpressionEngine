@@ -124,7 +124,7 @@ if ($cp_asset_data or count($tabs) > 1) {
                 echo str_repeat("\t", $indentDepth) . "\t", '<div class="item-inner">', "\n";
 
                 echo str_repeat("\t", $indentDepth) . "\t\t", '<span class="page-expand-collapse ec-none"><a href="#">+/-</a></span> <!-- new toggle -->', "\n";
-                echo str_repeat("\t", $indentDepth) . "\t\t", '<span class="page-handle', ($permissions['reorder'] == 'none' ? ' page-handle-disabled' : ''), (isset($permissions['reorder']) && ($permissions['reorder'] == 'all' || (is_numeric($level_lock_reorder)) && ($page['depth'] + 1) > $level_lock_reorder) ? ' drag-handle' : ''), '"><a href="#">Move</a></span>', "\n";
+                echo str_repeat("\t", $indentDepth) . "\t\t", '<span class="page-handle ', ($permissions['reorder'] == 'none' ? ' page-handle-disabled' : ''), (isset($permissions['reorder']) && ($permissions['reorder'] == 'all' || (is_numeric($level_lock_reorder)) && ($page['depth'] + 1) > $level_lock_reorder) ? ' drag-handle' : ''), '"><a href="#">Move</a></span>', "\n";
                 echo str_repeat("\t", $indentDepth) . "\t\t", '<span class="page-title">';
 
                 if (isset($prolet) && $prolet) {
@@ -146,7 +146,11 @@ if ($cp_asset_data or count($tabs) > 1) {
                 }
 
                 if ($page['hidden'] == 'y') {
-                    echo ' <span class="hidden-page">(hidden)</span>';
+                    echo ' <span class="hidden-page"><i class="fal fa-sm fa-eye-slash icon-left" title="' . lang('hidden') . '"></i></span>';
+                }
+
+                if (!isset($permissions['view_status']) || $permissions['view_status'] == 'y') {
+                    echo ' <span class="status-indicator"' . (isset($status_colors[$page['status']]) ? ' style="border-color: #' . $status_colors[$page['status']] . '; color: #' . $status_colors[$page['status']] . ';"' : '') . '>' . $page['status'] . '</span>';
                 }
 
                 echo '</span>', "\n";
@@ -164,7 +168,7 @@ if ($cp_asset_data or count($tabs) > 1) {
                     echo str_repeat("\t", $indentDepth) . "\t\t\t", '<span class="control-view"><a href="', ee('CP/URL')->make('addons/settings/structure/link', array('entry_id' => $page['entry_id'])), '">', lang('view_page'), '<i class="view_icon"></i></a></span>', "\n";
                 }
 
-                if ($permissions['view_add_page'] && $settings['show_picker'] == 'y') {
+                if (isset($permissions['view_add_page']) && $permissions['view_add_page'] == 'y' && $settings['show_picker'] == 'y') {
                     if (count($page_choices) > 1 && $page_count > 0) {
                         echo str_repeat("\t", $indentDepth) . "\t\t\t", '<span class="control-add"><a href="#" class="pop" data-parent_id="', $eid, '">', lang('ui_add_child_page'), '</a></span>', "\n";
                     } else {
@@ -172,7 +176,7 @@ if ($cp_asset_data or count($tabs) > 1) {
                     }
                 }
 
-                if ($permissions['view_add_page'] && $settings['show_picker'] == 'n') {
+                if (isset($permissions['view_add_page']) && $permissions['view_add_page'] == 'y' && $settings['show_picker'] == 'n') {
                     echo str_repeat("\t", $indentDepth) . "\t\t\t", '<span class="control-add"><a href="#" data-parent_id="', $eid, '">', lang('ui_add_child_page'), '</a></span>', "\n";
                 }
 

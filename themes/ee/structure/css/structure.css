@@ -1562,6 +1562,36 @@ body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls span a:hove
     border-color: var(--ee-button-primary-hover-border);
 }
 
+body[data-ee-version^="6."] #structure-ui .page-ui div.page-controls span.control-view a,
+body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls span.control-view a {
+    color: var(--ee-button-secondary-color);
+    background-color: var(--ee-button-secondary-bg);
+    border-color: var(--ee-button-secondary-border);
+}
+
+body[data-ee-version^="6."] #structure-ui .page-ui div.page-controls span.control-view a:hover,
+body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls span.control-view a:hover
+{
+    color: var(--ee-button-secondary-color);
+    background-color: var(--ee-button-secondary-hover-bg);
+    border-color: var(--ee-button-secondary-hover-border);
+}
+
+body[data-ee-version^="6."] #structure-ui .page-ui div.page-controls span.control-del a,
+body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls span.control-del a {
+    color: var(--ee-button-danger-color);
+    background-color: var(--ee-button-danger-bg);
+    border-color: var(--ee-button-danger-border);
+}
+
+body[data-ee-version^="6."] #structure-ui .page-ui div.page-controls span.control-del a:hover,
+body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls span.control-del a:hover
+{
+    color: var(--ee-button-danger-color);
+    background-color: var(--ee-button-danger-hover-bg);
+    border-color: var(--ee-button-danger-hover-border);
+}
+
 body[data-ee-version^="6."] #structure-ui .page-ui .page-handle,
 body[data-ee-version^="7."] #structure-ui .page-ui .page-handle
 {
@@ -1582,6 +1612,12 @@ body[data-ee-version^="7."] #structure-ui .page-handle a
     background:  none;
     cursor: move !important;
     margin: 0 auto;
+}
+
+body[data-ee-version^="6."] #structure-ui .page-handle.page-handle-disabled a,
+body[data-ee-version^="7."] #structure-ui .page-handle.page-handle-disabled a
+{
+    visibility: hidden;
 }
 
 body[data-ee-version^="6."] #structure-ui .page-handle a:before,
@@ -2170,4 +2206,20 @@ body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls span i {
     body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls {
         display: flex;
     }
+}
+
+#structure-ui .status-indicator {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2px 8px 3px;
+    border: 1px solid transparent;
+    border-radius: 1000px;
+    line-height: 1;
+    text-transform: capitalize;
+    margin-left: 5px;
+    font-size: 11px;
+    background: var(--ee-bg-blank);
+    white-space: nowrap;
+    font-weight: normal;
 }
