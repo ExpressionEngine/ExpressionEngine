@@ -176,6 +176,11 @@ class Role extends Model
         return $highlight;
     }
 
+    public function set__highlight($highlight)
+    {
+        $this->setRawProperty('highlight', ltrim((string) $highlight, '#'));
+    }
+
     /**
      * Get all members that are assigned to this role (as primary or extra one)
      *
