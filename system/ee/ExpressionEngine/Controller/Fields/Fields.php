@@ -881,6 +881,17 @@ class Fields extends AbstractFieldsController
             'evaluationRules' => $selectEvaluationRules,
             'evaluationValues' => ee('Model')->get('Status')->all(true)->getDictionary('status', 'status')
         ];
+        $fieldsWithEvaluationRules['channel_id'] = [
+            'field_id' => 'channel_id',
+            'field_label' => lang('channel'),
+            'field_name' => 'channel_id',
+            'field_type' => 'select',
+            'evaluationRules' => [
+                'matches' => $selectEvaluationRules['matches'],
+                'notMatches' => $selectEvaluationRules['notMatches']
+            ],
+            'evaluationValues' => ee('Model')->get('Channel')->filter('site_id', ee()->config->item('site_id'))->all(true)->getDictionary('channel_id', 'channel_title')
+        ];
 
         $structure = ee('Addon')->get('structure');
         if (version_compare($structure->getInstalledVersion(), '6.1.0', '>=')) {
