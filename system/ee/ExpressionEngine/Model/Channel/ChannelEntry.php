@@ -1299,7 +1299,14 @@ class ChannelEntry extends ContentModel
                 ? null : array_keys(ee()->session->userdata('assigned_channels'));
 
             $my_fields = $this->Channel->getAllCustomFields()->pluck('field_id');
+            
+            // sort for comparison later
+            sort($my_fields);
+
             $my_statuses = $this->Channel->Statuses->getIds();
+
+            // sort for comparison later
+            sort($my_statuses);
 
             $channel_filter_options = array();
 
@@ -1312,9 +1319,13 @@ class ChannelEntry extends ContentModel
 
             foreach ($channels as $channel) {
                 $channel_statuses = $channel->Statuses->getIds();
+                sort($channel_statuses);
 
-                if ($my_fields == $channel->getAllCustomFields()->pluck('field_id') &&
-                    sort($my_statuses) == sort($channel_statuses)) {
+                $channel_fields = $channel->getAllCustomFields()->pluck('field_id');
+                sort($channel_fields);
+
+                if ($my_fields == $channel_fields &&
+                    $my_statuses == $channel_statuses) {
                     $channel_filter_options[$channel->channel_id] = $channel->channel_title;
                 }
             }
