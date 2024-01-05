@@ -189,7 +189,7 @@ if (! function_exists('random_string')) {
 
                     $str = '';
                     for ($i = 0; $i < $len; $i++) {
-                        $str .= substr($pool, mt_rand(0, strlen($pool) - 1), 1);
+                        $str .= substr($pool, random_int(0, strlen($pool) - 1), 1);
                     }
 
                     return $str;
