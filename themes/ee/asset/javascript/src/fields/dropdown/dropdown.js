@@ -55,6 +55,8 @@ var Dropdown = /*#__PURE__*/function (_React$Component) {
       if (_this.props.conditionalRule == 'operator') {
         EE.cp.check_operator_value(selected, _this.input);
       }
+
+      $("[data-publish] > form").trigger("entry:startAutosave");
     });
 
     _defineProperty(_assertThisInitialized(_this), "toggleOpen", function () {
