@@ -792,7 +792,8 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
         buttonClass: "button--default button--small",
         createNewDirectory: this.props.createNewDirectory,
         ignoreChild: false,
-        addInput: true
+        addInput: true,
+        allowMultipleFiles: this.props.allowMultipleFiles
       })), this.props.showActionButtons && this.props.allowedDirectory != 'all' && (!checkChildren || checkChildren.children.length <= 0) && React.createElement(React.Fragment, null, React.createElement("div", {
         className: "button-segment"
       }, React.createElement("a", {
@@ -854,7 +855,8 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
         buttonClass: "button--default button--small",
         createNewDirectory: this.props.createNewDirectory,
         ignoreChild: false,
-        addInput: true
+        addInput: true,
+        allowMultipleFiles: this.props.allowMultipleFiles
       })), this.props.imitationButton && React.createElement(React.Fragment, null, React.createElement("a", {
         href: "#",
         style: {

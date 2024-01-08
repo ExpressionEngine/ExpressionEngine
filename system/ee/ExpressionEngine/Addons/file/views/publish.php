@@ -44,7 +44,8 @@ $component = [
     'createNewDirectory' => false,
     'ignoreChild' => false,
     'addInput' => false,
-    'imitationButton' => false
+    'imitationButton' => false,
+    'allowMultipleFiles' => false,
 ];
 ?>
 
