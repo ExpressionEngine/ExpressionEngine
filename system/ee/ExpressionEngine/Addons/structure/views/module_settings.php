@@ -98,7 +98,7 @@
 
 
 <div class="container">
-    <div class="padder ee7 structure-gui">
+    <div class="padder ee7 structure-gui module_settings">
         <h2>Named Navigations</h2>
         <?= ee('View')->make('ee:_shared/form/mini_grid')->render($named_nav_grid->viewData()) ?>
     </div>
