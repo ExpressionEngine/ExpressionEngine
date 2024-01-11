@@ -142,6 +142,7 @@ class RteHelper
             $urls = array();
 
             $pageData = static::getSitePages('', $site_id);
+            $home = [];
 
             if (!empty($pageData)) {
                 // Since the arrays being populated are going to be used in
@@ -155,10 +156,20 @@ class RteHelper
                     if (isset($page->entry_id)) {
                         // We want to preserve sorting order, so we'll make sure the key is string
                         $key = '_' . $page->entry_id;
+                        if ($page->uri === '/' || $page->uri === '') {
+                            $home = [$page->entry_id, $page->uri];
+                            continue;
+                        }
                         $tags[$key] = LD . 'page_' . $page->entry_id . RD;
                         $urls[$key] = $page->uri;
                     }
                 }
+            }
+            // if there is an URI that's just a slash (home page)
+            // we need to make sure it's listed at the end, not beginning
+            if (!empty($home)) {
+                $tags[] = LD . 'page_' . $home[0] . RD;
+                $urls[] = '/';
             }
 
             static::$_pageTags = array($tags, $urls);
