@@ -693,6 +693,14 @@ class UploadDestination extends StructureModel
      */
     public function buildDirectoriesDropdown($directory_id, $icon = false, $path = '', $root_only = true)
     {
+        // root requests can be cached
+        if ($root_only) {
+            $cache_key = '/' . __CLASS__ . '/' . md5(__METHOD__ . '__' . $directory_id);
+            $children = ee()->cache->get($cache_key);
+            if ($children !== false) {
+                return $children;
+            }
+        }
         $children = [];
         $i = 0;
         $directoriesCount = 0;
@@ -726,6 +734,11 @@ class UploadDestination extends StructureModel
                 }
             }
         } while ($directoriesCount > ($i + 1));
+
+        if ($root_only) {
+            //cache for 10 sec, which should suffice for page load even if it takes a while
+            ee()->cache->save($cache_key, $children, 10);
+        }
 
         return $children;
     }
