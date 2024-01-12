@@ -126,7 +126,7 @@ class EE_Core
         ee('App')->setupAddons(PATH_THIRD);
 
         //is this pro version?
-        if (isset(ee()->session) && ee('Addon')->get('pro') && ee('Addon')->get('pro')->isInstalled()) {
+        if (ee('Addon')->get('pro') && ee('Addon')->get('pro')->isInstalled()) {
             define('IS_PRO', true);
         } else {
             define('IS_PRO', false);

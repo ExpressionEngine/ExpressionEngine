@@ -571,7 +571,7 @@ class EE_Output
             ->filter('site_id', ee()->config->item('site_id'))
             ->filter('group_name', 'system_messages')->first();
 
-        if (! empty($template_group)) {
+        if (isset(ee()->session) && ! empty($template_group)) {
             $template = ee('Model')->get('Template')
                 ->filter('site_id', ee()->config->item('site_id'))
                 ->filter('group_id', $template_group->group_id)
