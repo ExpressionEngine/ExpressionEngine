@@ -57,6 +57,9 @@ class CommandSyncConditionalFieldLogic extends Cli
         'clear,x'       => 'command_sync_conditional_fields_option_clear',
     ];
 
+    // Channel ID used for syncing
+    private $channel_id;
+
     /**
      * Run the command
      * @return mixed
@@ -75,7 +78,7 @@ class CommandSyncConditionalFieldLogic extends Cli
         $this->info('command_sync_conditional_fields_sync_utility');
 
         $this->channel_id = $this->option('--channel_id');
-        $this->verbose = $this->option('--verbose');
+        $verbose = $this->option('--verbose');
 
         // This will ask for a channel entry before syncing
         // $this->channel_id = $this->getOptionOrAsk('--channel_id', "Channel ID to sync", '', false);
@@ -102,7 +105,7 @@ class CommandSyncConditionalFieldLogic extends Cli
             $entries = $this->getEntries($data);
 
             foreach ($entries as $entry) {
-                if ($this->verbose) {
+                if ($verbose) {
                     $this->info(sprintf(lang('command_sync_conditional_fields_current_entry'), $entry->getId()));
                 }
 
