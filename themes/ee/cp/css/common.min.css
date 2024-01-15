@@ -22648,6 +22648,10 @@ tr.selected td {
   background-color: var(--ee-bg-0);
 }
 
+.table-responsive .filter-bar__item {
+  position: static;
+}
+
 .typography .font-family-monospace {
   font-family: "SFMono-Regular", Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace;
 }
