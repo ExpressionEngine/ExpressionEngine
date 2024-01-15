@@ -79,6 +79,7 @@ context('Test Member roles Utilities ', () => {
 
 
 		cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(1) > .checkbox-label > input').last().click(); //turn off access to communicate
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
 		cy.logout()
 
 		cy.auth({
@@ -127,6 +128,7 @@ context('Test Member roles Utilities ', () => {
 
 
 		cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(2) input').last().click(); //turn off access to Translations
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
 		cy.logout()
 
 		cy.auth({
@@ -175,6 +177,7 @@ context('Test Member roles Utilities ', () => {
 
 		cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(3) input').click();
  				//turn off access to Imports
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
 		cy.logout()
 
 		cy.auth({
@@ -229,6 +232,7 @@ context('Test Member roles Utilities ', () => {
 			cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(4) input').click();
 
  				//turn off access to SQL
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
 		cy.logout()
 
 		cy.auth({
