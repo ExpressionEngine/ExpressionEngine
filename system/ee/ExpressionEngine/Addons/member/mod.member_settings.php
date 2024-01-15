@@ -14,6 +14,8 @@
  */
 class Member_settings extends Member
 {
+    public $member;
+
     /** ----------------------------------------
     /**  Member Profile - Menu
     /** ----------------------------------------*/
