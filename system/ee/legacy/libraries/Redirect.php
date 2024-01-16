@@ -29,21 +29,18 @@ if (REQ === 'PAGE' && !bool_config_item('allow_url_redirects_from_site')) {
 }
 
 // If the URL doesnt start with http or https (and the url doesnt start with ://), change the URL before moving on
-if (strncmp($_GET['URL'], 'http', 4) != 0 && strpos($_GET['URL'], '://') === false ) {
-    // get the protocol
-    if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
-        $protocol = "https://";
-    } else {
-        $protocol = "http://";
-    }
+if (strncmp($_GET['URL'], 'http', 4) != 0 && strpos($_GET['URL'], '://') === false) {
+    $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https://' : 'http://';
 
     // if the url starts with /, add the http host
     if (substr($_GET['URL'], 0, 1) === '/') {
-        $_GET['URL'] = $_SERVER['HTTP_HOST'] . $_GET['URL'];
+        $_GET['URL'] = ee()->config->site_url($_GET['URL']);
     }
 
-    // add the protocol
-    $_GET['URL'] = $protocol . $_GET['URL'];
+    // if the URL doesn't start with http or https, add the protocol
+    if (strncmp($_GET['URL'], 'http', 4) != 0) {
+        $_GET['URL'] = $protocol . $_GET['URL'];
+    }
 }
 
 $host = (! isset($_SERVER['HTTP_HOST'])) ? '' : (substr($_SERVER['HTTP_HOST'], 0, 4) == 'www.' ? substr($_SERVER['HTTP_HOST'], 4) : $_SERVER['HTTP_HOST']);
