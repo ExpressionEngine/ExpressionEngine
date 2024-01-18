@@ -295,6 +295,8 @@ class Publish extends AbstractPublishController
 
         $vars['layout'] = $entry->getDisplay($channel_layout);
 
+        $vars['layout_id'] = !empty($channel_layout) ? $channel_layout->layout_id : null;
+
         $result = $this->validateEntry($entry, $vars['layout']);
 
         if ($result instanceof ValidationResult) {

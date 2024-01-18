@@ -769,6 +769,8 @@ $lang = array(
 
     'upload_to' => 'Upload to %s',
 
+    'use_publish_layout' => 'This page is using publish layout',
+
     'url' => 'URL',
 
     'url_only' => 'URL Only',

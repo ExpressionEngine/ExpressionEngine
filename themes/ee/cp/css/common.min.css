@@ -28778,6 +28778,21 @@ input[type=button].btn-block {
   }
 }
 
+.link-to-layout {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+@media (max-width: 767px) {
+  .link-to-layout {
+    padding: 10px 15px 10px 15px;
+    flex: 1 1;
+  }
+}
+.link-to-layout > i {
+  font-family: "Font Awesome 6 Pro";
+}
+
 .breadcrumb {
   padding: 0;
   list-style-type: none;
@@ -32834,6 +32849,20 @@ body[data-theme=dark] .select-popup {
     right: 0;
     top: 3px;
   }
+}
+.ee-debugger .link-to-layout {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+@media (max-width: 767px) {
+  .ee-debugger .link-to-layout {
+    padding: 10px 15px 10px 15px;
+    flex: 1 1;
+  }
+}
+.ee-debugger .link-to-layout > i {
+  font-family: "Font Awesome 6 Pro";
 }
 .ee-debugger *, .ee-debugger :after, .ee-debugger :before {
   box-sizing: inherit;

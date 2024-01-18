@@ -304,3 +304,18 @@
 			}
 	}
 }
+
+.link-to-layout {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+
+	@include m-tablet-down {
+		padding: 10px 15px 10px 15px;
+		flex: 1 1;
+	}
+
+	& > i {
+		font-family: 'Font Awesome 6 Pro';
+	}
+}
