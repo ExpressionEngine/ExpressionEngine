@@ -10,7 +10,7 @@ if (! defined('BASEPATH')) {
 $config['save_tmpl_files'] = 'n';
 $config['legacy_member_templates'] = 'y';
 
-$config['app_version'] = '6.4.15';
+$config['app_version'] = '6.4.16';
 
 // Turn on logging when running tests
 $config['log_date_format'] = 'Y-m-d H:i:s';
