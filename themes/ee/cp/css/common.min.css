@@ -28515,6 +28515,16 @@ input[type=button].btn-block {
   display: block;
 }
 
+@media only screen and (max-width: 768px) {
+  .filter-bar__item.publisher-save-as {
+    position: static;
+  }
+
+  .filter-bar__item.publisher-save-as > button {
+    margin-top: 2em;
+    position: relative;
+  }
+}
 .tab-bar {
   display: flex;
   flex-wrap: wrap-reverse;

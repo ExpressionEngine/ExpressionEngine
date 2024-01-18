@@ -4,7 +4,8 @@ on:
   push:
     branches:
       - '*.dev'
-      - 'release*'
+      - 'release/**'
+      - '!release/**-alpha'
 
 jobs:
 
@@ -32,7 +33,7 @@ jobs:
             with:
               path: .git
               key: cache-ee-git-${{ github.sha }}
-          
+
           - name: Setup PHP
             uses: shivammathur/setup-php@v2
             with:
