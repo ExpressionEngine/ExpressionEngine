@@ -28782,11 +28782,13 @@ input[type=button].btn-block {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  margin-right: 20px;
 }
 @media (max-width: 767px) {
   .link-to-layout {
     padding: 10px 15px 10px 15px;
     flex: 1 1;
+    margin: 0;
   }
 }
 .link-to-layout > i {
@@ -32854,11 +32856,13 @@ body[data-theme=dark] .select-popup {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  margin-right: 20px;
 }
 @media (max-width: 767px) {
   .ee-debugger .link-to-layout {
     padding: 10px 15px 10px 15px;
     flex: 1 1;
+    margin: 0;
   }
 }
 .ee-debugger .link-to-layout > i {

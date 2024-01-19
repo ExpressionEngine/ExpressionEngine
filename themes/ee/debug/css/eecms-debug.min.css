@@ -18364,11 +18364,13 @@ body[data-theme=dark] .hljs .apache .hljs-attribute {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  margin-right: 20px;
 }
 @media (max-width: 767px) {
   .ee-debugger .link-to-layout {
     padding: 10px 15px 10px 15px;
     flex: 1 1;
+    margin: 0;
   }
 }
 .ee-debugger .link-to-layout > i {

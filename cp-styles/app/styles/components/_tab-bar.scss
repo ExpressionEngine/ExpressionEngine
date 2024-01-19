@@ -309,10 +309,12 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
+	margin-right: 20px;
 
 	@include m-tablet-down {
 		padding: 10px 15px 10px 15px;
 		flex: 1 1;
+		margin: 0;
 	}
 
 	& > i {
