@@ -27544,6 +27544,16 @@ input[type=button].btn-block {
   }
 }
 
+.modal.dialog--danger .ee-form-error-message {
+  display: block;
+  margin-top: 5px;
+  font-size: 12px;
+  font-style: normal;
+}
+.modal.dialog--danger .ee-form-error-message li {
+  list-style-type: none;
+}
+
 .jump-menu {
   background: var(--ee-bg-dropdown);
   min-width: 400px;

@@ -208,6 +208,10 @@ class Files extends AbstractFilesController
         //validate before saving on filesystem
         $validation = $subdir->validate();
 
+        if (AJAX_REQUEST && isset($_POST['ee_fv_field']) && $validation->isValid()) {
+            ee()->output->send_ajax_response(['success']);
+        }
+
         if (! $validation->isValid()) {
             $validationErrors = [];
             foreach ($validation->getAllErrors() as $field => $errors) {
@@ -550,6 +554,10 @@ class Files extends AbstractFilesController
 
         //validate before saving on filesystem
         $validation = $file->validate();
+
+        if (AJAX_REQUEST && isset($_POST['ee_fv_field']) && $validation->isValid()) {
+            ee()->output->send_ajax_response(['success']);
+        }
 
         if (!$validation->isValid()) {
             $validationErrors = [];
