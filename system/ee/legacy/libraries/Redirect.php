@@ -28,10 +28,6 @@ if (REQ === 'PAGE' && !bool_config_item('allow_url_redirects_from_site')) {
     }
 }
 
-if (strncmp($_GET['URL'], 'http', 4) != 0 && strpos($_GET['URL'], '://') === false && substr($_GET['URL'], 0, 1) != '/') {
-    $_GET['URL'] = "http://" . $_GET['URL'];
-}
-
 $host = (! isset($_SERVER['HTTP_HOST'])) ? '' : (substr($_SERVER['HTTP_HOST'], 0, 4) == 'www.' ? substr($_SERVER['HTTP_HOST'], 4) : $_SERVER['HTTP_HOST']);
 
 $force_redirect = ($request_type != 'CP' && bool_config_item('force_redirect') == true) ? true : false;
@@ -48,7 +44,8 @@ $link = str_replace('&amp;', '&', $link);
 // catch XSS as well as any HTML or malformed URLs. FILTER_VALIDATE_URL doesn't work with IDN,
 // so this will also fail if an IDN is used as a redirect on a server that is missing PHP's intl extension,
 // but that's okay, as it probably means this redirect was not created by the site owner
-if (substr($_GET['URL'], 0, 1) != '/' && (! filter_var($url, FILTER_VALIDATE_URL) or $link !== ee('Security/XSS')->clean($link))) {
+// if we have an invalid url (not a root relative url and does not validate) OR if our link contains an XSS threat throw an error
+if ((substr($_GET['URL'], 0, 1) != '/' && !filter_var($url, FILTER_VALIDATE_URL)) || $link !== ee('Security/XSS')->clean($link)) {
     show_error(sprintf(lang('redirect_xss_fail'), ee()->typography->encode_email(ee()->config->item('webmaster_email'))));
 }
 
@@ -80,6 +77,7 @@ if (substr($_GET['URL'], 0, 1) != '/'
     $str = "<html>\n<head>\n<meta http-equiv='Content-Type' content='text/html; charset=utf-8'/>\n<title>Redirect</title>\n" .
            '<meta http-equiv="refresh" content="0; URL=' . $_GET['URL'] . '">' .
            "\n</head>\n<body>\n</body>\n</html>";
+
 }
 
 exit($str);
