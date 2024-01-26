@@ -415,7 +415,7 @@ class EE_Functions
      * @param string
      * @return void
      */
-    public function redirect($location, $method = false, $status_code = null)
+    public function redirect($location, $method = false, $status_code = null, $forward_url_parameters = false)
     {
         // Remove hard line breaks and carriage returns
         $location = str_replace(array("\n", "\r"), '', $location);
@@ -427,6 +427,14 @@ class EE_Functions
 
         $location = $this->insert_action_ids($location);
         $location = ee()->uri->reformat($location);
+
+        if ($forward_url_parameters) {
+            $query = ee()->input->server('QUERY_STRING');
+
+            if ($query !== '') {
+                $location .= '?' . $query;
+            }
+        }
 
         if (isset(ee()->session) && count(ee()->session->flashdata)) {
             // Ajax requests don't redirect - serve the flashdata
