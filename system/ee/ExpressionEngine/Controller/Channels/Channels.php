@@ -13,7 +13,7 @@ namespace ExpressionEngine\Controller\Channels;
 use ExpressionEngine\Library\CP;
 use ExpressionEngine\Controller\Channels\AbstractChannels as AbstractChannelsController;
 use ExpressionEngine\Model\Channel\Channel;
-use ExpressionEngine\Library\Data\Collection;
+use ExpressionEngine\Service\Model\Collection;
 
 /**
  * Channels Controller
@@ -205,6 +205,7 @@ class Channels extends AbstractChannelsController
             $channel->FieldGroups = null;
             $channel->CustomFields = null;
             $channel->Statuses = null;
+            $channel->CategoryGroups = null;
         } else {
             $channel = ee('Model')->get('Channel', (int) $channel_id)->first();
 
@@ -246,9 +247,6 @@ class Channels extends AbstractChannelsController
 
             if ($result->isValid()) {
                 $channel = $this->saveChannel($channel);
-
-                // Set category group settings
-                $this->saveCategoryGroupSettings($channel);
 
                 if (is_null($channel_id)) {
                     ee()->session->set_flashdata('highlight_id', $channel->getId());
@@ -424,26 +422,25 @@ class Channels extends AbstractChannelsController
      * @param Channel $channel
      * @return void
      */
-    private function saveCategoryGroupSettings(Channel $channel)
+    private function setCategoryGroupSettings(Channel $channel)
     {
-        //delete all existing category group settings
-        $assignedGroupIds = $channel->CategoryGroups->pluck('group_id');
-        $assignedGroupSettings = array_filter($channel->CategoryGroupSettings->indexBy('group_id'), function ($group) use ($assignedGroupIds) {
-            return in_array($group->group_id, $assignedGroupIds);
-        });
+        $assignedGroupSettings = [];
         foreach ($channel->CategoryGroups as $group) {
-            if (!isset($assignedGroupSettings[$group->group_id])) {
-                $assignedGroupSettings[$group->group_id] = ee('Model')->make('CategoryGroupSettings', [
+            // can't grab CategoryGroupSettings at once, because they would not save properly
+            // so taking one by one - there shouldn't be too many
+            $setting = ee('Model')->get('CategoryGroupSettings')->filter('channel_id', $channel->channel_id)->filter('group_id', $group->group_id)->first();
+            if (empty($setting)) {
+                $setting = ee('Model')->make('CategoryGroupSettings', [
                     'group_id' => $group->group_id,
                     'channel_id' => $channel->channel_id,
                     'site_id' => $channel->site_id,
                 ]);
             }
-            $assignedGroupSettings[$group->group_id]->cat_required = !empty(ee('Request')->post('cat_required')) && in_array($group->group_id, ee('Request')->post('cat_required')) ? 'y' : 'n';
-            $assignedGroupSettings[$group->group_id]->cat_allow_multiple = !empty(ee('Request')->post('cat_allow_multiple')) && in_array($group->group_id, ee('Request')->post('cat_allow_multiple')) ? 'y' : 'n';
-            $assignedGroupSettings[$group->group_id]->save();
+            $setting->cat_required = !empty(ee('Request')->post('cat_required')) && in_array($group->group_id, ee('Request')->post('cat_required')) ? 'y' : 'n';
+            $setting->cat_allow_multiple = !empty(ee('Request')->post('cat_allow_multiple')) && in_array($group->group_id, ee('Request')->post('cat_allow_multiple')) ? 'y' : 'n';
+            $assignedGroupSettings[] = $setting;
         }
-        $channel->CategoryGroupSettings = $assignedGroupSettings;
+        $channel->CategoryGroupSettings = new Collection($assignedGroupSettings);
     }
 
     /**
@@ -1638,6 +1635,9 @@ class Channels extends AbstractChannelsController
         if (ee('Request')->post('clear_versioning_data')) {
             ee()->channel_model->clear_versioning_data($channel->getId());
         }
+
+        // Set category group settings
+        $this->setCategoryGroupSettings($channel);
 
         // Create Channel
         if ($channel->isNew()) {
