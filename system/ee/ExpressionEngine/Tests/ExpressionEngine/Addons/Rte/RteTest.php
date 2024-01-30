@@ -10,6 +10,9 @@
 
 namespace ExpressionEngine\Tests\Addons\Rte;
 
+// because of lowe case the class does not get autoloaded into PHPUnit
+require_once SYSPATH . 'ee/ExpressionEngine/Addons/rte/RteHelper.php';
+
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use ExpressionEngine\Addons\Rte\RteHelper;
