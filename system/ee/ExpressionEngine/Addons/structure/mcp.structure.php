@@ -828,7 +828,7 @@ class Structure_mcp
             'field_name' => 'named_navs'
         ));
         $grid->loadAssets();
-        $grid->setColumns(['ID', 'Navigation Name', 'Site']);
+        $grid->setColumns([lang('nav_id'), lang('nav_name'), lang('site')]);
         $grid->setNoResultsText(lang('no_named_navs'), lang('add_new'));
         $grid->setBlankRow(array(
             array('html' =>  ''),
