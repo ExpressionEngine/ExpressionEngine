@@ -97,6 +97,9 @@ $lang = array(
     'access_edit'                   => 'Can access edit',
     'access_structure'              => 'Can access Structure',
 
+    'no_named_navs'                 => 'No named navigations have been created yet.',
+    'add_a_row'                     => 'Add a row',
+
     'settings_manage'               => 'Manage',
     'settings_reorder'              => 'Reorder',
     'settings_options'              => 'Options',
