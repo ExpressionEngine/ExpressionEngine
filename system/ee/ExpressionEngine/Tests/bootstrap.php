@@ -37,6 +37,14 @@ function log_message()
 // add the composer autoloader
 require_once __DIR__ . '/vendor/autoload.php';
 require_once SYSPATH . 'ee/vendor-build/autoload.php';
+require SYSPATH . 'ee/ExpressionEngine/Core/Autoloader.php';
+ExpressionEngine\Core\Autoloader::getInstance()
+    ->addPrefix('EllisLab\Addons', SYSPATH . 'ee/ExpressionEngine/Addons/')
+    ->addPrefix('EllisLab\ExpressionEngine', SYSPATH . 'ee/ExpressionEngine/')
+    ->addPrefix('ExpressionEngine', SYSPATH . 'ee/ExpressionEngine/')
+    ->addPrefix('Michelf', SYSPATH . 'ee/legacy/libraries/typography/Markdown/Michelf/')
+    ->addPrefix('Mexitek', SYSPATH . 'ee/Mexitek/')
+    ->register();
 
 function lang($str)
 {
