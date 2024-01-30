@@ -718,9 +718,14 @@ class Structure_tab
 
         // PARENT BUG
         // Update: Changed this to `$entry_id` which may cause some oddity with the Parent dropdown.
-        $data = $this->sql->get_data($entry_id);
+        // $data = $this->sql->get_data($entry_id);
 
         foreach ($data as $eid => $entry) {
+            // If we have an entry then this entry and its children
+            // cannot be an option to use as its own parent
+            if ($entry_id && ($eid == $entry_id || $entry['parent_id'] == $entry_id)) {
+                continue;
+            }
             // Add faux indent with "--" double dashes
             $option = str_repeat("--", @$entry['depth']);
             $option .= @$entry['title'];
