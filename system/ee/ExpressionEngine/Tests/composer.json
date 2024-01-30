@@ -15,6 +15,7 @@
     "autoload": {
         "psr-4": {
             "ExpressionEngine\\Tests\\": "",
+            "ExpressionEngine\\Addons\\Rte": "../../ExpressionEngine/Addons/rte/",
             "ExpressionEngine\\": "../../ExpressionEngine/"
         }
     }
