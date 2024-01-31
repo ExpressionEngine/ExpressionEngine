@@ -224,6 +224,12 @@ class SyncConditionalFields extends Utilities
             ->offset($offset)
             ->all();
 
+        // do not save tab data
+        ee()->config->set_item('temporary_skip_saving_tab_data', 'y');
+        // we also don't want to update entry stats
+        ee()->config->set_item('ignore_entry_stats', 'y');
+        // because we're not saving these config items, they will just be reset back their values on next request
+
         foreach ($entries as $entry) {
             // Check to see if the conditional fields are outdated before saving
             if ($entry->conditionalFieldsOutdated()) {

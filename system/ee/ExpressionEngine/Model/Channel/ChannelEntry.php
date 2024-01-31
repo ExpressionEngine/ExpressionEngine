@@ -600,6 +600,12 @@ class ChannelEntry extends ContentModel
 
     public function saveTabData()
     {
+        if (ee()->config->item('temporary_skip_saving_tab_data') == 'y') {
+            // not real config item, is set on-the-fly when running conditional field sync
+            // allows us to skip saving tab data as it's not needed in that case
+            return;
+        }
+
         // Some Tabs might call ee()->api_channel_fields
         ee()->load->library('api');
         ee()->legacy_api->instantiate('channel_fields');

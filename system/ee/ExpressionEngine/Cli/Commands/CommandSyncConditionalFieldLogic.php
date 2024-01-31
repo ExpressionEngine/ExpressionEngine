@@ -104,6 +104,12 @@ class CommandSyncConditionalFieldLogic extends Cli
         foreach ($loopData as $data) {
             $entries = $this->getEntries($data);
 
+            // do not save tab data
+            ee()->config->set_item('temporary_skip_saving_tab_data', 'y');
+            // we also don't want to update entry stats
+            ee()->config->set_item('ignore_entry_stats', 'y');
+            // because we're not saving these config items, they will just be reset back their values on next request
+
             foreach ($entries as $entry) {
                 if ($verbose) {
                     $this->info(sprintf(lang('command_sync_conditional_fields_current_entry'), $entry->getId()));
