@@ -720,10 +720,13 @@ class Structure_tab
         // Update: Changed this to `$entry_id` which may cause some oddity with the Parent dropdown.
         // $data = $this->sql->get_data($entry_id);
 
+        // Create a list of entry_ids to exclude.  Using ids as keys so that we keep a unique list
+        $exclude = [$entry_id => null];
+
         foreach ($data as $eid => $entry) {
-            // If we have an entry then this entry and its children
-            // cannot be an option to use as its own parent
-            if ($entry_id && ($eid == $entry_id || $entry['parent_id'] == $entry_id)) {
+            // If we have an entry then this entry and its descendants cannot used as its own parent
+            if ($entry_id && (array_key_exists($eid, $exclude) || array_key_exists($entry['parent_id'], $exclude))) {
+                $exclude[$eid] = null; // in case we match on parent_id add the entry_id to exclusions
                 continue;
             }
             // Add faux indent with "--" double dashes
