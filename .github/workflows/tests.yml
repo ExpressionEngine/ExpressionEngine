@@ -26,10 +26,10 @@ jobs:
         runs-on: ubuntu-latest
         steps:
           - name: Checkout code
-            uses: actions/checkout@v3
+            uses: actions/checkout@v4
 
           - name: Cache repository info
-            uses: actions/cache@v3
+            uses: actions/cache@v4
             with:
               path: .git
               key: cache-ee-git-${{ github.sha }}
@@ -43,14 +43,14 @@ jobs:
                 ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
 
           - name: Checkout RedactorX
-            uses: actions/checkout@v3
+            uses: actions/checkout@v4
             with:
               repository: ExpressionEngine/RedactorX
               token: ${{ secrets.ORG_ACCESS_TOKEN }}
               path: __redactorx
 
           - name: Setup node
-            uses: actions/setup-node@v3
+            uses: actions/setup-node@v4
             with:
               node-version: '10'
 
@@ -80,7 +80,7 @@ jobs:
               mv ExpressionEngine${{ steps.build_json.outputs.BUILD_VERSION }} ExpressionEngine
 
           - name: Cache built EE version
-            uses: actions/cache@v3
+            uses: actions/cache@v4
             with:
               path: build-tools/builds/ExpressionEngine
               key: cache-ee-build-${{ github.sha }}
@@ -164,7 +164,7 @@ jobs:
         steps:
 
             - name: Use cached EE build
-              uses: actions/cache@v3
+              uses: actions/cache@v4
               with:
                 path: build-tools/builds/ExpressionEngine
                 key: cache-ee-build-${{ github.sha }}
@@ -176,7 +176,7 @@ jobs:
                 cp -R build-tools/builds/ExpressionEngine/* ./
 
             - name: Restore cached git history
-              uses: actions/cache@v3
+              uses: actions/cache@v4
               with:
                 path: .git
                 key: cache-ee-git-${{ github.sha }}
@@ -251,11 +251,11 @@ jobs:
             - name: Install Chrome
               uses: browser-actions/setup-chrome@latest
               with:
-                chrome-version: 120
+                chrome-version: latest
 
             - name: Run Cypress Tests
               if: matrix.php != '5.6'
-              uses: cypress-io/github-action@v5
+              uses: cypress-io/github-action@v6
               with:
                 # spec: ${{ steps.specs.outputs.SPECS }}
                 browser: chrome
@@ -270,7 +270,7 @@ jobs:
 
             - name: Run Cypress Tests (PHP 5.6)
               if: matrix.php == '5.6'
-              uses: cypress-io/github-action@v5
+              uses: cypress-io/github-action@v6
               with:
                 browser: chrome
                 working-directory: tests/cypress
@@ -284,7 +284,7 @@ jobs:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Run Cypress Tests (Electron)
-              uses: cypress-io/github-action@v5
+              uses: cypress-io/github-action@v6
               if: matrix.php == '8.1'
               with:
                 browser: electron
@@ -297,28 +297,28 @@ jobs:
                 COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
 
             - name: Archive screenshots
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               if: failure()
               with:
                 name: cypress-tests-PHP${{ matrix.php }}-${{ matrix.containers }}
                 path: tests/cypress/cypress/screenshots/
 
             - name: Archive server errors
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               if: failure()
               with:
                 name: error.PHP${{ matrix.php }}-${{ matrix.containers }}.log
                 path: /home/runner/php_errors.log
 
             - name: Archive JS errors
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               if: failure()
               with:
                 name: js-error.PHP${{ matrix.php }}-${{ matrix.containers }}.log
                 path: tests/cypress/cypress/downloads/js.log.txt
 
             - name: Archive EE error logs
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               with:
                 name: ee-error-logs.PHP${{ matrix.php }}-${{ matrix.containers }}
                 path: system/user/logs/
