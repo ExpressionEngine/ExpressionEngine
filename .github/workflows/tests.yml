@@ -251,7 +251,7 @@ jobs:
             - name: Install Chrome
               uses: browser-actions/setup-chrome@latest
               with:
-                chrome-version: 120
+                chrome-version: latest
 
             - name: Run Cypress Tests
               if: matrix.php != '5.6'

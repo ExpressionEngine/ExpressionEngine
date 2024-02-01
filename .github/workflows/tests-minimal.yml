@@ -216,7 +216,7 @@ jobs:
             - name: Install Chrome
               uses: browser-actions/setup-chrome@latest
               with:
-                chrome-version: 120
+                chrome-version: latest
 
             - name: Run Cypress Tests
               uses: cypress-io/github-action@v6
