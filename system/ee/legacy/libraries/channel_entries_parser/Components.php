@@ -11,6 +11,7 @@ require_once APPPATH . 'libraries/channel_entries_parser/components/Category.php
 require_once APPPATH . 'libraries/channel_entries_parser/components/Custom_field.php';
 require_once APPPATH . 'libraries/channel_entries_parser/components/Custom_field_pair.php';
 require_once APPPATH . 'libraries/channel_entries_parser/components/Custom_member_field.php';
+require_once APPPATH . 'libraries/channel_entries_parser/components/Custom_member_field_pair.php';
 require_once APPPATH . 'libraries/channel_entries_parser/components/Date.php';
 require_once APPPATH . 'libraries/channel_entries_parser/components/Fluid_field.php';
 require_once APPPATH . 'libraries/channel_entries_parser/components/Grid.php';
@@ -51,6 +52,7 @@ class EE_Channel_parser_components
         $this->register_once('EE_Channel_grid_parser');
         $this->register_once('EE_Channel_fluid_field_parser');
         $this->register_once('EE_Channel_custom_field_pair_parser');
+        $this->register_once('EE_Channel_custom_member_field_pair_parser');
         $this->register_once('EE_Channel_relationship_parser');
         $this->register_once('EE_Channel_switch_parser');
         $this->register_once('EE_Channel_date_parser');

@@ -1,0 +1,54 @@
+{layout="cypress/layout"}
+{exp:member:edit_profile include_assets="yes" datepicker="yes"}
+
+        <p>* Required fields</p>
+
+        <h4>Profile</h4>
+
+        <p>
+            <label for="username">Username*:</label><br />
+            <input type="text" name="username" id="username" value="{username}"/><br />
+        </p>
+
+        <p>
+            <label for="email">Email:</label><br />
+            <input type="text" name="email" id="email" value="{email}"/><br />
+        </p>
+
+        <p>
+            <label for="password">Password:</label><br />
+            <input type="password" name="password" id="password" value=""/>
+        </p>
+
+        <p>
+            <label for="password_confirm">Confirm password*:</label><br />
+            <input type="password" name="password_confirm" id="password_confirm" value=""/>
+        </p>
+
+        <p>
+            <label for="current_password">Current password*:</label><br />
+                <em>You <b>must</b> enter your current password to change your password, username or email.</em>
+             <input type="password" name="current_password" id="current_password" value=""/>
+        </p>
+
+
+    {custom_profile_fields}
+
+        <fieldset class="{field_name}" aria-label="{field_label}" data-id="{field_id}" data-type="{field_type}">
+            <label title="{field_label}">{lang:profile_field}</label><br>
+            <small class="profile_field_description">{lang:profile_field_description}</small><br>
+            <small class="field_instructions">{field_instructions}</small>
+
+            {display_field}
+
+            <div class="field_data">{field_data}</div>
+            <div class="text_direction">{text_direction}</div>
+            <div class="maxlength">{maxlength}</div>
+            {if field_required}<div class="required">*</div>{/if}
+
+        </fieldset>
+     {/custom_profile_fields}
+
+
+    <input type="submit" value="Save profile" id="submit" class="btn btn-primary" />
+{/exp:member:edit_profile}

@@ -133,6 +133,11 @@ require_once SYSPATH . 'ee/language/' . $schema->userdata['deft_lang'] . '/email
 // Install Database Tables!
 $install = $schema->install_tables_and_data();
 
+if (version_compare($schema->version, '7.3.99', '>=')) {
+    ee()->db->query('DELETE FROM exp_channel_category_groups');
+    ee()->db->query('INSERT INTO exp_channel_category_groups (channel_id, group_id) VALUES (1, 1), (2, 2)');
+}
+
 write_config_data($schema);
 
 install_modules($schema->version);

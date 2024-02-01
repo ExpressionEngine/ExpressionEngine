@@ -11,7 +11,10 @@ return array(
     'built_in' => true,
     'fieldtypes' => array(
         'date' => array(
-            'compatibility' => 'date'
+            'compatibility' => 'date',
+            'use' => array(
+                'MemberField'
+            )
         )
     )
 );

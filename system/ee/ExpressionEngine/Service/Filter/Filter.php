@@ -27,7 +27,7 @@ abstract class Filter
     /**
      * @var stirng A language key to use for the display label
      */
-    protected $label;
+    public $label;
 
     /**
      * @var mixed The default value to use for this filter when no value is
