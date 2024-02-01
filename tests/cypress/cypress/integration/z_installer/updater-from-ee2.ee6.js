@@ -15,7 +15,7 @@ let expect_login = false;
 // files before testing the upgrade. Please do not add `page.load()` to any of the
 // `before` calls.
 
-context('Updater', () => {
+context('Updater from EE2', () => {
 
   beforeEach(function(){
 
@@ -65,164 +65,165 @@ context('Updater', () => {
     cy.task('installer:delete_database_config')
   })
 
-  it('appears when using a database.php file', () => {
-    cy.task('db:load', '../../support/sql/database_5.3.0.sql').then(()=>{
-      //cy.wait(5000);
-      page.load()
-      cy.get('body', { timeout: 20000 }).should('be.visible');
-      cy.hasNoErrors()
-      page.get('inline_errors').should('not.exist')
-      page.get('header').invoke('text').then((text) => {
-        expect(text).to.match(/ExpressionEngine from \d+\.\d+\.\d+ to \d+\.\d+\.\d+/)
+
+  context('when updating from 2.x to 6.x', () => {
+    beforeEach(function(){
+      cy.task('db:load', '../../support/sql/database_2.10.1.sql')
+    })
+
+    it('updates using mysql as the dbdriver', () => {
+      cy.task('installer:replace_database_config', {file: database, options: {dbdriver: 'mysql'}}).then(() => {
+        test_update()
+        test_templates()
       })
     })
-  })
 
-  it('shows an error when no database information exists at all', () => {
-    //cy.wait(5000);
-    cy.task('installer:delete_database_config').then(()=>{
-      cy.task('db:load', '../../support/sql/database_5.3.0.sql').then(()=>{
-        //cy.wait(5000);
-        page.load()
-        cy.get('body', { timeout: 20000 }).should('be.visible');
-        page.get('header').invoke('text').then((text) => {
-          expect(text).to.eq('Install Failed')
+
+    it('updates using localhost as the database host', () => {
+      cy.task('installer:replace_database_config', {file: database, options: {hostname: 'localhost'}}).then(()=>{
+        test_cli_update()
+        test_templates()
+      })
+    })
+
+    it('updates using 127.0.0.1 as the database host', () => {
+      cy.task('installer:replace_database_config', {file: database, options: {hostname: '127.0.0.1'}}).then(()=>{
+        test_cli_update()
+        test_templates()
+      })
+    })
+
+    it('updates with the old tmpl_file_basepath', () => {
+      cy.task('installer:revert_config').then(()=>{
+        cy.task('installer:replace_config', {
+          file: config, options: {
+                database: {
+                    hostname: Cypress.env("DB_HOST"),
+                    database: Cypress.env("DB_DATABASE"),
+                    username: Cypress.env("DB_USER"),
+                    password: Cypress.env("DB_PASSWORD")
+                },
+            tmpl_file_basepath: '../system/expressionengine/templates',
+            app_version: '2.20.0'
+
+          }
+        }).then(()=>{
+          test_cli_update()
+          test_templates()
         })
-        page.get('error').contains('Unable to locate any database connection information.')
-        cy.hasNoErrors()
+      })
+    })
+
+    it('updates with invalid tmpl_file_basepath', () => {
+      cy.task('installer:revert_config').then(()=>{
+        cy.task('installer:replace_config', {
+          file:config, options: {
+            tmpl_file_basepath: '../system/not/a/directory/templates',
+            app_version: '2.20.0'
+          }
+        }).then(()=>{
+          test_cli_update()
+          test_templates()
+        })
+      })
+    })
+
+    it('updates using new template basepath', () => {
+      cy.task('installer:revert_config').then(()=>{
+        cy.task('installer:replace_config', {
+          file: config, options: {
+            tmpl_file_basepath: '../system/user/templates',
+            app_version: '2.20.0'
+          }
+        }).then(()=>{
+          test_cli_update()
+          test_templates()
+        })
+      })
+    })
+
+    it('has all required modules installed after the update', () => {
+      test_update()
+      test_templates()
+
+      let installed_modules = []
+      cy.task('db:query', 'SELECT module_name FROM exp_modules').then((result) => {
+        result[0].forEach(function(row){
+          installed_modules.push(row.module_name.toLowerCase());
+        });
+
+        expect(installed_modules).to.include('consent')
+        expect(installed_modules).to.include('channel')
+        expect(installed_modules).to.include('comment')
+        expect(installed_modules).to.include('member')
+        expect(installed_modules).to.include('stats')
+        expect(installed_modules).to.include('rte')
+        expect(installed_modules).to.include('file')
+        expect(installed_modules).to.include('filepicker')
+        expect(installed_modules).to.include('search')
+        expect(installed_modules).to.include('pro')
+      })
+
+      cy.task('db:query', 'SELECT * FROM exp_dashboard_widgets').then((result) => {
+        expect(result[0].length).to.be.gt(1)
+      })
+    })
+
+    it('has all required modules installed after CLI update', () => {
+      test_cli_update()
+      test_templates()
+
+      let installed_modules = []
+      cy.task('db:query', 'SELECT module_name FROM exp_modules').then((result) => {
+        result[0].forEach(function(row){
+          installed_modules.push(row.module_name.toLowerCase());
+        });
+
+        expect(installed_modules).to.include('consent')
+        expect(installed_modules).to.include('channel')
+        expect(installed_modules).to.include('comment')
+        expect(installed_modules).to.include('member')
+        expect(installed_modules).to.include('stats')
+        expect(installed_modules).to.include('rte')
+        expect(installed_modules).to.include('file')
+        expect(installed_modules).to.include('filepicker')
+        expect(installed_modules).to.include('search')
+        expect(installed_modules).to.include('pro')
+      })
+
+      cy.task('db:query', 'SELECT * FROM exp_dashboard_widgets').then((result) => {
+        expect(result[0].length).to.be.gt(1)
       })
     })
   })
 
-  it('turns system off if system was off before updating', () => {
-      cy.task('installer:revert_config').then(() => {
-          cy.task('installer:replace_config', {
-              file: 'support/config/config-5.3.0.php', options: {
-                  database: {
-                      hostname: Cypress.env("DB_HOST"),
-                      database: Cypress.env("DB_DATABASE"),
-                      username: Cypress.env("DB_USER"),
-                      password: Cypress.env("DB_PASSWORD")
-                  },
-                  app_version: '5.3.0',
-                  is_system_on: 'n',
-              }
-          }).then(() => {
-              cy.task('db:load', '../../support/sql/database_5.3.0.sql').then(() => {
-                  test_cli_update()
-                  cy.task('installer:disable')
-                  cy.eeConfig({ item: 'is_system_on' }).then((config) => {
-                      expect(config.trim()).to.be.equal('n')
-                  })
-              })
-          })
-      })
+  it('updates and creates a mailing list export when updating from 2.x to 6.x with the mailing list module', () => {
+    cy.task('db:load', '../../support/sql/database_2.10.1-mailinglist.sql').then(()=>{
+      test_update(true)
+    })
   })
 
-  it('turns system on if system was on before updating', () => {
-      cy.task('installer:revert_config').then(() => {
-          cy.task('installer:replace_config', {
-              file: 'support/config/config-5.3.0.php', options: {
-                  database: {
-                      hostname: Cypress.env("DB_HOST"),
-                      database: Cypress.env("DB_DATABASE"),
-                      username: Cypress.env("DB_USER"),
-                      password: Cypress.env("DB_PASSWORD")
-                  },
-                  app_version: '5.3.0',
-                  is_system_on: 'y',
-              }
-          }).then(() => {
-              cy.task('db:load', '../../support/sql/database_5.3.0.sql').then(() => {
-                  test_cli_update()
-                  cy.task('installer:disable')
-                  cy.eeConfig({ item: 'is_system_on' }).then((config) => {
-                      expect(config.trim()).to.be.equal('y')
-                  })
-              })
-          })
-      })
-  })
-
-  it('updates a core installation successfully and installs the member module', () => {
-
+  it('updates successfully when updating from 2.1.3 to 6.x', () => {
     cy.task('installer:revert_config').then(()=>{
       cy.task('installer:replace_config', {
-        file: 'support/config/config-3.0.5-core.php', options: {
-          database: {
-            hostname: Cypress.env("DB_HOST"),
-            database: Cypress.env("DB_DATABASE"),
-            username: Cypress.env("DB_USER"),
-            password: Cypress.env("DB_PASSWORD")
-          },
-          app_version: '3.0.5'
+        file: 'support/config/config-2.1.3.php', options: {
+          app_version: '213'
         }
       }).then(()=>{
-        cy.task('db:load', '../../support/sql/database_3.0.5-core.sql').then(()=>{
-          from_version = '3.0.5'
-          test_update()
-          cy.task('db:query', 'SELECT count(*) AS count FROM exp_modules WHERE module_name = "Member"').then((result) => {
-            expect(result[0].length).to.eq(1)
+        cy.task('installer:revert_database_config').then(()=>{
+          cy.task('installer:replace_database_config', {
+            file: 'support/config/database-2.1.3.php'
+          }).then(()=>{
+            cy.task('db:load', '../../support/sql/database_2.1.3.sql').then(()=>{
+              from_version = '2.1.3'
+              test_cli_update()
+            })
           })
         })
       })
     })
   })
 
-  it('updates without notices going straight to login page', () => {
-    cy.task('installer:revert_config').then(()=>{
-      cy.task('installer:replace_config', {
-        file: 'support/config/config-5.3.0.php', options: {
-          database: {
-            hostname: Cypress.env("DB_HOST"),
-            database: Cypress.env("DB_DATABASE"),
-            username: Cypress.env("DB_USER"),
-            password: Cypress.env("DB_PASSWORD")
-          },
-          app_version: '5.3.0'
-        }
-      }).then(()=>{
-        cy.task('db:load', '../../support/sql/database_5.3.0.sql').then(()=>{
-          from_version = '5.3.0'
-          expect_login = true
-          test_update(false, expect_login)
-          page.get('success_actions').should('not.exist')
-
-          //shows the banner about filemanager being in legacy mode
-          cy.task('installer:disable').then(() => {
-            cy.login();
-            cy.get('.app-notice-file_manager_compatibility_mode').should('be.visible')
-          })
-        })
-      })
-    })
-  })
-
-  it('shows post-upgrade notice', () => {
-    cy.task('installer:revert_config').then(()=>{
-      cy.task('installer:replace_config', {
-        file: 'support/config/config-5.3.0.php', options: {
-          database: {
-            hostname: Cypress.env("DB_HOST"),
-            database: Cypress.env("DB_DATABASE"),
-            username: Cypress.env("DB_USER"),
-            password: Cypress.env("DB_PASSWORD")
-          },
-          app_version: '5.3.0'
-        }
-      }).then(()=>{
-          cy.task('db:load', '../../support/sql/database_5.3.0.sql').then(()=>{
-            from_version = '5.3.0'
-            cy.task('db:query', "INSERT INTO `exp_fieldtypes` (`name`, `version`, `settings`, `has_global_settings`) VALUES ('fake_fieldtype','1.0.0','YTowOnt9','n');").then(()=>{
-              cy.task('db:query', "INSERT INTO `exp_channel_fields` (`site_id`, `field_name`, `field_label`, `field_instructions`, `field_type`, `field_list_items`, `field_pre_populate`, `field_pre_channel_id`, `field_pre_field_id`, `field_ta_rows`, `field_maxl`, `field_required`, `field_text_direction`, `field_search`, `field_is_hidden`, `field_fmt`, `field_show_fmt`, `field_order`, `field_content_type`, `field_settings`, `legacy_field_data`) VALUES (1,'fake_fieldtype','fake_fieldtype','','fake_fieldtype','','n',0,0,10,0,'n','ltr','y','n','xhtml','y',2,'any','YTo2OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToieSI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJ5IjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToieSI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToieSI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6InkiO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6InkiO30=','y');").then(()=>{
-                test_update()
-                page.get('success_actions').should('exist')
-              })
-          })
-        })
-      })
-    })
-  })
 
   function test_cli_update(mailinglist = false) {
       // Delete any stored mailing lists
