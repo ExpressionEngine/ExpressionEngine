@@ -198,6 +198,7 @@ abstract class Filter
             'placeholder' => $this->placeholder,
             'options' => $options,
             'url_without_filter' => $url_without_filter,
+            'class' => $this->name,
         );
 
         return $view->make('_shared/filters/filter')->render($filter);
