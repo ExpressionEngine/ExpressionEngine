@@ -327,7 +327,7 @@ class Table
                         $count = count($row);
                     }
                     if ($count != count($this->columns)) {
-                        throw new \InvalidArgumentException('Data must have the same number of columns as the set columns.');
+                        throw new \InvalidArgumentException('Data must have the same number of columns as the set columns. ' . $count . ' provided and '. count($this->columns) . ' expected.');
                     }
 
                     $attrs = array();
