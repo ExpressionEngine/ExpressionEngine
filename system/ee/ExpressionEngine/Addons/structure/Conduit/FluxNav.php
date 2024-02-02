@@ -2,8 +2,6 @@
 
 namespace ExpressionEngine\Addons\Structure\Conduit;
 
-@include_once PATH_ADDONS . 'structure/Conduit/McpNav.php';
-
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
