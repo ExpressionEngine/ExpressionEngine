@@ -11,6 +11,7 @@
 namespace ExpressionEngine\Service\Logger;
 
 use ExpressionEngine\Dependency\Monolog;
+use ExpressionEngine\Library\Monolog\Handler\TryAndCatchGroupHandler;
 
 /**
  * Return Logger instance that we can work with
@@ -70,13 +71,13 @@ class Factory
         $logger = new Monolog\Logger($channel);
 
         $config = [];
-        // 'all channels' part goes first, so we could forward it to NullHandler
-        if (isset($this->config['*'])) {
-            $config = $this->config['*'];
-        }
         // get the config part for this channel
         if (isset($this->config[$channel])) {
-            $config = array_merge_recursive($config, $this->config[$channel]);
+            $config = $this->config[$channel];
+        }
+        // 'all channels' part goes last, so we could forward it to NullHandler
+        if (isset($this->config['*'])) {
+            $config = array_merge_recursive($config, $this->config['*']);
         }
         // still nothing set up, log into EE database
         if (empty($config) || empty(reset($config))) {
@@ -94,7 +95,7 @@ class Factory
         }
 
         // the handlers are passed via another handler that does try/catch
-        $catcher = new Monolog\Handler\WhatFailureGroupHandler($handlers);
+        $catcher = new TryAndCatchGroupHandler($handlers);
         $logger->pushHandler($catcher);
 
         if ($forceNew == false) {
@@ -196,6 +197,7 @@ class Factory
                     $contructorParams['level'] = Monolog\Logger::toMonologLevel($level);
                 }
             }
+
             $instance = $reflection->newInstanceArgs($contructorParams);
             if (!empty($processors)) {
                 // recursively add processors

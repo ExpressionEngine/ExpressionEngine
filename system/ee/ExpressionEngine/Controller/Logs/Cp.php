@@ -89,7 +89,7 @@ class Cp extends Logs
             'form_url' => $this->base_url->compile(),
         );
 
-        $logs = $logs->order('act_date', 'desc')
+        $logs = $logs//->order('act_date', 'desc')
             ->limit($this->params['perpage'])
             ->offset($offset)
             ->all();

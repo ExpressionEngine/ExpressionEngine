@@ -45,22 +45,36 @@
 
 return [
     'handlers' => [
+        // log to ExpressionEngine database (requires EE to be booted)
         'DatabaseHandler' => [
             'class' => '\ExpressionEngine\Library\Monolog\Handler\DatabaseHandler', //FQCN
             'params' => [] // parameters, in order passed to constructor, level can be omited
         ],
-        // critical, alert and emergency all send an email in addition
+        // send email using ExpressionEngine means (requires EE to be booted)
         'EEMailHandler' => [
             'class' => '\ExpressionEngine\Library\Monolog\Handler\EEMailHandler'
         ],
+        // log to file
+        'UserLogFileHandler' => [
+            'class' => '\ExpressionEngine\Dependency\Monolog\Handler\RotatingFileHandler',
+            'params' => [SYSPATH . 'user/logs/log.php']
+        ],
+        // system error log
         'ErrorLogHandler' => [
             'class' => '\ExpressionEngine\Dependency\Monolog\Handler\ErrorLogHandler',
         ],
+        // all messages after this handler will not be logged
+        // that includes the handlers defined for 'all channels'
         'NullHandler' => [
             'class' => '\ExpressionEngine\Dependency\Monolog\Handler\NullHandler',
         ],
+        // does not do anything, use for testing
         'NoopHandler' => [
             'class' => '\ExpressionEngine\Dependency\Monolog\Handler\NoopHandler',
+        ],
+        // send logs to browser console
+        'BrowserConsoleHandler' => [
+            'class' => '\ExpressionEngine\Dependency\Monolog\Handler\BrowserConsoleHandler',
         ],
     ],
     'processors' => [
@@ -73,6 +87,15 @@ return [
                 null,
                 ['url', 'server', 'http_method', 'referrer']
             ]
+        ],
+        'HostnameProcessor' => [
+            'class' => '\ExpressionEngine\Dependency\Monolog\Processor\HostnameProcessor'
+        ],
+        'MemoryUsageProcessor' => [
+            'class' => '\ExpressionEngine\Dependency\Monolog\Processor\MemoryUsageProcessor'
+        ],
+        'MemoryPeakUsageProcessor' => [
+            'class' => '\ExpressionEngine\Dependency\Monolog\Processor\MemoryPeakUsageProcessor'
         ],
     ]
 ];

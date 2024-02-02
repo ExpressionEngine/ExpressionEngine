@@ -139,7 +139,7 @@ class Developer extends Logs
             'search_button_value' => lang('search_logs_button')
         );
 
-        $logs = $logs->order('timestamp', 'desc')
+        $logs = $logs//->order('timestamp', 'desc')
             ->order('log_id', 'desc')
             ->limit($this->params['perpage'])
             ->offset($offset)
