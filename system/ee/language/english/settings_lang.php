@@ -889,6 +889,8 @@ $lang = array(
 
     /* Logging */
 
+    'consent_settings' => 'Consent Settings',
+
     'anonymize_consent_logs' => 'Anonymize Consent Audit Logs',
 
     'anonymize_consent_logs_desc' => 'Selected fields will be anonymized in Consent Audit logs',

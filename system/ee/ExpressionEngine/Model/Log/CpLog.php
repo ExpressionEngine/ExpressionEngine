@@ -10,36 +10,36 @@
 
 namespace ExpressionEngine\Model\Log;
 
-use ExpressionEngine\Service\Model\Model;
-
 /**
  * CP Log Model
  */
-class CpLog extends Model
+class CpLog extends Log
 {
-    protected static $_primary_key = 'id';
-    protected static $_table_name = 'cp_log';
+    public function onBeforeInsert()
+    {
+        parent::onBeforeInsert();
+        $this->setProperty('channel', 'cp');
+    }
 
-    protected static $_relationships = array(
-        'Site' => array(
-            'type' => 'belongsTo'
-        ),
-        'Member' => array(
-            'type' => 'belongsTo'
-        )
-    );
+    public function get__id()
+    {
+        return $this->getProperty('log_id');
+    }
 
-    protected static $_validation_rules = array(
-        'ip_address' => 'ip_address'
-    );
+    public function get__act_date()
+    {
+        return $this->getProperty('log_date');
+    }
 
-    protected $id;
-    protected $site_id;
-    protected $member_id;
-    protected $username;
-    protected $ip_address;
-    protected $act_date;
-    protected $action;
+    public function get__username()
+    {
+        return $this->getProperty('member_id');
+    }
+
+    public function get__action()
+    {
+        return $this->getProperty('message');
+    }
 }
 
 // EOF
