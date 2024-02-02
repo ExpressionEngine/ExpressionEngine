@@ -273,6 +273,13 @@ class EE_Output
 
         // --------------------------------------------------------------------
 
+        if (ee()->extensions->active_hook('before_response_send_output') === true) {
+            $output = ee()->extensions->call('before_response_send_output', $output);
+            if (ee()->extensions->end_script === true) {
+                return;
+            }
+        }
+
         // Set the output data
         if ($output == '') {
             $output = & $this->final_output;
@@ -399,6 +406,13 @@ class EE_Output
         // --------------------------------------------------------------------
 
         echo $output;  // Send it to the browser!
+
+        if (ee()->extensions->active_hook('after_response_send_output') === true) {
+            ee()->extensions->call('after_response_send_output');
+            if (ee()->extensions->end_script === true) {
+                return;
+            }
+        }
 
         log_message('debug', "Final output sent to browser");
         log_message('debug', "Total execution time: " . $elapsed);
