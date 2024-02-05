@@ -32,7 +32,7 @@ class ColumnFactory
         'checkbox' => Columns\Checkbox::class
     ];
 
-    private static $instances = [];
+    protected static $instances = [];
 
     private static $structureColumnAvailable;
 
@@ -190,7 +190,7 @@ class ColumnFactory
      *
      * @return array[string]
      */
-    private static function getCompatibleFieldtypes()
+    protected static function getCompatibleFieldtypes()
     {
         static $fieldtypes = false;
         if ($fieldtypes === false) {

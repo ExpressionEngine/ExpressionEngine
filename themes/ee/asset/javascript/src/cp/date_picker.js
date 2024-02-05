@@ -109,6 +109,7 @@ EE.cp.datePicker = {
 			// c: foo,
 			// r: foo,
 			U: Math.floor(date.getTime() / 1000)
+
 		};
 
 		// hat tip: http://stevenlevithan.com/assets/misc/date.format.js
@@ -148,7 +149,16 @@ EE.cp.datePicker = {
 					parent = $(this.element).closest('form');
 				}
 
-				var _picker = $('<div class="date-picker-wrap"><div class="date-picker-clip"><div class="date-picker-clip-inner"></div></div><div class="date-picker-footer"><button class="button date-picker-today-button">Today</button></div></div>');
+				var include_seconds = EE.date.include_seconds
+				var timeBlock;
+
+				if (include_seconds == 'y') {
+					timeBlock = '<input type="time" value="12:00:00" step="1">';
+				} else {
+					timeBlock = '<input type="time" value="12:00">';
+				}
+				var _picker = $('<div class="date-picker-wrap"><div class="date-picker-clip"><div class="date-picker-clip-inner"></div></div><div class="date-picker-footer"><button class="button date-picker-today-button">' + EE.lang.date.today + '</button><div id="date-picker-time-block">' + timeBlock + '</div></div></div>');
+
 				_picker.appendTo(parent);
 				var _pickerWidth = _picker.width();
 
@@ -179,7 +189,10 @@ EE.cp.datePicker = {
 				// listen for clicks on elements classed with .date-picker-back
 				$('.date-picker-clip-inner').on('click', '.date-picker-item td a', function(e){
 					$('.date-picker-item td.act').removeClass('act');
+
 					$(this).closest('td').addClass('act');
+
+					var timeVal = $('.date-picker-wrap #date-picker-time-block input[type="time"]').val();
 
 					if ($(that.element).val()) {
 						var d = new Date($(that.element).data('timestamp') * 1000);
@@ -191,9 +204,68 @@ EE.cp.datePicker = {
 					}
 
 					var now = new Date();
-					d.setHours(now.getHours());
-					d.setMinutes(now.getMinutes());
-					d.setSeconds(now.getSeconds());
+
+					var hoursVal = timeVal.substring(0,timeVal.indexOf(':'));
+					var minutesVal, secondsVal;
+
+					if (include_seconds == 'y') {
+						minutesVal = timeVal.substring(timeVal.indexOf(':')+1);
+						secondsVal = minutesVal.substring(minutesVal.indexOf(':')+1);
+						minutesVal = minutesVal.substring(0,minutesVal.indexOf(':'));
+					} else {
+						minutesVal = timeVal.substring(timeVal.indexOf(':')+1);
+						secondsVal = '00';
+					}
+
+					d.setHours(hoursVal);
+					d.setMinutes(minutesVal);
+					d.setSeconds(secondsVal);
+
+					var date_format = EE.date.date_format;
+
+					// Allow custom date format via data-date-format parameter
+					if ($(that.element).data('dateFormat'))
+					{
+						date_format = $(that.element).data('dateFormat');
+					}
+					$(that.element).val(EE.cp.datePicker.get_formatted_date(d, date_format)).trigger('change');
+					$(that.element).data('timestamp', EE.cp.datePicker.get_formatted_date(d, '%U'));
+
+					$(that.element).focus();
+					// $('.date-picker-wrap').toggle();
+
+					e.preventDefault();
+					e.stopPropagation();
+				});
+
+				$('.date-picker-wrap #date-picker-time-block input[type="time"]').focusout(function(e){
+					var timeVal = $(this).val();
+					var now = new Date();
+					var year = now.getFullYear();
+					var month = now.getMonth();
+					var day = now.getDate();
+
+					if ($(that.element).val()) {
+						d = new Date($(that.element).data('timestamp') * 1000);
+					} else {
+						var d = new Date(that.year, that.month, day, $(this).text());
+					}
+
+					var hoursVal = timeVal.substring(0,timeVal.indexOf(':'));
+					var minutesVal, secondsVal;
+
+					if (include_seconds == 'y') {
+						minutesVal = timeVal.substring(timeVal.indexOf(':')+1);
+						secondsVal = minutesVal.substring(minutesVal.indexOf(':')+1);
+						minutesVal = minutesVal.substring(0,minutesVal.indexOf(':'));
+					} else {
+						minutesVal = timeVal.substring(timeVal.indexOf(':')+1);
+						secondsVal = '00';
+					}
+
+					d.setHours(hoursVal);
+					d.setMinutes(minutesVal);
+					d.setSeconds(secondsVal);
 
 					var date_format = EE.date.date_format;
 
@@ -207,7 +279,6 @@ EE.cp.datePicker = {
 					$(that.element).data('timestamp', EE.cp.datePicker.get_formatted_date(d, '%U'));
 
 					$(that.element).focus();
-					$('.date-picker-wrap').toggle();
 
 					e.preventDefault();
 					e.stopPropagation();
@@ -232,7 +303,7 @@ EE.cp.datePicker = {
 					$(that.element).data('timestamp', EE.cp.datePicker.get_formatted_date(d, '%U'));
 
 					$(that.element).focus();
-					$('.date-picker-wrap').toggle();
+					// $('.date-picker-wrap').toggle();
 
 					e.preventDefault();
 					e.stopPropagation();
@@ -245,7 +316,31 @@ EE.cp.datePicker = {
 			}
 
 			if ($(this.element).val()) {
+				if ($(this.element).data('include_time') != undefined) {
+					if ($(this.element).data('include_time')) {
+						$('.date-picker-wrap .date-picker-footer').addClass('include_time');
+					} else {
+						if ($('.date-picker-wrap .date-picker-footer').hasClass('include_time')) {
+							$('.date-picker-wrap .date-picker-footer').removeClass('include_time');
+						}
+					}
+				}
+
 				var timestamp = $(this.element).data('timestamp');
+
+				var time_format = EE.date.time_format;
+				var value = $(this.element).val();
+				var timeHours;
+
+				value = value.substring(value.indexOf(' ') + 1);
+
+				if (time_format === '12') {
+					timeHours = value.substring(value.indexOf(' ') + 1);
+					value = value.substring(0, value.indexOf(' '));
+				}
+
+				var timevalue;
+				var include_seconds = EE.date.include_seconds;
 
 				if ( ! timestamp) {
 					// this part we need to parse date formats like dd/mm/yyyy and dd-mm-yyyy
@@ -315,10 +410,59 @@ EE.cp.datePicker = {
 				selected = d.getDate();
 				year  = d.getFullYear();
 				month = d.getMonth();
+
+				var pickedHours = value.substring(0, value.indexOf(':'));
+
+				if (timeHours == "PM" && parseInt(pickedHours) < 12) {
+					pickedHours = parseInt(pickedHours) + 12;
+					pickedHours = pickedHours.toString();
+				}
+
+				if (timeHours == "AM") {
+					if (parseInt(pickedHours) == 12) {
+						pickedHours = parseInt(pickedHours) - 12;
+					}
+
+					pickedHours = this.addZero(pickedHours);
+					pickedHours = pickedHours.toString();
+				}
+
+				var pickedMinutes, pickedSeconds;
+
+				if (include_seconds == 'y') {
+					pickedMinutes = value.substring(value.indexOf(':')+1);
+					pickedSeconds = pickedMinutes.substring(pickedMinutes.indexOf(':')+1);
+					pickedMinutes = pickedMinutes.substring(0,pickedMinutes.indexOf(':'));
+				} else {
+					pickedMinutes = value.substring(value.indexOf(':')+1);
+					pickedSeconds = '00';
+				}
+
+				if (include_seconds == 'y') {
+					timevalue = pickedHours + ":" + pickedMinutes + ":" + pickedSeconds;
+				} else {
+					timevalue = pickedHours + ":" + pickedMinutes;
+				}
 			} else {
 				d = new Date();
 				year  = d.getFullYear();
 				month = d.getMonth();
+
+				if ($(this.element).data('include_time') != undefined) {
+					if ($(this.element).data('include_time')) {
+						$('.date-picker-wrap .date-picker-footer').addClass('include_time');
+					} else {
+						if ($('.date-picker-wrap .date-picker-footer').hasClass('include_time')) {
+							$('.date-picker-wrap .date-picker-footer').removeClass('include_time');
+						}
+					}
+				}
+
+				if (include_seconds == 'y') {
+					$('.date-picker-wrap .date-picker-footer input[type="time"]').val('12:00:00');
+				} else {
+					$('.date-picker-wrap .date-picker-footer input[type="time"]').val('12:00')
+				}
 			}
 
 			var html = this.generate(year, month);
@@ -331,6 +475,9 @@ EE.cp.datePicker = {
 							$(this).addClass('act');
 						}
 					});
+					if (timevalue != ':') {
+						$('.date-picker-wrap .date-picker-footer input[type="time"]').val(timevalue);
+					}
 				}
 			}
 		},
@@ -426,7 +573,6 @@ EE.cp.datePicker = {
 					out[out_i++] = '</tr>';
 					out[out_i++] = '<tr>';
 				}
-
 				if (today.getFullYear() == year
 					&& today.getMonth() == month
 					&& today.getDate() == (j + 1)
@@ -455,8 +601,12 @@ EE.cp.datePicker = {
 			this.calendars.push(year + '-' + month);
 
 			return preamble.join('') + daysArr.join('') + closeTr.join('') + out.join('') + closing.join('');
-		}
+		},
 
+		addZero: function(i) {
+			if (i < 10) {i = "0" + i}
+			return i;
+		}
 	},
 
 	Month: {

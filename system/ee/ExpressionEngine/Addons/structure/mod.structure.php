@@ -1958,7 +1958,7 @@ class Structure extends Channel
                 unset($site_pages['templates'][$entry_id]);
 
                 if (! in_array($entry_id, $l_ids)) {
-                    $this->set_status($entry_id, 'closed');
+                    ee('Model')->get('ChannelEntry', $entry_id)->fields('status')->first()->setProperty('status', 'closed')->save();
                 }
             }
             // Delete from exp_structure

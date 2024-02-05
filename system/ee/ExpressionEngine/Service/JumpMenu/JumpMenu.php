@@ -135,7 +135,7 @@ class JumpMenu extends AbstractJumpMenu
                 'command' => 'new create_member_field',
                 'dynamic' => false,
                 'addon' => false,
-                'target' => 'members/fields/create',
+                'target' => 'settings/member-fields/create',
                 'permission' => 'can_admin_roles'
             ),
             'createMemberRole' => array(
@@ -183,7 +183,7 @@ class JumpMenu extends AbstractJumpMenu
                 'command' => 'custom_profile_fields',
                 'dynamic' => false,
                 'addon' => false,
-                'target' => 'members/fields',
+                'target' => 'settings/member-fields',
                 'permission' => 'can_admin_roles'
             ),
             'editMemberField' => array(
@@ -199,7 +199,7 @@ class JumpMenu extends AbstractJumpMenu
                 'command' => 'manage_bans ip_address_banning email_address_banning username_banning screen_name_banning ban_options',
                 'dynamic' => false,
                 'addon' => false,
-                'target' => 'members/ban-settings',
+                'target' => 'settings/ban',
                 'permission' => 'ban_users'
             ),
             //categories
@@ -1867,7 +1867,7 @@ class JumpMenu extends AbstractJumpMenu
                 'target' => 'utilities/query',
                 'permission' => 'can_access_sql_manager'
             ),
-            'systemUtilitiesSearchReindex' => array(
+            'systemUtilitiesContentReindex' => array(
                 'icon' => 'fa-hammer',
                 'command' => 'system_utilities search_reindex',
                 'dynamic' => false,
