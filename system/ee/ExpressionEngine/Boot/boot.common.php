@@ -664,6 +664,17 @@ if (!function_exists('array_key_first')) {
     }
 }
 
+/**
+ * Polyfill for missing tmpfile()
+ * https://www.php.net/manual/en/function.tmpfile.php
+ */
+if (!function_exists('tmpfile')) {
+    function tmpfile()
+    {
+        return \ExpressionEngine\Library\Filesystem\TempFileFactory::fallback();
+    }
+}
+
 
 /**
  * Show pre-formatted debug trace of required depth (default: 5)
