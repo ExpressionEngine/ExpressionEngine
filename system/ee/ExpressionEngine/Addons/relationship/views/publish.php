@@ -81,7 +81,7 @@ if ($deferred) {
     ';
 }
 ?>
-<div data-relationship-react="<?=base64_encode(json_encode($component))?>" data-input-value="<?=$field_name?>" <?php echo ($deferred ? 'class="react-deferred-loading"' : '') ?>>
+<div data-relationship-react="<?=($deferred ? "" : base64_encode(json_encode($component)))?>" data-input-value="<?=$field_name?>" <?php echo ($deferred ? 'class="react-deferred-loading"' : '') ?>>
     <div class="fields-select">
         <div class="field-inputs">
             <?php echo $placeholder ?>
