@@ -211,6 +211,13 @@ class Fluid_field_parser
             $data = ee('LivePreview')->getEntryData();
             $entry_id = $data['entry_id'];
 
+            // This is needed to resolve the 'group' for an existing fluid field
+            $entry_fluid_field_data = ee('Model')->get('fluid_field:FluidField')
+                ->filter('fluid_field_id', 'IN', $fluid_field_ids)
+                ->filter('entry_id', $entry_id)
+                ->all()
+                ->indexBy('id');
+
             // Remove existing fields for the previewed entry, we'll create dummy fields
             // in their place
             $fluid_fields = array_filter($fluid_fields, function ($field) use ($entry_id) {
@@ -226,17 +233,43 @@ class Fluid_field_parser
                     continue;
                 }
 
+                // $fields = $data["field_id_{$fluid_field_id}"]['fields'];
+                $previous_field_group_id = null;
+                $previous_group_key = null;
+                $g = 0;
+
                 foreach ($data["field_id_{$fluid_field_id}"]['fields'] as $key => $value) {
                     if ($key == 'new_field_0') {
                         continue;
                     }
 
                     $field_group_id = null;
+                    $group_key = $key;
+
+                    if (strpos($key, 'new_field_for_group_') === 0) {
+                        $group_key = str_replace('new_field_for_', '', $key);
+                    } else if (strpos($key, 'field_') === 0) {
+                        $id = str_replace('field_', '', $key);
+                        $group_key = array_key_exists($id, $entry_fluid_field_data) ? "group_{$entry_fluid_field_data[$id]->group}" : $key;
+                    }
+
                     foreach (array_keys($value) as $k) {
                         if (strpos($k, 'field_group_id_') === 0) {
                             $field_group_id = (int) str_replace('field_group_id_', '', $k);
                             break;
                         }
+                    }
+
+                    // If the field_group is null we do not have a group and are always incrementing
+                    // If the field_group is not the previous_field_group then we increment the group
+                    // If the field_group is the previous_field_group but the key has changed
+                    if (
+                        $field_group_id == null
+                        || (is_null($field_group_id) && is_null($previous_field_group_id))
+                        || ($field_group_id !== $previous_field_group_id)
+                        || ($field_group_id === $previous_field_group_id && $group_key !== $previous_group_key)
+                    ) {
+                        $g++;
                     }
 
                     $value = reset($value);
@@ -245,25 +278,28 @@ class Fluid_field_parser
                     foreach (array_keys($value) as $k) {
                         if (strpos($k, 'field_id_') === 0) {
                             $field_id = (int) str_replace('field_id_', '', $k);
-                            break;
+                            $fluid_field = ee('Model')->make('fluid_field:FluidField');
+                            $fluid_field->setId("field_id_{$fluid_field_id},{$key}");
+                            $fluid_field->fluid_field_id = $fluid_field_id;
+                            $fluid_field->entry_id = $entry_id;
+                            $fluid_field->field_id = $field_id;
+                            $fluid_field->field_group_id = $field_group_id;
+                            $fluid_field->group = $g; // use the order passed in request
+                            $fluid_field->order = $i;
+                            $fluid_field->field_data_id = $i;
+
+                            $value['entry_id'] = $entry_id;
+                            $fluid_field->setFieldData($value);
+                            $fluid_fields[] = $fluid_field;
+
+                            $i++;
+                            // break;
                         }
                     }
 
-                    $fluid_field = ee('Model')->make('fluid_field:FluidField');
-                    $fluid_field->setId("field_id_{$fluid_field_id},{$key}");
-                    $fluid_field->fluid_field_id = $fluid_field_id;
-                    $fluid_field->entry_id = $entry_id;
-                    $fluid_field->field_id = $field_id;
-                    $fluid_field->field_group_id = $field_group_id;
-                    $fluid_field->group = $i; // use the order passed in request
-                    $fluid_field->order = $i;
-                    $fluid_field->field_data_id = $i;
+                    $previous_group_key = $group_key;
+                    $previous_field_group_id = $field_group_id;
 
-                    $value['entry_id'] = $entry_id;
-                    $fluid_field->setFieldData($value);
-                    $fluid_fields[] = $fluid_field;
-
-                    $i++;
                 }
             }
         }
@@ -305,12 +341,13 @@ class Fluid_field_parser
             }
             if (!isset($groups[$groupKey])) {
                 $groups[$groupKey] = [
-                    'name' => $field->ChannelFieldGroup ? $field->ChannelFieldGroup->group_name : '',
-                    'short_name' => $field->ChannelFieldGroup ? $field->ChannelFieldGroup->short_name : '',
+                    'name' => $field->ChannelFieldGroup ? $field->ChannelFieldGroup->group_name : $field->ChannelField->field_label,
+                    'short_name' => $field->ChannelFieldGroup ? $field->ChannelFieldGroup->short_name : $field->ChannelField->field_name,
+                    'is_field_group' => $field->ChannelFieldGroup ? true : false,
                     'fields' => []
                 ];
             }
-            $groups[$groupKey]['fields'][] = $field;
+            $groups[$groupKey]['fields'][$field->ChannelField->field_order] = $field;
         }
 
         $vars = ee('Variables/Parser')->extractVariables($tagdata);
@@ -347,8 +384,10 @@ class Fluid_field_parser
             $cond[$fluid_field_name . ':' . $group['short_name']] = true;
 
             $group_cond = array_intersect_key($cond, $group_cond_keys);
-            $has_group = !empty(array_filter($group_cond));
+            $has_group = $group['is_field_group'] && !empty(array_filter($group_cond));
             $group_tagdata = ee()->functions->prep_conditionals($cond_tagdata, $group_cond);
+            $group_prefix = $fluid_field_name . ':' . $group['short_name'];
+            $group_tags = [];
             $group_output = '';
 
             $chunks = [
@@ -377,12 +416,43 @@ class Fluid_field_parser
                 }
             }
 
+            // Setup $group_tags with $field data;
+            foreach ($group['fields'] as $fluid_field) {
+                $field_name = $fluid_field->ChannelField->field_name;
+                $field = $fluid_field->getField();
+                $row = array_merge($channel_row, $fluid_field->getFieldData()->getValues());
+                $row['entry_id'] = $entry_id; // the merge can sometimes wipe this out
+                $field->setItem('row', $row);
+
+                $group_tags["$group_prefix:$field_name"] = $field;
+            }
+
             // Since we can have multiple chunks we need to store the current field
             // index and reset it for each chunk so that our meta variables are correct
             $chunk_i = $i;
             foreach ($chunks as $chunk) {
                 $i = $chunk_i;
                 $chunk_output = '';
+
+                // Process Fixed Order parameter {fields fixed_order="field_1|field_2"}
+                $fixed_order = explode('|', $chunk['params']['fixed_order'] ?? '');
+
+                if(!empty($fixed_order)) {
+                    $fields = [];
+                    $count = count($fixed_order);
+                    $fixed_order = array_flip($fixed_order);
+
+                    foreach($group['fields'] as $field_index => $field) {
+                        $name = $field->ChannelField->field_name;
+                        $index = (array_key_exists($name, $fixed_order)) ? $fixed_order[$name] : $count + $field_index;
+                        $fields[$index] = $field;
+                    }
+                    $group['fields'] = $fields;
+                }
+
+                $order = $chunk['params']['order'] ?? 'asc';
+                $order == 'asc' ? ksort($group['fields']) : krsort($group['fields']);
+
                 foreach ($group['fields'] as $fluid_field) {
                     $field_name = $fluid_field->ChannelField->field_name;
 
@@ -423,13 +493,8 @@ class Fluid_field_parser
                     // Make group meta fields available inside field conditional
                     $meta = array_merge($meta, $group_meta);
 
-                    $field = $fluid_field->getField();
-
-                    $row = array_merge($channel_row, $fluid_field->getFieldData()->getValues());
-                    $row['entry_id'] = $entry_id; // the merge can sometimes wipe this out
-
-                    $field->setItem('row', $row);
                     $tag = ee('fluid_field:Tag', $my_tagdata);
+                    $field = $group_tags["$group_prefix:$field_name"];
 
                     $parsed = $tag->parse($field, $meta);
                     $chunk_output .= $parsed;
@@ -443,6 +508,11 @@ class Fluid_field_parser
                 } else {
                     $group_output = $chunk_output;
                 }
+            }
+
+            // If we didn't have any chunks and our output is empty pass group_tagdata along
+            if(empty($chunks) && empty($group_output)) {
+                $group_output = $group_tagdata;
             }
 
             if ($has_group) {
