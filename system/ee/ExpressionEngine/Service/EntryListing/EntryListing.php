@@ -252,10 +252,17 @@ class EntryListing
             ->filter('site_id', $this->site_id);
 
         $columnFields = [];
+        $columnFactory = new EntryManager\ColumnFactory();
         if (in_array('Columns', $this->extra_filters)) {
-            $columns = array_map(function ($identifier) {
-                return EntryManager\ColumnFactory::getColumn($identifier);
+            $columns = array_map(function ($identifier) use ($columnFactory) {
+                return $columnFactory::getColumn($identifier);
             }, $this->filters->values()['columns']);
+            // in order to avoid calls to non-existing tables
+            // we check if the columns are still available
+            $availableColumns = $columnFactory::getAvailableColumns();
+            $columns = array_filter($columns, function ($column) use ($availableColumns) {
+                return !empty($column) && isset($availableColumns[$column->getTableColumnIdentifier()]);
+            });
             foreach ($columns as $column) {
                 if (!empty($column)) {
                     if (!empty($column->getEntryManagerColumnModels())) {

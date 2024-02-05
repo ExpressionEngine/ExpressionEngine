@@ -89,10 +89,16 @@ class Edit extends AbstractPublishController
         // array_unshift($selected_columns, 'checkbox');
 
         $columns = [];
+        $columnFactory = new EntryManager\ColumnFactory();
         foreach ($selected_columns as $column) {
-            $columns[$column] = EntryManager\ColumnFactory::getColumn($column);
+            $columns[$column] = $columnFactory::getColumn($column);
         }
-        $columns = array_filter($columns);
+        // in order to avoid calls to non-existing tables
+        // we check if the columns are still available
+        $availableColumns = $columnFactory::getAvailableColumns();
+        $columns = array_filter($columns, function ($column) use ($availableColumns) {
+            return !empty($column) && isset($availableColumns[$column->getTableColumnIdentifier()]);
+        });
 
         $count = $entry_listing->getEntryCount();
 

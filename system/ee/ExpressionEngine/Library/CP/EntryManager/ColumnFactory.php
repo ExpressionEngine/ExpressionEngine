@@ -34,6 +34,8 @@ class ColumnFactory
 
     private static $instances = [];
 
+    private static $structureColumnAvailable;
+
     /**
      * Returns an instance of a column given its identifier. This factory uses
      * the Flyweight pattern to only keep a single instance of a column around
@@ -58,13 +60,6 @@ class ColumnFactory
             return null;
         }
 
-        // in order to avoid calls to non-existing tables
-        // we check if the columns are still available
-        $availableColumns = static::getAvailableColumns();
-        if (!isset($availableColumns[$identifier])) {
-            return null;
-        }
-
         return self::$instances[$identifier];
     }
 
@@ -72,6 +67,7 @@ class ColumnFactory
      * Returns all available columns in the system, be it a system-standard
      * column, a custom field, or a column provided by an extension
      *
+     * @param mixed $channel The channel to get columns for
      * @return array[Column]
      */
     public static function getAvailableColumns($channel = false)
@@ -95,16 +91,18 @@ class ColumnFactory
      */
     private static function getStandardColumns()
     {
-        $structureColumnAvailable = false;
-        $structure = ee('Addon')->get('structure');
-        if (version_compare((string) $structure->getInstalledVersion(), '6.1.0', '>=')) {
-            $structureColumnAvailable = true;
+        if (is_null(self::$structureColumnAvailable)) {
+            self::$structureColumnAvailable = false;
+            $structure = ee('Addon')->get('structure');
+            if (version_compare((string) $structure->getInstalledVersion(), '6.1.0', '>=')) {
+                self::$structureColumnAvailable = true;
+            }
         }
         return array_filter(
-            array_map(function ($identifier, $column) use ($structureColumnAvailable) {
+            array_map(function ($identifier, $column) {
                 if (
                     ($identifier != 'comments' || bool_config_item('enable_comments')) &&
-                    ($identifier != 'structure_uri' || $structureColumnAvailable)
+                    ($identifier != 'structure_uri' || self::$structureColumnAvailable === true)
                 ) {
                     return static::getColumn($identifier);
                 }
@@ -137,7 +135,7 @@ class ColumnFactory
                 });
         } else {
             $columns = ee('Model')->get('ChannelField')
-                ->all()
+                ->all(true)
                 ->filter(function ($field) {
                     return in_array(
                         $field->field_type,
