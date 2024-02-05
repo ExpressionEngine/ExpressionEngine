@@ -273,7 +273,7 @@ class EE_Output
 
         // --------------------------------------------------------------------
 
-        if (ee()->extensions->active_hook('before_response_send_output') === true) {
+        if (isset(ee()->extensions) && ee()->extensions->active_hook('before_response_send_output') === true) {
             $output = ee()->extensions->call('before_response_send_output', $output);
             if (ee()->extensions->end_script === true) {
                 return;
@@ -407,7 +407,7 @@ class EE_Output
 
         echo $output;  // Send it to the browser!
 
-        if (ee()->extensions->active_hook('after_response_send_output') === true) {
+        if (isset(ee()->extensions) && ee()->extensions->active_hook('after_response_send_output') === true) {
             ee()->extensions->call('after_response_send_output');
             if (ee()->extensions->end_script === true) {
                 return;
