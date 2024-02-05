@@ -287,9 +287,13 @@ class Fluid_field_ft extends EE_Fieldtype
                 $field_id = null;
 
                 // Existing field
-                if (strpos($key, 'field_') === 0 && (!defined('CLONING_MODE') || CLONING_MODE !== true)) {
+                if (strpos($key, 'field_') === 0) {
                     $id = str_replace('field_', '', $key);
-                    if (isset($fluid_field_data[$id])) {
+                    // If we have cloned an existing field we need to populate the fluid_field_data with its data
+                    if(defined('CLONING_MODE') && CLONING_MODE === true && !isset($fluid_field_data[$id])) {
+                        $clonedField = ee('Model')->get('fluid_field:FluidField')->filter('id', $id)->first();
+                        $group_key = 'group_' . $clonedField->group;
+                    }else if (isset($fluid_field_data[$id])) {
                         $group_key = 'group_' . $fluid_field_data[$id]->group;
                     } elseif (ee('Request')->get('version')) {
                         $key = 'new_field_' . ($total_fields + (int) $id);
@@ -302,7 +306,7 @@ class Fluid_field_ft extends EE_Fieldtype
                     $group_key = str_replace('new_field_for_', '', $key);
                 }
 
-                // New field
+                // New field - a cloned `field_X` value should also be considered a new field
                 if (strpos($key, 'new_field_') === 0 || (defined('CLONING_MODE') && CLONING_MODE === true)) {
                     $field_id = str_replace('field_id_', '', $fieldKey);
                 }
