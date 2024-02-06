@@ -368,6 +368,8 @@ $lang = array(
 
     'search_titles_only' => 'Search Titles Only',
 
+    'names_and_email_only' => 'Names & email only',
+
     'columns_filter' => 'Columns',
 
     'perpage_filter' => 'show',
@@ -645,7 +647,7 @@ $lang = array(
 
     'new_member' => 'New Member',
 
-    'all_members' => 'All Members',
+    'all_members' => 'Members',
 
     'pending_members' => 'Pending Members',
 
@@ -790,17 +792,17 @@ $lang = array(
 
     'html_button_ajax_reorder_fail_desc' => 'We failed to save your new html buttons order. Refresh the page and make sure you\'re logged in.',
 
-    /* Search Reindex tip */
+    /* Content Reindex tip */
 
-    'search_reindex_tip' => 'Search Reindex',
+    'search_reindex_tip' => 'Content Reindex',
 
-    'search_reindex_tip_desc' => "Please <a href='%s'>run the search reindex tool</a> tool to keep your searchable data up-to-date.",
+    'search_reindex_tip_desc' => "Please <a href='%s'>run the content reindex tool</a> tool to keep your searchable data up-to-date.",
 
     'reindex_not_needed' => 'Reindexing Not Necessary',
 
     'reindex_not_needed_desc' => 'Your search index is up-to-date!',
 
-    'reindex_explained_desc' => 'The search index can become stale if you have recently changed whether or not certain fieldtypes are searchable.<br>Please see the <a href="' . DOC_URL . '/control-panel/utilities.html#search-reindex">user guide</a> for more details.',
+    'reindex_explained_desc' => 'The searchable content might become stale if you have recently changed properties of some fields. <br>Reindexing will re-populate the data used by complex fields in search and Entry Manager. <br>Please see the <a href="' . DOC_URL . '/control-panel/utilities.html#content-reindex">user guide</a> for more details.',
 
     /* Permissions */
 
@@ -882,7 +884,7 @@ $lang = array(
 
     'remove_set' => 'Remove set button',
 
-    'toggle_buton' => 'toggle buton',
+    'toggle_buton' => 'toggle button',
 
     'reorder_row' => 'Reorder row button',
 

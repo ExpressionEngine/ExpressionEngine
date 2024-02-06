@@ -517,6 +517,8 @@ $lang = array(
 
     'require_terms_of_service_desc' => 'When enabled, users must agree to terms of service during registration.',
 
+    'manage_bans' => 'Ban Settings',
+
     /* Menu Manager */
     'add_menu_item' => 'Add Menu Item',
 

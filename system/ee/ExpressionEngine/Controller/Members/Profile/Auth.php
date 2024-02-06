@@ -62,7 +62,7 @@ class Auth extends Settings
                 }
             }
 
-            if (AJAX_REQUEST) {
+            if (AJAX_REQUEST && ee()->input->post('ee_fv_field') !== false) {
                 return ee('Validation')->ajax($result);
             }
 
@@ -73,6 +73,18 @@ class Auth extends Settings
                 }
 
                 $this->member->save();
+
+                if (ee('Request')->get('modal_form') == 'y') {
+                    $result = [
+                        'saveId' => $this->member->getId(),
+                        'item' => [
+                            'value' => $this->member->getId(),
+                            'label' => $this->member->screen_name,
+                            'instructions' => $this->member->username
+                        ]
+                    ];
+                    return $result;
+                }
 
                 ee('CP/Alert')->makeInline('shared-form')
                     ->asSuccess()
@@ -162,15 +174,24 @@ class Auth extends Settings
             );
         }
 
-        ee()->view->base_url = $this->base_url;
-        ee()->view->ajax_validate = true;
-        ee()->view->cp_page_title = lang('auth_settings');
-        ee()->view->save_btn_text = 'btn_authenticate_and_save';
-        ee()->view->save_btn_text_working = 'btn_saving';
+        $vars['base_url'] = $this->base_url;
+        $vars['ajax_validate'] = true;
+        $vars['cp_page_title'] = lang('auth_settings');
+        $vars['save_btn_text'] = 'btn_authenticate_and_save';
+        $vars['save_btn_text_working'] = 'btn_saving';
 
-        ee()->view->cp_breadcrumbs = array_merge($this->breadcrumbs, [
+        $vars['cp_breadcrumbs'] = array_merge($this->breadcrumbs, [
             '' => lang('auth_settings')
         ]);
+
+        if (ee('Request')->get('modal_form') == 'y') {
+            $sidebar = ee('CP/Sidebar')->render();
+            if (! empty($sidebar)) {
+                $vars['left_nav'] = $sidebar;
+                $vars['left_nav_collapsed'] = ee('CP/Sidebar')->collapsedState;
+            }
+            return ee('View')->make('settings/modal-form')->render($vars);
+        }
 
         ee()->cp->render('settings/form', $vars);
     }

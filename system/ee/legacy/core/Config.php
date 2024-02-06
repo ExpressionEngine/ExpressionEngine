@@ -608,6 +608,7 @@ class EE_Config
             'max_logged_searches',
             'rte_default_toolset',
             'rte_file_browser',
+            'rte_custom_ckeditor_build',
             'forum_trigger',
             'logging',
             //pro config values

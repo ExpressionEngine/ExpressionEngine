@@ -389,22 +389,17 @@ class Uploads extends AbstractFilesController
             )
         );
 
-
-
         // Grid validation results
         ee()->view->image_sizes_errors = isset($this->upload_errors['image_sizes'])
             ? $this->upload_errors['image_sizes'] : array();
 
         // Category group assignment
-        ee()->load->model('category_model');
-        $query = ee()->category_model->get_category_groups('', false, 1);
-
-        $cat_group_options = array();
-        if ($query->num_rows() > 0) {
-            foreach ($query->result() as $row) {
-                $cat_group_options[$row->group_id] = $row->group_name;
-            }
-        }
+        $cat_group_options = ee('Model')
+            ->get('CategoryGroup')
+            ->filter('site_id', ee()->config->item('site_id'))
+            ->filter('exclude_group', '!=', '2')
+            ->all()
+            ->getDictionary('group_id', 'group_name');
 
         $vars['sections']['upload_privileges'][] = array(
             'title' => 'upload_category_groups',
@@ -413,7 +408,7 @@ class Uploads extends AbstractFilesController
                 'cat_group' => array(
                     'type' => 'checkbox',
                     'choices' => $cat_group_options,
-                    'value' => ($upload_destination) ? explode('|', (string) $upload_destination->cat_group) : array(),
+                    'value' => ($upload_destination) ? $upload_destination->CategoryGroups->pluck('group_id') : array(),
                     'no_results' => [
                         'text' => sprintf(lang('no_found'), lang('category_groups'))
                     ]
@@ -654,9 +649,9 @@ class Uploads extends AbstractFilesController
                 unset($_POST['cat_group'][0]);
             }
 
-            $upload_destination->cat_group = implode('|', ee()->input->post('cat_group'));
+            $upload_destination->CategoryGroups = ee('Model')->get('CategoryGroup', ee('Request')->post('cat_group'))->all();
         } else {
-            $upload_destination->cat_group = '';
+            $upload_destination->CategoryGroups = null;
         }
 
         $access = ee()->input->post('upload_roles') ?: array();
