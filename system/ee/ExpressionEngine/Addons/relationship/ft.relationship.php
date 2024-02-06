@@ -467,7 +467,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
 
         $multiple = (bool) $this->settings['allow_multiple'];
 
-        $statuses = ee('Model')->get('Status')->all('true')->getDictionary('status', 'highlight');
+        $statuses = ee('Model')->get('Status')->all(true)->getDictionary('status', 'highlight');
         ee()->javascript->set_global([
             'statuses' => $statuses
         ]);
@@ -523,8 +523,31 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             ];
         }
 
-        return ee('View')->make('relationship:publish')->render([
-            'deferred' => isset($this->settings['deferred_loading']) ? $this->settings['deferred_loading'] : false,
+        // if the loading is deferred, set up URL
+        $deferred = isset($this->settings['deferred_loading']) ? $this->settings['deferred_loading'] : false;
+        $deferUrlParams = [
+            'entry_id' => $this->content_id()
+        ];
+        $deferUrl = null;
+        if ($deferred) {
+            if ($this->content_type() == 'grid') {
+                $deferUrlParams['grid_field_id'] = $this->settings['grid_field_id'];
+                $deferUrlParams['grid_col_id'] = $this->settings['col_id'];
+                $deferUrlParams['grid_row_id'] = $this->settings['grid_row_id'];
+            } else {
+                $deferUrlParams['field_name'] = $this->field_name;
+            }
+            $deferUrl = ee('CP/URL')->make('addons/settings/relationship/defer', $deferUrlParams)->compile();
+        }
+
+        $view = 'relationship:publish';
+        if (ee()->uri->segment(5) == 'defer') {
+            $view = 'relationship:component';
+        }
+
+        return ee('View')->make($view)->render([
+            'deferred' => $deferred,
+            'deferUrl' => $deferUrl,
             'field_name' => $field_name,
             'choices' => $choices,
             'selected' => $selected,
