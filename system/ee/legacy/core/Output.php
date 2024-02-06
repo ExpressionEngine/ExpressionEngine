@@ -273,10 +273,12 @@ class EE_Output
 
         // --------------------------------------------------------------------
 
-        if (ee()->extensions->active_hook('before_response_send_output') === true) {
-            $output = ee()->extensions->call('before_response_send_output', $output);
-            if (ee()->extensions->end_script === true) {
-                return;
+        if(isset(ee()->extensions)) {
+            if (ee()->extensions->active_hook('before_response_send_output') === true) {
+                $output = ee()->extensions->call('before_response_send_output', $output);
+                if (ee()->extensions->end_script === true) {
+                    return;
+                }
             }
         }
 
