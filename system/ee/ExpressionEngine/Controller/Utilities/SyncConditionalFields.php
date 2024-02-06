@@ -229,8 +229,15 @@ class SyncConditionalFields extends Utilities
             if ($entry->conditionalFieldsOutdated()) {
                 // Conditional fields are outdated, so we evaluate the conditions and save
                 $entry->evaluateConditionalFields();
-                $entry->save();
+                $entry->HiddenFields->save();
             }
+        }
+
+        // clear caches
+        if (ee()->config->item('new_posts_clear_caches') == 'y') {
+            ee()->functions->clear_caching('all');
+        } else {
+            ee()->functions->clear_caching('sql');
         }
 
         return json_encode([
