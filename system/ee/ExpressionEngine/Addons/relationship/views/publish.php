@@ -64,7 +64,7 @@ if ($deferred) {
     ';
 }
 ?>
-<div data-relationship-react="<?php if (!$deferred) { $this->embed('relationship:component'); } ?>" data-input-value="<?=$field_name?>" <?php echo ($deferred ? 'class="react-deferred-loading"' : '') ?>>
+<div data-relationship-react="<?php if (!$deferred) { $this->embed('relationship:component'); } ?>" data-input-value="<?=$field_name?>" <?php echo ($deferred ? 'class="react-deferred-loading"' : '') ?> <?php echo ($deferred ? 'data-deferUrl="' . $deferUrl . '"' : '') ?>>
     <div class="fields-select">
         <div class="field-inputs">
             <?php echo $placeholder ?>

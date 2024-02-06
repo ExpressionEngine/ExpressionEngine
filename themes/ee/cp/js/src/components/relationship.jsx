@@ -39,9 +39,20 @@ class Relationship extends React.Component {
 
             $button.on('click', function () {
                 $('div[data-relationship-react]', $wrapper).each(function () {
-                    var props = JSON.parse(window.atob($(this).data('relationshipReact')));
-                    props.name = $(this).data('inputValue');
-                    ReactDOM.render(React.createElement(Relationship, props, null), this);
+                    var deferUrl = $(this).data('deferurl');
+                    fetch(deferUrl)
+                    .then(res => res.json())
+                    .then(
+                        (result) => {
+                            let props = JSON.parse(window.atob(result.content));
+                            console.log(props);
+                            props.name = $(this).data('inputValue');
+                            ReactDOM.render(React.createElement(Relationship, props, null), this);
+                        },
+                        (error) => {
+                            console.log('error',error);
+                        }
+                    )
                 });
             });
         });
