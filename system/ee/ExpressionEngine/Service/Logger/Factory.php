@@ -49,6 +49,9 @@ class Factory
         // not everything might be booted, so we can't use ee()->config->loadFile('logger')
         $this->loggerConfig = array_merge_recursive(get_logger_config(), $this->defaultLoggerConfig);
         $this->config = config_item('logging');
+        if (!is_array($this->config)) {
+            $this->config = json_decode($this->config, true);
+        }
     }
 
     /**

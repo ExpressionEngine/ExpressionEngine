@@ -609,6 +609,7 @@ class EE_Config
             'rte_default_toolset',
             'rte_file_browser',
             'forum_trigger',
+            'logging',
             //pro config values
             'login_logo',
             'favicon',

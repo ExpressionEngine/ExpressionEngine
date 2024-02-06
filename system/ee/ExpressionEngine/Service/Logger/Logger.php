@@ -43,16 +43,20 @@ class Logger extends AbstractLogger implements LoggerInterface
     {
         // if channel not provided, guess based on request type
         if (is_null($channel)) {
-            switch (REQ) {
-                case 'CP':
-                    $channel = 'cp';
-                    break;
-                case 'CLI':
-                    $channel = 'cli';
-                    break;
-                default:
-                    $channel = 'site';
-                    break;
+            if (!defined('REQ')) {
+                $channel = 'site';
+            } else {
+                switch (REQ) {
+                    case 'CP':
+                        $channel = 'cp';
+                        break;
+                    case 'CLI':
+                        $channel = 'cli';
+                        break;
+                    default:
+                        $channel = 'site';
+                        break;
+                }
             }
         }
 

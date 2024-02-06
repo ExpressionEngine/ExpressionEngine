@@ -22,6 +22,19 @@ class Logging extends Settings
      */
     public function index($routes = null, $errors = null)
     {
+        if (! ee('Permission')->can('access_logs')) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
+        if (ee('Request')->isPost()) {
+            $config = $this->saveLoggingSettings();
+        } else {
+            $config = config_item('logging') ?: ['*' => ['DatabaseHandler' => []]];
+            if (!is_array($config)) {
+                $config = json_decode($config, true);
+            }
+        }
+
         $base_url = ee('CP/URL')->make('settings/logging');
 
         $vars = array();
@@ -64,7 +77,6 @@ class Logging extends Settings
         $defaultLoggingConfig = [];
         $specificLoggingConfig = [];
         $id = 0;
-        $config = config_item('logging') ?: ['*' => ['DatabaseHandler' => []]];
 
         foreach ($config as $channel => $channelConfig) {
             foreach ($channelConfig as $handler => $handlerConfig) {
@@ -176,7 +188,8 @@ class Logging extends Settings
                         'field' => array(
                             'type' => 'checkbox',
                             'choices' => $this->getHandlerOptions()['processors'],
-                            'value' => $configRow['processors'] ?? []
+                            'value' => $configRow['processors'] ?? [],
+                            'too_many' => 100
                         ),
                         'grid' => true,
                         'errors' => $errors
@@ -228,6 +241,38 @@ class Logging extends Settings
             'emergency' => 'emergency'
         );
         return $levels;
+    }
+
+    private function saveLoggingSettings()
+    {
+        $post = ee('Security/XSS')->clean($_POST);
+
+        $defaultLogging = $post['defaultLogging']['rows'] ?? [];
+        $specificLogging = $post['specificLogging']['rows'] ?? [];
+
+        $config = [];
+        foreach ($defaultLogging as $row) {
+            $config['*'][$row['handler']] = [
+                'level' => $row['level'],
+                'processors' => $row['processors']
+            ];
+        }
+        foreach ($specificLogging as $row) {
+            $config[$row['channel']][$row['handler']] = [
+                'level' => $row['level'],
+                'processors' => $row['processors']
+            ];
+        }
+
+        ee()->config->update_site_prefs(['logging' => $config]);
+
+        ee('CP/Alert')->makeInline('shared-form')
+            ->asSuccess()
+            ->withTitle(lang('preferences_updated'))
+            ->addToBody(lang('preferences_updated_desc'))
+            ->now();
+
+        return $config;
     }
 }
 // END CLASS
