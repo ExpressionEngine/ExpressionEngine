@@ -166,7 +166,7 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
       var selector = this.props.nested ? '.field-nested' : '.field-inputs';
       $(selector, this.container).sortable({
         axis: 'y',
-        containment: 'parent',
+        containment: false,
         handle: '.icon-reorder',
         items: this.props.nested ? '> li' : 'label',
         placeholder: 'field-reorder-placeholder',
