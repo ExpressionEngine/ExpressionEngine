@@ -28,6 +28,7 @@ class Updater
         $steps = new \ProgressIterator(
             [
                 'migrateLogsTable',
+                'addLogsViewsTable'
             ]
         );
 
@@ -163,6 +164,48 @@ class Updater
                 ),
                 `viewed`
             FROM exp_developer_log");
+    }
+
+    private function addLogsViewsTable()
+    {
+        if (!ee()->db->table_exists('log_manager_views')) {
+            ee()->dbforge->add_field(
+                [
+                    'view_id' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'unsigned' => true,
+                        'null' => false,
+                        'auto_increment' => true
+                    ],
+                    'channel' => [
+                        'type' => 'varchar',
+                        'constraint' => 45,
+                        'default' => null,
+                        'null' => true,
+                    ],
+                    'member_id' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'unsigned' => true,
+                        'null' => false,
+                    ],
+                    'name' => [
+                        'type' => 'varchar',
+                        'constraint' => 128,
+                        'null' => false,
+                        'default' => '',
+                    ],
+                    'columns' => [
+                        'type' => 'text',
+                        'null' => false
+                    ]
+                ]
+            );
+            ee()->dbforge->add_key('view_id', true);
+            ee()->dbforge->add_key(['member_id', 'channel']);
+            ee()->smartforge->create_table('log_manager_views');
+        }
     }
 }
 // EOF

@@ -1755,6 +1755,17 @@ class EE_Schema
 			KEY `role_id_member_id` (`role_id`, `member_id`)
 		);";
 
+        // log manager
+        $Q[] = "CREATE TABLE `exp_log_manager_views` (
+			`view_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`channel` varchar(45) DEFAULT NULL,
+			`member_id` int(10) unsigned NOT NULL,
+			`name` varchar(128) NOT NULL DEFAULT '',
+			`columns` text NOT NULL,
+			PRIMARY KEY (`view_id`),
+			KEY `role_id_member_id` (`role_id`, `member_id`)
+		);";
+
         // Default menu set
         $Q[] = "INSERT INTO exp_menu_sets(name) VALUES ('Default')";
 

@@ -816,8 +816,11 @@ $setup = [
         // ..\FileManager
         'FileManagerView' => 'Model\File\FileManagerView',
 
-        // ..\FileManager
+        // ..\MemberManager
         'MemberManagerView' => 'Model\Member\MemberManagerView',
+
+        // ..\LogManager
+        'LogManagerView' => 'Model\Log\LogManagerView',
     ),
 
     'cookies.necessary' => [
