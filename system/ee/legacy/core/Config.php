@@ -610,7 +610,8 @@ class EE_Config
             'rte_file_browser',
             'rte_custom_ckeditor_build',
             'forum_trigger',
-            'logging',
+            //'logging', cannot be here
+            // because the logging config is read very early, we don't have the DB ready
             //pro config values
             'login_logo',
             'favicon',

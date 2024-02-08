@@ -87,8 +87,9 @@ class Factory
             $config = $this->defaultConfig;
         }
         // developer logs need to go into EE DB always
-        if ($channel == 'developer' && !array_key_exists('DatabaseHandler', $config)) {
+        if ($channel == 'developer') {
             $config = array_merge_recursive($config, $this->defaultConfig);
+            $config['DatabaseHandler'] = 'info';
         }
 
         // set the handlers (and processors recurovely) according to configuration

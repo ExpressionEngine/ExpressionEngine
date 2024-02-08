@@ -78,33 +78,20 @@ class Logs extends CP_Controller
     /**
      * Index function
      *
-     * @access	public
-     * @return	void
+     * @access public
+     * @return string
      */
     public function index()
     {
-        $action = ee('Request')->post('bulk_action');
+        $action = ee()->input->get_post('bulk_action');
 
         if ($action) {
-            $ids = ee('Request')->post('selection');
+            $ids = ee()->input->get_post('selection');
             switch ($action) {
                 case 'remove':
-                    $this->delete($ids);
-                    break;
-
-                case 'approve':
-                    $this->approve($ids);
-                    break;
-
-                case 'decline':
-                    $this->decline($ids);
-                    break;
-
-                case 'resend':
-                    $this->resend($ids);
+                    $this->removeLogs($ids);
                     break;
             }
-
             ee()->functions->redirect($this->base_url);
         }
 
@@ -116,6 +103,20 @@ class Logs extends CP_Controller
         ));
 
         $vars['cp_heading'] = lang('logs');
+
+        $vars['toolbar_items'] = [];
+        if (ee('Permission')->can('access_sys_prefs')) {
+            $vars['toolbar_items']['settings'] = [
+                'href' => ee('CP/URL')->make('settings/logging'),
+                'class' => 'button--secondary icon--settings',
+                'title' => lang('logging_settings')
+            ];
+        }
+        $vars['toolbar_items']['remove'] = [
+            'href' => ee('CP/URL')->make('logs', ['bulk_action' => 'remove', 'selection' => ee()->input->get('channel') ?: '_all_']),
+            'class' => 'button--danger fal fa-trash',
+            'title' => lang('clear_logs'),
+        ];
 
         ee()->view->base_url = $this->base_url;
         ee()->view->ajax_validate = true;
@@ -311,6 +312,10 @@ class Logs extends CP_Controller
      */
     private function createChannelFilter()
     {
+        $builtinChannels = [
+            'cp' => 'cp',
+            'developer' => 'developer',
+        ];
         $channelsQuery = ee()->db->select('channel')
             ->distinct()
             ->from('logs')
@@ -320,6 +325,7 @@ class Logs extends CP_Controller
             return $row['channel'];
         }, $channelsQuery->result_array());
         $channels = array_combine($channels, $channels);
+        $channels = array_merge($channels, $builtinChannels);
 
         $filter = ee('CP/Filter')->make('channel', lang('channel'), $channels);
         $filter->useListFilter();
@@ -393,6 +399,41 @@ class Logs extends CP_Controller
         $message = sprintf(lang('logs_deleted_desc'), $count, lang($log_type));
 
         ee()->view->set_message('success', lang('logs_deleted'), $message, $flashdata);
+    }
+
+    /**
+     * Remove log records
+     *
+     * @param array $ids
+     * @return void
+     */
+    private function removeLogs($ids)
+    {
+        if (empty($ids)) {
+            return;
+        }
+
+        if (is_array($ids)) {
+            $count = count($ids);
+            $type = lang('all');
+            ee('Model')->get('Log', $ids)->delete();
+        } elseif ($ids === '_all_') {
+            ee('Model')->get('Log')->delete();
+            $count = lang('all');
+            $type = '';
+        } else {
+            ee('Model')->get('Log')->filter('channel', (string) $ids)->delete();
+            $count = lang('all');
+            $type = lang($ids);
+        }
+
+        if (isset($count)) {
+            ee('CP/Alert')->makeInline('shared-form')
+                ->asSuccess()
+                ->withTitle(lang('logs_deleted'))
+                ->addToBody(sprintf(lang('logs_deleted_desc'), $count, lang($type)))
+                ->defer();
+        }
     }
 }
 // END CLASS

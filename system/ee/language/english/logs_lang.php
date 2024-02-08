@@ -31,7 +31,7 @@ $lang = array(
 
     'logs_deleted' => 'Logs Deleted',
 
-    'logs_deleted_desc' => '<b>%d</b> log(s) deleted from <b>%s</b> logs',
+    'logs_deleted_desc' => '<b>%s</b> log(s) deleted from <b>%s</b> logs',
 
     'no_consent_logs_found' => 'No <b>Consent audit logs</b> found.',
 

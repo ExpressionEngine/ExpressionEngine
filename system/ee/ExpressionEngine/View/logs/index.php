@@ -11,6 +11,8 @@ if (! AJAX_REQUEST) {
                 <div class="title-bar">
                     <h3 class="title-bar__title title-bar--large"><?=$cp_heading?></h3>
 
+                    <?php $this->embed('ee:_shared/title-toolbar', $toolbar_items); ?>
+
                 </div>
             </div>
 
