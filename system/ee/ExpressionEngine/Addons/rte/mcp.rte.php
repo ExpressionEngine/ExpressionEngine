@@ -224,6 +224,10 @@ class Rte_mcp
         $toolsetType = ee('Security/XSS')->clean(ee('Request')->post('toolset_type', 'ckeditor'));
         if (ee('Request')->isPost()) {
             $settings = ee('Security/XSS')->clean(ee('Request')->post('settings'));
+            if (isset($settings['rte_config_json'])) {
+                // need to allow some extra stuff here
+                $settings['rte_config_json'] = ee('Request')->post('settings')['rte_config_json'];
+            }
 
             // -------------------------------------------
             //  Save and redirect to Index
@@ -251,7 +255,7 @@ class Rte_mcp
             $jsonError = false;
             if ($settings['rte_advanced_config'] == 'y' && !empty($settings['rte_config_json'])) {
                 //override with JSON
-                $json = json_decode(ee('Request')->post('settings')['rte_config_json']);
+                $json = json_decode($settings['rte_config_json']);
                 if (empty($json)) {
                     $jsonError = true;
                     $settings['toolbar'] = $settings[$toolsetType . '_toolbar'];
