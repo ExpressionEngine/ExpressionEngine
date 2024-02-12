@@ -183,10 +183,9 @@ class EE_Logger
                     ->filter('message', $description)
                     ->filter('context', $context)
                     ->all();
-                    // Set log item as unviewed and update the timestamp
+                    // update the timestamp
                 foreach ($logs as $log) {
                     $log->setProperty('log_date', ee()->localize->now)
-                        ->setProperty('viewed', 'n')
                         ->save();
                 }
             }

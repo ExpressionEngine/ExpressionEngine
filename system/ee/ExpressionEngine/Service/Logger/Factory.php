@@ -27,7 +27,10 @@ class Factory
     // default config when nothing is assigned
     protected $defaultConfig = [
         'DatabaseHandler' => [
-            'level' => 'info'
+            'level' => 'info',
+            'processors' => [
+                'CurrentMemberProcessor'
+            ]
         ]
     ];
     // ensure DatabaseHandler is never re-declared
@@ -89,7 +92,7 @@ class Factory
         // developer logs need to go into EE DB always
         if ($channel == 'developer') {
             $config = array_merge_recursive($config, $this->defaultConfig);
-            $config['DatabaseHandler'] = 'info';
+            $config['DatabaseHandler']['level'] = 'info';
         }
 
         // set the handlers (and processors recurovely) according to configuration
@@ -154,7 +157,7 @@ class Factory
                 $loggerConfig['params'] = [];
             }
             if (isset($systemConfig['level'])) {
-                $loggerConfig['level'] = $systemConfig['level'];
+                $loggerConfig['level'] = strtolower($systemConfig['level']);
             } elseif (!isset($loggerConfig['level'])) {
                 $loggerConfig['level'] = 'info';
             }

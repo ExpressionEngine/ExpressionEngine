@@ -31,7 +31,9 @@ class FileSystemEntity extends ContentModel
 
     protected static $_events = array(
         'beforeDelete',
+        'afterDelete',
         'beforeInsert',
+        'afterInsert',
         'beforeSave'
     );
     protected static $_binary_comparisons = array(
@@ -129,6 +131,11 @@ class FileSystemEntity extends ContentModel
     public function getStructure()
     {
         return $this->UploadDestination;
+    }
+
+    public function getTitle()
+    {
+        return $this->title;
     }
 
     /**

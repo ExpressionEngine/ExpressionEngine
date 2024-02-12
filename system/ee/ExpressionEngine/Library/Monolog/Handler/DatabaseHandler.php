@@ -18,6 +18,7 @@ class DatabaseHandler extends AbstractEEProcessingHandler
     protected function write(array $record): void
     {
         $data = array(
+            'site_id' => ee()->config->item('site_id'),
             'channel' => $record['channel'],
             'level' => $record['level'],
             'message' => $record['message'],

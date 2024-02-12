@@ -40,7 +40,7 @@ class IntrospectionProcessor extends Processor\IntrospectionProcessor
     /** @var int */
     private $skipStackFramesCount;
     /** @var string[] */
-    private $skipFunctions = ['call_user_func', 'call_user_func_array', 'log_message'];
+    private $skipFunctions = ['call_user_func', 'call_user_func_array', 'log_message', 'show_exception'];
     /**
      * @param string|int $level               The minimum logging level at which this Processor will be triggered
      * @param string[]   $skipClassesPartials
@@ -50,7 +50,7 @@ class IntrospectionProcessor extends Processor\IntrospectionProcessor
     public function __construct($level = Logger::DEBUG, array $skipClassesPartials = [], int $skipStackFramesCount = 0)
     {
         $this->level = Logger::toMonologLevel($level);
-        $this->skipClassesPartials = \array_merge(['Monolog\\'], $skipClassesPartials);
+        $this->skipClassesPartials = \array_merge(['Monolog\\', 'EE_Exceptions'], $skipClassesPartials);
         $this->skipStackFramesCount = $skipStackFramesCount;
     }
 

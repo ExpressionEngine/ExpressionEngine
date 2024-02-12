@@ -58,15 +58,12 @@ class Logs extends CP_Controller
         $logs = $sidebar->addHeader(lang('logs'))
             ->addBasicList();
 
-        if (ee('Permission')->isSuperAdmin()) {
-            $item = $logs->addItem(lang('developer_log'), ee('CP/URL')->make('logs/developer'));
-        }
+        $item = $logs->addItem(lang('system_log'), ee('CP/URL')->make('logs'));
 
         if (ee('Permission')->can('manage_consents')) {
             $item = $logs->addItem(lang('consent_log'), ee('CP/URL')->make('logs/consent'));
         }
 
-        $item = $logs->addItem(lang('cp_log'), ee('CP/URL')->make('logs/cp'));
         $item = $logs->addItem(lang('throttle_log'), ee('CP/URL')->make('logs/throttle'));
         $item = $logs->addItem(lang('email_log'), ee('CP/URL')->make('logs/email'));
 
@@ -102,7 +99,7 @@ class Logs extends CP_Controller
             'file' => array('cp/confirm_remove'),
         ));
 
-        $vars['cp_heading'] = lang('logs');
+        $vars['cp_heading'] = empty(ee()->input->get('channel')) ? lang('system_log') : ucfirst(lang(ee()->input->get('channel'))) . ' ' . lang('logs');
 
         $vars['toolbar_items'] = [];
         if (ee('Permission')->can('access_sys_prefs')) {
@@ -116,11 +113,12 @@ class Logs extends CP_Controller
             'href' => ee('CP/URL')->make('logs', ['bulk_action' => 'remove', 'selection' => ee()->input->get('channel') ?: '_all_']),
             'class' => 'button--danger fal fa-trash',
             'title' => lang('clear_logs'),
+            'data-warning' => sprintf(lang('confirm_remove_logs'), $vars['cp_heading'])
         ];
 
         ee()->view->base_url = $this->base_url;
         ee()->view->ajax_validate = true;
-        ee()->view->cp_page_title = ee()->view->cp_page_title ?: lang('logs');
+        ee()->view->cp_page_title = ee()->view->cp_page_title ?: lang('system_log');
 
         ee()->view->cp_breadcrumbs = array(
             '' => lang('logs')
@@ -215,7 +213,7 @@ class Logs extends CP_Controller
 
         //which columns should we show
         $columns = [];
-        $filter_values['columns'][] = 'checkbox';
+        array_unshift($filter_values['columns'], 'checkbox');
         foreach ($filter_values['columns'] as $column) {
             $columns[$column] = ColumnFactory::getColumn($column);
         }
@@ -327,7 +325,7 @@ class Logs extends CP_Controller
         $channels = array_combine($channels, $channels);
         $channels = array_merge($channels, $builtinChannels);
 
-        $filter = ee('CP/Filter')->make('channel', lang('channel'), $channels);
+        $filter = ee('CP/Filter')->make('channel', lang('log_channel'), $channels);
         $filter->useListFilter();
 
         return $filter;

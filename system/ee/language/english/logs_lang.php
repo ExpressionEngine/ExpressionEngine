@@ -29,6 +29,8 @@ $lang = array(
 
     'email_log' => 'Email',
 
+    'system_log' => 'System Logs',
+
     'logs_deleted' => 'Logs Deleted',
 
     'logs_deleted_desc' => '<b>%s</b> log(s) deleted from <b>%s</b> logs',
@@ -144,6 +146,20 @@ $lang = array(
     'filter_by_site' => 'filter sites',
 
     'filter_by_username' => 'filter username',
+
+    'log_channel' => 'Log Channel',
+
+    'log_date' => 'Date',
+
+    'log_level' => 'Severity',
+
+    'log_context' => 'Context',
+
+    'log_extra' => 'Extra',
+
+    'logging_settings' => 'Logging settings',
+
+    'confirm_remove_logs' => 'Are you sure you want to remove all %s?',
 
 );
 

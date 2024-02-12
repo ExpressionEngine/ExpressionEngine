@@ -1097,7 +1097,6 @@ class EE_Schema
 		$Q[] = "CREATE TABLE exp_logs (
 			`log_id` int(10) NOT NULL auto_increment,
 			`site_id` INT(4) UNSIGNED NOT NULL DEFAULT 0,
-			`member_id` int(10) unsigned NULL,
 			`log_date` int(10) NOT NULL DEFAULT 0,
 			`level` int(3) NOT NULL,
 			`channel` varchar(45) NOT NULL,
@@ -1105,11 +1104,9 @@ class EE_Schema
 			`context` text NULL,
 			`extra` text NULL,
 			`ip_address` varchar(45) default '0' NOT NULL,
-			`viewed` char(1) NOT NULL DEFAULT 'n',
 			PRIMARY KEY `log_id` (`log_id`),
 			KEY `site_id` (`site_id`),
-			KEY `channel` (`channel`),
-			KEY `member_id` (`member_id`)
+			KEY `channel` (`channel`)
 		)";
 
         // Template Groups

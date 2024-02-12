@@ -897,6 +897,54 @@ $lang = array(
 
     'anonymize_consent_logs_desc' => 'Selected fields will be anonymized in Consent Audit logs',
 
+    'logging_settings' => 'Logging settings',
+
+    'common_logging_settings' => 'Common logging settings',
+
+    'specific_logging_settings' => 'Specific logging settings',
+
+    'logging_channel' => 'Channel',
+
+    'logging_channel_desc' => 'The section where logging is made. Common channels are <i>cp</i>, <i>site</i>, <i>cli</i>',
+
+    'logging_handler' => 'Handler',
+
+    'logging_handler_desc' => 'Defines where and how logs are stored',
+
+    'logging_level' => 'Minimum level',
+
+    'logging_level_desc' => 'Only log with the severyty of selected level and higher will be stored',
+
+    'logging_processors' => 'Processors',
+
+    'logging_processors_desc' => 'Extra information to store with the log',
+
+    'logging_not_configured' => 'Logging not configured',
+
+    'configure' => 'Configure',
+
+    'DatabaseHandler' => 'ExpressionEngine Database',
+
+    'EEMailHandler' => 'ExpressionEngine Email',
+
+    'UserLogFileHandler' => 'User Log File',
+
+    'ErrorLogHandler' => 'PHP Error Log',
+
+    'NullHandler' => 'Terminate Logging',
+
+    'NoopHandler' => 'Skip Logging',
+
+    'WebProcessor' => 'Web Request Info',
+
+    'HostnameProcessor' => 'Hostname',
+
+    'MemoryUsageProcessor' => 'Memory Usage',
+
+    'MemoryPeakUsageProcessor' => 'Peak Memory Usage',
+
+    'CurrentMemberProcessor' => 'Logged In Member Info',
+
 );
 
 // EOF

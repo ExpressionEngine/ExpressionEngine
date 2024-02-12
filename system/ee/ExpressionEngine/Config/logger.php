@@ -81,6 +81,9 @@ return [
         'IntrospectionProcessor' => [
             'class' => '\ExpressionEngine\Library\Monolog\Processor\IntrospectionProcessor'
         ],
+        'CurrentMemberProcessor' => [
+            'class' => '\ExpressionEngine\Library\Monolog\Processor\CurrentMemberProcessor'
+        ],
         'WebProcessor' => [
             'class' => '\ExpressionEngine\Dependency\Monolog\Processor\WebProcessor',
             'params' => [

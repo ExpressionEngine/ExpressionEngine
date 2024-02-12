@@ -10,7 +10,7 @@
 
 namespace ExpressionEngine\Controller\Settings;
 
-use CP_Controller;
+use ExpressionEngine\Dependency\Monolog;
 
 /**
  * Logging Settings Controller
@@ -40,19 +40,19 @@ class Logging extends Settings
         $vars = array();
         $columns = array(
             'channel' => array(
-                'label' => 'channel',
+                'label' => 'logging_channel',
                 'desc' => 'logging_channel_desc'
             ),
             'handler' => array(
-                'label' => 'handler',
+                'label' => 'logging_handler',
                 'desc' => 'logging_handler_desc'
             ),
             'level' => array(
-                'label' => 'level',
+                'label' => 'logging_level',
                 'desc' => 'logging_level_desc'
             ),
             'processors' => array(
-                'label' => 'processors',
+                'label' => 'logging_processors',
                 'desc' => 'logging_processors_desc'
             ),
         );
@@ -177,7 +177,7 @@ class Logging extends Settings
             ),
             // level
             array(
-                'html' => form_dropdown('level', $this->getLevelOptions(), $configRow['level'] ?? 'info'),
+                'html' => form_dropdown('level', $this->getLevelOptions(), isset($configRow['level']) ? strtolower($configRow['level']) : 'info'),
                 'error' => (isset($errors) && $errors->hasErrors("routes[rows][{$id}][route]")) ? implode('<br>', $errors->getErrors("routes[rows][{$id}][route]")) : null
             ),
             // processors
@@ -219,6 +219,9 @@ class Logging extends Settings
             'handlers' => array_combine($handlers, $handlers),
             'processors' => array_combine($processors, $processors)
         );
+        array_walk_recursive($options, function (&$s) {
+            $s = lang($s);
+        });
         return $options;
     }
 
@@ -230,16 +233,11 @@ class Logging extends Settings
             return $levels;
         }
 
-        $levels = array(
-            'debug' => 'debug',
-            'info' => 'info',
-            'notice' => 'notice',
-            'warning' => 'warning',
-            'error' => 'error',
-            'critical' => 'critical',
-            'alert' => 'alert',
-            'emergency' => 'emergency'
-        );
+        $levelContsanst = array_keys(Monolog\Logger::getLevels());
+        array_walk($levelContsanst, function (&$s) {
+            $s = strtolower($s);
+        });
+        $levels = array_combine($levelContsanst, $levelContsanst);
         return $levels;
     }
 

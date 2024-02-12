@@ -59,12 +59,6 @@ class Updater
                         'null' => false,
                         'default' => '0'
                     ],
-                    'member_id' => [
-                        'type' => 'int',
-                        'constraint' => 10,
-                        'unsigned' => true,
-                        'null' => true,
-                    ],
                     'log_date' => [
                         'type' => 'int',
                         'constraint' => 10,
@@ -99,23 +93,11 @@ class Updater
                         'constraint' => 45,
                         'null' => false,
                         'default' => '0'
-                    ],
-                    'viewed' => [
-                        'type' => 'char',
-                        'constraint' => 1,
-                        'null' => false,
-                        'default' => 'n'
-                    ],
-                    'hash' => [
-                        'type' => 'char',
-                        'constraint' => 32,
-                        'null' => true,
-                    ],
+                    ]
                 ]
             );
             ee()->dbforge->add_key('log_id', true);
             ee()->dbforge->add_key('site_id');
-            ee()->dbforge->add_key('member_id');
             ee()->dbforge->add_key('channel');
             ee()->smartforge->create_table('logs');
         }
@@ -123,22 +105,20 @@ class Updater
         // migrate cp_log
         ee('db')->query("INSERT INTO `exp_logs` (
                 `site_id`,
-                `member_id`,
                 `log_date`,
                 `level`,
                 `channel`,
                 `message`,
-                `context`,
+                `extra`,
                 `ip_address`
             ) 
             SELECT
                 `site_id`,
-                `member_id`,
                 `act_date`,
                 '200',
                 'cp',
                 `action`,
-                CONCAT('{\"username\":\"', `username`, 'admin\"}'),
+                CONCAT('{\"current_username\":\"', `username`, '\", \"current_member_id\":\"', `member_id`, '\"}'),
                 `ip_address`
             FROM `exp_cp_log`");
 
@@ -147,22 +127,21 @@ class Updater
                 `log_date`,
                 `level`,
                 `channel`,
-                `message`,
-                `viewed`)
+                `message`)
             SELECT
                 `timestamp`,
                 '300',
                 'developer',
-                CONCAT_WS(' ',
-                    `description`,
-                    CONCAT('Deprecated function ', `function`, ' called'),
-                    CONCAT(' in ', `file`, ' on line ', `line`, '.'),
-                    CONCAT('From template tag exp:', addon_module, ':', `addon_method`, ' in ', `template_group`, '/', `template_name`, '.'),
-                    CONCAT('This tag may have been parsed from one of these snippets: ', `snippets`),
-                    CONCAT('Deprecated since ', `deprecated_since`, '.'),
-                    CONCAT('Use ', `use_instead`, ' instead.')
-                ),
-                `viewed`
+                IFNULL(`description`,
+                    CONCAT_WS(' ',
+                        CONCAT('Deprecated function ', `function`, ' called'),
+                        CONCAT(' in ', `file`, ' on line ', `line`, '.'),
+                        CONCAT('From template tag exp:', addon_module, ':', `addon_method`, ' in ', `template_group`, '/', `template_name`, '.'),
+                        CONCAT('This tag may have been parsed from one of these snippets: ', `snippets`),
+                        CONCAT('Deprecated since ', `deprecated_since`, '.'),
+                        CONCAT('Use ', `use_instead`, ' instead.')
+                    )
+                )
             FROM exp_developer_log");
     }
 

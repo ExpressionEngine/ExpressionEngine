@@ -26,7 +26,7 @@ class Message extends EntryManager\Columns\Column
 
     public function getTableColumnLabel()
     {
-        return $this->identifier;
+        return 'log_' . $this->identifier;
     }
 
     public function renderTableCell($data, $field_id, $log)

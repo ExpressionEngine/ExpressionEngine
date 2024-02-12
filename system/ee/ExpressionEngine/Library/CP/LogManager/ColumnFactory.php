@@ -18,7 +18,6 @@ class ColumnFactory extends EntryManager\ColumnFactory
 {
     protected static $standard_columns = [
         'site_id' => Columns\SiteId::class,
-        'member_id' => Columns\MemberId::class,
         'log_date' => Columns\LogDate::class,
         'level' => Columns\Level::class,
         'channel' => Columns\Channel::class,
