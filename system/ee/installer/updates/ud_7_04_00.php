@@ -40,6 +40,7 @@ class Updater
                 'addShowFieldNamesSetting',
                 'increaseEmailLength',
                 'addMissingPrimaryKeys',
+                'fixCategoryFieldRecords',
             ]
         );
 
@@ -478,12 +479,22 @@ class Updater
             'file_usage'
         ];
 
-        foreach($tables as $table) {
+        foreach ($tables as $table) {
             $column = "{$table}_id";
 
             if (!ee()->db->field_exists($column, $table)) {
                 $table = ee()->db->dbprefix($table);
                 ee()->db->query("ALTER TABLE $table ADD COLUMN `$column` INT(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT FIRST");
+            }
+        }
+    }
+
+    private function fixCategoryFieldRecords()
+    {
+        $query = ee()->db->query("SELECT cat_id, site_id, group_id FROM exp_categories WHERE cat_id NOT IN (SELECT cat_id FROM exp_category_field_data)");
+        if ($query->num_rows() > 0) {
+            foreach ($query->result() as $row) {
+                ee()->db->query("INSERT INTO exp_category_field_data (cat_id, site_id, group_id) VALUES ({$row->cat_id}, {$row->site_id}, {$row->group_id})");
             }
         }
     }
