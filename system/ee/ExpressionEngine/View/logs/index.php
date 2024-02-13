@@ -56,7 +56,8 @@ if (! AJAX_REQUEST) {
 <?php
 $modal_vars = array(
     'name' => 'modal-confirm-delete',
-    'form_url' => $form_url,
+    // 'form_url' => $form_url,
+    'form_url' => ee('CP/URL')->make('logs', ['bulk_action' => 'remove', 'selection' => ee()->input->get('channel') ?: '_all_']),
     'hidden' => array(
         'bulk_action' => 'remove'
     ),

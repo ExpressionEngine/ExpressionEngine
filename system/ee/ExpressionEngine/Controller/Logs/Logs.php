@@ -110,10 +110,11 @@ class Logs extends CP_Controller
             ];
         }
         $vars['toolbar_items']['remove'] = [
-            'href' => ee('CP/URL')->make('logs', ['bulk_action' => 'remove', 'selection' => ee()->input->get('channel') ?: '_all_']),
-            'class' => 'button--danger fal fa-trash',
+            'data-form-url' => ee('CP/URL')->make('logs', ['bulk_action' => 'remove', 'selection' => ee()->input->get('channel') ?: '_all_']),
+            'class' => 'button--danger fal fa-trash button-delete-logs',
             'title' => lang('clear_logs'),
-            'data-warning' => sprintf(lang('confirm_remove_logs'), $vars['cp_heading'])
+            'data-warning' => sprintf(lang('confirm_remove_logs'), $vars['cp_heading']),
+            'rel' => 'modal-confirm-delete'
         ];
 
         ee()->view->base_url = $this->base_url;

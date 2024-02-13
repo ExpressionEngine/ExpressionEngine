@@ -165,6 +165,24 @@ $(document).ready(function () {
 			e.preventDefault();
 		}
 	});
+
+
+	$('body').on('click', 'a.button-delete-logs', function (e) {
+		var form_url = $(this).data('form-url');
+		var warning_text = $(this).data('warning');
+		e.preventDefault();
+
+		// First adjust the checklist
+		var modalIs = '.' + $(this).attr('rel');
+		var modal = $(modalIs+', [rel='+$(this).attr('rel')+']')
+		$(modalIs + " .checklist").html(''); // Reset it
+
+		$(modalIs + " .checklist").append('<li><strong>' + warning_text + '</strong></li>');
+
+		$(modalIs + " .checklist li:last").addClass('last');
+
+		modal.trigger('modal:open')
+	})
 });
 
 EE.cp.Modal = {
