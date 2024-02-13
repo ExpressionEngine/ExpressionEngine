@@ -42,33 +42,27 @@ context('Categories', () => {
         cy.hasNoErrors()
     })
 
-    context('Categories shown on front-end when to custom fields exist', function() {
-        before(function() {
-            cy.visit('admin.php?/cp/categories/create/1');
-            cy.get('input[name=cat_name]').type('Test Me Once')
-            cy.get('.title-bar__extra-tools .saving-options').first().click()
-            cy.get('button').contains('Save & Close').first().click()
+    it('Categories shown on front-end when to custom fields exist', function() {
+        cy.visit('admin.php?/cp/categories/create/1');
+        cy.get('input[name=cat_name]').type('Test Me Once')
+        cy.get('.title-bar__extra-tools .saving-options').first().click()
+        cy.get('button').contains('Save & Close').first().click()
 
-            cy.visit('admin.php?/cp/categories/create/1');
-            cy.get('input[name=cat_name]').type('Test Me Twice')
-            cy.get('.title-bar__extra-tools .saving-options').first().click()
-            cy.get('button').contains('Save & Close').first().click()
-        })
+        cy.visit('admin.php?/cp/categories/create/1');
+        cy.get('input[name=cat_name]').type('Test Me Twice')
+        cy.get('.title-bar__extra-tools .saving-options').first().click()
+        cy.get('button').contains('Save & Close').first().click()
 
-        it('shows the category on the front-end', function() {
-            cy.visit('index.php/cats/index')
-            cy.get('body').should('contain', 'Test Me Once')
-            cy.get('body').should('contain', 'Test Me Twice')
-        })
+        cy.visit('index.php/cats/index')
+        cy.get('body').should('contain', 'Test Me Once')
+        cy.get('body').should('contain', 'Test Me Twice')
 
-        after(function() {
-            cy.authVisit('admin.php?/cp/categories/group/1')
-            cy.get('.js-nestable-categories .list-item__title').contains('Test Me Once').parents('.list-item').find('input[type=checkbox]').check()
-            cy.get('.js-nestable-categories .list-item__title').contains('Test Me Twice').parents('.list-item').find('input[type=checkbox]').check()
-            page.get('bulk_action').select("Delete")
-            page.get('action_submit_button').click()
-            cy.get('[value="Confirm and Delete"]').filter(':visible').first().click()
-        })
+        cy.visit('admin.php?/cp/categories/group/1')
+        cy.get('.js-nestable-categories .list-item__title').contains('Test Me Once').parents('.list-item').find('input[type=checkbox]').check()
+        cy.get('.js-nestable-categories .list-item__title').contains('Test Me Twice').parents('.list-item').find('input[type=checkbox]').check()
+        page.get('bulk_action').select("Delete")
+        page.get('action_submit_button').click()
+        cy.get('[value="Confirm and Delete"]').filter(':visible').first().click()
 
     })
 
