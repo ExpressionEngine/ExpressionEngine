@@ -101,6 +101,8 @@ class CommandAddonsUninstall extends Cli
         ee()->cache->file->delete('/addons-status');
         ee('CP/JumpMenu')->clearAllCaches();
 
+        ee('Logger')->get('cli')->info(lang('addons_uninstalled_desc') . ' ' . $addon->getName());
+
         $this->info(sprintf(lang('command_addons_uninstall_complete'), $addon->getName()));
     }
 }

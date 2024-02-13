@@ -30,6 +30,8 @@ class UploadDestination extends StructureModel
     protected static $_events = array(
         'beforeSave',
         'afterUpdate',
+        'afterInsert',
+        'afterDelete'
     );
 
     protected static $_relationships = array(

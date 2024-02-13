@@ -66,6 +66,7 @@ class CategoryGroup extends StructureModel
     );
 
     protected static $_events = [
+        'afterInsert',
         'afterDelete'
     ];
 
@@ -81,6 +82,7 @@ class CategoryGroup extends StructureModel
 
     public function onAfterDelete()
     {
+        parent::onAfterDelete();
         // Disassociate this group from channels
         foreach ($this->Channels as $channel) {
             $groups = explode('|', (string) $channel->cat_group);

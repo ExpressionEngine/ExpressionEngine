@@ -33,6 +33,9 @@ class Extra extends EntryManager\Columns\Column
     {
         $out = [];
         foreach ($log->extra as $name => $value) {
+            if (is_array($value)) {
+                $value = json_encode($value);
+            }
             $out[] = $name . ': ' . $value;
         }
         return implode('<br>', $out);
