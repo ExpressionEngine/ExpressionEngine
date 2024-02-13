@@ -549,7 +549,7 @@ function remove_invisible_characters($str, $url_encoded = true)
     $non_displayables[] = '/&#(?:823[78]|820[67]);/'; // HTML entity versions of RTL/LTR markers
 
     do {
-        $str = preg_replace($non_displayables, '', (string) $str, -1, $count);
+        $str = (string) preg_replace($non_displayables, '', (string) $str, -1, $count);
     } while ($count);
 
     return $str;
