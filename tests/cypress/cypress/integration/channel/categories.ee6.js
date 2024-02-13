@@ -4,6 +4,8 @@ import Category from '../../elements/pages/channel/Category';
 const page = new Category;
 const { _, $ } = Cypress
 
+var catId;
+
 context('Categories', () => {
 
     before(function() {
@@ -137,6 +139,11 @@ context('Categories', () => {
 
         cy.get('.title-bar__extra-tools .button--primary').first().click()
 
+        cy.url().then(url => {
+            catId = url.split("/").pop();
+            cy.log(catId);
+        })
+
         cy.visit(page.url);
 
         cy.get('.js-nestable-categories').contains('category one')
@@ -213,7 +220,7 @@ context('Categories', () => {
 
     it('check category heading on frontend', function() {
 
-        cy.visit('index.php/cats/heading/category/C5')
+        cy.visit('index.php/cats/heading/category/C' + catId)
 
         check_category_one()
         cy.logFrontendPerformance()
@@ -481,7 +488,7 @@ context('Categories', () => {
             check_category_two()
 
             cy.log('... when using category ID in URL')
-            cy.visit('index.php/cats/manual-heading-2/category/C5')
+            cy.visit('index.php/cats/manual-heading-2/category/C' + catId)
             check_category_two()
             cy.logFrontendPerformance()
 
@@ -508,7 +515,7 @@ context('Categories', () => {
             check_category_two()
 
             cy.log('... when using category ID in URL')
-            cy.visit('index.php/cats/manual-heading/category/C5')
+            cy.visit('index.php/cats/manual-heading/category/' + catId)
             check_category_two()
 
             cy.log('switch the setting')
