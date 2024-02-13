@@ -41,6 +41,7 @@ class Updater
                 'increaseEmailLength',
                 'addMissingPrimaryKeys',
                 'fixCategoryFieldRecords',
+                'fixMemberFieldRecords',
             ]
         );
 
@@ -495,6 +496,16 @@ class Updater
         if ($query->num_rows() > 0) {
             foreach ($query->result() as $row) {
                 ee()->db->query("INSERT INTO exp_category_field_data (cat_id, site_id, group_id) VALUES ({$row->cat_id}, {$row->site_id}, {$row->group_id})");
+            }
+        }
+    }
+
+    private function fixMemberFieldRecords()
+    {
+        $query = ee()->db->query("SELECT member_id FROM exp_members WHERE member_id NOT IN (SELECT member_id FROM exp_member_data)");
+        if ($query->num_rows() > 0) {
+            foreach ($query->result() as $row) {
+                ee()->db->query("INSERT INTO exp_member_data (member_id) VALUES ({$row->member_id})");
             }
         }
     }
