@@ -395,7 +395,19 @@ else: ?>
 
                             $column_label = "<div class=\"grid-field__column-label\"  role=\"rowheader\">
                                 <div class=\"grid-field__column-label__instraction\">
-                                    <label>$column_name</label>";
+                                    <label>";
+                            if (isset($columns[$key]['required']) && $columns[$key]['required']) {
+                                $column_label .= "
+                                    <span class=\"required\">
+                                ";
+                            }
+                            $column_label .= $column_name;
+                            if (isset($columns[$key]['required']) && $columns[$key]['required']) {
+                                $column_label .= "
+                                    </span>
+                                ";
+                            }
+                            $column_label .= "</label>";
                             if (!empty($column_desc)) {
                                 $column_label .= "
                                     <em>$column_desc</em>

@@ -31865,6 +31865,14 @@ fieldset .field-control #eye {
 .grid-field .ui-sortable-placeholder > * {
   display: none !important;
 }
+.grid-field .required:after {
+  content: "*";
+  color: var(--ee-brand-danger);
+  font-size: 1em;
+  position: relative;
+  top: 0px;
+  margin-left: 3px;
+}
 
 .grid-field__table th {
   font-size: 0.9em;
