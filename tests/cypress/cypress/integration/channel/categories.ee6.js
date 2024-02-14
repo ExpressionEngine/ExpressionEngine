@@ -4,6 +4,8 @@ import Category from '../../elements/pages/channel/Category';
 const page = new Category;
 const { _, $ } = Cypress
 
+var catId;
+
 context('Categories', () => {
 
     before(function() {
@@ -40,6 +42,30 @@ context('Categories', () => {
 
     afterEach(function() {
         cy.hasNoErrors()
+    })
+
+    it('Categories shown on front-end when to custom fields exist', function() {
+        cy.visit('admin.php?/cp/categories/create/1');
+        cy.get('input[name=cat_name]').type('Test Me Once')
+        cy.get('.title-bar__extra-tools .saving-options').first().click()
+        cy.get('button').contains('Save & Close').first().click()
+
+        cy.visit('admin.php?/cp/categories/create/1');
+        cy.get('input[name=cat_name]').type('Test Me Twice')
+        cy.get('.title-bar__extra-tools .saving-options').first().click()
+        cy.get('button').contains('Save & Close').first().click()
+
+        cy.visit('index.php/cats/index')
+        cy.get('body').should('contain', 'Test Me Once')
+        cy.get('body').should('contain', 'Test Me Twice')
+
+        cy.visit('admin.php?/cp/categories/group/1')
+        cy.get('.js-nestable-categories .list-item__title').contains('Test Me Once').parents('.list-item').find('input[type=checkbox]').check()
+        cy.get('.js-nestable-categories .list-item__title').contains('Test Me Twice').parents('.list-item').find('input[type=checkbox]').check()
+        page.get('bulk_action').select("Delete")
+        page.get('action_submit_button').click()
+        cy.get('[value="Confirm and Delete"]').filter(':visible').first().click()
+
     })
 
     it('create custom category fields', function() {
@@ -112,6 +138,11 @@ context('Categories', () => {
         cy.get('tr[data-id=7] td').should('not.be.visible')
 
         cy.get('.title-bar__extra-tools .button--primary').first().click()
+
+        cy.url().then(url => {
+            catId = url.split("/").pop();
+            cy.log(catId);
+        })
 
         cy.visit(page.url);
 
@@ -189,7 +220,7 @@ context('Categories', () => {
 
     it('check category heading on frontend', function() {
 
-        cy.visit('index.php/cats/heading/category/C5')
+        cy.visit('index.php/cats/heading/category/C' + catId)
 
         check_category_one()
         cy.logFrontendPerformance()
@@ -457,7 +488,7 @@ context('Categories', () => {
             check_category_two()
 
             cy.log('... when using category ID in URL')
-            cy.visit('index.php/cats/manual-heading-2/category/C5')
+            cy.visit('index.php/cats/manual-heading-2/category/C' + catId)
             check_category_two()
             cy.logFrontendPerformance()
 
@@ -484,7 +515,7 @@ context('Categories', () => {
             check_category_two()
 
             cy.log('... when using category ID in URL')
-            cy.visit('index.php/cats/manual-heading/category/C5')
+            cy.visit('index.php/cats/manual-heading/category/' + catId)
             check_category_two()
 
             cy.log('switch the setting')

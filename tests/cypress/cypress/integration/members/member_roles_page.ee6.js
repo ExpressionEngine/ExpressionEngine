@@ -56,7 +56,7 @@ context('Member Roles List', () => {
   it('cannot delete built-in roles', () => {
     let opts = ['Super Admin', 'Banned', 'Guests', 'Pending', 'Members']
     opts.forEach(function(group) {
-      page.get('list.groups').contains(group).parent().find('input[type="checkbox"]').check();
+      page.get('list.groups').find('.list-item__content:contains(' + group + ')').parent().find('input[type="checkbox"]').check();
       page.get('list.batch_actions').select('Delete')
       page.get('list.batch_submit').click();
       cy.get('.modal-confirm-delete').should('be.visible')

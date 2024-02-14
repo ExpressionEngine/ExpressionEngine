@@ -47,6 +47,7 @@ class CI_DB_driver
     public $cachedir = '';
     public $cache_autodel = false;
     public $CACHE; // The cache class object
+    public $dbcollat_default; // true if the collation is not in the config or is default
 
     // Private variables
     public $_protect_identifiers = true;

@@ -16,6 +16,8 @@ use ExpressionEngine\Error\AddonNotFound;
 class Api_channel_fields extends Api
 {
     public $custom_fields = array();
+    public $custom_member_fields = array();
+    public $custom_member_field_pairs = array();
     public $field_types = array();
     public $ft_paths = array();
     public $settings = array();
@@ -152,6 +154,7 @@ class Api_channel_fields extends Api
         $cfields = array();
         $dfields = array();
         $rfields = array();
+        $msfields = array();
         $gfields = array();
         $pfields = array();
         $ffields = array();
@@ -195,6 +198,8 @@ class Api_channel_fields extends Api
                 $ffields[$row['site_id']][$row['field_name']] = $row['field_id'];
             } elseif ($row['field_type'] == 'toggle') {
                 $tfields[$row['site_id']][$row['field_name']] = $row['field_id'];
+            } elseif ($row['field_type'] == 'member') {
+                $msfields[$row['site_id']][$row['field_name']] = $row['field_id'];
             }
 
             $cfields[$row['site_id']][$row['field_name']] = $row['field_id'];
@@ -205,10 +210,42 @@ class Api_channel_fields extends Api
             'date_fields' => $dfields,
             'relationship_fields' => $rfields,
             'grid_fields' => $gfields,
+            'members_fields' => $msfields,
             'pair_custom_fields' => $pfields,
             'fluid_field_fields' => $ffields,
             'toggle_fields' => $tfields,
         );
+    }
+
+    /**
+     *  Fetch custom member field IDs
+    */
+    public function fetch_custom_member_fields()
+    {
+        ee()->db->select('m_field_id, m_field_name, m_field_fmt, m_legacy_field_data, m_field_type');
+        $query = ee()->db->get('member_fields');
+
+        $mfields = array();
+        foreach ($query->result_array() as $row) {
+            if (! array_key_exists($row['m_field_type'], $this->field_types)) {
+                $this->field_types[$row['m_field_type']] = $this->include_handler($row['m_field_type']);
+            }
+
+            $mfields[$row['m_field_name']] = array($row['m_field_id'], $row['m_field_fmt'], $row['m_legacy_field_data']);
+            $this->custom_member_fields['m_' . $row['m_field_id']] = $row['m_field_type'];
+
+            $field_handler = $this->field_types[$row['m_field_type']];
+            $field_handler = is_object($field_handler) ? get_class($field_handler) : $field_handler;
+
+            // Yay for PHP 4
+            $class_vars = get_class_vars($field_handler);
+
+            if (isset($class_vars['has_array_data']) && $class_vars['has_array_data'] === true) {
+                $this->custom_member_field_pairs[$row['m_field_name']] = $mfields[$row['m_field_name']];
+            }
+        }
+
+        return $mfields;
     }
 
     /**
@@ -298,6 +335,10 @@ class Api_channel_fields extends Api
         } elseif (isset($this->settings[$field_type])) {
             $field_id = $field_type;
             $field_type = $this->settings[$field_id]['field_type'];
+        } elseif (strpos($field_type, 'm_') === 0 && isset($this->custom_member_fields[$field_type])) {
+            //custom member fields
+            $field_id = substr($field_type, 2);
+            $field_type = $this->custom_member_fields[$field_type];
         }
 
         // Now that we know that we're definitely working

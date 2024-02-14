@@ -11,11 +11,12 @@
 namespace ExpressionEngine\Controller\Members;
 
 use CP_Controller;
-use ExpressionEngine\Library\CP;
 use ExpressionEngine\Library\CP\Table;
 use ExpressionEngine\Service\Model\Query\Builder;
 use ExpressionEngine\Service\Member\Member;
 use ExpressionEngine\Service\Model\Collection;
+use ExpressionEngine\Library\CP\MemberManager\ColumnFactory;
+use ExpressionEngine\Library\CP\MemberManager\ColumnRenderer;
 
 /**
  * Members Controller
@@ -35,7 +36,6 @@ class Members extends CP_Controller
         ee()->lang->loadfile('members');
 
         $this->base_url = ee('CP/URL')->make('members');
-        $this->stdHeader();
 
         ee()->javascript->set_global([
             'cp.validatePasswordUrl' => ee('CP/URL', 'login/validate_password')->compile(),
@@ -43,92 +43,34 @@ class Members extends CP_Controller
         ]);
     }
 
-    protected function generateSidebar($active = null)
-    {
-        $sidebar = ee('CP/Sidebar')->make();
-
-        $sidebar->addHeader(lang('members'));
-
-        $all = $sidebar->addItem(lang('all_members'), ee('CP/URL')->make('members')->compile());
-
-        if ($active == 'all_members') {
-            $all->isActive();
-        }
-
-        if (ee('Permission')->can('edit_members')) {
-            $pending = $sidebar->addItem(lang('pending_activation'), ee('CP/URL', 'members/pending')->compile());
-
-            if ($active == 'pending') {
-                $pending->isActive();
-            }
-
-            $banned = $sidebar->addItem(lang('banned'), ee('CP/URL', 'members/banned')->compile());
-
-            if ($active == 'banned') {
-                $banned->isActive();
-            }
-        }
-
-        if (ee('Permission')->can('admin_roles')) {
-            $sidebar->addHeader(lang('member_settings'));
-
-            $member_roles = $sidebar->addItem(lang('member_roles'), ee('CP/URL')->make('members/roles'))->withIcon('user-tag');
-            $custom_member_fields = $sidebar->addItem(lang('custom_member_fields'), ee('CP/URL')->make('members/fields'))->withIcon('bars');
-
-            if ($active == 'roles') {
-                $member_roles->isActive();
-            }
-
-            if ($active == 'fields') {
-                $custom_member_fields->isActive();
-            }
-        }
-
-        if (ee('Permission')->can('ban_users')) {
-            $ban_settings = $sidebar->addItem(lang('manage_bans'), ee('CP/URL')->make('members/ban-settings'))->withIcon('ban');
-
-            if ($active == 'ban-settings') {
-                $ban_settings->isActive();
-            }
-        }
-    }
-
     public function index()
     {
-        if (ee('Request')->post('bulk_action') == 'remove') {
-            $this->delete();
+        $action = ee('Request')->post('bulk_action');
+
+        if ($action) {
+            $ids = ee('Request')->post('selection');
+            switch ($action) {
+                case 'remove':
+                    $this->delete($ids);
+                    break;
+
+                case 'approve':
+                    $this->approve($ids);
+                    break;
+
+                case 'decline':
+                    $this->decline($ids);
+                    break;
+
+                case 'resend':
+                    $this->resend($ids);
+                    break;
+            }
+
             ee()->functions->redirect($this->base_url);
         }
 
-        $members = ee('Model')->get('Member')->with('PrimaryRole', 'Roles');
-
-        $filters = $this->makeAndApplyFilters($members, true);
-        $vars['filters'] = $filters->render($this->base_url);
-
-        $filter_values = $filters->values();
-        $this->base_url->addQueryStringVariables($filter_values);
-
-        $page = ((int) ee('Request')->get('page')) ?: 1;
-        $offset = ($page - 1) * $filter_values['perpage']; // Offset is 0 indexed
-
-        $total_members = $members->count();
-
-        $members->limit($filter_values['perpage'])
-            ->offset($offset);
-
-        $this->generateSidebar('all_members');
-
-        $table = $this->buildTableFromMemberQuery($members);
-
-        $vars['table'] = $table->viewData($this->base_url);
-        $vars['form_url'] = $vars['table']['base_url'];
-
-        if (! empty($vars['table']['data'])) {
-            $vars['pagination'] = ee('CP/Pagination', $total_members)
-                ->perPage($filter_values['perpage'])
-                ->currentPage($page)
-                ->render($this->base_url);
-        }
+        $vars = $this->listingsPage(null);
 
         ee()->javascript->set_global('lang.remove_confirm', lang('members') . ': <b>### ' . lang('members') . '</b>');
         ee()->cp->add_js_script(array(
@@ -150,7 +92,28 @@ class Members extends CP_Controller
             ];
         }
 
-        $vars['can_delete_members'] = ee('Permission')->can('delete_members');
+        $vars['cp_heading'] = lang('all_members');
+        $vars['toolbar_items'] = [];
+        if (ee('Permission')->can('edit_member_fields')) {
+            $vars['toolbar_items']['fields'] = [
+                'href' => ee('CP/URL')->make('settings/member-fields'),
+                'class' => 'button--secondary fal fa-pen-field',
+                'title' => lang('custom_member_fields')
+            ];
+        }
+        if (ee('Permission')->can('access_sys_prefs')) {
+            $vars['toolbar_items']['settings'] = [
+                'href' => ee('CP/URL')->make('settings/members'),
+                'class' => 'button--secondary icon--settings',
+                'title' => lang('member_settings')
+            ];
+        }
+        if (ee('Permission')->can('create_members')) {
+            $vars['toolbar_items']['action_button'] = [
+                'content' => lang('new_member'),
+                'href' => ee('CP/URL')->make('members/create')
+            ];
+        }
 
         ee()->view->base_url = $this->base_url;
         ee()->view->ajax_validate = true;
@@ -160,104 +123,15 @@ class Members extends CP_Controller
             '' => lang('members')
         );
 
-        ee()->cp->render('members/view_members', $vars);
-    }
-
-    public function pending()
-    {
-        $this->base_url = ee('CP/URL')->make('members/pending');
-
-        $action = ee('Request')->post('bulk_action');
-
-        if ($action) {
-            $ids = ee('Request')->post('selection');
-            switch ($action) {
-                case 'approve':
-                    $this->approve($ids);
-
-                    break;
-
-                case 'decline':
-                    $this->decline($ids);
-
-                    break;
-
-                case 'resend':
-                    $this->resend($ids);
-
-                    break;
-            }
-
-            ee()->functions->redirect($this->base_url);
+        if (AJAX_REQUEST) {
+            return array(
+                'html' => ee('View')->make('members/index')->render($vars),
+                'url' => $vars['form_url']->compile(),
+                'viewManager_saveDefaultUrl' => ee('CP/URL')->make('members/views/save-default', ['role_id' => $vars['role_id']])->compile()
+            );
         }
 
-        $this->generateSidebar('pending');
-
-        $members = ee('Model')->get('Member')
-            ->with('PrimaryRole', 'Roles')
-            ->filter('role_id', 4);
-
-        $vars = array(
-            'can_edit' => ee('Permission')->can('edit_members'),
-            'can_delete' => ee('Permission')->can('delete_members'),
-            'resend_available' => (ee()->config->item('req_mbr_activation') == 'email')
-        );
-
-        $filters = $this->makeAndApplyFilters($members, false);
-        $vars['filters'] = $filters->render($this->base_url);
-
-        $filter_values = $filters->values();
-
-        $page = ((int) ee('Request')->get('page')) ?: 1;
-        $offset = ($page - 1) * $filter_values['perpage']; // Offset is 0 indexed
-
-        $total_members = $members->count();
-
-        $members->limit($filter_values['perpage'])
-            ->offset($offset);
-
-        $table = $this->buildTableFromMemberQuery($members);
-
-        $vars['table'] = $table->viewData($this->base_url);
-        $vars['form_url'] = $vars['table']['base_url'];
-
-        if (! empty($vars['table']['data'])) {
-            $vars['pagination'] = ee('CP/Pagination', $total_members)
-                ->perPage($filter_values['perpage'])
-                ->currentPage($page)
-                ->render($this->base_url);
-        }
-
-        ee()->javascript->set_global('lang.remove_confirm', lang('members') . ': <b>### ' . lang('members') . '</b>');
-        ee()->cp->add_js_script(array(
-            'file' => array('cp/confirm_remove', 'cp/members/members'),
-        ));
-
-        if (! ee('Session')->isWithinAuthTimeout()) {
-            $vars['confirm_remove_secure_form_ctrls'] = [
-                'title' => 'your_password',
-                'desc' => 'your_password_delete_members_desc',
-                'group' => 'verify_password',
-                'fields' => [
-                    'verify_password' => [
-                        'type' => 'password',
-                        'required' => true,
-                        'maxlength' => PASSWORD_MAX_LENGTH
-                    ]
-                ]
-            ];
-        }
-
-        ee()->view->base_url = $this->base_url;
-        ee()->view->ajax_validate = true;
-        ee()->view->cp_page_title = ee()->view->cp_page_title ?: lang('pending_members');
-
-        ee()->view->cp_breadcrumbs = array(
-            ee('CP/URL')->make('members')->compile() => lang('members'),
-            '' => lang('pending')
-        );
-
-        ee()->cp->render('members/pending', $vars);
+        ee()->cp->render('members/index', $vars);
     }
 
     /**
@@ -320,6 +194,8 @@ class Members extends CP_Controller
                 ->addToBody($usernames)
                 ->defer();
         }
+
+        ee()->functions->redirect(ee('CP/URL')->make('members', ['role_filter' => Member::PENDING]));
     }
 
     /**
@@ -328,11 +204,14 @@ class Members extends CP_Controller
      * @param array $ids The ID(s) of the member(s) being approved
      * @return void
      */
-    private function resend(array $ids)
+    public function resend(array $ids)
     {
-        if (! ee('Permission')->can('edit_members') or
-            ee()->config->item('req_mbr_activation') !== 'email') {
+        if (! ee('Permission')->can('edit_members') || ee()->config->item('req_mbr_activation') !== 'email') {
             show_error(lang('unauthorized_access'), 403);
+        }
+
+        if (! is_array($ids)) {
+            $ids = array($ids);
         }
 
         $members = ee('Model')->get('Member', $ids)
@@ -372,6 +251,8 @@ class Members extends CP_Controller
                 ->addToBody($members->pluck('username'))
                 ->defer();
         }
+
+        ee()->functions->redirect(ee('CP/URL')->make('members', ['role_filter' => Member::PENDING]));
     }
 
     /**
@@ -410,629 +291,22 @@ class Members extends CP_Controller
 
     public function banned()
     {
-        if (! ee('Permission')->can('ban_users')) {
-            show_error(lang('unauthorized_access'), 403);
-        }
-
-        ee()->load->library('form_validation');
-
-        $this->base_url = ee('CP/URL', 'members/banned');
-
-        if (ee('Request')->post('bulk_action') == 'remove') {
-            $this->delete();
-            ee()->functions->redirect($this->base_url);
-        }
-
-        $this->generateSidebar('banned');
-
-        $members = ee('Model')->get('Member')
-            ->with('PrimaryRole', 'Roles')
-            ->filter('role_id', 2);
-
-        $filters = $this->makeAndApplyFilters($members, false);
-        $vars['filters'] = $filters->render($this->base_url);
-
-        $filter_values = $filters->values();
-
-        $page = ((int) ee('Request')->get('page')) ?: 1;
-        $offset = ($page - 1) * $filter_values['perpage']; // Offset is 0 indexed
-
-        $total_members = $members->count();
-
-        $members->limit($filter_values['perpage'])
-            ->offset($offset);
-
-        $table = $this->buildTableFromMemberQuery($members);
-
-        $vars['table'] = $table->viewData($this->base_url);
-        $vars['form_url'] = $vars['table']['base_url'];
-
-        if (! empty($vars['table']['data'])) {
-            $vars['pagination'] = ee('CP/Pagination', $total_members)
-                ->perPage($filter_values['perpage'])
-                ->currentPage($page)
-                ->render($this->base_url);
-        }
-
-        ee()->javascript->set_global('lang.remove_confirm', lang('members') . ': <b>### ' . lang('members') . '</b>');
-        ee()->cp->add_js_script(array(
-            'file' => array('cp/confirm_remove', 'cp/members/members'),
-        ));
-
-        if (! ee('Session')->isWithinAuthTimeout()) {
-            $vars['confirm_remove_secure_form_ctrls'] = [
-                'title' => 'your_password',
-                'desc' => 'your_password_delete_members_desc',
-                'group' => 'verify_password',
-                'fields' => [
-                    'verify_password' => [
-                        'type' => 'password',
-                        'required' => true,
-                        'maxlength' => PASSWORD_MAX_LENGTH
-                    ]
-                ]
-            ];
-        }
-
-        $vars['can_delete_members'] = ee('Permission')->can('delete_members');
-
-        $values = [
-            'banned_ips' => '',
-            'banned_emails' => '',
-            'banned_usernames' => '',
-            'banned_screen_names' => '',
-        ];
-
-        foreach (array_keys($values) as $item) {
-            $value = ee()->config->item($item);
-
-            if ($value != '') {
-                foreach (explode('|', $value) as $line) {
-                    $values[$item] .= $line . NL;
-                }
-            }
-        }
-
-        $ban_action = ee()->config->item('ban_action');
-
-        $vars['form'] = array(
-            'ajax_validate' => true,
-            'base_url' => $this->base_url,
-            'cp_page_title' => lang('manage_bans'),
-            'save_btn_text' => sprintf(lang('btn_save'), lang('settings')),
-            'save_btn_text_working' => 'btn_saving',
-            'sections' => array(
-                array(
-                    array(
-                        'title' => 'ip_address_banning',
-                        'desc' => 'ip_banning_instructions',
-                        'fields' => array(
-                            'banned_ips' => array(
-                                'type' => 'textarea',
-                                'value' => $values['banned_ips']
-                            )
-                        )
-                    ),
-                    array(
-                        'title' => 'email_address_banning',
-                        'desc' => 'email_banning_instructions',
-                        'fields' => array(
-                            'banned_emails' => array(
-                                'type' => 'textarea',
-                                'value' => $values['banned_emails']
-                            )
-                        )
-                    ),
-                    array(
-                        'title' => 'username_banning',
-                        'desc' => 'username_banning_instructions',
-                        'fields' => array(
-                            'banned_usernames' => array(
-                                'type' => 'textarea',
-                                'value' => $values['banned_usernames']
-                            )
-                        )
-                    ),
-                    array(
-                        'title' => 'screen_name_banning',
-                        'desc' => 'screen_name_banning_instructions',
-                        'fields' => array(
-                            'banned_screen_names' => array(
-                                'type' => 'textarea',
-                                'value' => $values['banned_screen_names']
-                            )
-                        )
-                    ),
-                    array(
-                        'title' => 'ban_options',
-                        'desc' => 'ban_options_desc',
-                        'fields' => array(
-                            'ban_action_pt1' => array(
-                                'type' => 'radio',
-                                'name' => 'ban_action',
-                                'choices' => array(
-                                    'restrict' => lang('restrict_to_viewing'),
-                                    'message' => lang('show_this_message'),
-                                ),
-                                'value' => $ban_action
-                            ),
-                            'ban_message' => array(
-                                'type' => 'textarea',
-                                'value' => ee()->config->item('ban_message')
-                            ),
-                            'ban_action_pt2' => array(
-                                'type' => 'radio',
-                                'name' => 'ban_action',
-                                'choices' => array(
-                                    'bounce' => lang('send_to_site'),
-                                ),
-                                'value' => $ban_action
-                            ),
-                            'ban_destination' => array(
-                                'type' => 'text',
-                                'value' => ee()->config->item('ban_destination')
-                            ),
-                        )
-                    )
-                )
-            )
-        );
-
-        // @TODO: Stop using form_validation
-        ee()->form_validation->set_rules(array(
-            array(
-                'field' => 'banned_usernames',
-                'label' => 'lang:banned_usernames',
-                'rules' => 'valid_xss_check'
-            ),
-            array(
-                'field' => 'banned_screen_names',
-                'label' => 'lang:banned_screen_names',
-                'rules' => 'valid_xss_check'
-            ),
-            array(
-                'field' => 'banned_emails',
-                'label' => 'lang:banned_emails',
-                'rules' => 'valid_xss_check'
-            ),
-            array(
-                'field' => 'banned_ips',
-                'label' => 'lang:banned_ips',
-                'rules' => 'valid_xss_check'
-            )
-        ));
-
-        if (AJAX_REQUEST) {
-            ee()->form_validation->run_ajax();
-            exit;
-        } elseif (ee()->form_validation->run() !== false) {
-            $prefs = [
-                'ban_action' => ee('Request')->post('ban_action'),
-                'ban_message' => ee('Request')->post('ban_message'),
-                'ban_destination' => ee('Request')->post('ban_destination'),
-            ];
-
-            foreach (array_keys($values) as $item) {
-                $value = ee('Request')->post($item);
-                $value = implode('|', explode(NL, $value));
-                $prefs[$item] = $value;
-            }
-
-            ee()->config->update_site_prefs($prefs);
-
-            ee('CP/Alert')->makeInline('shared-form')
-                ->asSuccess()
-                ->withTitle(lang('ban_settings_updated'))
-                ->defer();
-
-            ee()->functions->redirect($this->base_url);
-        } elseif (ee()->form_validation->errors_exist()) {
-            ee('CP/Alert')->makeInline('shared-form')
-                ->asIssue()
-                ->withTitle(lang('settings_save_error'))
-                ->addToBody(lang('settings_save_error_desc'))
-                ->now();
-        }
-
-        ee()->view->cp_page_title = ee()->view->cp_page_title ?: lang('banned_members');
-
-        ee()->view->cp_breadcrumbs = array(
-            ee('CP/URL')->make('members')->compile() => lang('members'),
-            '' => lang('banned')
-        );
-
-        ee()->cp->render('members/banned', $vars);
+        ee()->functions->redirect(ee('CP/URL')->make('members', ['role_filter' => Member::BANNED]));
     }
 
     public function banSettings()
     {
-        if (!ee('Permission')->can('ban_users')) {
-            show_error(lang('unauthorized_access'), 403);
-        }
-
-        ee()->load->library('form_validation');
-
-        $this->generateSidebar('ban-settings');
-        $this->stdHeader();
-        $this->base_url = ee('CP/URL', 'members/ban-settings');
-
-        $values = [
-            'banned_ips' => '',
-            'banned_emails' => '',
-            'banned_usernames' => '',
-            'banned_screen_names' => '',
-        ];
-
-        foreach (array_keys($values) as $item) {
-            $value = ee()->config->item($item);
-
-            if ($value != '') {
-                foreach (explode('|', $value) as $line) {
-                    $values[$item] .= $line . NL;
-                }
-            }
-        }
-
-        $ban_action = ee()->config->item('ban_action');
-
-        $vars['form'] = array(
-            'ajax_validate' => true,
-            'base_url' => $this->base_url,
-            'cp_page_title' => lang('manage_bans'),
-            'save_btn_text' => sprintf(lang('btn_save'), lang('settings')),
-            'save_btn_text_working' => 'btn_saving',
-            'sections' => array(
-                array(
-                    array(
-                        'title' => 'ip_address_banning',
-                        'desc' => 'ip_banning_instructions',
-                        'fields' => array(
-                            'banned_ips' => array(
-                                'type' => 'textarea',
-                                'value' => $values['banned_ips']
-                            )
-                        )
-                    ),
-                    array(
-                        'title' => 'email_address_banning',
-                        'desc' => 'email_banning_instructions',
-                        'fields' => array(
-                            'banned_emails' => array(
-                                'type' => 'textarea',
-                                'value' => $values['banned_emails']
-                            )
-                        )
-                    ),
-                    array(
-                        'title' => 'username_banning',
-                        'desc' => 'username_banning_instructions',
-                        'fields' => array(
-                            'banned_usernames' => array(
-                                'type' => 'textarea',
-                                'value' => $values['banned_usernames']
-                            )
-                        )
-                    ),
-                    array(
-                        'title' => 'screen_name_banning',
-                        'desc' => 'screen_name_banning_instructions',
-                        'fields' => array(
-                            'banned_screen_names' => array(
-                                'type' => 'textarea',
-                                'value' => $values['banned_screen_names']
-                            )
-                        )
-                    ),
-                    array(
-                        'title' => 'ban_options',
-                        'desc' => 'ban_options_desc',
-                        'fields' => array(
-                            'ban_action_pt1' => array(
-                                'type' => 'radio',
-                                'name' => 'ban_action',
-                                'choices' => array(
-                                    'restrict' => lang('restrict_to_viewing'),
-                                    'message' => lang('show_this_message'),
-                                ),
-                                'value' => $ban_action
-                            ),
-                            'ban_message' => array(
-                                'type' => 'textarea',
-                                'value' => ee()->config->item('ban_message')
-                            ),
-                            'ban_action_pt2' => array(
-                                'type' => 'radio',
-                                'name' => 'ban_action',
-                                'choices' => array(
-                                    'bounce' => lang('send_to_site'),
-                                ),
-                                'value' => $ban_action
-                            ),
-                            'ban_destination' => array(
-                                'type' => 'text',
-                                'value' => ee()->config->item('ban_destination')
-                            ),
-                        )
-                    )
-                )
-            )
-        );
-
-        // @TODO: Stop using form_validation
-        ee()->form_validation->set_rules(array(
-            array(
-                'field' => 'banned_usernames',
-                'label' => 'lang:banned_usernames',
-                'rules' => 'valid_xss_check'
-            ),
-            array(
-                'field' => 'banned_screen_names',
-                'label' => 'lang:banned_screen_names',
-                'rules' => 'valid_xss_check'
-            ),
-            array(
-                'field' => 'banned_emails',
-                'label' => 'lang:banned_emails',
-                'rules' => 'valid_xss_check'
-            ),
-            array(
-                'field' => 'banned_ips',
-                'label' => 'lang:banned_ips',
-                'rules' => 'valid_xss_check'
-            )
-        ));
-
-        if (AJAX_REQUEST) {
-            ee()->form_validation->run_ajax();
-            exit;
-        } elseif (ee()->form_validation->run() !== false) {
-            $prefs = [
-                'ban_action' => ee('Request')->post('ban_action'),
-                'ban_message' => ee('Request')->post('ban_message'),
-                'ban_destination' => ee('Request')->post('ban_destination'),
-            ];
-
-            foreach (array_keys($values) as $item) {
-                $value = ee('Request')->post($item);
-                $value = implode('|', explode(NL, $value));
-                $prefs[$item] = $value;
-            }
-
-            ee()->config->update_site_prefs($prefs);
-
-            ee('CP/Alert')->makeInline('shared-form')
-                ->asSuccess()
-                ->withTitle(lang('ban_settings_updated'))
-                ->defer();
-
-            ee()->functions->redirect($this->base_url);
-        } elseif (ee()->form_validation->errors_exist()) {
-            ee('CP/Alert')->makeInline('shared-form')
-                ->asIssue()
-                ->withTitle(lang('settings_save_error'))
-                ->addToBody(lang('settings_save_error_desc'))
-                ->now();
-        }
-
-        ee()->view->cp_page_title = ee()->view->cp_page_title ?: lang('manage_bans');
-
-        ee()->view->cp_breadcrumbs = array(
-            ee('CP/URL')->make('members')->compile() => lang('members'),
-            '' => lang('manage_bans')
-        );
-
-        ee()->cp->render('members/ban_settings', $vars);
+        ee()->functions->redirect(ee('CP/URL')->make('settings/ban'));
     }
 
-    private function initializeTable()
+    public function fields()
     {
-        $checkboxes = ee('Permission')->can('delete_members');
-
-        // Get order by and sort preferences for our initial state
-        $order_by = (ee()->config->item('memberlist_order_by')) ?: 'member_id';
-        $sort = (ee()->config->item('memberlist_sort_order')) ?: 'asc';
-
-        // Fix for an issue where users may have 'total_posts' saved
-        // in their site settings for sorting members; but the actual
-        // column should be total_forum_posts, so we need to correct
-        // it until member preferences can be saved again with the
-        // right value
-        if ($order_by == 'total_posts') {
-            $order_by = 'total_forum_posts';
-        }
-
-        $sort_col = ee('Request')->get('sort_col') ?: $order_by;
-        $sort_dir = ee('Request')->get('sort_dir') ?: $sort;
-
-        $table = ee('CP/Table', array(
-            'sort_col' => $sort_col,
-            'sort_dir' => $sort_dir,
-            'limit' => ee()->config->item('memberlist_row_limit'),
-            // 'search' => ee('Request')->get_post('filter_by_keyword'),
-        ));
-
-        $table->setNoResultsText('no_members_found');
-
-        $columns = array(
-            'member_id' => array(
-                'type' => Table::COL_ID
-            ),
-            'username' => array(
-                'encode' => false
-            ),
-            'dates' => array(
-                'encode' => false
-            ),
-            'roles' => array(
-                'encode' => false
-            )
-        );
-
-        if ($checkboxes) {
-            $columns[] = array(
-                'type' => Table::COL_CHECKBOX
-            );
-        }
-
-        $table->setColumns($columns);
-
-        return $table;
+        ee()->functions->redirect(ee('CP/URL')->make('settings/member-fields'));
     }
 
-    private function buildTableFromMemberQuery(Builder $members, $checkboxes = null)
+    public function pending()
     {
-        $primary_icon = ' <sup class="icon--primary" title="' . lang('primary_role') . '"></sup>';
-
-        $table = $this->initializeTable();
-
-        $sort_map = array(
-            'member_id' => 'member_id',
-            'username' => 'username',
-            'dates' => 'join_date',
-            'roles' => 'role_id'
-        );
-
-        $members = $members->order($sort_map[$table->sort_col], $table->config['sort_dir'])
-            ->all();
-
-        $data = array();
-
-        $member_id = ee()->session->flashdata('highlight_id');
-
-        foreach ($members as $member) {
-            if (!ee('Permission')->isSuperAdmin()) {
-                $can_operate_member = (bool) ($member->PrimaryRole->is_locked != 'y');
-            } else {
-                $can_operate_member = true;
-            }
-
-            $edit_link = ee('CP/URL')->make('members/profile/', array('id' => $member->member_id));
-
-            $attrs = array();
-
-            switch ($member->PrimaryRole->getId()) {
-                case Member::BANNED:
-                    $group = "<span class='st-banned'>" . lang('banned') . "</span>";
-                    $attrs['class'] = 'banned';
-
-                    break;
-                case Member::PENDING:
-                    $group = "<span class='st-pending'>" . lang('pending') . "</span>";
-                    $attrs['class'] = 'pending';
-
-                    if (ee('Permission')->can('edit_members')) {
-                        $group .= "<a class=\"success-link icon-right button button--small button--default\" href=\"" . ee('CP/URL')->make('members/approve/' . $member->member_id) . "\" title=\"" . lang('approve') . "\"><i class=\"fal fa-check\"><span class=\"hidden\">" . lang('approve') . "</span></i></a>";
-                    }
-
-                    break;
-                default:
-                    $group = $member->PrimaryRole->name . $primary_icon;
-            }
-
-            foreach ($member->getAllRoles() as $role) {
-                if ($role->getId() != 0 && $role->getId() != $member->role_id) {
-                    $group .= ', ' . $role->name;
-                }
-            }
-
-            $email = "<a class=\"text-muted\" href='" . ee('CP/URL')->make('utilities/communicate/member/' . $member->member_id) . "'>" . $member->email . "</a>";
-
-            if (ee('Permission')->can('edit_members') && $can_operate_member) {
-                $username_display = "<a href = '" . $edit_link . "'>" . $member->username . "</a>";
-            } else {
-                $username_display = $member->username;
-            }
-
-            $username_display .= '<br><span class="meta-info">' . $email . '</span>';
-
-            $avatar_url = ($member->avatar_filename) ? ee()->config->slash_item('avatar_url') . $member->avatar_filename : (URL_THEMES . 'asset/img/default-avatar.png');
-
-            $username_display = "
-            <div class=\"d-flex align-items-center\">
-            <img src=\"$avatar_url\" alt='" . lang('image_alt') . " " . $member->username . "' class=\"avatar-icon add-mrg-right\">
-            <div>$username_display</div>
-            </div>
-            ";
-
-            $last_visit = ($member->last_visit) ? ee()->localize->human_time($member->last_visit) : '--';
-
-            $column = array(
-                $member->member_id,
-                $username_display,
-                '<span class="meta-info">
-                    <b>' . lang('joined') . '</b>: ' . ee()->localize->format_date(ee()->session->userdata('date_format', ee()->config->item('date_format')), $member->join_date) . '<br>
-                    <b>' . lang('last_visit') . '</b>: ' . $last_visit . '
-                </span>',
-                $group
-            );
-
-            // add the checkbox if they can delete members
-            if (ee('Permission')->can('delete_members')) {
-                $column[] = array(
-                    'name' => 'selection[]',
-                    'value' => $member->member_id,
-                    'data' => array(
-                        'confirm' => lang('member') . ': <b>' . htmlentities($member->username, ENT_QUOTES, 'UTF-8') . '</b>'
-                    ),
-                    'disabled' => !$can_operate_member || ($member->member_id == ee()->session->userdata('member_id'))
-                );
-            }
-
-            if ($member_id && $member->member_id == $member_id) {
-                $attrs = array('class' => 'selected');
-            }
-
-            $data[] = array(
-                'attrs' => $attrs,
-                'columns' => $column
-            );
-        }
-
-        $table->setData($data);
-
-        return $table;
-    }
-
-    protected function makeAndApplyFilters($members, $roles = false)
-    {
-        $filters = ee('CP/Filter');
-
-        if ($roles) {
-            $roles = ee('Model')->get('Role')
-                ->order('name', 'asc')
-                ->all()
-                ->getDictionary('role_id', 'name');
-
-            $role_filter = $filters->make('role_filter', 'role_filter', $roles);
-            $role_filter->setPlaceholder(lang('all'));
-            $role_filter->disableCustomValue();
-
-            $filters->add($role_filter);
-        }
-
-        $filters->add('Keyword');
-
-        $filter_values = $filters->values();
-
-        foreach ($filter_values as $key => $value) {
-            if ($value) {
-                if ($key == 'filter_by_keyword') {
-                    $members->search(['screen_name', 'username', 'email', 'member_id'], $value);
-                } elseif ($key == 'role_filter') {
-                    $role = ee('Model')->get('Role', $value)->first();
-
-                    if ($role) {
-                        $members->filter('member_id', 'IN', $role->getAllMembersData('member_id'));
-                    }
-                } else {
-                    $members->filter($key, $value);
-                }
-            }
-        }
-
-        $filters->add('Perpage', $members->count(), 'show_all_members');
-
-        return $filters;
+        ee()->functions->redirect(ee('CP/URL')->make('members', ['role_filter' => Member::PENDING]));
     }
 
     /**
@@ -1122,8 +396,7 @@ class Members extends CP_Controller
             ->filter('member_id', $member_id)
             ->first();
 
-        if (! ee('Permission')->can('delete_members') ||
-            ! $member) {
+        if (! ee('Permission')->can('delete_members') || ! $member) {
             show_error(lang('unauthorized_access'), 403);
         }
 
@@ -1170,8 +443,7 @@ class Members extends CP_Controller
     {
         $member_ids = ee('Request')->post('selection', true);
 
-        if (! ee('Permission')->can('delete_members') ||
-            ! $member_ids) {
+        if (! ee('Permission')->can('delete_members') || ! $member_ids) {
             show_error(lang('unauthorized_access'), 403);
         }
 
@@ -1387,7 +659,14 @@ class Members extends CP_Controller
             show_error(lang('unauthorized_access'), 403);
         }
 
-        $this->base_url = ee('CP/URL')->make('members/create');
+        $qs = [];
+        if (ee('Request')->get('modal_form') == 'y') {
+            $qs = [
+                'modal_form' => 'y'
+            ];
+        }
+
+        $this->base_url = ee('CP/URL')->make('members/create', $qs);
 
         $vars['errors'] = null;
 
@@ -1455,7 +734,7 @@ class Members extends CP_Controller
                 $member->save();
 
                 // Get a fresh copy of this member model and update statistics for its roles
-                if (!bool_config_item('ignore_member_stats')) { 
+                if (!bool_config_item('ignore_member_stats')) {
                     ee('Model')->get('Member')->filter('member_id', $member->getId())->first()->updateRoleTotalMembers();
                 }
 
@@ -1472,6 +751,18 @@ class Members extends CP_Controller
 
                 ee()->logger->log_action(lang('new_member_added') . NBS . $member->username);
                 ee()->stats->update_member_stats();
+
+                if (ee('Request')->get('modal_form') == 'y') {
+                    $result = [
+                        'saveId' => $member->getId(),
+                        'item' => [
+                            'value' => $member->getId(),
+                            'label' => $member->screen_name,
+                            'instructions' => $member->username
+                        ]
+                    ];
+                    return $result;
+                }
 
                 ee('CP/Alert')->makeInline('shared-form')
                     ->asSuccess()
@@ -1522,10 +813,10 @@ class Members extends CP_Controller
             );
         }
 
-        ee()->view->base_url = $this->base_url;
-        ee()->view->ajax_validate = true;
-        ee()->view->cp_page_title = lang('register_member');
-        ee()->view->buttons = [
+        $vars['base_url'] = $this->base_url;
+        $vars['ajax_validate'] = true;
+        $vars['cp_page_title'] = lang('register_member');
+        $vars['buttons'] = [
             [
                 'name' => 'submit',
                 'type' => 'submit',
@@ -1549,10 +840,21 @@ class Members extends CP_Controller
             ]
         ];
 
-        ee()->view->cp_breadcrumbs = array(
+        $vars['cp_breadcrumbs'] = array(
             ee('CP/URL')->make('members')->compile() => lang('members'),
             '' => lang('create')
         );
+
+        if (ee('Request')->get('modal_form') == 'y') {
+            $vars['buttons'] = [[
+                'name' => 'submit',
+                'type' => 'submit',
+                'value' => 'save_and_close',
+                'text' => 'save_and_close',
+                'working' => 'btn_saving'
+            ]];
+            return ee('View')->make('settings/modal-form')->render($vars);
+        }
 
         ee()->cp->render('settings/form', $vars);
     }
@@ -1576,7 +878,7 @@ class Members extends CP_Controller
                     'email' => [
                         'type' => 'text',
                         'required' => true,
-                        'maxlength' => USERNAME_MAX_LENGTH
+                        'maxlength' => 254
                     ]
                 ]
             ],
@@ -1800,34 +1102,292 @@ class Members extends CP_Controller
             $alert->defer();
         }
 
-        ee()->functions->redirect(ee('CP/URL', 'members/pending'));
+        ee()->functions->redirect(ee('CP/URL')->make('members', ['role_filter' => Member::PENDING]));
+    }
+
+    protected function listingsPage($primaryRole = null)
+    {
+        $vars = array();
+
+        $roleId = !empty($primaryRole) ? $primaryRole->getId() : null;
+
+        $base_url = ee('CP/URL')->make('members');
+
+        $members = ee('Model')->get('Member')
+            ->with('PrimaryRole', 'Roles');
+
+        $filters = ee('CP/Filter');
+        $roleFilter = $this->createRoleFilter($primaryRole);
+        if ($roleFilter->value()) {
+            if (is_null($primaryRole)) {
+                $primaryRole = ee('Model')->get('Role', $roleFilter->value())->first();
+            }
+            if (!is_null($primaryRole)) {
+                $members->filter('member_id', 'IN', $primaryRole->getAllMembersData('member_id'));
+            }
+        }
+        $filters->add('EntryKeyword')
+            ->add(
+                'SearchIn',
+                [
+                    'titles' => 'titles',
+                    'titles_and_content' => 'titles_and_content',
+                ],
+                'titles'
+            )
+            ->withLabel(lang('names_and_email_only'))
+            ->add($roleFilter)
+            ->add('Date')
+            ->withLabel(lang('join_date'));
+
+        $filters->add('MemberManagerColumns', $this->createColumnFilter($primaryRole));
+
+        $filter_values = $filters->values();
+        if (! empty($filter_values['filter_by_date'])) {
+            if (is_array($filter_values['filter_by_date'])) {
+                $members->filter('join_date', '>=', $filter_values['filter_by_date'][0]);
+                $members->filter('join_date', '<', $filter_values['filter_by_date'][1]);
+            } else {
+                $members->filter('join_date', '>=', ee()->localize->now - $filter_values['filter_by_date']);
+            }
+        }
+
+        $search_terms = ee()->input->get_post('filter_by_keyword');
+        if ($search_terms) {
+            $vars['search_terms'] = htmlentities($search_terms, ENT_QUOTES, 'UTF-8');
+            if (is_numeric($search_terms) && strlen($search_terms) < 3) {
+                $members->filter('member_id', $search_terms);
+            } else {
+                if ($filter_values['search_in'] == 'content' || $filter_values['search_in'] == 'titles_and_content') {
+                    // setup content fields to use in search
+                    $content_fields = [];
+                    $custom_fields = ee()->session->getMember()->getAllCustomFields();
+                    foreach ($custom_fields as $cf) {
+                        $content_fields[] = 'm_field_id_' . $cf->getId();
+                    }
+                }
+
+                $search_fields = [];
+                switch ($filter_values['search_in']) {
+                    case 'titles_and_content':
+                        $search_fields = array_merge(['username', 'screen_name', 'email', 'member_id'], $content_fields);
+                        break;
+                    case 'content':
+                        $search_fields = $content_fields;
+                        break;
+                    case 'titles':
+                    default:
+                        $search_fields = ['username', 'screen_name', 'email', 'member_id'];
+                        break;
+                }
+
+                $members->search($search_fields, $search_terms);
+            }
+        }
+
+        $total = $members->count();
+        $vars['total_members'] = $total;
+
+        $filters->add('Perpage', $total, 'show_all_members');
+
+        $filter_values = $filters->values();
+
+        $perpage = $filter_values['perpage'];
+        $page = ((int) ee()->input->get('page')) ?: 1;
+        $offset = ($page - 1) * $perpage;
+
+        $base_url->addQueryStringVariables(
+            array_filter(
+                $filter_values,
+                function ($key) {
+                    return (!in_array($key, ['columns', 'sort']));
+                },
+                ARRAY_FILTER_USE_KEY
+            )
+        );
+
+        // Get order by and sort preferences for our initial state
+        $sort_col = (ee()->config->item('memberlist_order_by')) ?: 'member_id';
+        $sort_dir = (ee()->config->item('memberlist_sort_order')) ?: 'asc';
+        $table = ee('CP/Table', array(
+            'sort_col' => $sort_col,
+            'sort_dir' => $sort_dir,
+            'class' => 'tbl-fixed'
+        ));
+
+        //which columns should we show
+        $columns = [];
+        $filter_values['columns'][] = 'manage';
+        $filter_values['columns'][] = 'checkbox';
+        foreach ($filter_values['columns'] as $column) {
+            $columns[$column] = ColumnFactory::getColumn($column);
+        }
+        $columns = array_filter($columns);
+
+        foreach ($columns as $column) {
+            if (!empty($column)) {
+                if (!empty($column->getEntryManagerColumnModels())) {
+                    foreach ($column->getEntryManagerColumnModels() as $with) {
+                        if (!empty($with)) {
+                            $members->with($with);
+                        }
+                    }
+                }
+            }
+        }
+
+        $column_renderer = new ColumnRenderer($columns);
+        $table_columns = $column_renderer->getTableColumnsConfig();
+        $table->setColumns($table_columns);
+
+        if (!empty($primaryRole)) {
+            $table->setNoResultsText(sprintf(lang('no_role_members_found'), $primaryRole->name));
+        } else {
+            $table->setNoResultsText('no_members_found');
+        }
+
+        $vars['bulk_options'] = [];
+        if (!empty($primaryRole) && $primaryRole->role_id == Member::PENDING) {
+            if (ee('Permission')->can('edit_members')) {
+                $vars['bulk_options'][] = [
+                    'value' => "approve",
+                    'text' => lang('approve')
+                ];
+            }
+            if (ee('Permission')->can('delete_members')) {
+                $vars['bulk_options'][] = [
+                    'value' => "decline",
+                    'text' => lang('decline'),
+                    'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-decline"'
+                ];
+            }
+        } else {
+            if (ee('Permission')->can('delete_members')) {
+                $vars['bulk_options'][] = [
+                    'value' => "remove",
+                    'text' => lang('delete'),
+                    'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-delete"'
+                ];
+            }
+        }
+
+        foreach ($table_columns as $table_column) {
+            if ($table_column['label'] == $table->sort_col) {
+                $sort_col = $table_column['name'];
+
+                break;
+            }
+        }
+
+        // Fix for an issue where users may have 'total_posts' saved
+        // in their site settings for sorting members; but the actual
+        // column should be total_forum_posts, so we need to correct
+        // it until member preferences can be saved again with the
+        // right value
+        $sort_field = ($sort_col == 'total_posts') ? 'total_forum_posts' : $columns[$sort_col]->getEntryManagerColumnSortField();
+        $preselectedId = ee()->session->flashdata('highlight_id');
+
+        if ($preselectedId) {
+            $members = $members->order('FIELD( member_id, ' . $preselectedId . ' )', 'DESC', false);
+        }
+
+        if (! ($table->sort_dir == $sort_dir && $table->sort_col == $sort_col)) {
+            $base_url->addQueryStringVariables(
+                array(
+                    'sort_dir' => $table->sort_dir,
+                    'sort_col' => $table->sort_col
+                )
+            );
+        }
+
+        $vars['pagination'] = ee('CP/Pagination', $total)
+            ->perPage($perpage)
+            ->currentPage($page)
+            ->render($base_url);
+
+        $members = $members->order($sort_field, $table->sort_dir)
+            ->limit($perpage)
+            ->offset($offset)
+            ->all();
+
+        $data = array();
+
+        foreach ($members as $member) {
+            $attrs = [
+                'member_id' => $member->member_id,
+                'title' => $member->screen_name,
+            ];
+
+
+            if ($preselectedId && $member->member_id == $preselectedId) {
+                $attrs['class'] .= ' selected';
+            }
+
+            $data[] = array(
+                'attrs' => $attrs,
+                'columns' => $column_renderer->getRenderedTableRowForEntry($member)
+            );
+        }
+
+        $table->setData($data);
+
+        $vars['table'] = $table->viewData($base_url);
+        $vars['form_url'] = $vars['table']['base_url'];
+
+        $vars['filters'] = $filters->renderEntryFilters($base_url);
+        $vars['filters_search'] = $filters->renderSearch($base_url);
+        $vars['search_value'] = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
+        $vars['role_id'] = $roleId;
+
+        ee()->javascript->set_global([
+            'viewManager.saveDefaultUrl' => ee('CP/URL')->make('members/views/save-default', ['role_id' => $roleId])->compile()
+        ]);
+
+        ee()->cp->add_js_script(array(
+            'file' => array(
+                'cp/confirm_remove',
+                'cp/publish/entry-list',
+            ),
+        ));
+        return $vars;
     }
 
     /**
-     * Set the header for the members section
-     * @param String $form_url Form URL
-     * @param String $search_button_value The text for the search button
+     * Creates role filter
      */
-    protected function stdHeader()
+    private function createRoleFilter($roleId = null)
     {
-        $header = [
-            'title' => lang('member_manager'),
-            'toolbar_items' => [
-                'settings' => [
-                    'href' => ee('CP/URL')->make('settings/members'),
-                    'title' => lang('member_settings')
-                ],
-            ],
-            'action_button' => ee('Permission')->can('create_members') ? [
-                'text' => lang('new_member'),
-                'href' => ee('CP/URL')->make('members/create')
-            ] : null
-        ];
+        $roles = ee('Model')->get('Role')
+            ->order('role_id', 'asc')
+            ->all(true)
+            ->getDictionary('role_id', 'name');
 
-        if (!ee('Permission')->can('access_settings')) {
-            unset($header['toolbar_items']);
+        $filter = ee('CP/Filter')->make('role_filter', lang('role'), $roles);
+        $filter->useListFilter();
+
+        return $filter;
+    }
+
+    /**
+     * Creates a column filter
+     */
+    private function createColumnFilter($primaryRole = null)
+    {
+        $column_choices = [];
+
+        $columns = ColumnFactory::getAvailableColumns($primaryRole);
+
+        foreach ($columns as $column) {
+            $identifier = $column->getTableColumnIdentifier();
+
+            // This column is mandatory, not optional
+            if (in_array($identifier, ['manage', 'checkbox'])) {
+                continue;
+            }
+
+            $column_choices[$identifier] = strip_tags(lang($column->getTableColumnLabel()));
         }
 
-        ee()->view->header = $header;
+        return $column_choices;
     }
 }

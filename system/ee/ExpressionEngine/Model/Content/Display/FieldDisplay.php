@@ -58,6 +58,11 @@ class FieldDisplay
         return $this->field->getName();
     }
 
+    public function getNameBadge($field_name_prefix = '')
+    {
+        return $this->field->getNameBadge($field_name_prefix);
+    }
+
     public function getShortName()
     {
         return $this->field->getShortName();
@@ -157,6 +162,18 @@ class FieldDisplay
     public function isConditionallyHidden()
     {
         return get_bool_from_string($this->field->getHidden());
+    }
+
+    public function renderAlert()
+    {
+        if (!empty($this->field->getAlertText())) {
+            return ee('CP/Alert')->makeInline('__inline_alert_' . $this->getShortName())
+                ->asWarning()
+                ->cannotClose()
+                ->addToBody($this->field->getAlertText())
+                ->render();
+        }
+        return '';
     }
 
     public function getSetting($item)

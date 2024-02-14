@@ -462,11 +462,7 @@ And if you made it to this &#x1F573;&#xFE0F; you did pretty good.']
      */
     public function testUrlSlug($content, $params, $expected)
     {
-        // minimal map
-        $config['foreign_chars'] = [
-            '223' => "ss", // ß
-            '230' => "ae", // æ
-        ];
+        $config['foreign_chars'] = include SYSPATH . 'ee/ExpressionEngine/Config/foreign_chars.php';
 
         $config['stopwords'] = ['a', 'and', 'into', 'to'];
 
@@ -501,6 +497,10 @@ And if you made it to this &#x1F573;&#xFE0F; you did pretty good.']
                 ],
                 'Sample-Title-to-Turn-Into-a-Slug-including-💩-tags-quotes-and-high-ascii-ssae-and-seps____in....content'
             ],
+            ['ExpressionEngine®', [], 'expressionengine®'], // ® is in our Emoji map
+            ['Anča', [], 'ancha'],
+            ['Selçuk Ören', [], 'selcuk-oeren'],
+            ['The General’s Room', [], 'the-generals-room'],
         ];
     }
 

@@ -233,6 +233,10 @@ class Filemanager
      */
     public function is_editable_image($file_path, $mime)
     {
+        if (!file_exists($file_path)) {
+            return false;
+        }
+
         if (! $this->is_image($mime)) {
             return false;
         }
@@ -1744,35 +1748,6 @@ class Filemanager
     }
 
     /**
-     * Build a dropdown list of categories
-     *
-     * @access private
-     * @param $dir Directory array, containing at least the id
-     * @return array Array with the category group name as the key and the
-     *  categories as the values (see above)
-     */
-    private function _get_category_dropdown($dir)
-    {
-        ee()->load->helper('form');
-
-        $raw_categories = $this->_get_categories($dir);
-        $category_dropdown_array = array('all' => lang('all_categories'));
-
-        // Build the array of categories
-        foreach ($raw_categories as $category_group) {
-            $categories = array();
-
-            foreach ($category_group['categories'] as $category) {
-                $categories[$category['cat_id']] = $category['cat_name'];
-            }
-
-            $category_dropdown_array[$category_group['group_name']] = $categories;
-        }
-
-        return form_dropdown('category', $category_dropdown_array);
-    }
-
-    /**
      * Validate Post Data
      *
      * Validates that the POST data did not get dropped, this happens when
@@ -1787,35 +1762,6 @@ class Filemanager
         $post_limit = get_bytes(ini_get('post_max_size'));
 
         return $_SERVER['CONTENT_LENGTH'] <= $post_limit;
-    }
-
-    /**
-     * Get the categories for the directory
-     *
-     * This function retrieves the categories for a particular directory
-     *
-     * @access private
-     * @return array category list
-     */
-    private function _get_categories($dir)
-    {
-        $categories = array();
-
-        ee()->load->model(array('file_upload_preferences_model', 'category_model'));
-
-        $category_group_ids = ee()->file_upload_preferences_model->get_file_upload_preferences(null, $dir['id']);
-        $category_group_ids = explode('|', $category_group_ids['cat_group']);
-
-        if (count($category_group_ids) > 0 and $category_group_ids[0] != '') {
-            foreach ($category_group_ids as $category_group_id) {
-                $category_group_info = ee()->category_model->get_category_groups($category_group_id);
-                $categories[$category_group_id] = $category_group_info->row_array();
-                $categories_for_group = ee()->category_model->get_channel_categories($category_group_id);
-                $categories[$category_group_id]['categories'] = $categories_for_group->result_array();
-            }
-        }
-
-        return $categories;
     }
 
     /**
