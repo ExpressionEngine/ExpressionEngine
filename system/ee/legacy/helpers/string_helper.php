@@ -55,7 +55,7 @@ if (! function_exists('strip_slashes')) {
             foreach ($str as $key => $val) {
                 $str[$key] = strip_slashes($val);
             }
-        } else {
+        } elseif (is_string($str)) {
             $str = stripslashes($str);
         }
 

@@ -29,13 +29,12 @@ import Indent from '@ckeditor/ckeditor5-indent/src/indent';
 import IndentBlock from '@ckeditor/ckeditor5-indent/src/indentblock';
 import Link from '@ckeditor/ckeditor5-link/src/link';
 import LinkImage from '@ckeditor/ckeditor5-link/src/linkimage';
-import List from '@ckeditor/ckeditor5-list/src/list';
+import { List, ListProperties } from '@ckeditor/ckeditor5-list';
 import MediaEmbed from '@ckeditor/ckeditor5-media-embed/src/mediaembed';
 import HtmlEmbed from '@ckeditor/ckeditor5-html-embed/src/htmlembed';
 import Paragraph from '@ckeditor/ckeditor5-paragraph/src/paragraph';
 import PasteFromOffice from '@ckeditor/ckeditor5-paste-from-office/src/pastefromoffice';
-import Table from '@ckeditor/ckeditor5-table/src/table';
-import TableToolbar from '@ckeditor/ckeditor5-table/src/tabletoolbar';
+import { Table, TableCellProperties, TableProperties, TableToolbar, TableColumnResize, TableCaption } from '@ckeditor/ckeditor5-table';
 import TextTransformation from '@ckeditor/ckeditor5-typing/src/texttransformation';
 import RemoveFormat from '@ckeditor/ckeditor5-remove-format/src/removeformat';
 import HorizontalLine from '@ckeditor/ckeditor5-horizontal-line/src/horizontalline';
@@ -46,6 +45,10 @@ import PageBreak from '@ckeditor/ckeditor5-page-break/src/pagebreak';
 import Font from '@ckeditor/ckeditor5-font/src/font';
 import Alignment from '@ckeditor/ckeditor5-alignment/src/alignment';
 import WordCount from '@ckeditor/ckeditor5-word-count/src/wordcount';
+import { Style } from '@ckeditor/ckeditor5-style';
+import { GeneralHtmlSupport } from '@ckeditor/ckeditor5-html-support';
+import { SourceEditing } from '@ckeditor/ckeditor5-source-editing';
+import { ShowBlocks } from '@ckeditor/ckeditor5-show-blocks';
 
 import Mention from '../plugins/ckeditor5-mention/src/mention';
 import ReadMore from '../plugins/readmore/src/readmore';
@@ -82,12 +85,17 @@ ClassicEditor.builtinPlugins = [
 	Link,
 	LinkImage,
 	List,
+	ListProperties,
 	MediaEmbed,
 	HtmlEmbed,
 	Paragraph,
 	PasteFromOffice,
 	Table,
 	TableToolbar,
+	TableProperties,
+	TableCellProperties,
+	TableColumnResize,
+	TableCaption,
 	TextTransformation,
 	ReadMore,
 	RemoveFormat,
@@ -100,10 +108,14 @@ ClassicEditor.builtinPlugins = [
 	PageBreak,
 	Font,
 	Alignment,
+	Style,
+	GeneralHtmlSupport,
 	Mention,
 	PageLinks,
 	EditorClassPlugin,
-	WordCount
+	WordCount,
+	SourceEditing,
+	ShowBlocks
 ];
 
 // Editor configuration.
