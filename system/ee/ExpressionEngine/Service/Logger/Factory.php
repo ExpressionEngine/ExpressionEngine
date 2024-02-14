@@ -58,6 +58,16 @@ class Factory
     }
 
     /**
+     * Get default config
+     *
+     * return array
+     */
+    public function getDefaultConfig()
+    {
+        return $this->defaultConfig;
+    }
+
+    /**
      * Get logger instance for the channel
      *
      * @param string $channel
@@ -83,7 +93,13 @@ class Factory
         }
         // 'all channels' part goes last, so we could forward it to NullHandler
         if (isset($this->config['*'])) {
-            $config = array_merge_recursive($config, $this->config['*']);
+            // specific settings will override the common ones
+            $handlerNames = array_merge(array_keys($config), array_keys($this->config['*']));
+            foreach ($handlerNames as $handlerName) {
+                if (!array_key_exists($handlerName, $config) && array_key_exists($handlerName, $this->config['*'])) {
+                    $config[$handlerName] = $this->config['*'][$handlerName];
+                }
+            }
         }
         // still nothing set up, log into EE database
         if (empty($config) || empty(reset($config))) {
@@ -91,8 +107,11 @@ class Factory
         }
         // developer logs need to go into EE DB always
         if ($channel == 'developer') {
-            $config = array_merge_recursive($config, $this->defaultConfig);
-            $config['DatabaseHandler']['level'] = 'info';
+            // need to make sure it gets listed first, so it can be 'stopped' with NullHandler
+            if (array_key_exists('DatabaseHandler', $config)) {
+                unset($config['DatabaseHandler']);
+            }
+            $config = array_merge_recursive($this->defaultConfig, $config);
         }
 
         // set the handlers (and processors recurovely) according to configuration
@@ -175,6 +194,7 @@ class Factory
         foreach ($setup as $info) {
             extract($info);
             // class, params, level, processors
+            $monologLevel = Monolog\Logger::toMonologLevel($level);
             $reflection = new \ReflectionClass($class);
             // need to make sure to pass correct number of parameters to the contructor
             $params = array_values($params);
@@ -201,14 +221,14 @@ class Factory
                 }
                 // override the default level with what is set in config
                 if (isset($contructorParams['level'])) {
-                    $contructorParams['level'] = Monolog\Logger::toMonologLevel($level);
+                    $contructorParams['level'] = $monologLevel;
                 }
             }
 
             $instance = $reflection->newInstanceArgs($contructorParams);
-            if (!empty($processors)) {
+            if (!empty($processors) && method_exists($instance, 'pushProcessor')) {
                 // recursively add processors
-                $processorsConfig = array_fill_keys($processors, ['level' => $contructorParams['level']]);
+                $processorsConfig = array_fill_keys($processors, ['level' => $monologLevel]);
                 $processorInstances = $this->getLoggingInstances($processorsConfig, 'processor');
                 foreach ($processorInstances as $processor) {
                     $instance->pushProcessor($processor);

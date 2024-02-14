@@ -33,6 +33,16 @@ class Logger extends AbstractLogger implements LoggerInterface
     }
 
     /**
+     * Get default config
+     *
+     * return array
+     */
+    public function getDefaultConfig()
+    {
+        return self::$factory->getDefaultConfig();
+    }
+
+    /**
      * Get the Logger from factory
      *
      * @param string $channel log channel name

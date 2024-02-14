@@ -27,11 +27,18 @@ class Logging extends Settings
         }
 
         if (ee('Request')->isPost()) {
+            if (AJAX_REQUEST) {
+                //do the validation here
+                return ['success'];
+            }
             $config = $this->saveLoggingSettings();
         } else {
-            $config = config_item('logging') ?: ['*' => ['DatabaseHandler' => []]];
+            $config = config_item('logging') ?: [];
             if (!is_array($config)) {
                 $config = json_decode($config, true);
+            }
+            if (count($config) == 0) {
+                $config = ['*' => ee('Logger')->getDefaultConfig()];
             }
         }
 
@@ -137,7 +144,7 @@ class Logging extends Settings
         );
 
         ee()->view->cp_breadcrumbs = array(
-            '' => lang('template_routes')
+            '' => lang('logging')
         );
 
         ee()->view->ajax_validate = true;
@@ -251,15 +258,19 @@ class Logging extends Settings
         $config = [];
         foreach ($defaultLogging as $row) {
             $config['*'][$row['handler']] = [
-                'level' => $row['level'],
-                'processors' => $row['processors']
+                'level' => $row['level']
             ];
+            if (!empty($row['processors'])) {
+                $config['*'][$row['handler']]['processors'] = $row['processors'];
+            }
         }
         foreach ($specificLogging as $row) {
             $config[$row['channel']][$row['handler']] = [
-                'level' => $row['level'],
-                'processors' => $row['processors']
+                'level' => $row['level']
             ];
+            if (!empty($row['processors'])) {
+                $config[$row['channel']][$row['handler']]['processors'] = $row['processors'];
+            }
         }
 
         ee()->config->update_site_prefs(['logging' => $config]);

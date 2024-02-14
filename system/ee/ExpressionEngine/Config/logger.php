@@ -56,7 +56,7 @@ return [
         ],
         // log to file
         'UserLogFileHandler' => [
-            'class' => '\ExpressionEngine\Dependency\Monolog\Handler\RotatingFileHandler',
+            'class' => '\ExpressionEngine\Library\Monolog\Handler\UserLogFileHandler',
             'params' => [SYSPATH . 'user/logs/log.php']
         ],
         // system error log
