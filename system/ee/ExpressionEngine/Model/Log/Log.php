@@ -47,7 +47,6 @@ class Log extends Model
 
     protected $log_id;
     protected $site_id;
-    protected $member_id;
     protected $log_date;
     protected $level;
     protected $channel;
@@ -55,7 +54,6 @@ class Log extends Model
     protected $context;
     protected $extra;
     protected $ip_address;
-    protected $viewed;
 
     public function onBeforeInsert()
     {

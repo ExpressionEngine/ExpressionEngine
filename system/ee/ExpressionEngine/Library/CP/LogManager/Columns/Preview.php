@@ -11,37 +11,38 @@
 namespace ExpressionEngine\Library\CP\LogManager\Columns;
 
 use ExpressionEngine\Library\CP\EntryManager;
+use ExpressionEngine\Library\CP\Table;
 
 /**
- * Context Column
+ * Preview Column
  */
-class Context extends EntryManager\Columns\Column
+class Preview extends EntryManager\Columns\Column
 {
     public function getTableColumnLabel()
     {
-        return 'log_' . $this->identifier;
+        return '';
     }
 
     public function getTableColumnConfig()
     {
         return [
-            'encode' => false,
+            'type' => Table::COL_TOOLBAR,
         ];
     }
 
     public function renderTableCell($data, $field_id, $log)
     {
-        $out = [];
-        foreach ($log->context as $name => $value) {
-            if (is_array($value)) {
-                $value = json_encode($value);
-            }
-            $out[] = $name . ': ' . $value;
-        }
-        if (count($out) > 5) {
-            $out = array_slice($out, 0, 5);
-            $out[] = '...';
-        }
-        return implode('<br>', $out);
+        $toolbar = [
+            'toolbar_items' => [
+                'view' => [
+                    'href' => '',
+                    'rel' => 'modal-log-' . $log->getId(),
+                    'title' => lang('view'),
+                    'class' => 'js-modal-link'
+                ]
+            ]
+        ];
+
+        return $toolbar;
     }
 }

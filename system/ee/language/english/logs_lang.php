@@ -161,6 +161,10 @@ $lang = array(
 
     'confirm_remove_logs' => 'Are you sure you want to remove all %s?',
 
+    'no_logs_found' => 'No log records found',
+
+    'show_all_logs' => 'Show all logs',
+
 );
 
 // EOF

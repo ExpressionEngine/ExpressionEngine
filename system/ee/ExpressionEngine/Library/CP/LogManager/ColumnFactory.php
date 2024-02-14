@@ -26,6 +26,7 @@ class ColumnFactory extends EntryManager\ColumnFactory
         'extra' => Columns\Extra::class,
         'ip_address' => Columns\IpAddress::class,
         'checkbox' => Columns\Checkbox::class,
+        'preview' => Columns\Preview::class,
     ];
 
     /**

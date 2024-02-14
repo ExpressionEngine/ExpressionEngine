@@ -38,6 +38,10 @@ class Extra extends EntryManager\Columns\Column
             }
             $out[] = $name . ': ' . $value;
         }
+        if (count($out) > 5) {
+            $out = array_slice($out, 0, 5);
+            $out[] = '...';
+        }
         return implode('<br>', $out);
     }
 }

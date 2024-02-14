@@ -54,10 +54,33 @@ if (! AJAX_REQUEST) {
 </div>
 
 <?php
+// preview modals
+foreach ($logs as $log) {
+    ee('CP/Modal')->startModal('modal-log-' . $log['log_id']); ?>
+        <div class="app-modal app-modal--center" rev="modal-log-<?=$log['log_id']?>">
+            <div class="app-modal__content">
+                <div class="app-modal__dismiss">
+                    <a class="js-modal-close" rel="modal-center" href="#"><?=lang('close_modal')?></a> <span class="txt-fade">[esc]</span>
+                </div>
+                <div class="md-wrap">
+                    <p><?=lang('date') . ': ' . $log['log_date']?></p>
+                    <p><?=lang('log_channel') . ': ' . $log['channel']?></p>
+                    <p><?=lang('log_level') . ': ' . $log['level']?></p>
+                    <p><?=lang('site_id') . ': ' . $log['site_id']?></p>
+                    <p><?=lang('ip_address') . ': ' . $log['ip_address']?></p>
+                    <p><strong><?=$log['message']?></strong></p>
+                    <p><?=$log['context']?></p>
+                    <p><?=$log['extra']?></p>
+                </div>
+            </div>
+        </div>
+    <?php ee('CP/Modal')->endModal();
+}
+
+// delete modal
 $modal_vars = array(
     'name' => 'modal-confirm-delete',
-    // 'form_url' => $form_url,
-    'form_url' => ee('CP/URL')->make('logs', ['bulk_action' => 'remove', 'selection' => ee()->input->get('channel') ?: '_all_']),
+    'form_url' => $form_url,
     'hidden' => array(
         'bulk_action' => 'remove'
     ),
@@ -67,21 +90,17 @@ $modal_vars = array(
 $modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);
 ee('CP/Modal')->addModal('delete', $modal);
 
+// delete all modal
 $modal_vars = array(
-    'name' => 'modal-confirm-decline',
-    'title' => lang('confirm_decline'),
-    'alert' => lang('confirm_decline_desc'),
-    'button' => array(
-        'text' => 'btn_confirm_and_decline',
-        'working' => 'btn_confirm_and_decline_working'
-    ),
+    'name' => 'modal-confirm-delete-all',
     'form_url' => $form_url,
     'hidden' => array(
-        'bulk_action' => 'decline'
+        'bulk_action' => 'remove',
     ),
-    'secure_form_ctrls' => false
+    'remove_confirmation' => form_hidden('selection'),
+    'secure_form_ctrls' => null
 );
 
 $modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);
-ee('CP/Modal')->addModal('decline', $modal);
+ee('CP/Modal')->addModal('delete-all', $modal);
 ?>

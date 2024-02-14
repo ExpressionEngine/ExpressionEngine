@@ -96,7 +96,10 @@ class Logs extends CP_Controller
 
         ee()->javascript->set_global('lang.remove_confirm', lang('logs') . ': <b>### ' . lang('logs') . '</b>');
         ee()->cp->add_js_script(array(
-            'file' => array('cp/confirm_remove'),
+            'file' => array(
+                'cp/logs/logs',
+                'cp/confirm_remove'
+            ),
         ));
 
         $vars['cp_heading'] = empty(ee()->input->get('channel')) ? lang('system_log') : ucfirst(lang(ee()->input->get('channel'))) . ' ' . lang('logs');
@@ -110,11 +113,11 @@ class Logs extends CP_Controller
             ];
         }
         $vars['toolbar_items']['remove'] = [
-            'data-form-url' => ee('CP/URL')->make('logs', ['bulk_action' => 'remove', 'selection' => ee()->input->get('channel') ?: '_all_']),
-            'class' => 'button--danger fal fa-trash button-delete-logs',
+            'class' => 'button--danger fal fa-trash js-delete-all-logs',
+            'data-confirm' => $vars['cp_heading'],
+            'data-selection' => ee()->input->get('channel') ?: 'all',
             'title' => lang('clear_logs'),
-            'data-warning' => sprintf(lang('confirm_remove_logs'), $vars['cp_heading']),
-            'rel' => 'modal-confirm-delete'
+            'rel' => 'modal-confirm-delete-all'
         ];
 
         ee()->view->base_url = $this->base_url;
@@ -215,6 +218,7 @@ class Logs extends CP_Controller
         //which columns should we show
         $columns = [];
         array_unshift($filter_values['columns'], 'checkbox');
+        $filter_values['columns'][] = 'preview'; // add preview column to the end of the list
         foreach ($filter_values['columns'] as $column) {
             $columns[$column] = ColumnFactory::getColumn($column);
         }
@@ -276,7 +280,28 @@ class Logs extends CP_Controller
 
         $data = array();
 
+        $vars['logs'] = [];
         foreach ($logs as $log) {
+            $logValues = $log->getValues();
+            $logValues['log_date'] = ee()->localize->human_time($log->log_date);
+            $logValues['level'] = Monolog\Logger::getLevelName($log->level);
+            $context = [];
+            foreach ($log->context as $name => $value) {
+                if (is_array($value)) {
+                    $value = json_encode($value);
+                }
+                $context[] = $name . ': ' . $value;
+            }
+            $logValues['context'] = implode('<br>', $context);
+            $extra = [];
+            foreach ($log->extra as $name => $value) {
+                if (is_array($value)) {
+                    $value = json_encode($value);
+                }
+                $extra[] = $name . ': ' . $value;
+            }
+            $logValues['extra'] = implode('<br>', $extra);
+            $vars['logs'][] = $logValues;
             $data[] = array(
                 'attrs' => [],
                 'columns' => $column_renderer->getRenderedTableRowForEntry($log)
@@ -299,7 +324,7 @@ class Logs extends CP_Controller
         ee()->cp->add_js_script(array(
             'file' => array(
                 'cp/confirm_remove',
-                'cp/files/manager',
+                'cp/logs/logs',
                 'cp/publish/entry-list',
             ),
         ));
@@ -358,7 +383,7 @@ class Logs extends CP_Controller
             $identifier = $column->getTableColumnIdentifier();
 
             // This column is mandatory, not optional
-            if (in_array($identifier, ['checkbox'])) {
+            if (in_array($identifier, ['checkbox', 'preview'])) {
                 continue;
             }
 
@@ -416,7 +441,7 @@ class Logs extends CP_Controller
             $count = count($ids);
             $type = lang('all');
             ee('Model')->get('Log', $ids)->delete();
-        } elseif ($ids === '_all_') {
+        } elseif ($ids === 'all') {
             ee('Model')->get('Log')->delete();
             $count = lang('all');
             $type = '';
