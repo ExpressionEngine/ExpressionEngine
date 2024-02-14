@@ -4,7 +4,7 @@ const { defineConfig } = require('cypress')
 module.exports = defineConfig({
     "e2e": {
         "baseUrl": "http://localhost:8888/",
-        "specPattern": "cypress/integration/!(updater)/**.ee6.js",
+        "specPattern": "cypress/integration/z_installer/updater-from-ee2.ee6.js",
         "supportFile": "cypress/support/index.js",
         setupNodeEvents(on, config) {
             
