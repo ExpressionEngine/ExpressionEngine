@@ -30,8 +30,8 @@ class UserLogFileHandler extends Monolog\Handler\RotatingFileHandler
             $this->mustRotate = \true;
             $this->close();
         }
-        if ($this->mustRotate === true) {
-            $record['formatted'] = "<?php\n\n" . (string) $record['formatted'];
+        if ($this->mustRotate === true && !\file_exists($this->url)) {
+            $record['formatted'] = "<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed'); ?>\n\n" . (string) $record['formatted'];
         }
         parent::write($record);
     }
