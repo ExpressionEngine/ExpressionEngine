@@ -751,7 +751,7 @@ class Channels extends AbstractChannelsController
         $categoryGroupSettings = $channel ? $channel->CategoryGroupSettings->indexBy('group_id') : null;
 
         if (!ee('Request')->isPost() && !is_null($channel) && ! is_null($channel->CategoryGroups)) {
-            $selected =  $channel->CategoryGroups->pluck('group_id');
+            $selected = $channel->CategoryGroups->pluck('group_id');
         }
 
         foreach ($categoryGroups as $categoryGroup) {
@@ -762,6 +762,15 @@ class Channels extends AbstractChannelsController
                     'cat_required' => ($categoryGroupSettings && isset($categoryGroupSettings[$categoryGroup->group_id])) ? $categoryGroupSettings[$categoryGroup->group_id]->cat_required : false
                 ]
             ];
+        }
+
+        $no_results = [
+            'text' => sprintf(lang('no_found'), lang('category_groups'))
+        ];
+
+        if (ee('Permission')->can('create_categories')) {
+            $no_results['link_text'] = 'add_new';
+            $no_results['link_href'] = ee('CP/URL')->make('categories/groups/create');
         }
 
         ee()->javascript->set_global([
@@ -779,6 +788,7 @@ class Channels extends AbstractChannelsController
             'reorderable' => false,
             'removable' => false,
             'editable' => true,
+            'no_results' => $no_results,
             'toggles' => [
                 'cat_allow_multiple',
                 'cat_required'
