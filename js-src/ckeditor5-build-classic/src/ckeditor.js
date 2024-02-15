@@ -49,11 +49,12 @@ import { Style } from '@ckeditor/ckeditor5-style';
 import { GeneralHtmlSupport } from '@ckeditor/ckeditor5-html-support';
 import { SourceEditing } from '@ckeditor/ckeditor5-source-editing';
 import { ShowBlocks } from '@ckeditor/ckeditor5-show-blocks';
+import { Mention } from '@ckeditor/ckeditor5-mention';
 
-import Mention from '../plugins/ckeditor5-mention/src/mention';
 import ReadMore from '../plugins/readmore/src/readmore';
 import FileManager from '../plugins/filemanager/src/filemanager';
 import PageLinks from '../plugins/pagelinks/src/pagelinks';
+import Pages from '../plugins/pages/src/pages';
 
 export default class ClassicEditor extends ClassicEditorBase {}
 
@@ -112,6 +113,7 @@ ClassicEditor.builtinPlugins = [
 	GeneralHtmlSupport,
 	Mention,
 	PageLinks,
+	Pages,
 	EditorClassPlugin,
 	WordCount,
 	SourceEditing,

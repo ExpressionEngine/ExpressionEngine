@@ -47,6 +47,7 @@ class ChannelEntry extends ContentModel
         'expiration_date' => 'int',
         'comment_expiration_date' => 'int',
         'author_id' => 'int',
+        'edit_member_id' => 'int',
         'edit_date' => 'timestamp',
         'recent_comment_date' => 'timestamp',
     );
@@ -145,6 +146,11 @@ class ChannelEntry extends ContentModel
             ),
             'weak' => true
         ),
+        'LastEditor' => array(
+            'type' => 'belongsTo',
+            'model' => 'Member',
+            'from_key' => 'edit_member_id'
+        ),
     );
 
     protected static $_field_data = array(
@@ -209,6 +215,7 @@ class ChannelEntry extends ContentModel
     protected $expiration_date;
     protected $comment_expiration_date;
     protected $edit_date;
+    protected $edit_member_id;
     protected $recent_comment_date;
     protected $comment_total;
 
@@ -459,6 +466,8 @@ class ChannelEntry extends ContentModel
         $this->evaluateConditionalFields();
 
         $this->updateFilesUsage();
+
+        $this->setProperty('edit_member_id', isset(ee()->session) ? ee()->session->userdata('member_id') : 0);
     }
 
     public function onAfterSave()

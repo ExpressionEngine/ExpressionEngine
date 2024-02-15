@@ -745,6 +745,7 @@ class EE_Schema
 			expiration_date int(10) NOT NULL default 0,
 			comment_expiration_date int(10) NOT NULL default 0,
 			edit_date bigint(14),
+			edit_member_id int(10) unsigned NOT NULL default 0,
 			recent_comment_date int(10) NULL DEFAULT NULL,
 			comment_total int(4) unsigned NOT NULL default 0,
 			PRIMARY KEY `entry_id` (`entry_id`),
@@ -754,6 +755,7 @@ class EE_Schema
 			KEY `status` (`status`),
 			KEY `entry_date` (`entry_date`),
 			KEY `expiration_date` (`expiration_date`),
+			KEY `edit_member_id` (`edit_member_id`),
 			KEY `site_id` (`site_id`),
 			KEY `sticky_date_id_idx` (`sticky`,`entry_date`,`entry_id`)
 		)";
