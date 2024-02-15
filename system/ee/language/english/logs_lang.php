@@ -29,9 +29,11 @@ $lang = array(
 
     'email_log' => 'Email',
 
+    'system_log' => 'System Logs',
+
     'logs_deleted' => 'Logs Deleted',
 
-    'logs_deleted_desc' => '<b>%d</b> log(s) deleted from <b>%s</b> logs',
+    'logs_deleted_desc' => '<b>%s</b> log(s) deleted from <b>%s</b> logs',
 
     'no_consent_logs_found' => 'No <b>Consent audit logs</b> found.',
 
@@ -144,6 +146,24 @@ $lang = array(
     'filter_by_site' => 'filter sites',
 
     'filter_by_username' => 'filter username',
+
+    'log_channel' => 'Log Channel',
+
+    'log_date' => 'Date',
+
+    'log_level' => 'Severity',
+
+    'log_context' => 'Context',
+
+    'log_extra' => 'Extra',
+
+    'logging_settings' => 'Logging settings',
+
+    'confirm_remove_logs' => 'Are you sure you want to remove all %s?',
+
+    'no_logs_found' => 'No log records found',
+
+    'show_all_logs' => 'Show all logs',
 
 );
 

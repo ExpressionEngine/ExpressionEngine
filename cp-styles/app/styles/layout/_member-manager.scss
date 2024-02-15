@@ -31,6 +31,10 @@
                 &-search {
                     flex-grow: 3;
 
+                    & > .field-control {
+                        width: 100%;
+                    }
+
                     @media (max-width: 1200px) {
                         flex-grow: 2;
                     }

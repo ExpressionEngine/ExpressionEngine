@@ -32,6 +32,17 @@ $text-selection-bg: lighten($brand-primary, 25%);
 $link: $brand-primary;
 $link-hover: darken($link, 15%);
 
+// Monolog Level Colours - Snow Light Theme
+
+$log-level-emergency: #FF0000;
+$log-level-alert: #BE185D;
+$log-level-critical: #C026D3;
+$log-level-error: #FF7673;
+$log-level-debug: #36D792;
+$log-level-notice: #2196F3;
+$log-level-info: #00AF64;
+$log-level-warning: #FF9A00;
+
 // #Details - Snow Light Theme
 $snow-theme: (
 
@@ -44,6 +55,15 @@ $snow-theme: (
   accent-dark: darken($brand-primary, 15%),
 	accent-medium: lighten($brand-primary, 20%),
 	accent-light: lighten($brand-primary, 30%),
+
+  log-level-emergency: $log-level-emergency,
+  log-level-alert: $log-level-alert,
+  log-level-critical: $log-level-critical,
+  log-level-error: $log-level-error,
+  log-level-debug: $log-level-debug,
+  log-level-notice: $log-level-notice,
+  log-level-info: $log-level-info,
+  log-level-warning: $log-level-warning,
 
   // Grays
   gray-blank: $gray-blank,

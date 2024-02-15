@@ -57,6 +57,8 @@
 </div>
 <?php endif; ?>
 
+<?php if (isset($settings)) echo $settings; ?>
+
 <?php
 
 $modal_vars = array(

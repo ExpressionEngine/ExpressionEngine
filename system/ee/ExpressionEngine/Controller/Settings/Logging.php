@@ -10,7 +10,7 @@
 
 namespace ExpressionEngine\Controller\Settings;
 
-use CP_Controller;
+use ExpressionEngine\Dependency\Monolog;
 
 /**
  * Logging Settings Controller
@@ -20,47 +20,268 @@ class Logging extends Settings
     /**
      * General Settings
      */
-    public function index()
+    public function index($routes = null, $errors = null)
     {
-        $vars['sections'] = array(
-            array(
-                array(
-                    'title' => 'anonymize_consent_logs',
-                    'desc' => 'anonymize_consent_logs_desc',
-                    'fields' => array(
-                        'anonymize_consent_logs' => array(
-                            'type' => 'checkbox',
-                            'choices' => array(
-                                'ip_address' => 'ip_address',
-                            )
-                        )
-                    )
-                ),
-            )
-        );
+        if (! ee('Permission')->can('access_logs')) {
+            show_error(lang('unauthorized_access'), 403);
+        }
 
-
-        $base_url = ee('CP/URL')->make('settings/logging');
-
-        if (! empty($_POST)) {
-            if (is_array($_POST['anonymize_consent_logs'])) {
-                $_POST['anonymize_consent_logs'] = implode('|', $_POST['anonymize_consent_logs']);
+        if (ee('Request')->isPost()) {
+            if (AJAX_REQUEST) {
+                //do the validation here
+                return ['success'];
             }
-            if ($this->saveSettings($vars['sections'])) {
-                ee()->view->set_message('success', lang('preferences_updated'), lang('preferences_updated_desc'), true);
-            } else {
-                ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+            $config = $this->saveLoggingSettings();
+        } else {
+            $config = config_item('logging') ?: [];
+            if (!is_array($config)) {
+                $config = json_decode($config, true);
+            }
+            if (count($config) == 0) {
+                $config = ['*' => ee('Logger')->getDefaultConfig()];
             }
         }
 
-        ee()->view->base_url = $base_url;
-        ee()->view->cp_page_title = lang('logging');
-        ee()->view->save_btn_text = 'btn_save_settings';
-        ee()->view->save_btn_text_working = 'btn_saving';
+        $base_url = ee('CP/URL')->make('settings/logging');
+
+        $vars = array();
+        $columns = array(
+            'channel' => array(
+                'label' => 'logging_channel',
+                'desc' => 'logging_channel_desc'
+            ),
+            'handler' => array(
+                'label' => 'logging_handler',
+                'desc' => 'logging_handler_desc'
+            ),
+            'level' => array(
+                'label' => 'logging_level',
+                'desc' => 'logging_level_desc'
+            ),
+            'processors' => array(
+                'label' => 'logging_processors',
+                'desc' => 'logging_processors_desc'
+            ),
+        );
+        $defaultLoggingSettings = ee('CP/GridInput', array(
+            'field_name' => 'defaultLogging',
+            'show_add_button' => true
+        ));
+        $defaultLoggingSettings->loadAssets();
+        $defaultLoggingSettings->setColumns($columns);
+        $defaultLoggingSettings->setNoResultsText('logging_not_configured', 'configure');
+
+        $specificLoggingSettings = ee('CP/GridInput', array(
+            'field_name' => 'specificLogging',
+            'show_add_button' => true
+        ));
+        $specificLoggingSettings->loadAssets();
+        $specificLoggingSettings->setColumns($columns);
+        $specificLoggingSettings->setNoResultsText('logging_not_configured', 'configure');
+
+        $defaultLoggingData = [];
+        $specificLoggingData = [];
+        $defaultLoggingConfig = [];
+        $specificLoggingConfig = [];
+        $id = 0;
+
+        foreach ($config as $channel => $channelConfig) {
+            foreach ($channelConfig as $handler => $handlerConfig) {
+                $var = $channel == '*' ? 'defaultLoggingConfig' : 'specificLoggingConfig';
+                array_push($$var, [
+                    'id' => $id++,
+                    'channel' => $channel,
+                    'handler' => $handler,
+                    'level' => $handlerConfig['level'] ?? 'info',
+                    'processors' => $handlerConfig['processors'] ?? []
+                ]);
+            }
+        }
+
+        foreach ($defaultLoggingConfig as $row) {
+            $defaultLoggingData[] = $this->getRow($row, $errors);
+        }
+        $defaultLoggingSettings->setData($defaultLoggingData);
+        $blankRow = $this->getRow(['channel' => '*'], null);
+        $defaultLoggingSettings->setBlankRow($blankRow['columns']);
+
+        foreach ($specificLoggingConfig as $row) {
+            $specificLoggingData[] = $this->getRow($row, $errors);
+        }
+        $specificLoggingSettings->setData($specificLoggingData);
+        $blankRow = $this->getRow([], null);
+        $specificLoggingSettings->setBlankRow($blankRow['columns']);
+
+        $vars = array(
+            'base_url' => $base_url,
+            'cp_page_title' => lang('logging_settings'),
+            'sections' => array(
+                array(
+                    array(
+                        'title' => 'common_logging_settings',
+                        'wide' => true,
+                        'grid' => true,
+                        'fields' => array(
+                            'defaultLogging' => array(
+                                'type' => 'html',
+                                'content' => ee()->load->view('_shared/table', $defaultLoggingSettings->viewData(), true)
+                            )
+                        )
+                    ),
+                    array(
+                        'title' => 'specific_logging_settings',
+                        'wide' => true,
+                        'grid' => true,
+                        'fields' => array(
+                            'specificLogging' => array(
+                                'type' => 'html',
+                                'content' => ee()->load->view('_shared/table', $specificLoggingSettings->viewData(), true)
+                            )
+                        )
+                    )
+                )
+            )
+        );
+
         ee()->view->cp_breadcrumbs = array(
             '' => lang('logging')
         );
+
+        ee()->view->ajax_validate = true;
+        ee()->view->buttons = [
+            [
+                'name' => 'submit',
+                'type' => 'submit',
+                'value' => 'save',
+                'text' => 'save',
+                'working' => 'btn_saving'
+            ]
+        ];
+
         ee()->cp->render('settings/form', $vars);
+    }
+
+    private function getRow($configRow, $errors)
+    {
+        // if the handler is NullHandler, get the next one and mark it as teminator
+        // (if there is no next one for this channel, add a new one)
+
+        $row = array();
+
+        $id = !empty($configRow && isset($configRow['id'])) ? $configRow['id'] : 0;
+        $row['attrs']['row_id'] = 'new_row_' . $id;
+
+        $row['columns'] = array(
+            // channel
+            array(
+                'html' => (isset($configRow['channel']) && $configRow['channel'] == '*') ? lang('all_channels') : form_input('channel', $configRow['channel'] ?? ''),
+                'error' => (isset($errors) && $errors->hasErrors("routes[rows][{$id}][template_id]")) ? implode('<br>', $errors->getErrors("routes[rows][{$id}][template_id]")) : null
+            ),
+            // handler
+            array(
+                'html' => form_dropdown('handler', $this->getHandlerOptions()['handlers'], $configRow['handler'] ?? 'DatabaseHandler'),
+                'error' => (isset($errors) && $errors->hasErrors("routes[rows][{$id}][route]")) ? implode('<br>', $errors->getErrors("routes[rows][{$id}][route]")) : null
+            ),
+            // level
+            array(
+                'html' => form_dropdown('level', $this->getLevelOptions(), isset($configRow['level']) ? strtolower($configRow['level']) : 'info'),
+                'error' => (isset($errors) && $errors->hasErrors("routes[rows][{$id}][route]")) ? implode('<br>', $errors->getErrors("routes[rows][{$id}][route]")) : null
+            ),
+            // processors
+            array(
+                'html' => ee('View')->make('_shared/form/field')
+                    ->render(array(
+                        'field_name' => "processors",
+                        'field' => array(
+                            'type' => 'checkbox',
+                            'choices' => $this->getHandlerOptions()['processors'],
+                            'value' => $configRow['processors'] ?? [],
+                            'too_many' => 100
+                        ),
+                        'grid' => true,
+                        'errors' => $errors
+                    )
+                ),
+                'error' => (isset($errors) && $errors->hasErrors("routes[rows][{$id}][route]")) ? implode('<br>', $errors->getErrors("routes[rows][{$id}][route]")) : null
+            ),
+
+        );
+        $row['attrs']['class'] = 'setting-field';
+
+        return $row;
+    }
+
+    private function getHandlerOptions()
+    {
+        static $options;
+
+        if (!empty($options)) {
+            return $options;
+        }
+
+        $config = ee()->config->loadFile('logger');
+        $handlers = array_keys($config['handlers']);
+        $processors = array_keys($config['processors']);
+        $options = array(
+            'handlers' => array_combine($handlers, $handlers),
+            'processors' => array_combine($processors, $processors)
+        );
+        array_walk_recursive($options, function (&$s) {
+            $s = lang($s);
+        });
+        return $options;
+    }
+
+    private function getLevelOptions()
+    {
+        static $levels;
+
+        if (!empty($levels)) {
+            return $levels;
+        }
+
+        $levelContsanst = array_keys(Monolog\Logger::getLevels());
+        array_walk($levelContsanst, function (&$s) {
+            $s = strtolower($s);
+        });
+        $levels = array_combine($levelContsanst, $levelContsanst);
+        return $levels;
+    }
+
+    private function saveLoggingSettings()
+    {
+        $post = ee('Security/XSS')->clean($_POST);
+
+        $defaultLogging = $post['defaultLogging']['rows'] ?? [];
+        $specificLogging = $post['specificLogging']['rows'] ?? [];
+
+        $config = [];
+        foreach ($defaultLogging as $row) {
+            $config['*'][$row['handler']] = [
+                'level' => $row['level']
+            ];
+            if (!empty($row['processors'])) {
+                $config['*'][$row['handler']]['processors'] = $row['processors'];
+            }
+        }
+        foreach ($specificLogging as $row) {
+            $config[$row['channel']][$row['handler']] = [
+                'level' => $row['level']
+            ];
+            if (!empty($row['processors'])) {
+                $config[$row['channel']][$row['handler']]['processors'] = $row['processors'];
+            }
+        }
+
+        ee()->config->update_site_prefs(['logging' => $config]);
+
+        ee('CP/Alert')->makeInline('shared-form')
+            ->asSuccess()
+            ->withTitle(lang('preferences_updated'))
+            ->addToBody(lang('preferences_updated_desc'))
+            ->now();
+
+        return $config;
     }
 }
 // END CLASS

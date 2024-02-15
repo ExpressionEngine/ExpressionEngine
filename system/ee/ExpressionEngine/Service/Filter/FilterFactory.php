@@ -382,6 +382,16 @@ class FilterFactory
     }
 
     /**
+     * This will instantiate and return a default LogManagerColumns filter
+     *
+     * @return Filter\LogManagerColumns a LogManagerColumns Filter object
+     */
+    protected function createDefaultLogManagerColumns($columns, $primaryRole = null, $view_id = null)
+    {
+        return new Filter\LogManagerColumns($columns, $primaryRole, $view_id);
+    }
+
+    /**
      * This will instantiate and return a default Sort filter
      *
      * @return Filter\Sort a Sort Filter object

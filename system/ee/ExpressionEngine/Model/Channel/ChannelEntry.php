@@ -251,6 +251,11 @@ class ChannelEntry extends ContentModel
         return $date;
     }
 
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
     public function validate()
     {
         $result = parent::validate();
@@ -615,6 +620,8 @@ class ChannelEntry extends ContentModel
 
     public function onAfterDelete()
     {
+        parent::onAfterDelete();
+
         // store the author and dissociate. otherwise saving the author will
         // attempt to save this entry to ensure relationship integrity.
         // TODO make sure everything is already dissociated when we hit this

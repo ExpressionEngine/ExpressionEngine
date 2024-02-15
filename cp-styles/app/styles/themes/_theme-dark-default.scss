@@ -35,6 +35,17 @@ $text-selection-bg: lighten($brand-primary, 3%);
 $link: $brand-primary;
 $link-hover: lighten($link, 10%);
 
+// Monolog Level Colours - Default Dark Theme
+
+$log-level-emergency: #FF0000;
+$log-level-alert: #BE185D;
+$log-level-critical: #C026D3;
+$log-level-error: #FF7673;
+$log-level-debug: #36D792;
+$log-level-notice: #2196F3;
+$log-level-info: #00AF64;
+$log-level-warning: #FF9A00;
+
 // #Details - Default Dark Theme
 $dark-theme: (
 
@@ -47,6 +58,15 @@ $dark-theme: (
   accent-dark: lighten($brand-primary, 10%),
   accent-medium: darken($brand-primary, 35%),
   accent-light: darken($brand-primary, 53%),
+
+  log-level-emergency: $log-level-emergency,
+  log-level-alert: $log-level-alert,
+  log-level-critical: $log-level-critical,
+  log-level-error: $log-level-error,
+  log-level-debug: $log-level-debug,
+  log-level-notice: $log-level-notice,
+  log-level-info: $log-level-info,
+  log-level-warning: $log-level-warning,
 
   // Grays
   gray-blank: $gray-blank,

@@ -167,6 +167,7 @@ class Channel extends StructureModel
         'afterInsert',
         'afterUpdate',
         'beforeDelete',
+        'afterDelete',
         'afterSave'
     );
 

@@ -1054,20 +1054,6 @@ class EE_Schema
 			PRIMARY KEY `entry_id_cat_id` (`entry_id`, `cat_id`)
 		)";
 
-        // Control panel log
-
-        $Q[] = "CREATE TABLE exp_cp_log (
-			id int(10) NOT NULL auto_increment,
-			site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
-			member_id int(10) unsigned NOT NULL,
-			username varchar(" . USERNAME_MAX_LENGTH . ") NOT NULL,
-			ip_address varchar(45) default '0' NOT NULL,
-			act_date int(10) NOT NULL,
-			action text NOT NULL,
-			PRIMARY KEY `id` (`id`),
-			KEY `site_id` (`site_id`)
-		)";
-
         // HTML buttons
         // These are the buttons that appear on the PUBLISH page.
         // Each member can have their own set of buttons
@@ -1104,6 +1090,23 @@ class EE_Schema
 			layout_id int(10) UNSIGNED NOT NULL,
 			role_id int(10) UNSIGNED NOT NULL,
 			PRIMARY KEY `layout_id_role_id` (`layout_id`, `role_id`)
+		)";
+
+        // Logs
+
+		$Q[] = "CREATE TABLE exp_logs (
+			`log_id` int(10) NOT NULL auto_increment,
+			`site_id` INT(4) UNSIGNED NOT NULL DEFAULT 0,
+			`log_date` int(10) NOT NULL DEFAULT 0,
+			`level` int(3) NOT NULL,
+			`channel` varchar(45) NOT NULL,
+			`message` text NOT NULL,
+			`context` text NULL,
+			`extra` text NULL,
+			`ip_address` varchar(45) default '0' NOT NULL,
+			PRIMARY KEY `log_id` (`log_id`),
+			KEY `site_id` (`site_id`),
+			KEY `channel` (`channel`)
 		)";
 
         // Template Groups
@@ -1545,27 +1548,6 @@ class EE_Schema
 			PRIMARY KEY (`wm_id`)
 		)";
 
-        // Developer log table
-        $Q[] = "CREATE TABLE `exp_developer_log` (
-			`log_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-			`timestamp` int(10) unsigned NOT NULL,
-			`viewed` char(1) NOT NULL DEFAULT 'n',
-			`description` text NULL,
-			`function` varchar(100) NULL,
-			`line` int(10) unsigned NULL,
-			`file` varchar(255) NULL,
-			`deprecated_since` varchar(10) NULL,
-			`use_instead` varchar(100) NULL,
-			`template_id` int(10) unsigned NOT NULL default 0,
-			`template_name` varchar(100) NULL,
-			`template_group` varchar(100) NULL,
-			`addon_module` varchar(100) NULL,
-			`addon_method` varchar(100) NULL,
-			`snippets` text NULL,
-			`hash` char(32) NOT NULL,
-			PRIMARY KEY (`log_id`)
-		)";
-
         // Remember me table
         $Q[] = "CREATE TABLE `exp_remember_me` (
 			`remember_me_id` varchar(40) NOT NULL DEFAULT '0',
@@ -1763,6 +1745,17 @@ class EE_Schema
         $Q[] = "CREATE TABLE `exp_member_manager_views` (
 			`view_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`role_id` int(6) unsigned NOT NULL,
+			`member_id` int(10) unsigned NOT NULL,
+			`name` varchar(128) NOT NULL DEFAULT '',
+			`columns` text NOT NULL,
+			PRIMARY KEY (`view_id`),
+			KEY `role_id_member_id` (`role_id`, `member_id`)
+		);";
+
+        // log manager
+        $Q[] = "CREATE TABLE `exp_log_manager_views` (
+			`view_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`channel` varchar(45) DEFAULT NULL,
 			`member_id` int(10) unsigned NOT NULL,
 			`name` varchar(128) NOT NULL DEFAULT '',
 			`columns` text NOT NULL,

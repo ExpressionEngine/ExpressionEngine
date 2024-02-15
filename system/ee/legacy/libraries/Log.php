@@ -68,6 +68,8 @@ class EE_Log
 
         if (! file_exists($filepath)) {
             $message .= "<" . "?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed'); ?" . ">\n\n";
+
+            $message .= "log_threshold configuration is deprecated. Choose User Log File handler in Logging settings to achieve similar behaviour.\n\n";
         }
 
         if (! $fp = @fopen($filepath, FOPEN_WRITE_CREATE)) {

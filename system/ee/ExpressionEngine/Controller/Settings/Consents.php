@@ -71,6 +71,8 @@ class Consents extends Settings
             $vars['requests'][$type] = $data['requests'];
         }
 
+        $vars['settings'] = $this->settings();
+
         $vars['no_results'] = ['text' =>
             sprintf(lang('no_found'), lang('consent_requests'))
             . ' <a href="' . $vars['create_url'] . '">' . lang('add_new') . '</a>'];
@@ -177,6 +179,45 @@ class Consents extends Settings
             'requests' => $data,
             'filters' => $filters
         ];
+    }
+
+    private function settings()
+    {
+        $vars = [
+            'base_url' => ee('CP/URL')->make('settings/consents'),
+            'cp_page_title' => lang('consent_settings'),
+            'save_btn_text' => 'btn_save_settings',
+            'save_btn_text_working' => 'btn_saving'
+        ];
+        $vars['sections'] = array(
+            array(
+                array(
+                    'title' => 'anonymize_consent_logs',
+                    'desc' => 'anonymize_consent_logs_desc',
+                    'fields' => array(
+                        'anonymize_consent_logs' => array(
+                            'type' => 'checkbox',
+                            'choices' => array(
+                                'ip_address' => 'ip_address',
+                            )
+                        )
+                    )
+                ),
+            )
+        );
+
+        if (! empty($_POST) && isset($_POST['anonymize_consent_logs'])) {
+            if (is_array($_POST['anonymize_consent_logs'])) {
+                $_POST['anonymize_consent_logs'] = implode('|', $_POST['anonymize_consent_logs']);
+            }
+            if ($this->saveSettings($vars['sections'])) {
+                ee()->view->set_message('success', lang('preferences_updated'), lang('preferences_updated_desc'), true);
+            } else {
+                ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+            }
+        }
+
+        return ee('View')->make('ee:_shared/form')->render($vars);
     }
 
     public function create()

@@ -598,6 +598,10 @@ $setup = [
             return new License\LicenseFactory($default_key);
         },
 
+        'Logger' => function ($ee) {
+            return new Logger\Logger();
+        },
+
         'Member' => function ($ee) {
             return new Member\Member();
         },
@@ -703,6 +707,7 @@ $setup = [
         'Watermark' => 'Model\File\Watermark',
 
         // ..\Log
+        'Log' => 'Model\Log\Log',
         'CpLog' => 'Model\Log\CpLog',
         'DeveloperLog' => 'Model\Log\DeveloperLog',
         'EmailConsoleCache' => 'Model\Log\EmailConsoleCache',
@@ -811,8 +816,11 @@ $setup = [
         // ..\FileManager
         'FileManagerView' => 'Model\File\FileManagerView',
 
-        // ..\FileManager
+        // ..\MemberManager
         'MemberManagerView' => 'Model\Member\MemberManagerView',
+
+        // ..\LogManager
+        'LogManagerView' => 'Model\Log\LogManagerView',
     ),
 
     'cookies.necessary' => [

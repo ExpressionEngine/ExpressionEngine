@@ -103,6 +103,22 @@ class EE_Exceptions
         $message = str_replace($syspath, '', $message);
         $message = htmlentities($message, ENT_QUOTES, 'UTF-8', false);
 
+        // Log it
+        switch ($error_category) {
+            case 'Notice':
+            case 'Deprecated':
+                $logLevel = 'notice';
+                break;
+            case 'Warning':
+                $logLevel = 'warning';
+                break;
+            case 'Error':
+            default:
+                $logLevel = 'error';
+                break;
+        }
+        ee('Logger')->get()->log($logLevel, $error_constant . ': ' . $message . ' in ' . $filepath . ':' . $line . '.');
+
         if (ob_get_level() > $this->ob_level + 1) {
             ob_end_flush();
         }
@@ -274,6 +290,9 @@ class EE_Exceptions
             $line = str_replace($partial_path, '', $line);
             $line = htmlentities($line, ENT_QUOTES, 'UTF-8');
         }
+
+        // Log it
+        ee('Logger')->get()->error($error_type . ' in ' . $location . '. ' . $message, $trace);
 
         // We'll only want to show certain information, like file paths, if we're allowed
         $debug = (bool) (DEBUG or (isset(ee()->config) && ee()->config->item('debug') > 1) or (isset(ee()->session) && ee('Permission')->isSuperAdmin()));

@@ -10,38 +10,31 @@
 
 namespace ExpressionEngine\Model\Log;
 
-use ExpressionEngine\Service\Model\Model;
-
 /**
  * Developer Log Model
  */
-class DeveloperLog extends Model
+class DeveloperLog extends Log
 {
-    protected static $_primary_key = 'log_id';
-    protected static $_table_name = 'developer_log';
+    public function onBeforeInsert()
+    {
+        parent::onBeforeInsert();
+        $this->setProperty('channel', 'developer');
+    }
 
-    protected static $_relationships = array(
-        'Template' => array(
-            'type' => 'belongsTo'
-        )
-    );
+    public function get__timestamp()
+    {
+        return $this->getProperty('log_date');
+    }
 
-    protected $log_id;
-    protected $timestamp;
-    protected $viewed;
-    protected $description;
-    protected $function;
-    protected $line;
-    protected $file;
-    protected $deprecated_since;
-    protected $use_instead;
-    protected $template_id;
-    protected $template_name;
-    protected $template_group;
-    protected $addon_module;
-    protected $addon_method;
-    protected $snippets;
-    protected $hash;
+    public function get__function()
+    {
+        return null;
+    }
+
+    public function get__description()
+    {
+        return $this->getProperty('message');
+    }
 }
 
 // EOF
