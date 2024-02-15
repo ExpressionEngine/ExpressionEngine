@@ -291,7 +291,7 @@ context('Member Registration on Front-end', () => {
             cy.clearCookies()
 
             cy.authVisit('admin.php?/cp/members');
-            cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4)').contains('Pending')
+            cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4) .st-pending').should('exist')
 
             cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4) a[title=Approve]').click()
             cy.contains("Member Approved");
@@ -318,7 +318,7 @@ context('Member Registration on Front-end', () => {
             cy.clearCookies()
 
             cy.authVisit('admin.php?/cp/members');
-            cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4)').contains('Pending')
+            cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4) .st-pending').should('exist')
 
             cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4) a[title=Approve]').click()
             cy.contains("Member Approved");
@@ -363,7 +363,7 @@ context('Member Registration on Front-end', () => {
             cy.clearCookies()
 
             cy.authVisit('admin.php?/cp/members');
-            cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4)').contains('Pending')
+            cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4) .st-pending').should('exist')
 
             cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4) a[title=Approve]').click()
             cy.contains("Member Approved");
@@ -426,7 +426,7 @@ context('Member Registration on Front-end', () => {
 
             cy.eeConfig({ item: 'default_primary_role', value: '7' })
             cy.authVisit('admin.php?/cp/members');
-            cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4)').contains('Pending')
+            cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4) .st-pending').should('exist')
 
             cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4) a[title=Approve]').click()
             cy.contains("Member Approved");
@@ -439,7 +439,7 @@ context('Member Registration on Front-end', () => {
             cy.eeConfig({ item: 'default_primary_role', value: '6' })
 
             cy.authVisit('admin.php?/cp/members');
-            cy.get("a:contains('pending1')").parents('tr').find('td:nth-child(4)').contains('Pending')
+            cy.get("a:contains('pending1')").parents('tr').find('td:nth-child(4) .st-pending').should('exist')
 
             cy.get("a:contains('pending1')").parents('tr').find('td:nth-child(4) a[title=Approve]').click()
             cy.contains("Member Approved");
@@ -452,7 +452,7 @@ context('Member Registration on Front-end', () => {
             cy.eeConfig({ item: 'default_primary_role', value: '7' })
 
             cy.authVisit('admin.php?/cp/members');
-            cy.get("a:contains('pending2')").parents('tr').find('td:nth-child(4)').contains('Pending')
+            cy.get("a:contains('pending2')").parents('tr').find('td:nth-child(4) .st-pending').should('exist')
 
             cy.get("a:contains('pending2')").parents('tr').find('td:nth-child(4) a[title=Approve]').click()
             cy.contains("Unable to activate");
@@ -499,7 +499,7 @@ context('Member Registration on Front-end', () => {
             cy.clearCookies()
 
             cy.authVisit('admin.php?/cp/members');
-            cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4)').contains('Pending')
+            cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4) .st-pending').should('exist')
 
             cy.clearCookies()
             cy.maildevGetAllMessages().then((emails) => {
@@ -532,7 +532,7 @@ context('Member Registration on Front-end', () => {
             cy.clearCookies()
 
             cy.authVisit('admin.php?/cp/members');
-            cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4)').contains('Pending')
+            cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4) .st-pending').should('exist')
 
             cy.clearCookies()
             cy.maildevGetAllMessages().then((emails) => {
@@ -583,7 +583,7 @@ context('Member Registration on Front-end', () => {
             cy.clearCookies()
 
             cy.authVisit('admin.php?/cp/members');
-            cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4)').contains('Pending')
+            cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4) .st-pending').should('exist')
 
             cy.clearCookies()
             cy.maildevGetAllMessages().then((emails) => {
@@ -651,7 +651,7 @@ context('Member Registration on Front-end', () => {
 
             cy.eeConfig({ item: 'default_primary_role', value: '7' })
             cy.authVisit('admin.php?/cp/members');
-            cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4)').contains('Pending')
+            cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4) .st-pending').should('exist')
 
             cy.clearCookies()
             cy.maildevGetAllMessages().then((emails) => {

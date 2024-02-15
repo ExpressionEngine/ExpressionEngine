@@ -193,10 +193,7 @@ abstract class AbstractBulkEdit extends CP_Controller
         }
 
         $channel = ee('Model')->make('Channel');
-        $channel->cat_group = implode(
-            '|',
-            $channels->CategoryGroups->intersect()->getIds()
-        );
+        $channel->CategoryGroups = $channels->CategoryGroups->intersect();
         $channel->Statuses = $channels->Statuses->intersect();
 
         // Only enable if ALL channels have comments enabled

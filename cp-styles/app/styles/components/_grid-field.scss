@@ -19,7 +19,7 @@
 			font-size: 1em;
 			position: relative;
 			top: 0px;
-			margin-left: 3px;
+			margin-left: 0;
 		}
 	}
 }
@@ -147,7 +147,7 @@
 	display: none;
 
 	label {
-		display: block;
+		display: inline-block;
 		color: var(--ee-text-normal);
 		margin-bottom: 5px;
 		font-weight: 500;

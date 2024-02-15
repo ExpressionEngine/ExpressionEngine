@@ -75,6 +75,15 @@ class Member extends ContentModel
             'model' => 'ChannelEntry',
             'to_key' => 'author_id'
         ),
+        'RelatedChannelEntries' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'ChannelEntry',
+            'pivot' => array(
+                'table' => 'member_relationships',
+                'left' => 'child_id',
+                'right' => 'parent_id'
+            )
+        ),
         'LastAuthoredSpecialtyTemplates' => array(
             'type' => 'hasMany',
             'model' => 'SpecialtyTemplate',
@@ -221,7 +230,7 @@ class Member extends ContentModel
         'role_id' => 'required|isNatural|validateRoles',
         'username' => 'required|unique|validUsername|validateWhenIsNew|notBanned',
         'screen_name' => 'validScreenName|notBanned',
-        'email' => 'required|email|uniqueEmail|max_length[' . USERNAME_MAX_LENGTH . ']|notBanned',
+        'email' => 'required|email|uniqueEmail|max_length[254]|notBanned',
         'password' => 'required|validPassword|passwordMatchesSecurityPolicy',
         'timezone' => 'validateTimezone',
         'date_format' => 'validateDateFormat',
@@ -956,7 +965,7 @@ class Member extends ContentModel
         $roles = ($cache == true) ? $this->getFromCache($cache_key) : false;
 
         if ($roles === false) {
-            $roles = $this->Roles->indexBy('name');
+            $roles = $this->Roles->filter('role_id', '!=', 0)->indexBy('name');
             if (is_object($this->PrimaryRole)) {
                 $roles[$this->PrimaryRole->name] = $this->PrimaryRole;
             }

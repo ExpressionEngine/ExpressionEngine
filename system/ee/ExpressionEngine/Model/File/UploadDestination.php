@@ -50,6 +50,15 @@ class UploadDestination extends StructureModel
             'model' => 'Module',
             'to_key' => 'module_id'
         ),
+        'CategoryGroups' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'CategoryGroup',
+            'pivot' => array(
+                'table' => 'upload_prefs_category_groups',
+                'left' => 'upload_location_id',
+                'right' => 'group_id'
+            )
+        ),
         'Files' => array(
             'type' => 'hasMany',
             'model' => 'File',
@@ -481,7 +490,7 @@ class UploadDestination extends StructureModel
         $replace_sizes = array();
 
         $id = $this->getId();
-        $missing_only_sizes = (is_array($allSizes[$id])) ? $allSizes[$id] : array();
+        $missing_only_sizes = (array_key_exists($id, $allSizes) && is_array($allSizes[$id])) ? $allSizes[$id] : array();
 
         if (is_array($replaceSizeIds)) {
             foreach ($replaceSizeIds as $resize_id) {
@@ -622,25 +631,33 @@ class UploadDestination extends StructureModel
                 }
                 array_pop($pathInfo);
                 $directory = $this->getFileByPath(implode('/', $pathInfo));
-                $file_data['directory_id'] = $directory->getId();
+                $file_data['directory_id'] = !is_null($directory) ? $directory->getId() : 0;
             }
             $file->set($file_data);
             if ($file->isEditableImage()) {
-                $image_dimensions = $file->actLocally(function ($path) {
-                    return ee()->filemanager->get_image_dimensions($path);
-                });
-                $file_data['file_hw_original'] =  $image_dimensions['height'] . ' ' . $image_dimensions['width'];
-                $file->setRawProperty('file_hw_original', $file_data['file_hw_original']);
+                try {
+                    $image_dimensions = $file->actLocally(function ($path) {
+                        return ee()->filemanager->get_image_dimensions($path);
+                    });
+                    $file_data['file_hw_original'] =  $image_dimensions['height'] . ' ' . $image_dimensions['width'];
+                    $file->setRawProperty('file_hw_original', $file_data['file_hw_original']);
+                } catch (\Exception $e) {
+                    //do nothing
+                }
             }
             //$file->save(); need to fallback to old saving because of the checks
 
-            $saved = ee()->filemanager
-                ->save_file(
+            try {
+                $saved = ee()->filemanager->save_file(
                     $file->getAbsolutePath(),
                     $id,
                     $file_data,
                     false
                 );
+            } catch (\Exception $e) {
+                $errors[$fileInfo['basename']] = $e->getMessage();
+                continue;
+            }
 
             if (! $saved['status']) {
                 $errors[$fileInfo['basename']] = $saved['message'];

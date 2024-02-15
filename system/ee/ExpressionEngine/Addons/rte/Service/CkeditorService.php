@@ -28,11 +28,12 @@ class CkeditorService extends AbstractRteService implements RteService
             ee()->lang->loadfile('fieldtypes');
             ee()->file_field->loadDragAndDropAssets();
 
-            //would rather prefer this in combo loader, but that's for CP only
-            ee()->cp->add_js_script(['file' => [
-                'fields/rte/ckeditor/ckeditor',
-                'fields/rte/rte']
-            ]);
+            if (!empty(ee()->config->item('rte_custom_ckeditor_build')) && ee()->config->item('rte_custom_ckeditor_build') === 'y') {
+                ee()->cp->load_package_js('ckeditor');
+            } else {
+                ee()->cp->add_js_script(['file' => 'fields/rte/ckeditor/ckeditor']);
+            }
+            ee()->cp->add_js_script(['file' => 'fields/rte/rte']);
 
             if (REQ == 'CP') {
                 ee()->cp->add_js_script(['file' => [
@@ -242,6 +243,17 @@ class CkeditorService extends AbstractRteService implements RteService
                 ];
             }
 
+            $tableContentToolbar = [
+                'tableColumn',
+                'tableRow',
+                'mergeTableCells',
+                'tableProperties',
+                'tableCellProperties',
+                'toggleTableCaption'
+            ];
+            $toolbarConfig['table'] = new \stdClass();
+            $toolbarConfig['table']->contentToolbar = $tableContentToolbar;
+
             //link
             $toolbarConfig['link'] = (object) [
                 'decorators' => [
@@ -268,7 +280,7 @@ class CkeditorService extends AbstractRteService implements RteService
                 $selection = $config->settings['toolbar']->items;
             }
         } else {
-            $selection = isset($config->settings['toolbar']['buttons']) ? $config->settings['toolbar']['buttons'] : $config->settings['toolbar'];
+            $selection = isset($config->settings['toolbar']['buttons']) && is_array($config->settings['toolbar']['buttons']) ? $config->settings['toolbar']['buttons'] : $config->settings['toolbar'];
         }
         $fullToolbar = array_merge($selection, static::defaultToolbars()['CKEditor Full']);//merge to get the right order
         $fullToolset = [];
@@ -353,7 +365,9 @@ class CkeditorService extends AbstractRteService implements RteService
                 "specialCharacters",
                 "readMore",
                 "fontColor",
-                "fontBackgroundColor"
+                "fontBackgroundColor",
+                "showBlocks",
+                "sourceEditing"
             ],
         ];
     }
