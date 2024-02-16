@@ -15,7 +15,7 @@ jobs:
     name: TEST BUILD
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.build_json.outputs.BUILD_VERSION }}-dp.${{ env.dp_ver }}
+      version: ${{ steps.build_json.outputs.BUILD_VERSION }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
