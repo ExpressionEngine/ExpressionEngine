@@ -344,7 +344,7 @@ class Channels extends AbstractChannelsController
             'channelManager.catGroup.createUrl' => ee('CP/URL')->make('categories/groups/create')->compile(),
             'channelManager.catGroup.editUrl' => ee('CP/URL')->make('categories/groups/edit/###')->compile(),
             'channelManager.catGroup.toggleUrl' => ee('CP/URL')->make('channels/groups/edit/###')->compile(),
-            'channelManager.catGroup.fieldUrl' => ee('CP/URL')->make('channels/render-category-groups-field')->compile(),
+            'channelManager.catGroup.fieldUrl' => ee('CP/URL')->make('channels/render-category-groups-field/' . $channel_id)->compile(),
 
             'channelManager.statuses.createUrl' => ee('CP/URL')->make('channels/status/create')->compile(),
             'channelManager.statuses.editUrl' => ee('CP/URL')->make('channels/status/edit/###')->compile(),
@@ -738,6 +738,11 @@ class Channels extends AbstractChannelsController
      */
     public function renderCategoryGroupsField($channel = null)
     {
+        // Channel might be coming as GET parameter, then it's channel ID
+        if (!empty($channel) && is_numeric($channel)) {
+            $channel = ee('Model')->get('Channel', $channel)->first();
+        }
+
         $categoryGroups = ee('Model')->get('CategoryGroup')
             ->filter('site_id', ee()->config->item('site_id'))
             ->filter('exclude_group', '!=', 1)
