@@ -1923,7 +1923,7 @@ GRID_FALLBACK;
         //get field group and limit
         $query->filter('Channel.site_id', $this->site_id);
 
-        $channel = $query->first();
+        $channel = $query->all()->first();
 
         if (! isset($channel)) {
             throw new Channel_form_exception(lang('channel_form_unknown_channel'));
