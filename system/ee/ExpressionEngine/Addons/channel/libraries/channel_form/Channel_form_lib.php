@@ -1851,7 +1851,7 @@ GRID_FALLBACK;
     public function fetch_categories()
     {
         //exit if already loaded, or if there is no category group
-        if ($this->categories || empty($this->channel->CategoryGroups)) {
+        if ($this->categories || $this->channel->CategoryGroups->count() == 0) {
             return;
         }
 
