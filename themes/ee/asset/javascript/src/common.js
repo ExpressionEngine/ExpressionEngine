@@ -171,21 +171,6 @@ $(document).ready(function(){
 				return false;
 			});
 
-			// listen for clicks to the document
-			$(document).on('click',function(e){
-				// check to see if we are inside a sub-menu or not.
-				if(!$(e.target).closest('.sub-menu').length){
-					// close OTHER open sub menus
-					// when clicking outside ANY sub menu trigger
-					// thanks me :D
-					$('.open')
-						// remove the class of open
-						.removeClass('open')
-						// hide all siblings of open with a class of sub-menu
-						.siblings('.sub-menu').hide();
-				}
-			});
-
 	// =========
 	// sub menus (NEW)
 	// =========
@@ -236,20 +221,23 @@ $(document).ready(function(){
 			}
 		});
 
+		// Removed this code, to prevent bug with popup inside RedactorX
+		// Moved code to remove Class 'open' inside dropdown-controller.js file hideAllDropdowns()
+
 		// listen for clicks to the document
-		$(document).on('click',function(e){
-			// check to see if we are inside a sub-menu or not.
-			if( ! $(e.target).closest('.sub-menu, .date-picker-wrap').length){
-				// close OTHER open sub menus
-				// when clicking outside ANY sub menu trigger
-				// thanks me :D
-				$('.open')
-					// remove the class of open
-					.removeClass('open')
-					// hide all siblings of open with a class of sub-menu
-					.siblings('.sub-menu').hide();
-			}
-		});
+		// $(document).on('click',function(e){
+		// 	// check to see if we are inside a sub-menu or not.
+		// 	if( ! $(e.target).closest('.sub-menu, .date-picker-wrap').length && ! $(e.target).parents('.rx-popup').length){
+		// 		// close OTHER open sub menus
+		// 		// when clicking outside ANY sub menu trigger
+		// 		// thanks me :D
+		// 		$('.open')
+		// 			// remove the class of open
+		// 			.removeClass('open')
+		// 			// hide all siblings of open with a class of sub-menu
+		// 			.siblings('.sub-menu').hide();
+		// 	}
+		// });
 
 
     // Clicking icons in Jump input focuses input
@@ -1266,12 +1254,12 @@ $(document).ready(function(){
 			el.find('.fa-copy').addClass('hidden');
 			el.find('.fa-circle-check').removeClass('hidden');
 
-			// // hide notification in 10 sec
+			// hide notification in 2 sec
 			setTimeout(function() {
 				el.removeClass('success');
 				el.find('.fa-copy').removeClass('hidden');
 				el.find('.fa-circle-check').addClass('hidden');
-			}, 10000);
+			}, 2000);
 
 			return false;
 		})

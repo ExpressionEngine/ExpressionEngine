@@ -280,7 +280,7 @@ class CkeditorService extends AbstractRteService implements RteService
                 $selection = $config->settings['toolbar']->items;
             }
         } else {
-            $selection = isset($config->settings['toolbar']['buttons']) ? $config->settings['toolbar']['buttons'] : $config->settings['toolbar'];
+            $selection = isset($config->settings['toolbar']['buttons']) && is_array($config->settings['toolbar']['buttons']) ? $config->settings['toolbar']['buttons'] : $config->settings['toolbar'];
         }
         $fullToolbar = array_merge($selection, static::defaultToolbars()['CKEditor Full']);//merge to get the right order
         $fullToolset = [];

@@ -96,7 +96,7 @@ class Members extends CP_Controller
         $vars['toolbar_items'] = [];
         if (ee('Permission')->can('edit_member_fields')) {
             $vars['toolbar_items']['fields'] = [
-                'href' => ee('CP/URL')->make('members/fields'),
+                'href' => ee('CP/URL')->make('settings/member-fields'),
                 'class' => 'button--secondary fal fa-pen-field',
                 'title' => lang('custom_member_fields')
             ];
@@ -297,6 +297,11 @@ class Members extends CP_Controller
     public function banSettings()
     {
         ee()->functions->redirect(ee('CP/URL')->make('settings/ban'));
+    }
+
+    public function fields()
+    {
+        ee()->functions->redirect(ee('CP/URL')->make('settings/member-fields'));
     }
 
     public function pending()
@@ -1335,16 +1340,12 @@ class Members extends CP_Controller
         $vars['role_id'] = $roleId;
 
         ee()->javascript->set_global([
-            'file_view_url' => ee('CP/URL')->make('files/file/view/###')->compile(),
-            'fileManager.fileDirectory.createUrl' => ee('CP/URL')->make('files/uploads/create')->compile(),
-            'lang.remove_confirm' => lang('file') . ': <b>### ' . lang('files') . '</b>',
             'viewManager.saveDefaultUrl' => ee('CP/URL')->make('members/views/save-default', ['role_id' => $roleId])->compile()
         ]);
 
         ee()->cp->add_js_script(array(
             'file' => array(
                 'cp/confirm_remove',
-                'cp/files/manager',
                 'cp/publish/entry-list',
             ),
         ));

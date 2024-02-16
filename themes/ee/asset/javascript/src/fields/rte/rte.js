@@ -45,6 +45,8 @@ window.Rte;
             this.showIframe(this.config.type);
         } else if (this.config.type == 'redactor') {
             this.initRedactor();
+        } else if (this.config.type == 'redactorX') {
+            this.initRedactorX();
         } else {
             this.initCKEditor();
         }
@@ -80,8 +82,10 @@ window.Rte;
 
             if (type == 'ckeditor') {
                 $(iDoc).click($.proxy(this, 'initCKEditor'));
-            } else {
+            } else if (type == 'redactor') {
                 $(iDoc).click(() => {this.initRedactor();});
+            } else {
+                $(iDoc).click(() => {this.initRedactorX();});
             }
         },
 
@@ -101,6 +105,30 @@ window.Rte;
                 }
             };
             $R('#' + this.id, config);
+
+            if (this.$iframe) {
+                this.$iframe.remove();
+            }
+        },
+
+        /**
+         * Init RedactorX
+         */
+        initRedactorX: function() {
+            var config = typeof this.config === 'string'
+                            ? JSON.parse(this.config)
+                            : this.config;
+            var id = this.id;
+            config.subscribe = {
+                'editor.blur': function(e) {
+                    $('#' + id).trigger('change');
+                },
+                'editor.keyup': function(e) {
+                    $("[data-publish] > form").trigger("entry:startAutosave")
+                }
+            };
+
+            RedactorX('#' + this.id, config);
 
             if (this.$iframe) {
                 this.$iframe.remove();

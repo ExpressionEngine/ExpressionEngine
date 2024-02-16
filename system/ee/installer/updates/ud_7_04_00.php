@@ -36,10 +36,12 @@ class Updater
                 'addCategoryGroupSettings',
                 'addMemberRelationshipTable',
                 'addMemberFieldtype',
-                'addCategoryGroupPermissions',
                 'ensureBuiltinRoles',
                 'addShowFieldNamesSetting',
                 'increaseEmailLength',
+                'addMissingPrimaryKeys',
+                'fixCategoryFieldRecords',
+                'fixMemberFieldRecords',
             ]
         );
 
@@ -68,7 +70,7 @@ class Updater
 
     private function addMemberManagerViewsTable()
     {
-        if (! ee()->db->table_exists('member_manager_views')) {
+        if (!ee()->db->table_exists('member_manager_views')) {
             ee()->dbforge->add_field(
                 [
                     'view_id' => [
@@ -380,33 +382,6 @@ class Updater
         );
     }
 
-    // those that have edit_categories permissions get the new permission automatically
-    private function addCategoryGroupPermissions()
-    {
-        $query = ee()->db->where('permission', 'can_edit_categories')->get('permissions');
-
-        foreach ($query->result_array() as $row) {
-            $data = array(
-                'site_id' => $row['site_id'],
-                'role_id' => $row['role_id'],
-                'permission' => 'can_create_category_groups'
-            );
-            ee()->db->insert('permissions', $data);
-            $data = array(
-                'site_id' => $row['site_id'],
-                'role_id' => $row['role_id'],
-                'permission' => 'can_edit_category_groups'
-            );
-            ee()->db->insert('permissions', $data);
-            $data = array(
-                'site_id' => $row['site_id'],
-                'role_id' => $row['role_id'],
-                'permission' => 'can_delete_category_groups'
-            );
-            ee()->db->insert('permissions', $data);
-        }
-    }
-
     // in some very old EE versions is was possible to delete built-in member groups
     // here we make sure the required roles are in place
     private function ensureBuiltinRoles()
@@ -462,7 +437,7 @@ class Updater
 
     private function addRoleHighlightColumn()
     {
-        if (! ee()->db->field_exists('highlight', 'roles')) {
+        if (!ee()->db->field_exists('highlight', 'roles')) {
             ee()->smartforge->add_column(
                 'roles',
                 array(
@@ -475,6 +450,7 @@ class Updater
                 )
             );
         }
+
         return true;
     }
 
@@ -493,6 +469,45 @@ class Updater
                 ]
             );
         }
+    }
+
+    private function addMissingPrimaryKeys()
+    {
+        $tables = [
+            'consent_request_version_cookies',
+            'dashboard_layout_widgets',
+            'dock_prolets',
+            'file_usage'
+        ];
+
+        foreach ($tables as $table) {
+            $column = "{$table}_id";
+
+            if (!ee()->db->field_exists($column, $table)) {
+                $table = ee()->db->dbprefix($table);
+                ee()->db->query("ALTER TABLE $table ADD COLUMN `$column` INT(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT FIRST");
+            }
+        }
+    }
+
+    private function fixCategoryFieldRecords()
+    {
+        ee()->db->query(
+            "INSERT INTO exp_category_field_data (cat_id, site_id, group_id) ".
+            "SELECT cat_id, site_id, group_id ".
+            "FROM exp_categories ".
+            "WHERE cat_id NOT IN (SELECT cat_id FROM exp_category_field_data)"
+        );
+    }
+
+    private function fixMemberFieldRecords()
+    {
+        ee()->db->query(
+            "INSERT INTO exp_member_data (member_id) ".
+            "SELECT member_id ".
+            "FROM exp_members ".
+            "WHERE member_id NOT IN (SELECT member_id FROM exp_member_data)"
+        );
     }
 }
 

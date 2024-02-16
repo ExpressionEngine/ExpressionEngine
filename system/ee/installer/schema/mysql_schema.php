@@ -103,7 +103,6 @@ class EE_Schema
             'can_delete_statuses',
             'can_edit_statuses',
             'can_create_categories',
-            'can_create_category_groups',
             'can_create_roles',
             'can_delete_roles',
             'can_edit_roles',
@@ -128,9 +127,7 @@ class EE_Schema
             'can_delete_template_variables',
             'can_edit_template_variables',
             'can_edit_categories',
-            'can_edit_category_groups',
             'can_delete_categories',
-            'can_delete_category_groups',
             'can_view_other_entries',
             'can_edit_other_entries',
             'can_assign_post_authors',
@@ -1513,9 +1510,11 @@ class EE_Schema
 		)";
 
         $Q[] = "CREATE TABLE `exp_file_usage` (
+            `file_usage_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`file_id` int(10) unsigned NOT NULL,
 			`entry_id` int(10) unsigned NOT NULL DEFAULT '0',
 			`cat_id` int(10) unsigned NOT NULL DEFAULT '0',
+            PRIMARY KEY (`file_usage_id`),
 			KEY `file_id` (`file_id`),
 			KEY `entry_id` (`entry_id`),
 			KEY `cat_id` (`cat_id`)
@@ -1640,8 +1639,10 @@ class EE_Schema
 		)";
 
         $Q[] = "CREATE TABLE `exp_dashboard_layout_widgets` (
+            `dashboard_layout_widgets_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`layout_id` int(10) unsigned NOT NULL,
 			`widget_id` int(10) unsigned NOT NULL,
+            PRIMARY KEY (`dashboard_layout_widgets_id`),
 			KEY `layouts_widgets` (`layout_id`, `widget_id`)
 		)";
 
@@ -1689,8 +1690,10 @@ class EE_Schema
 		)";
 
         $Q[] = "CREATE TABLE `exp_consent_request_version_cookies` (
+            `consent_request_version_cookies_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`consent_request_version_id` int(10) unsigned NOT NULL,
 			`cookie_id` int(10) unsigned NOT NULL,
+            PRIMARY KEY (`consent_request_version_cookies_id`),
 			KEY `consent_request_version_cookies` (`consent_request_version_id`, `cookie_id`)
 		)";
 

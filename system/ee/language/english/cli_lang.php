@@ -435,6 +435,7 @@ $lang = array(
     'command_sync_upload_directory_ask_id'          => 'Enter Upload Directory ID',
     'command_sync_upload_directory_option_regenerate_manipulations' => 'Image manipulations to regenerate. Comma separated list of manipulation IDs. \'all\' to regenerate all manipulations, empty value to skip.',
     'command_sync_upload_directory_ask_regenerate_manipulations' => 'Enter comma-separated IDs of manipulations to regenerate. Enter \'all\' to regenerate all manipulations, empty to skip.',
+    'cli_error_sync_upload_directory_base_path_is_empty' => '{base_path} is being used in Upload Directory path, but it is empty.',
 
     // Lang entries for command update:prepare
     'command_update_prepare_description'                        => 'Prepare a site to be upgraded using these files',

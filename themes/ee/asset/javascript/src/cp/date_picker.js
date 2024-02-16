@@ -232,7 +232,7 @@ EE.cp.datePicker = {
 					$(that.element).data('timestamp', EE.cp.datePicker.get_formatted_date(d, '%U'));
 
 					$(that.element).focus();
-					$('.date-picker-wrap').toggle();
+					// $('.date-picker-wrap').toggle();
 
 					e.preventDefault();
 					e.stopPropagation();
@@ -303,7 +303,7 @@ EE.cp.datePicker = {
 					$(that.element).data('timestamp', EE.cp.datePicker.get_formatted_date(d, '%U'));
 
 					$(that.element).focus();
-					$('.date-picker-wrap').toggle();
+					// $('.date-picker-wrap').toggle();
 
 					e.preventDefault();
 					e.stopPropagation();

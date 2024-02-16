@@ -75,6 +75,16 @@ class ColumnFactory extends EntryManager\ColumnFactory
     }
 
     /**
+     * Module tabs not supported
+     *
+     * @return array
+     */
+    protected static function getTabColumns()
+    {
+        return [];
+    }
+
+    /**
      * Returns a MemberField object given a field_id_x identifier
      *
      * @return MemberField
