@@ -345,8 +345,8 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
             }
 
             $tagdata = str_replace(LD . $key . RD, $avatar_url, $tagdata);
-            $tagdata = str_replace(LD . $prefix . 'avatar_image_width' . RD, $data['avatar_width'], $tagdata);
-            $tagdata = str_replace(LD . $prefix . 'avatar_image_height' . RD, $data['avatar_height'], $tagdata);
+            $tagdata = str_replace(LD . $prefix . 'avatar_image_width' . RD, (string) $data['avatar_width'], $tagdata);
+            $tagdata = str_replace(LD . $prefix . 'avatar_image_height' . RD, (string) $data['avatar_height'], $tagdata);
         } elseif ($key == $prefix . "photo_url") {
             if (ee()->session->userdata('display_photos') == 'n' or $data['photo_filename'] == '' or ee()->session->userdata('display_photos') == 'n') {
                 $tagdata = str_replace(LD . $key . RD, '', $tagdata);

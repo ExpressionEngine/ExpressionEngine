@@ -56,6 +56,12 @@ var Dropdown = /*#__PURE__*/function (_React$Component) {
         EE.cp.check_operator_value(selected, _this.input);
       }
 
+      if (_this.props.conditionalRule == 'rx-redactor-dropdown') {
+        var $rx_react_parent = $(_this.input).parents('.rx-form-div').parent();
+        var $rx_url_input = $($rx_react_parent).next('input.rx-form-input');
+        $rx_url_input.val(selected.value);
+      }
+
       if ($("[data-publish] > form").length) {
         $("[data-publish] > form").trigger("entry:startAutosave");
       }

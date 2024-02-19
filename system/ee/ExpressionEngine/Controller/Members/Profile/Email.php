@@ -53,7 +53,7 @@ class Email extends Settings
                             'type' => 'text',
                             'value' => $this->member->email,
                             'required' => true,
-                            'maxlength' => USERNAME_MAX_LENGTH,
+                            'maxlength' => 254,
                             'attrs' => 'autocomplete="off"'
                         )
                     )
@@ -91,7 +91,7 @@ class Email extends Settings
             [
                 'field' => 'email',
                 'label' => 'lang:email',
-                'rules' => 'required|valid_email|max_length[' . USERNAME_MAX_LENGTH . ']'
+                'rules' => 'required|valid_email|max_length[254]'
             ]
         ];
 
@@ -119,7 +119,7 @@ class Email extends Settings
 
         ee()->form_validation->set_rules($rules);
 
-        if (AJAX_REQUEST) {
+        if (AJAX_REQUEST && ee()->input->post('ee_fv_field') !== false) {
             ee()->form_validation->run_ajax();
             exit;
         } elseif (ee()->form_validation->run() !== false) {
@@ -127,6 +127,18 @@ class Email extends Settings
             unset($vars['sections']['secure_form_ctrls']);
 
             if ($this->saveSettings($vars['sections'])) {
+                if (ee('Request')->get('modal_form') == 'y') {
+                    $result = [
+                        'saveId' => $this->member->getId(),
+                        'item' => [
+                            'value' => $this->member->getId(),
+                            'label' => $this->member->screen_name,
+                            'instructions' => $this->member->username
+                        ]
+                    ];
+                    return $result;
+                }
+
                 ee('CP/Alert')->makeInline('shared-form')
                     ->asSuccess()
                     ->withTitle(lang('member_updated'))
@@ -142,15 +154,24 @@ class Email extends Settings
                 ->now();
         }
 
-        ee()->view->base_url = $this->base_url;
-        ee()->view->ajax_validate = true;
-        ee()->view->cp_page_title = lang('email_settings');
-        ee()->view->save_btn_text = 'btn_authenticate_and_save';
-        ee()->view->save_btn_text_working = 'btn_saving';
+        $vars['base_url'] = $this->base_url;
+        $vars['ajax_validate'] = true;
+        $vars['cp_page_title'] = lang('email_settings');
+        $vars['save_btn_text'] = 'btn_authenticate_and_save';
+        $vars['save_btn_text_working'] = 'btn_saving';
 
-        ee()->view->cp_breadcrumbs = array_merge($this->breadcrumbs, [
+        $vars['cp_breadcrumbs'] = array_merge($this->breadcrumbs, [
             '' => lang('email_settings')
         ]);
+
+        if (ee('Request')->get('modal_form') == 'y') {
+            $sidebar = ee('CP/Sidebar')->render();
+            if (! empty($sidebar)) {
+                $vars['left_nav'] = $sidebar;
+                $vars['left_nav_collapsed'] = ee('CP/Sidebar')->collapsedState;
+            }
+            return ee('View')->make('settings/modal-form')->render($vars);
+        }
 
         ee()->cp->render('settings/form', $vars);
     }

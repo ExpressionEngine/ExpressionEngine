@@ -26,10 +26,10 @@ jobs:
         runs-on: ubuntu-latest
         steps:
           - name: Checkout code
-            uses: actions/checkout@v3
+            uses: actions/checkout@v4
 
           - name: Cache repository info
-            uses: actions/cache@v3
+            uses: actions/cache@v4
             with:
               path: .git
               key: cache-ee-git-${{ github.sha }}
@@ -42,8 +42,15 @@ jobs:
                 coverage: none
                 ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
 
+          - name: Checkout RedactorX
+            uses: actions/checkout@v4
+            with:
+              repository: ExpressionEngine/RedactorX
+              token: ${{ secrets.ORG_ACCESS_TOKEN }}
+              path: __redactorx
+
           - name: Setup node
-            uses: actions/setup-node@v3
+            uses: actions/setup-node@v4
             with:
               node-version: '10'
 
@@ -64,6 +71,7 @@ jobs:
               RELEASE_PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
               RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
               APP_REPO_PATH: ${{ github.workspace }}
+              REDACTORX_REPO_PATH: ${{ github.workspace }}/__redactorx
             run: gulp build-app --local --nogit --head --skip-lint --skip-pro --version=${{ steps.build_json.outputs.BUILD_VERSION }}
 
           - name: Rename build directory
@@ -72,7 +80,7 @@ jobs:
               mv ExpressionEngine${{ steps.build_json.outputs.BUILD_VERSION }} ExpressionEngine
 
           - name: Cache built EE version
-            uses: actions/cache@v3
+            uses: actions/cache@v4
             with:
               path: build-tools/builds/ExpressionEngine
               key: cache-ee-build-${{ github.sha }}
@@ -92,10 +100,10 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.3, 7.4, 8.0, 8.1, 8.2]
+                php: [7.3, 7.4, 8.0, 8.1, 8.2, 8.3]
                 os: [ubuntu-latest]
                 include:
-                  - php: 8.1
+                  - php: 8.2
                     os: windows-latest
 
         name: PHPUnit, php${{ matrix.php }} - ${{ matrix.os }}
@@ -111,10 +119,10 @@ jobs:
                 sudo locale-gen ru
             
             - name: Checkout code
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
 
             - name: Use cached EE build
-              uses: actions/cache@v3
+              uses: actions/cache@v4
               with:
                 path: build-tools/builds/ExpressionEngine
                 key: cache-ee-build-${{ github.sha }}
