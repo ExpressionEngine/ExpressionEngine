@@ -182,6 +182,7 @@ class EntryListing
         ) {
             $channel = ee('Model')->get('Channel', $this->channel_filter->value())
                 ->with('CategoryGroups')
+                ->all()
                 ->first();
         }
 
@@ -462,7 +463,15 @@ class EntryListing
      */
     private function createCategoryFilter($channel = null)
     {
-        $category_groups = ($channel)  ? $channel->CategoryGroups : [];
+        if (is_null($channel)) {
+            $category_groups = ee('Model')->get('CategoryGroup', null)
+                ->with('Categories')
+                ->filter('site_id', ee()->config->item('site_id'))
+                ->filter('exclude_group', '!=', 1)
+                ->all();
+        } else {
+            $category_groups = $channel->CategoryGroups;
+        }
 
         $category_options = array();
         foreach ($category_groups as $group) {
