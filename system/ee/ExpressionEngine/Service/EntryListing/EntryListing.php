@@ -464,7 +464,7 @@ class EntryListing
     private function createCategoryFilter($channel = null)
     {
         if (is_null($channel)) {
-            $category_groups = ee('Model')->get('CategoryGroup', null)
+            $category_groups = ee('Model')->get('CategoryGroup')
                 ->with('Categories')
                 ->filter('site_id', ee()->config->item('site_id'))
                 ->filter('exclude_group', '!=', 1)
