@@ -470,7 +470,15 @@ class EntryListing
     {
         ee()->load->library('datastructures/tree');
 
-        $category_groups = ($channel)  ? $channel->CategoryGroups : [];
+        if (is_null($channel)) {
+            $category_groups = ee('Model')->get('CategoryGroup', null)
+                ->with('Categories')
+                ->filter('site_id', ee()->config->item('site_id'))
+                ->filter('exclude_group', '!=', 1)
+                ->all();
+        } else {
+            $category_groups = $channel->CategoryGroups;
+        }
 
         foreach ($category_groups as $group) {
             $tree = $group->getCategoryTree(ee()->tree);
