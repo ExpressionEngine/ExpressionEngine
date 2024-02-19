@@ -11,7 +11,10 @@ return [
     'built_in' => true,
     'fieldtypes' => array(
         'colorpicker' => array(
-            'compatibility' => 'text'
+            'compatibility' => 'text',
+            'use' => array(
+                'MemberField'
+            )
         )
     )
 ];

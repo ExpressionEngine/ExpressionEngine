@@ -134,6 +134,18 @@ class FilterFactory
         return $this;
     }
 
+    public function withLabel($label)
+    {
+        if (empty($this->filters)) {
+            throw new \Exception('No filters have been addded. Cannot rename a filter.');
+        }
+
+        $filter = end($this->filters);
+        $filter->label = $label;
+
+        return $this;
+    }
+
     /**
      * This will render the filters down to HTML by looping through all the
      * Filters and calling their individual render() methods.
@@ -357,6 +369,16 @@ class FilterFactory
     protected function createDefaultFileManagerColumns($columns, $uploadLocation = null, $view_id = null)
     {
         return new Filter\FileManagerColumns($columns, $uploadLocation, $view_id);
+    }
+
+    /**
+     * This will instantiate and return a default MemberManagerColumns filter
+     *
+     * @return Filter\MemberManagerColumns a MemberManagerColumns Filter object
+     */
+    protected function createDefaultMemberManagerColumns($columns, $primaryRole = null, $view_id = null)
+    {
+        return new Filter\MemberManagerColumns($columns, $primaryRole, $view_id);
     }
 
     /**

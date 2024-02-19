@@ -151,8 +151,10 @@ class Categories extends AbstractCategoriesController
         foreach ($cat_group->getCategories() as $category) {
             $new_category = $this->new_order_reference[$category->cat_id];
 
-            if ($category->parent_id != $new_category['parent_id'] or
-                $category->cat_order != $new_category['order']) {
+            if (
+                $category->parent_id != $new_category['parent_id'] or
+                $category->cat_order != $new_category['order']
+            ) {
                 $category->parent_id = $new_category['parent_id'];
                 $category->cat_order = $new_category['order'];
                 $category->save();
@@ -202,7 +204,7 @@ class Categories extends AbstractCategoriesController
             if (! empty($cat_ids)) {
                 $cats = ee('Model')->get('Category')
                     ->filter('cat_id', 'IN', $cat_ids);
-                
+
                 // Grab the group ID for the possible AJAX return below
                 $cat_group = ee('Model')->get('Category', $cat_ids[0])->first()->CategoryGroup;
                 $can_delete = explode('|', rtrim((string) $cat_group->can_delete_categories, '|'));
@@ -250,7 +252,7 @@ class Categories extends AbstractCategoriesController
     /**
      * Category create
      *
-     * @param	int		$group_id	ID of category group category is to be in
+     * @param   int $group_id   ID of category group category is to be in
      */
     public function create($group_id)
     {
@@ -264,8 +266,8 @@ class Categories extends AbstractCategoriesController
     /**
      * Category edit
      *
-     * @param	int	$group_id		ID of category group category is in
-     * @param	int	$category_id	ID of category to edit
+     * @param   int $group_id   ID of category group category is in
+     * @param   int $category_id    ID of category to edit
      */
     public function edit($group_id, $category_id)
     {
@@ -279,8 +281,8 @@ class Categories extends AbstractCategoriesController
     /**
      * Category creation/edit form
      *
-     * @param	int	$group_id		ID of category group category is (to be) in
-     * @param	int	$category_id	ID of category to edit
+     * @param   int $group_id   ID of category group category is (to be) in
+     * @param   int $category_id    ID of category to edit
      */
     private function categoryForm($group_id, $category_id = null)
     {
@@ -320,14 +322,14 @@ class Categories extends AbstractCategoriesController
             // Only auto-complete channel short name for new channels
             ee()->cp->add_js_script('plugin', 'ee_url_title');
 
-            //	Create Foreign Character Conversion JS
+            // Create Foreign Character Conversion JS
             $foreign_characters = ee()->config->loadFile('foreign_chars');
 
             /* -------------------------------------
             /*  'foreign_character_conversion_array' hook.
             /*  - Allows you to use your own foreign character conversion array
             /*  - Added 1.6.0
-            * 	- Note: in 2.0, you can edit the foreign_chars.php config file as well
+            *   - Note: in 2.0, you can edit the foreign_chars.php config file as well
             */
             if (ee()->extensions->active_hook('foreign_character_conversion_array') === true) {
                 $foreign_characters = ee()->extensions->call('foreign_character_conversion_array');
@@ -561,9 +563,10 @@ class Categories extends AbstractCategoriesController
      * AJAX return body for adding a new category via the publish form; when a
      * new category is added, we have to refresh the category list
      *
-     * @param	int		$group_id	Category group ID
+     * @param   int $group_id   Category group ID
+     * @param   int $channel_id   Channel ID
      */
-    public function categoryGroupPublishField($group_id)
+    public function categoryGroupPublishField($group_id, $channel_id = null)
     {
         $group = ee('Model')->get('CategoryGroup', $group_id)->first();
 
@@ -583,12 +586,30 @@ class Categories extends AbstractCategoriesController
         $selected = ee('Request')->post('categories');
 
         // Reset the categories they already have selected
-        $selected_cats = ee('Model')->get('Category')
-            ->fields('cat_id')
-            ->filter('cat_id', 'IN', $selected['cat_group_id_' . $group_id])
-            ->all();
-        $field->setData(implode('|', $selected_cats->pluck('cat_id')));
+        if (!empty($selected)) {
+            $selected_cats = ee('Model')->get('Category')
+                ->fields('cat_id')
+                ->filter('cat_id', 'IN', $selected['cat_group_id_' . $group_id])
+                ->all();
+            $field->setData(implode('|', $selected_cats->pluck('cat_id')));
+        }
         $field->setItem('editing', true);
+
+        if (!empty($channel_id)) {
+            $categoryGroupSettings = ee('Model')
+                ->get('CategoryGroupSettings')
+                ->filter('channel_id', $channel_id)
+                ->filter('group_id', $group_id)
+                ->first();
+            if (!is_null($categoryGroupSettings)) {
+                if ($categoryGroupSettings->cat_required) {
+                    $field->setItem('field_required', true);
+                }
+                if (!$categoryGroupSettings->cat_allow_multiple) {
+                    $field->setItem('field_type', 'radio');
+                }
+            }
+        }
 
         return $field->getForm();
     }

@@ -275,31 +275,10 @@ class Select extends Query
             }
             $fields = array_values($fields);
         } else {
-            if ($meta_field_data['field_model'] == 'MemberField' && ! empty(ee()->session)) {
-                $fields = ee()->session->cache('ExpressionEngine::MemberFieldModel', 'getCustomFields');
-
-                // might be empty, so need to be specific
-                if (! is_array($fields)) {
-                    // get ALL fields, since this cache key is shared elsewhere and expects all fields
-                    $fields = ee('Model')->get($meta_field_data['field_model'])
-                        ->all()
-                        ->asArray();
-                    ee()->session->set_cache('ExpressionEngine::MemberFieldModel', 'getCustomFields', $fields);
-                }
-
-                // filter just for non-legacy fields
-                $fields = new Collection($fields);
-                $fields = $fields->filter(function ($mfield) use ($column_prefix) {
-                    $colname = $column_prefix . 'legacy_field_data';
-
-                    return $mfield->$colname == false;
-                })->asArray();
-            } else {
-                $fields = ee('Model')->get($meta_field_data['field_model'])
-                    ->filter($column_prefix . 'legacy_field_data', 'n')
-                    ->all()
-                    ->asArray();
-            }
+            $fields = ee('Model')->get($meta_field_data['field_model'])
+                ->filter($column_prefix . 'legacy_field_data', 'n')
+                ->all(true)
+                ->asArray();
         }
 
         if (! empty($fields)) {

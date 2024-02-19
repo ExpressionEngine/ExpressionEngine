@@ -11,7 +11,10 @@ return array(
     'built_in' => true,
     'fieldtypes' => array(
         'checkboxes' => array(
-            'compatibility' => 'list'
+            'compatibility' => 'list',
+            'use' => array(
+                'MemberField'
+            )
         )
     )
 );
