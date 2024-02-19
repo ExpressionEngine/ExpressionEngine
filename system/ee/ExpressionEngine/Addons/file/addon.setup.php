@@ -11,7 +11,10 @@ return array(
     'built_in' => true,
     'fieldtypes' => array(
         'file' => array(
-            'compatibility' => 'file'
+            'compatibility' => 'file',
+            'use' => array(
+                'MemberField'
+            )
         )
     )
 );

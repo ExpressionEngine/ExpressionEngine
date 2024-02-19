@@ -10,7 +10,7 @@
 
 namespace ExpressionEngine\Model\Category;
 
-use ExpressionEngine\Service\Model\Model;
+use ExpressionEngine\Service\Model\Model\Collection;
 use ExpressionEngine\Model\Content\StructureModel;
 
 /**
@@ -27,6 +27,9 @@ class CategoryGroup extends StructureModel
         'Site' => array(
             'type' => 'belongsTo'
         ),
+        'CategoryGroupSettings' => array(
+            'type' => 'hasMany'
+        ),
         'CategoryFields' => array(
             'type' => 'hasMany',
             'model' => 'CategoryField'
@@ -34,6 +37,24 @@ class CategoryGroup extends StructureModel
         'Categories' => array(
             'type' => 'hasMany',
             'model' => 'Category'
+        ),
+        'Channels' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'Channel',
+            'pivot' => array(
+                'table' => 'channel_category_groups',
+                'left' => 'group_id',
+                'right' => 'channel_id'
+            )
+        ),
+        'UploadDestinations' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'UploadDestination',
+            'pivot' => array(
+                'table' => 'upload_prefs_category_groups',
+                'left' => 'group_id',
+                'right' => 'upload_location_id'
+            )
         )
     );
 
@@ -72,22 +93,6 @@ class CategoryGroup extends StructureModel
         }
     }
 
-    public function __get($name)
-    {
-        // Fake the Channel relationship since it's stored weird; old
-        // relationship name was just "Channel"
-        if ($name == 'Channel' || $name == 'Channels') {
-            return ee('Model')->get('Channel')
-                ->filter('site_id', ee()->config->item('site_id'))
-                ->all(true)
-                ->filter(function ($channel) {
-                    return in_array($this->getId(), explode('|', (string) $channel->cat_group));
-                });
-        }
-
-        return parent::__get($name);
-    }
-
     // Clean XSS from group name when saved
     protected function set__group_name($groupName)
     {
@@ -115,8 +120,8 @@ class CategoryGroup extends StructureModel
     /**
      * Returns the category tree for this category group
      *
-     * @param 	EE_Tree	$tree		An EE_Tree library object
-     * @return 	Object<ImmutableTree> Traversable tree object
+     * @param \EE_Tree $tree An EE_Tree library object
+     * @return Object<ImmutableTree> Traversable tree object
      */
     public function getCategoryTree(\EE_Tree $tree)
     {
@@ -139,16 +144,20 @@ class CategoryGroup extends StructureModel
         $can_edit = explode('|', rtrim((string) $this->can_edit_categories, '|'));
         $editable = false;
 
-        if (ee('Permission')->isSuperAdmin()
-            || (ee('Permission')->can('edit_categories') && ee('Permission')->hasAnyRole($can_edit))) {
+        if (
+            ee('Permission')->isSuperAdmin() ||
+            (ee('Permission')->can('edit_categories') && ee('Permission')->hasAnyRole($can_edit))
+        ) {
             $editable = true;
         }
 
         $can_delete = explode('|', rtrim((string) $this->can_delete_categories, '|'));
         $deletable = false;
 
-        if (ee('Permission')->isSuperAdmin()
-            || (ee('Permission')->can('delete_categories') && ee('Permission')->hasAnyRole($can_delete))) {
+        if (
+            ee('Permission')->isSuperAdmin() ||
+            (ee('Permission')->can('delete_categories') && ee('Permission')->hasAnyRole($can_delete))
+        ) {
             $deletable = true;
         }
 
@@ -170,11 +179,14 @@ class CategoryGroup extends StructureModel
             'field_instructions' => lang('categories_desc'),
             'field_text_direction' => 'ltr',
             'field_type' => 'checkboxes',
+            'force_react' => true,
             'field_list_items' => '',
             'field_maxl' => 100,
             'editable' => $editable,
             'editing' => false,
             'deletable' => $deletable,
+            'nested' => true,
+            'nestableReorder' => true,
             'populateCallback' => array($this, 'populateCategories'),
             'manage_toggle_label' => lang('manage_categories'),
             'add_btn_label' => REQ == 'CP' && ee('Permission')->can('create_categories')
@@ -255,9 +267,9 @@ class CategoryGroup extends StructureModel
     /**
      * Turn the categories collection into a nested array of ids => names
      *
-     * @param	Collection	$categories		Top level categories to construct tree out of
-     * @param	string		$sort_column	Either 'cat_name' or 'cat_order', sorts the
-     *	categories by the given column
+     * @param   Collection  $categories Top level categories to construct tree out of
+     * @param   string      $sort_column    Either 'cat_name' or 'cat_order', sorts the
+     *                      categories by the given column
      */
     protected function buildCategoryList($categories, $sort_column)
     {

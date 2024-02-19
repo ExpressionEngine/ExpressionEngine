@@ -187,3 +187,16 @@
 	// color: color(text-primary);
 	// font-weight: bold;
 }
+
+.rx-form-div {
+	.select__button {
+		width: 100%;
+		max-width: 100%;
+		text-align: left;
+
+		.select__button-label {
+			width: 100%;
+			display: block;
+		}
+	}
+}
