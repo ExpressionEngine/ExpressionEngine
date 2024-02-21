@@ -134,7 +134,8 @@ var DropDownButton = /*#__PURE__*/function (_React$Component) {
           display: 'none'
         },
         "data-upload_location_id": '',
-        "data-path": ''
+        "data-path": '',
+        multiple: this.props.allowMultipleFiles
       }), this.dropdownRecursion(dropdownItems)), this.props.createNewDirectory && React.createElement("p", {
         className: "create_new_direction"
       }, React.createElement("a", {
