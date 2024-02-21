@@ -27558,6 +27558,15 @@ input[type=button].btn-block {
   list-style-type: none;
 }
 
+.modal .invalid-input {
+  border: 1px solid var(--ee-error);
+  box-shadow: none;
+}
+.modal .invalid-input:focus {
+  border-color: var(--ee-error);
+  box-shadow: none;
+}
+
 .jump-menu {
   background: var(--ee-bg-dropdown);
   min-width: 400px;

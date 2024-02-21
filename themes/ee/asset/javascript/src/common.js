@@ -1237,7 +1237,7 @@ $(document).ready(function(){
 			});
 		}
 
-		$('body').on('keyup', '#folder_name', function() {
+		$('body').on('keyup', '.modal input[type=text]:visible', function() {
 			var that = $(this),
 					action = that.parents('form').attr('action'),
 					data = that.parents('form').serialize();
@@ -1248,12 +1248,12 @@ $(document).ready(function(){
 					data: data+'&ee_fv_field='+that.attr('name'),
 					dataType: 'json',
 					error: function(err) {
-						console.log('err', err);
+						console.log('ajax error message:', err);
 					},
 					success: function(response) {
 						if(response.error) {
 							that.parent('fieldset').addClass('fieldset-invalid');
-							that.css({'border':'1px solid var(--ee-error)', 'box-shadow':'none'});
+							that.addClass('invalid-input');
 							if (that.next('em.ee-form-error-message').length) {
 								that.next('em.ee-form-error-message').html(response.error);
 							} else {
@@ -1261,40 +1261,8 @@ $(document).ready(function(){
 							}
 						} else {
 							that.parent('fieldset').removeClass('fieldset-invalid');
+							that.removeClass('invalid-input');
 							that.next().remove('em');
-							that.removeAttr('style');
-						}
-					}
-				});
-		});
-
-		$('body').on('keyup focusout', '#new_name', function() {
-			var that = $(this),
-					action = that.parents('form').attr('action'),
-					data = that.parents('form').serialize();
-
-				$.ajax({
-					url: action,
-					type: 'POST',
-					data: data+'&ee_fv_field='+that.attr('name'),
-					dataType: 'json',
-					error: function(err) {
-						console.log('err', err);
-					},
-					success: function(response) {
-						console.log(response);
-						if(response['alert:inline:files-form']) {
-							that.parents('fieldset').addClass('fieldset-invalid');
-							that.css({'border':'1px solid var(--ee-error)', 'box-shadow':'none'});
-							if (that.next('em.ee-form-error-message').length) {
-								that.next('em.ee-form-error-message').html(response['alert:inline:files-form'].body);
-							} else {
-								that.after( '<em class="ee-form-error-message">'+response['alert:inline:files-form'].body+'</em>' );
-							}
-						} else {
-							that.parents('fieldset').removeClass('fieldset-invalid');
-							that.next().remove('em');
-							that.removeAttr('style');
 						}
 					}
 				});

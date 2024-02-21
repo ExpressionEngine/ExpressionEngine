@@ -200,3 +200,13 @@
     }
   }
 }
+
+.modal .invalid-input {
+  border: 1px solid var(--ee-error);
+  box-shadow: none;
+
+  &:focus {
+    border-color: var(--ee-error);
+    box-shadow: none;
+  }
+}
