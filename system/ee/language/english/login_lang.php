@@ -72,6 +72,8 @@ $lang = array(
 
     'confirm' => 'Confirm',
 
+    'cancel_authentication' => 'Cancel authentication',
+
 );
 
 // EOF

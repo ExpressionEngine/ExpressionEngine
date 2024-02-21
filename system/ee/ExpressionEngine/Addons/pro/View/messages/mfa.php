@@ -23,4 +23,7 @@ endif;
 </fieldset>
 <fieldset class="last">
     <?=form_submit('submit', $btn_label, 'class="' . $btn_class . '" data-work-text="' . lang('authenticating') . '" tabindex="4" ' . $btn_disabled)?>
+    <div class="field-instruct">
+        <label><a href="<?=ee()->functions->fetch_current_uri()?>"><?=lang('cancel_authentication')?></a></label>
+    </div>
 </fieldset>
