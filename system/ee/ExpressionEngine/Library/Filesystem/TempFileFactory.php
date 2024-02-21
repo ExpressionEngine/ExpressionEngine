@@ -33,7 +33,7 @@ class TempFileFactory
      */
     public static function fallback()
     {
-        if(!static::$fallbackRegistered) {
+        if (!static::$fallbackRegistered) {
             ee()->logger->developer(
                 "Your system has disabled support for PHP's tmpfile(). " .
                 "For best results please enable tmpfile in your php.ini settings",
@@ -51,7 +51,7 @@ class TempFileFactory
         // make sure PATH_CACHE/tmp exists
         if (!file_exists($tmpFolder)) {
             $created = mkdir($tmpFolder);
-            if(!$created) {
+            if (!$created) {
                 return false;
             }
         }
@@ -76,5 +76,4 @@ class TempFileFactory
 
         return $tmpfile;
     }
-
 }

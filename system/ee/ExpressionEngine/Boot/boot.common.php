@@ -660,6 +660,7 @@ if (!function_exists('array_key_first')) {
         foreach ($arr as $key => $unused) {
             return $key;
         }
+
         return null;
     }
 }
@@ -674,7 +675,6 @@ if (!function_exists('tmpfile')) {
         return \ExpressionEngine\Library\Filesystem\TempFileFactory::fallback();
     }
 }
-
 
 /**
  * Show pre-formatted debug trace of required depth (default: 5)
