@@ -572,7 +572,10 @@ class Files extends AbstractFilesController
                     $field = 'folder_name';
                 }
                 foreach ($errors as $error) {
-                    $validationErrors[] = '<b>' . lang($field) . ':</b> ' . $error;
+                    $validationErrors[] = $errorMessage = '<b>' . lang($field) . ':</b> ' . $error;
+                    if ($field == ee('Request')->post('ee_fv_field') && AJAX_REQUEST) {
+                        ee()->output->send_ajax_response(['error' => $errorMessage]);
+                    }
                 }
             }
             if (AJAX_REQUEST) {
