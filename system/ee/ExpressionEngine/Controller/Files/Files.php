@@ -514,6 +514,9 @@ class Files extends AbstractFilesController
         $selected = ee('Request')->post('selection');
         //can only rename one file at a time
         if (count($selected) != 1) {
+            if (AJAX_REQUEST) {
+                ee()->output->send_ajax_response(['error' => lang('one_rename_at_a_time')]);
+            }
             ee('CP/Alert')->makeInline('files-form-errors')
                 ->asWarning()
                 ->withTitle(lang('could_not_rename'))
@@ -524,6 +527,9 @@ class Files extends AbstractFilesController
 
         $file = ee('Model')->get('Directory', $selected[0])->first();
         if (empty($file)) {
+            if (AJAX_REQUEST) {
+                ee()->output->send_ajax_response(['error' => lang('file_not_found')]);
+            }
             ee('CP/Alert')->makeInline('files-form-errors')
                 ->asWarning()
                 ->withTitle(lang('could_not_rename'))
@@ -569,6 +575,9 @@ class Files extends AbstractFilesController
                     $validationErrors[] = '<b>' . lang($field) . ':</b> ' . $error;
                 }
             }
+            if (AJAX_REQUEST) {
+                ee()->output->send_ajax_response(['error' => implode('<br>', $validationErrors)]);
+            }
             ee('CP/Alert')->makeInline('files-form')
                 ->asWarning()
                 ->withTitle(lang('could_not_rename'))
@@ -580,6 +589,9 @@ class Files extends AbstractFilesController
 
         //does the file with same name already exist?
         if ($target->getFilesystem()->exists($file->file_name)) {
+            if (AJAX_REQUEST) {
+                ee()->output->send_ajax_response(['error' => lang('error_renaming_already_exists')]);
+            }
             ee('CP/Alert')->makeInline('files-form')
                 ->asWarning()
                 ->withTitle(lang('could_not_rename'))
@@ -595,12 +607,18 @@ class Files extends AbstractFilesController
 
         if ($renamed) {
             $file->save();
+            if (AJAX_REQUEST) {
+                ee()->output->send_ajax_response(['success']);
+            }
             ee('CP/Alert')->makeInline('files-form')
                 ->asSuccess()
                 ->withTitle(lang('rename_success'))
                 ->addToBody(sprintf(lang('rename_success_desc'), $oldName, $file->file_name))
                 ->defer();
         } else {
+            if (AJAX_REQUEST) {
+                ee()->output->send_ajax_response(['error' => lang('unexpected_error')]);
+            }
             ee('CP/Alert')->makeInline('files-form-errors')
                 ->asWarning()
                 ->withTitle(lang('could_not_rename'))
