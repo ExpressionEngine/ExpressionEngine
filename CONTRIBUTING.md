@@ -181,7 +181,7 @@ Don't feel like you need to memorize these. You're a good developer, and when mo
 
 ExpressionEngines is using Sass stylesheet language that needs to be compiled to CSS. If you want to make an update to the styles of Control Panel, you should add your styles to appropriate file in `cp-styles/app/styles` directory and then compile it using `npm run build:css` command.
 
-ExpressionEngine is using FontAwesome 5 to create and style icons in the Control Panel.
+ExpressionEngine is using FontAwesome 6 Pro to create and style icons in the Control Panel.
 
 Note that there is additional README file with some info in `cp-styles` directory.
 
