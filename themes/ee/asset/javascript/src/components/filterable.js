@@ -119,14 +119,17 @@ function makeFilterableComponent(WrappedComponent) {
       value: function filterItems(items, searchTerm) {
         var _this2 = this;
 
+        searchTerm = searchTerm.toLowerCase();
         items = items.map(function (item) {
           // Clone item so we don't modify reference types
           item = Object.assign({}, item); // If any children contain the search term, we'll keep the parent
 
           if (item.children) item.children = _this2.filterItems(item.children, searchTerm);
           var itemFoundInChildren = item.children && item.children.length > 0;
-          var itemFound = String(item.label).toLowerCase().includes(searchTerm.toLowerCase());
-          return itemFound || itemFoundInChildren ? item : false;
+          var itemFound = String(item.label).toLowerCase().includes(searchTerm);
+          var itemShortName;
+          if (item.instructions) itemShortName = String(item.instructions).toLowerCase().includes(searchTerm);
+          return itemFound || itemFoundInChildren || itemShortName ? item : false;
         });
         return items.filter(function (item) {
           return item;
