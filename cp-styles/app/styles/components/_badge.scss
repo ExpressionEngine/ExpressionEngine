@@ -35,3 +35,43 @@
 	color: color(accent);
 	background: #fff;
 }
+
+.label-app-badge {
+	display: inline-flex;
+	color: var(--ee-text-secondary);
+	justify-content: center;
+	align-items: center;
+	font-style: italic;
+	margin-left: 5px;
+	font-size: 0.8rem;
+	font-weight: normal;
+	border-radius: 4px;
+	cursor: pointer;
+	-webkit-transition: opacity 0.15s ease-in-out;
+	-moz-transition: opacity 0.15s ease-in-out;
+	-o-transition: opacity 0.15s ease-in-out;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+
+	i {
+		margin-left: 5px;
+		opacity: 0;
+	}
+
+	&:hover {
+		i {
+			opacity: 1;
+		}
+	}
+
+	&.success {
+		color: var(--ee-accent);
+		border-color: var(--ee-accent);
+
+		i {
+			color: var(--ee-accent);
+		}
+	}
+}

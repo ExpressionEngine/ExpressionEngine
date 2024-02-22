@@ -104,6 +104,10 @@ $lang = array(
 
     'site_online_desc' => 'When disabled, only Super Admins and members with roles that have proper permissions will be able to browse this website.',
 
+    'system_online' => 'System online?',
+
+    'system_online_desc' => 'When turned off, only Super Admins and members with roles that have proper permissions will be able to browse the websites on this ExpressionEngine installation. <br>Individual <code>Website online?</code> settings for MSM sites can be managed under <a href="%s">Sites</a> section of Control Panel',
+
     'site_short_name' => 'Short name',
 
     'site_short_name_taken' => 'This short name is already taken.',
@@ -512,6 +516,8 @@ $lang = array(
     'require_terms_of_service' => 'Require terms of service?',
 
     'require_terms_of_service_desc' => 'When enabled, users must agree to terms of service during registration.',
+
+    'manage_bans' => 'Ban Settings',
 
     /* Menu Manager */
     'add_menu_item' => 'Add Menu Item',

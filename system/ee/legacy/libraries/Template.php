@@ -142,7 +142,8 @@ class EE_Template
         }
 
         $this->user_vars = array(
-            'member_id', 'group_id', 'group_description', 'group_title', 'primary_role_id', 'primary_role_description', 'primary_role_name', 'primary_role_short_name', 'username', 'screen_name',
+            'member_id', 'group_id', 'group_description', 'group_title', 'primary_role_id', 'primary_role_description', 'primary_role_name', 'primary_role_short_name',
+            'username', 'screen_name', 'avatar_filename', 'avatar_width', 'avatar_height',
             'email', 'ip_address', 'total_entries', 'total_comments', 'private_messages',
             'total_forum_posts', 'total_forum_topics', 'total_forum_replies', 'mfa_enabled',
         );
@@ -711,6 +712,9 @@ class EE_Template
         }
 
         foreach ($layout_vars as $key => $val) {
+            if ($val === '' && strpos($str, LD . '/layout:' . $key . RD) !== false) {
+                $val = []; // undefined or empty value that is supposed to be an array
+            }
             if (is_array($val)) {
                 $layout_conditionals['layout:' . $key] = true;
 
@@ -3057,6 +3061,9 @@ class EE_Template
      */
     public function remove_ee_comments($str)
     {
+        if (is_null($str)) {
+            return '';
+        }
         if (strpos($str, '{!--') === false) {
             return $str;
         }

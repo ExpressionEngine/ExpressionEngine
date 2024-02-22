@@ -128,7 +128,7 @@ abstract class AbstractPublish extends CP_Controller
             'fileManager.fileDirectory.createUrl' => ee('CP/URL')->make('files/uploads/create')->compile(),
         ));
 
-        ee('Category')->addCategoryJS();
+        ee('Category')->addCategoryJS($channel_id);
 
         // -------------------------------------------
         //  Publish Page Title Focus - makes the title field gain focus when the page is loaded
@@ -427,6 +427,13 @@ abstract class AbstractPublish extends CP_Controller
                 ->withTitle(lang($action . '_entry_error'))
                 ->addToBody(lang($action . '_entry_error_desc'))
                 ->now();
+            // IP Address is not a field, but we need to display the error if it fails
+            if ($result->hasErrors('ip_address')) {
+                ee('CP/Alert')->makeInline('ip_address-error')
+                    ->asIssue()
+                    ->addToBody('ip_address: ' . implode(BR, $result->getErrors('ip_address')))
+                    ->now();
+            }
         }
 
         return $result;

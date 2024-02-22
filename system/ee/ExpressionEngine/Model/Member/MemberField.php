@@ -27,9 +27,9 @@ class MemberField extends FieldModel
     );
 
     protected static $_validation_rules = array(
-        'm_field_type' => 'required|enum[text,textarea,select,date,url]',
+        'm_field_type' => 'required|validateIsCompatibleWithPreviousValue',
         'm_field_label' => 'required|xss|noHtml|maxLength[50]',
-        'm_field_name' => 'required|alphaDash|unique|validateNameIsNotReserved|maxLength[32]',
+        'm_field_name' => 'required|alphaDash|unique|validateNameIsNotReserved|validateUniqueAmongFieldGroups|maxLength[32]',
         'm_legacy_field_data' => 'enum[y,n]'
     );
 
@@ -189,6 +189,48 @@ class MemberField extends FieldModel
         }
 
         return $key;
+    }
+
+    /**
+     * The field name must be also unique across Channel Fields
+     */
+    public function validateUniqueAmongFieldGroups($key, $value, array $params = array())
+    {
+        $key = (strpos($key, 'm_') === 0) ? substr($key, 2) : $key;
+
+        // check channel field groups
+        $unique = $this->getModelFacade()
+            ->get('ChannelFieldGroup')
+            ->filter('short_name', $value);
+
+        foreach ($params as $field) {
+            $unique->filter(
+                ((strpos($field, 'm_') === 0) ? substr($field, 2) : $field),
+                $this->getProperty($field)
+            );
+        }
+
+        if ($unique->count() > 0) {
+            return 'unique_among_field_groups'; // lang key
+        }
+
+        // check channel fields
+        $unique = $this->getModelFacade()
+            ->get('ChannelField')
+            ->filter($key, $value);
+
+        foreach ($params as $field) {
+            $unique->filter(
+                ((strpos($field, 'm_') === 0) ? substr($field, 2) : $field),
+                $this->getProperty($field)
+            );
+        }
+
+        if ($unique->count() > 0) {
+            return 'unique_among_channel_fields'; // lang key
+        }
+
+        return true;
     }
 }
 

@@ -821,6 +821,7 @@ class Pro_search_mcp
 
         $channels = ee('Model')
             ->get('Channel')
+            ->with('CategoryGroups')
             ->filter('site_id', $this->site_id)
             ->order('channel_title', 'ASC')
             ->all();
@@ -988,12 +989,14 @@ class Pro_search_mcp
             );
 
             // Category Field weights
-            if ($channel->cat_group) {
+            if ($channel->CategoryGroups) {
                 // So we get the right lang labels
                 ee()->lang->loadfile('admin_content');
 
                 // Loop through each category group of this channel
-                foreach (explode('|', $channel->cat_group) as $group_id) {
+                foreach ($channel->CategoryGroups as $group) {
+
+                    $group_id = $group->getId();
                     // Skip references to non-existent category groups
                     if (! in_array($group_id, $catgroups->getDictionary('group_id', 'group_id'))) {
                         continue;
@@ -2153,6 +2156,7 @@ class Pro_search_mcp
 
         $query = ee('Model')
             ->get('Channel')
+            ->with('CategoryGroups')
             ->filter('site_id', $this->site_id)
             ->filter('channel_id', 'IN', $channel_ids)
             ->all();
@@ -2165,9 +2169,7 @@ class Pro_search_mcp
                     'fields'          => array('title' => lang('title'))
                 );
 
-                if ($row->cat_group) {
-                    $cat_groups = array_merge($cat_groups, explode('|', $row->cat_group));
-                }
+                $cat_groups = array_merge($cat_groups, $row->CategoryGroups->pluck('group_id'));
             }
 
             // Channel fields for this channel
@@ -3301,21 +3303,22 @@ class Pro_search_mcp
                 }
 
                 // Then get channel and their cat groups
-                $query = ee()->db->select('channel_id, cat_group')
-                    ->from('channels')
-                    ->where('site_id', $this->site_id)
-                    ->get();
+                $channels = ee('Model')
+                    ->get('Channel')
+                    ->with('CategoryGroups')
+                    ->filter('site_id', $this->site_id)
+                    ->all();
 
                 // And associate channel with cat ids
-                foreach ($query->result() as $row) {
-                    foreach (array_filter(explode('|', $row->cat_group)) as $group_id) {
+                foreach ($channels as $channel) {
+                    foreach ($channel->CategoryGroups as $group) {
                         if (! isset($categories[$row->channel_id])) {
                             $categories[$row->channel_id] = array();
                         }
 
                         $categories[$row->channel_id] = array_merge(
                             $categories[$row->channel_id],
-                            $cats_by_group[$group_id]
+                            $cats_by_group[$group->group_id]
                         );
                     }
                 }

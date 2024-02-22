@@ -459,7 +459,8 @@ LOCK TABLES `exp_channels_channel_fields` WRITE;
 INSERT INTO `exp_channels_channel_fields` (`channel_id`, `field_id`)
 VALUES
 	(3,10),
-	(3,17);
+	(3,17),
+	(3,19);
 
 /*!40000 ALTER TABLE `exp_channels_channel_fields` ENABLE KEYS */;
 UNLOCK TABLES;

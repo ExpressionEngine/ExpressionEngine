@@ -48,6 +48,9 @@ class Profile extends CP_Controller
         }
 
         $qs = array('id' => $id);
+        if (ee('Request')->get('modal_form') == 'y') {
+            $qs['modal_form'] = 'y';
+        }
         $this->query_string = $qs;
         $this->base_url = ee('CP/URL')->make('members/profile/settings');
         $this->base_url->setQueryStringVariable('id', $id);
@@ -63,7 +66,11 @@ class Profile extends CP_Controller
 
         ee()->load->library('form_validation');
 
-        $this->generateSidebar();
+        if (ee('Request')->get('modal_form') == 'y') {
+            $this->generateMinimalSidebar();
+        } else {
+            $this->generateSidebar();
+        }
 
         ee()->javascript->set_global([
             'cp.validatePasswordUrl' => ee('CP/URL', 'login/validate_password')->compile(),
@@ -86,6 +93,28 @@ class Profile extends CP_Controller
             show_error(lang('unauthorized_access'), 403);
         }
     }
+
+    protected function generateMinimalSidebar($active = null)
+    {
+        $sidebar = ee('CP/Sidebar')->make();
+
+        $header = $sidebar->addHeader(!empty($this->member->screen_name) ? $this->member->screen_name : $this->member->username);
+
+        $list = $header->addBasicList();
+
+        $list->addItem(lang('personal_settings'), ee('CP/URL')->make('members/profile/settings', $this->query_string));
+        $list->addItem(lang('email_settings'), ee('CP/URL')->make('members/profile/email', $this->query_string));
+        $list->addItem(lang('auth_settings'), ee('CP/URL')->make('members/profile/auth', $this->query_string));
+
+        $sa_editing_self = ($this->member->isSuperAdmin() && $this->member->member_id == ee()->session->userdata['member_id']);
+        $group_locked = (! ee('Permission')->isSuperAdmin() && $this->member->PrimaryRole->is_locked);
+
+        if (! $sa_editing_self && ! $group_locked) {
+            $list->addItem(lang('member_roles'), ee('CP/URL')->make('members/profile/roles', $this->query_string));
+        }
+
+    }
+
 
     protected function generateSidebar($active = null)
     {
@@ -325,6 +354,13 @@ class Profile extends CP_Controller
 
                         // Set custom field format override if available, too
                         if (strpos($name, 'field_ft_') !== false && ee()->input->post($name)) {
+                            $this->member->$name = ee()->input->post($name);
+                        }
+
+                        $name = str_replace('m_field_id_', 'm_field_dt_', $field_name);
+
+                        // Set custom field format override if available, too
+                        if (strpos($name, 'field_dt_') !== false && ee()->input->post($name)) {
                             $this->member->$name = ee()->input->post($name);
                         }
                     }

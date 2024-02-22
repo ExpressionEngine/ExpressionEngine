@@ -1,0 +1,19 @@
+{layout="members/_layout"}
+
+<h1>Member Listing</h1>
+
+<div class="result">
+
+    {exp:member:memberlist
+        return="members/login/forgot-username"
+        inline_errors="yes"
+        email_subject="Your Username"
+        email_template="members/email-forgot-username"
+        }
+
+
+            {member_rows backspace="2"}{name}**{/member_rows}
+
+
+    {/exp:member:memberlist}
+</div>
