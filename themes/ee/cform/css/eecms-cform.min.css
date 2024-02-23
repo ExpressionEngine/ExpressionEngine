@@ -2959,6 +2959,63 @@ iframe.Rte:hover {
 }
 /* END Toggle field */
 
+/* CHECKBOX field */
+.ee-cform .checkbox-wrapper label {
+    display: block;
+    position: relative;
+    padding: 5px;
+    padding-left: 25px;
+    cursor: pointer;
+    transition: background 100ms ease;
+    color: #0d0d19;
+    border-radius: 5px;
+    font-weight: 400;
+}
+
+.ee-cform .checkbox-wrapper label input[type="checkbox"] {
+    background-color: #f7f7fb;
+    transition: all 100ms ease;
+    width: 15px;
+    height: 15px;
+    margin: 0;
+    padding: 0;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+    border: 1px solid #cbcbda;
+    border-radius: 3px;
+    z-index: 1;
+    position: absolute;
+    top: 7px;
+    left: 0px;
+}
+
+.ee-cform .checkbox-wrapper label input[type=checkbox]:checked {
+    background: #5D63F1;
+    border-color: #5D63F1;
+}
+
+.ee-cform .checkbox-wrapper label input[type=checkbox]:after {
+    transition: all 100ms ease;
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    font-size: 12px;
+    margin: 0 !important;
+    color: #fff !important;
+    content: " ";
+    font-weight: 600;
+}
+
+.ee-cform .checkbox-wrapper label input[type=checkbox]:checked:after {
+    opacity: 1;
+}
+
+/* END CHECKBOX field */
+
 .ck.ck-balloon-panel.ck-balloon-panel_visible {
     z-index: 2000 !important;
 }
