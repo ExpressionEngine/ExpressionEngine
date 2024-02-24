@@ -53,6 +53,10 @@ class Dropdown extends React.Component {
     if (this.props.conditionalRule == 'operator') {
       EE.cp.check_operator_value(selected, this.input);
     }
+
+    if ($("[data-publish] > form").length) {
+      $("[data-publish] > form").trigger("entry:startAutosave");
+    }
   }
 
   componentDidUpdate (prevProps, prevState) {

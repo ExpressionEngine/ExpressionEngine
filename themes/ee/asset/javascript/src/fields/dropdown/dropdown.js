@@ -57,6 +57,10 @@ function (_React$Component) {
       if (_this.props.conditionalRule == 'operator') {
         EE.cp.check_operator_value(selected, _this.input);
       }
+
+      if ($("[data-publish] > form").length) {
+        $("[data-publish] > form").trigger("entry:startAutosave");
+      }
     });
 
     _defineProperty(_assertThisInitialized(_this), "toggleOpen", function () {

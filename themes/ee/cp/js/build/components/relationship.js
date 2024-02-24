@@ -212,6 +212,7 @@ function (_React$Component) {
       // the dropdown controller to update the dropdown positions so the dropdown stays under the button
 
       DropdownController.updateDropdownPositions();
+      $("[data-publish] > form").trigger("entry:startAutosave");
     }
   }, {
     key: "deselect",

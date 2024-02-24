@@ -211,6 +211,10 @@ class DragAndDropUpload extends React.Component {
 
       formData.append('file', file)
       xhr.send(formData)
+
+      if ($("[data-publish] > form").length) {
+        $("[data-publish] > form").trigger("entry:startAutosave");
+      }
     })
   }
 
