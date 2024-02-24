@@ -19,4 +19,14 @@ class EntryDate extends DateColumn
     {
         return 'column_entry_date';
     }
+
+    public function renderTableCell($data, $field_id, $entry)
+    {
+        $cell = parent::renderTableCell($data, $field_id, $entry);
+        $data = $entry->{$this->identifier};
+        if (!empty($data) && $data > ee()->localize->now) {
+            $cell = '<i class="fal fa-hourglass-start faded" title="' . lang('entry_date_future') . '"></i> ' . $cell;
+        }
+        return $cell;
+    }
 }
