@@ -507,14 +507,14 @@ abstract class FieldModel extends Model
             $data = '';
         }
         if ($tag) {
-            return str_replace(LD . $tag . RD, $data, $tagdata);
+            return str_replace(LD . $tag . RD, ($data ?: ''), $tagdata);
         }
         $tag = $this->field_name;
         if ($modifier) {
             $tag = $tag . ':' . $modifier;
         }
 
-        return str_replace(LD . $tag . RD, $data, $tagdata);
+        return str_replace(LD . $tag . RD, ($data ?: ''), $tagdata);
     }
 
     public function getCompatibleFieldtypes()
