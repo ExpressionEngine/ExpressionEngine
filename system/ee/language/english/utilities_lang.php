@@ -628,6 +628,8 @@ Once you are ready to experience the new File Manager features, please run the <
 
     'debug_tools_all_used_fieldtypes' => 'All used fieldtypes',
 
+    'debug_tools_invalid_base_path_used' => '<code>{base_path}</code> variable is used in your site configuration, but it is not set to a valid path.',
+
     'debug_tools_members' => 'Debug Members',
 
     'debug_tools_debug_duplicate_template_groups' => 'Duplicate Template Groups',
