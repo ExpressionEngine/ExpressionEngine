@@ -83,3 +83,18 @@
     }
   }
 }
+
+.panel-heading__publish {
+  .title-bar__title {
+    max-width: calc(100% - 250px);
+
+    @include m-tablet-down {
+      max-width: 100%;
+    }
+
+    & > span {
+      font-size: 0.8em;
+      color: var(--ee-text-secondary);
+    }
+  }
+}

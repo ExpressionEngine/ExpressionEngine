@@ -402,6 +402,7 @@ class Edit extends AbstractPublishController
         // -------------------------------------------
 
         $entry_title = htmlentities($entry->title, ENT_QUOTES, 'UTF-8');
+
         ee()->view->cp_page_title = sprintf(lang('edit_entry_with_title'), $entry_title);
 
         $form_attributes = array(
@@ -412,7 +413,8 @@ class Edit extends AbstractPublishController
 
         $vars = array(
             'head' => [
-                'title' => lang('edit_entry'),
+                // 'title' => lang('edit_entry'),
+                'title' => sprintf(lang('edit_entry_with_title'), $entry_title),
                 'class' => 'entries'
             ],
             'form_url' => $base_url,
