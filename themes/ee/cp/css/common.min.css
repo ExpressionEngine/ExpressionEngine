@@ -47335,6 +47335,10 @@ a.ck.ck-button.ck-on {
 .rx-container .rx-statusbar-container .rx-statusbar .rx-statusbar-item:last-child {
   border-right: none;
 }
+.rx-container em {
+  font-size: initial;
+  display: initial;
+}
 
 /* Do not show the page break element inside the print preview window. */
 @media print {
