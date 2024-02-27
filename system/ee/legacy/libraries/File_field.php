@@ -990,6 +990,9 @@ class File_field
                 ];
             }
         }
+        if (!ee('Permission')->has('can_access_files')) {
+            $upload_destinations = [];
+        }
 
         if (REQ == 'CP') {
             ee()->javascript->set_global([
@@ -1015,7 +1018,7 @@ class File_field
                 'lang.file_dnd_create_directory' => lang('file_dnd_create_directory'),
                 'lang.hidden_input' => lang('hidden_input'),
                 'lang.file_dnd_no_directories' => lang('file_dnd_no_directories'),
-                'lang.file_dnd_no_directories_desc' => lang('file_dnd_no_directories_desc'),
+                'lang.file_dnd_no_directories_desc' => !ee('Permission')->has('can_access_files') ? lang('file_dnd_no_directory_permissions') : lang('file_dnd_no_directories_desc'),
 
                 'dragAndDrop.uploadDesinations' => ee('View/Helpers')->normalizedChoices($upload_destinations),
                 'dragAndDrop.endpoint' => ee('CP/URL')->make('addons/settings/filepicker/ajax-upload')->compile(),

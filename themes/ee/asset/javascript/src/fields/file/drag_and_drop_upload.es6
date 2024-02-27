@@ -402,10 +402,11 @@ class DragAndDropUpload extends React.Component {
     }
 
     el.find('.f_open-filepicker').click();
-    el.find('.f_open-filepicker').one('change', function(e){
+    el.find('.f_open-filepicker').off().one('change', function(e){
       var files = e.target.files;
       that.handleDroppedFiles(files)
     });
+
   }
 
   hiddenUpload = (el) => {
@@ -429,7 +430,7 @@ class DragAndDropUpload extends React.Component {
     })
 
     $(this.dropZone).parents('div[data-file-field-react]').find('.f_open-filepicker').click();
-    $(this.dropZone).parents('div[data-file-field-react]').find('.f_open-filepicker').on('change', function(e){
+    $(this.dropZone).parents('div[data-file-field-react]').find('.f_open-filepicker').off().on('change', function(e){
       var files = e.target.files;
       that.handleDroppedFiles(files)
     });

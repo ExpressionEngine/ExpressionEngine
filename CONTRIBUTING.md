@@ -61,7 +61,9 @@ Even if you can't write code, you can help triage bugs!
 - [Documentation](#documentation)
 - [Tests](#tests)
 - [Code Review](#code-review)
-- [Coding Styles](#coding-styles)
+- [PHP Coding Styles](#php-coding-styles)
+- [CSS Style Updates](#css-style-updates)
+- [JavaScript Updates](#javascript-updates)
 - [Attribution](#attribution)
 - [Contributor License Agreement](#contributor-license-agreement)
 
@@ -137,7 +139,7 @@ All additive changes and new features should have a corresponding pull request i
 
 Integration testing helps maintain the quality of the application and prevents unintentional regressions. ExpressionEnigne uses [Cypress](https://www.cypress.io/) for behavioral tests, and [PHPUnit](https://phpunit.de/) for unit testing. At a minimum, you should make sure that your changes do not break existing tests. Pull requests will automatically run tests on all supported PHP versions using GitHub actions, and will not be merged if tests fail.
 
-#### Running Tests
+#### Running Cypress Tests
 
 To run the tests locally, you would need to ensure you have NPM and Cypress installed and then follow some steps as outlined below.
 
@@ -167,13 +169,29 @@ All code review takes place on GitHub. Code review is an important process in ma
 
 You can ping `@ExpressionEngine/Maintainers` if your change is urgent. Please provide a solid reason for doing so, as it will result in pulling other professional developers off of their tasks to give you attention.
 
-### Coding Styles
+### PHP Coding Styles
 
 As of ExpressionEngine 6 and greater, all new code submitted to the ExpressionEngine core should follow the PSR-12 recommendations. [https://expressionengine.com/blog/expressionengine-adopts-psr-12](https://expressionengine.com/blog/expressionengine-adopts-psr-12)
 
 For specific style guidelines, reference the ExpressionEngine User Guide: [Development Style & Syntax](https://docs.expressionengine.com/latest/development/guidelines/general.html). Feel free to open a pull request against that page to make suggestions or corrections.
 
 Don't feel like you need to memorize these. You're a good developer, and when modifying an existing file are fully capable of keeping the internal style consistent. When adding new files, make sure of the big things, including attribution below.
+
+### CSS Style Updates
+
+ExpressionEngines is using Sass stylesheet language that needs to be compiled to CSS. If you want to make an update to the styles of Control Panel, you should add your styles to appropriate file in `cp-styles/app/styles` directory and then compile it using `npm run build:css` command.
+
+ExpressionEngine is using FontAwesome 6 Pro to create and style icons in the Control Panel.
+
+Note that there is additional README file with some info in `cp-styles` directory.
+
+### JavaScript Updates
+
+For historical reasons, ExpressionEngine is using mix of JavaScript technologies: ECMAScript, ReactJS and jQuery.
+
+If you need to edit a file that is found in `themes/ee/cp/js` folder, make sure to edit the file that's found in `src` directory and then run the build script using `npm run build:js` command.
+
+If you need to edit a file that is found in `themes/ee/asset/javascript` folder, make sure to edit the `.es6` file and then run the build script using `npm run build:old-js` command.
 
 ### Attribution
 

@@ -156,10 +156,12 @@ class Updater
             if (!empty($record->cat_group)) {
                 $cat_groups = explode('|', $record->cat_group);
                 foreach ($cat_groups as $cat_group) {
-                    ee('db')->insert('upload_prefs_category_groups', [
-                        'upload_location_id' => $record->id,
-                        'group_id' => $cat_group
-                    ]);
+                    if (!empty($cat_group)) {
+                        ee('db')->insert('upload_prefs_category_groups', [
+                            'upload_location_id' => $record->id,
+                            'group_id' => $cat_group
+                        ]);
+                    }
                 }
             }
         }
@@ -196,10 +198,12 @@ class Updater
             if (!empty($record->cat_group)) {
                 $cat_groups = explode('|', $record->cat_group);
                 foreach ($cat_groups as $cat_group) {
-                    ee('db')->insert('channel_category_groups', [
-                        'channel_id' => $record->channel_id,
-                        'group_id' => $cat_group
-                    ]);
+                    if (!empty($cat_group)) {
+                        ee('db')->insert('channel_category_groups', [
+                            'channel_id' => $record->channel_id,
+                            'group_id' => $cat_group
+                        ]);
+                    }
                 }
             }
         }

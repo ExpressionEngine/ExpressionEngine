@@ -567,6 +567,7 @@ class ChannelEntry extends ContentModel
             $this->Status = $this->getModelFacade()->get('Status')
                 ->filter('status', $this->getProperty('status'))
                 ->first();
+            $this->markAsDirty('status_id');
         }
     }
 

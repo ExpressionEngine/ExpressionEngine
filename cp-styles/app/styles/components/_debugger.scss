@@ -1,6 +1,8 @@
 
 // Has the ee prefix since it's a standalone component
 .ee-debugger {
+	@import 'vendor/fontawesome/scss/fontawesome';
+	@import 'vendor/fontawesome/scss/light';
 	// Import the tab bar since these styles can be loaded on the front end
 	@import '_tab-bar';
 
