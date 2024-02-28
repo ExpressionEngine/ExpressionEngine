@@ -722,7 +722,7 @@ include(dirname(__FILE__) . '/_wrapper-head.php'); ?>
 					<div class="select">
 						<div class="select__button">
 							<label class="select__button-label">
-								<!-- Choose Wisely -->
+								<!-- Please select -->
 								<div class="status-tag st-open">Open</div>
 								<input type="hidden" name="">
 							</label>
@@ -748,7 +748,7 @@ include(dirname(__FILE__) . '/_wrapper-head.php'); ?>
 					<div class="select">
 						<div class="select__button">
 							<label class="select__button-label">
-								Choose Wisely
+								Please select
 								<input type="hidden" name="">
 							</label>
 						</div>
@@ -773,7 +773,7 @@ include(dirname(__FILE__) . '/_wrapper-head.php'); ?>
 					<div class="select select--open select--open">
 						<div class="select__button">
 							<label class="select__button-label act">
-								Choose Wisely
+								Please select
 								<input type="hidden" name="">
 							</label>
 						</div>

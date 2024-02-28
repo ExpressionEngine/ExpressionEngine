@@ -149,7 +149,7 @@ case 'dropdown': ?>
         'limit' => isset($field['limit']) ? $field['limit'] : 100,
         'no_results' => isset($field['no_results']) ? $field['no_results'] : null,
         'group_toggle' => isset($field['group_toggle']) ? $field['group_toggle'] : null,
-        'empty_text' => isset($field['empty_text']) ? lang($field['empty_text']) : lang('choose_wisely'),
+        'empty_text' => isset($field['empty_text']) ? lang($field['empty_text']) : lang('please_select'),
         'class' => $class,
     ]); ?>
 <?php break;
