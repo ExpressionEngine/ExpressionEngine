@@ -26,7 +26,7 @@ class EE_Functions
     public $catfields = array();
     protected $cat_array = array();
     protected $temp_array = array();
-    public static $protected_data = array();
+    public static $protected_data;
 
     /**
      * Fetch base site index
@@ -318,7 +318,7 @@ class EE_Functions
         // Setup some default params that every front-end form can use.
         $default_params = array(
             'return_error' => ee()->TMPL->fetch_param('return_error'),
-            'inline_errors' => ee()->TMPL->fetch_param('inline_errors'),
+            'inline_errors' => ee()->TMPL->fetch_param('inline_errors') == 'yes' || ee()->TMPL->fetch_param('error_handling') == 'inline' ? 'yes' : 'no',
         );
 
         // Merge in any custom params.
@@ -396,6 +396,10 @@ class EE_Functions
      */
     public function determine_error_return()
     {
+        if (is_null(self::$protected_data)) {
+            $this->handle_protected();
+        }
+
         // Find out if we have the `return_error` param in our protected data.
         if (! empty(self::$protected_data['return_error'])) {
             return self::$protected_data['return_error'];
@@ -560,6 +564,12 @@ class EE_Functions
             }
             if (empty($data['class'])) {
                 $data['form_class'] = ee()->TMPL->form_class;
+            }
+            // ensure inline_errors is passed as protected param
+            if (ee()->TMPL->inline_errors == 'yes') {
+                if (is_array($data['hidden_fields']) && ! isset($data['hidden_fields']['P'])) {
+                    $data['hidden_fields']['P'] = $this->get_protected_form_params(['inline_errors' => ee()->TMPL->inline_errors]);
+                }
             }
         }
 

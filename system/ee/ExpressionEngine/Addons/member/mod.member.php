@@ -1095,9 +1095,6 @@ class Member
 
     public function reset_password_form()
     {
-        // Handle our protected data if any. This contains our extra params.
-        $protected = ee()->functions->handle_protected();
-
         // Determine where we need to return to in case of success or error.
         $return_success_link = ee()->functions->determine_return();
         $return_error_link = ee()->functions->determine_error_return();
@@ -1130,7 +1127,6 @@ class Member
             'ACT' => ee()->functions->fetch_action_id('Member', 'process_reset_password'),
             'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->TMPL->fetch_param('return') : '',
             'FROM' => ($in_forum == true) ? 'forum' : '',
-            'P' => ee()->functions->get_protected_form_params(),
             'resetcode' => $resetcode
         );
 
@@ -2519,6 +2515,16 @@ class Member
         $more_fields['total_forum_posts'] = $default_fields['total_forum_topics'] + $default_fields['total_forum_posts'];
 
         $default_fields = array_merge($default_fields, $more_fields);
+
+        $error_tags = ee()->session->flashdata('error_tags');
+        if ($error_tags === false) {
+            $error_tags = array();
+        }
+        if (ee()->TMPL->fetch_param('error_handling') == 'inline') {
+            foreach ($default_fields as $key => $val) {
+                $default_fields['error:' . $key] = (isset($error_tags['error:' . $key])) ? $error_tags['error:' . $key] : '';
+            }
+        }
 
         if (! class_exists('Channel')) {
             require PATH_ADDONS . 'channel/mod.channel.php';
