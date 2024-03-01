@@ -393,7 +393,7 @@ class EE_Relationship_data_parser
         $entry_ids = $entry_ids[$parent_id];
 
         // reorder the ids
-        if ($node->param('orderby') or $node->param('sticky', 'yes') == 'yes') {
+        if ($node->param('orderby') or $node->param('fixed_order') or $node->param('sticky', 'yes') == 'yes') {
             $entry_ids = $this->_apply_sort($node, $entry_ids);
         }
 
@@ -684,6 +684,26 @@ class EE_Relationship_data_parser
         $sort_parameters[] = &$entry_ids;
 
         call_user_func_array('array_multisort', $sort_parameters);
+
+        //is fixed order required?
+        if ($node->param('fixed_order')) {
+            $order = explode('|', $node->param('fixed_order'));
+            usort($entry_ids, function ($a, $b) use ($order) {
+                $pos_a = array_search($a, $order);
+                $pos_b = array_search($b, $order);
+                if ($pos_a === $pos_b) {
+                    $sort = 0;
+                } elseif ($pos_a === false) {
+                    $sort = 1;
+                } elseif ($pos_b === false) {
+                    $sort = -1;
+                } else {
+                    $sort = $pos_a - $pos_b;
+                }
+
+                return $sort;
+            });
+        }
 
         return $entry_ids;
     }
