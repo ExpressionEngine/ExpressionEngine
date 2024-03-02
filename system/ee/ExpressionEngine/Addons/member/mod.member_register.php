@@ -47,6 +47,12 @@ class Member_register extends Member
             $reg_form = $this->_load_element('registration_form');
         }
 
+        $error_tags = array();
+        if (ee()->TMPL->fetch_param('error_handling') == 'inline') {
+            // get the field errors
+            $error_tags = ee()->session->flashdata('error_tags');
+        }
+
         // Do we have custom fields to show?
         $query = ee()->db->where('m_field_reg', 'y')
             ->order_by('m_field_order')
@@ -110,7 +116,8 @@ class Member_register extends Member
                             'lang:profile_field_description' => $row['m_field_description'],
                             'required' => get_bool_from_string($row['m_field_required']),
                             'field' => $field,
-                            'form:custom_profile_field' => $field
+                            'form:custom_profile_field' => $field,
+                            'error' => !empty($error_tags) && isset($error_tags['error:' . $row['m_field_name']]) ? $error_tags['error:' . $row['m_field_name']] : '',
                         ];
                         $str .= ee()->TMPL->parse_variables_row($temp, $field_vars);
                         continue;
@@ -146,7 +153,10 @@ class Member_register extends Member
                     if ($field->m_field_reg === 'y') {
                         $formField = $field->getField();
                         $formField->setName('m_field_id_' . $field->m_field_id);
-                        $reg_form = str_replace(LD . 'field:' . $field->m_field_name . RD, $formField->getForm(), $reg_form);
+                        $fieldShorName = $field->m_field_name;
+                        $reg_form = str_replace(LD . 'field:' . $fieldShorName . RD, $formField->getForm(), $reg_form);
+                        $error = !empty($error_tags) && isset($error_tags['error:' . $fieldShorName]) ? $error_tags['error:' . $fieldShorName] : '';
+                        $reg_form = str_replace(LD . 'error:' . $fieldShorName . RD, $error, $reg_form);
                     }
                 }
             }
@@ -211,18 +221,9 @@ class Member_register extends Member
             )
         );
 
-        $inline_errors = 'no';
-
-        if (ee()->TMPL->fetch_param('error_handling') == 'inline') {
-            // determine_error_return function looks for yes.
-            $inline_errors = 'yes';
-
-            // parse the errors
-            $error_tags = ee()->session->flashdata('error_tags');
-
-            if (!empty($error_tags)) {
-                $reg_form = ee()->TMPL->parse_variables($reg_form, array($error_tags));
-            }
+        // parse inline errors
+        if (!empty($error_tags)) {
+            $reg_form = ee()->TMPL->parse_variables($reg_form, array($error_tags));
         }
 
         // Generate Form declaration
@@ -231,8 +232,7 @@ class Member_register extends Member
             'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->TMPL->fetch_param('return') : ee()->functions->fetch_site_index(),
             'FROM' => ($this->in_forum == true) ? 'forum' : '',
             'P' => ee()->functions->get_protected_form_params([
-                'primary_role' => ee()->TMPL->fetch_param('primary_role'),
-                'inline_errors' => $inline_errors,
+                'primary_role' => ee()->TMPL->fetch_param('primary_role')
             ]),
         );
 
@@ -370,7 +370,7 @@ class Member_register extends Member
                     // Ensure their selection is actually a valid choice
                     if (! in_array(ee('Request')->post($field_name), $options)) {
                         $valid = false;
-                        $cust_errors['error:' . $field_name] = lang('mbr_field_invalid') . '&nbsp;' . $row['m_field_label'];
+                        $cust_errors['error:' . $field_name] = $cust_errors['error:' . $field_model->m_field_name] = lang('mbr_field_invalid') . '&nbsp;' . $row['m_field_label'];
                     }
                 }
 
@@ -502,18 +502,20 @@ class Member_register extends Member
             }
         }
 
-        $field_labels = array();
-
-        foreach ($member->getDisplay()->getFields() as $field) {
-            $field_labels[$field->getName()] = $field->getLabel();
-        }
-
         $field_errors = array();
         $error_tags = array();
 
         if ($result->failed()) {
             $e = $result->getAllErrors();
             $errors = array_map('current', $e);
+
+            $field_labels = array();
+            $fieldNames = array();
+
+            foreach ($member->getDisplay()->getFields() as $field) {
+                $field_labels[$field->getName()] = $field->getLabel();
+                $fieldNames[$field->getName()] = $field->getShortName();
+            }
 
             foreach ($errors as $field => $error) {
                 // build out auto error page data
@@ -527,23 +529,22 @@ class Member_register extends Member
 
                 // add data for inline errors
                 $error_tags['error:' . $field] = $error;
+                if (isset($fieldNames[$field])) {
+                    $error_tags['error:' . $fieldNames[$field]] = $error;
+                }
             }
-        }
-
-
-        // if we don't have a link we'll give them errors for core ee error screen
-        if (empty($return_error_link)) {
-            $errors = array_merge($field_errors, $cust_errors, $this->errors);
         }
 
         // do we have a link?  If so we're giving them the inline errors
         if (!empty($return_error_link)) {
-            $errors = array_merge($error_tags, $cust_errors);
+            $error_tags = array_merge($error_tags, $cust_errors);
 
             // populate flash data for custom error tags
-            ee()->session->set_flashdata('error_tags', $errors);
+            ee()->session->set_flashdata('error_tags', $error_tags);
         }
 
+        // give them errors for core ee error screen or {errors} tag pair
+        $errors = array_merge($field_errors, $cust_errors, $this->errors);
         // Display error if there are any
         if (count($errors) > 0) {
             ee()->session->set_flashdata('errors', $errors);

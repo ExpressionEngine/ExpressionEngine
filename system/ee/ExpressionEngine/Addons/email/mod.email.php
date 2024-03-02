@@ -455,11 +455,13 @@ class Email
             return $this->preview_handler();
         }
 
+        $return_error_link = ee()->functions->determine_error_return();
+
         $error = array();
 
         // Blocked/Allowed List Check
         if (ee()->blockedlist->blocked == 'y' && ee()->blockedlist->allowed == 'n') {
-            return ee()->output->show_user_error('general', array(lang('not_authorized')));
+            return ee()->output->show_user_error('general', array(lang('not_authorized')), '', $return_error_link);
         }
 
         // Is the nation of the user banend?
@@ -503,29 +505,29 @@ class Email
         // Basic Security Check
         if (ee()->session->userdata('ip_address') == '' or
             ee()->session->userdata('user_agent') == '') {
-            return ee()->output->show_user_error('general', array(lang('em_unauthorized_request')));
+            return ee()->output->show_user_error('general', array(lang('em_unauthorized_request')), '', $return_error_link);
         }
 
         // ERROR Checking
         // If the message is empty, bounce them back
         if ($_POST['message'] == '') {
-            return ee()->output->show_user_error('general', array(lang('message_required')));
+            return ee()->output->show_user_error('general', array(lang('message_required')), '', $return_error_link);
         }
 
         // If the from field is empty, error
         ee()->load->helper('email');
         if ($_POST['from'] == '' or ! valid_email($_POST['from'])) {
-            return ee()->output->show_user_error('general', array(lang('em_sender_required')));
+            return ee()->output->show_user_error('general', array(lang('em_sender_required')), '', $return_error_link);
         }
 
         // If no recipients, bounce them back
         if ($_POST['recipients'] == '' && $_POST['to'] == '') {
-            return ee()->output->show_user_error('general', array(lang('em_no_valid_recipients')));
+            return ee()->output->show_user_error('general', array(lang('em_no_valid_recipients')), '', $return_error_link);
         }
 
         // Is the user banned?
         if (ee()->session->userdata['is_banned'] == true) {
-            return ee()->output->show_user_error('general', array(lang('not_authorized')));
+            return ee()->output->show_user_error('general', array(lang('not_authorized')), '', $return_error_link);
         }
 
         // Check Tracking Class
@@ -549,7 +551,7 @@ class Email
             // Max Emails - Quick check
             if (! ee('Permission')->isSuperAdmin()
                 && $query->num_rows() >= $this->email_max_emails) {
-                return ee()->output->show_user_error('general', array(lang('em_limit_exceeded')));
+                return ee()->output->show_user_error('general', array(lang('em_limit_exceeded')), '', $return_error_link);
             }
 
             // Max Emails - Indepth check
@@ -561,14 +563,14 @@ class Email
 
             if (! ee('Permission')->isSuperAdmin()
                 && $total_sent >= $this->email_max_emails) {
-                return ee()->output->show_user_error('general', array(lang('em_limit_exceeded')));
+                return ee()->output->show_user_error('general', array(lang('em_limit_exceeded')), '', $return_error_link);
             }
 
             // Interval check
             if ($query->row('email_date') > (ee()->localize->now - $this->email_time_interval)) {
                 $error[] = str_replace("%s", $this->email_time_interval, lang('em_interval_warning'));
 
-                return ee()->output->show_user_error('general', $error);
+                return ee()->output->show_user_error('general', $error, '', $return_error_link);
             }
         }
 
@@ -605,14 +607,14 @@ class Email
 
         // Do we have errors to display?
         if (count($error) > 0) {
-            return ee()->output->show_user_error('submission', $error);
+            return ee()->output->show_user_error('submission', $error, '', $return_error_link);
         }
 
         // Check CAPTCHA
         if ($this->use_captchas == 'y') {
             if (! isset($_POST['captcha']) or $_POST['captcha'] == '') {
                 $captcha_error = ee()->config->item('use_recaptcha') == 'y' ? ee()->lang->line('recaptcha_required') : ee()->lang->line('captcha_required');
-                return ee()->output->show_user_error('general', $captcha_error);
+                return ee()->output->show_user_error('general', $captcha_error, '', $return_error_link);
             }
 
             $query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_captcha
@@ -622,7 +624,7 @@ class Email
 
             if ($query->row('count') == 0) {
                 $captcha_error = ee()->config->item('use_recaptcha') == 'y' ? ee()->lang->line('recaptcha_required') : ee()->lang->line('captcha_incorrect');
-                return ee()->output->show_user_error('submission', $captcha_error);
+                return ee()->output->show_user_error('submission', $captcha_error, '', $return_error_link);
             }
 
             ee()->db->query("DELETE FROM exp_captcha

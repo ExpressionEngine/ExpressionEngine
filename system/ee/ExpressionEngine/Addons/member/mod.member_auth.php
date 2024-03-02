@@ -86,6 +86,8 @@ class Member_auth extends Member
             $return_link = $return;
         }
 
+        $error_return_link = ee()->functions->determine_error_return();
+
         ee()->load->library('auth');
         ee()->lang->loadfile('login');
 
@@ -117,22 +119,22 @@ class Member_auth extends Member
         $password = ee()->input->post('password');
 
         if (! $multi && ! ($username && $password)) {
-            return ee()->output->show_user_error('general', lang('mbr_form_empty'));
+            return ee()->output->show_user_error('general', lang('mbr_form_empty'), '', $error_return_link);
         }
 
         if (strlen($password) > PASSWORD_MAX_LENGTH) {
-            return ee()->output->show_user_error('general', lang('credential_missmatch'));
+            return ee()->output->show_user_error('general', lang('credential_missmatch'), '', $error_return_link);
         }
 
         // This should go in the auth lib.
         if (! ee()->auth->check_require_ip()) {
-            return ee()->output->show_user_error('general', lang('unauthorized_request'));
+            return ee()->output->show_user_error('general', lang('unauthorized_request'), '', $error_return_link);
         }
 
         // Check password lockout status
         if (true === ee()->session->check_password_lockout($username)) {
             $line = lang('password_lockout_in_effect');
-            $line = sprintf($line, ee()->config->item('password_lockout_interval'));
+            $line = sprintf($line, ee()->config->item('password_lockout_interval'), '', $error_return_link);
 
             ee()->output->show_user_error('general', $line);
         }
@@ -239,6 +241,7 @@ class Member_auth extends Member
      */
     private function _do_auth($username, $password)
     {
+        $error_return_link = ee()->functions->determine_error_return();
         $sess = ee()->auth->authenticate_username($username, $password);
 
         if ($sess === false) {
@@ -249,22 +252,22 @@ class Member_auth extends Member
             ee()->session->save_password_lockout($username);
 
             if (empty($username) or empty($password)) {
-                return ee()->output->show_user_error('general', lang('mbr_form_empty'));
+                return ee()->output->show_user_error('general', lang('mbr_form_empty'), '', $error_return_link);
             } else {
-                return ee()->output->show_user_error('general', lang('invalid_existing_un_pw'));
+                return ee()->output->show_user_error('general', lang('invalid_existing_un_pw'), '', $error_return_link);
             }
         }
 
         // Banned
         if ($sess->is_banned()) {
-            return ee()->output->show_user_error('general', lang('not_authorized'));
+            return ee()->output->show_user_error('general', lang('not_authorized'), '', $error_return_link);
         }
 
         // Allow multiple logins?
         // Do we allow multiple logins on the same account?
         if (ee()->config->item('allow_multi_logins') == 'n') {
             if ($sess->has_other_session()) {
-                return ee()->output->show_user_error('general', lang('not_authorized'));
+                return ee()->output->show_user_error('general', lang('not_authorized'), '', $error_return_link);
             }
         }
 
