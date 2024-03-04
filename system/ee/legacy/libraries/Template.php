@@ -692,7 +692,7 @@ class EE_Template
         $this->layout_conditionals = [];
 
         // get all the declared layout variables (excluding layout:contents)
-        if (preg_match_all('/' . LD . 'layout:(?!\bcontents\b)([^!]+?)(' . RD . '|\s|:)/', $str, $matches)) {
+        if (preg_match_all('/' . LD . 'layout:(?!\bset|contents\b)([^!]+?)(' . RD . '|\s|:)/', $str, $matches)) {
             $undefined_layout_vars = [];
 
             foreach ($matches[1] as $key) {

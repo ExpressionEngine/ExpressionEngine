@@ -31916,6 +31916,14 @@ fieldset .field-control #eye {
 .grid-field .ui-sortable-placeholder > * {
   display: none !important;
 }
+.grid-field .required:after {
+  content: "*";
+  color: var(--ee-brand-danger);
+  font-size: 1em;
+  position: relative;
+  top: 0px;
+  margin-left: 0;
+}
 
 .grid-field__table th {
   font-size: 0.9em;
@@ -47335,6 +47343,10 @@ a.ck.ck-button.ck-on {
 .rx-container .rx-statusbar-container .rx-statusbar .rx-statusbar-item:last-child {
   border-right: none;
 }
+.rx-container em {
+  font-size: initial;
+  display: initial;
+}
 
 /* Do not show the page break element inside the print preview window. */
 @media print {
@@ -49910,31 +49922,6 @@ ul.field-reorder-drop,
   background: #ee0707;
 }
 
-/*
-body[data-theme="dark"] {
-	.st-open,
-	.st-enable,
-	.st-status,
-	.st-unlocked,
-
-	.status-tag--open {
-		background: rgba(231, 250, 240, 0.925);
-		color: #00b533;
-	}
-
-	.st-spam,
-	.st-error,
-	.st-closed,
-	.st-banned,
-	.st-locked,
-	.st-disable,
-
-	.status-tag--closed {
-		background: rgba(254, 237, 240, 0.925);
-		color: #ee0707;
-	}
-}
-*/
 .st-draft {
   background-color: var(--ee-bg-blank);
   border-color: #CCCCCC;
@@ -49990,43 +49977,58 @@ body[data-theme="dark"] {
   font-weight: inherit;
   text-transform: inherit;
   letter-spacing: inherit;
-  border: inherit;
   background-color: inherit !important;
-  padding: inherit;
-  color: inherit !important;
   background: inherit;
   display: inherit;
   border-radius: inherit;
-  /*
-  &::before {
-    content: "";
-    width: 13px;
-    height: 13px;
-    display: block;
-    position: absolute;
-    left: 20px;
-    top: calc(50% - 7px);
-    border-radius: $border-radius-full;
-  }
+}
 
-  &.st-open::before,
-  &.st-enable::before,
-  &.st-status::before,
-  &.st-unlocked::before,
-  &.status-tag--open::before {
-  	background-color: color(success);
-  }
-
-  &.st-spam::before,
-  &.st-error::before,
-  &.st-closed::before,
-  &.st-banned::before,
-  &.st-locked::before,
-  &.st-disable::before,
-  &.status-tag--closed::before {
-    background-color: color(danger);
-  }
-  */
+[data-input-value=status] .select__button .status-tag, [data-input-value=status] .select__button .st-spam,
+[data-input-value=status] .select__button .st-error,
+[data-input-value=status] .select__button .st-closed,
+[data-input-value=status] .select__button .st-banned,
+[data-input-value=status] .select__button .st-open,
+[data-input-value=status] .select__button .st-draft,
+[data-input-value=status] .select__button .st-pending,
+[data-input-value=status] .select__button .st-info,
+[data-input-value=status] .select__button .st-note,
+[data-input-value=status] .select__button .st-warning,
+[data-input-value=status] .select__button .st-locked,
+[data-input-value=status] .select__button .st-unlocked,
+[data-input-value=status] .select__button .st-enable,
+[data-input-value=status] .select__button .st-disable,
+[data-input-value=status] .select__button .st-status {
+  border: inherit;
+  padding: inherit;
+}
+[data-input-value=status] .select__dropdown .select__dropdown-item {
+  padding: 0;
+  min-height: 0;
+  margin-bottom: 5px;
+  border-radius: 1000px;
+}
+[data-input-value=status] .select__dropdown .select__dropdown-item > span {
+  width: 100%;
+}
+[data-input-value=status] .select__dropdown .status-tag, [data-input-value=status] .select__dropdown .st-spam,
+[data-input-value=status] .select__dropdown .st-error,
+[data-input-value=status] .select__dropdown .st-closed,
+[data-input-value=status] .select__dropdown .st-banned,
+[data-input-value=status] .select__dropdown .st-open,
+[data-input-value=status] .select__dropdown .st-draft,
+[data-input-value=status] .select__dropdown .st-pending,
+[data-input-value=status] .select__dropdown .st-info,
+[data-input-value=status] .select__dropdown .st-note,
+[data-input-value=status] .select__dropdown .st-warning,
+[data-input-value=status] .select__dropdown .st-locked,
+[data-input-value=status] .select__dropdown .st-unlocked,
+[data-input-value=status] .select__dropdown .st-enable,
+[data-input-value=status] .select__dropdown .st-disable,
+[data-input-value=status] .select__dropdown .st-status {
+  min-height: 38px;
+  padding: 7px 15px;
+  width: 100%;
+  border-radius: 1000px;
 }
 
 .icon--add:before {
