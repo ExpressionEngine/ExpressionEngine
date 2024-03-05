@@ -375,7 +375,7 @@ class EE_Lang
             show_error('Unable to load the requested language file: language/' . $idiom . '/' . $langfile);
         }
 
-        if (! empty($langStrings)) {
+        if (empty($langStrings)) {
             log_message('debug', 'Language file contains no data: language/' . $idiom . '/' . $langfile);
 
             return;
