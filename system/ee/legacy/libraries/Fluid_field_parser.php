@@ -331,6 +331,10 @@ class Fluid_field_parser
         // down to just the data for this fluid field on this entry.
         $fluid_field_data = $this->data->filter(function ($fluid_field) use ($entry_id, $fluid_field_id) {
             return ($fluid_field->entry_id == $entry_id && $fluid_field->fluid_field_id == $fluid_field_id);
+        })
+        // Sort by ChannelField->field_order
+        ->sortBy(function($item) {
+            return $item->ChannelField->field_order;
         });
 
         $groups = [];
@@ -347,7 +351,7 @@ class Fluid_field_parser
                     'fields' => []
                 ];
             }
-            $groups[$groupKey]['fields'][$field->ChannelField->field_order] = $field;
+            $groups[$groupKey]['fields'][] = $field;
         }
 
         $vars = ee('Variables/Parser')->extractVariables($tagdata);
@@ -386,7 +390,7 @@ class Fluid_field_parser
             $group_cond = array_intersect_key($cond, $group_cond_keys);
             $has_group = $group['is_field_group'] && !empty(array_filter($group_cond));
             $group_tagdata = ee()->functions->prep_conditionals($cond_tagdata, $group_cond);
-            $group_prefix = $fluid_field_name . ':' . $group['short_name'];
+            $group_prefix = $group['short_name'];
             $group_tags = [];
             $group_output = '';
 
@@ -426,6 +430,15 @@ class Fluid_field_parser
 
                 $group_tags["$group_prefix:$field_name"] = $field;
             }
+
+            // sort group_tags by field type to ensure proper parse order later
+            uasort($group_tags, function($a, $b) {
+                $priority = ['relationship'];
+                $aPriority = in_array($a->getType(), $priority);
+                $bPriority = in_array($b->getType(), $priority);
+
+                return ($aPriority && $bPriority) ? 0 : (($aPriority && !$bPriority) ? -1 : 1);
+            });
 
             // Since we can have multiple chunks we need to store the current field
             // index and reset it for each chunk so that our meta variables are correct
@@ -525,6 +538,15 @@ class Fluid_field_parser
                 foreach ($group_meta as $name => $value) {
                     $tag = LD . $name . RD;
                     $group_output = str_replace($tag, $value, $group_output);
+                }
+
+                // handle tag replacements
+                foreach ($group_tags as $tag => $field) {
+                    if (strpos($group_output, LD . $tag) === false) {
+                        continue;
+                    }
+
+                    $group_output = ee('fluid_field:Tag', $group_output)->setTag($tag)->parse($field);
                 }
             }
 

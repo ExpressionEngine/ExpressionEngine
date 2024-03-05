@@ -1,0 +1,58 @@
+<html>
+<body>
+{exp:channel:entries channel="fluid_fields" limit="1" dynamic="yes"}
+<div id="{url_title}">
+    <h3>#{entry_id} - {title}</h3>
+    <div class="fluid">
+    {corpse}
+        {!-- News Group --}
+        {corpse:news}
+            <h3>News Group</h3>
+
+            <h4>Fields Loop</h4>
+            {fields}
+                {corpse:news_body}
+                    <div class="tag__news_body">News Body: {content}</div>
+                    <div class="tag__news_body modifier__length">News Body Length: {content:length}</div>
+                {/corpse:news_body}
+                {corpse:news_extended}
+                    <div class="tag__news_extended">News Extended: {content}</div>
+                    <div class="tag__news_extended modifier__attr_safe">News Extended Attribute Safe: {content:attr_safe}</div>
+                {/corpse:news_extended}
+                {corpse:news_image}
+                    <div class="tag__news_image">News Image: {content}</div>
+                    <div class="tag__news_image modifier__resize">News Image Resize: {content:resize width="10" height="10"}</div>
+                {/corpse:news_image}
+                {corpse:rel_item}
+                    {content}
+                        <div class="tag__rel_item">Related Item: {content:title}</div>
+                        <div class="tag__rel_item modifier__length">Related Item Title Length: {content:title:length}</div>
+                    {/content}
+                {/corpse:rel_item}
+            {/fields}
+
+            <h4>Fields Individual</h4>
+            <div class="tag__news_body">News Body: {news:news_body}</div>
+            <div class="tag__news_body modifier__length">News Body Length: {news:news_body:length}</div>
+
+            <div class="tag__news_extended">News Extended: {news:news_extended}</div>
+            <div class="tag__news_extended modifier__attr_safe">News Extended Attribute Safe: {news:news_extended:attr_safe}</div>
+
+            <div class="tag__news_image">News Image: {news:news_image}</div>
+            <div class="tag__news_image modifier__resize">News Image Resize: {news:news_image:resize width="10" height="10"}</div>
+
+            {news:rel_item}
+                <div class="tag__rel_item">Related Item: {rel_item:title} </div>
+                <div class="tag__rel_item modifier__length">Related Item Title Length: {rel_item:title:length}</div>
+            {/news:rel_item}
+
+            <h4>Group Meta</h4>
+            {corpse:current_group_name}
+            {corpse:current_group_short_name}
+        {/corpse:news}
+    {/corpse}
+    </div>
+</div>
+{/exp:channel:entries}
+</body>
+</html>
