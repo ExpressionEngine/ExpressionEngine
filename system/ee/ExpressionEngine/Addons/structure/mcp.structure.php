@@ -17,7 +17,7 @@ require_once PATH_ADDONS . 'structure/helper.php';
 require_once PATH_ADDONS . 'structure/sql.structure.php';
 require_once PATH_ADDONS . 'structure/mod.structure.php';
 
-use ExpressionEngine\Structure\Conduit\McpNav as AddonNav;
+use ExpressionEngine\Addons\Structure\Conduit\McpNav as AddonNav;
 
 class Structure_mcp
 {

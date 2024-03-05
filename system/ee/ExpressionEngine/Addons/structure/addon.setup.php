@@ -19,5 +19,17 @@
             'structure' => array(
                 'name' => 'Structure'
             )
+        ),
+        'models' => array(
+            'Structure' => 'Model\Structure',
+            'StructureListing' => 'Model\StructureListing'
+        ),
+        'models.dependencies' => array(
+            'Structure' => array(
+                'ee:ChannelEntry'
+            ),
+            'StructureListing' => array(
+                'ee:ChannelEntry'
+            )
         )
     );

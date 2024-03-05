@@ -229,10 +229,16 @@ trait FileManagerTrait
         }
 
         $columns = [];
+        $columnFactory = new ColumnFactory();
         foreach ($selected_columns as $column) {
-            $columns[$column] = ColumnFactory::getColumn($column);
+            $columns[$column] = $columnFactory::getColumn($column);
         }
-        $columns = array_filter($columns);
+        // in order to avoid calls to non-existing tables
+        // we check if the columns are still available
+        $availableColumns = $columnFactory::getAvailableColumns();
+        $columns = array_filter($columns, function ($column) use ($availableColumns) {
+            return !empty($column) && isset($availableColumns[$column->getTableColumnIdentifier()]);
+        });
 
         foreach ($columns as $column) {
             if (!empty($column)) {

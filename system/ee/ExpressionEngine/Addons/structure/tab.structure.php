@@ -5,8 +5,8 @@ require_once PATH_ADDONS . 'structure/sql.structure.php';
 require_once PATH_ADDONS . 'structure/mod.structure.php';
 require_once PATH_ADDONS . 'structure/helper.php';
 
-use ExpressionEngine\Structure\Conduit\StaticCache;
-use ExpressionEngine\Structure\Conduit\PersistentCache;
+use ExpressionEngine\Addons\Structure\Conduit\StaticCache;
+use ExpressionEngine\Addons\Structure\Conduit\PersistentCache;
 
 /**
  * This source file is part of the open source project

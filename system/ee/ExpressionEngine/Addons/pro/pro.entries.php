@@ -74,10 +74,17 @@ class Entries_pro extends Prolet\AbstractProlet
         //which columns should we show
         $selected_columns = ['entry_id', 'title', 'entry_date', 'author', 'status'];//$filter_values['columns'];
         $columns = [];
+        $columnFactory = new ColumnFactory();
         foreach ($selected_columns as $column) {
-            $columns[$column] = ColumnFactory::getColumn($column);
+            $columns[$column] = $columnFactory::getColumn($column);
         }
-        $columns = array_filter($columns);
+        // in order to avoid calls to non-existing tables
+        // we check if the columns are still available
+        $availableColumns = $columnFactory::getAvailableColumns();
+        $columns = array_filter($columns, function ($column) use ($availableColumns) {
+            return !empty($column) && isset($availableColumns[$column->getTableColumnIdentifier()]);
+        });
+
 
         if (! ee('Permission')->hasAny($this->permissions['others'])) {
             $entries->filter('author_id', ee()->session->userdata('member_id'));

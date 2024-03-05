@@ -1264,7 +1264,7 @@ class Structure extends Channel
                 $structure_template_id = $data['template_id'];
 
                 // Update Structure
-                ee()->db->query("UPDATE exp_structure SET parent_id='" . intval($parent_id) . "', listing_cid='" . intval($lcid) . "', hidden='" . $hidden . "', structure_url_title='" . $structure_url_title . "', template_id='" . intval($structure_template_id) . "' WHERE entry_id='" . intval($entry_id) . "'");
+                ee()->db->query("UPDATE exp_structure SET parent_id='" . intval($parent_id) . "', listing_cid='" . intval($lcid) . "', hidden='" . $hidden . "', structure_url_title='" . $structure_url_title . "', structure_uri='" . $data['uri'] . "', template_id='" . intval($structure_template_id) . "' WHERE entry_id='" . intval($entry_id) . "'");
 
                 // Listing Channel option in tab was changed TO "Unmanaged"
                 if ($prev_lcid != 0 && $lcid == 0) {
@@ -1328,10 +1328,10 @@ class Structure extends Channel
                             }
                         }
 
-                        $listing_data[] = $temp_listing;
-
-                        $site_pages['uris'][$c_entry['entry_id']] = $this->create_full_uri($temp_listing['parent_uri'], !empty($listing_entries[$c_entry['entry_id']]['uri']) ? $listing_entries[$c_entry['entry_id']]['uri'] : $c_entry['url_title']);
+                        $temp_listing['structure_uri'] = $site_pages['uris'][$c_entry['entry_id']] = $this->create_full_uri($temp_listing['parent_uri'], !empty($listing_entries[$c_entry['entry_id']]['uri']) ? $listing_entries[$c_entry['entry_id']]['uri'] : $c_entry['url_title']);
                         $site_pages['templates'][$c_entry['entry_id']] = !empty($listing_entries[$c_entry['entry_id']]['template_id']) ? $listing_entries[$c_entry['entry_id']]['template_id'] : $default_template;
+
+                        $listing_data[] = $temp_listing;
                     }
 
                     // Update structure_listings table, and site_pages array with proper data
@@ -1460,10 +1460,10 @@ class Structure extends Channel
                             }
                         }
 
-                        $listing_data[] = $temp_listing;
-
-                        $site_pages['uris'][$c_entry['entry_id']] = $this->create_full_uri($temp_listing['parent_uri'], !empty($listing_entries[$c_entry['entry_id']]['uri']) ? $listing_entries[$c_entry['entry_id']]['uri'] : $c_entry['url_title']);
+                        $temp_listing['structure_uri'] = $site_pages['uris'][$c_entry['entry_id']] = $this->create_full_uri($temp_listing['parent_uri'], !empty($listing_entries[$c_entry['entry_id']]['uri']) ? $listing_entries[$c_entry['entry_id']]['uri'] : $c_entry['url_title']);
                         $site_pages['templates'][$c_entry['entry_id']] = !empty($listing_entries[$c_entry['entry_id']]['template_id']) ? $listing_entries[$c_entry['entry_id']]['template_id'] : $default_template;
+
+                        $listing_data[] = $temp_listing;
                     }
 
                     // Update structure_listings table, and site_pages array with proper data

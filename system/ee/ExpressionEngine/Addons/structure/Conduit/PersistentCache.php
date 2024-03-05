@@ -1,8 +1,8 @@
 <?php
 
-namespace ExpressionEngine\Structure\Conduit;
+namespace ExpressionEngine\Addons\Structure\Conduit;
 
-use ExpressionEngine\Structure\Conduit\StaticCache;
+use ExpressionEngine\Addons\Structure\Conduit\StaticCache;
 
 // Based on CI DB caching function
 class PersistentCache
