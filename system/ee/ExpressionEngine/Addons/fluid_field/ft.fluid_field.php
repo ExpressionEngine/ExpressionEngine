@@ -293,7 +293,7 @@ class Fluid_field_ft extends EE_Fieldtype
                     if(defined('CLONING_MODE') && CLONING_MODE === true && !isset($fluid_field_data[$id])) {
                         $clonedField = ee('Model')->get('fluid_field:FluidField')->filter('id', $id)->first();
                         $group_key = 'group_' . $clonedField->group;
-                    }else if (isset($fluid_field_data[$id])) {
+                    } elseif (isset($fluid_field_data[$id])) {
                         $group_key = 'group_' . $fluid_field_data[$id]->group;
                     } elseif (ee('Request')->get('version')) {
                         $key = 'new_field_' . ($total_fields + (int) $id);
@@ -479,6 +479,7 @@ class Fluid_field_ft extends EE_Fieldtype
                 ee()->grid_lib->fluid_field_data_id = $fluid_field->id;
                 ee()->grid_lib->save([]);
                 ee()->load->remove_package_path(PATH_ADDONS . 'grid');
+
                 break;
             case 'relationship':
                 ee('db')
@@ -487,6 +488,7 @@ class Fluid_field_ft extends EE_Fieldtype
                     ->where('fluid_field_data_id', $fluid_field->id)
                     ->where('grid_field_id', 0)
                     ->delete('relationships');
+
                 break;
             default:
                 break;
@@ -538,6 +540,7 @@ class Fluid_field_ft extends EE_Fieldtype
 
         $filter_options = $field_templates->map(function ($field) {
             $field = $field->getField();
+
             return \ExpressionEngine\Addons\FluidField\Model\FluidFieldFilter::make([
                 'name' => $field->getShortName(),
                 'label' => $field->getItem('field_label'),
@@ -611,6 +614,7 @@ class Fluid_field_ft extends EE_Fieldtype
                                     '[field_group_id_' . $field_group->getId() . ']',
                                     '[field_id_' . $f->getId() . ']'
                                 ]));
+
                                 return $f;
                             }, $field_group_fields),
                             'field_name' => $field_group->short_name,
@@ -628,7 +632,7 @@ class Fluid_field_ft extends EE_Fieldtype
                     $fields .= ee('View')->make($view)->render($viewData);
                 }
             }
-        // This happens when we have a validation issue and data was not saved
+            // This happens when we have a validation issue and data was not saved
         } else {
             $field_group_map = $this->getFieldData()->indexBy('id');
             // $field_groups = $field_groups->indexByIds();
@@ -785,6 +789,7 @@ class Fluid_field_ft extends EE_Fieldtype
                     $f = $field->getField();
                     $f->setItem('fluid_field_data_id', null);
                     $f->setName($this->name() . '[fields][new_field_0][field_group_id_' . $field_group->getId() . '][field_id_' . $field->getId() . ']');
+
                     return $f;
                 }),
                 'field_name' => $field_group->short_name,
@@ -947,7 +952,7 @@ class Fluid_field_ft extends EE_Fieldtype
             // Sometimes a fluid field with no fields attached to it gets saved as an empty string
             //   rather than an empty array. In this case, we need to convert it to an array to
             //   perform array operations on it
-            if(is_string($all['field_channel_fields']) && empty($all['field_channel_fields'])){
+            if(is_string($all['field_channel_fields']) && empty($all['field_channel_fields'])) {
                 $all['field_channel_fields'] = [];
             }
 
@@ -981,20 +986,20 @@ class Fluid_field_ft extends EE_Fieldtype
             $removed_groups = (array_diff($this->settings['field_channel_field_groups'], $all['field_channel_field_groups']));
 
             ee('Model')->get('fluid_field:FluidField')
-                    ->filter('fluid_field_id', $this->field_id)
-                    ->filter('field_group_id', 'IN', $removed_groups)
-                    ->all()
-                    ->delete();
+                ->filter('fluid_field_id', $this->field_id)
+                ->filter('field_group_id', 'IN', $removed_groups)
+                ->all()
+                ->delete();
 
             $reindexNeeded = true;
         }
 
         if ($reindexNeeded) {
             ee('CP/Alert')->makeInline('search-reindex')
-                    ->asImportant()
-                    ->withTitle(lang('search_reindex_tip'))
-                    ->addToBody(sprintf(lang('search_reindex_tip_desc'), ee('CP/URL')->make('utilities/reindex')->compile()))
-                    ->defer();
+                ->asImportant()
+                ->withTitle(lang('search_reindex_tip'))
+                ->addToBody(sprintf(lang('search_reindex_tip_desc'), ee('CP/URL')->make('utilities/reindex')->compile()))
+                ->defer();
 
             ee()->config->update_site_prefs(['search_reindex_needed' => ee()->localize->now], 0);
         }
