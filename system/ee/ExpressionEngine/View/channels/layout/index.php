@@ -13,7 +13,7 @@
             <div class="title-bar title-bar--large">
               <h3 class="title-bar__title"><?=$cp_page_title?></h3>
               <div class="title-bar__extra-tools">
-  					<a class="button button--primary" href="<?=$create_url?>"><?=lang('new_layout')?></a>
+  					<a class="button button--primary" href="<?=$create_url?>" data-shortcut="a"><?=lang('new_layout')?></a>
         </div>
 
         </div>

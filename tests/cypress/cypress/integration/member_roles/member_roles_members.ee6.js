@@ -60,7 +60,7 @@ context('Member Roles / Members Permissions', () => {
 
 	   cy.visit('admin.php?/cp/members')
 	   cy.dismissLicenseAlert()
-	   cy.get('a').contains('New Member').click()
+	   cy.get('a').contains('Add Member').click()
 	   cy.get('button').contains('Roles').click()
 	   cy.get('fieldset[id="fieldset-role_id"]').filter(':visible').contains('Super Admin').should('not.exist')
 	   // cy.wait(1500) //takes a second for error to show up
@@ -75,7 +75,7 @@ context('Member Roles / Members Permissions', () => {
 
 	   cy.visit('admin.php?/cp/members')
 	   cy.dismissLicenseAlert()
-	   cy.get('a').contains('New Member').click()
+	   cy.get('a').contains('Add Member').click()
 	   cy.get('button').contains('Roles').click()
 	   cy.get('div').filter(':visible').contains('Super Admin').should('not.exist')
 
@@ -170,7 +170,7 @@ context('Member Roles / Members Permissions', () => {
 
 	   cy.visit('admin.php?/cp/members/roles')
 	   cy.dismissLicenseAlert()
-	   cy.get('a').contains('New Role').should('exist')
+	   cy.get('a').contains('Add Role').should('exist')
 	   cy.get('.ctrl-all').click()
 	   cy.get('select').should('exist')
 	   cy.get('select').select('Delete')

@@ -299,7 +299,7 @@ context('Conditional Fields', () => {
         // Create fluid field in News Group
         cy.authVisit('admin.php?/cp/fields&group_id=1')
         cy.dismissLicenseAlert()
-        cy.get('.button--primary').contains('New Field').click();
+        cy.get('.button--primary').contains('Add Field').click();
         cy.get('#fieldset-field_type .select__button.js-dropdown-toggle').should('exist');
         cy.get('#fieldset-field_type .select__button').click();
         cy.get('.dropdown--open .select__dropdown-item').contains('Fluid').click({ force: true });

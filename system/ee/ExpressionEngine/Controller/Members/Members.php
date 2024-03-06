@@ -111,7 +111,8 @@ class Members extends CP_Controller
         if (ee('Permission')->can('create_members')) {
             $vars['toolbar_items']['action_button'] = [
                 'content' => lang('new_member'),
-                'href' => ee('CP/URL')->make('members/create')
+                'href' => ee('CP/URL')->make('members/create'),
+                'data-shortcut' => 'a'
             ];
         }
 
