@@ -38,7 +38,7 @@ class LimitHtml extends ValidationRule
     {
         $list = implode(', ', $this->parameters);
 
-        return array($this->getName(), $list);
+        return array($this->getName(), [$list]);
     }
 }
 
