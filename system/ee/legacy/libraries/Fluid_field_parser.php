@@ -248,7 +248,7 @@ class Fluid_field_parser
 
                     if (strpos($key, 'new_field_for_group_') === 0) {
                         $group_key = str_replace('new_field_for_', '', $key);
-                    } else if (strpos($key, 'field_') === 0) {
+                    } elseif (strpos($key, 'field_') === 0) {
                         $id = str_replace('field_', '', $key);
                         $group_key = array_key_exists($id, $entry_fluid_field_data) ? "group_{$entry_fluid_field_data[$id]->group}" : $key;
                     }
@@ -256,6 +256,7 @@ class Fluid_field_parser
                     foreach (array_keys($value) as $k) {
                         if (strpos($k, 'field_group_id_') === 0) {
                             $field_group_id = (int) str_replace('field_group_id_', '', $k);
+
                             break;
                         }
                     }
@@ -333,9 +334,9 @@ class Fluid_field_parser
             return ($fluid_field->entry_id == $entry_id && $fluid_field->fluid_field_id == $fluid_field_id);
         })
         // Sort by ChannelField->field_order
-        ->sortBy(function($item) {
-            return $item->ChannelField->field_order;
-        });
+            ->sortBy(function ($item) {
+                return $item->ChannelField->field_order;
+            });
 
         $groups = [];
         foreach ($fluid_field_data as $field) {
@@ -432,7 +433,7 @@ class Fluid_field_parser
             }
 
             // sort group_tags by field type to ensure proper parse order later
-            uasort($group_tags, function($a, $b) {
+            uasort($group_tags, function ($a, $b) {
                 $priority = ['relationship'];
                 $aPriority = in_array($a->getType(), $priority);
                 $bPriority = in_array($b->getType(), $priority);
@@ -467,7 +468,8 @@ class Fluid_field_parser
                 $order = $chunk['params']['order'] ?? 'asc';
                 $order == 'asc' ? ksort($group['fields']) : krsort($group['fields']);
 
-                foreach ($group['fields'] as $fieldCount => $fluid_field) {
+                $fieldCount = 0;
+                foreach ($group['fields'] as $fluid_field) {
                     $field_name = $fluid_field->ChannelField->field_name;
 
                     // Flip this field's conditional to TRUE so all the other fields will be
@@ -517,6 +519,7 @@ class Fluid_field_parser
                     $parsed = $tag->parse($field, $meta);
                     $chunk_output .= $parsed;
                     $i++;
+                    $fieldCount++;
                 }
 
                 if ($has_group) {
