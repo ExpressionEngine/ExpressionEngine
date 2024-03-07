@@ -157,6 +157,10 @@ class EE_Exceptions
      */
     public function show_error($heading, $message, $template = 'error_general', $status_code = 500)
     {
+        $logMessage = is_array($message) ? implode("\n", $message) : $message;
+        $logLevel = $status_code < 500 ? 'error' : 'critical';
+        ee('Logger')->get()->log($logLevel, $logMessage);
+
         if (REQ == 'CLI') {
             $cli = new \ExpressionEngine\Cli\Cli();
             $cli->fail($message);

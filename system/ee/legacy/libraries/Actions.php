@@ -69,6 +69,7 @@ class EE_Actions
 
             if ($query->num_rows() == 0) {
                 if (ee()->config->item('debug') >= 1) {
+                    ee('Logger')->get()->error(ee()->lang->line('invalid_action'), ['action_id' => $action_id]);
                     ee()->output->fatal_error(ee()->lang->line('invalid_action'));
                 } else {
                     return false;
@@ -95,6 +96,7 @@ class EE_Actions
 
             if ($query->num_rows() == 0) {
                 if (ee()->config->item('debug') >= 1) {
+                    ee('Logger')->get()->error(ee()->lang->line('invalid_action'), $specials);
                     ee()->output->fatal_error(ee()->lang->line('invalid_action'));
                 } else {
                     return false;
@@ -132,6 +134,7 @@ class EE_Actions
 
         if (! $addon) {
             if (ee()->config->item('debug') >= 1) {
+                ee('Logger')->get()->error(ee()->lang->line('invalid_action'), ['addon' => $base_class]);
                 ee()->output->fatal_error(ee()->lang->line('invalid_action'));
             } else {
                 return false;
@@ -168,6 +171,7 @@ class EE_Actions
             // If it's still not callable, stop here
             if (! is_callable(array($ACT, $method))) {
                 if (ee()->config->item('debug') >= 1) {
+                    ee('Logger')->get()->error(ee()->lang->line('invalid_action'), array($ACT, $method));
                     ee()->output->fatal_error(ee()->lang->line('invalid_action'));
                 } else {
                     return false;

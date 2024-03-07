@@ -866,6 +866,7 @@ class EE_Template
             if ($tag_pos > $first_tag && $first_tag !== false) {
                 if (ee()->config->item('debug') >= 1) {
                     $error = ee()->lang->line('error_layout_too_late');
+                    ee('Logger')->get()->error($error);
                     ee()->output->fatal_error($error);
                 }
 
@@ -880,6 +881,7 @@ class EE_Template
                     $error .= '<br><br>';
                     $error .= htmlspecialchars($bad_layout[0]);
 
+                    ee('Logger')->get()->error($error);
                     ee()->output->fatal_error($error);
                 }
 
@@ -1566,6 +1568,7 @@ class EE_Template
                             $error .= '</code><br /><br />';
                             $error .= str_replace('%x', $this->tag_data[$i]['class'], ee()->lang->line('error_fix_install_addon'));
 
+                            ee('Logger')->get()->error($error);
                             ee()->output->fatal_error($error);
                         } else {
                             return false;
@@ -1805,6 +1808,7 @@ class EE_Template
                         $error .= '</code><br /><br />';
                         $error .= str_replace('%x', $this->tag_data[$i]['class'], str_replace('%y', $meth_name, ee()->lang->line('error_fix_module_processing')));
 
+                        ee('Logger')->get()->error($error);
                         ee()->output->fatal_error($error);
                     } else {
                         return;

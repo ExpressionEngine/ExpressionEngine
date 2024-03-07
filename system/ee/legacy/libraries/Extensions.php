@@ -175,6 +175,7 @@ class EE_Extensions
                 }
                 $error = 'Unable to load the following extension file:<br /><br />' . 'ext.' . $name . '.php';
 
+                ee('Logger')->get()->error($error);
                 return ee()->output->fatal_error($error);
             }
 

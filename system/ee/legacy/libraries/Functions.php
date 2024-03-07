@@ -1732,6 +1732,8 @@ class EE_Functions
                 $error = lang('generic_fatal_error');
             }
 
+            ee('Logger')->get()->error($error);
+
             ee()->output->set_status_header(500);
             ee()->output->fatal_error(nl2br($error));
 
