@@ -624,17 +624,17 @@ class Fluid_field_ft extends EE_Fieldtype
                         $fields .= ee('View')->make($view)->render($viewData);
                     } else {
                         foreach ($field_data as $field_datum) {
-                           $field = $field_datum->getField();
+                            $field = $field_datum->getField();
 
-                           $field->setName($this->name() . '[fields][field_' . $field_datum->getId() . '][field_group_id_0][field_id_' . $field->getId() . ']');
+                            $field->setName($this->name() . '[fields][field_' . $field_datum->getId() . '][field_group_id_0][field_id_' . $field->getId() . ']');
 
-                           $viewData = array_merge($viewData, [
+                            $viewData = array_merge($viewData, [
                                'field' => $field,
                                'field_name' => $field_datum->ChannelField->field_name,
-                           ]);
+                            ]);
 
-                           $fields .= ee('View')->make($view)->render($viewData);
-                       }
+                            $fields .= ee('View')->make($view)->render($viewData);
+                        }
                     }
                 }
             }
@@ -934,7 +934,7 @@ class Fluid_field_ft extends EE_Fieldtype
             // Sometimes a fluid field with no fields attached to it gets saved as an empty string
             //   rather than an empty array. In this case, we need to convert it to an array to
             //   perform array operations on it
-            if(is_string($all['field_channel_fields']) && empty($all['field_channel_fields'])){
+            if (is_string($all['field_channel_fields']) && empty($all['field_channel_fields'])) {
                 $all['field_channel_fields'] = [];
             }
 
