@@ -179,7 +179,7 @@ class Sql_structure
      *
      * @return array
      */
-    public function get_selective_data($site_id, $current_id, $branch_entry_id, $mode, $show_depth, $max_depth, $status, $include, $exclude, $show_overview, $rename_overview, $show_expired, $show_future, $override_hidden_state = "no", $recursive_overview = "no", $include_site_url = "yes")
+    public function get_selective_data($site_id, $current_id, $branch_entry_id, $mode, $show_depth, $max_depth, $status, $include, $exclude, $show_overview, $rename_overview, $show_expired, $show_future, $override_hidden_state = "no", $recursive_overview = "no", $include_site_url = "yes", $named_nav = null)
     {
         $parent_id = $this->get_parent_id($current_id);
 
@@ -426,6 +426,7 @@ class Sql_structure
         if ($override_hidden_state) {
             if ($override_hidden_state != 'yes') {
                 $tree->selective_prune('hidden', array('y'), true);
+                $tree->selective_hidden_from_named_nav($named_nav);
             }
         }
 
@@ -1187,7 +1188,7 @@ class Sql_structure
 
             return $row->title;
         }
-        
+
 
         return false;
     }
@@ -1557,7 +1558,7 @@ class Sql_structure
                 WHERE entry_id = " . $entry_id .
                 " AND site_id = " . $this->site_id;
 
-        
+
         $cached_listing_cid = StaticCache::get('get_listing_channel_' . $sql);
 
         if(!empty($cached_listing_cid)) {
@@ -2100,6 +2101,76 @@ class Sql_structure
 
         return 'n';
     }
+
+    public function get_hidden_from_named_nav_state($entry_id)
+    {
+        ee()->db->select('hidden_from_named_nav')->from('structure')->where(array('entry_id' => $entry_id, 'site_id' => $this->site_id));
+        $result = ee()->db->get();
+
+        if ($result->num_rows > 0) {
+            $row = $result->row();
+            $hidden_from_named_nav = explode('|', $row->hidden_from_named_nav);
+            foreach($hidden_from_named_nav as $key => $value) {
+                // If the value is not an int or is empty, remove it from the array
+                if(!is_numeric($value) || empty($value)) {
+                    unset($hidden_from_named_nav[$key]);
+                    continue;
+                }
+                $hidden_from_named_nav[$key] = trim($value);
+            }
+
+
+            return implode('|', $hidden_from_named_nav);
+        }
+
+        return null;
+    }
+
+    // Returns all named navs for the given site id
+    // If no site id is passed, it will return all named navs for all sites
+    public function get_named_navs($site_id = null)
+    {
+        if (!empty($site_id)) {
+            $site_id_where = "WHERE site_id = $site_id";
+        } else {
+            $site_id_where = '';
+        }
+
+        $sql = "SELECT * FROM exp_structure_named_navs " . $site_id_where;
+        $result = ee()->db->query($sql);
+
+        if ($result->num_rows > 0) {
+            return $result->result_array();
+        }
+
+        return [];
+    }
+
+
+    // Returns all named navs for the given site id
+    // If no site id is passed, it will return all named navs for all sites
+    public function get_named_nav_from_name($nav_name)
+    {
+        // Allow empty nav names, and return null
+        if(empty($nav_name)) {
+            return null;
+        }
+
+        ee()->db->select('id')
+            ->from('structure_named_navs')
+            ->where_in('site_id', array(0, $this->site_id))
+            ->where('nav_name', $nav_name);
+
+        $result = ee()->db->get();
+
+        // Not found
+        if ($result->num_rows == 0) {
+            return null;
+        }
+
+        return $result->row()->id;
+    }
+
 
     public function update_integrity_data()
     {
@@ -3005,6 +3076,30 @@ class structure_leaf
             }
             if ($exclude || !$is_val) {
                 $child->selective_prune($key, $values, $exclude);
+            }
+        }
+    }
+
+    /**
+     * Remove all hidden from named nav items
+     * @param string int ID of the named nav
+     * @param boolean $exclude Exclude = FALSE and non matching items are deleted, Exclude = TRUE and matching items are deleted
+     */
+    public function selective_hidden_from_named_nav($named_nav_id)
+    {
+        if(empty($named_nav_id)) {
+            return;
+        }
+
+        foreach ($this->children as $id => $child) {
+            if(empty($child->row['hidden_from_named_nav'])) {
+                continue;
+            }
+
+            $hidden_from_named_nav = explode('|', $child->row['hidden_from_named_nav']);
+
+            if(in_array($named_nav_id, $hidden_from_named_nav)) {
+                unset($this->children[$id]);
             }
         }
     }

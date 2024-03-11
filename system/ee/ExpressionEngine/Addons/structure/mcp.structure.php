@@ -760,6 +760,7 @@ class Structure_mcp
         $this->set_cp_title('cp_module_settings_title');
 
         $settings = $this->sql->get_settings();
+        $named_navs = $this->sql->get_named_navs();
         $groups = $this->sql->get_member_groups();
 
         // Check if we have admin permission
@@ -779,6 +780,8 @@ class Structure_mcp
         $vars['groups'] = $groups;
         $vars['perms'] = $this->perms;
         $vars['settings'] = $settings;
+        $vars['named_navs'] = $named_navs;
+        $vars['named_nav_grid'] = $this->getNamedNavMiniGrid($named_navs);
         $vars['permissions'] = $permissions;
         $vars['extension_is_installed'] = $this->sql->extension_is_installed();
         $vars['redirect_types'] = array(
@@ -812,6 +815,47 @@ class Structure_mcp
         return ee()->general_helper->view('module_settings', $vars, true);
     }
 
+    protected function getNamedNavMiniGrid($named_navs)
+    {
+        // Get list of sites and build select options
+        $site_select_options = array();
+        $sites = ee()->db->select('site_id, site_label')->get('sites')->result_array();
+        foreach ($sites as $site) {
+            $site_select_options[$site['site_id']] = $site['site_label'];
+        }
+
+        $grid = ee('CP/MiniGridInput', array(
+            'field_name' => 'named_navs'
+        ));
+        $grid->loadAssets();
+        $grid->setColumns([lang('nav_id'), lang('nav_name'), lang('site')]);
+        $grid->setNoResultsText(lang('no_named_navs'), lang('add_new'));
+        $grid->setBlankRow(array(
+            array('html' =>  ''),
+            array('html' => form_input('nav_name', '')),
+            array('html' => form_dropdown('site_id', $site_select_options, set_value('site_id', ee()->config->item('site_id'))))
+        ));
+        $grid->setData(array());
+
+        if (!empty($named_navs)) {
+            $pairs = array();
+            foreach ($named_navs as $nav) {
+                $pairs[] = array(
+                    'attrs' => array('row_id' => $nav['id']),
+                    'columns' => array(
+                        array('html' => $nav['id']),
+                        array('html' => form_input('nav_name', $nav['nav_name'])),
+                        array('html' => form_dropdown('site_id', $site_select_options, set_value('site_id', $nav['site_id'])))
+                    )
+                );
+            }
+
+            $grid->setData($pairs);
+        }
+
+        return $grid;
+    }
+
     // Process form data from the module settings area
     public function module_settings_submit()
     {
@@ -823,6 +867,22 @@ class Structure_mcp
 
         // insert settings into DB
         foreach ($_POST as $key => $value) {
+            if($key == 'named_navs') {
+                // First, delete all existing named navs
+                ee()->db->where('site_id', $site_id)->delete('structure_named_navs');
+
+                $navs = $value['rows'];
+                foreach($navs as $id => $nav) {
+                    // if $id is row_id_X then it's an existing row, so we add the id so its the same
+                    if(strpos($id, 'row_id_') !== false) {
+                        $id = str_replace('row_id_', '', $id);
+                        $nav['id'] = $id;
+                    }
+
+                    ee()->db->insert('structure_named_navs', $nav);
+                }
+                continue;
+            }
             // Good heavens, this is just plain ghetto. If there is no "perm", it's a "setting"
             // if if there's no "perm" AND it's not a number, then it's a multi-option permission.
             $value = strpos($key, 'perm_') === 0 && is_numeric($value) ? 'y' : $value;

@@ -132,6 +132,8 @@ class Structure_tab
             $entry_id = ee()->input->get_post('entry_id') !== false ? ee()->input->get_post('entry_id') : 0;
         }
 
+        $named_navs = $this->sql->get_named_navs($site_id);
+
         $data = $this->sql->get_data();
         $cids = isset($data['channel_ids']) ? $data['channel_ids'] : array();
         $lcids = isset($data['listing_cids']) ? $data['listing_cids'] : array();
@@ -276,6 +278,33 @@ class Structure_tab
                 'field_text_direction'  => 'ltr',
                 'field_type'            => 'select'
             );
+
+            /** -------------------------------------
+            /**  Field: Hide From Nav
+            /** -------------------------------------*/
+
+            // If the user set up named navs, show the option to hide from them
+            if(!empty($named_navs)) {
+
+                // Make array of named navs - named_nav_id -> named_nav_name
+                $named_nav_options = array_combine(array_column($named_navs, 'id'), array_column($named_navs, 'nav_name'));
+                $hidden_from_named_nav_setting = $this->sql->get_hidden_from_named_nav_state($entry_id);
+
+                $settings['hidden_from_named_nav'] = array(
+                    'field_id'              => 'hidden_from_named_nav',
+                    'field_label'           => 'Hidden From Named Navs',
+                    'field_required'        => 'n',
+                    'field_data'            => $hidden_from_named_nav_setting,
+                    'field_list_items'      => $named_nav_options,
+                    'field_fmt'             => '',
+                    'field_instructions'    => 'Hide this entry from the following named navs',
+                    'field_show_fmt'        => 'n',
+                    'field_fmt_options'     => '',
+                    'field_pre_populate'    => 'n',
+                    'field_text_direction'  => 'ltr',
+                    'field_type'            => 'checkboxes'
+                );
+            }
         }
 
         /** -------------------------------------
@@ -497,6 +526,8 @@ class Structure_tab
             }
         }
 
+        $hidden_from_named_nav = $params['hidden_from_named_nav'];
+
         // assign the hidden setting
         if (isset($params['hidden'])) {
             $hidden = $params['hidden']; // EE3
@@ -596,14 +627,15 @@ class Structure_tab
             if ($channel_type == 'page') {
                 // get form fields
                 $data = array(
-                    'site_id'       => intval($site_id),
-                    'channel_id'    => intval($channel_id),
-                    'entry_id'      => intval($entry_id),
-                    'uri'           => $uri,
-                    'template_id'   => intval($template_id),
-                    'hidden'        => $hidden,
-                    'listing_cid'   => intval($listing_channel),
-                    'structure_uri' => $structure_uri
+                    'site_id'               => intval($site_id),
+                    'channel_id'            => intval($channel_id),
+                    'entry_id'              => intval($entry_id),
+                    'uri'                   => $uri,
+                    'template_id'           => intval($template_id),
+                    'hidden'                => $hidden,
+                    'hidden_from_named_nav' => $hidden_from_named_nav,
+                    'listing_cid'           => intval($listing_channel),
+                    'structure_uri'         => $structure_uri
                 );
 
                 $data['parent_id'] = intval($parent_id);

@@ -95,6 +95,8 @@ class Structure extends Channel
         $show_future = ee()->TMPL->fetch_param('show_future_entries', 'no');
         $override_hidden_state = ee()->TMPL->fetch_param('override_hidden_state', 'no');
         $include_site_url = ee()->TMPL->fetch_param('site_url', 'no');
+        $named_nav = ee()->TMPL->fetch_param('named_nav');
+        $named_nav_id = $this->sql->get_named_nav_from_name($named_nav);
 
         $branch_entry_id = 0; // default to 'root'
 
@@ -128,7 +130,7 @@ class Structure extends Channel
             $level = "0";
         }
 
-        $selective_data = $this->sql->get_selective_data($site_id, $current_id, $branch_entry_id, $mode, $show_depth, $max_depth, $status, $include, $exclude, $show_overview, $rename_overview, $show_expired, $show_future, $override_hidden_state, $recursive_overview, $include_site_url);
+        $selective_data = $this->sql->get_selective_data($site_id, $current_id, $branch_entry_id, $mode, $show_depth, $max_depth, $status, $include, $exclude, $show_overview, $rename_overview, $show_expired, $show_future, $override_hidden_state, $recursive_overview, $include_site_url, $named_nav_id);
 
         $html = $this->sql->generate_nav($selective_data, $current_id, $branch_entry_id, $mode, $show_overview, $rename_overview, $override_hidden_state, $recursive_overview, $level);
 
@@ -384,9 +386,14 @@ class Structure extends Channel
         $show_expired = ee()->TMPL->fetch_param('show_expired', 'no');
         $show_future = ee()->TMPL->fetch_param('show_future_entries', 'no');
 
+        // Get named nav and nav id
+        $named_nav = ee()->TMPL->fetch_param('named_nav');
+        $named_nav_id = $this->sql->get_named_nav_from_name($named_nav);
+
+
         $custom_title_fields = $this->sql->create_custom_titles(true);
 
-        $pages = $this->sql->get_selective_data($site_id, $entry_id, $parent_id, 'sub', 1, -1, $status, $include, $exclude, false, false, $show_expired, $show_future); // Get parent and all children
+        $pages = $this->sql->get_selective_data($site_id, $entry_id, $parent_id, 'sub', 1, -1, $status, $include, $exclude, false, false, $show_expired, $show_future, 'no', 'no', 'yes', $named_nav_id); // Get parent and all children
 
         if (! is_array($pages) || count($pages) == 0) {
             return null;
@@ -1234,6 +1241,7 @@ class Structure extends Channel
                     'channel_id'            => $channel_id,
                     'listing_cid'           => $listing_cid,
                     'hidden'                => $hidden,
+                    'hidden_from_named_nav' => $hidden_from_named_nav,
                     'dead'                  => ''
                 );
 
@@ -1264,7 +1272,7 @@ class Structure extends Channel
                 $structure_template_id = $data['template_id'];
 
                 // Update Structure
-                ee()->db->query("UPDATE exp_structure SET parent_id='" . intval($parent_id) . "', listing_cid='" . intval($lcid) . "', hidden='" . $hidden . "', structure_url_title='" . $structure_url_title . "', template_id='" . intval($structure_template_id) . "' WHERE entry_id='" . intval($entry_id) . "'");
+                ee()->db->query("UPDATE exp_structure SET parent_id='" . intval($parent_id) . "', listing_cid='" . intval($lcid) . "', hidden='" . $hidden . "', hidden_from_named_nav='" . $hidden_from_named_nav . "', structure_url_title='" . $structure_url_title . "', template_id='" . intval($structure_template_id) . "' WHERE entry_id='" . intval($entry_id) . "'");
 
                 // Listing Channel option in tab was changed TO "Unmanaged"
                 if ($prev_lcid != 0 && $lcid == 0) {
@@ -1819,6 +1827,10 @@ class Structure extends Channel
 
             if ($node['hidden'] != $data['hidden']) {
                 $changed = 'hidden';
+            }
+
+            if ($node['hidden_from_named_nav'] != $data['hidden_from_named_nav']) {
+                $changed = 'hidden_from_named_nav';
             }
 
             if ($node['template_id'] != $data['template_id']) {

@@ -1,7 +1,7 @@
 {
     "name": "Structure",
     "shortname": "structure",
-    "version": "6.0.0",
+    "version": "6.1.0",
     "description": "Create pages, generate navigation, manage content through a simple interface and build robust sites faster than ever.",
     "license": "ExpressionEngine",
     "namespace": "ExpressionEngine\\Structure",
