@@ -352,7 +352,12 @@ EE.cp.formValidation = {
 			container = field.parents('.field-control'),
 			fieldset = (container.parents('fieldset').length > 0) ? container.parents('fieldset') : container.parent(),
 			errorClass = 'em.ee-form-error-message',
-			grid = false;
+			grid = false,
+			modal_button = false;
+
+			if (form.parents('.modal').length) {
+				modal_button = form.parents('.modal').find('.dialog__buttons .button');
+			}
 
 		// Tabs
 		var tab_container = field.parents('.tab'),
@@ -410,6 +415,10 @@ EE.cp.formValidation = {
 			}
 
 			container.find('> ' + errorClass).remove();
+
+			if (modal_button) {
+				modal_button.removeClass('disable').removeAttr('disabled');
+			}
 
 			// If no more errors on this tab, remove invalid class from tab
 			if (tab.length > 0 &&  ! this._errorsExist(tab_container))
@@ -484,6 +493,10 @@ EE.cp.formValidation = {
 
 			// Disable submit button
 			button.addClass('disable').attr('disabled', 'disabled');
+
+			if (modal_button) {
+				modal_button.addClass('disable').attr('disabled', 'disabled');
+			}
 
 			button.each(function(index, thisButton) {
 				thisButton = $(thisButton);
