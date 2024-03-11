@@ -716,11 +716,12 @@ class EE_Template
                 $val = []; // undefined or empty value that is supposed to be an array
             }
             if (is_array($val)) {
-                $layout_conditionals['layout:' . $key] = true;
+                $layout_conditionals['layout:' . $key] = !empty($val);
 
                 $total_items = count($val);
                 $variables = [];
-
+                $item = ''; // initial value for catch-all replacement
+                
                 foreach ($val as $idx => $item) {
                     $variables[] = [
                         'index' => $idx,
