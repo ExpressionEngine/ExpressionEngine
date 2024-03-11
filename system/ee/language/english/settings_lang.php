@@ -244,6 +244,16 @@ $lang = array(
 
     'word_wrap_desc' => 'When enabled, the system will wrap long lines of text to a more readable width.',
 
+    'send_test_email' => 'Test email',
+
+    'test_email_subject' => 'Test message from %s',
+
+    'test_email_message' => '<p>This is a test email message sent using following settings:</p>',
+
+    'test_email_sent' => 'Test Email sent',
+
+    'email_settings_verified' => 'Email settings verified by sending a test message to %s',
+
     /* Debugging & Output */
     'caching_driver' => 'Caching Driver',
 
