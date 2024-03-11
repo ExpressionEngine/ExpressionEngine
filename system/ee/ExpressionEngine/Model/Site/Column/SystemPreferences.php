@@ -109,6 +109,7 @@ class SystemPreferences extends CustomType
     protected $max_logged_searches;
     protected $rte_default_toolset;
     protected $rte_file_browser;
+    protected $rte_custom_ckeditor_build;
     protected $forum_trigger;
 
     /**

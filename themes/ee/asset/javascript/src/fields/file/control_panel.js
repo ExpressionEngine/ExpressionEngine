@@ -26,7 +26,8 @@
 			if (EE.fileManagerCompatibilityMode) {
 				input.val('{filedir_' + data.upload_location_id + '}' + data.file_name)
 			} else {
-				input.val('{file:' + data.file_id + ':url}')
+				input.val('{file:' + data.file_id + ':url}');
+				input.attr('data-id', data.file_id);
 			}
 			input.trigger('change')
 				.trigger('hasFile', data);
@@ -71,6 +72,7 @@
 
 			// Fill in formatted caption
 			name.html('<p><b>'+data.title+'</b></p>');
+			name.attr('data-id', data.file_id);
 
 			// Show the image
 			input.siblings('.fields-upload-chosen').removeClass('hidden');
@@ -80,6 +82,10 @@
 
 			// Hide the "missing file" error
 			input.siblings('em').remove();
+
+			if ($("[data-publish] > form").length) {
+				$("[data-publish] > form").trigger("entry:startAutosave");
+			}
 		},
 
 		setup: function(container) {
@@ -97,6 +103,51 @@
 				figure_container.siblings('.fields-upload-btn').removeClass('hidden');
 				figure_container.find('.fields-upload-chosen-file i').remove();
 				e.preventDefault();
+			});
+
+			$('.button.edit-meta', container).click(function (e) {
+				e.preventDefault();
+				var figure_container = $(this).closest('.fields-upload-chosen');
+				var file_id = figure_container.siblings('input[type="hidden"]').attr('data-id');
+
+				EE.cp.ModalForm.openForm({
+					url: EE.file.publishCreateUrl.replace('###', file_id),
+					load: (modal) => {
+						if ($('div[data-select-react]', modal).length) {
+							SelectField.renderFields();
+						}
+
+						$('.js-copy-url-button').on('click', function (e) {
+							e.preventDefault();
+							// copy asset link to clipboard
+							var copyText = $(this).attr('href');
+
+							document.addEventListener('copy', function(e) {
+								e.clipboardData.setData('text/plain', copyText);
+								e.preventDefault();
+							}, true);
+
+							document.execCommand('copy');
+
+							// show notification
+							$('.f_manager-alert').css('display', 'flex');
+							DropdownController.hideAllDropdowns()
+
+							// hide notification in 10 sec
+							setTimeout(function() {
+								$('.f_manager-alert').css('display', 'none');
+							}, 5000);
+
+							return false;
+						});
+
+					},
+					success: (result) => {
+						$('.fields-upload-chosen-name[data-id=' + file_id + ']').attr('title', result.title).text(result.title)
+					}
+				})
+				e.stopImmediatePropagation();
+				return false;
 			});
 
 			// Drag and drop component

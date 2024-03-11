@@ -18,8 +18,9 @@ class RedactorService extends AbstractRteService implements RteService {
     public $handle;
     protected $settings;
     protected $toolset;
-    private static $_includedFieldResources = false;
-    private static $_includedConfigs;
+    protected static $_includedFieldResources = false;
+    protected static $_includedConfigs;
+    protected static $type = 'redactor';
 
     protected function includeFieldResources()
     {
@@ -28,10 +29,9 @@ class RedactorService extends AbstractRteService implements RteService {
             ee()->lang->loadfile('fieldtypes');
             ee()->file_field->loadDragAndDropAssets();
 
-            ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/fields/rte/redactor/redactor.min.css" type="text/css" />');
-            
+            ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.css" type="text/css" />');
             ee()->cp->add_js_script(['file' => [
-                'fields/rte/redactor/redactor.min',
+                'fields/rte/' . strtolower(static::$type) . '/redactor.min',
                 'fields/rte/rte']
             ]);
 
@@ -70,7 +70,7 @@ class RedactorService extends AbstractRteService implements RteService {
         if (!$this->toolset && !empty(ee()->config->item('rte_default_toolset'))) {
             $configId = ee()->config->item('rte_default_toolset');
             $toolsetQuery = ee('Model')->get('rte:Toolset');
-            $toolsetQuery->filter('toolset_type', 'redactor');
+            $toolsetQuery->filter('toolset_type', static::$type);
             if (!empty($configId)) {
                 $toolsetQuery->filter('toolset_id', $configId);
             }
@@ -140,7 +140,7 @@ class RedactorService extends AbstractRteService implements RteService {
                 $config['toolbar']['plugins'] = array_values($items);
             }
         }
-        
+
         if (isset($config['height']) && !empty($config['height']) && is_numeric($config['height'])) {
             $config['toolbar']['minHeight'] = (int) $config['height'] . 'px';
         }
@@ -170,7 +170,7 @@ class RedactorService extends AbstractRteService implements RteService {
         //  JSONify Config and Return
         // -------------------------------------------
         ee()->javascript->set_global([
-            'Rte.configs.' . $configHandle => array_merge(['type' => 'redactor'], $config['toolbar'])
+            'Rte.configs.' . $configHandle => array_merge(['type' => static::$type], $config['toolbar'])
         ]);
 
         static::$_includedConfigs[] = $configHandle;
@@ -197,7 +197,7 @@ class RedactorService extends AbstractRteService implements RteService {
     {
 
         return array(
-            'type' => 'redactor',
+            'type' => static::$type,
             'toolbar' => static::defaultToolbars()['Redactor Basic'],
             'height' => '200',
             'upload_dir' => 'all'
@@ -206,13 +206,13 @@ class RedactorService extends AbstractRteService implements RteService {
 
     public function toolbarInputHtml($config)
     {
-            ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/fields/rte/redactor/redactor.min.css" type="text/css" />');
+            ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.css" type="text/css" />');
 
             $selection = [];
             if (is_object($config->settings['toolbar'])) {
                 $selection = (array) $config->settings['toolbar'];
             } else {
-                $selection = isset($config->settings['toolbar']['buttons']) ? $config->settings['toolbar']['buttons'] : $config->settings['toolbar'];
+                $selection = isset($config->settings['toolbar']['buttons']) && is_array($config->settings['toolbar']['buttons']) ? $config->settings['toolbar']['buttons'] : $config->settings['toolbar'];
             }
 
             $fullToolbar = array_merge($selection, static::defaultToolbars()['Redactor Full']['buttons']);//merge to get the right order

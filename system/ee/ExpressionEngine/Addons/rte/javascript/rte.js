@@ -274,7 +274,7 @@
 
 	// --------------------------------------------------------------------
 
-	function initToolbarSelector(outer_selector, selector, button_selector, disabled_button_class) {
+	function initToolbarSelector(outer_selector, selector, button_selector, disabled_button_class, reverse = false) {
 		$(selector).ptDropPanes(outer_selector, {
 			onSelect: function(toolgroup) {
 				var buttons = $(button_selector, toolgroup);
@@ -283,10 +283,18 @@
 						var button = $(this);
 						if (button.hasClass(disabled_button_class)) {
 							button.removeClass(disabled_button_class);
-							$('*[name]', button).removeAttr('disabled');
+							if (! reverse) {
+								$('*[name]', button).removeAttr('disabled');
+							} else {
+								$('*[name]', button).attr('disabled', true);
+							}
 						} else {
 							button.addClass(disabled_button_class)
-							$('*[name]', button).attr('disabled', true);
+							if (reverse) {
+								$('*[name]', button).removeAttr('disabled');
+							} else {
+								$('*[name]', button).attr('disabled', true);
+							}
 						}
 						redrawSettingsIfSafari();
 					});
@@ -302,6 +310,12 @@
 	initToolbarSelector('tb-selections', '#ckeditor-toolbar', '.cke_button', 'disabled');
 	initToolbarSelector('tb-selections-redactor-buttons', '#redactor-toolbar-buttons', '.re-button', 'redactor-button-active');
 	initToolbarSelector('tb-selections-redactor-plugins', '#redactor-toolbar-plugins', '.re-button', 'redactor-button-active');
+	initToolbarSelector('tb-selections-redactorX-hide', '#redactorX-toolbar-hide', '.rx-button', 'disable', true);
+	initToolbarSelector('tb-selections-redactorX-topbar', '#redactorX-toolbar-topbar', '.rx-button', 'disable');
+	initToolbarSelector('tb-selections-redactorX-addbar', '#redactorX-toolbar-addbar', '.rx-button', 'disable');
+	initToolbarSelector('tb-selections-redactorX-context', '#redactorX-toolbar-context', '.rx-button', 'disable');
+	initToolbarSelector('tb-selections-redactorX-format', '#redactorX-toolbar-format', '.rx-button', 'disable');
+	initToolbarSelector('tb-selections-redactorX-plugins', '#redactorX-toolbar-plugins', '.rx-button', 'disable');
 
 
 	})(jQuery);

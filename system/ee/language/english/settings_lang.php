@@ -517,6 +517,8 @@ $lang = array(
 
     'require_terms_of_service_desc' => 'When enabled, users must agree to terms of service during registration.',
 
+    'manage_bans' => 'Ban Settings',
+
     /* Menu Manager */
     'add_menu_item' => 'Add Menu Item',
 
@@ -538,9 +540,9 @@ $lang = array(
 
     'menu_dropdown' => 'Dropdown',
 
-    'menu_items' => 'Menu Items',
+    'menu_items' => 'Menu items',
 
-    'menu_items_desc' => 'Manage this menu sets contents',
+    'menu_items_desc' => 'Manage this menu set\'s contents',
 
     'menu_label' => 'Name',
 
@@ -578,9 +580,9 @@ $lang = array(
 
     'set_assigned' => 'Assigned',
 
-    'set_roles' => 'Member role(s)?',
+    'set_roles' => 'Member role(s)',
 
-    'set_roles_desc' => 'Choose the role(s) to apply this menu to.',
+    'set_roles_desc' => 'Choose the role(s) to apply this menu to',
 
     'set_name' => 'Name',
 

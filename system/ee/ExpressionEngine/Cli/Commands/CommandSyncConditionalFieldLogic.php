@@ -111,7 +111,7 @@ class CommandSyncConditionalFieldLogic extends Cli
 
                 // Evaluate the conditions and save
                 $entry->evaluateConditionalFields();
-                $entry->save();
+                $entry->HiddenFields->save();
 
                 unset($entry);
 
@@ -128,6 +128,14 @@ class CommandSyncConditionalFieldLogic extends Cli
 
             unset($entries);
         }
+
+        // clear caches
+        if (ee()->config->item('new_posts_clear_caches') == 'y') {
+            ee()->functions->clear_caching('all');
+        } else {
+            ee()->functions->clear_caching('sql');
+        }
+
 
         // End timer
         $endtime = microtime(true);

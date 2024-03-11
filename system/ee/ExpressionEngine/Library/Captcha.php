@@ -112,7 +112,7 @@ class Captcha
                 if ($filename != "." and $filename != ".." and $filename != "index.html") {
                     $name = str_replace(".jpg", "", $filename);
 
-                    if (($name + $expiration) < microtime(true)) {
+                    if ((intval($name) + $expiration) < microtime(true)) {
                         @unlink($img_path . $filename);
                     }
                 }

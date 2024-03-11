@@ -91,20 +91,38 @@ class Builder
     /**
      *
      */
-    public function count()
+    public function count($cache = false)
     {
+        if ($cache) {
+            $copyOfThis = clone $this;
+            unset($copyOfThis->facade);
+            unset($copyOfThis->datastore);
+            $cacheKey = crc32(serialize($copyOfThis) . '__count');
+            unset($copyOfThis);
+            $fetched = $this->getFromCache($cacheKey);
+            if ($fetched !== false) {
+                return $fetched;
+            }
+        }
+
         if ($this->isFutile()) {
             return 0;
         }
 
-        return $this->datastore->countQuery($this);
+        $fetched = $this->datastore->countQuery($this);
+
+        if ($cache) {
+            $this->saveToCache($cacheKey, $fetched);
+        }
+
+        return $fetched;
     }
 
     /**
      * Run a fetch in batches
      *
      * @param Int     $batch_size Batch size
-     * @param Closure $callback   Closure to run for each result
+     * @param \Closure $callback   Closure to run for each result
      *
      * NOTE: The callback can be passed in the first parameter, in
      * which case the default $batch_size (@see Batch) is used.
@@ -138,7 +156,7 @@ class Builder
                 return $fetched;
             }
         }
-        
+
         if (! $this->filterStackIsEmpty()) {
             throw new \Exception('Unclosed filter group.');
         }

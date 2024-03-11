@@ -6,6 +6,8 @@ $lang = array(
 
     'directory_no_access' => 'You do not have access to the directory specified for this field',
 
+    'edit_meta' => 'Edit meta data',
+
     'file_undo_remove' => 'Undo Remove',
 
     'remove_file' => 'Remove File',
@@ -27,6 +29,8 @@ $lang = array(
 
     'relate_entry' => 'Relate Entry',
 
+    'relate_member' => 'Relate Member',
+
     'relate_entry_deferred' => 'Edit Relationships',
 
     'rel_ft_allow_multi' => 'Allow multiple relationships?',
@@ -45,6 +49,12 @@ $lang = array(
 
     'rel_ft_channels_desc' => 'Which channels can related content be pulled from.',
 
+    'rel_ft_roles' => 'Roles to include',
+
+    'rel_ft_roles_desc' => 'Only allow selecting member with chosen primary roles',
+
+    'any_role' => 'Any role',
+
     'rel_ft_include' => 'Include in selection',
 
     'rel_ft_include_desc' => 'Allow expired or future entries in this relationships field.',
@@ -53,9 +63,9 @@ $lang = array(
 
     'rel_ft_include_future' => 'Future entries',
 
-    'rel_ft_limit' => 'Maximum number of available entries',
+    'rel_ft_limit' => 'Maximum number of available %s',
 
-    'rel_ft_limit_desc' => 'Sets the number of entries displayed in the field\'s dropdown.<br><i>Leave blank to allow all entries.</i>',
+    'rel_ft_limit_desc' => 'Sets the number of %s displayed in the field\'s dropdown.<br><i>Leave blank to allow all %s.</i>',
 
     'rel_ft_order' => 'Order by',
 
@@ -63,7 +73,7 @@ $lang = array(
 
     'rel_ft_order_date' => 'Entry Date',
 
-    'rel_ft_order_desc' => 'Default ordering of entries in relationship field.',
+    'rel_ft_order_desc' => 'Default ordering of %s in relationship field.',
 
     'rel_ft_order_descending' => 'Descending (Z-A)',
 
@@ -81,6 +91,9 @@ $lang = array(
 
     'rel_ft_display_entry_id_desc' => 'When enabled, entry IDs will be displayed together with entry title inside the field.',
 
+    'rel_ft_display_member_id' => 'Display Member IDs?',
+
+    'rel_ft_display_member_id_desc' => 'When enabled, member IDs will be displayed together with member screen name inside the field.',
     'rel_ft_display_status' => 'Display Status?',
 
     'rel_ft_display_status_desc' => 'When enabled, colored status badge will be displayed together with entry title inside the field.',
@@ -89,17 +102,17 @@ $lang = array(
 
     'rel_ft_deferred_desc' => 'When enabled, this field won’t initialize until the Edit Relationships button is clicked on. This can result in faster control panel page load times.',
 
-    'rel_ft_max' => 'Maximum number of related entries',
+    'rel_ft_max' => 'Maximum number of related %s',
 
-    'rel_ft_max_desc' => 'Sets the maximum number of entries this field can be used to relate.',
+    'rel_ft_max_desc' => 'Sets the maximum number of %s this field can be used to relate.',
 
-    'rel_ft_max_error' => 'You can select no more than %d entries.',
+    'rel_ft_max_error' => 'You can select no more than %d %s.',
 
-    'rel_ft_min' => 'Minimum number of related entries',
+    'rel_ft_min' => 'Minimum number of related %s',
 
-    'rel_ft_min_desc' => 'Sets the minimum number of entries this field should be used to relate.',
+    'rel_ft_min_desc' => 'Sets the minimum number of %s this field should be used to relate.',
 
-    'rel_ft_min_error' => 'You need to select at least %d entries.',
+    'rel_ft_min_error' => 'You need to select at least %d %s.',
 
     /* Duration */
     'duration_ft_hh' => 'hh',
@@ -200,6 +213,8 @@ $lang = array(
     'file_dnd_no_directories' => 'No upload directories available',
 
     'file_dnd_no_directories_desc' => 'This field is limited to upload directory not available for current member and site.',
+
+    'file_dnd_no_directory_permissions' => 'You do not have permission to upload files to any of the available directories.',
 
     'file_grid_vertical_layout_title' => 'File Grid layout',
 

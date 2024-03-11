@@ -13,7 +13,7 @@ context('Member Roles / Members Permissions', () => {
 
 		cy.visit('admin.php?/cp/members/roles')
 
-		cy.get('div[class="list-item__title"]').contains('MemberManager').parent().find('.list-item__secondary').click()
+		cy.get('a.list-item__content:contains("MemberManager")').click()
 
 		cy.get('button').contains('CP Access').click()
 		cy.get('#fieldset-can_access_cp .toggle-btn').click(); //access CP
@@ -36,20 +36,20 @@ context('Member Roles / Members Permissions', () => {
 		cy.auth()
 		cy.visit('admin.php?/cp/members/roles')
 
-		cy.get('div[class="list-item__title"]').contains('MemberManager').parents('.list-item').find('.status-wrap .status-tag').contains('Unlocked').should('exist')
-		cy.get('div[class="list-item__title"]').contains('MemberManager').parent().find('.list-item__secondary').click()
+		cy.get('a.list-item__content:contains("MemberManager")').parents('.list-item').find('.list-item__secondary').contains('Unlocked').should('exist')
+		cy.get('a.list-item__content:contains("MemberManager")').click()
 		cy.get('#fieldset-is_locked [data-toggle-for="is_locked"]').click()
 		cy.get('body').type('{ctrl}', {release: false}).type('s')
 
 		cy.visit('admin.php?/cp/members/roles')
-		cy.get('div[class="list-item__title"]').contains('MemberManager').parents('.list-item').find('.status-wrap .status-tag').contains('Locked').should('exist')
+		cy.get('a.list-item__content:contains("MemberManager")').parents('.list-item').find('.list-item__secondary').contains('Locked').should('exist')
 
-		cy.get('div[class="list-item__title"]').contains('MemberManager').parent().find('.list-item__secondary').click()
+		cy.get('a.list-item__content:contains("MemberManager")').click()
 		cy.get('#fieldset-is_locked [data-toggle-for="is_locked"]').click()
 		cy.get('body').type('{ctrl}', {release: false}).type('s')
 
 		cy.visit('admin.php?/cp/members/roles')
-		cy.get('div[class="list-item__title"]').contains('MemberManager').parents('.list-item').find('.status-wrap .status-tag').contains('Unlocked').should('exist')
+		cy.get('div[class="list-item__title"]').contains('MemberManager').parents('.list-item').find('.list-item__secondary').contains('Unlocked').should('exist')
 	})
 
 	it('Cannot add members to "locked" groups (Super admins only)', () => {
@@ -104,7 +104,7 @@ context('Member Roles / Members Permissions', () => {
 
 		cy.visit('admin.php?/cp/members/roles')
 
-		cy.get('div[class="list-item__title"]').contains('MemberManager').parent().find('.list-item__secondary').click()
+		cy.get('a.list-item__content:contains("MemberManager")').click()
 
 		cy.get('button').contains('CP Access').click()
 
@@ -134,7 +134,7 @@ context('Member Roles / Members Permissions', () => {
 
 		cy.visit('admin.php?/cp/members/roles')
 
-		cy.get('div[class="list-item__title"]').contains('MemberManager').parent().find('.list-item__secondary').click()
+		cy.get('a.list-item__content:contains("MemberManager")').click()
 
 		cy.get('button').contains('CP Access').click()
 
@@ -150,7 +150,7 @@ context('Member Roles / Members Permissions', () => {
 
 		cy.visit('admin.php?/cp/members/roles')
 
-		cy.get('div[class="list-item__title"]').contains('MemberManager').parent().find('.list-item__secondary').click()
+		cy.get('a.list-item__content:contains("MemberManager")').click()
 
 		cy.get('button').contains('CP Access').click()
 

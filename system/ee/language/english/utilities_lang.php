@@ -528,11 +528,11 @@ $lang = array(
 
 Once you are ready to experience the new File Manager features, please run the <a href="%s">Update File Usage</a> Utility and then visit <a href="%s">Content & Design Settings</a> to disable Compatibility Mode.',
 
-    /* Search Reindex */
+    /* Content Reindex */
 
     'search_reindex_fail' => 'Reindexing Failed',
 
-    'search_reindex' => 'Search Reindex',
+    'search_reindex' => 'Content Reindex',
 
     'search_reindex_desc' => '%s Channel entries will be reindexed',
 
@@ -548,9 +548,9 @@ Once you are ready to experience the new File Manager features, please run the <
 
     'all_sites_desc' => 'Reindex the Channel entries across all sites, or just this one?',
 
-    'search_reindexed_started' => 'Search reindexing started.',
+    'search_reindexed_started' => 'Content reindexing started.',
 
-    'search_reindexed_completed' => 'Search reindexing complete. %s entries were reindexed.',
+    'search_reindexed_completed' => 'Content reindexing complete. %s entries were reindexed.',
 
     /* Export Email Addresses */
 

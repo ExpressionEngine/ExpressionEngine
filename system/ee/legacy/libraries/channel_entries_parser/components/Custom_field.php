@@ -55,11 +55,13 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
         $cfields = $obj->channel()->cfields;
         $rfields = $obj->channel()->rfields;
         $gfields = $obj->channel()->gfields;
+        $msfields = $obj->channel()->msfields;
         $ffields = $obj->channel()->ffields;
 
         $rfields = isset($rfields[$site_id]) ? $rfields[$site_id] : [];
         $cfields = isset($cfields[$site_id]) ? $cfields[$site_id] : [];
         $gfields = isset($gfields[$site_id]) ? $gfields[$site_id] : [];
+        $msfields = isset($msfields[$site_id]) ? $msfields[$site_id] : [];
         $ffields = isset($ffields[$site_id]) ? $ffields[$site_id] : [];
 
         $cfields = array_diff_key($cfields, $rfields);
@@ -88,6 +90,7 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
             if (
                 (isset($data['field_id_' . $field_id]) && $data['field_id_' . $field_id] !== '') or
                 array_key_exists($field['field_name'], $gfields) or // is a Grid single
+                array_key_exists($field['field_name'], $msfields) or // is a Member select single
                 array_key_exists($field['field_name'], $ffields) // is a Fluid single
             ) {
                 $obj = $ft_api->setup_handler($field_id, true);
