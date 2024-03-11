@@ -126,7 +126,7 @@ class SelectList extends React.Component {
 
     $(selector, this.container).sortable({
       axis: 'y',
-      containment: 'parent',
+      containment: false,
       handle: '.icon-reorder',
       items: this.props.nested ? '> li' : 'label',
       placeholder: 'field-reorder-placeholder',
