@@ -61,6 +61,10 @@ var Dropdown = /*#__PURE__*/function (_React$Component) {
         var $rx_url_input = $($rx_react_parent).next('input.rx-form-input');
         $rx_url_input.val(selected.value);
       }
+
+      if ($("[data-publish] > form").length) {
+        $("[data-publish] > form").trigger("entry:startAutosave");
+      }
     });
 
     _defineProperty(_assertThisInitialized(_this), "toggleOpen", function () {
