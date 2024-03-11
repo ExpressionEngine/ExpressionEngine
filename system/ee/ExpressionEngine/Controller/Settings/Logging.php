@@ -25,6 +25,36 @@ class Logging extends Settings
         $vars['sections'] = array(
             array(
                 array(
+                    'title' => 'log_cp_visits',
+                    'desc' => 'log_cp_visits_desc',
+                    'fields' => array(
+                        'log_cp_visits' => array(
+                            'type' => 'yes_no',
+                            'value' => ee()->config->item('log_cp_visits') ?: true
+                        )
+                    )
+                ),
+                array(
+                    'title' => 'log_entry_deletions',
+                    'desc' => 'logentry_deletions_desc',
+                    'fields' => array(
+                        'log_entry_deletions' => array(
+                            'type' => 'yes_no',
+                            'value' => ee()->config->item('log_entry_deletions') ?: true
+                        )
+                    )
+                ),
+                array(
+                    'title' => 'log_member_deletions',
+                    'desc' => 'log_member_deletions_desc',
+                    'fields' => array(
+                        'log_member_deletions' => array(
+                            'type' => 'yes_no',
+                            'value' => ee()->config->item('log_member_deletions') ?: true
+                        )
+                    )
+                ),
+                array(
                     'title' => 'anonymize_consent_logs',
                     'desc' => 'anonymize_consent_logs_desc',
                     'fields' => array(
