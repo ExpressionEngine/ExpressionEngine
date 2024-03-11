@@ -1240,37 +1240,6 @@ $(document).ready(function(){
 			});
 		}
 
-		$('body').on('keyup', '.modal input[type=text]:visible', function() {
-			var that = $(this),
-					action = that.parents('form').attr('action'),
-					data = that.parents('form').serialize();
-
-				$.ajax({
-					url: action,
-					type: 'POST',
-					data: data+'&ee_fv_field='+that.attr('name'),
-					dataType: 'json',
-					error: function(err) {
-						console.log('ajax error message:', err);
-					},
-					success: function(response) {
-						if(response.error) {
-							that.parent('fieldset').addClass('fieldset-invalid');
-							that.addClass('invalid-input');
-							if (that.next('em.ee-form-error-message').length) {
-								that.next('em.ee-form-error-message').html(response.error);
-							} else {
-								that.after( '<em class="ee-form-error-message">'+response.error+'</em>' );
-							}
-						} else {
-							that.parent('fieldset').removeClass('fieldset-invalid');
-							that.removeClass('invalid-input');
-							that.next().remove('em');
-						}
-					}
-				});
-		});
-
 		$('body').on('click', '.js-app-badge', function(e) {
 			var el = $(this);
 			// copy asset link to clipboard

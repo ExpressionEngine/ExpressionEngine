@@ -219,7 +219,7 @@ class Files extends AbstractFilesController
                     $field = 'folder_name';
                 }
                 foreach ($errors as $error) {
-                    $validationErrors[] = '<b>' . lang($field) . ':</b> ' . $error;
+                    $validationErrors[] = '<em class="ee-form-error-message"><b>' . lang($field) . ':</b> ' . $error . '</em>';
                 }
             }
             if (AJAX_REQUEST) {
@@ -572,7 +572,7 @@ class Files extends AbstractFilesController
                     $field = 'folder_name';
                 }
                 foreach ($errors as $error) {
-                    $validationErrors[] = $errorMessage = '<b>' . lang($field) . ':</b> ' . $error;
+                    $validationErrors[] = $errorMessage = '<em class="ee-form-error-message"><b>' . lang($field) . ':</b> ' . $error . '</em>';
                     if ($field == ee('Request')->post('ee_fv_field') && AJAX_REQUEST) {
                         ee()->output->send_ajax_response(['error' => $errorMessage]);
                     }
