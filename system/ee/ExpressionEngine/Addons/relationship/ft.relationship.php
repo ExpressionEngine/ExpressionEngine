@@ -526,18 +526,31 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
         $deferUrlParams = [
             'entry_id' => $this->content_id()
         ];
+        if (isset($this->settings['fluid_field_data_id'])) {
+            $deferUrlParams['fluid_field_data_id'] = $this->settings['fluid_field_data_id'];
+        }
         $deferUrl = null;
-        if ($deferred) {
+        if ($deferred && !empty($deferUrlParams['entry_id'])) {
+            // Grid and Grid in Fluid
             if ($this->content_type() == 'grid') {
-                $deferUrlParams['grid_field_id'] = $this->settings['grid_field_id'];
-                $deferUrlParams['grid_col_id'] = $this->settings['col_id'];
-                $deferUrlParams['grid_row_id'] = $this->settings['grid_row_id'];
+                if (isset($this->settings['grid_row_id'])) {
+                    $deferUrlParams['grid_field_id'] = $this->settings['grid_field_id'];
+                    $deferUrlParams['grid_col_id'] = $this->settings['col_id'];
+                    $deferUrlParams['grid_row_id'] = $this->settings['grid_row_id'];
+                    $deferUrl = ee('CP/URL')->make('addons/settings/relationship/defer', $deferUrlParams)->compile();
+                }
+            // Fluid field
+            } else if (isset($deferUrlParams['fluid_field_data_id'])) {
+                $deferUrlParams['field_id'] = $this->field_id;
+                $deferUrl = ee('CP/URL')->make('addons/settings/relationship/defer', $deferUrlParams)->compile();
+            // regular field
             } else {
                 $deferUrlParams['field_name'] = $this->field_name;
+                $deferUrl = ee('CP/URL')->make('addons/settings/relationship/defer', $deferUrlParams)->compile();
             }
-            $deferUrl = ee('CP/URL')->make('addons/settings/relationship/defer', $deferUrlParams)->compile();
         }
 
+        // set the view depe
         $view = 'relationship:publish';
         if (ee()->uri->segment(5) == 'defer') {
             $view = 'relationship:component';
