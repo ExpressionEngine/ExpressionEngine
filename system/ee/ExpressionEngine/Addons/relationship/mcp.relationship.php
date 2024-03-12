@@ -88,6 +88,17 @@ class Relationship_mcp
             $display_field = ee()->grid_parser->call('display_field', $rows[$entry->getId()][$grid_row_id]);
             return ee()->output->send_ajax_response(['content' => $display_field]);
         } else {
+            // -------------------------------------------
+            // 'relationships_deferred_field_load' hook.
+            //  - Allow third-party add-ons to process deferred field loading
+            //
+            if (ee()->extensions->active_hook('relationships_deferred_field_load') === true) {
+                $content = ee()->extensions->call(
+                    'relationships_deferred_field_load',
+                    $entry
+                );
+                return ee()->output->send_ajax_response(['content' => $content]);
+            }
             ee()->output->send_ajax_response(['error' => 'No field or column name provided'], true);
         }
         return array('html' => $entry->getCustomField(ee()->input->get('field_name'))->getForm());
