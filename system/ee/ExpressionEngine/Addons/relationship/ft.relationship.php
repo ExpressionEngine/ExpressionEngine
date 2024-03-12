@@ -554,11 +554,13 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             // 'relationships_set_defer_url' hook.
             //  - Allow third-party fieldtypes to set up their own deferUrl
             //
-            if (ee()->extensions->active_hook('relationships_set_defer_url') === true) {
-                $deferUrl = ee()->extensions->call(
+            if (is_null($deferUrl) && ee()->extensions->active_hook('relationships_set_defer_url') === true) {
+                $deferUrlParams = ee()->extensions->call(
                     'relationships_set_defer_url',
-                    $entry
+                    $this,
+                    $deferUrlParams
                 );
+                $deferUrl = ee('CP/URL')->make('addons/settings/relationship/defer', $deferUrlParams)->compile();
             }
         }
 
