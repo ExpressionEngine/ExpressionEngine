@@ -533,14 +533,16 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
         if ($deferred && !empty($deferUrlParams['entry_id'])) {
             // Grid and Grid in Fluid
             if ($this->content_type() == 'grid') {
-                if (isset($this->settings['grid_row_id'])) {
+                // some third-party add-ons might mimic grid, but they don't have this property
+                // we also check for grid_row_id because we only need defer for existing rows
+                if (isset($this->settings['grid_row_id']) && isset($this->settings['grid_content_type']) && $this->settings['grid_content_type'] == 'channel') {
                     $deferUrlParams['grid_field_id'] = $this->settings['grid_field_id'];
                     $deferUrlParams['grid_col_id'] = $this->settings['col_id'];
                     $deferUrlParams['grid_row_id'] = $this->settings['grid_row_id'];
                     $deferUrl = ee('CP/URL')->make('addons/settings/relationship/defer', $deferUrlParams)->compile();
                 }
             // Fluid field
-            } else if (isset($deferUrlParams['fluid_field_data_id'])) {
+            } elseif (isset($deferUrlParams['fluid_field_data_id'])) {
                 $deferUrlParams['field_id'] = $this->field_id;
                 $deferUrl = ee('CP/URL')->make('addons/settings/relationship/defer', $deferUrlParams)->compile();
             // regular field
