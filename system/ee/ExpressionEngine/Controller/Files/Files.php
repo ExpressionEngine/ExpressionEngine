@@ -226,9 +226,9 @@ class Files extends AbstractFilesController
                 ee()->output->send_ajax_response(array('error' => implode('<br>', $validationErrors)));
             }
             ee('CP/Alert')->makeInline('files-form')
-                ->asWarning()
+                ->asIssue()
                 ->withTitle(lang('error_creating_directory'))
-                ->addToBody($validationErrors)
+                ->addToBody(strip_tags(implode('<br>', $validationErrors), '<b><br>'))
                 ->defer();
 
             return ee()->functions->redirect($return_url);
@@ -241,7 +241,7 @@ class Files extends AbstractFilesController
                 ee()->output->send_ajax_response(array('error' => lang('subfolder_directory_already_exists_desc')));
             }
             ee('CP/Alert')->makeInline('files-form')
-                ->asWarning()
+                ->asIssue()
                 ->withTitle(lang('subfolder_directory_already_exists'))
                 ->addToBody(lang('subfolder_directory_already_exists_desc'))
                 ->defer();
@@ -259,7 +259,7 @@ class Files extends AbstractFilesController
                 ee()->output->send_ajax_response(array('error' => lang('error_creating_directory')));
             }
             ee('CP/Alert')->makeInline('files-form')
-                ->asWarning()
+                ->asIssue()
                 ->withTitle(lang('error_creating_directory'))
                 ->defer();
 
