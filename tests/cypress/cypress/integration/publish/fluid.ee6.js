@@ -150,6 +150,7 @@ context('Publish Entry with Fluid', () => {
         cy.visit('index.php/entries/fluid-group/fluid-field-test-first')
         cy.hasNoErrors();
 
+        // Check contents
         cy.get('.tag__news_body').contains('News Body Textarea');
         cy.get('.tag__news_body.modifier__length').contains('18');
         cy.get('.tag__news_extended').contains('News Extended Textarea');
@@ -158,6 +159,19 @@ context('Publish Entry with Fluid', () => {
         cy.get('.tag__news_image.modifier__resize').contains('staff_jane_resize_');
         cy.get('.tag__rel_item').contains('About the Label');
         cy.get('.tag__rel_item.modifier__length').contains('15');
+
+        // Check meta
+        cy.get('.field__news_body .meta__index').contains('0')
+        cy.get('.field__news_body .meta__current_fieldtype').contains('textarea')
+        cy.get('.field__news_extended .meta__index_in_group').contains('1')
+        cy.get('.field__news_extended .meta__current_fieldtype').contains('textarea')
+        cy.get('.field__news_image .meta__count').contains('3')
+        cy.get('.field__news_image .meta__current_fieldtype').contains('file')
+        cy.get('.field__rel_item .meta__count_in_group').contains('4')
+        cy.get('.field__rel_item .meta__current_fieldtype').contains('relationship')
+        cy.get('.meta__current_group_short_name').contains('news');
+        cy.get('.meta__first_group').contains('1')
+        cy.get('.meta__total_fields').contains('4')
     })
 
     it('adds a field to Fluid', () => {
