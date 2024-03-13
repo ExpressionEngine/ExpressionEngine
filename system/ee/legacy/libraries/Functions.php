@@ -629,6 +629,11 @@ class EE_Functions
             $form .= "</div>\n\n";
         }
 
+        // Inject JavaScript to refresh CSRF token lifetime
+        if (!bool_config_item('disable_csrf_protection') && !bool_config_item('disable_csrf_refresh')) {
+            $form .= '{!-- csrf_refresh --}';
+        }
+
         return $form;
     }
 

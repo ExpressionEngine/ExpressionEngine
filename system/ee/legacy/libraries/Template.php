@@ -3073,6 +3073,10 @@ class EE_Template
             $str = preg_replace("/\{\!--\s*(\/\/)*\s*disable\s*frontedit\s*--\}/s", '<!-- ${1}disable frontedit -->', $str);
         }
 
+        if (strpos($str, '{!-- csrf_refresh --}') !== false) {
+            ee()->output->add_token_refresh = true;
+        }
+
         return preg_replace("/\{!--.*?--\}/s", '', $str);
     }
 
