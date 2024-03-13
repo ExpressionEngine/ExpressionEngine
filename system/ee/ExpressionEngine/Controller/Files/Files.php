@@ -518,7 +518,7 @@ class Files extends AbstractFilesController
                 ee()->output->send_ajax_response(['error' => lang('one_rename_at_a_time')]);
             }
             ee('CP/Alert')->makeInline('files-form-errors')
-                ->asWarning()
+                ->asIssue()
                 ->withTitle(lang('could_not_rename'))
                 ->addToBody(lang('one_rename_at_a_time'))
                 ->defer();
@@ -531,7 +531,7 @@ class Files extends AbstractFilesController
                 ee()->output->send_ajax_response(['error' => lang('file_not_found')]);
             }
             ee('CP/Alert')->makeInline('files-form-errors')
-                ->asWarning()
+                ->asIssue()
                 ->withTitle(lang('could_not_rename'))
                 ->addToBody(lang('file_not_found'))
                 ->defer();
@@ -582,9 +582,9 @@ class Files extends AbstractFilesController
                 ee()->output->send_ajax_response(['error' => implode('<br>', $validationErrors)]);
             }
             ee('CP/Alert')->makeInline('files-form')
-                ->asWarning()
+                ->asIssue()
                 ->withTitle(lang('could_not_rename'))
-                ->addToBody($validationErrors)
+                ->addToBody(strip_tags(implode('<br>', $validationErrors), '<b><br>'))
                 ->defer();
 
             return false;
@@ -596,7 +596,7 @@ class Files extends AbstractFilesController
                 ee()->output->send_ajax_response(['error' => lang('error_renaming_already_exists')]);
             }
             ee('CP/Alert')->makeInline('files-form')
-                ->asWarning()
+                ->asIssue()
                 ->withTitle(lang('could_not_rename'))
                 ->addToBody(lang('error_renaming_already_exists'))
                 ->defer();
@@ -623,7 +623,7 @@ class Files extends AbstractFilesController
                 ee()->output->send_ajax_response(['error' => lang('unexpected_error')]);
             }
             ee('CP/Alert')->makeInline('files-form-errors')
-                ->asWarning()
+                ->asIssue()
                 ->withTitle(lang('could_not_rename'))
                 ->addToBody(lang('unexpected_error'))
                 ->defer();
