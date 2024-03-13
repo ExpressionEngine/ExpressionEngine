@@ -39,7 +39,7 @@ class Relationship extends React.Component {
             var $wrapper = $(this);
             var $button = $wrapper.find('.js-dropdown-toggle');
 
-            $button.on('click', function () {
+            $button.off('click.defferedLoad').on('click.defferedLoad', function () {
                 $('div[data-relationship-react]', $wrapper).each(function () {
                     var deferUrl = $(this).data('deferurl');
                     if (typeof deferUrl !== 'undefined') {
@@ -48,7 +48,6 @@ class Relationship extends React.Component {
                         .then(
                             (result) => {
                                 let props = JSON.parse(window.atob(result.content));
-                                console.log(props);
                                 props.name = $(this).data('inputValue');
                                 ReactDOM.render(React.createElement(Relationship, props, null), this);
                             },

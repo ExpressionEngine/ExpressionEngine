@@ -542,7 +542,7 @@ var Relationship = /*#__PURE__*/function (_React$Component) {
       $('.react-deferred-loading--relationship', context).each(function () {
         var $wrapper = $(this);
         var $button = $wrapper.find('.js-dropdown-toggle');
-        $button.on('click', function () {
+        $button.off('click.defferedLoad').on('click.defferedLoad', function () {
           $('div[data-relationship-react]', $wrapper).each(function () {
             var _this6 = this;
 
@@ -553,7 +553,6 @@ var Relationship = /*#__PURE__*/function (_React$Component) {
                 return res.json();
               }).then(function (result) {
                 var props = JSON.parse(window.atob(result.content));
-                console.log(props);
                 props.name = $(_this6).data('inputValue');
                 ReactDOM.render(React.createElement(Relationship, props, null), _this6);
               }, function (error) {
