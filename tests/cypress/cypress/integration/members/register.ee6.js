@@ -478,7 +478,7 @@ context('Member Registration on Front-end', () => {
             cy.contains("Unable to activate");
 
             cy.authVisit('admin.php?/cp/members');
-            cy.get("a:contains('pending1')").parents('tr').find('td:nth-child(4)').should('not.contain', 'Unlocked Extra Role')
+            cy.get("a:contains('pending2')").parents('tr').find('td:nth-child(4)').should('not.contain', 'Unlocked Extra Role')
 
         })
 
