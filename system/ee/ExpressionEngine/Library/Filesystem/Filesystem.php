@@ -828,6 +828,10 @@ class Filesystem
             return null;
         }
 
+        if (!function_exists('disk_free_space')) {
+            return false;
+        }
+
         return @disk_free_space($path);
     }
 
