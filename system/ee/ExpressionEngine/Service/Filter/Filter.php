@@ -222,7 +222,14 @@ abstract class Filter
             $label = !is_null($label) ? $label : $show;
             $url = clone $base_url;
             $url->setQueryStringVariable($this->name, $show);
-            $options[$url->compile()] = htmlentities($label, ENT_QUOTES, 'UTF-8');
+
+            if(is_array($label) && isset($label['label'])) {
+                $label['label'] = htmlentities($label['label'], ENT_QUOTES, 'UTF-8');
+            } else {
+                $label = htmlentities($label, ENT_QUOTES, 'UTF-8');
+            }
+
+            $options[$url->compile()] = $label;
         }
 
         return $options;

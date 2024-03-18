@@ -475,6 +475,7 @@ class EntryListing
                 ->with('Categories')
                 ->filter('site_id', ee()->config->item('site_id'))
                 ->filter('exclude_group', '!=', 1)
+                ->order('group_name', 'asc')
                 ->all();
         } else {
             $category_groups = $channel->CategoryGroups;
@@ -482,6 +483,8 @@ class EntryListing
 
         foreach ($category_groups as $group) {
             $tree = $group->getCategoryTree(ee()->tree);
+            // Add the Category Group name as a header to the filter options
+            $this->category_options['group_' . $group->group_id] = ['type' => 'header', 'label' => $group->group_name];
             foreach ($tree->children() as $category) {
                 $this->setCategoryOptions($category);
             }
@@ -498,7 +501,8 @@ class EntryListing
     /**
      * Recursively sets category options for the category filter
      */
-    private function setCategoryOptions($category) {
+    private function setCategoryOptions($category)
+    {
         $this->category_options[$category->data->cat_id] = str_repeat('-- ', $category->depth() - 1) . $category->data->cat_name;
         if (count($category->children())) {
             foreach ($category->children() as $subcategory) {
