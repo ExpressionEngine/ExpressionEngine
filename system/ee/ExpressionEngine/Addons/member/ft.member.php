@@ -31,7 +31,7 @@ class Member_ft extends Relationship_ft implements ColumnInterface
 
     public $default_settings = [
         'roles' => '--',
-        'limit' => '',
+        'limit' => 100,
         'order_field' => 'screen_name',
         'order_dir' => 'asc',
         'allow_multiple' => 'y',
