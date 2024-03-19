@@ -697,7 +697,7 @@ EE.cp.datePicker = {
 			return
 		}
 
-		elements.off('focus').on('focus', function() {
+		elements.off('focus.datepicker').on('focus.datepicker', function() {
 			// find the position of the input clicked
 			var pos = $(this).offset();
 			EE.cp.datePicker.Calendar.init(this);
