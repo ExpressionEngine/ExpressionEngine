@@ -634,6 +634,8 @@ Once you are ready to experience the new File Manager features, please run the <
 
     'debug_tools_entries_missing_data_desc' => 'Some entries are referencing non-existent %s',
 
+    'debug_tools_entries_missing_data_count' => '%d entries are referencing non-existent %s',
+
     'debug_tools_members' => 'Debug Members',
 
     'debug_tools_debug_duplicate_template_groups' => 'Duplicate Template Groups',

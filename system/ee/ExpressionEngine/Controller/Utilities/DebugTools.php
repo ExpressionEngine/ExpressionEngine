@@ -50,6 +50,13 @@ class DebugTools extends Utilities
         $ftAdvisor = new Advisor\FieldtypeAdvisor();
         $vars['missing_fieldtype_count'] = $ftAdvisor->getMissingFieldtypeCount();
 
+        $entryAdvisor = new Advisor\EntryAdvisor();
+        $vars['entries_missing_data'] = [
+            'channel' => $entryAdvisor->getEntriesMissingData('channel'),
+            'status' => $entryAdvisor->getEntriesMissingData('status'),
+            'author' => $entryAdvisor->getEntriesMissingAuthor()
+        ];
+
         ee()->view->cp_breadcrumbs = array(
             '' => lang('debug_tools')
         );
@@ -149,13 +156,13 @@ class DebugTools extends Utilities
     {
         ee()->view->cp_page_title = lang('debug_tools_channel_entries');
 
-        $advisor = new Advisor\EntryAdvisor();
+        $entryAdvisor = new Advisor\EntryAdvisor();
 
         $vars = [];
         $vars['entries_missing_data'] = [
-            'channel' => $advisor->getEntriesMissingData('channel'),
-            'status' => $advisor->getEntriesMissingData('status'),
-            'author' => $advisor->getEntriesMissingAuthor()
+            'channel' => $entryAdvisor->getEntriesMissingData('channel'),
+            'status' => $entryAdvisor->getEntriesMissingData('status'),
+            'author' => $entryAdvisor->getEntriesMissingAuthor()
         ];
 
         ee()->view->cp_breadcrumbs = array(
