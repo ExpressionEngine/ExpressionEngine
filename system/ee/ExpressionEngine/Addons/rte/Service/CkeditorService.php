@@ -234,6 +234,17 @@ class CkeditorService extends AbstractRteService implements RteService
             $toolbarConfig['image']->insert->type = 'auto';
             $toolbarConfig['image']->insert->integrations = ['url'];
 
+            $toolbarConfig['htmlEmbed'] = new \stdClass();
+            $toolbarConfig['htmlEmbed']->showPreviews = true;
+
+            $allowedHtml = new \stdClass();
+            $allowedHtml->name = '/.*/';
+            $allowedHtml->attributes = true;
+            $allowedHtml->classes = true;
+            $allowedHtml->styles = true;
+            $toolbarConfig['htmlSupport'] = new \stdClass();
+            $toolbarConfig['htmlSupport']->allow = [$allowedHtml];
+
             if (in_array('heading', $toolbarConfig['toolbar']->items)) {
                 $toolbarConfig['heading'] = new \stdClass();
                 $toolbarConfig['heading']->options = [
