@@ -746,6 +746,10 @@ a.ck.ck-button.ck-on {
     z-index: 2000 !important;
 }
 
+.ck.ck-label {
+    z-index: 2001 !important;
+}
+
 .ck.ck-balloon-panel[class*=arrow_n]:before {
     border-color: transparent transparent var(--ee-list-item-border) !important;
 }
@@ -841,6 +845,24 @@ a.ck.ck-button.ck-on {
 
 .ck-balloon-rotator__content .ck.ck-list__item .ck-button.ck-on.ck-switchbutton {
     background: transparent !important;
+}
+
+.ck.ck-find-and-replace-form__actions .ck-button-find {
+    color: var(--ee-button-secondary-color) !important;
+    background-color: var(--ee-button-secondary-bg);
+    border-color: var(--ee-button-secondary-border);
+    font-weight: normal;
+    cursor: pointer;
+}
+
+.ck.ck-find-and-replace-form__actions .ck-button-find span {
+   color: var(--ee-button-secondary-color) !important;
+}
+
+.ck.ck-find-and-replace-form__actions .ck-button-find:hover {
+    color: var(--ee-button-secondary-color) !important;
+    background-color: var(--ee-button-secondary-hover-bg) !important;
+    border-color: var(--ee-button-secondary-hover-border) !important;
 }
 
 // REDACTORX STYLES
