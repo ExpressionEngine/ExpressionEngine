@@ -230,6 +230,10 @@ class CkeditorService extends AbstractRteService implements RteService
                 'alignCenter',
                 'alignRight'
             ];
+            $toolbarConfig['image']->insert = new \stdClass();
+            $toolbarConfig['image']->insert->type = 'auto';
+            $toolbarConfig['image']->insert->integrations = ['url'];
+
             if (in_array('heading', $toolbarConfig['toolbar']->items)) {
                 $toolbarConfig['heading'] = new \stdClass();
                 $toolbarConfig['heading']->options = [
@@ -354,6 +358,7 @@ class CkeditorService extends AbstractRteService implements RteService
                 "indent",
                 "link",
                 "filemanager",
+                "insertImage",
                 "insertTable",
                 "mediaEmbed",
                 "htmlEmbed",
@@ -366,6 +371,7 @@ class CkeditorService extends AbstractRteService implements RteService
                 "readMore",
                 "fontColor",
                 "fontBackgroundColor",
+                "findAndReplace",
                 "showBlocks",
                 "sourceEditing"
             ],
