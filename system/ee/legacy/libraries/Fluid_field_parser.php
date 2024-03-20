@@ -334,9 +334,9 @@ class Fluid_field_parser
             return ($fluid_field->entry_id == $entry_id && $fluid_field->fluid_field_id == $fluid_field_id);
         })
         // Sort by ChannelField->field_order
-            ->sortBy(function ($item) {
-                return $item->ChannelField->field_order;
-            });
+        ->sortBy(function ($item) {
+            return $item->ChannelField->field_order;
+        });
 
         $groups = [];
         foreach ($fluid_field_data as $field) {
@@ -354,6 +354,8 @@ class Fluid_field_parser
             }
             $groups[$groupKey]['fields'][] = $field;
         }
+        // Sort groups by $groupKey ascending
+        ksort($groups);
 
         $vars = ee('Variables/Parser')->extractVariables($tagdata);
         $singles = array_filter($vars['var_single'], function ($val) use ($fluid_field_name) {
@@ -382,6 +384,7 @@ class Fluid_field_parser
         }, array_filter(array_unique(array_column($groups, 'short_name')))), null);
 
         $i = 0;
+
         $groups = array_values($groups);
 
         foreach ($groups as $g => $group) {
