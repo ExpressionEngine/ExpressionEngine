@@ -351,6 +351,10 @@ class Publish extends AbstractPublishController
 
         $vars['layout'] = $entry->getDisplay($channel_layout);
 
+        $vars['layout_id'] = !empty($channel_layout) ? $channel_layout->layout_id : null;
+
+        $vars['can_edit_layouts'] = ee('Permission')->can('edit_channels') ? true : false;
+
         $result = $this->validateEntry($entry, $vars['layout']);
 
         if ($result instanceof ValidationResult) {
