@@ -34,7 +34,7 @@ context('Member Field List', () => {
     
     page.load()
     cy.log('create file field')
-    cy.visit('admin.php?/cp/members/fields/create')
+    cy.visit('admin.php?/cp/settings/member-fields/create')
     form.createField({
         type: 'File',
         label: 'Member Image',
@@ -98,7 +98,7 @@ context('Member Field List', () => {
   })
 
   it('can not create field with duplicate name', () => {
-    cy.visit('admin.php?/cp/members/fields/create')
+    cy.visit('admin.php?/cp/settings/member-fields/create')
     form.createField({
         type: 'File',
         label: 'News Image',

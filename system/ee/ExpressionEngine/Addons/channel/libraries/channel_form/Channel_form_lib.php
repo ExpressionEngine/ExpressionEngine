@@ -1851,7 +1851,7 @@ GRID_FALLBACK;
     public function fetch_categories()
     {
         //exit if already loaded, or if there is no category group
-        if ($this->categories || empty($this->channel->CategoryGroups)) {
+        if ($this->categories || $this->channel->CategoryGroups->count() == 0) {
             return;
         }
 
@@ -1923,7 +1923,7 @@ GRID_FALLBACK;
         //get field group and limit
         $query->filter('Channel.site_id', $this->site_id);
 
-        $channel = $query->first();
+        $channel = $query->all()->first();
 
         if (! isset($channel)) {
             throw new Channel_form_exception(lang('channel_form_unknown_channel'));

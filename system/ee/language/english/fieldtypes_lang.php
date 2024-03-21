@@ -214,6 +214,8 @@ $lang = array(
 
     'file_dnd_no_directories_desc' => 'This field is limited to upload directory not available for current member and site.',
 
+    'file_dnd_no_directory_permissions' => 'You do not have permission to upload files to any of the available directories.',
+
     'file_grid_vertical_layout_title' => 'File Grid layout',
 
     /* Grid */

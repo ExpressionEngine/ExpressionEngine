@@ -368,14 +368,14 @@ class Member_register extends Member
                     }
 
                     // Ensure their selection is actually a valid choice
-                    if (! in_array(htmlentities($_POST[$field_name]), $options)) {
+                    if (! in_array(ee('Request')->post($field_name), $options)) {
                         $valid = false;
                         $cust_errors['error:' . $field_name] = lang('mbr_field_invalid') . '&nbsp;' . $row['m_field_label'];
                     }
                 }
 
                 if ($valid) {
-                    $custom_data[$field_name] = ee('Security/XSS')->clean($_POST[$field_name]);
+                    $custom_data[$field_name] = ee('Security/XSS')->clean(ee('Request')->post($field_name));
                 }
             }
         }

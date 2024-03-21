@@ -107,7 +107,15 @@ class Fluid_field_ft extends EE_Fieldtype
                         continue;
                     }
 
-                    $field = clone $field_templates[$field_id];
+                    // the field might be present, but not in the settings currently
+                    if (isset($field_templates[$field_id])) {
+                        $field = clone $field_templates[$field_id];
+                    } else {
+                        $field = ee('Model')->get('ChannelField', $field_id)->first();
+                        if (empty($field)) {
+                            continue;
+                        }
+                    }
 
                     $f = $field->getField();
                     $ft_instance = $f->getNativeField();

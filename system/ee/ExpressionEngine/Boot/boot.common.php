@@ -549,7 +549,7 @@ function remove_invisible_characters($str, $url_encoded = true)
     $non_displayables[] = '/&#(?:823[78]|820[67]);/'; // HTML entity versions of RTL/LTR markers
 
     do {
-        $str = preg_replace($non_displayables, '', (string) $str, -1, $count);
+        $str = (string) preg_replace($non_displayables, '', (string) $str, -1, $count);
     } while ($count);
 
     return $str;
@@ -660,10 +660,21 @@ if (!function_exists('array_key_first')) {
         foreach ($arr as $key => $unused) {
             return $key;
         }
+
         return null;
     }
 }
 
+/**
+ * Polyfill for missing tmpfile()
+ * https://www.php.net/manual/en/function.tmpfile.php
+ */
+if (!function_exists('tmpfile')) {
+    function tmpfile()
+    {
+        return \ExpressionEngine\Library\Filesystem\TempFileFactory::fallback();
+    }
+}
 
 /**
  * Show pre-formatted debug trace of required depth (default: 5)

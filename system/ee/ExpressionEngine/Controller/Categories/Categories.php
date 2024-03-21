@@ -300,6 +300,14 @@ class Categories extends AbstractCategoriesController
 
         $this->generateSidebar($group_id);
 
+        //  Check discrete privileges when editig (we have no discrete create
+        //  permissions)
+        $can_edit = explode('|', rtrim((string) $cat_group->can_edit_categories, '|'));
+
+        if (! ee('Permission')->isSuperAdmin() and ! ee('Permission')->hasAnyRole($can_edit)) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
         if (is_null($category_id)) {
             $alert_key = 'created';
             ee()->view->cp_page_title = lang('new_category');
@@ -340,13 +348,6 @@ class Categories extends AbstractCategoriesController
 				});
 			');
         } else {
-            //  Check discrete privileges when editig (we have no discrete create permissions)
-            $can_edit = explode('|', rtrim((string) $cat_group->can_edit_categories, '|'));
-
-            if (! ee('Permission')->isSuperAdmin() and ! ee('Permission')->hasAnyRole($can_edit)) {
-                show_error(lang('unauthorized_access'), 403);
-            }
-
             $category = ee('Model')->get('Category')->filter('cat_id', (int) $category_id)->first();
 
             if (! $category) {
