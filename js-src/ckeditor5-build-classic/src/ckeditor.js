@@ -44,7 +44,6 @@ import { GeneralHtmlSupport } from '@ckeditor/ckeditor5-html-support';
 import { SourceEditing } from '@ckeditor/ckeditor5-source-editing';
 import { ShowBlocks } from '@ckeditor/ckeditor5-show-blocks';
 import { FindAndReplace } from '@ckeditor/ckeditor5-find-and-replace';
-import { SimpleUploadAdapter } from '@ckeditor/ckeditor5-upload';
 
 import Mention from '../plugins/ckeditor5-mention/src/mention';
 import ReadMore from '../plugins/readmore/src/readmore';
@@ -56,7 +55,6 @@ export default class ClassicEditor extends ClassicEditorBase {}
 // Plugins to include in the build.
 ClassicEditor.builtinPlugins = [
 	Essentials,
-	SimpleUploadAdapter,
 	FindAndReplace,
 	Autoformat,
 	Clipboard,
