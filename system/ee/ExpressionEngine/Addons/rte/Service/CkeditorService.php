@@ -272,13 +272,21 @@ class CkeditorService extends AbstractRteService implements RteService
             $toolbarConfig['htmlEmbed'] = new \stdClass();
             $toolbarConfig['htmlEmbed']->showPreviews = true;
 
+            // By default, we allow some block elements & span with any data-attribute and any class
+            // Plus the elements that have corresponding plugin or button - such as table, link, image, etc.
+            // We also allow classes, but not styles
+            // If the mode "do anything when in source editing" needs to be enable, set up advanaced config like this:
+            // https://ckeditor.com/docs/ckeditor5/latest/features/html/general-html-support.html#enabling-all-html-features
+            // However this is ponetially dangerous and also will break "paste from Word" filters
             $allowedHtml = new \stdClass();
-            $allowedHtml->name = '/.*/';
-            $allowedHtml->attributes = true;
+            $allowedHtml->name = '/^(div|section|article|span)$/';
+            $allowedHtml->attributes = '/data-[\w-]+/';
             $allowedHtml->classes = true;
-            $allowedHtml->styles = true;
+            $allowedHtml->styles = false;
             $toolbarConfig['htmlSupport'] = new \stdClass();
-            $toolbarConfig['htmlSupport']->allow = [$allowedHtml];
+            $toolbarConfig['htmlSupport']->allow = [
+                $allowedHtml
+            ];
 
             if (in_array('heading', $toolbarConfig['toolbar']->items)) {
                 $toolbarConfig['heading'] = new \stdClass();
