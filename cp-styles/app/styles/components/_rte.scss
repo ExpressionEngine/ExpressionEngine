@@ -865,6 +865,24 @@ a.ck.ck-button.ck-on {
     border-color: var(--ee-button-secondary-hover-border) !important;
 }
 
+.ck.ck-dialog {
+  background: var(--ee-button-default-bg) !important;
+  color: var(--ee-button-default-color) !important;
+  border-color: var(--ee-list-item-border) !important;
+}
+
+.ck.ck-dialog h2 {
+  color: var(--ee-button-default-color) !important;
+}
+
+.ck.ck-find-and-replace-form__actions {
+  margin-top: 10px !important;
+}
+
+.ck.ck-labeled-field-view .ck-labeled-field-view__status.ck-labeled-field-view__status_error {
+    color: var(--ee-error) !important;
+}
+
 // REDACTORX STYLES
 .rx-toolbar,
 .rx-topbar {
