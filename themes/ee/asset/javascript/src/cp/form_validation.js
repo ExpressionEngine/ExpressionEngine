@@ -77,23 +77,46 @@ EE.cp.formValidation = {
 
 		var that = this;
 
+		var typingTimer; //timer identifier
+
 		// Don't fire AJAX when submit button pressed
 		$(container).on('mousedown', this._buttonSelector, function() {
 			that.pause()
 		})
 
-		$(this._textInputSelectors, container)
+		if ($(container).hasClass('ajax-validate') && $(container).find('.fieldset-required').length == 1) {
+
+			$(this._textInputSelectors, container)
 			.not('*[data-ajax-validate=no]')
-			.blur(function() {
+			.on('keyup', function () {
+				$(this).data('validating', false);
+				var element = $(this);
+				clearTimeout(typingTimer);
 
-			// Unbind keydown validation when the invalid field loses focus
-			$(this).data('validating', false);
-			var element = $(this);
+				typingTimer = setTimeout(function() {
+					that._sendAjaxRequest(element);
+				}, 500);
+			});
 
-			setTimeout(function() {
-				that._sendAjaxRequest(element);
-			}, 0);
-		});
+			$(this._textInputSelectors, container)
+			.not('*[data-ajax-validate=no]')
+			.on('keydown', function () {
+				clearTimeout(typingTimer);
+			})
+		} else {
+			$(this._textInputSelectors, container)
+				.not('*[data-ajax-validate=no]')
+				.blur(function() {
+
+				// Unbind keydown validation when the invalid field loses focus
+				$(this).data('validating', false);
+				var element = $(this);
+
+				setTimeout(function() {
+					that._sendAjaxRequest(element);
+				}, 0);
+			});
+		}
 
 		$(container).on('change', 'input[type=checkbox], input[type=radio], input[type=hidden], input[type=range], select', function() {
 
@@ -352,7 +375,12 @@ EE.cp.formValidation = {
 			container = field.parents('.field-control'),
 			fieldset = (container.parents('fieldset').length > 0) ? container.parents('fieldset') : container.parent(),
 			errorClass = 'em.ee-form-error-message',
-			grid = false;
+			grid = false,
+			modal_button = false;
+
+			if (form.parents('.modal').length) {
+				modal_button = form.parents('.modal').find('.dialog__buttons .button');
+			}
 
 		// Tabs
 		var tab_container = field.parents('.tab'),
@@ -410,6 +438,10 @@ EE.cp.formValidation = {
 			}
 
 			container.find('> ' + errorClass).remove();
+
+			if (modal_button) {
+				modal_button.removeClass('disable').removeAttr('disabled');
+			}
 
 			// If no more errors on this tab, remove invalid class from tab
 			if (tab.length > 0 &&  ! this._errorsExist(tab_container))
@@ -484,6 +516,10 @@ EE.cp.formValidation = {
 
 			// Disable submit button
 			button.addClass('disable').attr('disabled', 'disabled');
+
+			if (modal_button) {
+				modal_button.addClass('disable').attr('disabled', 'disabled');
+			}
 
 			button.each(function(index, thisButton) {
 				thisButton = $(thisButton);
