@@ -26,15 +26,6 @@ window.Rte;
 
         this.config = (EE.Rte.configs[config] || EE.Rte.configs['default']);
 
-        if (typeof(this.config.typing) !== 'undefined' && typeof(this.config.typing.transformations) !== 'undefined' && typeof(this.config.typing.transformations.extra) !== 'undefined') {
-            for (const index in this.config.typing.transformations.extra) {
-                var value = this.config.typing.transformations.extra[index];
-                if (typeof value.from === 'string' && value.from.indexOf('/') === 0 && value.from.lastIndexOf('$/') === value.from.length - 2) {
-                    this.config.typing.transformations.extra[index].from = new RegExp(value.from.substring(1, value.from.length - 2) + '$');
-                }
-            }
-        }
-
         if (typeof defer == "undefined") {
             this.defer = this.$element.data('defer') == "y";
         } else {
@@ -139,16 +130,6 @@ window.Rte;
          * Init CKEditor
          */
         initCKEditor: function() {
-            if (typeof this.config.htmlSupport !== 'undefined') {
-                if (typeof this.config.htmlSupport.allow !== 'undefined') {
-                    this.config.htmlSupport.allow.forEach((elem, index) =>  {
-                        var value = this.config.htmlSupport.allow[index];
-                        if (typeof value.name === 'string' && value.name.indexOf('/') === 0 && value.name.lastIndexOf('/') === value.name.length - 1) {
-                            this.config.htmlSupport.allow[index].name = new RegExp(value.name.substring(1, value.name.length - 1));
-                        }
-                    })
-                }
-            }
             var textareaId = this.id;
             ClassicEditor.create(document.querySelector('#'+this.id), this.config)
             .then( editor => {
