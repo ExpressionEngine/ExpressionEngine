@@ -84,7 +84,7 @@ EE.cp.formValidation = {
 			that.pause()
 		})
 
-		if (container.hasClass('ajax-validate') && container.find('.fieldset-required').length == 1) {
+		if ($(container).hasClass('ajax-validate') && $(container).find('.fieldset-required').length == 1) {
 
 			$(this._textInputSelectors, container)
 			.not('*[data-ajax-validate=no]')
