@@ -18,7 +18,7 @@ import CodeBlock from '@ckeditor/ckeditor5-code-block/src/codeblock';
 import Subscript from '@ckeditor/ckeditor5-basic-styles/src/subscript';
 import Superscript from '@ckeditor/ckeditor5-basic-styles/src/superscript';
 import BlockQuote from '@ckeditor/ckeditor5-block-quote/src/blockquote';
-import { Image, ImageInsert, AutoImage, ImageCaption, ImageStyle, ImageToolbar, ImageResize } from '@ckeditor/ckeditor5-image';
+import { Image, ImageInsert, AutoImage, ImageCaption, ImageStyle, ImageToolbar, ImageResize, ImageUpload } from '@ckeditor/ckeditor5-image';
 import Indent from '@ckeditor/ckeditor5-indent/src/indent';
 import IndentBlock from '@ckeditor/ckeditor5-indent/src/indentblock';
 import Link from '@ckeditor/ckeditor5-link/src/link';
@@ -44,19 +44,21 @@ import { GeneralHtmlSupport } from '@ckeditor/ckeditor5-html-support';
 import { SourceEditing } from '@ckeditor/ckeditor5-source-editing';
 import { ShowBlocks } from '@ckeditor/ckeditor5-show-blocks';
 import { FindAndReplace } from '@ckeditor/ckeditor5-find-and-replace';
-import { SimpleUploadAdapter } from '@ckeditor/ckeditor5-upload';
+import { FileRepository } from '@ckeditor/ckeditor5-upload';
 
 import Mention from '../plugins/ckeditor5-mention/src/mention';
 import ReadMore from '../plugins/readmore/src/readmore';
 import FileManager from '../plugins/filemanager/src/filemanager';
 import PageLinks from '../plugins/pagelinks/src/pagelinks';
+import EEUploadAdapter from '../plugins/eeuploadadapter/src/eeuploadadapter';
 
 export default class ClassicEditor extends ClassicEditorBase {}
 
 // Plugins to include in the build.
 ClassicEditor.builtinPlugins = [
 	Essentials,
-	SimpleUploadAdapter,
+	FileRepository,
+	EEUploadAdapter,
 	FindAndReplace,
 	Autoformat,
 	Clipboard,

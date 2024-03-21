@@ -149,7 +149,6 @@ window.Rte;
                     })
                 }
             }
-            console.log(this.config);
             var textareaId = this.id;
             ClassicEditor.create(document.querySelector('#'+this.id), this.config)
             .then( editor => {

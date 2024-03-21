@@ -112,6 +112,9 @@ class CkeditorService extends AbstractRteService implements RteService
         $config = array_merge($config, $this->buildToolbarConfig($config));
         if (REQ == 'CP') {
             $config['toolbar']->viewportOffset = (object) ['top' => 59];
+            $config['eeUpload'] = new \stdClass();
+            $config['eeUpload']->uploadUrl = ee('CP/URL')->make('addons/settings/filepicker/ajax-upload', ['from' => 'rte'])->compile();
+            $config['eeUpload']->uploadLocationId = 5;
         }
 
         $config['editorClass'] = 'rte_' . $configHandle;

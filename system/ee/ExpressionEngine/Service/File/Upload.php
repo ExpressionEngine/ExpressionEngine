@@ -331,6 +331,9 @@ class Upload
                 ee()->load->library('filemanager');
                 $upload_response = ee()->filemanager->upload_file($upload_location_id, 'file', false, $directory_id);
                 if (isset($upload_response['error'])) {
+                    if (AJAX_REQUEST) {
+                        ee()->output->send_ajax_response(array('error' => $upload_response['error']));
+                    }
                     ee('CP/Alert')->makeInline('shared-form')
                         ->asIssue()
                         ->withTitle(lang('upload_filedata_error'))

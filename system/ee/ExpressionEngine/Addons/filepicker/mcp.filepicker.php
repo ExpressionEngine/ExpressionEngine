@@ -340,6 +340,16 @@ class Filepicker_mcp
             $errors = $result['validation_result'];
 
             if ($result['uploaded']) {
+                // when dropped into RTE, return the result immediately
+                if (ee('Request')->get('from') == 'rte') {
+                    return [
+                        'ajax' => true,
+                        'body' => [
+                            'status' => 'success',
+                            'url' => $file->getAbsoluteURL()
+                        ]
+                    ];
+                }
                 // mark the file as newly uploaded in file picker
                 ee()->session->set_flashdata('file_id', $file->getId());
 
