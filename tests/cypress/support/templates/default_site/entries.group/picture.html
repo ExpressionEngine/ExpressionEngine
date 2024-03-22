@@ -1,0 +1,38 @@
+{layout="cypress/layout"}
+{exp:channel:entries entry_id="1"}
+<h1>{title}</h1>
+
+<div class="file">
+{news_image}
+
+    <img src="{url}" class="url">
+
+    <img src="{url:resize width="50"}" class="resized">
+
+    <img src="{url:crop width="75" height="75" maintain_ratio="n"}" class="cropped">
+
+    <img src="{url:crop:webp width="75" height="75" maintain_ratio="n"}" class="webp">
+
+{/news_image}
+</div>
+
+<div class="file_grid">
+    {file_grid_field}
+
+        {file_grid_field:file}
+
+        <img src="{url}" class="url">
+    
+        <img src="{url:resize width="40"}" class="resized">
+    
+        <img src="{url:crop width="65" height="65" maintain_ratio="n"}" class="cropped">
+    
+        <img src="{url:crop:webp width="65" height="65" maintain_ratio="n"}" class="webp">
+
+        {/file_grid_field:file}
+    
+    {/file_grid_field}
+    </div>
+
+
+{/exp:channel:entries}
