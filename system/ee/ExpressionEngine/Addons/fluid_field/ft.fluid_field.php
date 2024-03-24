@@ -177,6 +177,15 @@ class Fluid_field_ft extends EE_Fieldtype
 
         $fluid_field_data = $this->getFieldData()->indexBy('id');
 
+        if (ee()->extensions->active_hook('fluid_field_before_save') === true) {
+            $data = ee()->extensions->call(
+                'fluid_field_before_save',
+                $this,
+                $fluid_field_data,
+                $data,
+            );
+        }
+
         if (empty($fluid_field_data)) {
             return '';
         }
@@ -261,6 +270,13 @@ class Fluid_field_ft extends EE_Fieldtype
         $previous_field_group_id = null;
         $previous_group_key = null;
 
+        $collection = [
+            'added' => [], // Only fields added
+            'updated' => [], // Only fields updated
+            'deleted' => [], // Only fields deleted
+            'saved' => [], // All fields, added and/or updated, when entry is saved
+        ];
+
         $i = 1;
         $g = 0;
         $total_fields = count($data['fields']);
@@ -327,11 +343,34 @@ class Fluid_field_ft extends EE_Fieldtype
                     $thisFieldValue = array_filter($value, function ($k) use ($field_id) {
                         return strrpos($k, '_' . $field_id) === strlen($k) - strlen('_' . $field_id);
                     }, ARRAY_FILTER_USE_KEY);
-                    $this->addField($i, $group, $field_id, $thisFieldValue);
+                    $insertId = $this->addField($i, $group, $field_id, $thisFieldValue);
+
+                    $rowData = [
+                        'order' => $i,
+                        'group' => $group,
+                        'fieldId' => $field_id,
+                        'value' => $thisFieldValue,
+                        'dataId' => $insertId,
+                    ];
+
+                    $collection['added'][] = $rowData;
                 } else {
                     $this->updateField($fluid_field_data[$id], $i, $group, $value);
+
+                    $rowData = [
+                        'order' => $i,
+                        'group' => $group,
+                        'fieldId' => $fluid_field_data[$id]->field_id ?? 0,
+                        'value' => $value,
+                        'dataId' => $fluid_field_data[$id]->field_data_id ?? 0,
+                    ];
+
+                    $collection['updated'][] = $rowData;
+
                     unset($fluid_field_data[$id]);
                 }
+
+                $collection['saved'][] = $rowData;
 
                 $i++;
 
@@ -342,6 +381,21 @@ class Fluid_field_ft extends EE_Fieldtype
         // Remove fields
         foreach ($fluid_field_data as $fluid_field) {
             $this->removeField($fluid_field);
+
+            $collection['deleted'][] = [
+                'order' => $fluid_field->order ?? 0,
+                'group' => $fluid_field->group ?? null,
+                'fieldId' => $fluid_field->field_id ?? 0,
+                'dataId' => $fluid_field->field_data_id ?? 0,
+            ];
+        }
+
+        if (ee()->extensions->active_hook('fluid_field_after_save') === true) {
+            ee()->extensions->call(
+                'fluid_field_after_save',
+                $this,
+                $collection
+            );
         }
     }
 
@@ -478,6 +532,8 @@ class Fluid_field_ft extends EE_Fieldtype
                 $id ?? 0
             );
         }
+
+        return $id ?? 0;
     }
 
     private function removeField($fluid_field)
