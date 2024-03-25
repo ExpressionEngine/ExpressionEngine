@@ -28459,7 +28459,7 @@ input[type=button].btn-block {
   position: absolute;
 }
 .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item .dropdown, .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item .select__dropdown {
-  width: 100%;
+  width: fit-content;
 }
 .filter-search-bar .filter-search-bar__search-row {
   display: flex;
