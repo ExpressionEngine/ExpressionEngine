@@ -274,7 +274,7 @@ class Fluid_field_ft extends EE_Fieldtype
             'added' => [], // Only fields added
             'updated' => [], // Only fields updated
             'deleted' => [], // Only fields deleted
-            'saved' => [], // All fields, added and/or updated, when entry is saved
+            'saved' => [], // All fields, added or updated, in sequential order when entry is saved
         ];
 
         $i = 1;
@@ -346,11 +346,13 @@ class Fluid_field_ft extends EE_Fieldtype
                     $insertId = $this->addField($i, $group, $field_id, $thisFieldValue);
 
                     $rowData = [
-                        'order' => $i,
+                        'entry_id' => $this->content_id,
+                        'field_data_id' => $insertId,
+                        'field_id' => (int) $field_id,
+                        'fluid_field_id' => $this->field_id,
                         'group' => $group,
-                        'fieldId' => $field_id,
+                        'order' => $i,
                         'value' => $thisFieldValue,
-                        'dataId' => $insertId,
                     ];
 
                     $collection['added'][] = $rowData;
@@ -358,11 +360,13 @@ class Fluid_field_ft extends EE_Fieldtype
                     $this->updateField($fluid_field_data[$id], $i, $group, $value);
 
                     $rowData = [
-                        'order' => $i,
+                        'entry_id' => $this->content_id,
+                        'field_data_id' => $fluid_field_data[$id]->field_data_id,
+                        'field_id' => (int) $fluid_field_data[$id]->field_id,
+                        'fluid_field_id' => $this->field_id,
                         'group' => $group,
-                        'fieldId' => $fluid_field_data[$id]->field_id ?? 0,
+                        'order' => $i,
                         'value' => $value,
-                        'dataId' => $fluid_field_data[$id]->field_data_id ?? 0,
                     ];
 
                     $collection['updated'][] = $rowData;
@@ -380,14 +384,16 @@ class Fluid_field_ft extends EE_Fieldtype
 
         // Remove fields
         foreach ($fluid_field_data as $fluid_field) {
-            $this->removeField($fluid_field);
-
             $collection['deleted'][] = [
-                'order' => $fluid_field->order ?? 0,
+                'entry_id' => $this->content_id,
+                'field_data_id' => $fluid_field->field_data_id ?? 0,
+                'field_id' => $fluid_field->field_id ?? 0,
+                'fluid_field_id' => $this->field_id,
                 'group' => $fluid_field->group ?? null,
-                'fieldId' => $fluid_field->field_id ?? 0,
-                'dataId' => $fluid_field->field_data_id ?? 0,
+                'order' => $fluid_field->order ?? 0,
             ];
+
+            $this->removeField($fluid_field);
         }
 
         if (ee()->extensions->active_hook('fluid_field_after_save') === true) {
@@ -533,7 +539,7 @@ class Fluid_field_ft extends EE_Fieldtype
             );
         }
 
-        return $id ?? 0;
+        return $id ? (int) $id : 0;
     }
 
     private function removeField($fluid_field)
