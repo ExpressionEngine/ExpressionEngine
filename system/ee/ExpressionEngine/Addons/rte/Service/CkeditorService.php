@@ -119,7 +119,7 @@ class CkeditorService extends AbstractRteService implements RteService
         } else {
             if (empty(self::$uploadActionId)) {
                 $actionQuery = ee()->db->select('action_id')
-                    ->where('class', 'Filepicker')
+                    ->where('class', 'File')
                     ->where('method', 'ajaxUpload')
                     ->get('actions');
                 if ($actionQuery->num_rows() > 0) {
