@@ -47538,6 +47538,10 @@ a.ck.ck-button.ck-on {
   opacity: 0.3;
 }
 
+.ck.ck-widget__resizer {
+  background: transparent !important;
+}
+
 .rx-toolbar .rx-button-toolbar,
 .rx-toolbar .rx-button-topbar,
 .rx-topbar .rx-button-toolbar,
