@@ -119,7 +119,9 @@ class FluidField extends Model
             $rows = ee()->extensions->call(
                 'fluid_field_get_field_data',
                 $this->field_id,
-                $this->field_data_id
+                $this->field_data_id,
+                $this->fluid_field_id,
+                $this->entry_id
             );
         } else {
             ee()->db->where('id', $this->field_data_id);
@@ -137,14 +139,6 @@ class FluidField extends Model
     {
         if (($field_data = ee()->session->cache(__CLASS__, $this->getSessionCacheKey(), false)) === false) {
             $field_data = $this->setFieldData($this->fetchFieldData());
-        }
-
-        if (ee()->extensions->active_hook('fluid_field_get_all_data') === true) {
-            $field_data = ee()->extensions->call(
-                'fluid_field_get_all_data',
-                $field_data,
-                $this->fluid_field_id
-            );
         }
 
         return $field_data;
