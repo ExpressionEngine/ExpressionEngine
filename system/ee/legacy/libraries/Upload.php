@@ -370,7 +370,7 @@ class EE_Upload
         // Since we use native functions to copy/move uploads in the local filesystem
         // we need to explicitly update the existence in the adapter's cache
         if ($filesystem && $filesystem->isLocal() && $filesystem->hasCachedAdapter()) {
-            $filesystem->getAdapter()->getCache()->updateObject($this->file_name, [
+            $filesystem->getAdapter()->getCache()->updateObject($filesystem->relative($destination), [
                 'type' => 'file',
                 'contents' => false,
                 'path' => $destination
