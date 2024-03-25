@@ -159,6 +159,8 @@ class EE_Actions
 
         ee()->core->process_secure_forms($flags);
 
+        dump($ACT, $method);
+
         if ($method != '') {
             // If the stored method name is not callable, we use the snakecase version
             if (! is_callable(array($ACT, $method))) {

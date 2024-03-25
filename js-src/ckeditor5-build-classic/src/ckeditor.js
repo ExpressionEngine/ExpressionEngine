@@ -18,7 +18,7 @@ import CodeBlock from '@ckeditor/ckeditor5-code-block/src/codeblock';
 import Subscript from '@ckeditor/ckeditor5-basic-styles/src/subscript';
 import Superscript from '@ckeditor/ckeditor5-basic-styles/src/superscript';
 import BlockQuote from '@ckeditor/ckeditor5-block-quote/src/blockquote';
-import { Image, ImageInsert, AutoImage, ImageCaption, ImageStyle, ImageToolbar, ImageResize, ImageUpload } from '@ckeditor/ckeditor5-image';
+import { Image, ImageInsert, AutoImage, ImageCaption, ImageStyle, ImageToolbar, ImageResize, ImageUpload, ImageUtils } from '@ckeditor/ckeditor5-image';
 import Indent from '@ckeditor/ckeditor5-indent/src/indent';
 import IndentBlock from '@ckeditor/ckeditor5-indent/src/indentblock';
 import Link from '@ckeditor/ckeditor5-link/src/link';
@@ -79,6 +79,7 @@ ClassicEditor.builtinPlugins = [
 	ImageToolbar,
 	ImageResize,
 	ImageInsert,
+	ImageUpload,
 	AutoImage,
 	Indent,
 	IndentBlock,

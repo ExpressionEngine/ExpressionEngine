@@ -26,13 +26,13 @@ window.Rte;
 
         this.config = (EE.Rte.configs[config] || EE.Rte.configs['default']);
 
-        if (typeof(this.config.typing) !== 'undefined' && typeof(this.config.typing.transformations) !== 'undefined' && typeof(this.config.typing.transformations.extra) !== 'undefined') {
-            for (const index in this.config.typing.transformations.extra) {
-                var value = this.config.typing.transformations.extra[index];
-                if (typeof value.from === 'string' && value.from.indexOf('/') === 0 && value.from.lastIndexOf('$/') === value.from.length - 2) {
-                    this.config.typing.transformations.extra[index].from = new RegExp(value.from.substring(1, value.from.length - 2) + '$');
-                }
-            }
+        // set the config for upload directories individually for each field
+        if (this.$element.data('directories')) {
+            this.config.directories = this.$element.data('directories');
+        }
+
+        if (this.$element.data('defaultdir')) {
+            this.config.defaultdir = this.$element.data('defaultdir');
         }
 
         if (typeof defer == "undefined") {
@@ -139,16 +139,6 @@ window.Rte;
          * Init CKEditor
          */
         initCKEditor: function() {
-            if (typeof this.config.htmlSupport !== 'undefined') {
-                if (typeof this.config.htmlSupport.allow !== 'undefined') {
-                    this.config.htmlSupport.allow.forEach((elem, index) =>  {
-                        var value = this.config.htmlSupport.allow[index];
-                        if (typeof value.name === 'string' && value.name.indexOf('/') === 0 && value.name.lastIndexOf('/') === value.name.length - 1) {
-                            this.config.htmlSupport.allow[index].name = new RegExp(value.name.substring(1, value.name.length - 1));
-                        }
-                    })
-                }
-            }
             var textareaId = this.id;
             ClassicEditor.create(document.querySelector('#'+this.id), this.config)
             .then( editor => {
@@ -210,7 +200,8 @@ window.Rte;
     /**
      * Load EE File Browser
      */
-    Rte.loadEEFileBrowser = function(params, directory, content_type) {
+    Rte.loadEEFileBrowser = function(sourceElement, params, directory, content_type) {
+        console.log('loadEEFileBrowser', params, directory);
         // Set up the temporary increase of z-indexes.
         var modalZIndex = $('.modal-file').css('z-index'),
             overlayZindex = $('.overlay').css('z-index');
@@ -229,7 +220,11 @@ window.Rte;
             $('body').css({ position:'initial', width:'initial' });
         };
 
-        var $trigger = $('<trigger class="m-link filepicker" rel="modal-file" href="' + EE.Rte.fpUrl + '"/>').appendTo('body');
+        var pickerUrl = EE.Rte.fpUrl;
+        if (typeof EE.Rte.filePickerUrl !== 'undefined' && typeof params.directories !== 'undefined' && typeof params.defaultdir !== 'undefined') {
+            pickerUrl = EE.Rte.filePickerUrl + '&field_upload_locations=' + params.directories + '&requested_directory=' + params.defaultdir;
+        }
+        var $trigger = $('<trigger class="m-link filepicker" rel="modal-file" href="' + pickerUrl + '"/>').appendTo('body');
 
         $trigger.FilePicker({
             callback: function(data, references)

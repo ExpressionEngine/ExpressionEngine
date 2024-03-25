@@ -40,21 +40,6 @@ class Filepicker_mcp
         ee()->lang->loadfile('filemanager');
     }
 
-    protected function getUserUploadDirectories()
-    {
-        $dirs = ee('Model')->get('UploadDestination')
-            ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
-            ->filter('module_id', 0)
-            ->order('name', 'asc')
-            ->all();
-
-        $member = ee()->session->getMember();
-
-        return $dirs->filter(function ($dir) use ($member) {
-            return $dir->memberHasAccess($member);
-        });
-    }
-
     protected function getSystemUploadDirectories()
     {
         $dirs = ee('Model')->get('UploadDestination')
@@ -84,7 +69,7 @@ class Filepicker_mcp
         $requested_directory = ee()->input->get('requested_directory') ?: ee()->input->get('directories');
         $requested_directory = empty($requested_directory) ? $field_upload_locations : $requested_directory;
 
-        $dirs = $this->getUserUploadDirectories();
+        $dirs = ee('File')->makeUpload()->getUserUploadDirectories();
         if ($requested_directory != 'all') {
             $dirs = $dirs->filter('id', (int) $requested_directory);
         }
@@ -313,84 +298,7 @@ class Filepicker_mcp
 
     public function ajaxUpload()
     {
-        $dir_id = ee('Request')->post('upload_location_id') ?: ee('Request')->post('directory');
-        $subfolder_id = (int) ee('Request')->post('directory_id');
-
-        if (empty($dir_id)) {
-            show_404();
-        }
-
-        $errors = null;
-
-        $result = ee('File')->makeUpload()->uploadTo($dir_id, $subfolder_id);
-
-        $file = $result['file'];
-
-        if (isset($result['upload_response']['error'])) {
-            return [
-                'ajax' => true,
-                'body' => [
-                    'status' => 'error',
-                    'error' => $result['upload_response']['error']
-                ]
-            ];
-        }
-
-        if ($result['posted']) {
-            $errors = $result['validation_result'];
-
-            if ($result['uploaded']) {
-                // when dropped into RTE, return the result immediately
-                if (ee('Request')->get('from') == 'rte') {
-                    return [
-                        'ajax' => true,
-                        'body' => [
-                            'status' => 'success',
-                            'url' => $file->getAbsoluteURL()
-                        ]
-                    ];
-                }
-                // mark the file as newly uploaded in file picker
-                ee()->session->set_flashdata('file_id', $file->getId());
-
-                if ($file->file_name != $result['upload_response']['file_data_orig_name']) {
-                    $file->save();
-
-                    return [
-                        'ajax' => true,
-                        'body' => [
-                            'status' => 'duplicate',
-                            'duplicate' => true,
-                            'fileId' => $file->getId(),
-                            'originalFileName' => $result['upload_response']['file_data_orig_name']
-                        ]
-                    ];
-                }
-
-                return [
-                    'ajax' => true,
-                    'body' => [
-                        // Inconsistent casing for backwards compatibility
-                        'status' => 'success',
-                        'title' => $file->file_name,
-                        'file_id' => $file->getId(),
-                        'file_name' => $file->file_name,
-                        'isImage' => $file->isImage(),
-                        'isSVG' => $file->isSVG(),
-                        'thumb_path' => $file->getAbsoluteThumbnailURL(),
-                        'upload_location_id' => $file->upload_location_id
-                    ]
-                ];
-            }
-        }
-
-        return [
-            'ajax' => true,
-            'body' => [
-                'status' => 'error',
-                'error' => $errors
-            ]
-        ];
+        return $this->picker->ajaxUpload();
     }
 
     public function ajaxOverwriteOrRename()

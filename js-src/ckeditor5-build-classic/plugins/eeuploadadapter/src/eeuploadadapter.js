@@ -55,6 +55,10 @@ export default class EEUploadAdapter extends Plugin {
         if (!options) {
             return;
         }
+        options.uploadLocationId = this.editor.config.get('defaultdir');
+        if (!options.uploadLocationId) {
+            return;
+        }
         if (!options.uploadUrl) {
             /**
              * The {@link module:upload/uploadconfig~SimpleUploadConfig#uploadUrl `config.simpleUpload.uploadUrl`}
@@ -133,7 +137,7 @@ class Adapter {
             if (!response || response.error) {
                 return reject(response && response.error ? response.error : genericErrorText);
             }
-            const urls = response.path ? { default: response.path } : response.urls;
+            const urls = response.path ? { default: response.path } : response.url ? { default: response.url } : response.urls;
             // Resolve with the normalized `urls` property and pass the rest of the response
             // to allow customizing the behavior of features relying on the upload adapters.
             resolve({

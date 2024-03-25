@@ -18,9 +18,9 @@ $lang = array(
     'rte_config_name' => 'Configuration Name',
     'rte_toolbar' => 'Customize the Toolbar',
     'custom_stylesheet' => 'Custom Stylesheet',
-    'custom_stylesheet_desc' => 'CSS template with styles to be applied to fields using this tool set. All styles will be automatically prefixed with toolset class.',
+    'custom_stylesheet_desc' => 'CSS template with styles to be applied to fields using this configuration. All styles will be automatically prefixed with toolset class.',
     'custom_javascript' => 'Extra JavaScript',
-    'custom_javascript_rte_desc' => 'JS template to be included with fields using this tool set. Typically used to include extra plugins when using advanced configuration.',
+    'custom_javascript_rte_desc' => 'JS template to be included with fields using this configuration. Typically used to include extra plugins when using advanced configuration.',
     'rte_min_height' => 'Minimal height',
     'rte_min_height_desc' => 'Enter the number of pixels, or leave empty',
     'rte_max_height' => 'Maximal height',
@@ -32,7 +32,7 @@ $lang = array(
     'rte_advanced_config' => 'Advanced configuration',
     'rte_advanced_config_desc' => 'Edit configuration directly in JSON format',
     'rte_config_json' => 'Configuration JSON',
-    'rte_config_json_desc' => 'Overrides visually constructed tool set',
+    'rte_config_json_desc' => 'Overrides visually constructed configuration',
     'rte_advanced_config_warning' => '<p><b>Warning</b>: <b class="no">Advanced users only.</b> Please be careful with using this feature and check your work.</p><p>Providing invalid configuration can make the RTE fields inaccessible.</p><p>Consult editing engine docs: <a href="https://ckeditor.com/docs/ckeditor5/latest/installation/getting-started/configuration.html" target="_blank">CKEditor</a>, <a href="https://imperavi.com/redactor/docs/settings/" target="_blank">Redactor</a>, <a href="https://imperavi.com/redactorx/docs/settings/" target="_blank">RedactorX</a>.</p><p>Note that some options might be not available or implemented differently. We suggest using Full configuration as starting base.<p>',
     'rte_config_saved' => 'Configuration Saved!',
     'rte_config_saved_desc' => 'Your configuration saved successfully.',
@@ -53,10 +53,12 @@ $lang = array(
     'rte_edit_configs' => 'Edit&nbsp;Configurations',
     'rte_defer' => 'Defer Editor initialization?',
     'rte_defer_desc' => 'If you select “Yes”, RTE won’t initialize the field javascript until the field is clicked on.',
+    'rte_default_directory' => 'Default Upload Directory',
+    'rte_default_directory_desc' => 'Opening File Manager will start in this directory. Direct image uploads will go into this directory, if available.',
 
     // RTE
 
-    'available_tool_sets' => 'Available Tool Sets',
+    'available_tool_sets' => 'Available Configurations',
 
     'btn_save_settings' => 'Save Settings',
 
@@ -66,15 +68,15 @@ $lang = array(
 
     'create_new' => 'Create New',
 
-    'create_tool_set' => 'Create Tool Set',
+    'create_tool_set' => 'Create Configuration',
 
-    'create_tool_set_header' => 'Create <abbr title="Rich Text Editor">RTE</abbr> Tool Set',
+    'create_tool_set_header' => 'Create <abbr title="Rich Text Editor">RTE</abbr> Configuration',
 
-    'edit_tool_set' => 'Edit Tool Set',
+    'edit_tool_set' => 'Edit Configuration',
 
-    'edit_tool_set_header' => 'Edit <abbr title="Rich Text Editor">RTE</abbr> Tool Set',
+    'edit_tool_set_header' => 'Edit <abbr title="Rich Text Editor">RTE</abbr> Configuration',
 
-    'no_tool_sets' => 'No Tool Sets Found',
+    'no_tool_sets' => 'No Configurations Found',
 
     'rte_module_description' => '',
 
@@ -82,24 +84,24 @@ $lang = array(
 
     'status' => 'Status',
 
-    'tool_set' => 'Tool Set',
+    'tool_set' => 'Configuration',
 
     'tool_set_name' => 'Name',
 
     'tool_type' => 'Editor Type',
 
     /* Headings */
-    'create_new_toolset' => 'Create a New Tool Set',
+    'create_new_toolset' => 'Create a new configuration',
 
-    'edit_my_toolset' => 'Edit My Tool Set',
+    'edit_my_toolset' => 'Edit my configuration',
 
-    'edit_toolset' => 'Edit Tool Set',
+    'edit_toolset' => 'Edit configuration',
 
-    'my_toolset' => 'My Tool Set',
+    'my_toolset' => 'My configuration',
 
     'nav_rte_settings' => 'Rich Text Editor Settings',
 
-    'nav_rte_settings_short_desc' => 'Manage Rich Text Editor Tools and Tool Sets',
+    'nav_rte_settings_short_desc' => 'Manage Rich Text Editor Tools and Configurations',
 
     'rte_prefs' => 'Rich Text Editor Preferences',
 
@@ -107,7 +109,7 @@ $lang = array(
 
     'tools' => 'Tools',
 
-    'toolsets' => 'Tool Sets',
+    'toolsets' => 'Configuration',
 
     /* Snippets */
     'cancel' => 'Cancel',
@@ -116,25 +118,25 @@ $lang = array(
 
     'tool' => 'Tool',
 
-    'toolset' => 'Tool Set',
+    'toolset' => 'Configuration',
 
     /* Flashes */
 
-    'cannot_remove_default_toolset' => 'The default RTE tool set cannot be removed',
+    'cannot_remove_default_toolset' => 'The default RTE configuration cannot be removed',
 
-    'disable_fail_desc' => 'The following tool sets were <b>not</b> disabled',
+    'disable_fail_desc' => 'The following configurations were <b>not</b> disabled',
 
-    'disable_success_desc' => 'The following tool sets were disabled',
+    'disable_success_desc' => 'The following configurations were disabled',
 
-    'enable_fail_desc' => 'The following tool sets were <b>not</b> enabled',
+    'enable_fail_desc' => 'The following configurations were <b>not</b> enabled',
 
-    'enable_success_desc' => 'The following tool sets were enabled',
+    'enable_success_desc' => 'The following configurations were enabled',
 
-    'name_required' => 'The tool set name is required.',
+    'name_required' => 'The configuration name is required.',
 
-    'remove_fail_desc' => 'The following tool sets were <b>not</b> removed',
+    'remove_fail_desc' => 'The following configurations were <b>not</b> removed',
 
-    'remove_success_desc' => 'The following tool sets were removed',
+    'remove_success_desc' => 'The following configurations were removed',
 
     'settings_error' => 'Error saving settings',
 
@@ -146,44 +148,44 @@ $lang = array(
 
     'tool_updated' => 'Tool updated',
 
-    'toolset_created' => 'Tool set created',
+    'toolset_created' => 'Configuration created',
 
     'toolset_created_desc' => '<b>%s</b> has been successfully created.',
 
     'toolset_updated_desc' => '<b>%s</b> has been successfully updated.',
 
-    'toolset_deleted' => 'Tool set deleted successfully.',
+    'toolset_deleted' => 'Configuration deleted successfully.',
 
-    'toolset_edit_failed' => 'Tool set could not be opened for editing.',
+    'toolset_edit_failed' => 'Configuration could not be opened for editing.',
 
-    'toolset_error' => 'Tool set error',
+    'toolset_error' => 'Configuration error',
 
-    'toolset_error_desc' => 'We were unable to save the tool set, please review and fix errors below.',
+    'toolset_error_desc' => 'We were unable to save the configuration, please review and fix errors below.',
 
     'toolset_json_error_desc' => 'The advanced configuration provided is not valid JSON.',
 
-    'toolset_not_deleted' => 'Tool set could not be deleted.',
+    'toolset_not_deleted' => 'Configuration could not be deleted.',
 
-    'toolset_update_failed' => 'Tool set update failed. Please try again.',
+    'toolset_update_failed' => 'Configuration update failed. Please try again.',
 
-    'toolset_updated' => 'Tool set updated',
+    'toolset_updated' => 'Configuration updated',
 
-    'toolsets_removed' => 'Tool sets removed',
+    'toolsets_removed' => 'Configurations removed',
 
-    'toolsets_removed_desc' => '%d tool sets were removed.',
+    'toolsets_removed_desc' => '%d configurations were removed.',
 
-    'toolsets_updated' => 'Tool sets updated',
+    'toolsets_updated' => 'Configurations updated',
 
-    'unique_name_required' => 'The tool set name must be unique.',
+    'unique_name_required' => 'The configuration name must be unique.',
 
-    'valid_name_required' => 'The tool set name must not include special characters.',
+    'valid_name_required' => 'The configuration name must not include special characters.',
 
     'valid_url_required' => 'A valid URL is required.',
 
     /* Labels */
     'available_tools' => 'Available Tools (not being used)',
 
-    'default_toolset' => 'Default <abbr title="Rich Text Editor">RTE</abbr> tool set',
+    'default_toolset' => 'Default <abbr title="Rich Text Editor">RTE</abbr> configuration',
 
     'default_toolset_details' => 'Shown for users that have not created their own or chosen another.',
 
@@ -205,13 +207,13 @@ $lang = array(
 
     'rte_url' => 'URL',
 
-    'tools_in_toolset' => 'In This Tool set',
+    'tools_in_toolset' => 'In this configuration',
 
     'toolset_builder_instructions' => 'Select one or more tools and drag them to the desired location.',
 
-    'toolset_builder_label' => 'Which tools should be available in this Tool set?',
+    'toolset_builder_label' => 'Which tools should be available in this configuration?',
 
-    'toolset_name' => 'Tool set Name',
+    'toolset_name' => 'Configuration Name',
 
     /* tool names */
 
@@ -300,6 +302,8 @@ $lang = array(
     'filemanager_rte' => 'Image or File Picker',
 
     'insertImage_rte' => 'Insert image via URL',
+
+    'uploadImage_rte' => 'Upload image from computer',
 
     'insertTable_rte' => 'Table',
 

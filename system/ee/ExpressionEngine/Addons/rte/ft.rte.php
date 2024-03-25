@@ -29,6 +29,8 @@ class Rte_ft extends EE_Fieldtype
 
     public $defaultEvaluationRule = 'isNotEmpty';
 
+    private static $availableUploadDirectories; // upload dirs that the member can use
+
     /**
      * Implements EntryManager\ColumnInterface
      */
@@ -161,13 +163,12 @@ class Rte_ft extends EE_Fieldtype
     // --------------------------------------------------------------------
 
     /**
-     * Display the field.
+     * Build field to be displayed
      *
-     * @param string $data field data
-     *
-     * @return string $field
+     * @param string $data
+     * @return array
      */
-    public function display_field($data)
+    private function build_field($data)
     {
         $toolsetId = (isset($this->settings['toolset_id'])) ? (int) $this->settings['toolset_id'] : (!empty(ee()->config->item('rte_default_toolset')) ? (int) ee()->config->item('rte_default_toolset') : null);
         if (!empty($toolsetId)) {
@@ -180,15 +181,6 @@ class Rte_ft extends EE_Fieldtype
         $serviceName = ucfirst($toolset->toolset_type) . 'Service';
         $configHandle = ee('rte:' . $serviceName)->init($this->settings, $toolset);
 
-        $id = str_replace(array('[', ']'), array('_', ''), $this->field_name);
-        $defer = (isset($this->settings['defer']) && $this->settings['defer'] == 'y')
-                    ? true
-                    : false;
-
-        if (strpos($id, '_new_field_0') === false && strpos($id, '_new_row_0') === false) {
-            ee()->cp->add_to_foot('<script type="text/javascript">new Rte("' . $id . '", "' . $configHandle . '", ' . ($defer ? 'true' : 'false') . ');</script>');
-        }
-
         // convert file tags to URLs
         RteHelper::replaceFileTags($data);
 
@@ -198,21 +190,57 @@ class Rte_ft extends EE_Fieldtype
         //Third party conversion
         RteHelper::replaceExtraTags($data);
 
+        // Default directory is per-field setting, but if it's not available we grab the first available one
+        if (empty(self::$availableUploadDirectories)) {
+            self::$availableUploadDirectories = ee('File')->makeUpload()->getUserUploadDirectories()->pluck('id');
+        }
+        $defaultDirectory = isset($this->settings['default_directory']) ? $this->settings['default_directory'] : null;
+        if (empty($defaultDirectory) || !in_array($defaultDirectory, self::$availableUploadDirectories)) {
+            $defaultDirectory = !empty(self::$availableUploadDirectories) ? self::$availableUploadDirectories[0] : null;
+        }
+        if (!ee('Permission')->has('can_upload_files')) {
+            $defaultDirectory = null;
+        }
+
         if (ee()->extensions->active_hook('rte_before_display')) {
             $data = ee()->extensions->call('rte_before_display', $this, $data);
         }
 
-        ee()->load->helper('form');
-
-        $field = array(
+        return array(
             'name' => $this->field_name,
             'value' => $data,
-            'id' => $id,
             'rows' => 10,
             'data-config' => $configHandle,
             'class' => ee('rte:' . $serviceName)->getClass(),
-            'data-defer' => ($defer ? 'y' : 'n')
+            'data-directories' => isset($toolset->settings['upload_dir']) && !empty($toolset->settings['upload_dir']) ? $toolset->settings['upload_dir'] : 'all',
+            'data-defaultdir' => $defaultDirectory
         );
+    }
+
+    /**
+     * Display the field.
+     *
+     * @param string $data field data
+     *
+     * @return string $field
+     */
+    public function display_field($data)
+    {
+        $field = $this->build_field($data);
+
+        $id = str_replace(array('[', ']'), array('_', ''), $this->field_name);
+        $defer = (isset($this->settings['defer']) && $this->settings['defer'] == 'y')
+                    ? true
+                    : false;
+
+        if (strpos($id, '_new_field_0') === false && strpos($id, '_new_row_0') === false) {
+            ee()->cp->add_to_foot('<script type="text/javascript">new Rte("' . $id . '", "' . $field['data-config'] . '", ' . ($defer ? 'true' : 'false') . ');</script>');
+        }
+
+        $field['id'] = $id;
+        $field['data-defer'] = $defer ? 'y' : 'n';
+
+        ee()->load->helper('form');
 
         return form_textarea($field);
     }
@@ -226,16 +254,7 @@ class Rte_ft extends EE_Fieldtype
      */
     public function grid_display_field($data)
     {
-        $toolsetId = (isset($this->settings['toolset_id'])) ? (int) $this->settings['toolset_id'] : (!empty(ee()->config->item('rte_default_toolset')) ? (int) ee()->config->item('rte_default_toolset') : null);
-        if (!empty($toolsetId)) {
-            $toolset = ee('Model')->get('rte:Toolset')->filter('toolset_id', $toolsetId)->first();
-        } else {
-            $toolset = ee('Model')->get('rte:Toolset')->first();
-        }
-
-        // Load proper toolset
-        $serviceName = ucfirst($toolset->toolset_type) . 'Service';
-        $configHandle = ee('rte:' . $serviceName)->init($this->settings, $toolset);
+        $field = $this->build_field($data);
 
         // get the cache
         if (! isset(ee()->session->cache['rte'])) {
@@ -250,32 +269,14 @@ class Rte_ft extends EE_Fieldtype
         if (! isset($cache['displayed_grid_cols'][$this->settings['col_id']])) {
             $defer = (isset($this->settings['defer']) && $this->settings['defer'] == 'y') ? 'true' : 'false';
 
-            ee()->javascript->output('Rte.gridColConfigs.col_id_' . $this->settings['col_id'] . ' = ["' . $configHandle . '", ' . $defer . '];');
+            ee()->javascript->output('Rte.gridColConfigs.col_id_' . $this->settings['col_id'] . ' = ["' . $field['data-config'] . '", ' . $defer . '];');
 
             $cache['displayed_grid_cols'][$this->settings['col_id']] = true;
         }
 
-        // convert file tags to URLs
-        RteHelper::replaceFileTags($data);
-
-        // convert asset tags to URLs
-        RteHelper::replaceExtraTags($data);
-
-        // convert site page tags to URLs
-        RteHelper::replacePageTags($data);
-
-        if (ee()->extensions->active_hook('rte_before_display')) {
-            $data = ee()->extensions->call('rte_before_display', $this, $data);
-        }
+        
 
         ee()->load->helper('form');
-
-        $field = array(
-            'name' => $this->field_name,
-            'value' => $data,
-            'rows' => 10,
-            'data-config' => $configHandle
-        );
 
         return form_textarea($field);
     }
@@ -573,10 +574,22 @@ class Rte_ft extends EE_Fieldtype
             ),
             array(
                 'title' => lang('rte_defer'),
+                'desc' => lang('rte_defer_desc'),
                 'fields' => array(
                     'rte[defer]' => array(
                         'type' => 'yes_no',
                         'value' => (isset($settings['defer']) && $settings['defer'] == 'y') ? 'y' : 'n'
+                    )
+                )
+            ),
+            array(
+                'title' => lang('rte_default_directory'),
+                'desc' => lang('rte_default_directory_desc'),
+                'fields' => array(
+                    'rte[default_directory]' => array(
+                        'type' => 'select',
+                        'choices' => ee('Model')->get('UploadDestination')->fields('id', 'name')->filter('module_id', 0)->order('name', 'asc')->all()->getDictionary('id', 'name'),
+                        'value' => isset($settings['default_directory']) ? $settings['default_directory'] : null,
                     )
                 )
             ),

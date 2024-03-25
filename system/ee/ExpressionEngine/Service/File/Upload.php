@@ -14,6 +14,7 @@ use ExpressionEngine\Model\File\File as FileModel;
 use ExpressionEngine\Model\Content\FieldFacade;
 use ExpressionEngine\Model\Content\Display\FieldDisplay;
 use ExpressionEngine\Service\Validation\Result as ValidationResult;
+use ExpressionEngine\Service\Model\Collection;
 
 /**
  * File Service Upload
@@ -753,6 +754,30 @@ class Upload
                 'message_type' => 'success'
             ));
         }
+    }
+
+    /**
+     * List of directories the current user can upload to
+     *
+     * @return array
+     */
+    public function getUserUploadDirectories()
+    {
+        if (!isset(ee()->session)) {
+            return new Collection();
+        }
+
+        $dirs = ee('Model')->get('UploadDestination')
+            ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
+            ->filter('module_id', 0)
+            ->order('name', 'asc')
+            ->all();
+
+        $member = ee()->session->getMember();
+
+        return $dirs->filter(function ($dir) use ($member) {
+            return $dir->memberHasAccess($member);
+        });
     }
 }
 

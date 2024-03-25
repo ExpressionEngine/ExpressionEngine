@@ -87,6 +87,9 @@ export default class FileManagerCommand extends Command {
 			}
 		};
 
+		options.directories = this.editor.config.get('directories');
+		options.defaultdir = this.editor.config.get('defaultdir');
+
 		function pickFile(evt) {
 			const file = evt.detail;
 			if (Object.prototype.toString.call(file) === '[object String]') {
