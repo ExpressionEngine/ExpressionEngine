@@ -170,6 +170,7 @@ class Adapter {
             this.xhr.setRequestHeader(headerName, headers[headerName]);
         }
         this.xhr.setRequestHeader('X-CSRF-TOKEN', EE.CSRF_TOKEN);
+        this.xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         this.xhr.withCredentials = withCredentials;
         // Prepare the form data.
         const data = new FormData();

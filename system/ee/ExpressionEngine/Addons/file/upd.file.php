@@ -13,13 +13,13 @@
  */
 class File_upd
 {
-    public $version = '1.1.0';
+    public $version = '1.2.0';
 
     /**
      * Module Installer
      *
-     * @access	public
-     * @return	bool
+     * @access  public
+     * @return  bool
      */
     public function install()
     {
@@ -39,14 +39,22 @@ class File_upd
 
         ee()->db->insert('actions', $data);
 
+        //install action for direct image uploads (via RTE, etc.)
+        $data = array(
+            'class' => 'File',
+            'method' => 'ajaxUpload'
+        );
+
+        ee()->db->insert('actions', $data);
+
         return true;
     }
 
     /**
      * Module Uninstaller
      *
-     * @access	public
-     * @return	bool
+     * @access  public
+     * @return  bool
      */
     public function uninstall()
     {
@@ -64,11 +72,21 @@ class File_upd
     /**
      * Module Updater
      *
-     * @access	public
-     * @return	bool
+     * @access  public
+     * @return  bool
      */
-    public function update()
+    public function update($current = '')
     {
+        if (version_compare($current, '1.2.0', '<')) {
+            $actionQuery = ee()->db->get_where('actions', array('class' => 'File', 'method' => 'ajaxUpload'));
+            if ($actionQuery->num_rows() == 0) {
+                $data = array(
+                    'class' => 'File',
+                    'method' => 'ajaxUpload'
+                );
+                ee()->db->insert('actions', $data);
+            }
+        }
         return true;
     }
 }

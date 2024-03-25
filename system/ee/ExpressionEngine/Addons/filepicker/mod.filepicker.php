@@ -16,25 +16,6 @@ use ExpressionEngine\Addons\FilePicker\FilePicker as Picker;
 class Filepicker
 {
     public $return_data;
-
-    /**
-     * Constructor
-    */
-    public function __construct()
-    {
-        $this->return_data = '';
-    }
-
-    public function ajaxUpload()
-    {
-        exit('ok');
-        $picker = new Picker();
-        echo 'ajaUpload';
-        /*$upload = $picker->ajaxUpload();
-        echo 'loaded';
-        dd($upload);
-        ee()->output->send_ajax_response();*/
-    }
 }
 
 // EOF

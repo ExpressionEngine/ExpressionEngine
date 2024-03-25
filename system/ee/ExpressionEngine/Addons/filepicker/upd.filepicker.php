@@ -95,14 +95,6 @@ class Filepicker_upd
             $dir->save();
         }
 
-        //install action for direct image uploads (via RTE, etc.)
-        $act_data = array(
-            'class' => 'Filepicker',
-            'method' => 'ajaxUpload'
-        );
-
-        ee()->db->insert('actions', $act_data);
-
         return true;
     }
 
@@ -136,18 +128,6 @@ class Filepicker_upd
      */
     public function update($current = '')
     {
-        if (version_compare($current, '1.1.0', '<')) {
-            // Update to 1.1.0
-            $actionQuery = ee()->db->get_where('actions', array('class' => 'Filepicker', 'method' => 'ajaxUpload'));
-            if ($actionQuery->num_rows() == 0) {
-                $act_data = array(
-                    'class' => 'Filepicker',
-                    'method' => 'ajaxUpload'
-                );
-
-                ee()->db->insert('actions', $act_data);
-            }
-        }
         return true;
     }
 }
