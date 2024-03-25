@@ -367,8 +367,18 @@ class EE_Upload
             }
         }
 
+        // Since we use native functions to copy/move uploads in the local filesystem
+        // we need to explicitly update the existence in the adapter's cache
+        if ($filesystem->isLocal() && $filesystem->hasCachedAdapter()) {
+            $filesystem->getAdapter()->getCache()->updateObject($this->file_name, [
+                'type' => 'file',
+                'contents' => false,
+                'path' => $destination
+            ], true);
+        }
+
         if (!$filesystem || $filesystem->isLocal()) {
-            @chmod($this->upload_path . $this->file_name, FILE_WRITE_MODE);
+            @chmod($destination, FILE_WRITE_MODE);
         }
 
         return $result;
