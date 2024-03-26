@@ -716,7 +716,7 @@ class UploadDestination extends StructureModel
         }, []);
 
         $children = $this->getDirectoryDropdownChildren(0, $directories, $includeIcon);
-        ee()->cache->save($cache_key, $children, 10); // Cache results for 10 seconds
+        ee()->cache->save($cache_key, $children, 5); // Cache results for 5 seconds
 
         return $children;
     }
@@ -794,8 +794,8 @@ class UploadDestination extends StructureModel
         } while ($directoriesCount > ($i + 1));
 
         if ($root_only) {
-            //cache for 10 sec, which should suffice for page load even if it takes a while
-            ee()->cache->save($cache_key, $children, 10);
+            // cache for 5 seconds, which should suffice for page load even if it takes a while
+            ee()->cache->save($cache_key, $children, 5);
         }
 
         return $children;
