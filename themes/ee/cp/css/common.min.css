@@ -28459,7 +28459,7 @@ input[type=button].btn-block {
   position: absolute;
 }
 .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item .dropdown, .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item .select__dropdown {
-  width: fit-content;
+  width: 100%;
 }
 .filter-search-bar .filter-search-bar__search-row {
   display: flex;
@@ -53008,6 +53008,9 @@ ul.field-reorder-drop,
 }
 .member_manager-wrapper .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item-no-search {
   flex-grow: 0;
+}
+.member_manager-wrapper .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item-no-search div[rev=toggle-columns] {
+  width: fit-content;
 }
 .member_manager-wrapper .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item-search {
   flex-grow: 3;
