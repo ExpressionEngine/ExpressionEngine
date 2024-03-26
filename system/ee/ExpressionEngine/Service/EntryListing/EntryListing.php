@@ -483,8 +483,10 @@ class EntryListing
 
         foreach ($category_groups as $group) {
             $tree = $group->getCategoryTree(ee()->tree);
-            // Add the Category Group name as a header to the filter options
-            $this->category_options['group_' . $group->group_id] = ['type' => 'header', 'label' => $group->group_name];
+            // If there are multiple categories add the Category Group name as a header to the filter options
+            if ($category_groups->count() > 1) {
+                $this->category_options['group_' . $group->group_id] = ['type'  => 'header', 'label' => $group->group_name];
+            }
             foreach ($tree->children() as $category) {
                 $this->setCategoryOptions($category);
             }
