@@ -1,0 +1,25 @@
+{layout="cypress/layout"}
+
+{exp:channel:field field_id="{segment_3}"}
+<h5 class="field_id">{field_id}</h5>
+<h5 class="field_name">{field_name}</h5>
+<h5 class="field_label">{field_label}</h5>
+<div class="field_options">
+    {field_options}
+    <p><span class="value">{value}</span>: <span class="label">{label}</span></p>
+    {/field_options}
+</div>
+{/exp:channel:field}
+
+{!-- there should be only 1 tag processed at a time --}
+
+{exp:channel:field field_name="{segment_3}"}
+<h5 class="field_id">{field_id}</h5>
+<h5 class="field_name">{field_name}</h5>
+<h5 class="field_label">{field_label}</h5>
+<div class="field_options">
+    {field_options}
+    <p><span class="value">{value}</span>: <span class="label">{label}</span></p>
+    {/field_options}
+</div>
+{/exp:channel:field}
