@@ -979,7 +979,7 @@ class EE_Input
     */
     public function _clean_input_data($str)
     {
-        if (empty($str)) {
+        if (is_null($str) || $str === '') {
             return (string) $str;
         }
 
