@@ -81,10 +81,10 @@ class FluidField extends Model
     );
 
     protected $id;
-    protected $fluid_field_id;
+    protected $fluid_field_id; // ID of Fluid field itself
     protected $entry_id;
     protected $field_group_id;
-    protected $field_id;
+    protected $field_id; // ID of field contained in Fluid
     protected $field_data_id;
     protected $order;
     protected $group;
