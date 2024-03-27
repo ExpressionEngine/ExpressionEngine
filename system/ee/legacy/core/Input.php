@@ -979,6 +979,10 @@ class EE_Input
     */
     public function _clean_input_data($str)
     {
+        if (empty($str)) {
+            return (string) $str;
+        }
+
         if (is_array($str)) {
             $new_array = array();
             foreach ($str as $key => $val) {
@@ -987,8 +991,6 @@ class EE_Input
 
             return $new_array;
         }
-
-        $str = (string) $str;
 
         // Clean UTF-8 if supported
         if (UTF8_ENABLED === true) {
