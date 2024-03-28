@@ -523,6 +523,54 @@ class File
             }
         }
     }
+
+    /**
+     * Upload the file via AJAX request
+     * and save immediately (e.g. for RTE drag&drop)
+     *
+     * @return void
+     */
+    public function ajaxUpload()
+    {
+        $dir_id = ee('Request')->post('upload_location_id') ?: ee('Request')->post('directory');
+        $subfolder_id = (int) ee('Request')->post('directory_id');
+
+        if (empty($dir_id)) {
+            ee()->output->send_ajax_response([
+                'status' => 'error',
+                'error' => lang('no_upload_dirs')
+            ]);
+        }
+
+        $errors = null;
+
+        $result = ee('File')->makeUpload()->uploadTo($dir_id, $subfolder_id);
+
+        $file = $result['file'];
+
+        if (isset($result['upload_response']['error'])) {
+            ee()->output->send_ajax_response([
+                'status' => 'error',
+                'error' => $result['upload_response']['error']
+            ]);
+        }
+
+        if ($result['posted']) {
+            $errors = $result['validation_result'];
+
+            if ($result['uploaded']) {
+                ee()->output->send_ajax_response([
+                    'status' => 'success',
+                    'url' => $file->getAbsoluteURL()
+                ]);
+            }
+        }
+
+        ee()->output->send_ajax_response([
+            'status' => 'error',
+            'error' => $errors
+        ]);
+    }
 }
 // END CLASS
 

@@ -7,7 +7,6 @@
 import ClassicEditorBase from '@ckeditor/ckeditor5-editor-classic/src/classiceditor';
 
 import Essentials from '@ckeditor/ckeditor5-essentials/src/essentials';
-import UploadAdapter from '@ckeditor/ckeditor5-adapter-ckfinder/src/uploadadapter';
 import Autoformat from '@ckeditor/ckeditor5-autoformat/src/autoformat';
 import Clipboard from '@ckeditor/ckeditor5-clipboard/src/clipboard';
 import Strikethrough from '@ckeditor/ckeditor5-basic-styles/src/strikethrough';
@@ -19,12 +18,7 @@ import CodeBlock from '@ckeditor/ckeditor5-code-block/src/codeblock';
 import Subscript from '@ckeditor/ckeditor5-basic-styles/src/subscript';
 import Superscript from '@ckeditor/ckeditor5-basic-styles/src/superscript';
 import BlockQuote from '@ckeditor/ckeditor5-block-quote/src/blockquote';
-import Image from '@ckeditor/ckeditor5-image/src/image';
-import ImageCaption from '@ckeditor/ckeditor5-image/src/imagecaption';
-import ImageStyle from '@ckeditor/ckeditor5-image/src/imagestyle';
-import ImageToolbar from '@ckeditor/ckeditor5-image/src/imagetoolbar';
-import ImageUpload from '@ckeditor/ckeditor5-image/src/imageupload';
-import ImageResize from '@ckeditor/ckeditor5-image/src/imageresize';
+import { Image, ImageInsert, AutoImage, ImageCaption, ImageStyle, ImageToolbar, ImageResize, ImageUpload, ImageUtils } from '@ckeditor/ckeditor5-image';
 import Indent from '@ckeditor/ckeditor5-indent/src/indent';
 import IndentBlock from '@ckeditor/ckeditor5-indent/src/indentblock';
 import Link from '@ckeditor/ckeditor5-link/src/link';
@@ -49,18 +43,23 @@ import { Style } from '@ckeditor/ckeditor5-style';
 import { GeneralHtmlSupport } from '@ckeditor/ckeditor5-html-support';
 import { SourceEditing } from '@ckeditor/ckeditor5-source-editing';
 import { ShowBlocks } from '@ckeditor/ckeditor5-show-blocks';
+import { FindAndReplace } from '@ckeditor/ckeditor5-find-and-replace';
+import { FileRepository } from '@ckeditor/ckeditor5-upload';
 
 import Mention from '../plugins/ckeditor5-mention/src/mention';
 import ReadMore from '../plugins/readmore/src/readmore';
 import FileManager from '../plugins/filemanager/src/filemanager';
 import PageLinks from '../plugins/pagelinks/src/pagelinks';
+import EEUploadAdapter from '../plugins/eeuploadadapter/src/eeuploadadapter';
 
 export default class ClassicEditor extends ClassicEditorBase {}
 
 // Plugins to include in the build.
 ClassicEditor.builtinPlugins = [
 	Essentials,
-	UploadAdapter,
+	FileRepository,
+	EEUploadAdapter,
+	FindAndReplace,
 	Autoformat,
 	Clipboard,
 	Strikethrough,
@@ -78,8 +77,10 @@ ClassicEditor.builtinPlugins = [
 	ImageCaption,
 	ImageStyle,
 	ImageToolbar,
-	ImageUpload,
 	ImageResize,
+	ImageInsert,
+	ImageUpload,
+	AutoImage,
 	Indent,
 	IndentBlock,
 	Link,

@@ -5,7 +5,7 @@ return array(
     'author_url' => 'https://expressionengine.com/',
     'name' => 'File',
     'description' => '',
-    'version' => '1.1.0',
+    'version' => '1.2.0',
     'namespace' => 'ExpressionEngine\Addons\File',
     'settings_exist' => false,
     'built_in' => true,
