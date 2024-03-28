@@ -404,7 +404,7 @@ class Rte_mcp
                             'choices' => [
                                 'ckeditor'  => 'CKEditor',
                                 'redactorX'  => 'RedactorX',
-                                'redactor'  => 'Redactor (deprecated)',
+                                'redactor'  => 'Redactor Classic (deprecated)',
                             ],
                             'group_toggle' => [
                                 'ckeditor' => 'ckeditor_toolbar',
