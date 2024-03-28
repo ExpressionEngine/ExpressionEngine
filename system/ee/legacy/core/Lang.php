@@ -307,6 +307,7 @@ class EE_Lang
             $idiom = $this->getIdiom();
         }
 
+        $systemDefaultFile = SYSPATH . 'ee/language/english/' . $langfile;
         $paths = array(
             // Check custom languages first
             SYSPATH . 'user/language/' . $idiom . '/' . $langfile,
@@ -314,8 +315,6 @@ class EE_Lang
             SYSPATH . 'ee/language/' . $idiom . '/' . $langfile,
             // Check their defined default language
             SYSPATH . 'user/language/' . $deft_lang . '/' . $langfile,
-            // Lastly render the english
-            SYSPATH . 'ee/language/english/' . $langfile
         );
 
         // If we're in the installer, add those lang files
@@ -326,6 +325,9 @@ class EE_Lang
                 APPPATH . 'language/' . $deft_lang . '/' . $langfile
             );
         }
+
+        // We'll load system English file first, with possibility to override
+        array_unshift($paths, $systemDefaultFile);
 
         // if it's in an alternate location, such as a package, check there first
         $alt_files = [];
@@ -352,14 +354,20 @@ class EE_Lang
 
         $success = false;
 
+        $langStrings = [];
         foreach ($paths as $path) {
             if (file_exists($path) && include $path) {
-                $success = true;
-                if (in_array($path, $alt_files)) {
-                    $scope = 'addon';
+                if (isset($lang) && is_array($lang)) {
+                    $success = true;
+                    $langStrings = array_merge($langStrings, $lang);
+                    unset($lang);
+                    if (in_array($path, $alt_files)) {
+                        $scope = 'addon';
+                    }
+                    if ($path !== $systemDefaultFile) {
+                        break;
+                    }
                 }
-
-                break;
             }
         }
 
@@ -367,31 +375,31 @@ class EE_Lang
             show_error('Unable to load the requested language file: language/' . $idiom . '/' . $langfile);
         }
 
-        if (! isset($lang)) {
+        if (empty($langStrings)) {
             log_message('debug', 'Language file contains no data: language/' . $idiom . '/' . $langfile);
 
             return;
         }
 
         if ($return == true) {
-            return $lang;
+            return $langStrings;
         }
 
         $this->is_loaded[] = $langfile;
 
         switch ($scope) {
             case 'addon':
-                $this->addon_language = array_merge($this->addon_language, $lang);
+                $this->addon_language = array_merge($this->addon_language, $langStrings);
 
                 break;
             case 'ee':
             default:
-                $this->language = array_merge($this->language, $lang);
+                $this->language = array_merge($this->language, $langStrings);
 
                 break;
         }
-        unset($lang);
 
+        // $ee_lang is a way for add-on lang file to override EE lang file
         if (isset($ee_lang)) {
             $this->language = array_merge($this->language, $ee_lang);
             unset($ee_lang);
