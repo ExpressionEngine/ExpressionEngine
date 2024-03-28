@@ -138,6 +138,7 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
                 'multi' => true,
                 'nested' => true,
                 'nestable_reorder' => true,
+                'force_react' => $this->get_setting('force_react', false),
                 'manageable' => $this->get_setting('editable', false)
                     && ! $this->get_setting('in_modal_context'),
                 'add_btn_label' => $this->get_setting('add_btn_label', null),
@@ -150,7 +151,7 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
             ]);
         }
 
-        $r = '<div class="scroll-wrap pr">';
+        $r = '<div class="scroll-wrap pr checkbox-wrapper">';
 
         $r .= $this->_display_nested_form($field_options, $values);
 

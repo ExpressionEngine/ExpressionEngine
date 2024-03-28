@@ -102,10 +102,6 @@ class Edit extends AbstractPublishController
             $vars['channels_exist'] = (bool) ee('Model')->get('Channel')->filter('site_id', ee()->config->item('site_id'))->count();
         }
 
-        $vars['filters'] = $filters->renderEntryFilters($base_url);
-        $vars['filters_search'] = $filters->renderSearch($base_url);
-        $vars['search_value'] = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
-
         $base_url->addQueryStringVariables(
             array_filter(
                 $filter_values,
@@ -245,6 +241,9 @@ class Edit extends AbstractPublishController
             );
         }
 
+        $vars['filters'] = $filters->renderEntryFilters($base_url);
+        $vars['filters_search'] = $filters->renderSearch($base_url);
+        $vars['search_value'] = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
         $vars['pagination'] = ee('CP/Pagination', $count)
             ->perPage($filter_values['perpage'])
             ->currentPage($page)

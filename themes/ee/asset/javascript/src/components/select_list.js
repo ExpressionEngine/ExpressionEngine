@@ -52,7 +52,31 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
           selected = _this.props.selected.concat([item]).filter(function (item) {
             return item.value != XORvalue;
           }); // uncheck XOR value
-          // Sort selection?
+          // check if item has toggles object
+          // toggles are present on the Channel->Edit->Categories
+
+          if (item.toggles && Object.keys(item.toggles).length) {
+            var _loop = function _loop(_key) {
+              if (item.toggles[_key]) {
+                i = _this.state.toggles.filter(function (toggle) {
+                  return toggle[_key] == item.value;
+                });
+
+                if (!i.length) {
+                  var _this$state$toggles$p;
+
+                  _this.state.toggles.push((_this$state$toggles$p = {}, _defineProperty(_this$state$toggles$p, _key, item.value), _defineProperty(_this$state$toggles$p, 'name', _key), _defineProperty(_this$state$toggles$p, 'value', item.value), _this$state$toggles$p));
+                }
+              }
+            };
+
+            for (var _key in item.toggles) {
+              var i;
+
+              _loop(_key);
+            }
+          } // Sort selection?
+
 
           if (_this.props.selectionShouldRetainItemOrder) {
             selected = _this.getOrderedSelection(selected);
@@ -135,6 +159,28 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
     });
 
     _this.version = 0;
+    var toggles = [];
+    var values = props.selected.length ? props.selected.map(function (item) {
+      return item.value;
+    }) : [];
+
+    if (props.selectable && props.items.length != 0 && props.selected.length != 0 && props.toggles && props.toggles.length != 0) {
+      props.items.filter(function (item) {
+        return values.includes(item.value);
+      }).forEach(function (item) {
+        props.toggles.filter(function (toggle) {
+          if (item.toggles[toggle] == true) {
+            var _toggles$push;
+
+            toggles.push((_toggles$push = {}, _defineProperty(_toggles$push, toggle, item.value), _defineProperty(_toggles$push, 'name', toggle), _defineProperty(_toggles$push, 'value', item.value), _toggles$push));
+          }
+        });
+      });
+    }
+
+    _this.state = {
+      toggles: toggles
+    };
     return _this;
   }
 
@@ -166,7 +212,7 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
       var selector = this.props.nested ? '.field-nested' : '.field-inputs';
       $(selector, this.container).sortable({
         axis: 'y',
-        containment: 'parent',
+        containment: false,
         handle: '.icon-reorder',
         items: this.props.nested ? '> li' : 'label',
         placeholder: 'field-reorder-placeholder',
@@ -435,7 +481,10 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
           handleRemove: function handleRemove(e, item) {
             return props.handleRemove(e, item);
           },
-          groupToggle: props.groupToggle
+          groupToggle: props.groupToggle,
+          toggles: props.toggles,
+          state: _this8.state,
+          toggleChanged: props.toggleChanged
         });
       })), !props.multi && props.tooMany && props.selected[0] && React.createElement(SelectedItem, {
         item: this.getFullItem(props.selected[0]),
@@ -454,6 +503,16 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
           key: item.value,
           name: props.multi ? props.name + '[]' : props.name,
           value: item.value,
+          ref: function ref(input) {
+            _this8.input = input;
+          }
+        });
+      }), this.state.toggles.length != 0 && this.state.toggles.map(function (toggle) {
+        return React.createElement("input", {
+          type: "hidden",
+          key: toggle.name + '[' + toggle.value + ']',
+          name: props.multi ? toggle.name + '[]' : toggle.name,
+          value: toggle.value,
           ref: function ref(input) {
             _this8.input = input;
           }
@@ -498,6 +557,7 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
             entry_id: items[key].entry_id ? items[key].entry_id : '',
             upload_location_id: items[key].upload_location_id ? items[key].upload_location_id : '',
             path: items[key].path ? items[key].path : '',
+            toggles: items[key].toggles ? items[key].toggles : null,
             status: items[key].status ? items[key].status : null,
             editable: items[key].editable ? items[key].editable : false
           };
@@ -597,8 +657,57 @@ var SelectItem = /*#__PURE__*/function (_React$Component2) {
       });
     }
   }, {
+    key: "bindToggleChange",
+    value: function bindToggleChange(e, item) {
+      e.preventDefault();
+      $(e.currentTarget).toggleClass('active');
+      $(e.currentTarget).find('i').toggleClass('fa-toggle-on fa-toggle-off');
+      var toggleName = $(e.currentTarget).attr('data-toggle-name');
+      item.toggles[toggleName] = !item.toggles[toggleName];
+
+      if (item.toggles[toggleName]) {
+        var _this$props$state$tog;
+
+        this.props.state.toggles.push((_this$props$state$tog = {}, _defineProperty(_this$props$state$tog, toggleName, item.value), _defineProperty(_this$props$state$tog, 'name', toggleName), _defineProperty(_this$props$state$tog, 'value', item.value), _this$props$state$tog));
+      } else {
+        this.props.state.toggles = this.props.state.toggles.filter(function (object) {
+          if (object[toggleName] != item.value) return object;
+        });
+      }
+
+      this.props.toggleChanged(this.props.state.toggles);
+    }
+  }, {
+    key: "toggleOn",
+    value: function toggleOn() {
+      return React.createElement("svg", {
+        xmlns: "http://www.w3.org/2000/svg",
+        viewBox: "0 0 576 384"
+      }, React.createElement("path", {
+        fill: "#171feb",
+        d: "m0,192C0,86,86,0,192,0h192c106,0,192,86,192,192s-86,192-192,192h-192C86,384,0,298,0,192Z"
+      }), React.createElement("circle", {
+        fill: "#fff",
+        cx: "384",
+        cy: "192",
+        r: "96"
+      }));
+    }
+  }, {
+    key: "toggleOff",
+    value: function toggleOff() {
+      return React.createElement("svg", {
+        xmlns: "http://www.w3.org/2000/svg",
+        viewBox: "0 0 576 512"
+      }, React.createElement("path", {
+        d: "M384 112c79.5 0 144 64.5 144 144s-64.5 144-144 144H192c-79.5 0-144-64.5-144-144s64.5-144 144-144H384zM576 256c0-106-86-192-192-192H192C86 64 0 150 0 256S86 448 192 448H384c106 0 192-86 192-192zM192 352a96 96 0 1 0 0-192 96 96 0 1 0 0 192z"
+      }));
+    }
+  }, {
     key: "render",
     value: function render() {
+      var _this9 = this;
+
       var props = this.props;
       var checked = this.checked(props.item.value);
       var label = props.item.label;
@@ -641,9 +750,20 @@ var SelectItem = /*#__PURE__*/function (_React$Component2) {
         className: "meta-info"
       }, props.item.instructions), React.createElement("div", {
         "class": "button-group button-group-xsmall button-group-flyout-right"
-      }, props.editable && React.createElement("a", {
+      }, props.toggles && props.toggles.length != 0 && props.toggles.map(function (toggleName, index) {
+        return React.createElement("a", {
+          href: "",
+          className: 'button button--default extra-flyout-button flyout-' + toggleName + (props.item.toggles[toggleName] == true ? ' active' : ''),
+          onClick: function onClick(e) {
+            return _this9.bindToggleChange(e, props.item);
+          },
+          disabled: checked ? false : true,
+          "data-toggle-name": toggleName
+        }, EE.lang[toggleName], " ", props.item.toggles[toggleName] == true ? _this9.toggleOn() : _this9.toggleOff());
+      }), props.editable && React.createElement("a", {
         href: "",
-        className: "button button--default flyout-edit flyout-edit-icon"
+        className: "button button--default flyout-edit flyout-edit-icon",
+        "data-id": props.item.value
       }, React.createElement("span", {
         className: "sr-only"
       }, EE.lang.edit_element), React.createElement("i", {

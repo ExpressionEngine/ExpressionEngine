@@ -12,11 +12,17 @@ return array(
     'fieldtypes' => array(
         'slider' => array(
             'name' => 'Value Slider',
-            'compatibility' => 'text'
+            'compatibility' => 'text',
+            'use' => array(
+                'MemberField'
+            )
         ),
         'range_slider' => array(
             'name' => 'Range Slider',
-            'compatibility' => 'text'
+            'compatibility' => 'text',
+            'use' => array(
+                'MemberField'
+            )
         )
     )
 );

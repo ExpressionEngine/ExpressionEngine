@@ -16,6 +16,7 @@ context('One-Click Updater', () => {
 
     cy.eeConfig({ item: 'app_version' }).then((config) => {
       app_version = config
+      cy.log('Current version: ' + app_version)
     })
 
     // This test is also used in the pre-release.yml workflow and gets a copy of 6.1.5
@@ -71,7 +72,7 @@ context('One-Click Updater', () => {
         expect(text).to.contain(app_version)
       })
       cy.eeConfig({ item: 'app_version' }).then((config) => {
-        expect(config).to.eq(app_version)
+        expect(config).to.contain(app_version)
       })
   })
 

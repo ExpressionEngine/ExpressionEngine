@@ -11,7 +11,10 @@ return array(
     'built_in' => true,
     'fieldtypes' => array(
         'text' => array(
-            'compatibility' => 'text'
+            'compatibility' => 'text',
+            'use' => array(
+                'MemberField'
+            )
         )
     )
 );

@@ -33,6 +33,13 @@ class Pro_search_en_stemmer
     private static $regex_vowel = '(?:[aeiou]|(?<![aeiou])y)';
 
     /**
+     * Stem method that Pro Search will call
+     *
+     * @var string
+     */
+    public $pro_search_stem_method = 'stem';
+
+    /**
     * Stems a word. Simple huh?
     *
     * @param  string $word Word to stem

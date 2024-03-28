@@ -171,21 +171,6 @@ $(document).ready(function(){
 				return false;
 			});
 
-			// listen for clicks to the document
-			$(document).on('click',function(e){
-				// check to see if we are inside a sub-menu or not.
-				if(!$(e.target).closest('.sub-menu').length){
-					// close OTHER open sub menus
-					// when clicking outside ANY sub menu trigger
-					// thanks me :D
-					$('.open')
-						// remove the class of open
-						.removeClass('open')
-						// hide all siblings of open with a class of sub-menu
-						.siblings('.sub-menu').hide();
-				}
-			});
-
 	// =========
 	// sub menus (NEW)
 	// =========
@@ -236,20 +221,23 @@ $(document).ready(function(){
 			}
 		});
 
+		// Removed this code, to prevent bug with popup inside RedactorX
+		// Moved code to remove Class 'open' inside dropdown-controller.js file hideAllDropdowns()
+
 		// listen for clicks to the document
-		$(document).on('click',function(e){
-			// check to see if we are inside a sub-menu or not.
-			if( ! $(e.target).closest('.sub-menu, .date-picker-wrap').length){
-				// close OTHER open sub menus
-				// when clicking outside ANY sub menu trigger
-				// thanks me :D
-				$('.open')
-					// remove the class of open
-					.removeClass('open')
-					// hide all siblings of open with a class of sub-menu
-					.siblings('.sub-menu').hide();
-			}
-		});
+		// $(document).on('click',function(e){
+		// 	// check to see if we are inside a sub-menu or not.
+		// 	if( ! $(e.target).closest('.sub-menu, .date-picker-wrap').length && ! $(e.target).parents('.rx-popup').length){
+		// 		// close OTHER open sub menus
+		// 		// when clicking outside ANY sub menu trigger
+		// 		// thanks me :D
+		// 		$('.open')
+		// 			// remove the class of open
+		// 			.removeClass('open')
+		// 			// hide all siblings of open with a class of sub-menu
+		// 			.siblings('.sub-menu').hide();
+		// 	}
+		// });
 
 
     // Clicking icons in Jump input focuses input
@@ -676,6 +664,9 @@ $(document).ready(function(){
 			// reveal the modal
 			if ($(this).hasClass('modal-wrap')) {
 				$(this).fadeIn('slow');
+				if ($(this).find('input:visible').length) {
+					$(this).find('input:visible').focus();
+				}
 			} else {
 				$(this).removeClass('app-modal---closed')
 					.addClass('app-modal---open');
@@ -866,7 +857,7 @@ $(document).ready(function(){
 		});
 
 		// Prevent clicks on checkboxes from bubbling to the table row
-		$('body').on('click', 'table tr td:last-child input[type=checkbox]', function(e) {
+		$('body').on('click', 'table tr td:last-child input[type=checkbox], table tr td.app-listing__cell', function(e) {
 			e.stopPropagation();
 		});
 
@@ -1240,8 +1231,40 @@ $(document).ready(function(){
 						$(this).css('pointer-events', 'none');
 						$(this).find('.checkbox-label__text').css('pointer-events', 'auto');
 						$(this).find('input').css('pointer-events', 'auto');
+
+						if ($(this).find('.checkbox-label__text-editable').length) {
+							$(this).find('.checkbox-label__text-editable').css('pointer-events', 'none');
+							$(this).find('.checkbox-label__text-editable .button').css('pointer-events', 'auto')
+						}
 				}
 			});
 		}
+
+		$('body').on('click', '.js-app-badge', function(e) {
+			var el = $(this);
+			// copy asset link to clipboard
+			var copyText = el.find('.txt-only').text();
+
+			document.addEventListener('copy', function(e) {
+				e.clipboardData.setData('text/plain', copyText);
+				e.preventDefault();
+			}, true);
+
+			document.execCommand('copy');
+
+			// show notification
+			el.addClass('success');
+			el.find('.fa-copy').addClass('hidden');
+			el.find('.fa-circle-check').removeClass('hidden');
+
+			// hide notification in 2 sec
+			setTimeout(function() {
+				el.removeClass('success');
+				el.find('.fa-copy').removeClass('hidden');
+				el.find('.fa-circle-check').addClass('hidden');
+			}, 2000);
+
+			return false;
+		})
 
 }); // close (document).ready

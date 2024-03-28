@@ -89,6 +89,19 @@ class ChannelFieldGroup extends Model
             return 'unique_among_channel_fields';
         }
 
+        // check member fields
+        $unique = $this->getModelFacade()
+            ->get('MemberField')
+            ->filter('m_field_name', $value);
+
+        foreach ($params as $field) {
+            $unique->filter('m_' . $field, $this->getProperty($field));
+        }
+
+        if ($unique->count() > 0) {
+            return 'unique_among_member_fields'; // lang key
+        }
+
         return true;
     }
 
@@ -134,6 +147,17 @@ class ChannelFieldGroup extends Model
         }
 
         return new Collection($channels);
+    }
+
+    public function getNameBadge($prefix = '')
+    {
+        if (ee()->session->userdata('member_id') == 0) {
+            return '';
+        }
+        if (ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->show_field_names == 'y') {
+            return ee('View')->make('publish/partials/field_name_badge')->render(['name' => $prefix . $this->short_name]);
+        }
+        return '';
     }
 }
 

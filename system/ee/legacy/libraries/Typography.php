@@ -2251,7 +2251,7 @@ var out = '',
 	j = el.length;
 
 while (--i >= 0)
-	out += unescape(l[i].replace(/^\s\s*/, '&#'));
+	out += decodeURIComponent(l[i].replace(/^\s\s*/, '&#'));
 
 while (--j >= 0)
 	if (el[j].getAttribute('<?php echo $span_marker ?>'))

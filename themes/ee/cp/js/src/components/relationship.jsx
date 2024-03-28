@@ -23,6 +23,8 @@ class Relationship extends React.Component {
         this.ajaxFilter = (SelectList.countItems(this.initialItems) >= props.limit && props.filter_url)
         this.ajaxTimer = null
         this.ajaxRequest = null
+        this.lang = typeof(props.lang) !== 'undefined' ? props.lang : EE.relationship.lang
+        this.showCreateDropdown = props.channels.length > 1 ? (typeof(props.showCreateDropdown) !== 'undefined' && props.showCreateDropdown == false ? false : true) : false
     }
 
     static renderFields(context) {
@@ -74,6 +76,7 @@ class Relationship extends React.Component {
         // Because the add field button shifts down when an item is added, we need to tell
         // the dropdown controller to update the dropdown positions so the dropdown stays under the button
         DropdownController.updateDropdownPositions()
+        $("[data-publish] > form").trigger("entry:startAutosave");
     }
 
     deselect(itemId) {
@@ -86,16 +89,17 @@ class Relationship extends React.Component {
     openPublishFormForChannel (channel) {
         const channelTitle = channel.title
         const channelId = channel.id
+        const publishCreateUrl = typeof(this.props.publishCreateUrl) !== 'undefined' ? this.props.publishCreateUrl : EE.relationship.publishCreateUrl;
 
         EE.cp.ModalForm.openForm({
-            url: EE.relationship.publishCreateUrl.replace('###', channelId),
+            url: publishCreateUrl.replace('###', channelId),
             full: true,
             iframe: true,
             success: this.entryWasCreated,
             load: (modal) => {
                 const entryTitle = $(this.field.closest('[data-publish]')).find('input[name=title]').val()
 
-                let title = EE.relationship.lang.creatingNew
+                let title = this.lang.creatingNew
                     .replace('#to_channel#', channelTitle)
                     .replace('#from_channel#', EE.publish.channel_title)
 
@@ -110,8 +114,9 @@ class Relationship extends React.Component {
 
     // Opens a modal to edit an entry
     openPublishEditForm (id) {
+        const publishEditUrl = typeof(this.props.publishEditUrl) !== 'undefined' ? this.props.publishEditUrl : EE.relationship.publishEditUrl;
         EE.cp.ModalForm.openForm({
-            url: EE.relationship.publishEditUrl.replace('###', id + '&' + $.param({ entry_ids: [id] })),
+            url: publishEditUrl.replace('###', id + '&' + $.param({ entry_ids: [id] })),
             full: true,
             iframe: true,
             dataType: 'json',
@@ -341,11 +346,11 @@ class Relationship extends React.Component {
                                     </div>
                                     <div class="list-item__content-right">
                                         <div className="button-group">
-                                            {this.props.can_add_items && item.editable &&
-                                            <button type="button" title={EE.relationship.lang.edit} className="button button--small button--default" onClick={() => this.openPublishEditForm(item.value)}><i class="fal fa-pencil-alt"></i></button>
+                                            {this.props.can_edit_items && item.can_edit && item.editable &&
+                                            <button type="button" title={this.lang.edit} className="button button--small button--default" onClick={() => this.openPublishEditForm(item.value)}><i class="fal fa-pencil-alt"></i></button>
                                             }
 
-                                            <button type="button" title={EE.relationship.lang.remove} onClick={() => this.deselect(item.value)} className="button button--small button--default"><i class="fal fa-fw fa-trash-alt"></i></button>
+                                            <button type="button" title={this.lang.remove} onClick={() => this.deselect(item.value)} className="button button--small button--default"><i class="fal fa-fw fa-trash-alt"></i></button>
                                         </div>
                                     </div>
                                 </li>
@@ -366,20 +371,20 @@ class Relationship extends React.Component {
                 }
 
                 <div style={{display: showAddButton ? 'block' : 'none' }}>
-                <button type="button" className="js-dropdown-toggle button button--default"><i class="fal fa-plus icon-left"></i> {props.button_label ? props.button_label : EE.relationship.lang.relateEntry}</button>
+                <button type="button" className="js-dropdown-toggle button button--default"><i class="fal fa-plus icon-left"></i> {props.button_label ? props.button_label : this.lang.relateEntry}</button>
                     <div className="dropdown js-dropdown-auto-focus-input">
                         <div className="dropdown__search d-flex">
                             <div className="filter-bar flex-grow">
                                 <div className="filter-bar__item flex-grow">
                                     <div className="search-input">
-                                        <input type="text" class="search-input__input input--small" onChange={(handleSearchItem) => this.filterChange('search', handleSearchItem.target.value)} placeholder={EE.relationship.lang.search} />
+                                        <input type="text" class="search-input__input input--small" onChange={(handleSearchItem) => this.filterChange('search', handleSearchItem.target.value)} placeholder={this.lang.search} />
                                     </div>
                                 </div>
                                 {props.channels.length > 1 &&
                                 <div className="filter-bar__item">
                                     <DropDownButton
                                         keepSelectedState={true}
-                                        title={EE.relationship.lang.channel}
+                                        title={this.lang.channel}
                                         items={channelFilterItems}
                                         onSelect={(value) => this.filterChange('channel_id', value)}
                                         buttonClass="filter-bar__button"
@@ -388,14 +393,14 @@ class Relationship extends React.Component {
                                 }
                                 {this.props.can_add_items &&
                                 <div className="filter-bar__item">
-                                    {props.channels.length == 1 &&
-                                    <button type="button" className="button button--primary button--small" onClick={() => this.openPublishFormForChannel(this.props.channels[0])}>New Entry</button>
+                                    {!this.showCreateDropdown &&
+                                    <button type="button" className="button button--primary button--small" onClick={() => this.openPublishFormForChannel(this.props.channels[0])}>{ this.props.new_entry }</button>
                                     }
-                                    {props.channels.length > 1 &&
+                                    {this.showCreateDropdown &&
                                     <div>
-                                    <button type="button" className="js-dropdown-toggle button button--primary button--small" data-dropdown-pos="bottom-end">New Entry <i class="fal fa-chevron-down icon-right"></i></button>
+                                    <button type="button" className="js-dropdown-toggle button button--primary button--small" data-dropdown-pos="bottom-end">{ this.props.new_entry } <i class="fal fa-chevron-down icon-right"></i></button>
                                     <div className="dropdown">
-                                        {props.channels.map((channel) => {
+                                        {props.channelsForNewEntries.map((channel) => {
                                             return (
                                                 <a href className="dropdown__link" onClick={() => this.openPublishFormForChannel(channel)}>{channel.title}</a>
                                             )
@@ -417,7 +422,7 @@ class Relationship extends React.Component {
                             })
                         }
                         {dropdownItems.length == 0 &&
-                            <div class="dropdown__header text-center">No Entries Found</div>
+                            <div class="dropdown__header text-center">{ this.props.no_results }</div>
                         }
                         </div>
                     </div>
@@ -434,7 +439,13 @@ $(document).ready(function () {
 Grid.bind("relationship", "display", function (cell) {
     Relationship.renderFields(cell);
 });
+Grid.bind("member", "display", function (cell) {
+    Relationship.renderFields(cell);
+});
 
 FluidField.on("relationship", "add", function (field) {
+    Relationship.renderFields(field);
+});
+FluidField.on("member", "add", function (field) {
     Relationship.renderFields(field);
 });

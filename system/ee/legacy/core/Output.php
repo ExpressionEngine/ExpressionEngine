@@ -273,6 +273,13 @@ class EE_Output
 
         // --------------------------------------------------------------------
 
+        if (isset(ee()->extensions) && ee()->extensions->active_hook('before_response_send_output') === true) {
+            $output = ee()->extensions->call('before_response_send_output', $output);
+            if (ee()->extensions->end_script === true) {
+                return;
+            }
+        }
+
         // Set the output data
         if ($output == '') {
             $output = & $this->final_output;
@@ -399,6 +406,13 @@ class EE_Output
         // --------------------------------------------------------------------
 
         echo $output;  // Send it to the browser!
+
+        if (isset(ee()->extensions) && ee()->extensions->active_hook('after_response_send_output') === true) {
+            ee()->extensions->call('after_response_send_output');
+            if (ee()->extensions->end_script === true) {
+                return;
+            }
+        }
 
         log_message('debug', "Final output sent to browser");
         log_message('debug', "Total execution time: " . $elapsed);
@@ -674,15 +688,19 @@ class EE_Output
      *
      * @access  public
      * @param   string
-     * @param   bool    whether or not the response is an error
+     * @param   bool|int    HTTP status code. If boolean, status code to send.
      * @return  void
      */
-    public function send_ajax_response($msg, $error = false)
+    public function send_ajax_response($msg, $statusCode = false)
     {
         $this->enable_profiler(false);
 
-        if ($error === true) {
+        if ($statusCode === true) {
             $this->set_status_header(500);
+        } else if ($statusCode === false || (!is_int($statusCode) && !is_bool($statusCode))) {
+            $this->set_status_header(200);
+        } else {
+            $this->set_status_header($statusCode);
         }
 
         if (ee()->config->item('send_headers') == 'y') {

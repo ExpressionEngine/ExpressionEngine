@@ -128,7 +128,7 @@ class Member_memberlist extends Member
         /** ---------------------------------
         /**  Does the recipient accept email?
         /** ---------------------------------*/
-        $query = ee()->db->query("SELECT email, screen_name, accept_user_email FROM exp_members WHERE member_id = '". ee()->db->escape_str($member_id) . "'");
+        $query = ee()->db->query("SELECT email, screen_name, accept_user_email FROM exp_members WHERE member_id = '" .  ee()->db->escape_str($member_id) . "'");
 
         if ($query->num_rows() == 0) {
             return false;
@@ -159,7 +159,7 @@ class Member_memberlist extends Member
         ee()->email->message($message);
 
         if (isset($_POST['self_copy'])) {
-            /*	If CC'ing the send, they get the email and the recipient is BCC'ed
+            /*  If CC'ing the send, they get the email and the recipient is BCC'ed
                 Because Rick says his filter blocks emails without a To: field
             */
 
@@ -249,7 +249,7 @@ class Member_memberlist extends Member
             $template = ee()->TMPL->tagdata;
             // Find out where our memberlist page actually is (for doing search results).
             $result_page = ee()->functions->fetch_current_uri();
-        } else {
+        } elseif (ee('Config')->getFile()->getBoolean('legacy_member_templates')) {
             $template = $this->_load_element('memberlist');
         }
 
@@ -258,10 +258,12 @@ class Member_memberlist extends Member
 
         // Find out if we have sub-tag data for our `member_rows` tag. If not, use the legacy speciality template.
         if (strpos($template, '{/member_rows}') !== false) {
-            $member_rows_tag_length = strlen(LD . 'member_rows' . RD);
+
+            $member_rows_opening = ee('Variables/Parser')->getFullTag($template, 'member_rows');
+            $member_rows_tag_length = strlen(LD . $member_rows_opening);
 
             // Find the starting and ending position of our subtag and calculate the difference so we can grab it.
-            $member_rows_start = strpos($template, LD . 'member_rows' . RD) + $member_rows_tag_length;
+            $member_rows_start = strpos($template, LD . $member_rows_opening) + $member_rows_tag_length;
             $member_rows_end = strpos($template, LD . '/member_rows' . RD);
             $member_rows_diff = $member_rows_end - $member_rows_start;
 
@@ -338,7 +340,7 @@ class Member_memberlist extends Member
 
         /* ----------------------------------------
         /*  Check for Search URL
-        /*		- In an attempt to be clever, I decided to first check for
+        /*      - In an attempt to be clever, I decided to first check for
                 the Search ID and if found, use an explode to set it and
                 find a new $this->cur_id.  This solves the problem easily
                 and saves me from using substr() and strpos() far too many times
@@ -889,17 +891,17 @@ class Member_memberlist extends Member
             $template = str_replace(LD . "form:form_declaration:do_member_search" . RD, $form_open_member_search, $template);
         }
 
-        if (! empty($member_rows_diff)) {
-            $member_rows_start = strpos($template, LD . 'member_rows' . RD);
-            $member_rows_end = strpos($template, LD . '/member_rows' . RD) + $member_rows_tag_length + 1;
-            $member_rows_diff = $member_rows_end - $member_rows_start;
-
-            $template = substr_replace($template, $str, $member_rows_start, $member_rows_diff);
+        if (isset($member_rows_diff) && ! empty($member_rows_diff)) {
+            $params = ee('Variables/Parser')->parseTagParameters($member_rows_opening);
+            if (isset($params['backspace']) && is_numeric($params['backspace'])) {
+                $str = substr($str, 0, - $params['backspace']);
+            }
+            $template = str_replace(LD . $member_rows_opening . $memberlist_rows . LD . '/member_rows' . RD, $str, $template);
         } else {
             $template = str_replace(LD . "member_rows" . RD, $str, $template);
         }
 
-        return	$template;
+        return $template;
     }
 
     /** ------------------------------------------

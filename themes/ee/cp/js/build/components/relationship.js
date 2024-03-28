@@ -194,6 +194,8 @@ var Relationship = /*#__PURE__*/function (_React$Component) {
     _this.ajaxFilter = SelectList.countItems(_this.initialItems) >= props.limit && props.filter_url;
     _this.ajaxTimer = null;
     _this.ajaxRequest = null;
+    _this.lang = typeof props.lang !== 'undefined' ? props.lang : EE.relationship.lang;
+    _this.showCreateDropdown = props.channels.length > 1 ? typeof props.showCreateDropdown !== 'undefined' && props.showCreateDropdown == false ? false : true : false;
     return _this;
   }
 
@@ -231,6 +233,7 @@ var Relationship = /*#__PURE__*/function (_React$Component) {
       // the dropdown controller to update the dropdown positions so the dropdown stays under the button
 
       DropdownController.updateDropdownPositions();
+      $("[data-publish] > form").trigger("entry:startAutosave");
     }
   }, {
     key: "deselect",
@@ -249,14 +252,16 @@ var Relationship = /*#__PURE__*/function (_React$Component) {
 
       var channelTitle = channel.title;
       var channelId = channel.id;
+      var publishCreateUrl = typeof this.props.publishCreateUrl !== 'undefined' ? this.props.publishCreateUrl : EE.relationship.publishCreateUrl;
       EE.cp.ModalForm.openForm({
-        url: EE.relationship.publishCreateUrl.replace('###', channelId),
+        url: publishCreateUrl.replace('###', channelId),
         full: true,
         iframe: true,
         success: this.entryWasCreated,
         load: function load(modal) {
           var entryTitle = $(_this2.field.closest('[data-publish]')).find('input[name=title]').val();
-          var title = EE.relationship.lang.creatingNew.replace('#to_channel#', channelTitle).replace('#from_channel#', EE.publish.channel_title);
+
+          var title = _this2.lang.creatingNew.replace('#to_channel#', channelTitle).replace('#from_channel#', EE.publish.channel_title);
 
           if (entryTitle) {
             title += '<b>: ' + entryTitle + '</b>';
@@ -270,8 +275,9 @@ var Relationship = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "openPublishEditForm",
     value: function openPublishEditForm(id) {
+      var publishEditUrl = typeof this.props.publishEditUrl !== 'undefined' ? this.props.publishEditUrl : EE.relationship.publishEditUrl;
       EE.cp.ModalForm.openForm({
-        url: EE.relationship.publishEditUrl.replace('###', id + '&' + $.param({
+        url: publishEditUrl.replace('###', id + '&' + $.param({
           entry_ids: [id]
         })),
         full: true,
@@ -410,9 +416,9 @@ var Relationship = /*#__PURE__*/function (_React$Component) {
           "class": "list-item__content-right"
         }, React.createElement("div", {
           className: "button-group"
-        }, _this5.props.can_add_items && item.editable && React.createElement("button", {
+        }, _this5.props.can_edit_items && item.can_edit && item.editable && React.createElement("button", {
           type: "button",
-          title: EE.relationship.lang.edit,
+          title: _this5.lang.edit,
           className: "button button--small button--default",
           onClick: function onClick() {
             return _this5.openPublishEditForm(item.value);
@@ -421,7 +427,7 @@ var Relationship = /*#__PURE__*/function (_React$Component) {
           "class": "fal fa-pencil-alt"
         })), React.createElement("button", {
           type: "button",
-          title: EE.relationship.lang.remove,
+          title: _this5.lang.remove,
           onClick: function onClick() {
             return _this5.deselect(item.value);
           },
@@ -448,7 +454,7 @@ var Relationship = /*#__PURE__*/function (_React$Component) {
         className: "js-dropdown-toggle button button--default"
       }, React.createElement("i", {
         "class": "fal fa-plus icon-left"
-      }), " ", props.button_label ? props.button_label : EE.relationship.lang.relateEntry), React.createElement("div", {
+      }), " ", props.button_label ? props.button_label : this.lang.relateEntry), React.createElement("div", {
         className: "dropdown js-dropdown-auto-focus-input"
       }, React.createElement("div", {
         className: "dropdown__search d-flex"
@@ -464,12 +470,12 @@ var Relationship = /*#__PURE__*/function (_React$Component) {
         onChange: function onChange(handleSearchItem) {
           return _this5.filterChange('search', handleSearchItem.target.value);
         },
-        placeholder: EE.relationship.lang.search
+        placeholder: this.lang.search
       }))), props.channels.length > 1 && React.createElement("div", {
         className: "filter-bar__item"
       }, React.createElement(DropDownButton, {
         keepSelectedState: true,
-        title: EE.relationship.lang.channel,
+        title: this.lang.channel,
         items: channelFilterItems,
         onSelect: function onSelect(value) {
           return _this5.filterChange('channel_id', value);
@@ -477,21 +483,21 @@ var Relationship = /*#__PURE__*/function (_React$Component) {
         buttonClass: "filter-bar__button"
       })), this.props.can_add_items && React.createElement("div", {
         className: "filter-bar__item"
-      }, props.channels.length == 1 && React.createElement("button", {
+      }, !this.showCreateDropdown && React.createElement("button", {
         type: "button",
         className: "button button--primary button--small",
         onClick: function onClick() {
           return _this5.openPublishFormForChannel(_this5.props.channels[0]);
         }
-      }, "New Entry"), props.channels.length > 1 && React.createElement("div", null, React.createElement("button", {
+      }, this.props.new_entry), this.showCreateDropdown && React.createElement("div", null, React.createElement("button", {
         type: "button",
         className: "js-dropdown-toggle button button--primary button--small",
         "data-dropdown-pos": "bottom-end"
-      }, "New Entry ", React.createElement("i", {
+      }, this.props.new_entry, " ", React.createElement("i", {
         "class": "fal fa-chevron-down icon-right"
       })), React.createElement("div", {
         className: "dropdown"
-      }, props.channels.map(function (channel) {
+      }, props.channelsForNewEntries.map(function (channel) {
         return React.createElement("a", {
           href: true,
           className: "dropdown__link",
@@ -523,7 +529,7 @@ var Relationship = /*#__PURE__*/function (_React$Component) {
         }, item.instructions));
       }), dropdownItems.length == 0 && React.createElement("div", {
         "class": "dropdown__header text-center"
-      }, "No Entries Found")))));
+      }, this.props.no_results)))));
     }
   }], [{
     key: "renderFields",
@@ -556,6 +562,12 @@ $(document).ready(function () {
 Grid.bind("relationship", "display", function (cell) {
   Relationship.renderFields(cell);
 });
+Grid.bind("member", "display", function (cell) {
+  Relationship.renderFields(cell);
+});
 FluidField.on("relationship", "add", function (field) {
+  Relationship.renderFields(field);
+});
+FluidField.on("member", "add", function (field) {
   Relationship.renderFields(field);
 });

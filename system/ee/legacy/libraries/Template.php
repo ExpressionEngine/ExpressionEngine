@@ -142,7 +142,8 @@ class EE_Template
         }
 
         $this->user_vars = array(
-            'member_id', 'group_id', 'group_description', 'group_title', 'primary_role_id', 'primary_role_description', 'primary_role_name', 'primary_role_short_name', 'username', 'screen_name',
+            'member_id', 'group_id', 'group_description', 'group_title', 'primary_role_id', 'primary_role_description', 'primary_role_name', 'primary_role_short_name',
+            'username', 'screen_name', 'avatar_filename', 'avatar_width', 'avatar_height',
             'email', 'ip_address', 'total_entries', 'total_comments', 'private_messages',
             'total_forum_posts', 'total_forum_topics', 'total_forum_replies', 'mfa_enabled',
         );
@@ -691,7 +692,7 @@ class EE_Template
         $this->layout_conditionals = [];
 
         // get all the declared layout variables (excluding layout:contents)
-        if (preg_match_all('/' . LD . 'layout:(?!\bcontents\b)([^!]+?)(' . RD . '|\s|:)/', $str, $matches)) {
+        if (preg_match_all('/' . LD . 'layout:(?!\bset|contents\b)([^!]+?)(' . RD . '|\s|:)/', $str, $matches)) {
             $undefined_layout_vars = [];
 
             foreach ($matches[1] as $key) {
@@ -711,12 +712,16 @@ class EE_Template
         }
 
         foreach ($layout_vars as $key => $val) {
+            if ($val === '' && strpos($str, LD . '/layout:' . $key . RD) !== false) {
+                $val = []; // undefined or empty value that is supposed to be an array
+            }
             if (is_array($val)) {
-                $layout_conditionals['layout:' . $key] = true;
+                $layout_conditionals['layout:' . $key] = !empty($val);
 
                 $total_items = count($val);
                 $variables = [];
-
+                $item = ''; // initial value for catch-all replacement
+                
                 foreach ($val as $idx => $item) {
                     $variables[] = [
                         'index' => $idx,
@@ -3057,6 +3062,9 @@ class EE_Template
      */
     public function remove_ee_comments($str)
     {
+        if (is_null($str)) {
+            return '';
+        }
         if (strpos($str, '{!--') === false) {
             return $str;
         }

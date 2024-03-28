@@ -148,7 +148,8 @@ else:
         'manageLabel' => isset($manage_label) ? $manage_label : null,
         'reorderAjaxUrl' => isset($reorder_ajax_url) ? $reorder_ajax_url : null,
         'noResults' => isset($no_results['text']) ? lang($no_results['text']) : null,
-        'splitForTwo' => isset($split_for_two) ? $split_for_two : null
+        'splitForTwo' => isset($split_for_two) ? $split_for_two : null,
+        'toggles' => isset($toggles) ? $toggles : []
     ];
     ?>
 	<div data-select-react="<?=base64_encode(json_encode($component))?>" data-input-value="<?=$field_name?>" class="<?=$class?>">

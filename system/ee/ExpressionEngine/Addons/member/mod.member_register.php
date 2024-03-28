@@ -40,9 +40,10 @@ class Member_register extends Member
         // Fetch the registration form
         $tagdata = trim(ee()->TMPL->tagdata);
 
+        $reg_form = '';
         if (! empty($tagdata)) {
             $reg_form = ee()->TMPL->tagdata;
-        } else {
+        } elseif (ee('Config')->getFile()->getBoolean('legacy_member_templates')) {
             $reg_form = $this->_load_element('registration_form');
         }
 
@@ -50,6 +51,11 @@ class Member_register extends Member
         $query = ee()->db->where('m_field_reg', 'y')
             ->order_by('m_field_order')
             ->get('member_fields');
+
+        ee()->router->set_class('cp');
+        ee()->load->library('cp');
+        ee()->load->library('javascript');
+        ee()->load->helper('form');
 
         // If not, we'll kill the custom field variables from the template
         if ($query->num_rows() == 0) {
@@ -79,54 +85,70 @@ class Member_register extends Member
                 ->all()
                 ->indexBy('m_field_id');
 
-            ee()->router->set_class('cp');
-            ee()->load->library('cp');
-            ee()->load->library('javascript');
+            if (!empty($field_chunk)) {
+                foreach ($query->result_array() as $row) {
+                    $field = '';
+                    $temp = $field_chunk;
 
-            foreach ($query->result_array() as $row) {
-                $field = '';
-                $temp = $field_chunk;
+                    // Replace {required} pair
+                    if ($row['m_field_required'] == 'y') {
+                        $temp = preg_replace("/" . LD . "required" . RD . ".*?" . LD . "\/required" . RD . "/s", $req_chunk, $temp);
+                    } else {
+                        $temp = preg_replace("/" . LD . "required" . RD . ".*?" . LD . "\/required" . RD . "/s", '', $temp);
+                    }
 
-                // Replace {field_name}
-                $temp = str_replace("{field_name}", $row['m_field_label'], $temp);
+                    // Parse input fields
+                    $field = $member_fields[$row['m_field_id']]->getField();
+                    $field->setName('m_field_id_' . $row['m_field_id']);
+                    $field = $field->getForm();
 
-                if ($row['m_field_description'] == '') {
-                    $temp = preg_replace("/{if field_description}.+?{\/if}/s", "", $temp);
-                } else {
-                    $temp = preg_replace("/{if field_description}(.+?){\/if}/s", "\\1", $temp);
+                    if (! empty($tagdata)) {
+                        $field_vars = [
+                            'field_name' => $row['m_field_label'],
+                            'lang:profile_field' => $row['m_field_label'],
+                            'field_description' => $row['m_field_description'],
+                            'lang:profile_field_description' => $row['m_field_description'],
+                            'required' => get_bool_from_string($row['m_field_required']),
+                            'field' => $field,
+                            'form:custom_profile_field' => $field
+                        ];
+                        $str .= ee()->TMPL->parse_variables_row($temp, $field_vars);
+                        continue;
+                    }
+
+                    $temp = str_replace("{field}", $field, $temp);
+
+                    // Replace {field_name}
+                    $temp = str_replace("{field_name}", $row['m_field_label'], $temp);
+
+                    if ($row['m_field_description'] == '') {
+                        $temp = preg_replace("/{if field_description}.+?{\/if}/s", "", $temp);
+                    } else {
+                        $temp = preg_replace("/{if field_description}(.+?){\/if}/s", "\\1", $temp);
+                    }
+
+                    $temp = str_replace("{field_description}", $row['m_field_description'], $temp);
+
+                    $str .= $temp;
                 }
 
-                $temp = str_replace("{field_description}", $row['m_field_description'], $temp);
-
-                // Replace {required} pair
-                if ($row['m_field_required'] == 'y') {
-                    $temp = preg_replace("/" . LD . "required" . RD . ".*?" . LD . "\/required" . RD . "/s", $req_chunk, $temp);
-                } else {
-                    $temp = preg_replace("/" . LD . "required" . RD . ".*?" . LD . "\/required" . RD . "/s", '', $temp);
+                // since $str may have sequences that look like PCRE backreferences,
+                // the two choices are to escape them and use preg_replace() or to
+                // match the pattern and use str_replace().  This way happens
+                // to be faster in this case.
+                if (preg_match("/" . LD . "custom_fields" . RD . ".*?" . LD . "\/custom_fields" . RD . "/s", $reg_form, $match)) {
+                    $reg_form = str_replace($match[0], $str, $reg_form);
                 }
-
-                // Parse input fields
-
-                ee()->load->helper('form');
-                $field = $member_fields[$row['m_field_id']]->getField();
-                $field->setName('m_field_id_' . $row['m_field_id']);
-                $field = $field->getForm();
-
-                $temp = str_replace("{field}", $field, $temp);
-
-                $str .= $temp;
             }
 
-            // since $str may have sequences that look like PCRE backreferences,
-            // the two choices are to escape them and use preg_replace() or to
-            // match the pattern and use str_replace().  This way happens
-            // to be faster in this case.
-            if (preg_match(
-                "/" . LD . "custom_fields" . RD . ".*?" . LD . "\/custom_fields" . RD . "/s",
-                $reg_form,
-                $match
-            )) {
-                $reg_form = str_replace($match[0], $str, $reg_form);
+            if (strpos($reg_form, LD . 'field:') !== false) {
+                foreach ($member_fields as $field) {
+                    if ($field->m_field_reg === 'y') {
+                        $formField = $field->getField();
+                        $formField->setName('m_field_id_' . $field->m_field_id);
+                        $reg_form = str_replace(LD . 'field:' . $field->m_field_name . RD, $formField->getForm(), $reg_form);
+                    }
+                }
             }
         }
 
@@ -191,7 +213,7 @@ class Member_register extends Member
 
         $inline_errors = 'no';
 
-        if(ee()->TMPL->fetch_param('error_handling') == 'inline') {
+        if (ee()->TMPL->fetch_param('error_handling') == 'inline') {
             // determine_error_return function looks for yes.
             $inline_errors = 'yes';
 
@@ -214,9 +236,8 @@ class Member_register extends Member
             ]),
         );
 
-        if(!empty(ee()->TMPL->form_class)) {
-            $data['class'] = ee()->TMPL->form_class;
-        }
+        $data['class'] = (get_bool_from_string(ee()->TMPL->fetch_param('include_assets', 'n') || strpos($reg_form, LD . 'form_assets' . RD) !== false) ? 'ee-cform ' : '');
+        $data['class'] .= ee()->TMPL->form_class;
 
         if ($this->in_forum === true) {
             $data['hidden_fields']['board_id'] = $this->board_id;
@@ -224,8 +245,24 @@ class Member_register extends Member
 
         $data['id'] = 'register_member_form';
 
+        ee()->load->add_package_path(PATH_ADDONS . 'channel');
+        ee()->load->library('channel_form/channel_form_lib');
+        ee()->channel_form_lib->datepicker = get_bool_from_string(ee()->TMPL->fetch_param('datepicker', 'y'));
+        ee()->channel_form_lib->compile_js();
+
+        $out = ee()->functions->form_declaration($data) . $reg_form . "\n" . "</form>";
+
+        //make head appear by default
+        if (strpos($out, LD . 'form_assets' . RD) !== false) {
+            $out = ee()->TMPL->swap_var_single('form_assets', ee()->channel_form_lib->head, $out);
+        } elseif (get_bool_from_string(ee()->TMPL->fetch_param('include_assets'), 'n')) {
+            // Head should only be there if the param is there
+            $out .= ee()->channel_form_lib->head;
+        }
+        ee()->load->remove_package_path(PATH_ADDONS . 'channel');
+
         // Return the final rendered form
-        return ee()->functions->form_declaration($data) . $reg_form . "\n" . "</form>";
+        return $out;
     }
 
     /**
@@ -254,8 +291,10 @@ class Member_register extends Member
         }
 
         // Blocked/Allowed List Check
-        if (ee()->blockedlist->blocked == 'y' &&
-            ee()->blockedlist->allowed == 'n') {
+        if (
+            ee()->blockedlist->blocked == 'y' &&
+            ee()->blockedlist->allowed == 'n'
+        ) {
             return ee()->output->show_user_error(
                 'general',
                 array(lang('not_authorized'))
@@ -329,14 +368,14 @@ class Member_register extends Member
                     }
 
                     // Ensure their selection is actually a valid choice
-                    if (! in_array(htmlentities($_POST[$field_name]), $options)) {
+                    if (! in_array(ee('Request')->post($field_name), $options)) {
                         $valid = false;
-                        $cust_errors['error:'.$field_name] = lang('mbr_field_invalid') . '&nbsp;' . $row['m_field_label'];
+                        $cust_errors['error:' . $field_name] = lang('mbr_field_invalid') . '&nbsp;' . $row['m_field_label'];
                     }
                 }
 
                 if ($valid) {
-                    $custom_data[$field_name] = ee('Security/XSS')->clean($_POST[$field_name]);
+                    $custom_data[$field_name] = ee('Security/XSS')->clean(ee('Request')->post($field_name));
                 }
             }
         }
@@ -405,8 +444,10 @@ class Member_register extends Member
             ee()->output->show_user_error('submission', lang('mbr_cannot_register_role_is_locked'));
         }
 
-        if (ee()->config->item('req_mbr_activation') == 'manual' or
-            ee()->config->item('req_mbr_activation') == 'email') {
+        if (
+            ee()->config->item('req_mbr_activation') == 'manual' or
+            ee()->config->item('req_mbr_activation') == 'email'
+        ) {
             $data['role_id'] = Mbr::PENDING;
             $data['pending_role_id'] = $roleId;
         } else {
@@ -485,18 +526,18 @@ class Member_register extends Member
                 $field_errors[] = "<b>{$label}: </b>{$error}";
 
                 // add data for inline errors
-                $error_tags['error:'.$field] = $error;
+                $error_tags['error:' . $field] = $error;
             }
         }
 
 
         // if we don't have a link we'll give them errors for core ee error screen
-        if(empty($return_error_link)) {
+        if (empty($return_error_link)) {
             $errors = array_merge($field_errors, $cust_errors, $this->errors);
         }
 
         // do we have a link?  If so we're giving them the inline errors
-        if(!empty($return_error_link)) {
+        if (!empty($return_error_link)) {
             $errors = array_merge($error_tags, $cust_errors);
 
             // populate flash data for custom error tags
@@ -541,8 +582,10 @@ class Member_register extends Member
         $member_id = $member->member_id;
 
         // Send admin notifications
-        if (ee()->config->item('new_member_notification') == 'y' &&
-            ee()->config->item('mbr_notification_emails') != '') {
+        if (
+            ee()->config->item('new_member_notification') == 'y' &&
+            ee()->config->item('mbr_notification_emails') != ''
+        ) {
             $name = ($data['screen_name'] != '') ? $data['screen_name'] : $data['username'];
 
             $swap = array(
@@ -659,8 +702,10 @@ class Member_register extends Member
 
     private function _do_form_query()
     {
-        if (ee()->input->get_post('board_id') !== false &&
-            is_numeric(ee()->input->get_post('board_id'))) {
+        if (
+            ee()->input->get_post('board_id') !== false &&
+            is_numeric(ee()->input->get_post('board_id'))
+        ) {
             return ee()->db->select('board_forum_url, board_id, board_label')
                 ->where('board_id', (int) ee()->input->get_post('board_id'))
                 ->get('forum_boards');
