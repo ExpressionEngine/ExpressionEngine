@@ -1,5 +1,6 @@
 @viewport{width:extend-to-zoom;zoom:1}@font-face{font-family:FontAwesome;font-style:normal;font-weight:400;src:url(../../asset/fonts/fontawesome-webfont.eot),url(../../asset/fonts/fontawesome-webfont.eot?#iefix) format('embedded-opentype'),url(../../asset/fonts/fontawesome-webfont.woff2) format('woff2'),url(../../asset/fonts/fontawesome-webfont.woff) format('woff'),url(../../asset/fonts/fontawesome-webfont.ttf) format('truetype'),url(../../asset/fonts/fontawesome-webfont.svg#fontawesome) format('svg')}.font-wk{-webkit-font-smoothing:antialiased}
-:root, body {
+/*:root, body {*/
+.ee-cform {
     --ee-panel-bg: #fff;
     --ee-panel-border: #dfe0ef;
     --ee-input-border: #cbcbda;
