@@ -108,6 +108,11 @@ class EntryListing
     protected $channels;
 
     /**
+     * @var array $category_options Category options for the category filter
+     */
+    protected $category_options = array();
+
+    /**
      * Constructor
      * @param int $site_id Current site ID
      * @param boolean $is_admin Whether or not a Super Admin is making this
@@ -463,30 +468,49 @@ class EntryListing
      */
     private function createCategoryFilter($channel = null)
     {
+        ee()->load->library('datastructures/tree');
+
         if (is_null($channel)) {
             $category_groups = ee('Model')->get('CategoryGroup')
                 ->with('Categories')
                 ->filter('site_id', ee()->config->item('site_id'))
                 ->filter('exclude_group', '!=', 1)
+                ->order('group_name', 'asc')
                 ->all();
         } else {
             $category_groups = $channel->CategoryGroups;
         }
 
-        $category_options = array();
         foreach ($category_groups as $group) {
-            $sort_column = ($group->sort_order == 'a') ? 'cat_name' : 'cat_order';
-            foreach ($group->Categories->sortBy($sort_column) as $category) {
-                $category_options[$category->cat_id] = $category->cat_name;
+            $tree = $group->getCategoryTree(ee()->tree);
+            // If there are multiple categories add the Category Group name as a header to the filter options
+            if ($category_groups->count() > 1) {
+                $this->category_options['group_' . $group->group_id] = ['type'  => 'header', 'label' => $group->group_name];
+            }
+            foreach ($tree->children() as $category) {
+                $this->setCategoryOptions($category);
             }
         }
 
-        $categories = ee('CP/Filter')->make('filter_by_category', 'filter_by_category', $category_options);
+        $categories = ee('CP/Filter')->make('filter_by_category', 'filter_by_category', $this->category_options);
         $categories->setPlaceholder(lang('filter_categories'));
         $categories->setLabel(lang('category'));
         $categories->useListFilter(); // disables custom values
 
         return $categories;
+    }
+
+    /**
+     * Recursively sets category options for the category filter
+     */
+    private function setCategoryOptions($category)
+    {
+        $this->category_options[$category->data->cat_id] = str_repeat('-- ', $category->depth() - 1) . $category->data->cat_name;
+        if (count($category->children())) {
+            foreach ($category->children() as $subcategory) {
+                $this->setCategoryOptions($subcategory);
+            }
+        }
     }
 
     /**
