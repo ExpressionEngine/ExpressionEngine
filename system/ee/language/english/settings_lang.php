@@ -515,7 +515,7 @@ $lang = array(
 
     'activation_auto_login' => 'Auto-login upon activation?',
 
-    'activation_auto_login_desc' => 'Automatically log member in after clicking activation link in email message.',
+    'activation_auto_login_desc' => 'Automatically log a member in after account activation.',
 
     'activation_redirect' => 'Activation redirect URL',
 

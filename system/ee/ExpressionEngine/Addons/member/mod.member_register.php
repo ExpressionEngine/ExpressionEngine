@@ -666,15 +666,8 @@ class Member_register extends Member
             $message = lang('mbr_membership_instructions_email');
         } elseif (ee()->config->item('req_mbr_activation') == 'manual') {
             $message = lang('mbr_admin_will_activate');
-        } else {
-            // Log user in (the extra query is a little annoying)
-            ee()->load->library('auth');
-            $member_data_q = ee()->db->get_where('members', array('member_id' => $member_id));
-
-            $incoming = new Auth_result($member_data_q->row());
-            $incoming->remember_me();
-            $incoming->start_session();
-
+        } elseif (bool_config_item('activation_auto_login')) {
+            $this->startMemberSession($member_id);
             $message = lang('mbr_your_are_logged_in');
         }
 
@@ -808,14 +801,7 @@ class Member_register extends Member
         $loginStateMessage = lang('mbr_may_now_log_in');
 
         if (bool_config_item('activation_auto_login')) {
-            // Log user in (the extra query is a little annoying)
-            ee()->load->library('auth');
-            $member_data_q = ee()->db->get_where('members', array('member_id' => $member->getId()));
-
-            $incoming = new Auth_result($member_data_q->row());
-            $incoming->remember_me();
-            $incoming->start_session();
-
+            $this->startMemberSession($member->getId());
             $loginStateMessage = lang('mbr_your_are_logged_in');
         }
 
@@ -834,6 +820,23 @@ class Member_register extends Member
         );
 
         ee()->output->show_message($data);
+    }
+
+    /**
+     * Helper function to authenticate and start a session for a newly activated Member
+     *
+     * @param int $member_id
+     * @return void
+     */
+    private function startMemberSession($member_id)
+    {
+        // Log user in (the extra query is a little annoying)
+        ee()->load->library('auth');
+        $member_data_q = ee()->db->get_where('members', array('member_id' => $member_id));
+
+        $incoming = new Auth_result($member_data_q->row());
+        $incoming->remember_me();
+        $incoming->start_session();
     }
 }
 // END CLASS

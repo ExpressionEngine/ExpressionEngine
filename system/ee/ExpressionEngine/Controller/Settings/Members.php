@@ -71,19 +71,18 @@ class Members extends Settings
                     )
                 ),
                 array(
-                    'title' => 'activation_auto_login',
-                    'desc' => 'activation_auto_login_desc',
-                    'group' => 'activation_email',
-                    'fields' => array(
-                        'activation_auto_login' => array('type' => 'yes_no')
-                    )
-                ),
-                array(
                     'title' => 'activation_redirect',
                     'desc' => 'activation_redirect_desc',
                     'group' => 'activation_email',
                     'fields' => array(
                         'activation_redirect' => array('type' => 'text')
+                    )
+                ),
+                array(
+                    'title' => 'activation_auto_login',
+                    'desc' => 'activation_auto_login_desc',
+                    'fields' => array(
+                        'activation_auto_login' => array('type' => 'yes_no')
                     )
                 ),
                 array(
