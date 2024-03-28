@@ -621,6 +621,9 @@ class SelectItem extends React.Component {
         {props.item.instructions && (
           <span className="meta-info">{props.item.instructions}</span>
         )}
+        {props.name=="author_id" && (
+          <span className="meta-info">{"#" + props.item.value}</span>
+        )}
         <div class="button-group button-group-xsmall button-group-flyout-right">
         {props.toggles && props.toggles.length != 0 && props.toggles.map((toggleName, index) =>
           <a href="" className={'button button--default extra-flyout-button flyout-' + toggleName + (props.item.toggles[toggleName] == true ? ' active' : '')} onClick={(e) => this.bindToggleChange(e, props.item)} disabled = {checked ? false : true} data-toggle-name={toggleName}>{EE.lang[toggleName]} {(props.item.toggles[toggleName] == true ? this.toggleOn() : this.toggleOff())}</a>

@@ -748,7 +748,9 @@ var SelectItem = /*#__PURE__*/function (_React$Component2) {
         }
       }), " ", props.item.instructions && React.createElement("span", {
         className: "meta-info"
-      }, props.item.instructions), React.createElement("div", {
+      }, props.item.instructions), props.name == "author_id" && React.createElement("span", {
+        className: "meta-info"
+      }, "#" + props.item.value), React.createElement("div", {
         "class": "button-group button-group-xsmall button-group-flyout-right"
       }, props.toggles && props.toggles.length != 0 && props.toggles.map(function (toggleName, index) {
         return React.createElement("a", {
