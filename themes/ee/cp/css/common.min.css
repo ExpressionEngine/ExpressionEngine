@@ -28013,6 +28013,7 @@ input[type=button].btn-block {
 .ee-main-header .main-header__account .main-header__account-icon img {
   width: 42px;
   height: 42px;
+  object-fit: cover;
 }
 
 .file-card-wrapper {
