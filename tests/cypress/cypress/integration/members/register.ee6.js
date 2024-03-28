@@ -615,6 +615,7 @@ context('Member Registration on Front-end', () => {
             cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4)').contains('Members')
 
             cy.eeConfig({ item: 'activation_auto_login', value: 'n' })
+            cy.eeConfig({ item: 'activation_redirect', value: '' })
         })
 
         it('registers into unlocked default group', function() {
