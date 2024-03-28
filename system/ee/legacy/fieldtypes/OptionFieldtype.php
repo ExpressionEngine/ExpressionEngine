@@ -120,11 +120,11 @@ abstract class OptionFieldtype extends EE_Fieldtype
     /**
      * Constructs a settings form array for multi-option fields
      *
-     * @param	string	$field_type	Fieldtype short name
-     * @param	array	$data		Fieldtype settings array
-     * @param	string	$title		Lang key for settings section title
-     * @param	string	$desc		Lang key or string for settings section description
-     * @return	Array in shared form view format for settings form
+     * @param   string  $field_type Fieldtype short name
+     * @param   array   $data   Fieldtype settings array
+     * @param   string  $title  Lang key for settings section title
+     * @param   string  $desc   Lang key or string for settings section description
+     * @return array Array in shared form view format for settings form
      */
     protected function getSettingsForm($field_type, $data, $title, $desc)
     {
@@ -143,8 +143,10 @@ abstract class OptionFieldtype extends EE_Fieldtype
         }
 
         // Load from validation error
-        if (isset($_POST['value_label_pairs']['rows']) &&
-            ((isset($_POST['field_type']) && $_POST['field_type'] == $field_type) or (isset($_POST['m_field_type']) && $_POST['m_field_type'] == $field_type))) {
+        if (
+            isset($_POST['value_label_pairs']['rows']) &&
+            ((isset($_POST['field_type']) && $_POST['field_type'] == $field_type) or (isset($_POST['m_field_type']) && $_POST['m_field_type'] == $field_type))
+        ) {
             foreach ($_POST['value_label_pairs']['rows'] as $row) {
                 $data['value_label_pairs'][$row['value']] = $row['label'];
             }
@@ -241,11 +243,11 @@ abstract class OptionFieldtype extends EE_Fieldtype
     /**
      * Constructs a Grid settings form array for multi-option fields
      *
-     * @param	string	$field_type	Fieldtype short name
-     * @param	array	$data		Fieldtype settings array
-     * @param	string	$title		Lang key for settings section title
-     * @param	string	$desc		Lang key or string for settings section description
-     * @return	Array in shared form view format for Grid settings form
+     * @param   string  $field_type Fieldtype short name
+     * @param   array   $data   Fieldtype settings array
+     * @param   string  $title  Lang key for settings section title
+     * @param   string  $desc   Lang key or string for settings section description
+     * @return  array Array in shared form view format for Grid settings form
      */
     protected function getGridSettingsForm($field_type, $data, $title, $desc)
     {
@@ -415,8 +417,8 @@ abstract class OptionFieldtype extends EE_Fieldtype
     /**
      * Process text through default typography options
      *
-     * @param	string	$string	String to process
-     * @return	Processed string
+     * @param   string  $string String to process
+     * @return  string Processed string
      */
     protected function processTypograpghy($string)
     {
@@ -436,10 +438,10 @@ abstract class OptionFieldtype extends EE_Fieldtype
     /**
      * Parses a multi select field as a single variable
      *
-     * @param	string	$data	Entry field data
-     * @param	array	$params	Params passed to the field via the template
-     * @param	array	$forceValue	Whether to force returning value and not label
-     * @return	Parsed template string
+     * @param   array   $data   Entry field data
+     * @param   array   $params Params passed to the field via the template
+     * @param   array   $forceValue Whether to force returning value and not label
+     * @return  string Parsed template string
      */
     protected function _parse_single($data, $params, $forceValue = false)
     {
@@ -486,10 +488,10 @@ abstract class OptionFieldtype extends EE_Fieldtype
     /**
     * Parses a multi select field as a variable pair
     *
-    * @param	string	$data		Entry field data
-    * @param	array	$params		Params passed to the field via the template
-    * @param	string	$tagdata	String between the variable pair
-    * @return	Parsed template string
+    * @param    array   $data   Entry field data
+    * @param    array   $params Params passed to the field via the template
+    * @param    string  $tagdata    String between the variable pair
+    * @return   string  Parsed template string
     */
     protected function _parse_multi($data, $params, $tagdata)
     {
@@ -504,12 +506,15 @@ abstract class OptionFieldtype extends EE_Fieldtype
 
         $pairs = $this->get_setting('value_label_pairs');
 
+        $total_items = count($data);
         foreach ($data as $key => $item) {
             if (! $limit or $key < $limit) {
                 $vars['item'] = $item;
                 $vars['item:label'] = $item;
                 $vars['item:value'] = $item;
-                $vars['count'] = $key + 1;	// {count} parameter
+                $vars['count'] = $key + 1;  // {count} parameter
+                $vars['index'] = $key;
+                $vars['total_items'] = $total_items;
 
                 if (isset($pairs[$item])) {
                     $vars['item:label'] = $pairs[$item];
