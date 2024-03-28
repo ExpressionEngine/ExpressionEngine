@@ -99,6 +99,7 @@ $lang = array(
     'mfa_wrong_code' => 'Wrong Code',
     'mfa_wrong_code_desc' => 'The verification code you have entered is not valid',
     'mfa_not_available' => 'Multi-Factor Authentication is not available',
+    'mfa_wrong_user_desc' => 'Multi-Factor Authentication can only be set up for logged in user',
 
     'pro_license_error' => 'ExpressionEngine Pro License Error.',
     'pro_license_error_trial' => 'Since this site has multiple members, it will also require a purchased license. Please buy a license before launching. Thanks!',
