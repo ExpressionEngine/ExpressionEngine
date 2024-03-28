@@ -53077,6 +53077,9 @@ ul.field-reorder-drop,
 .member_manager-wrapper .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item-no-search {
   flex-grow: 0;
 }
+.member_manager-wrapper .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item-no-search div[rev=toggle-columns] {
+  width: fit-content;
+}
 .member_manager-wrapper .members--filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item-search {
   flex-grow: 3;
 }
