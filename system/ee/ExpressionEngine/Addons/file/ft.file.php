@@ -586,6 +586,17 @@ JSC;
                 }
             }
 
+            // if position parameter is provided, use it to calculate x and y
+            if ($function == 'crop' && isset($params['position'])) {
+                $props = ee()->image_lib->get_image_properties($source['path'], true);
+                if (isset($params['width'])) {
+                    $imageLibConfig['x_axis'] += floor(($props['width'] - (int) $params['width']) / 2);
+                }
+                if (isset($params['height'])) {
+                    $imageLibConfig['y_axis'] += floor(($props['height'] - (int) $params['height']) / 2);
+                }
+            }
+
             ee()->image_lib->clear();
             if (!isset($imageLibConfig['width'])) {
                 ee()->image_lib->width = '';
