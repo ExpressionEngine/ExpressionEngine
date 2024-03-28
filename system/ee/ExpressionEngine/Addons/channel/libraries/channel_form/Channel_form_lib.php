@@ -784,43 +784,47 @@ class Channel_form_lib
     public function compile_js($addt_js = [], $markItUp = [])
     {
         if ($this->datepicker) {
+            ee()->lang->loadfile('calendar');
+            $week_start = ee()->session->userdata('week_start', (ee()->config->item('week_start') ?: 'sunday'));
+            $addt_js['date']['week_start'] = $week_start;
             $addt_js['date']['date_format'] = ee()->localize->get_date_format();
+            $addt_js['lang']['date']['today'] = lang('cal_today');
             $addt_js['lang']['date']['months']['full'] = array(
-                lang('january'),
-                lang('february'),
-                lang('march'),
-                lang('april'),
-                lang('may'),
-                lang('june'),
-                lang('july'),
-                lang('august'),
-                lang('september'),
-                lang('october'),
-                lang('november'),
-                lang('december')
+                lang('cal_january'),
+                lang('cal_february'),
+                lang('cal_march'),
+                lang('cal_april'),
+                lang('cal_may'),
+                lang('cal_june'),
+                lang('cal_july'),
+                lang('cal_august'),
+                lang('cal_september'),
+                lang('cal_october'),
+                lang('cal_november'),
+                lang('cal_december')
             );
             $addt_js['lang']['date']['months']['abbreviated'] = array(
-                lang('jan'),
-                lang('feb'),
-                lang('mar'),
-                lang('apr'),
-                lang('may'),
-                lang('june'),
-                lang('july'),
-                lang('aug'),
-                lang('sept'),
-                lang('oct'),
-                lang('nov'),
-                lang('dec')
+                lang('cal_jan'),
+                lang('cal_feb'),
+                lang('cal_mar'),
+                lang('cal_apr'),
+                lang('cal_may'),
+                lang('cal_june'),
+                lang('cal_july'),
+                lang('cal_aug'),
+                lang('cal_sept'),
+                lang('cal_oct'),
+                lang('cal_nov'),
+                lang('cal_dec')
             );
             $addt_js['lang']['date']['days'] = array(
-                lang('su'),
-                lang('mo'),
-                lang('tu'),
-                lang('we'),
-                lang('th'),
-                lang('fr'),
-                lang('sa'),
+                lang('cal_su'),
+                lang('cal_mo'),
+                lang('cal_tu'),
+                lang('cal_we'),
+                lang('cal_th'),
+                lang('cal_fr'),
+                lang('cal_sa'),
             );
         }
 
