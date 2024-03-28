@@ -495,7 +495,7 @@ class Upload
                         $file->getFilesystem()->forceCopy($src, $dest);
                     }
                 }
-
+                $original->deleteGeneratedFiles();
                 $file->delete();
 
                 $result['params']['file'] = $original;
