@@ -609,7 +609,7 @@ trait FileManagerTrait
                     'adapter' => $upload_pref->adapter,
                     'directory_id' => 0,
                     'path' => '',
-                    'children' => !bool_config_item('file_manager_compatibility_mode') ? $upload_pref->buildDirectoriesDropdown($upload_pref->getId(), true) : []
+                    'children' => !bool_config_item('file_manager_compatibility_mode') ? $upload_pref->getDirectoriesDropdown(true) : []
                 ];
             }
         }

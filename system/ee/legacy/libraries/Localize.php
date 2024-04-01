@@ -61,7 +61,7 @@ class Localize
     public function string_to_timestamp($human_string, $localized = true, $date_format = null)
     {
         if (trim($human_string) == '') {
-            return '';
+            return false;
         }
 
         $dt = $this->_datetime($human_string, $localized, $date_format);
