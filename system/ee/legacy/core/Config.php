@@ -633,6 +633,7 @@ class EE_Config
             'allow_member_registration',
             'allow_member_localization',
             'req_mbr_activation',
+            'registration_auto_login',
             'activation_auto_login',
             'activation_redirect',
             'new_member_notification',

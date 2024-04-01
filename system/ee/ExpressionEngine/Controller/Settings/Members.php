@@ -65,9 +65,26 @@ class Members extends Settings
                                 'manual' => lang('req_mbr_activation_opt_manual')
                             ),
                             'group_toggle' => array(
+                                'none' => 'activation_none',
                                 'email' => 'activation_email'
                             )
                         )
+                    )
+                ),
+                array(
+                    'title' => 'registration_auto_login',
+                    'desc' => 'registration_auto_login_desc',
+                    'group' => 'activation_none',
+                    'fields' => array(
+                        'registration_auto_login' => array('type' => 'yes_no')
+                    )
+                ),
+                array(
+                    'title' => 'activation_auto_login',
+                    'desc' => 'activation_auto_login_desc',
+                    'group' => 'activation_email',
+                    'fields' => array(
+                        'activation_auto_login' => array('type' => 'yes_no')
                     )
                 ),
                 array(
@@ -76,13 +93,6 @@ class Members extends Settings
                     'group' => 'activation_email',
                     'fields' => array(
                         'activation_redirect' => array('type' => 'text')
-                    )
-                ),
-                array(
-                    'title' => 'activation_auto_login',
-                    'desc' => 'activation_auto_login_desc',
-                    'fields' => array(
-                        'activation_auto_login' => array('type' => 'yes_no')
                     )
                 ),
                 array(

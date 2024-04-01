@@ -513,6 +513,10 @@ $lang = array(
 
     'req_mbr_activation_opt_none' => 'No activation required',
 
+    'registration_auto_login' => 'Auto-login upon registration?',
+
+    'registration_auto_login_desc' => 'Automatically log a member in after account registration.',
+
     'activation_auto_login' => 'Auto-login upon activation?',
 
     'activation_auto_login_desc' => 'Automatically log a member in after account activation.',

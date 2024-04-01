@@ -666,7 +666,7 @@ class Member_register extends Member
             $message = lang('mbr_membership_instructions_email');
         } elseif (ee()->config->item('req_mbr_activation') == 'manual') {
             $message = lang('mbr_admin_will_activate');
-        } elseif (bool_config_item('activation_auto_login')) {
+        } elseif (bool_config_item('registration_auto_login')) {
             $this->startMemberSession($member_id);
             $message = lang('mbr_your_are_logged_in');
         }
