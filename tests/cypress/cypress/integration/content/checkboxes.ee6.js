@@ -18,12 +18,12 @@ context('Checkboxes field tags', () => {
         //copy templates
         cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' }).then(() => {
             cy.visit('admin.php?/cp/design')
-        })
-
-        channel_field_form.createField({
-            group_id: 1,
-            type: 'Checkboxes',
-            label: 'Checkboxes Field'
+            cy.visit('admin.php?/cp/fields/create/1')
+            channel_field_form.createField({
+                group_id: 1,
+                type: 'Checkboxes',
+                label: 'Checkboxes Field'
+            })
         })
     })
 
