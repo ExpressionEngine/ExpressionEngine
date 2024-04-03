@@ -151,7 +151,7 @@ class Member_images extends Member
             ->where('member_id', (int) ee()->session->userdata('member_id'))
             ->get('members');
 
-        if ($query->row('avatar_filename') == '') {
+        if (empty($query->row('avatar_filename'))) {
             $template = $this->_deny_if('avatar', $template);
             $template = $this->_allow_if('no_avatar', $template);
 
