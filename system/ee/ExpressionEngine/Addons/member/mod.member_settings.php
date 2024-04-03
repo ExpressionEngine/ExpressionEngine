@@ -1070,12 +1070,12 @@ class Member_settings extends Member
 
             // username & password
             $need_validation = false;
-            if (ee()->config->item('allow_username_change') == 'y' && ee()->input->post('username') != '') {
+            if (ee()->config->item('allow_username_change') == 'y' && ee()->input->post('username') != '' && ee()->input->post('username') !== $member->username) {
                 $member->username = ee()->input->post('username');
                 $need_validation = true;
             }
 
-            if (ee()->input->post('screen_name') != '') {
+            if (ee()->input->post('screen_name') != '' && ee()->input->post('screen_name') !== $member->screen_name) {
                 $need_validation = true;
                 $member->screen_name = ee()->input->post('screen_name');
             }
