@@ -547,7 +547,7 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
           // array of values for multi select
           var value = multi ? items[key] : key;
           var newItem = {
-            value: items[key].value || items[key].value === '' ? items[key].value : value,
+            value: items[key].value || items[key].value === '' || items[key].value === 0 ? items[key].value : value,
             label: items[key].label !== undefined ? items[key].label : items[key],
             instructions: items[key].instructions ? items[key].instructions : '',
             children: null,
