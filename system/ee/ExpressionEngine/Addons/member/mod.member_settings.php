@@ -1098,12 +1098,13 @@ class Member_settings extends Member
 
         $result = $member->validate();
 
-        if (ee()->input->post('password')) {
-            $password_confirm = $validator->validate($_POST);
+        // Extra validation is sometimes required outside of the Member model validation
+        // Add any failures from this validation to the Member model result object
+        if (isset($validator)) {
+            $validatorResult = $validator->validate($_POST);
 
-            // Add password confirmation failure to main result object
-            if ($password_confirm->failed()) {
-                $rules = $password_confirm->getFailed();
+            if ($validatorResult->failed()) {
+                $rules = $validatorResult->getFailed();
                 foreach ($rules as $field => $rule) {
                     $result->addFailed($field, $rule[0]);
                 }
