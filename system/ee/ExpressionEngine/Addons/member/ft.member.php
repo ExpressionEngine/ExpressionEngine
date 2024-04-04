@@ -71,7 +71,7 @@ class Member_ft extends Relationship_ft implements ColumnInterface
         $order = array();
 
         if (is_array($data) && isset($data['data']) && ! empty($data['data'])) { // autosave
-            foreach ($data['data'] as $k => $id) {
+            foreach (array_filter($data['data']) as $k => $id) {
                 $order[$id] = $k + 1;
             }
         } elseif (is_int($data)) {
