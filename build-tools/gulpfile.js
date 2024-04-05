@@ -34,6 +34,8 @@ if (fs.existsSync('./local_config.json')) {
 
 if (process.env.APP_REPO_PATH) {
     properties.local_repositories.app = process.env.APP_REPO_PATH;
+} else {
+    properties.local_repositories.app = require('path').resolve(__dirname, '..')
 }
 
 if (process.env.PRO_REPO_PATH) {
@@ -72,7 +74,7 @@ gulp.task('app', ['_preflight'], function (cb) {
 		'build/',
 		'tests/',
 		'build-tools/',
-		
+
 		'images/*/*',
 		'images/about',
 		'!images/*/index.html',
@@ -169,12 +171,12 @@ gulp.task('_archive_pro', function (cb) {
 	console.log(paths.app);
 
 	var files = [
-		properties.local_repositories.app + 'images/**/*', 
-		properties.local_repositories.app + 'system/**/*', 
-		properties.local_repositories.app + 'themes/**/*', 
-		properties.local_repositories.app + 'admin.php', 
-		properties.local_repositories.app + 'index.php', 
-		properties.local_repositories.app + 'favicon.ico', 
+		properties.local_repositories.app + 'images/**/*',
+		properties.local_repositories.app + 'system/**/*',
+		properties.local_repositories.app + 'themes/**/*',
+		properties.local_repositories.app + 'admin.php',
+		properties.local_repositories.app + 'index.php',
+		properties.local_repositories.app + 'favicon.ico',
 		properties.local_repositories.app + 'LICENSE.txt'
 	];
 
@@ -219,7 +221,7 @@ gulp.task('_set_debug', function (cb) {
  */
 var copyrightDate = function (path) {
 	path = (typeof path !== 'undefined') ? path : properties.local_repositories.app + '/';
-	
+
 	var currentYear = new Date().getFullYear();
 	var pastYear = currentYear - 1;
 
@@ -247,7 +249,7 @@ gulp.task('_replace_jira_collector', function (cb) {
 		paths.app + 'system/ee/legacy/errors/error_exception.php',
 		paths.app + 'system/ee/legacy/errors/error_general.php'
 	];
-	
+
 	files.forEach(function(item, index) {
 		var dest = item.substring(0, item.lastIndexOf('/'));
 		gulp.src(item)
