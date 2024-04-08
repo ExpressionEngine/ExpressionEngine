@@ -868,7 +868,8 @@ class Fields extends AbstractFieldsController
             // When fieldtype settings contain fields with their own group toggles
             // we need to loop through them and append the fieldtype group name
             foreach ($field_options as &$option) {
-                foreach ($option['settings'] ?? [] as $key => $setting) {
+                $settings = isset($option['settings']) ? $option['settings'] : [];
+                foreach ($settings as $key => $setting) {
                     if (isset($setting['group']) && isset($option['group'])) {
                         $option['settings'][$key]['group'] = $option['group'] . '|' . $setting['group'];
                     }
