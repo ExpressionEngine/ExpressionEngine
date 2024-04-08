@@ -482,4 +482,15 @@ $(document).ready(function () {
 			}
 		});
 	}
+
+	$('body').on('input', 'div[rev=toggle-columns] input[name="columns"]', function(e) {
+		var searchInput = $(this);
+		var valThis = $(this).val().toLowerCase();
+		var inputParent = searchInput.parents('div[rev=toggle-columns]');
+		inputParent.find('.dropdown__item').each(function(){
+			var text = $(this).find('label').text().toLowerCase();
+			text = $.trim(text);
+			(text.indexOf(valThis) == -1) ? $(this).hide() : $(this).show();
+		});
+	})
 });
