@@ -27532,6 +27532,8 @@ input[type=button].btn-block {
 .modal-file {
   max-width: 100%;
   width: 98%;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .modal-confirm-delete-file,
