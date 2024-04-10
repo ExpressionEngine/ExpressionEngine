@@ -244,7 +244,7 @@ var Relationship = /*#__PURE__*/function (_React$Component) {
           return item.value !== itemId;
         })
       });
-        $(document).trigger('entry:preview');
+      $(document).trigger('entry:preview');
     } // Opens a modal to create a new entry
 
   }, {
