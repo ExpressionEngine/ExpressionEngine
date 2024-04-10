@@ -88,20 +88,20 @@ EE.cp.formValidation = {
 
 			$(this._textInputSelectors, container)
 			.not('*[data-ajax-validate=no]')
-			.on('keyup', function () {
+			.on('keypress', function (e) {
 				$(this).data('validating', false);
-				var element = $(this);
-				clearTimeout(typingTimer);
-
-				typingTimer = setTimeout(function() {
-					that._sendAjaxRequest(element);
-				}, 500);
+				window.clearTimeout(typingTimer);
 			});
 
 			$(this._textInputSelectors, container)
 			.not('*[data-ajax-validate=no]')
-			.on('keydown', function () {
-				clearTimeout(typingTimer);
+			.on('keyup', function (e) {
+				var _this  = $(this);
+				window.clearTimeout(typingTimer);
+				typingTimer = window.setTimeout(() => {
+					var element = _this;
+					that._sendAjaxRequest(element);
+				}, 500);
 			})
 		} else {
 			$(this._textInputSelectors, container)
@@ -134,7 +134,7 @@ EE.cp.formValidation = {
 		// validation only)
 		$('form.ajax-validate .fieldset-invalid, form.ajax-validate div.grid-publish:has(div.invalid)').each(function() {
 			that._bindTextFieldTimer($(this));
-		});
+		})
 	},
 
 	/**
@@ -564,7 +564,6 @@ EE.cp.formValidation = {
 		{
 			return;
 		}
-
 		// Bind the timer on keydown and change
 		inputs.data('validating', true).on('keydown change', function() {
 
@@ -575,11 +574,13 @@ EE.cp.formValidation = {
 
 			var field = $(this);
 
-			// Wait half a second, then clear the timer and send the AJAX request
-			timer = setTimeout(function() {
-				clearTimeout(timer);
-				that._sendAjaxRequest(field);
-			}, 500);
+			if (field.parents('form.ajax-validate').find('.fieldset-required').length != 1) {
+				// Wait half a second, then clear the timer and send the AJAX request
+				timer = setTimeout(function() {
+					clearTimeout(timer);
+					that._sendAjaxRequest(field);
+				}, 500);
+			}
 		});
 	}
 }
