@@ -1266,4 +1266,5 @@ $(document).ready(function(){
 
 			return false;
 		})
+
 }); // close (document).ready
