@@ -208,7 +208,8 @@ function (_React$Component) {
 
       this.setState({
         selected: [].concat(_toConsumableArray(this.state.selected), [item])
-      }); // Because the add field button shifts down when an item is added, we need to tell
+      });
+      $(document).trigger('entry:preview'); // Because the add field button shifts down when an item is added, we need to tell
       // the dropdown controller to update the dropdown positions so the dropdown stays under the button
 
       DropdownController.updateDropdownPositions();
@@ -221,6 +222,7 @@ function (_React$Component) {
           return item.value !== itemId;
         })
       });
+      $(document).trigger('entry:preview');
     } // Opens a modal to create a new entry
 
   }, {

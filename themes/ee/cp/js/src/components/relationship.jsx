@@ -70,6 +70,7 @@ class Relationship extends React.Component {
 
         // Add the item to the selection
         this.setState({ selected: [...this.state.selected, item] })
+        $(document).trigger('entry:preview');
 
         // Because the add field button shifts down when an item is added, we need to tell
         // the dropdown controller to update the dropdown positions so the dropdown stays under the button
@@ -80,6 +81,7 @@ class Relationship extends React.Component {
         this.setState({ selected: this.state.selected.filter(function(item) {
             return item.value !== itemId
         })});
+        $(document).trigger('entry:preview');
     }
 
     // Opens a modal to create a new entry
