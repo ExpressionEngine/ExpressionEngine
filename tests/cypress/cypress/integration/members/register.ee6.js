@@ -9,6 +9,7 @@ const emailSettings = new EmailSettings
 const { _, $ } = Cypress
 
 var userCount = 0;
+var urlRegex = /(https?:\/\/[^\s]+)/g;
 
 context('Member Registration on Front-end', () => {
 
@@ -512,7 +513,7 @@ context('Member Registration on Front-end', () => {
             emailSettings.get('smtp_port').clear().type('1025')
             emailSettings.get('email_smtp_crypto').filter('[value=""]').check()
             cy.get('button').contains('Save Settings').first().click()
-
+            cy.logout()
         })
 
         this.beforeEach(function(){
@@ -521,7 +522,6 @@ context('Member Registration on Front-end', () => {
 
         it('registers normally', function() {
             cy.eeConfig({ item: 'default_primary_role', value: '5' })
-            cy.clearCookies()
             cy.visit('index.php/mbr/register');
             cy.get('#username').clear().type('user' + userCount);
             cy.get('#email').clear().type('user' + userCount + '@expressionengine.com');
@@ -541,7 +541,6 @@ context('Member Registration on Front-end', () => {
             cy.clearCookies()
             cy.maildevGetAllMessages().then((emails) => {
                 //var email = emails[emails.length - 1];
-                var urlRegex = /(http?:\/\/[^\s]+)/g;
                 var link = emails[0].text.match(urlRegex);
                 cy.visit(link[0], {failOnStatusCode: false});
                 cy.contains('Your account has been activated');
@@ -549,6 +548,74 @@ context('Member Registration on Front-end', () => {
 
             cy.authVisit('admin.php?/cp/members');
             cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4)').contains('Members')
+        })
+
+        it('registers and auto logs in upon activation', function() {
+            cy.eeConfig({ item: 'default_primary_role', value: '5' })
+            cy.eeConfig({ item: 'activation_auto_login', value: 'y' })
+            cy.visit('index.php/mbr/register');
+            cy.get('#username').clear().type('user' + userCount);
+            cy.get('#email').clear().type('user' + userCount + '@expressionengine.com');
+            cy.get('#password').clear().type('password');
+            cy.get('#password_confirm').clear().type('password');
+            cy.get('#accept_terms').check();
+            cy.get('#submit').click();
+
+            cy.get('h1').invoke('text').then((text) => {
+                expect(text).equal('Member Registration Home')//redirected successfully
+            })
+            cy.clearCookies()
+
+            cy.authVisit('admin.php?/cp/members');
+            cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4) .st-pending').should('exist')
+
+            cy.clearCookies()
+            cy.maildevGetAllMessages().then((emails) => {
+                var link = emails[0].text.match(urlRegex);
+                cy.visit(link[0], {failOnStatusCode: false});
+                cy.contains('You are logged-in and ready to begin using your new account.');
+                cy.clearCookies()
+            });
+
+            cy.authVisit('admin.php?/cp/members');
+            cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4)').contains('Members')
+
+            cy.eeConfig({ item: 'activation_auto_login', value: 'n' })
+        })
+
+        it('registers and redirects in upon activation', function() {
+            cy.eeConfig({ item: 'default_primary_role', value: '5' })
+            cy.eeConfig({ item: 'activation_auto_login', value: 'y' })
+            cy.eeConfig({ item: 'activation_redirect', value: '/mbr/profile-edit' })
+            cy.visit('index.php/mbr/register');
+            cy.get('#username').clear().type('user' + userCount);
+            cy.get('#email').clear().type('user' + userCount + '@expressionengine.com');
+            cy.get('#password').clear().type('password');
+            cy.get('#password_confirm').clear().type('password');
+            cy.get('#accept_terms').check();
+            cy.get('#submit').click();
+
+            cy.get('h1').invoke('text').then((text) => {
+                expect(text).equal('Member Registration Home')//redirected successfully
+            })
+            cy.clearCookies()
+
+            cy.authVisit('admin.php?/cp/members');
+            cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4) .st-pending').should('exist')
+
+            cy.clearCookies()
+            cy.maildevGetAllMessages().then((emails) => {
+                var link = emails[0].text.match(urlRegex);
+                cy.visit(link[0], {failOnStatusCode: false});
+                cy.url().should('match', /mbr\/profile-edit/)
+                cy.clearCookies()
+            });
+
+            cy.authVisit('admin.php?/cp/members');
+            cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4)').contains('Members')
+
+            cy.eeConfig({ item: 'activation_auto_login', value: 'n' })
+            cy.eeConfig({ item: 'activation_redirect', value: '' })
         })
 
         it('registers into unlocked default group', function() {
@@ -574,7 +641,6 @@ context('Member Registration on Front-end', () => {
             cy.clearCookies()
             cy.maildevGetAllMessages().then((emails) => {
                 //var email = emails[emails.length - 1];
-                var urlRegex = /(http?:\/\/[^\s]+)/g;
                 var link = emails[0].text.match(urlRegex);
                 cy.visit(link[0], {failOnStatusCode: false});
                 cy.contains('Your account has been activated');
@@ -624,7 +690,6 @@ context('Member Registration on Front-end', () => {
 
             cy.clearCookies()
             cy.maildevGetAllMessages().then((emails) => {
-                var urlRegex = /(http?:\/\/[^\s]+)/g;
                 var link = emails[0].text.match(urlRegex);
                 cy.visit(link[0], {failOnStatusCode: false});
                 cy.contains('Your account has been activated');
@@ -693,7 +758,6 @@ context('Member Registration on Front-end', () => {
             cy.clearCookies()
             cy.maildevGetAllMessages().then((emails) => {
                 //var email = emails[emails.length - 1];
-                var urlRegex = /(http?:\/\/[^\s]+)/g;
                 var link = emails[0].text.match(urlRegex);
                 cy.visit(link[0], {failOnStatusCode: false});
                 cy.contains('Your account has been activated');
