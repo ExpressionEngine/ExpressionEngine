@@ -270,7 +270,8 @@ trait FileManagerTrait
             'createNewDirectory' => false,
             'ignoreChild' => false,
             'addInput' => false,
-            'imitationButton' => true
+            'imitationButton' => true,
+            'allowMultipleFiles' => false,
         ];
 
         if (!$filepickerMode || ee('Request')->get('hasUpload') == 1) {
