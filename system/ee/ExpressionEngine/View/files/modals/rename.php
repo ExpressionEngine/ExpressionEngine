@@ -32,7 +32,7 @@
 
         <div class="dialog__actions ">
             <div class="dialog__buttons">
-                <button class="button button--primary button--danger" type="submit" value="<?=lang('save'); ?>" data-submit-text="<?=lang('btn_confirm_and_move'); ?>" data-work-text="<?=lang('btn_confirm_and_save_working'); ?>"><?=lang('btn_confirm_and_move'); ?></button>
+                <button class="button button--primary button--danger" type="submit" value="<?=lang('save'); ?>" data-submit-text="<?=lang('btn_confirm_and_rename'); ?>" data-work-text="<?=lang('btn_confirm_and_save_working'); ?>"><?=lang('btn_confirm_and_rename'); ?></button>
             </div>
         </div>
         </form>
