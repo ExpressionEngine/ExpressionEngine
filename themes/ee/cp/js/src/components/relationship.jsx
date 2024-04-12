@@ -74,6 +74,7 @@ class Relationship extends React.Component {
         // Because the add field button shifts down when an item is added, we need to tell
         // the dropdown controller to update the dropdown positions so the dropdown stays under the button
         DropdownController.updateDropdownPositions()
+        $("[data-publish] > form").trigger("entry:startAutosave");
     }
 
     deselect(itemId) {
