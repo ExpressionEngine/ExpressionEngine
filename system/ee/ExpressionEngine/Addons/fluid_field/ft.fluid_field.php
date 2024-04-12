@@ -107,7 +107,15 @@ class Fluid_field_ft extends EE_Fieldtype
                         continue;
                     }
 
-                    $field = clone $field_templates[$field_id];
+                    // the field might be present, but not in the settings currently
+                    if (isset($field_templates[$field_id])) {
+                        $field = clone $field_templates[$field_id];
+                    } else {
+                        $field = ee('Model')->get('ChannelField', $field_id)->first();
+                        if (empty($field)) {
+                            continue;
+                        }
+                    }
 
                     $f = $field->getField();
                     $ft_instance = $f->getNativeField();
@@ -288,8 +296,16 @@ class Fluid_field_ft extends EE_Fieldtype
                     }
                 }
                 // New field
-                if (strpos($key, 'new_field_') === 0 || (defined('CLONING_MODE') && CLONING_MODE === true)) {
+                if (strpos($key, 'new_field_') === 0) {
                     $field_id = str_replace('field_id_', '', $fieldKey);
+                }
+                // cloning mode
+                if (defined('CLONING_MODE') && CLONING_MODE === true) {
+                    $field_id = str_replace('field_id_', '', $fieldKey);
+                    $fluidField = ee('Model')->get('fluid_field:FluidField')->filter('field_id', $field_id)->first();
+                    if (!empty($fluidField)) {
+                        $group_key = 'group_' . $fluidField->group;
+                    }
                 }
 
                 // If the field_group is null we do not have a group and are always incrementing
@@ -531,6 +547,8 @@ class Fluid_field_ft extends EE_Fieldtype
 
         $field_templates = $field_templates->indexByIds();
 
+        $field_name_prefix = (isset($this->settings['field_short_name']) && !empty($this->settings['field_short_name'])) ? $this->settings['field_short_name'] . ':' : '';
+
         if (! is_array($data)) {
             if ($this->content_id) {
                 $fluid_field_data = $this->getFieldData();
@@ -560,7 +578,8 @@ class Fluid_field_ft extends EE_Fieldtype
                         'errors' => $this->errors,
                         'reorderable' => true,
                         'show_field_type' => false,
-                        'field_filters' => $filter_options
+                        'field_filters' => $filter_options,
+                        'field_name_prefix' => $field_name_prefix
                     ];
 
                     if ($is_group) {
@@ -668,7 +687,8 @@ class Fluid_field_ft extends EE_Fieldtype
                     'errors' => $this->errors,
                     'reorderable' => true,
                     'show_field_type' => false,
-                    'field_filters' => $filter_options
+                    'field_filters' => $filter_options,
+                    'field_name_prefix' => $field_name_prefix
                 ];
 
                 if ($is_group) {
@@ -701,6 +721,7 @@ class Fluid_field_ft extends EE_Fieldtype
             $templates .= ee('View')->make('fluid_field:field')->render([
                 'field' => $f,
                 'field_name' => $field->field_name,
+                'field_name_prefix' => $field_name_prefix,
                 'filters' => $filters,
                 'errors' => $this->errors,
                 'reorderable' => true,
@@ -722,6 +743,7 @@ class Fluid_field_ft extends EE_Fieldtype
                     return $f;
                 }),
                 'field_name' => $field_group->short_name,
+                'field_name_prefix' => $field_name_prefix,
                 'filters' => $filters,
                 'errors' => $this->errors,
                 'reorderable' => true,

@@ -138,9 +138,7 @@ class Upload
             )
         );
 
-        $cat_groups = ee('Model')->get('CategoryGroup')
-            ->filter('group_id', 'IN', explode('|', (string) $file->UploadDestination->cat_group))
-            ->all();
+        $cat_groups = $file->UploadDestination->CategoryGroups;
 
         if (count($cat_groups) == 0) {
             $url = ee('CP/URL', 'files/uploads/edit/' . $file->UploadDestination->getId())->compile();
@@ -497,7 +495,7 @@ class Upload
                         $file->getFilesystem()->forceCopy($src, $dest);
                     }
                 }
-
+                $original->deleteGeneratedFiles();
                 $file->delete();
 
                 $result['params']['file'] = $original;

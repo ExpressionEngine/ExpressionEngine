@@ -111,7 +111,9 @@ class Pro_variables
         if (defined('IS_PRO') && IS_PRO) {
             $local_vars = array();
             foreach ($this->vars as $t) {
-                if (strpos($tagdata, "{$t['variable_name']}") !== false && $t['is_hidden'] === 'n') {
+                if ($t['variable_name'] == $var && $t['is_hidden'] === 'n') {
+                    array_push($local_vars, $t);
+                } elseif (strpos($tagdata, "{$t['variable_name']}") !== false && $t['is_hidden'] === 'n') {
                     array_push($local_vars, $t);
                 }
                 //Get the early parsed variables
@@ -119,7 +121,9 @@ class Pro_variables
                     array_push($local_vars, $t);
                 }
             }
-            ee('pro:Prolet')->initialize('pro_variables', ['local' => $local_vars]);
+            if (!empty($local_vars)) {
+                ee('pro:Prolet')->initialize('pro_variables', ['local' => $local_vars]);
+            }
         }
 
         // -------------------------------------

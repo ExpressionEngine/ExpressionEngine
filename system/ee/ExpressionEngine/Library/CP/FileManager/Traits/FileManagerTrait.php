@@ -537,7 +537,7 @@ trait FileManagerTrait
      */
     private function createCategoryFilter($uploadLocation = null)
     {
-        $cat_id = ($uploadLocation) ? explode('|', (string) $uploadLocation->cat_group) : null;
+        $cat_id = ($uploadLocation) ? $uploadLocation->CategoryGroups->pluck('group_id') : null;
 
         $category_groups = ee('Model')->get('CategoryGroup', $cat_id)
             ->with('Categories')
@@ -610,7 +610,7 @@ trait FileManagerTrait
                     'adapter' => $upload_pref->adapter,
                     'directory_id' => 0,
                     'path' => '',
-                    'children' => !bool_config_item('file_manager_compatibility_mode') ? $upload_pref->buildDirectoriesDropdown($upload_pref->getId(), true) : []
+                    'children' => !bool_config_item('file_manager_compatibility_mode') ? $upload_pref->getDirectoriesDropdown(true) : []
                 ];
             }
         }

@@ -52,17 +52,21 @@ class Text extends Formatter
 
         $this->content = '';
         foreach ($chars as $index => $char) {
-            $decoded = mb_convert_encoding($char, 'ISO-8859-1', 'UTF-8');
-
-            if ($decoded != '?') {
-                $char = $decoded;
+            if ($this->multibyte) {
+                $ord = mb_ord($char);
+            } else {
+                if (function_exists('utf8_decode')) {
+                    $decoded = utf8_decode($char);
+                    if ($decoded != '?') {
+                        $char = $decoded;
+                    }
+                }
+                $ord = ord($char);
             }
-
-            $ord = ord($char);
 
             if (isset($accent_map[$ord])) {
                 $this->content .= $accent_map[$ord];
-            } else {
+            } elseif ($ord !== false) { //make sure char is valid character
                 $this->content .= $char;
             }
         }
