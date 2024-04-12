@@ -13,7 +13,7 @@ context('Editing field settings', () => {
     before(function () {
         cy.task('db:seed')
         cy.auth()
-
+        cy.visit('admin.php?/cp/fields/create/1')
         channel_field_form.createField({
             group_id: 1,
             type: 'Checkboxes',
