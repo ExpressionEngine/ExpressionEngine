@@ -566,7 +566,7 @@ $lang = array(
 
     'menu_set_created' => 'Menu Set Created',
 
-    'menu_set_created_desc' => 'The menu set <b>%s</b> has been updated.',
+    'menu_set_created_desc' => 'The menu set <b>%s</b> has been created.',
 
     'menu_set_updated' => 'Menu Set Updated',
 
