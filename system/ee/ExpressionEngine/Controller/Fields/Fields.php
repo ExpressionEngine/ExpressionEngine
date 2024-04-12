@@ -865,6 +865,17 @@ class Fields extends AbstractFieldsController
             }
 
             $field_options = $dummy_field->getSettingsForm();
+            // When fieldtype settings contain fields with their own group toggles
+            // we need to loop through them and append the fieldtype group name
+            foreach ($field_options as &$option) {
+                $settings = isset($option['settings']) ? $option['settings'] : [];
+                foreach ($settings as $key => $setting) {
+                    if (isset($setting['group']) && isset($option['group'])) {
+                        $option['settings'][$key]['group'] = $option['group'] . '|' . $setting['group'];
+                    }
+                }
+            }
+
             if (is_array($field_options) && ! empty($field_options)) {
                 $sections = array_merge($sections, $field_options);
             }
