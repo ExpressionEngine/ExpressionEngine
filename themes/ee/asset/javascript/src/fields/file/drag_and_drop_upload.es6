@@ -698,6 +698,7 @@ class DragAndDropUpload extends React.Component {
               createNewDirectory={this.props.createNewDirectory}
               ignoreChild={false}
               addInput={true}
+              allowMultipleFiles={this.props.allowMultipleFiles}
             />
           </div>
           )
@@ -749,6 +750,7 @@ class DragAndDropUpload extends React.Component {
               createNewDirectory={this.props.createNewDirectory}
               ignoreChild={false}
               addInput={true}
+              allowMultipleFiles={this.props.allowMultipleFiles}
             />
           </div>
         )}
