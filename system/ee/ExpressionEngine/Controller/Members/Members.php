@@ -1746,7 +1746,7 @@ class Members extends CP_Controller
                 $errors[] = sprintf(lang('cannot_activate_member_role_not_exists'), $member->username, $role->name);
                 continue;
             }
-            if ($role->is_locked == 'y') {
+            if ($role->is_locked == 'y' && !ee('Permission')->isSuperAdmin()) {
                 $errors[] = sprintf(lang('cannot_activate_member_role_is_locked'), $member->username, $role->name);
                 continue;
             }

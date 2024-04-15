@@ -211,6 +211,10 @@ class DragAndDropUpload extends React.Component {
 
       formData.append('file', file)
       xhr.send(formData)
+
+      if ($("[data-publish] > form").length) {
+        $("[data-publish] > form").trigger("entry:startAutosave");
+      }
     })
   }
 
@@ -317,7 +321,7 @@ class DragAndDropUpload extends React.Component {
 
     var selectedDirectoryNotInList = false;
     if (this.state.directory != 'all') {
-      dir = this.state.directory;
+      var dir = this.state.directory;
       if (EE.dragAndDrop.uploadDesinations.length != 0) {
         selectedDirectoryNotInList = true;
         Object.values(EE.dragAndDrop.uploadDesinations).forEach(function (uploadDesination) {

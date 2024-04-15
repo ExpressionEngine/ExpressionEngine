@@ -47,6 +47,10 @@
 
 			// Hide the "missing file" error
 			input.siblings('em').remove();
+
+			if ($("[data-publish] > form").length) {
+				$("[data-publish] > form").trigger("entry:startAutosave");
+			}
 		},
 
 		setup: function(container) {
