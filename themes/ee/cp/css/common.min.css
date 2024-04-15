@@ -48431,6 +48431,26 @@ table .field-no-results {
   word-break: break-word;
 }
 
+.simple-list-wrapper .simple-item {
+  display: flex;
+  align-items: start;
+  padding: 5px 15px;
+  border: 2px solid var(--ee-border);
+  margin-bottom: 10px;
+  border-radius: 8px;
+}
+.simple-list-wrapper .avatar-icon {
+  width: 45px;
+  height: 45px;
+  margin-top: 10px;
+}
+.simple-list-wrapper .meta-details {
+  color: var(--ee-text-secondary);
+}
+.simple-list-wrapper .meta-info {
+  text-align: left;
+}
+
 .pagination {
   list-style-type: none;
   padding: 20px 25px 10px;

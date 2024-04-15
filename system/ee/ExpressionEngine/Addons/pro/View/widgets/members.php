@@ -1,23 +1,30 @@
 <?php if ($can_access_members):?>
 
-		<ul class="simple-list">
+		<section class="simple-list-wrapper">
 			<?php
 				$recent_members = ee('Model')->get('Member')
 				->order('last_visit', 'DESC')
-				->limit(7)
+				->limit(8)
 				->all();
 
 				foreach($recent_members as $member):
 					$last_visit = ($member->last_visit) ? ee()->localize->human_time($member->last_visit) : '--';
 					$avatar_url = ($member->avatar_filename) ? ee()->config->slash_item('avatar_url') . $member->avatar_filename : (URL_THEMES . 'asset/img/default-avatar.png');
 				?>
-				<li>
+				<div class="simple-item">
 					<a href="<?=ee('CP/URL')->make('members/profile/settings&id=' . $member->member_id);?>" class="d-flex align-items-center normal-link">
 						<img src="<?=$avatar_url?>" class="avatar-icon add-mrg-right" alt="">
-						<div class="flex-grow"><?= $member->screen_name; ?> <span class="meta-info float-right"><?=$last_visit?></span></div>
 					</a>
-				</li>
+					<div class="simple-item-info">
+						<h3><a href="<?=ee('CP/URL')->make('members/profile/settings&id=' . $member->member_id);?>" class="d-flex align-items-center normal-link"><?= $member->screen_name; ?></a></h3>
+						<p class="meta-details">
+							<span class="username"><?= $member->username; ?></span> / 
+							<span class="email"><?= $member->email; ?></span>
+						</p>
+						<p class="meta-info"><?=$last_visit?></p>
+					</div>
+				</div>
 				<?php endforeach; ?>
-		</ul>
+		</section>
 
 <?php endif; ?>

@@ -18,3 +18,29 @@
 		}
 	}
 }
+
+.simple-list-wrapper {
+
+	.simple-item{
+		display: flex;
+		align-items: start;
+		padding: 5px 15px;
+		border: 2px solid var(--ee-border);
+		margin-bottom: 10px;
+		border-radius: 8px;
+	}
+
+	.avatar-icon {
+		width: 45px;
+		height: 45px;
+		margin-top: 10px;
+	}
+
+	.meta-details {
+		color: var(--ee-text-secondary);
+	}
+
+	.meta-info {
+		text-align: left;
+	}
+}
