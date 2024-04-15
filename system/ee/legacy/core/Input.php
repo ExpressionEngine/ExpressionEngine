@@ -144,8 +144,8 @@ class EE_Input
         // Clean up the value.
         $data['value'] = stripslashes($data['value']);
 
-        // check the cookie setting for expiration date
-        if (is_numeric($data['expire'])) {
+        // check the cookie setting for expiration date, unless config override is forcing the lowest value
+        if (is_numeric($data['expire']) && ! bool_config_item('expire_session_on_browser_close')) {
             $loadedCookieSettings = ee('CookieRegistry')->getCookieSettings($name);
             if (!empty($loadedCookieSettings)) {
                 if ($loadedCookieSettings['cookie_lifetime'] === null) {
