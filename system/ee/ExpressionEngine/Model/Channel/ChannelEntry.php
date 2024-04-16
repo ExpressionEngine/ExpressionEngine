@@ -1002,6 +1002,11 @@ class ChannelEntry extends ContentModel
     {
         $currentlyHiddenFieldsIds = $this->getHiddenFieldIds();
 
+        // if we can't determine channel, do not proceed
+        if (is_null($this->Channel)) {
+            return $currentlyHiddenFieldsIds;
+        }
+
         $hiddenFieldIds = [];
         $evaluator = ee('ee:ConditionalFieldEvaluator', $this);
         foreach ($this->Channel->getAllCustomConditionalFields() as $field_name => $field) {
