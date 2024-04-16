@@ -21,13 +21,18 @@
 
 .simple-list-wrapper {
 
-	.simple-item{
+	h3 {
+		font-size: 1.2em;
+	}
+
+	.simple-item {
 		display: flex;
 		align-items: start;
 		padding: 5px 15px;
-		border: 2px solid var(--ee-border);
+		border: 1px solid var(--ee-border);
 		margin-bottom: 10px;
 		border-radius: 8px;
+		background: var(--ee-bg-blank);
 	}
 
 	.avatar-icon {
@@ -36,11 +41,31 @@
 		margin-top: 10px;
 	}
 
+	.simple-item-info {
+		width: 100%;
+	}
+
 	.meta-details {
 		color: var(--ee-text-secondary);
+		font-size: 13px;
 	}
 
 	.meta-info {
 		text-align: left;
+		min-width: unset;
+		font-size: inherit;
+		text-transform: none;
+		margin-left: 0;
+		letter-spacing: normal;
+		width: 100%;
+		font-size: 13px;
 	}
+}
+
+.dashboard__item {
+	background: var(--ee-bg-0);
+}
+
+.widget__title-bar {
+	background: var(--ee-bg-blank);
 }

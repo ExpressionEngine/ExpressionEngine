@@ -4,7 +4,7 @@
 			<?php
 				$recent_members = ee('Model')->get('Member')
 				->order('last_visit', 'DESC')
-				->limit(8)
+				->limit(5)
 				->all();
 
 				foreach($recent_members as $member):
@@ -18,10 +18,9 @@
 					<div class="simple-item-info">
 						<h3><a href="<?=ee('CP/URL')->make('members/profile/settings&id=' . $member->member_id);?>" class="d-flex align-items-center normal-link"><?= $member->screen_name; ?></a></h3>
 						<p class="meta-details">
-							<span class="username"><?= $member->username; ?></span> / 
-							<span class="email"><?= $member->email; ?></span>
+							<span class="email"><b>Email:</b> <?= $member->email; ?></span>
 						</p>
-						<p class="meta-info"><?=$last_visit?></p>
+						<p class="meta-info"><b>Last Visit:</b> <?=$last_visit?></p>
 					</div>
 				</div>
 				<?php endforeach; ?>
