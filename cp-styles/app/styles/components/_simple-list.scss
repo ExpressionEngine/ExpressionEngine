@@ -22,7 +22,7 @@
 .simple-list-wrapper {
 
 	h3 {
-		font-size: 1.2em;
+		font-size: 1.1em;
 	}
 
 	.simple-item {
@@ -33,6 +33,7 @@
 		margin-bottom: 10px;
 		border-radius: 8px;
 		background: var(--ee-bg-blank);
+		box-shadow: 0 2px 3px rgba(0,0,0,0.1);
 	}
 
 	.avatar-icon {
@@ -47,7 +48,7 @@
 
 	.meta-details {
 		color: var(--ee-text-secondary);
-		font-size: 13px;
+		font-size: 80%;
 	}
 
 	.meta-info {
@@ -58,14 +59,6 @@
 		margin-left: 0;
 		letter-spacing: normal;
 		width: 100%;
-		font-size: 13px;
+		font-size: 80%;
 	}
-}
-
-.dashboard__item {
-	background: var(--ee-bg-0);
-}
-
-.widget__title-bar {
-	background: var(--ee-bg-blank);
 }

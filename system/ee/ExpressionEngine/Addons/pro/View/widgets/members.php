@@ -16,7 +16,7 @@
 						<img src="<?=$avatar_url?>" class="avatar-icon add-mrg-right" alt="">
 					</a>
 					<div class="simple-item-info">
-						<h3><a href="<?=ee('CP/URL')->make('members/profile/settings&id=' . $member->member_id);?>" class="d-flex align-items-center normal-link"><?= $member->screen_name; ?></a></h3>
+						<h3><?= $member->screen_name; ?></h3>
 						<p class="meta-details">
 							<span class="email"><b>Email:</b> <?= $member->email; ?></span>
 						</p>
