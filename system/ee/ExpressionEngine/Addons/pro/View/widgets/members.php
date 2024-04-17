@@ -14,14 +14,14 @@
 				<div class="simple-item">
 					<a href="<?=ee('CP/URL')->make('members/profile/settings&id=' . $member->member_id);?>" class="d-flex align-items-center normal-link">
 						<img src="<?=$avatar_url?>" class="avatar-icon add-mrg-right" alt="">
+						<div class="simple-item-info">
+							<h3><?= $member->screen_name; ?></h3>
+							<p class="meta-details">
+								<span class="email"><b>Email:</b> <?= $member->email; ?></span>
+							</p>
+							<p class="meta-info"><b>Last Visit:</b> <?=$last_visit?></p>
+						</div>
 					</a>
-					<div class="simple-item-info">
-						<h3><?= $member->screen_name; ?></h3>
-						<p class="meta-details">
-							<span class="email"><b>Email:</b> <?= $member->email; ?></span>
-						</p>
-						<p class="meta-info"><b>Last Visit:</b> <?=$last_visit?></p>
-					</div>
 				</div>
 				<?php endforeach; ?>
 		</section>

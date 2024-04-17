@@ -48435,14 +48435,16 @@ table .field-no-results {
   font-size: 1.1em;
 }
 .simple-list-wrapper .simple-item {
-  display: flex;
-  align-items: start;
   padding: 5px 15px;
   border: 1px solid var(--ee-border);
   margin-bottom: 10px;
   border-radius: 8px;
   background: var(--ee-bg-blank);
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+}
+.simple-list-wrapper .simple-item a {
+  display: flex;
+  align-items: start;
 }
 .simple-list-wrapper .avatar-icon {
   width: 45px;
