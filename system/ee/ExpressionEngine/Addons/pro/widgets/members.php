@@ -12,6 +12,8 @@ use ExpressionEngine\Addons\Pro\Service\Dashboard;
 
 class Members extends Dashboard\AbstractDashboardWidget implements Dashboard\DashboardWidgetInterface
 {
+    public $class = 'member-widget';
+
     public function getTitle()
     {
         return lang('members');

@@ -48431,44 +48431,6 @@ table .field-no-results {
   word-break: break-word;
 }
 
-.simple-list-wrapper h3 {
-  font-size: 1.1em;
-}
-.simple-list-wrapper .simple-item {
-  padding: 5px 15px;
-  border: 1px solid var(--ee-border);
-  margin-bottom: 10px;
-  border-radius: 8px;
-  background: var(--ee-bg-blank);
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
-}
-.simple-list-wrapper .simple-item a {
-  display: flex;
-  align-items: start;
-}
-.simple-list-wrapper .avatar-icon {
-  width: 45px;
-  height: 45px;
-  margin-top: 10px;
-}
-.simple-list-wrapper .simple-item-info {
-  width: 100%;
-}
-.simple-list-wrapper .meta-details {
-  color: var(--ee-text-secondary);
-  font-size: 80%;
-}
-.simple-list-wrapper .meta-info {
-  text-align: left;
-  min-width: unset;
-  font-size: inherit;
-  text-transform: none;
-  margin-left: 0;
-  letter-spacing: normal;
-  width: 100%;
-  font-size: 80%;
-}
-
 .pagination {
   list-style-type: none;
   padding: 20px 25px 10px;
@@ -49491,6 +49453,54 @@ table .field-no-results {
   line-height: 22px;
   display: none;
   z-index: 1200;
+}
+
+.simple-list-wrapper h3 {
+  font-size: 1.1em;
+}
+.simple-list-wrapper .simple-item a {
+  align-items: start;
+  padding: 10px 20px;
+  background: var(--ee-bg-blank);
+  border-bottom: 1px solid var(--ee-border);
+}
+.simple-list-wrapper .simple-item a:hover {
+  color: inherit;
+  background: var(--ee-sidebar-bg-active);
+}
+.simple-list-wrapper .avatar-icon {
+  width: 45px;
+  height: 45px;
+}
+.simple-list-wrapper .simple-item-info {
+  width: 100%;
+}
+.simple-list-wrapper .meta-details {
+  color: var(--ee-text-secondary);
+  font-size: 80%;
+}
+.simple-list-wrapper .meta-info {
+  text-align: right;
+  min-width: unset;
+  font-size: inherit;
+  text-transform: none;
+  margin-left: 0;
+  letter-spacing: normal;
+  width: 100%;
+  font-size: 80%;
+}
+.simple-list-wrapper .simple-item-info-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.member-widget {
+  padding: 0;
+  border: none;
+}
+.member-widget .widget__title-bar {
+  margin: 0;
 }
 
 /*
