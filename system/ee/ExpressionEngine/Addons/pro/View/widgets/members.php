@@ -8,7 +8,7 @@
 				->all();
 
 				foreach($recent_members as $member):
-					$last_visit = ($member->last_visit) ? ee()->localize->human_time($member->last_visit) : '--';
+					$last_visit = ($member->last_visit) ? ee()->localize->human_time($member->last_visit, true, false, false) : '--';
 					$avatar_url = ($member->avatar_filename) ? ee()->config->slash_item('avatar_url') . $member->avatar_filename : (URL_THEMES . 'asset/img/default-avatar.png');
 				?>
 				<div class="simple-item">
@@ -18,7 +18,7 @@
 							<h3><?= $member->screen_name; ?></h3>
 							<div class="simple-item-info-secondary">
 								<p class="meta-details"><?= $member->email; ?></p>
-								<p class="meta-info"><b>Last Visit:</b> <?=$last_visit?></p>
+								<p class="meta-info">Last Seen: <?=$last_visit?></p>
 							</div>
 						</div>
 					</a>
