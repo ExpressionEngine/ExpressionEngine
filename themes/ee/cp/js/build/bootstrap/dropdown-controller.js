@@ -120,6 +120,17 @@ var DropdownController = function () {
     dropdown._popper.update();
 
     dropdown._popper.scheduleUpdate();
+
+    if ($('div[data-input-value="field_type"').length) {
+      var search_input = $('div[data-input-value="field_type"] .search-input .search-input__input');
+      console.log('search_input', search_input);
+      var interval = setInterval(function () {
+        if (search_input.is(':visible')) {
+          search_input.focus();
+          clearInterval(interval);
+        }
+      }, 50);
+    }
   }
 
   function hideDropdown(dropdown, button) {
