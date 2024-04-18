@@ -175,7 +175,7 @@ class Structure_tab
                 'field_label'           => lang('tab_parent_entry'),
                 'field_required'        => 'n',
                 'field_data'            => $selected_parent,
-                'field_list_items'      => $parent_ids,
+                'value_label_pairs'     => $parent_ids,
                 'field_fmt'             => '',
                 'field_instructions'    => '',
                 'field_show_fmt'        => 'n',
@@ -714,7 +714,7 @@ class Structure_tab
         // Build Parent Entries Select Box
         $parent_id = ee()->input->get_post('structure__parent_id') ? ee()->input->get_post('structure__parent_id') : 0;
         $parent_ids = array();
-        $parent_ids['n'] = "NONE";
+        $parent_ids['0'] = "NONE";
 
         // PARENT BUG
         // Update: Changed this to `$entry_id` which may cause some oddity with the Parent dropdown.
