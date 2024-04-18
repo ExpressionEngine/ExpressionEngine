@@ -52211,6 +52211,7 @@ ul.field-reorder-drop,
 .ee-sidebar__items .ee-sidebar__version.ee-sidebar__version--update, .ee-sidebar__items .ee-sidebar__version.ee-sidebar__version--update i {
   color: var(--ee-ee-update) !important;
   background: var(--ee-ee-update-bg);
+  border-radius: 0;
 }
 .ee-sidebar__items .ee-sidebar__version.ee-sidebar__version--update #ee-logomark {
   fill: var(--ee-ee-update) !important;
