@@ -875,7 +875,7 @@ abstract class EE_Fieldtype
             $multidimensional = count(array_filter($field_options, 'is_array')) > 0;
             $data = array_reverse($data);
             foreach ($data as $item) {
-                if (!empty($item)) {
+                if ($item === 0 || !empty($item)) {
                     if (array_key_exists($item, $field_options)) {
                         continue;
                     }
