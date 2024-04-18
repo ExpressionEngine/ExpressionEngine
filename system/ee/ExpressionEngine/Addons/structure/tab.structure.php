@@ -454,7 +454,7 @@ class Structure_tab
             $parent_id = $params['parent_id']; // EE3
         } elseif (isset($params['mod_data']['parent_id'])) {
             $parent_id = $params['mod_data']['parent_id']; // EE2
-        } elseif (!empty($structure_alt_parent_id)) {
+        } elseif (!is_null($structure_alt_parent_id)) {
             $parent_id = $structure_alt_parent_id;
         } else {
             // do we have an entry id as well as a template?
