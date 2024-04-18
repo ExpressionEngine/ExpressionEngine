@@ -49456,7 +49456,8 @@ table .field-no-results {
 }
 
 .simple-list-wrapper h3 {
-  font-size: 1.1em;
+  font-size: 1.05em;
+  margin-bottom: 5px;
 }
 .simple-list-wrapper .simple-item a {
   align-items: start;
@@ -49469,8 +49470,8 @@ table .field-no-results {
   background: var(--ee-sidebar-bg-active);
 }
 .simple-list-wrapper .avatar-icon {
-  width: 45px;
-  height: 45px;
+  width: 48px;
+  height: 48px;
 }
 .simple-list-wrapper .simple-item-info {
   width: 100%;
@@ -49485,7 +49486,6 @@ table .field-no-results {
   font-size: inherit;
   text-transform: none;
   margin-left: 0;
-  letter-spacing: normal;
   width: 100%;
   font-size: 80%;
 }

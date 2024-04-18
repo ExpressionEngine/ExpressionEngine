@@ -1,7 +1,8 @@
 .simple-list-wrapper {
 
 	h3 {
-		font-size: 1.1em;
+		font-size: 1.05em;
+		margin-bottom: 5px;
 	}
 
 	.simple-item {
@@ -19,8 +20,8 @@
 	}
 
 	.avatar-icon {
-		width: 45px;
-		height: 45px;
+		width: 48px;
+		height: 48px;
 	}
 
 	.simple-item-info {
@@ -38,7 +39,6 @@
 		font-size: inherit;
 		text-transform: none;
 		margin-left: 0;
-		letter-spacing: normal;
 		width: 100%;
 		font-size: 80%;
 	}
