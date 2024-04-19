@@ -698,7 +698,9 @@ class Structure_tab
             StaticCache::set('get_template_fields', $templates);
         }
 
-        $options = array();
+        $options = array(
+            0 => 'NONE',
+        );
 
         foreach ($templates as $template_row) {
             $template_id = $template_row['template_id'];
