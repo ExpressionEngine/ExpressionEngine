@@ -49461,7 +49461,7 @@ table .field-no-results {
 }
 .simple-list-wrapper .simple-item a {
   align-items: start;
-  padding: 10px 20px;
+  padding: 5px 15px;
   background: var(--ee-bg-blank);
   border-bottom: 1px solid var(--ee-border);
 }
@@ -49470,8 +49470,8 @@ table .field-no-results {
   background: var(--ee-sidebar-bg-active);
 }
 .simple-list-wrapper .avatar-icon {
-  width: 48px;
-  height: 48px;
+  width: 45px;
+  height: 45px;
 }
 .simple-list-wrapper .simple-item-info {
   width: 100%;
