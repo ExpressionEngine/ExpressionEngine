@@ -333,14 +333,14 @@ class CI_DB_active_record extends CI_DB_driver
             $join_alias = ' ' . $alias . ' ';
         }
 		
-		if (trim($type) == 'STRAIGHT') {
-			$join = 'STRAIGHT_JOIN ' . $this->_protect_identifiers($table, true, null, false) . $join_alias . ' ON ' . $cond;
-		}
-		else {
         // Assemble the JOIN statement
-        $join = $type . 'JOIN ' . $this->_protect_identifiers($table, true, null, false) . $join_alias . ' ON ' . $cond;
-		}
-
+        if (trim($type) == 'STRAIGHT') {
+            $join = 'STRAIGHT_JOIN ' . $this->_protect_identifiers($table, true, null, false) . $join_alias . ' ON ' . $cond;
+        }
+        else {
+            $join = $type . 'JOIN ' . $this->_protect_identifiers($table, true, null, false) . $join_alias . ' ON ' . $cond;
+        }
+		
         $this->ar_join[] = $join;
         if ($this->ar_caching === true) {
             $this->ar_cache_join[] = $join;
