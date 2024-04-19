@@ -230,7 +230,7 @@ class CI_DB_active_record extends CI_DB_driver
 
         return $this;
     }
-	
+
     /**
      * From
      *
@@ -315,7 +315,7 @@ class CI_DB_active_record extends CI_DB_driver
         if (! empty($alias)) {
             $join_alias = ' ' . $alias . ' ';
         }
-		
+
         // Assemble the JOIN statement
         if (trim($type) == 'STRAIGHT') {
             $join = 'STRAIGHT_JOIN ' . $this->_protect_identifiers($table, true, null, false) . $join_alias . ' ON ' . $cond;
