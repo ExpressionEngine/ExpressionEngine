@@ -907,19 +907,17 @@ class Members extends CP_Controller
         ]];
 
         foreach (ee('Model')->make('Member')->getDisplay()->getFields() as $field) {
-            if ($field->get('m_field_reg') == 'y' or $field->isRequired()) {
-                $sections['custom_fields'][] = [
-                    'title' => $field->getLabel(),
-                    'desc' => '',
-                    'fields' => [
-                        $field->getName() => [
-                            'type' => 'html',
-                            'content' => $field->getForm(),
-                            'required' => $field->isRequired(),
-                        ]
+            $sections['custom_fields'][] = [
+                'title' => $field->getLabel(),
+                'desc' => '',
+                'fields' => [
+                    $field->getName() => [
+                        'type' => 'html',
+                        'content' => $field->getForm(),
+                        'required' => $field->isRequired(),
                     ]
-                ];
-            }
+                ]
+            ];
         }
 
         $html = '';
