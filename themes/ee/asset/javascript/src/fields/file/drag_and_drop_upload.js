@@ -333,7 +333,14 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
         });
         xhr.addEventListener('readystatechange', function () {
           if (xhr.readyState == 4 && xhr.status == 200) {
-            var _response = JSON.parse(xhr.responseText);
+            try {
+              var _response = JSON.parse(xhr.responseText);
+            } catch (err) {
+              var _response = {
+                'status': 'error',
+                'error': EE.lang.file_dnd_unexpected_error
+              }
+            }
             switch (_response.status) {
               case 'success':
                 _this3.removeFile(file);
