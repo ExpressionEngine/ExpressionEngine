@@ -484,9 +484,14 @@ class Member_memberlist extends Member
 
         $template = $pagination->prepare($template);
 
-        if ($query->row('count') > $row_limit && $pagination->paginate === true) {
-            $pagination->build($query->row('count'), $row_limit);
-            $sql .= " LIMIT " . $pagination->offset . ", " . $row_limit;
+        if ($query->row('count') > $row_limit) {
+            if ($pagination->paginate === true) {
+                $pagination->build($query->row('count'), $row_limit);
+                $sql .= " LIMIT " . $pagination->offset . ", " . $row_limit;
+            } else {
+                // no pagination tag, but we still need to respect limit parameter
+                $sql .= " LIMIT " . $row_limit;
+            }
         }
 
         /** ----------------------------------------
