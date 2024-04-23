@@ -8,7 +8,7 @@
 	.simple-item {
 		a {
 			align-items: start;
-			padding: 5px 15px;
+			padding: 5px 15px 8px 15px;
 			background: var(--ee-bg-blank);
 			border-bottom: 1px solid var(--ee-border);
 
@@ -20,8 +20,9 @@
 	}
 
 	.avatar-icon {
-		width: 45px;
-		height: 45px;
+		width: 40px;
+		height: 40px;
+		margin-top: 5px;
 	}
 
 	.simple-item-info {
@@ -36,11 +37,16 @@
 	.meta-info {
 		text-align: right;
 		min-width: unset;
-		font-size: inherit;
 		text-transform: none;
 		margin-left: 0;
 		width: 100%;
 		font-size: 80%;
+		letter-spacing: normal;
+
+		span {
+			letter-spacing: 1px;
+		}
+
 	}
 
 	.simple-item-info-secondary {

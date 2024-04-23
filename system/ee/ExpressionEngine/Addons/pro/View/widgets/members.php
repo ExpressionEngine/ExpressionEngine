@@ -18,7 +18,7 @@
 							<h3><?= $member->screen_name; ?></h3>
 							<div class="simple-item-info-secondary">
 								<p class="meta-details"><?= $member->email; ?></p>
-								<p class="meta-info">Last Seen: <?=$last_visit?></p>
+								<p class="meta-info">Last Seen: <span><?=$last_visit?></span></p>
 							</div>
 						</div>
 					</a>

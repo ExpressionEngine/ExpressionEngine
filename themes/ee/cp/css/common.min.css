@@ -49461,7 +49461,7 @@ table .field-no-results {
 }
 .simple-list-wrapper .simple-item a {
   align-items: start;
-  padding: 5px 15px;
+  padding: 5px 15px 8px 15px;
   background: var(--ee-bg-blank);
   border-bottom: 1px solid var(--ee-border);
 }
@@ -49470,8 +49470,9 @@ table .field-no-results {
   background: var(--ee-sidebar-bg-active);
 }
 .simple-list-wrapper .avatar-icon {
-  width: 45px;
-  height: 45px;
+  width: 40px;
+  height: 40px;
+  margin-top: 5px;
 }
 .simple-list-wrapper .simple-item-info {
   width: 100%;
@@ -49483,11 +49484,14 @@ table .field-no-results {
 .simple-list-wrapper .meta-info {
   text-align: right;
   min-width: unset;
-  font-size: inherit;
   text-transform: none;
   margin-left: 0;
   width: 100%;
   font-size: 80%;
+  letter-spacing: normal;
+}
+.simple-list-wrapper .meta-info span {
+  letter-spacing: 1px;
 }
 .simple-list-wrapper .simple-item-info-secondary {
   display: flex;
