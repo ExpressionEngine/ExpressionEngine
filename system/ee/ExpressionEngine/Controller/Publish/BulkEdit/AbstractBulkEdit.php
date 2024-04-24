@@ -75,7 +75,7 @@ abstract class AbstractBulkEdit extends CP_Controller
         if (! empty($filter_fields)) {
             $filter_options = array_map(function ($field) {
                 return \ExpressionEngine\Addons\FluidField\Model\FluidFieldFilter::make([
-                    'name' => $field->getShortName(),
+                    'name' => is_numeric($field->getId()) ? 'field_id_' . $field->getId() : $field->getShortName(),
                     'label' => $field->getItem('field_label'),
                     'icon' => $field->getIcon()
                 ]);
@@ -195,6 +195,8 @@ abstract class AbstractBulkEdit extends CP_Controller
         $channel = ee('Model')->make('Channel');
         $channel->CategoryGroups = $channels->CategoryGroups->intersect();
         $channel->Statuses = $channels->Statuses->intersect();
+        $channel->FieldGroups = $channels->FieldGroups->intersect();
+        $channel->CustomFields = $channels->CustomFields->intersect();
 
         // Only enable if ALL channels have comments enabled
         $channel->comment_system_enabled = ! in_array(false, $channels->pluck('comment_system_enabled'), true);
