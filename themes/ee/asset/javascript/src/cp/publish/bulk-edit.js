@@ -198,6 +198,7 @@ EE.cp.BulkEdit = {
 			// TODO: Once we have generic callback for fieldtypes to instantiate
 			// their stuff in a future version, use that here instead
 			SelectField.renderFields(fieldContainer)
+			Relationship.renderFields(fieldContainer)
 			Dropdown.renderFields(fieldContainer)
 			EE.cp.datePicker.bind($('input[rel="date-picker"]'))
 		})

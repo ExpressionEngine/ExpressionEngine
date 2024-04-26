@@ -274,7 +274,8 @@ class Edit extends AbstractPublishController
                 'cp/confirm_remove',
                 'cp/publish/entry-list',
                 'components/bulk_edit_entries',
-                'cp/publish/bulk-edit'
+                'cp/publish/bulk-edit',
+                'components/relationship'
             ),
         ));
 
