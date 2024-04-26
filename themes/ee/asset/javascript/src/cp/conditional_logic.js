@@ -537,7 +537,7 @@ $(document).ready(function() {
 
         var textInputSelectors = 'input[type=hidden], textarea, button.toggle-btn';
 
-        if ($(this).val() == "notes") {
+        if ($(this).val() == "notes" || $(this).val() == "reverse_relationship") {
             hiddenList.each(function(){
                 var el = $(this);
                 el.hide();
