@@ -69,7 +69,7 @@ class Channels extends AbstractChannelsController
 
             $data[] = [
                 'id' => $channel->getId(),
-                'label' => $channel->channel_title,
+                'label' => ee('Format')->make('Text', $channel->channel_title)->convertToEntities(),
                 'href' => $edit_url,
                 'extra' => LD . $channel->channel_name . RD,
                 'selected' => ($highlight_id && $channel->getId() == $highlight_id) or in_array($channel->getId(), $imported_channels),
@@ -81,7 +81,7 @@ class Channels extends AbstractChannelsController
                     ],
                     'layout-set' => [
                         'href' => ee('CP/URL', 'channels/layouts/' . $channel->getId()),
-                        'title' => $channel->channel_title . ' ' . lang('layouts'),
+                        'title' => ee('Format')->make('Text', $channel->channel_title)->convertToEntities() . ' ' . lang('layouts'),
                         'content' => ' ' . lang('layouts')
                     ]
                 ],
