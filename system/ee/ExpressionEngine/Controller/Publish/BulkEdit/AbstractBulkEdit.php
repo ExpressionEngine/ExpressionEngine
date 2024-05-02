@@ -77,7 +77,8 @@ abstract class AbstractBulkEdit extends CP_Controller
                 return \ExpressionEngine\Addons\FluidField\Model\FluidFieldFilter::make([
                     'name' => is_numeric($field->getId()) ? 'field_id_' . $field->getId() : $field->getShortName(),
                     'label' => $field->getItem('field_label'),
-                    'icon' => $field->getIcon()
+                    'icon' => $field->getIcon(),
+                    'type' => $field->getType()
                 ]);
             }, $filter_fields);
             $filters = ee('View')->make('fluid_field:filters')->render(['filters' => $filter_options]);

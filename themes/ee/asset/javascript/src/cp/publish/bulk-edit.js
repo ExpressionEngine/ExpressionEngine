@@ -110,6 +110,7 @@ EE.cp.BulkEdit = {
 			params = form.serialize() + '&' + $.param({ entry_ids: entryIds })
 
 		var that = this
+
 		this.ajaxRequest = $.ajax({
 			url: this.intentFormUrls[this.intent],
 			data: params,
@@ -183,7 +184,8 @@ EE.cp.BulkEdit = {
 			var wrapper = $(this).closest('.fluid'),
 				fieldName = $(this).data('fieldName'),
 				template = wrapper.find('.fluid-field-templates [data-field-name="'+fieldName+'"]'),
-				fieldContainer = wrapper.find('.js-sorting-container')
+				fieldContainer = wrapper.find('.js-sorting-container'),
+				fieldType = $(this).data('fieldType')
 
 			// Add the field
 			template.appendTo(fieldContainer)
@@ -198,9 +200,24 @@ EE.cp.BulkEdit = {
 			// TODO: Once we have generic callback for fieldtypes to instantiate
 			// their stuff in a future version, use that here instead
 			SelectField.renderFields(fieldContainer)
-			Relationship.renderFields(fieldContainer)
 			Dropdown.renderFields(fieldContainer)
 			EE.cp.datePicker.bind($('input[rel="date-picker"]'))
+
+			if (fieldType == "relationship") {
+				Relationship.renderFields(fieldContainer)
+			} else if (fieldType == "file" || fieldType == 'file_grid') {
+				FileField.renderFields()
+			} else if (fieldType == "colorpicker") {
+				ColorPicker.renderFields()
+			} else if (fieldType == 'rte') {
+				var field_id = $('.rte-textarea').attr('id');
+				var config_handle = $('#'+field_id).data('config');
+				var defer = $('#'+field_id).data('defer');
+
+				if(defer === 'n') defer = false;
+
+				new Rte(field_id, config_handle, defer);
+			}
 		})
 	},
 
