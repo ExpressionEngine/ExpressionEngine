@@ -65,6 +65,9 @@ class Member_upd extends Installer
         ],
         [
             'method' => 'validate'
+        ],
+        [
+            'method' => 'login_validate'
         ]
     ];
 
@@ -78,6 +81,11 @@ class Member_upd extends Installer
         if (version_compare($current, '2.2.1', '<')) {
             ee()->db->where('method', 'member_search');
             ee()->db->update('actions', ['method' => 'do_member_search']);
+        }
+
+        if (version_compare($current, '2.3.0', '<')) {
+            $data = ['class' => 'Member', 'method' => 'login_validate', 'csrf_exempt' => 0];
+            ee()->db->insert('actions', $data);
         }
 
         return true;
