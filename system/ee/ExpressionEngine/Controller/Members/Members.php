@@ -1296,7 +1296,7 @@ class Members extends CP_Controller
             ->all();
 
         // Re-query the members with relationship data eager loaded for display
-        $members = ee('Model')->get('Member')->filter('member_id', 'IN', $members->pluck('member_id'))
+        $memberData = ee('Model')->get('Member')->filter('member_id', 'IN', $members->pluck('member_id'))
             ->with('PrimaryRole', 'Roles');
 
         // Apply eager loads for columns
@@ -1304,15 +1304,17 @@ class Members extends CP_Controller
             if (!empty($column) && !empty($column->getEntryManagerColumnModels())) {
                 foreach ($column->getEntryManagerColumnModels() as $with) {
                     if (!empty($with)) {
-                        $members->with($with);
+                        $memberData->with($with);
                     }
                 }
             }
         }
 
         $data = array();
+        $memberData = $memberData->all()->indexBy('member_id');
 
-        foreach ($members->all() as $member) {
+        foreach ($members->pluck('member_id') as $member_id) {
+            $member = $memberData[$member_id];
             $attrs = [
                 'member_id' => $member->member_id,
                 'title' => $member->screen_name,
