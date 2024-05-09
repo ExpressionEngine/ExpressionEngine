@@ -333,7 +333,14 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
         });
         xhr.addEventListener('readystatechange', function () {
           if (xhr.readyState == 4 && xhr.status == 200) {
-            var _response = JSON.parse(xhr.responseText);
+            try {
+              var _response = JSON.parse(xhr.responseText);
+            } catch (err) {
+              var _response = {
+                'status': 'error',
+                'error': EE.lang.file_dnd_unexpected_error
+              }
+            }
             switch (_response.status) {
               case 'success':
                 _this3.removeFile(file);
@@ -668,7 +675,8 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
         buttonClass: "button--default button--small",
         createNewDirectory: this.props.createNewDirectory,
         ignoreChild: false,
-        addInput: true
+        addInput: true,
+        allowMultipleFiles: this.props.allowMultipleFiles
       })), this.props.showActionButtons && this.props.allowedDirectory != 'all' && (!checkChildren || checkChildren.children.length <= 0) && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
         className: "button-segment"
       }, /*#__PURE__*/React.createElement("a", {
@@ -728,7 +736,8 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
         buttonClass: "button--default button--small",
         createNewDirectory: this.props.createNewDirectory,
         ignoreChild: false,
-        addInput: true
+        addInput: true,
+        allowMultipleFiles: this.props.allowMultipleFiles
       })), this.props.imitationButton && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("a", {
         href: "#",
         style: {

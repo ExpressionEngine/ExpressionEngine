@@ -244,6 +244,16 @@ $lang = array(
 
     'word_wrap_desc' => 'When enabled, the system will wrap long lines of text to a more readable width.',
 
+    'send_test_email' => 'Test email',
+
+    'test_email_subject' => 'Test message from %s',
+
+    'test_email_message' => '<p>This is a test email message sent using following settings:</p>',
+
+    'test_email_sent' => 'Test Email sent',
+
+    'email_settings_verified' => 'Email settings verified by sending a test message to %s',
+
     /* Debugging & Output */
     'caching_driver' => 'Caching Driver',
 
@@ -404,7 +414,7 @@ $lang = array(
 
     'strict_urls' => 'Enable strict <abbr title="Uniform Resource Location">URL</abbr>s?',
 
-    'strict_urls_desc' => 'When enabled, ExpressioneEngine will apply stricter rules to <abbr title="Uniform Resource Location">URL</abbr> handling.',
+    'strict_urls_desc' => 'When enabled, ExpressionEngine will apply stricter rules to <abbr title="Uniform Resource Location">URL</abbr> handling.',
 
     'template_manager' => 'Template Manager',
 
@@ -512,6 +522,18 @@ $lang = array(
     'req_mbr_activation_opt_manual' => 'Manually moderated by administrator',
 
     'req_mbr_activation_opt_none' => 'No activation required',
+
+    'registration_auto_login' => 'Auto-login upon registration?',
+
+    'registration_auto_login_desc' => 'Automatically log a member in after account registration.',
+
+    'activation_auto_login' => 'Auto-login upon activation?',
+
+    'activation_auto_login_desc' => 'Automatically log a member in after account activation.',
+
+    'activation_redirect' => 'Activation redirect URL',
+
+    'activation_redirect_desc' => 'Template path or route to redirect members to after clicking activation link in email message. When omitted, system message will be shown instead',
 
     'require_terms_of_service' => 'Require terms of service?',
 

@@ -870,7 +870,7 @@ class File_field
     private function _get_upload_prefs()
     {
         if (empty($this->_upload_prefs)) {
-            $this->_upload_prefs = $directories = ee('Model')->get('UploadDestination')->all()->indexBy('id');
+            $this->_upload_prefs = $directories = ee('Model')->get('UploadDestination')->order('name', 'asc')->all()->indexBy('id');
         }
 
         return $this->_upload_prefs;
@@ -986,7 +986,7 @@ class File_field
                     'label' => $upload_pref->name,
                     'path' => '',
                     'upload_location_id' => $upload_pref->id,
-                    'children' => !bool_config_item('file_manager_compatibility_mode') ? $upload_pref->buildDirectoriesDropdown($upload_pref->getId()) : []
+                    'children' => !bool_config_item('file_manager_compatibility_mode') ? $upload_pref->getDirectoriesDropdown() : []
                 ];
             }
         }

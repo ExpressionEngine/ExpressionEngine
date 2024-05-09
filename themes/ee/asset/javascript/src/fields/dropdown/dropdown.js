@@ -93,7 +93,7 @@ var Dropdown = /*#__PURE__*/function (_React$Component) {
         }, React.createElement(DropdownItem, {
           key: item.value ? item.value : item.section,
           item: item,
-          selected: _this.state.selected && item.value == _this.state.selected.value,
+          selected: _this.state.selected && item.value === _this.state.selected.value,
           onClick: function onClick(e) {
             return _this.selectionChanged(item);
           },

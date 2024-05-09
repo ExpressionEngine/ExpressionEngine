@@ -828,7 +828,7 @@ abstract class EE_Fieldtype
 
         $pairs = $this->get_setting('value_label_pairs');
         if (! empty($pairs) or $this->get_setting('field_pre_populate') === null) {
-            return $pairs;
+            $field_options = $pairs;
         } elseif ($this->get_setting('field_pre_populate') === false) {
             if (! is_array($this->settings['field_list_items'])) {
                 foreach (explode("\n", $this->settings['field_list_items']) as $v) {
@@ -841,7 +841,7 @@ abstract class EE_Fieldtype
         } elseif ($this->get_setting('field_pre_channel_id') !== 0) {
             $field = 'field_id_' . $this->settings['field_pre_field_id'];
 
-            $data = ee('Model')->get('ChannelEntry')
+            $entriesData = ee('Model')->get('ChannelEntry')
                 ->filter('channel_id', $this->settings['field_pre_channel_id'])
                 ->order($field, 'asc')
                 ->all()
@@ -851,7 +851,7 @@ abstract class EE_Fieldtype
                 $field_options[''] = $show_empty;
             }
 
-            foreach ($data as $datum) {
+            foreach ($entriesData as $datum) {
                 if (trim($datum) == '') {
                     continue;
                 }
@@ -860,6 +860,40 @@ abstract class EE_Fieldtype
                 $pretitle = str_replace(array("\r\n", "\r", "\n", "\t"), " ", $pretitle);
 
                 $field_options[trim($datum)] = $pretitle;
+            }
+        }
+
+        // if there are saved options that are not available anymore
+        // show them at the beginning of field options
+        if (!empty($data)) {
+            ee()->load->helper('custom_field');
+            $data = decode_multi_field($data);
+            $firstEmptyValue = null;
+            if (array_key_first($field_options) === '') {
+                $firstEmptyValue = array_shift($field_options);
+            }
+            $multidimensional = count(array_filter($field_options, 'is_array')) > 0;
+            $data = array_reverse($data);
+            foreach ($data as $item) {
+                if ($item === 0 || !empty($item)) {
+                    if (array_key_exists($item, $field_options)) {
+                        continue;
+                    }
+                    if ($multidimensional) {
+                        foreach ($field_options as $key => $value) {
+                            if (!is_array($value)) {
+                                continue;
+                            }
+                            if (array_key_exists($item, $value)) {
+                                continue 2;
+                            }
+                        }
+                    }
+                }
+                $field_options = [$item => $item] + $field_options;
+            }
+            if (!is_null($firstEmptyValue)) {
+                $field_options = ['' => $firstEmptyValue] + $field_options;
             }
         }
 

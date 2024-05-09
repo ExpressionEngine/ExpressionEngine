@@ -404,7 +404,7 @@ class Rte_mcp
                             'choices' => [
                                 'ckeditor'  => 'CKEditor',
                                 'redactorX'  => 'RedactorX',
-                                'redactor'  => 'Redactor (deprecated)',
+                                'redactor'  => 'Redactor Classic (deprecated)',
                             ],
                             'group_toggle' => [
                                 'ckeditor' => 'ckeditor_toolbar',
@@ -481,7 +481,7 @@ class Rte_mcp
                             'group_toggle' => array(
                                 'y' => 'redactorX_toolbar_hide',
                             ),
-                            'value' => isset($config->settings['toolbar']['toolbar_hide']) && !empty($config->settings['toolbar']['toolbar_hide']) ? $config->settings['toolbar']['toolbar_hide'] : 'y',
+                            'value' => is_array($config->settings['toolbar']) && isset($config->settings['toolbar']['toolbar_hide']) && !empty($config->settings['toolbar']['toolbar_hide']) ? $config->settings['toolbar']['toolbar_hide'] : 'y',
                         )
                     )
                 ),
@@ -503,7 +503,7 @@ class Rte_mcp
                     'fields' => array(
                         'settings[redactorX_toolbar][sticky]' => array(
                             'type' => 'yes_no',
-                            'value' => isset($config->settings['toolbar']['sticky']) && !empty($config->settings['toolbar']['sticky']) ? $config->settings['toolbar']['sticky'] : 'y',
+                            'value' => is_array($config->settings['toolbar']) && isset($config->settings['toolbar']['sticky']) && !empty($config->settings['toolbar']['sticky']) ? $config->settings['toolbar']['sticky'] : 'y',
                         )
                     )
                 ),
@@ -517,7 +517,7 @@ class Rte_mcp
                             'group_toggle' => array(
                                 'y' => 'redactorX_toolbar_topbar',
                             ),
-                            'value' => isset($config->settings['toolbar']['toolbar_topbar']) && !empty($config->settings['toolbar']['toolbar_topbar']) ? $config->settings['toolbar']['toolbar_topbar'] : 'y',
+                            'value' => is_array($config->settings['toolbar']) && isset($config->settings['toolbar']['toolbar_topbar']) && !empty($config->settings['toolbar']['toolbar_topbar']) ? $config->settings['toolbar']['toolbar_topbar'] : 'y',
                         )
                     )
                 ),
@@ -542,7 +542,7 @@ class Rte_mcp
                             'group_toggle' => array(
                                 'y' => 'redactorX_toolbar_addbar',
                             ),
-                            'value' => isset($config->settings['toolbar']['toolbar_addbar']) && !empty($config->settings['toolbar']['toolbar_addbar']) ? $config->settings['toolbar']['toolbar_addbar'] : 'y',
+                            'value' => is_array($config->settings['toolbar']) && isset($config->settings['toolbar']['toolbar_addbar']) && !empty($config->settings['toolbar']['toolbar_addbar']) ? $config->settings['toolbar']['toolbar_addbar'] : 'y',
                         )
                     )
                 ),
@@ -567,7 +567,7 @@ class Rte_mcp
                             'group_toggle' => array(
                                 'y' => 'redactorX_toolbar_context',
                             ),
-                            'value' => isset($config->settings['toolbar']['toolbar_context']) && !empty($config->settings['toolbar']['toolbar_context']) ? $config->settings['toolbar']['toolbar_context'] : 'y',
+                            'value' => is_array($config->settings['toolbar']) && isset($config->settings['toolbar']['toolbar_context']) && !empty($config->settings['toolbar']['toolbar_context']) ? $config->settings['toolbar']['toolbar_context'] : 'y',
                         )
                     )
                 ),
@@ -612,7 +612,7 @@ class Rte_mcp
                     'fields' => array(
                         'settings[redactorX_toolbar][toolbar_control]' => array(
                             'type' => 'yes_no',
-                            'value' => isset($config->settings['toolbar']['toolbar_control']) && !empty($config->settings['toolbar']['toolbar_control']) ? $config->settings['toolbar']['toolbar_control'] : 'y',
+                            'value' => is_array($config->settings['toolbar']) && isset($config->settings['toolbar']['toolbar_control']) && !empty($config->settings['toolbar']['toolbar_control']) ? $config->settings['toolbar']['toolbar_control'] : 'y',
                         )
                     )
                 ),
@@ -628,7 +628,7 @@ class Rte_mcp
                                 'browser' => lang('browser'),
                                 'grammarly' => lang('grammarly')
                             ],
-                            'value' => isset($config->settings['toolbar']['spellcheck']) && !empty($config->settings['toolbar']['spellcheck']) ? $config->settings['toolbar']['spellcheck'] : 'browser'
+                            'value' => is_array($config->settings['toolbar']) && isset($config->settings['toolbar']['spellcheck']) && !empty($config->settings['toolbar']['spellcheck']) ? $config->settings['toolbar']['spellcheck'] : 'browser'
                         )
                     )
                 ),

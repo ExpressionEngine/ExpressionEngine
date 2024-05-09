@@ -1070,12 +1070,12 @@ class Member_settings extends Member
 
             // username & password
             $need_validation = false;
-            if (ee()->config->item('allow_username_change') == 'y' && ee()->input->post('username') != '') {
+            if (ee()->config->item('allow_username_change') == 'y' && ee()->input->post('username') != '' && ee()->input->post('username') !== $member->username) {
                 $member->username = ee()->input->post('username');
                 $need_validation = true;
             }
 
-            if (ee()->input->post('screen_name') != '') {
+            if (ee()->input->post('screen_name') != '' && ee()->input->post('screen_name') !== $member->screen_name) {
                 $need_validation = true;
                 $member->screen_name = ee()->input->post('screen_name');
             }
@@ -1098,12 +1098,13 @@ class Member_settings extends Member
 
         $result = $member->validate();
 
-        if (ee()->input->post('password')) {
-            $password_confirm = $validator->validate($_POST);
+        // Extra validation is sometimes required outside of the Member model validation
+        // Add any failures from this validation to the Member model result object
+        if (isset($validator)) {
+            $validatorResult = $validator->validate($_POST);
 
-            // Add password confirmation failure to main result object
-            if ($password_confirm->failed()) {
-                $rules = $password_confirm->getFailed();
+            if ($validatorResult->failed()) {
+                $rules = $validatorResult->getFailed();
                 foreach ($rules as $field => $rule) {
                     $result->addFailed($field, $rule[0]);
                 }

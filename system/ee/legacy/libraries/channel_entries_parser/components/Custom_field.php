@@ -106,7 +106,7 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
                     ));
 
                     $data = $ft_api->apply('pre_process', array(
-                        $data['field_id_' . $field_id]
+                        $data['field_id_' . $field_id] ?? null
                     ));
 
                     $checkNextModifier = method_exists($obj, 'getChainableModifiersThatRequireArray');

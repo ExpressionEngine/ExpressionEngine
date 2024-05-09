@@ -1255,6 +1255,27 @@ class JumpMenu extends AbstractJumpMenu
                         'command' => 'req_mbr_activation req_mbr_activation_desc',
                         'command_title' => 'req_mbr_activation'
                     ),
+                    'fieldset-registration_auto_login' => array(
+                        'trail' => [
+                            'member_settings'
+                        ],
+                        'command' => 'registration_auto_login registration_auto_login_desc',
+                        'command_title' => 'registration_auto_login'
+                    ),
+                    'fieldset-activation_auto_login' => array(
+                        'trail' => [
+                            'member_settings'
+                        ],
+                        'command' => 'activation_auto_login activation_auto_login_desc',
+                        'command_title' => 'activation_auto_login'
+                    ),
+                    'fieldset-activation_redirect' => array(
+                        'trail' => [
+                            'member_settings'
+                        ],
+                        'command' => 'activation_redirect activation_redirect_desc',
+                        'command_title' => 'activation_redirect'
+                    ),
                     'fieldset-approved_member_notification' => array(
                         'trail' => [
                             'member_settings'
@@ -1817,6 +1838,14 @@ class JumpMenu extends AbstractJumpMenu
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'utilities/debug-tools/duplicate-template-groups',
+                'permission' => 'is_super_admin'
+            ),
+            'systemUtilitiesDebugToolsChannelEntries' => array(
+                'icon' => 'fa-hammer',
+                'command' => 'system_utilities debug_tools_channel_entries',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'utilities/debug-tools/debug-entries',
                 'permission' => 'is_super_admin'
             ),
             'systemUtilitiesFileConverter' => array(
