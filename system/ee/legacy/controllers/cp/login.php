@@ -942,6 +942,18 @@ class Login extends CP_Controller
                 $this->db->where('date <', $a_day_ago)
                     ->or_where('member_id', $member_id)
                     ->delete('reset_password');
+				
+		        /* -------------------------------------------
+		        /* 'cp_member_reset_password' hook.
+		        /*  - Additional processing after user resets password
+		        /*  - Added EE 2.9.3
+		        */
+		        $this->extensions->call('cp_member_reset_password');
+		        if ($this->extensions->end_script === true) {
+		            return;
+		        }
+		        /*
+		        /* -------------------------------------------*/
 
                 ee('CP/Alert')
                     ->makeInline()
@@ -953,18 +965,6 @@ class Login extends CP_Controller
                 return $this->index();
             }
         }
-
-        /* -------------------------------------------
-        /* 'cp_member_reset_password' hook.
-        /*  - Additional processing after user resets password
-        /*  - Added EE 2.9.3
-        */
-        $this->extensions->call('cp_member_reset_password');
-        if ($this->extensions->end_script === true) {
-            return;
-        }
-        /*
-        /* -------------------------------------------*/
 
         $alert = ee('CP/Alert')
             ->makeInline()
