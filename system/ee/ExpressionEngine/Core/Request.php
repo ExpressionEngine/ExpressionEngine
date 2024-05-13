@@ -236,6 +236,20 @@ class Request
     }
 
     /**
+     * Set a key and value on the current request method
+     *
+     * @param string $key
+     * @param mixed $value
+     * @return void
+     */
+    public function set($key, $value)
+    {
+        $method = strtolower($this->method());
+        $this->$method[$key] = $this->trimInput($value);
+        ${"_{$this->method()}"}[$key] = $value;
+    }
+
+    /**
      * Helper method to get with default
      *
      * @param String $arr Class array name

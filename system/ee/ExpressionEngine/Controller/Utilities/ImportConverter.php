@@ -361,10 +361,10 @@ class ImportConverter extends Utilities
         // Validate selected fields
         foreach ($_POST as $key => $val) {
             if (substr($key, 0, 5) == 'field') {
-                $_POST['unique_check'][$key] = $val;
                 $paired[$key] = $val;
             }
         }
+        ee('Request')->set('unique_check', $paired);
 
         ee()->load->library('form_validation');
         ee()->form_validation->set_rules(array(
