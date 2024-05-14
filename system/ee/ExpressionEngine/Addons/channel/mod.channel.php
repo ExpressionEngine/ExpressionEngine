@@ -422,7 +422,9 @@ class Channel
                 return;
             }
 
-            $sql .= implode(',', array_unique(array_filter($categories))) . ')';
+            $sql .= empty($categories)
+                ? implode(',', array_unique(array_filter($categories))) . ')'
+                : '0)';
 
             $sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order";
 
@@ -2999,10 +3001,11 @@ class Channel
                     'active' => ($active_cat == $val[0] || $active_cat == $val[6])
                 );
 
-                // add custom fields for conditionals prep
-
+                // add custom fields for conditionals prep and parsing
                 foreach ($this->catfields as $v) {
-                    $cat_vars[$v['field_name']] = (! isset($val['field_id_' . $v['field_id']])) ? '' : $val['field_id_' . $v['field_id']];
+                    if (empty($cat_vars[$v['field_name']])) {
+                        $cat_vars[$v['field_name']] = (!isset($val['field_id_' . $v['field_id']])) ? '' : $val['field_id_' . $v['field_id']];
+                    }
                 }
 
                 $cat_vars['count'] = ++$this->category_count;
@@ -3411,8 +3414,11 @@ class Channel
                             'active' => ($active_cat == $row['cat_id'] || $active_cat == $row['cat_url_title'])
                         );
 
+                        // add custom fields for conditionals prep and parsing
                         foreach ($this->catfields as $v) {
-                            $cat_vars[$v['field_name']] = (! isset($row['field_id_' . $v['field_id']])) ? '' : $row['field_id_' . $v['field_id']];
+                            if (empty($cat_vars[$v['field_name']])) {
+                                $cat_vars[$v['field_name']] = (!isset($row['field_id_' . $v['field_id']])) ? '' : $row['field_id_' . $v['field_id']];
+                            }
                         }
 
                         $chunk = ee()->functions->prep_conditionals($chunk, $cat_vars);
@@ -3787,9 +3793,11 @@ class Channel
                     'active' => ($active_cat == $key || $active_cat == $val[4])
                 );
 
-                // add custom fields for conditionals prep
+                // add custom fields for conditionals prep and parsing
                 foreach ($this->catfields as $v) {
-                    $cat_vars[$v['field_name']] = (! isset($val['field_id_' . $v['field_id']])) ? '' : $val['field_id_' . $v['field_id']];
+                    if (empty($cat_vars[$v['field_name']])) {
+                        $cat_vars[$v['field_name']] = (!isset($val['field_id_' . $v['field_id']])) ? '' : $val['field_id_' . $v['field_id']];
+                    }
                 }
 
                 $cat_vars['count'] = ++$this->category_count;
@@ -4249,9 +4257,11 @@ class Channel
             'parent_id' => $query->row('parent_id')
         );
 
-        // add custom fields for conditionals prep
+        // add custom fields for conditionals prep and parsing
         foreach ($this->catfields as $v) {
-            $cat_vars[$v['field_name']] = ($query->row('field_id_' . $v['field_id'])) ? $query->row('field_id_' . $v['field_id']) : '';
+            if (empty($cat_vars[$v['field_name']])) {
+                $cat_vars[$v['field_name']] = ($query->row('field_id_' . $v['field_id'])) ? $query->row('field_id_' . $v['field_id']) : '';
+            }
         }
 
         ee()->TMPL->tagdata = ee()->functions->prep_conditionals(ee()->TMPL->tagdata, $cat_vars);
