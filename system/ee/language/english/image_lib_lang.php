@@ -36,6 +36,8 @@ $lang = array(
 
     'imglib_save_failed' => 'Unable to save the image. Please make sure the image and file directory are writable.',
 
+    'imglib_properties_failed' => 'Unable to gather properties of the image. Please make sure the image is valid and readable.',
+
     'imglib_source_image_required' => 'You must specify a source image in your preferences.',
 
     'imglib_unsupported_imagecreate' => 'Your server does not support the GD function required to process this type of image.',

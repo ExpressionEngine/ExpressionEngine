@@ -1381,6 +1381,12 @@ class EE_Image_lib
 
         $vals = @getimagesize($path);
 
+        if (! $vals) {
+            $this->set_error('imglib_properties_failed');
+
+            return false;
+        }
+
         $types = array(IMAGETYPE_GIF => 'gif', IMAGETYPE_JPEG => 'jpeg', IMAGETYPE_PNG => 'png', '18' => 'webp');
 
         $mime = (isset($types[$vals['2']])) ? 'image/' . $types[$vals['2']] : 'image/jpg';
