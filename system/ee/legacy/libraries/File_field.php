@@ -763,6 +763,8 @@ class File_field
         $file['file_size:human'] = (string) ee('Format')->make('Number', $file['file_size'])->bytes();
         $file['file_size:human_long'] = (string) ee('Format')->make('Number', $file['file_size'])->bytes(false);
 
+        $file['folder_id'] = $file['directory_id'];
+
         $file['directory_id'] = $file['upload_location_id'];
         $file['directory_title'] = $upload_dir->name;
 
@@ -868,7 +870,7 @@ class File_field
     private function _get_upload_prefs()
     {
         if (empty($this->_upload_prefs)) {
-            $this->_upload_prefs = $directories = ee('Model')->get('UploadDestination')->all()->indexBy('id');
+            $this->_upload_prefs = $directories = ee('Model')->get('UploadDestination')->order('name', 'asc')->all()->indexBy('id');
         }
 
         return $this->_upload_prefs;
@@ -984,9 +986,12 @@ class File_field
                     'label' => $upload_pref->name,
                     'path' => '',
                     'upload_location_id' => $upload_pref->id,
-                    'children' => !bool_config_item('file_manager_compatibility_mode') ? $upload_pref->buildDirectoriesDropdown($upload_pref->getId()) : []
+                    'children' => !bool_config_item('file_manager_compatibility_mode') ? $upload_pref->getDirectoriesDropdown() : []
                 ];
             }
+        }
+        if (!ee('Permission')->has('can_access_files')) {
+            $upload_destinations = [];
         }
 
         if (REQ == 'CP') {
@@ -1011,8 +1016,9 @@ class File_field
                 'lang.file_dnd_uploading_to' => lang('file_dnd_uploading_to'),
                 'lang.file_dnd_upload_new' => lang('file_dnd_upload_new'),
                 'lang.file_dnd_create_directory' => lang('file_dnd_create_directory'),
+                'lang.hidden_input' => lang('hidden_input'),
                 'lang.file_dnd_no_directories' => lang('file_dnd_no_directories'),
-                'lang.file_dnd_no_directories_desc' => lang('file_dnd_no_directories_desc'),
+                'lang.file_dnd_no_directories_desc' => !ee('Permission')->has('can_access_files') ? lang('file_dnd_no_directory_permissions') : lang('file_dnd_no_directories_desc'),
 
                 'dragAndDrop.uploadDesinations' => ee('View/Helpers')->normalizedChoices($upload_destinations),
                 'dragAndDrop.endpoint' => ee('CP/URL')->make('addons/settings/filepicker/ajax-upload')->compile(),

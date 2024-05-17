@@ -93,6 +93,7 @@
       img {
         width: $size;
         height: $size;
+        object-fit: cover;
       }
     }
   }

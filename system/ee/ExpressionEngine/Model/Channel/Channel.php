@@ -62,6 +62,18 @@ class Channel extends StructureModel
             ),
             'weak' => true,
         ),
+        'CategoryGroups' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'CategoryGroup',
+            'pivot' => array(
+                'table' => 'channel_category_groups',
+                'left' => 'channel_id',
+                'right' => 'group_id'
+            )
+        ),
+        'CategoryGroupSettings' => array(
+            'type' => 'hasMany'
+        ),
         'CustomFields' => array(
             'type' => 'hasAndBelongsToMany',
             'model' => 'ChannelField',
@@ -269,11 +281,6 @@ class Channel extends StructureModel
      */
     public function __get($name)
     {
-        // Fake the CategoryGroups relationship since it's stored weird
-        if ($name == 'CategoryGroups') {
-            return $this->getCategoryGroups();
-        }
-
         $value = parent::__get($name);
 
         if (in_array($name, array('channel_url', 'comment_url', 'search_results_url', 'rss_url'))) {
@@ -338,7 +345,7 @@ class Channel extends StructureModel
 
                     break;
                 case 'deft_category':
-                    if (! isset($this->cat_group) or count(array_diff(explode('|', (string) $this->cat_group), explode('|', (string) $channel->cat_group))) == 0) {
+                    if (empty($this->CategoryGroups) or count(array_diff($this->CategoryGroups->pluck('group_id'), $channel->CategoryGroups->pluck('group_id'))) == 0) {
                         $this->setRawProperty($property, $channel->{$property});
                     }
 
@@ -350,7 +357,7 @@ class Channel extends StructureModel
             }
         }
 
-        foreach (['FieldGroups', 'CustomFields', 'Statuses', 'ChannelFormSettings'] as $rel) {
+        foreach (['FieldGroups', 'CustomFields', 'Statuses', 'ChannelFormSettings', 'CategoryGroups'] as $rel) {
             if ($channel->$rel) {
                 $this->$rel = clone $channel->$rel;
             }
@@ -412,7 +419,7 @@ class Channel extends StructureModel
     {
         $cat_groups = array();
 
-        foreach (explode('|', (string) $this->cat_group) as $group_id) {
+        foreach ($this->CategoryGroups->pluck('group_id') as $group_id) {
             $cat_groups['categories[cat_group_id_' . $group_id . ']'] = true;
         }
 
@@ -433,10 +440,8 @@ class Channel extends StructureModel
                         // Is it already accounted for?
                         if (in_array($field_name, array_keys($cat_groups))) {
                             unset($cat_groups[$field_name]);
-                        }
-
-                        // If not, it was removed and needs to be deleted
-                        else {
+                        } else {
+                            // If not, it was removed and needs to be deleted
                             unset($field_layout[$i]['fields'][$j]);
 
                             // Re-index to ensure flat, zero-indexed array
@@ -538,9 +543,7 @@ class Channel extends StructureModel
 
     public function getCategoryGroups()
     {
-        $groups = explode('|', (string) $this->cat_group);
-
-        return $this->getModelFacade()->get('CategoryGroup', $groups)->all();
+        return $this->CategoryGroups;
     }
 
     /**
@@ -584,7 +587,7 @@ class Channel extends StructureModel
     public function getAllCustomFields()
     {
         $cache_key = "ChannelCustomFields/{$this->getId()}/";
-        if (($fields = ee()->session->cache(__CLASS__, $cache_key, false)) === false) {
+        if (!isset(ee()->session) || ($fields = ee()->session->cache(__CLASS__, $cache_key, false)) === false) {
             $fields = $this->CustomFields->indexBy('field_name');
             $field_groups = $this->FieldGroups;
 
@@ -596,7 +599,9 @@ class Channel extends StructureModel
 
             $fields = new Collection($fields);
 
-            ee()->session->set_cache(__CLASS__, $cache_key, $fields);
+            if (isset(ee()->session)) {
+                ee()->session->set_cache(__CLASS__, $cache_key, $fields);
+            }
         }
         return $fields;
     }

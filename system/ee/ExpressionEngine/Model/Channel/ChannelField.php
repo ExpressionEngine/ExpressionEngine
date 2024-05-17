@@ -96,7 +96,7 @@ class ChannelField extends FieldModel
     protected static $_validation_rules = array(
         'site_id' => 'required|integer',
         'field_name' => 'required|alphaDash|unique|validateNameIsNotReserved|maxLength[32]|validateUniqueAmongFieldGroups',
-        'field_label' => 'required|maxLength[50]',
+        'field_label' => 'required|xss|noHtml|maxLength[50]',
         'field_type' => 'validateIsCompatibleWithPreviousValue',
         //	'field_list_items'     => 'required',
         'field_pre_populate' => 'enum[y,n,v]',
@@ -333,6 +333,19 @@ class ChannelField extends FieldModel
         // If there are any matches, return the lang key of the error
         if ($channelFieldGroups->count() > 0) {
             return 'unique_among_field_groups';
+        }
+
+        // check member fields
+        $unique = $this->getModelFacade()
+            ->get('MemberField')
+            ->filter('m_' . $key, $value);
+
+        foreach ($params as $field) {
+            $unique->filter('m_' . $field, $this->getProperty($field));
+        }
+
+        if ($unique->count() > 0) {
+            return 'unique_among_member_fields'; // lang key
         }
 
         return true;

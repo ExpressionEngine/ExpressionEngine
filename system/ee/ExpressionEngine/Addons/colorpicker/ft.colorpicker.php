@@ -93,7 +93,26 @@ class Colorpicker_ft extends EE_Fieldtype
      */
     public function display_field($data)
     {
+        if (REQ != 'CP') {
+            $swatches = $this->getSwatches();
+
+            if(empty($swatches)) {
+                return '<input type="color" name="' . $this->field_name . '" value="' . $data . '" />';
+            }
+
+            return '<input type="color" name="' . $this->field_name . '" value="' . $data . '" list="' . $this->field_name . '_colors" />'
+                . '<datalist id="' . $this->field_name . '_colors">'
+                . implode('', array_map(function ($color) {
+                    return "<option>$color</option>";
+                }, $swatches))
+                . '</datalist>';
+        }
+
         ee()->cp->add_js_script('file', array('library/simplecolor', 'components/colorpicker'));
+
+        ee()->javascript->set_global([
+            'lang.colorpicker_input' => lang('colorpicker_input'),
+        ]);
 
         return $this->createColorPicker([
             'allowedColors' => $this->get_setting('allowed_colors'),
@@ -116,7 +135,7 @@ class Colorpicker_ft extends EE_Fieldtype
 
         $disabled = $disabled ? 'disabled' : '';
 
-        return "<input name=\"{$info['inputName']}\" data-colorpicker-react=\"{$data}\" data-input-value=\"\" {$disabled}/>";
+        return "<input name=\"{$info['inputName']}\" data-colorpicker-react=\"{$data}\" data-input-value=\"\" {$disabled} aria-label='" . lang('color_picker_file') . "'/>";
     }
 
     // -----------------------------------------------------------------------
@@ -280,6 +299,13 @@ class Colorpicker_ft extends EE_Fieldtype
         ]];
     }
 
+    public function grid_display_settings($data)
+    {
+        return array(
+            'field_options' => $this->display_settings($data)['field_options_colorpicker']['settings']
+        );
+    }
+
     /**
      * Validate the settings
      *
@@ -372,10 +398,16 @@ class Colorpicker_ft extends EE_Fieldtype
             $pairs = [];
             $i = 1;
 
+            if (isset($data['value_swatches']['rows'])) {
+                $data['value_swatches'] = $data['value_swatches']['rows'];
+            }
+
             foreach ($data['value_swatches'] as $color) {
                 $name = '';
-
-                if (strpos($color, '|') !== false) {
+                if (is_array($color)) {
+                    $name = $color['name'];
+                    $color = $color['color'];
+                } elseif (strpos($color, '|') !== false) {
                     $parts = explode('|', $color);
                     $color = $parts[0];
                     $name = $parts[1];

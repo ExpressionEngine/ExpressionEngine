@@ -46,17 +46,17 @@ context('Rich Text Editor', () => {
 
         it('Displays an itemized modal when trying to remove 5 or less tool sets', function() {
             cy.authVisit(page.url);
-            let tool_set_name = page.$('tool_set_names').eq(1).text()
+            page.get('tool_set_names').eq(1).invoke('text').then((tool_set_name) => {
+                // Header at 0, first "real" row is 1
+                page.get('tool_sets').eq(2).find('input[type="checkbox"]').check()
+                page.get('bulk_action').select("Delete")
+                page.get('action_submit_button').click()
 
-            // Header at 0, first "real" row is 1
-            page.get('tool_sets').eq(2).find('input[type="checkbox"]').check()
-            page.get('bulk_action').select("Delete")
-            page.get('action_submit_button').click()
-
-            page.get('modal_title').contains("Confirm Removal")
-            page.get('modal').contains("You are attempting to remove the following items, please confirm this action.")
-            page.get('modal').contains(tool_set_name)
-            page.get('modal').find('.checklist li').its('length').should('eq', 1)
+                page.get('modal_title').contains("Confirm Removal")
+                page.get('modal').contains("You are attempting to remove the following items, please confirm this action.")
+                page.get('modal').contains(tool_set_name)
+                page.get('modal').find('.checklist li').its('length').should('eq', 1)
+            })
         })
 
         it('Displays a bulk confirmation modal when trying to remove more than 5 tool sets', function() {
@@ -72,26 +72,26 @@ context('Rich Text Editor', () => {
 
         it('Cannot remove the default tool set', function() {
             cy.authVisit(page.url);
-            let tool_set_name = page.$('tool_set_names').eq(0).text()
+            page.get('tool_set_names').eq(0).invoke('text').then((tool_set_name) => {
+                // This populates the modal with a hidden input so we can modify it later
+                page.get('tool_sets').eq(2).find('input[type="checkbox"]').check()
+                page.get('bulk_action').select("Delete")
+                page.get('action_submit_button').click()
 
-            // This populates the modal with a hidden input so we can modify it later
-            page.get('tool_sets').eq(2).find('input[type="checkbox"]').check()
-            page.get('bulk_action').select("Delete")
-            page.get('action_submit_button').click()
-
-            cy.get('input[name="selection[]"]').then(elem => {
-                cy.get('[value="Confirm, and Remove"]').first().invoke('val').then((val) => {
-                    elem.val(val)
+                cy.get('input[name="selection[]"]').then(elem => {
+                    cy.get('[value="Confirm, and Remove"]').first().invoke('val').then((val) => {
+                        elem.val(val)
+                    });
                 });
-            });
 
-            //page.get('modal_submit_button').click() // Submits a form AJ
-            cy.get('button').contains('Confirm, and Remove').first().click({force:true})
-            cy.hasNoErrors()
+                //page.get('modal_submit_button').click() // Submits a form AJ
+                cy.get('button').contains('Confirm, and Remove').first().click({force:true})
+                cy.hasNoErrors()
 
-            page.hasAlert('error')
-            page.get('alert').contains("Your Rich Text Editor Settings could not be saved")
-            page.get('tool_set_names').eq(0).contains(tool_set_name)
+                page.hasAlert('error')
+                page.get('alert').contains("Your Rich Text Editor Settings could not be saved")
+                page.get('tool_set_names').eq(0).contains(tool_set_name)
+            })
         })
 
         it('Can reverse sort tool sets by name', function() {
@@ -130,7 +130,8 @@ context('Rich Text Editor', () => {
             page.get('tool_sets').eq(1).find('a').first().click()
 
             page.get('tool_set_name').clear().type('Cypress Edited')
-            page.get('tool_set_save_button').click()
+            page.get('tool_set_save_button').eq(1).click() // save and close
+            cy.get('button').contains('Save & Close').first().click()
 
             cy.hasNoErrors()
             page.get('tool_sets').contains("Cypress Edited")
@@ -173,8 +174,8 @@ context('Rich Text Editor', () => {
             page.get('alert').contains("Tool sets removed")
             page.get('alert').contains("The following tool sets were removed")
             page.get('alert').contains("CKEditor Full")
-            page.get('alert').contains("Redactor Basic")
-            page.get('alert').contains("Redactor Full")
+            page.get('alert').contains("RedactorX Basic")
+            page.get('alert').contains("RedactorX Full")
             page.get('alert').contains("Six")
             page.get('alert').contains("Seven")
         })
@@ -196,7 +197,8 @@ context('Rich Text Editor', () => {
 
         it('Can create a new tool set', function() {
             page.get('tool_set_name').type('Empty')
-            page.get('tool_set_save_button').click()
+            page.get('tool_set_save_button').eq(1).click() // save and close
+            cy.get('button').contains('Save & Close').first().click()
 
             cy.hasNoErrors()
             page.confirmSettings()
@@ -209,7 +211,7 @@ context('Rich Text Editor', () => {
 
         it('Ensures tool set names are unique', function() {
             page.get('tool_set_name').type('Empty')
-            page.get('tool_set_save_button').click()
+            page.get('tool_set_save_button').eq(0).click()
 
             cy.hasNoErrors()
             page.get('tool_set_name').invoke('val').should('eq', "Empty")
@@ -222,7 +224,8 @@ context('Rich Text Editor', () => {
         })
 
         it('Requires a tool set name', function() {
-            page.get('tool_set_save_button').click()
+            page.get('tool_set_save_button').eq(1).click() // save and close
+            cy.get('button').contains('Save & Close').first().click()
 
             cy.hasNoErrors()
 
@@ -237,7 +240,7 @@ context('Rich Text Editor', () => {
 
         it('Disallows XSS strings as a tool set name', function() {
             page.get('tool_set_name').type('<script>Haha')
-            page.get('tool_set_save_button').click()
+            page.get('tool_set_save_button').eq(0).click()
 
             cy.hasNoErrors()
                 // page.confirmToolset()
@@ -258,7 +261,7 @@ context('Rich Text Editor', () => {
             cy.get('.cke_button__inserttable').click()
 
             page.get('tool_set_name').type('<script>Haha')
-            page.get('tool_set_save_button').click()
+            page.get('tool_set_save_button').eq(0).click()
 
             cy.hasNoErrors()
 

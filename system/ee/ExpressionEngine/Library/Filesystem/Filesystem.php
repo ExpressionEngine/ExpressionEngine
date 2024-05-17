@@ -322,6 +322,46 @@ class Filesystem
         return $this->flysystem->getAdapter()->eagerLoadPaths($paths);
     }
 
+    /*
+     * Get a list of files within the $path that share the same prefix as the path's filename
+     *
+     * @param string $path
+     * @return array
+     */
+    public function filesMatchingPrefix($path)
+    {
+        $path = $this->normalize($path);
+
+        $directory = ($this->dirname($path) !== '.') ? $this->dirname($path) . '/' : '';
+        $filename = $this->filename($path);
+
+        if ($this->isLocal()) {
+            $files = glob($this->absolute($directory . $filename) . '*') ?: [];
+        } else {
+            $relativePath = $this->normalizeRelativePath($path);
+
+            try {
+                $files = $this->getDirectoryContents($directory);
+            } catch(FilesystemException $e) {
+                $files = [];
+            }
+
+            // Filter out any files that do not start with our path
+            $files = array_filter($files, function ($file) use ($relativePath) {
+                return strpos($file, $relativePath) === 0;
+            });
+        }
+
+        return array_map(function ($file) {
+            return [
+                'path' => $file,
+                'filename' => $this->filename($file),
+                'dirname' => $this->dirname($file),
+                'extension' => $this->extension($file)
+            ];
+        }, $files);
+    }
+
     /**
      * Get the file with metadata info
      *
@@ -848,6 +888,10 @@ class Filesystem
             return null;
         }
 
+        if (!function_exists('disk_free_space')) {
+            return false;
+        }
+
         return @disk_free_space($path);
     }
 
@@ -1042,6 +1086,9 @@ class Filesystem
      */
     public function actLocally($path, callable $callback)
     {
+        // Remove invisible control characters
+        $path = preg_replace('#\\p{C}+#u', '', $path);
+
         if ($this->isLocal()) {
             return $callback($path);
         }
@@ -1065,6 +1112,9 @@ class Filesystem
         if (empty($path)) {
             return '';
         }
+
+        // Remove invisible control characters
+        $path = preg_replace('#\\p{C}+#u', '', $path);
 
         return str_replace('//', '/', implode([
             in_array(substr($path, 0, 1), ['/', '\\']) ? '/' : '',

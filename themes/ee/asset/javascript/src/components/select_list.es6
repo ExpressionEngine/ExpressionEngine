@@ -26,6 +26,25 @@ class SelectList extends React.Component {
     // increment this variable which is set as a key on the root element,
     // telling React to destroy it and start anew
     this.version = 0
+    var toggles = [];
+    var values = props.selected.length ? props.selected.map(item => item.value) : [];
+    if (props.selectable && props.items.length != 0 && props.selected.length != 0 && props.toggles && props.toggles.length != 0) {
+      props.items.filter(item => values.includes(item.value)).forEach(item => {
+        props.toggles.filter(toggle => {
+          if (item.toggles[toggle] == true) {
+            toggles.push({
+              [toggle]: item.value,
+              'name': toggle,
+              'value': item.value
+            });
+          }
+        })
+      });
+    }
+
+    this.state ={
+      toggles: toggles
+    }
   }
 
   static formatItems (items, parent, multi) {
@@ -47,7 +66,7 @@ class SelectList extends React.Component {
         // array of values for multi select
         var value = (multi) ? items[key] : key
         var newItem = {
-          value: items[key].value || items[key].value === '' ? items[key].value : value,
+          value: items[key].value || items[key].value === '' || items[key].value === 0 ? items[key].value : value,
           label: items[key].label !== undefined ? items[key].label : items[key],
           instructions: items[key].instructions ? items[key].instructions : '',
           children: null,
@@ -57,6 +76,9 @@ class SelectList extends React.Component {
           entry_id: items[key].entry_id ? items[key].entry_id : '',
           upload_location_id: items[key].upload_location_id ? items[key].upload_location_id : '',
           path: items[key].path ? items[key].path : '',
+          toggles: items[key].toggles ? items[key].toggles : null,
+          status: items[key].status ? items[key].status : null,
+          editable: items[key].editable ? items[key].editable : false,
         }
 
         if (items[key].children) {
@@ -104,7 +126,7 @@ class SelectList extends React.Component {
 
     $(selector, this.container).sortable({
       axis: 'y',
-      containment: 'parent',
+      containment: false,
       handle: '.icon-reorder',
       items: this.props.nested ? '> li' : 'label',
       placeholder: 'field-reorder-placeholder',
@@ -228,10 +250,26 @@ class SelectList extends React.Component {
 
     if (this.props.multi && item.value != XORvalue) {
       if (checked) {
-
         selected = this.props.selected
             .concat([item])
             .filter(item => item.value != XORvalue) // uncheck XOR value
+
+        // check if item has toggles object
+        // toggles are present on the Channel->Edit->Categories
+        if (item.toggles && Object.keys(item.toggles).length) {
+          for (let key in item.toggles) {
+            if (item.toggles[key]) {
+              var i = this.state.toggles.filter(toggle => toggle[key] == item.value);
+              if (!i.length) {
+                this.state.toggles.push({
+                  [key]: item.value,
+                  'name': key,
+                  'value': item.value
+                });
+              }
+            }
+          }
+        }
 
         // Sort selection?
         if (this.props.selectionShouldRetainItemOrder) {
@@ -419,6 +457,9 @@ class SelectList extends React.Component {
               handleSelect={this.handleSelect}
               handleRemove={(e, item) => props.handleRemove(e, item)}
               groupToggle={props.groupToggle}
+              toggles = {props.toggles}
+              state={this.state}
+              toggleChanged={props.toggleChanged}
             />
           )}
         </FieldInputs>
@@ -439,9 +480,17 @@ class SelectList extends React.Component {
               ref={(input) => { this.input = input }} />
           )
         }
+
+        {/* CHANGE THIS CODE BASED ON TOOGLE PROPS*/}
+        { this.state.toggles.length != 0 &&
+          this.state.toggles.map(toggle => 
+            <input type="hidden" key={toggle.name + '[' + toggle.value + ']'} name={props.multi ? toggle.name + '[]' : toggle.name} value={toggle.value} ref={(input) => { this.input = input }} />
+          )
+        }
+
         {/* JSONified fields are using joined input */}
         { props.jsonify && props.selectable &&
-          <input type="hidden" name={props.name} value={JSON.stringify(values)}
+          <input type="hidden"  name={props.name} value={JSON.stringify(values)}
             ref={(input) => { this.input = input }} />
         }
       </div>
@@ -503,6 +552,37 @@ class SelectItem extends React.Component {
     })
   }
 
+  bindToggleChange (e, item) {
+    e.preventDefault();
+    $(e.currentTarget).toggleClass('active');
+    $(e.currentTarget).find('i').toggleClass('fa-toggle-on fa-toggle-off');
+    var toggleName = $(e.currentTarget).attr('data-toggle-name');
+
+    item.toggles[toggleName] = !item.toggles[toggleName];
+
+    if (item.toggles[toggleName]) {
+      this.props.state.toggles.push({
+        [toggleName]: item.value,
+        'name': toggleName,
+        'value': item.value
+      });
+    } else {
+      this.props.state.toggles = this.props.state.toggles.filter(object => {
+        if (object[toggleName] != item.value) return object
+      })
+    }
+
+    this.props.toggleChanged(this.props.state.toggles);
+  }
+
+  toggleOn () {
+    return <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 384"><path fill="#171feb" d="m0,192C0,86,86,0,192,0h192c106,0,192,86,192,192s-86,192-192,192h-192C86,384,0,298,0,192Z"/><circle fill="#fff" cx="384" cy="192" r="96"/></svg>
+  }
+
+  toggleOff () {
+    return <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M384 112c79.5 0 144 64.5 144 144s-64.5 144-144 144H192c-79.5 0-144-64.5-144-144s64.5-144 144-144H384zM576 256c0-106-86-192-192-192H192C86 64 0 150 0 256S86 448 192 448H384c106 0 192-86 192-192zM192 352a96 96 0 1 0 0-192 96 96 0 1 0 0 192z"/></svg>
+  }
+
   render() {
     let props = this.props
     let checked = this.checked(props.item.value)
@@ -541,12 +621,18 @@ class SelectItem extends React.Component {
         {props.item.instructions && (
           <span className="meta-info">{props.item.instructions}</span>
         )}
+        {props.name=="author_id" && (
+          <span className="meta-info">{"#" + props.item.value}</span>
+        )}
         <div class="button-group button-group-xsmall button-group-flyout-right">
+        {props.toggles && props.toggles.length != 0 && props.toggles.map((toggleName, index) =>
+          <a href="" className={'button button--default extra-flyout-button flyout-' + toggleName + (props.item.toggles[toggleName] == true ? ' active' : '')} onClick={(e) => this.bindToggleChange(e, props.item)} disabled = {checked ? false : true} data-toggle-name={toggleName}>{EE.lang[toggleName]} {(props.item.toggles[toggleName] == true ? this.toggleOn() : this.toggleOff())}</a>
+        )}
         {props.editable && (
-          <a href="" className="button button--default flyout-edit flyout-edit-icon"><i class="fal fa-pencil-alt"></i></a>
+          <a href="" className="button button--default flyout-edit flyout-edit-icon" data-id={props.item.value}><span className="sr-only">{EE.lang.edit_element}</span><i class="fal fa-pencil-alt"></i></a>
         )}
         {props.removable && (
-            <a href="" className="button button--default js-button-delete" onClick={(e) => props.handleRemove(e, props.item)}><i class="fal fa-fw fa-trash-alt"></i></a>
+            <a href="" className="button button--default js-button-delete" onClick={(e) => props.handleRemove(e, props.item)}><span className="sr-only">{EE.lang.remove_btn}</span><i class="fal fa-fw fa-trash-alt"></i></a>
         )}
         </div>
         </div>

@@ -56,7 +56,7 @@
                                     <?php if (isset($settings['content'])): ?>
                                         <?=$settings['content']?>
                                     <?php else: ?>
-                                        <label for="<?=$table_id?>-select-all" class="hidden"><?=lang('select_all_files')?></label>
+                                        <label for="<?=$table_id?>-select-all" class="sr-only"><?=lang('select_all_files')?></label>
                                         <input id="<?=$table_id?>-select-all" class="input--no-mrg" type="checkbox" title="<?=lang('select_all_files')?>">
                                     <?php endif ?>
                                 <?php endif ?>
@@ -80,6 +80,15 @@
                             }
                             ?>
                             <th<?php if (! empty($header_class)): ?> class="<?=trim($header_class)?>"<?php endif ?><?php foreach ($attrs as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
+
+                                <?php if (empty($settings['label']) && $settings['name'] == 'thumbnail') {?>
+                                    <span class="sr-only"><?=lang('thumbnail_column')?></span>
+                                <?php } ?>
+
+                                <?php if (empty($settings['label']) && $settings['name'] == 'manage') {?>
+                                    <span class="sr-only"><?=lang('toolbar_column')?></span>
+                                <?php } ?>
+
                                 <?php if ($header_sorts): ?>
                                     <?php
                                     $url = clone $base_url;
@@ -167,7 +176,7 @@
     								</td>
     							<?php elseif ($column['type'] == Table::COL_CHECKBOX): ?>
     								<td class="app-listing__cell app-listing__cell--input text--center checkbox-column">
-    									<label class="hidden" for="<?=$table_id . '-' . $i . '-' . $row_id?>"><?=lang('select_row')?></label>
+    									<label class="sr-only" for="<?=$table_id . '-' . $i . '-' . $row_id?>"><?=lang('select_row')?></label>
     									<input
     										id="<?=$table_id . '-' . $i . '-' . $row_id?>"
     										class="input--no-mrg<?php if (isset($column['hidden']) && $column['hidden']):?> hidden<?php endif; ?>"
@@ -299,6 +308,7 @@ else: ?>
                             <?php if (isset($settings['required']) && $settings['required']): ?><span class="required"><?php endif; ?>
                             <?=($lang_cols) ? lang($label) : $label ?>
                             <?php if (isset($settings['required']) && $settings['required']): ?></span><?php endif; ?>
+                            <?php if (isset($settings['badge'])) echo $settings['badge']; ?>
                             <?php if (isset($settings['desc']) && ! empty($settings['desc'])): ?>
                                 <span class="grid-instruct"><?=lang($settings['desc'])?></span>
                             <?php endif ?>
@@ -384,9 +394,24 @@ else: ?>
                                 $column_desc = lang($columns[$key]['desc']);
                             }
 
+                            $column_badge = isset($columns[$key]['badge']) ? $columns[$key]['badge'] : '';
+
                             $column_label = "<div class=\"grid-field__column-label\"  role=\"rowheader\">
                                 <div class=\"grid-field__column-label__instraction\">
-                                    <label>$column_name</label>";
+                                    <label>";
+                            if (isset($columns[$key]['required']) && $columns[$key]['required']) {
+                                $column_label .= "
+                                    <span class=\"required\">
+                                ";
+                            }
+                            $column_label .= $column_name;
+                            if (isset($columns[$key]['required']) && $columns[$key]['required']) {
+                                $column_label .= "
+                                    </span>
+                                ";
+                            }
+                            $column_label .= "</label>" . $column_badge;
+
                             if (!empty($column_desc)) {
                                 $column_label .= "
                                     <em>$column_desc</em>

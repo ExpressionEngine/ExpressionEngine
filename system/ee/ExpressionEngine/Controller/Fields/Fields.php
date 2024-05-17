@@ -437,6 +437,7 @@ class Fields extends AbstractFieldsController
             if ($_POST['field_label'] == $field->field_label) {
                 $_POST['field_label'] = lang('copy_of') . ' ' . $_POST['field_label'];
             }
+
             return $this->create(!empty($active_groups) ? $active_groups[0] : null);
         }
 
@@ -824,6 +825,16 @@ class Fields extends AbstractFieldsController
 
             try {
                 $field_options = $dummy_field->getSettingsForm();
+                // When fieldtype settings contain fields with their own group toggles
+                // we need to loop through them and append the fieldtype group name
+                foreach ($field_options as &$option) {
+                    foreach ($option['settings'] ?? [] as $key => $setting) {
+                        if (isset($setting['group']) && isset($option['group'])) {
+                            $option['settings'][$key]['group'] = $option['group'] . '|' . $setting['group'];
+                        }
+                    }
+                }
+
                 if (is_array($field_options) && ! empty($field_options)) {
                     $sections = array_merge($sections, $field_options);
                 }

@@ -67,7 +67,6 @@ class DragAndDropUpload extends React.Component {
     if (directory == 'all') return null;
 
     var directory = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, directory);
-
     if (typeof(directory) === 'undefined') {
       return ' ';
     }
@@ -332,6 +331,10 @@ class DragAndDropUpload extends React.Component {
 
       formData.append('file', file)
       xhr.send(formData)
+
+      if ($("[data-publish] > form").length) {
+        $("[data-publish] > form").trigger("entry:startAutosave");
+      }
     })
   }
 
@@ -403,10 +406,11 @@ class DragAndDropUpload extends React.Component {
     }
 
     el.find('.f_open-filepicker').click();
-    el.find('.f_open-filepicker').one('change', function(e){
+    el.find('.f_open-filepicker').off().one('change', function(e){
       var files = e.target.files;
       that.handleDroppedFiles(files)
     });
+
   }
 
   hiddenUpload = (el) => {
@@ -430,7 +434,7 @@ class DragAndDropUpload extends React.Component {
     })
 
     $(this.dropZone).parents('div[data-file-field-react]').find('.f_open-filepicker').click();
-    $(this.dropZone).parents('div[data-file-field-react]').find('.f_open-filepicker').on('change', function(e){
+    $(this.dropZone).parents('div[data-file-field-react]').find('.f_open-filepicker').off().on('change', function(e){
       var files = e.target.files;
       that.handleDroppedFiles(files)
     });
@@ -557,14 +561,13 @@ class DragAndDropUpload extends React.Component {
 
     var selectedDirectoryNotInList = false;
     if (this.state.directory != 'all') {
-      dir = this.state.directory;
+      var dir = this.state.directory;
       if (EE.dragAndDrop.uploadDesinations.length != 0) {
         selectedDirectoryNotInList = true;
-        Object.values(EE.dragAndDrop.uploadDesinations).forEach(function (uploadDesination) {
-          if (uploadDesination.value == dir) {
-            selectedDirectoryNotInList = false;
-          }
-        });
+        var dir_in_list = this.checkChildDirectory(EE.dragAndDrop.uploadDesinations, dir);
+        if (typeof dir_in_list != 'undefined') {
+          selectedDirectoryNotInList = false;
+        }
       }
     }
     if (EE.dragAndDrop.uploadDesinations.length == 0 || selectedDirectoryNotInList) {
@@ -695,6 +698,7 @@ class DragAndDropUpload extends React.Component {
               createNewDirectory={this.props.createNewDirectory}
               ignoreChild={false}
               addInput={true}
+              allowMultipleFiles={this.props.allowMultipleFiles}
             />
           </div>
           )
@@ -712,7 +716,8 @@ class DragAndDropUpload extends React.Component {
               e.preventDefault()
               this.uploadNew(this.state.directory)
             }}>{EE.lang.file_dnd_upload_new}</a>
-            <input type="file" className="f_open-filepicker" style={{display: 'none'}} multiple="multiple"/>
+            <label htmlFor="f_open-filepicker_id" className="sr-only">{EE.lang.hidden_input}</label>
+            <input id="f_open-filepicker_id" type="file" className="f_open-filepicker" style={{display: 'none'}} multiple="multiple"/>
             </div>
           </React.Fragment>
           )
@@ -745,13 +750,15 @@ class DragAndDropUpload extends React.Component {
               createNewDirectory={this.props.createNewDirectory}
               ignoreChild={false}
               addInput={true}
+              allowMultipleFiles={this.props.allowMultipleFiles}
             />
           </div>
         )}
         {this.props.imitationButton && (
           <React.Fragment>
           <a href="#" style={{display: 'none'}} onClick={(el) => this.hiddenUpload(el)} data-upload_location_id={''} data-directory_id={''} data-path={''} className='imitation_button'>Imitation</a>
-          <input type="file" className="f_open-filepicker" style={{display: 'none'}} multiple="multiple"/>
+          <label htmlFor="f_open-filepicker_id" className="sr-only">{EE.lang.hidden_input}</label>
+          <input id="f_open-filepicker_id" type="file" className="f_open-filepicker" style={{display: 'none'}} multiple="multiple"/>
           </React.Fragment>
         )}
         </div>

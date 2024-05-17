@@ -73,9 +73,17 @@ class Range_slider_ft extends Slider_ft
             $field['to'] = $field['max'];
         }
 
-        if (REQ == 'CP') {
-            return ee('View')->make('slider:pair')->render($field);
-        }
+        ee()->javascript->output("
+            $('.ee-slider-field.range-slider').each(function() {
+                var minValue = $(this).find('input[type=range]').attr('min');
+                var maxValue = $(this).find('input[type=range]').attr('max');
+
+                $(this).attr('data-min', minValue);
+                $(this).attr('data-max', maxValue);
+            });
+        ");
+
+        return ee('View')->make('slider:pair')->render($field);
 
         return form_range(array_merge($field, ['value' => $field['from']])) . BR . form_range(array_merge($field, ['value' => $field['to']]));
     }

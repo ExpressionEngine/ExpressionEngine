@@ -135,7 +135,7 @@ class JumpMenu extends AbstractJumpMenu
                 'command' => 'new create_member_field',
                 'dynamic' => false,
                 'addon' => false,
-                'target' => 'members/fields/create',
+                'target' => 'settings/member-fields/create',
                 'permission' => 'can_admin_roles'
             ),
             'createMemberRole' => array(
@@ -183,7 +183,7 @@ class JumpMenu extends AbstractJumpMenu
                 'command' => 'custom_profile_fields',
                 'dynamic' => false,
                 'addon' => false,
-                'target' => 'members/fields',
+                'target' => 'settings/member-fields',
                 'permission' => 'can_admin_roles'
             ),
             'editMemberField' => array(
@@ -199,7 +199,7 @@ class JumpMenu extends AbstractJumpMenu
                 'command' => 'manage_bans ip_address_banning email_address_banning username_banning screen_name_banning ban_options',
                 'dynamic' => false,
                 'addon' => false,
-                'target' => 'members/ban-settings',
+                'target' => 'settings/ban',
                 'permission' => 'ban_users'
             ),
             //categories
@@ -1255,6 +1255,27 @@ class JumpMenu extends AbstractJumpMenu
                         'command' => 'req_mbr_activation req_mbr_activation_desc',
                         'command_title' => 'req_mbr_activation'
                     ),
+                    'fieldset-registration_auto_login' => array(
+                        'trail' => [
+                            'member_settings'
+                        ],
+                        'command' => 'registration_auto_login registration_auto_login_desc',
+                        'command_title' => 'registration_auto_login'
+                    ),
+                    'fieldset-activation_auto_login' => array(
+                        'trail' => [
+                            'member_settings'
+                        ],
+                        'command' => 'activation_auto_login activation_auto_login_desc',
+                        'command_title' => 'activation_auto_login'
+                    ),
+                    'fieldset-activation_redirect' => array(
+                        'trail' => [
+                            'member_settings'
+                        ],
+                        'command' => 'activation_redirect activation_redirect_desc',
+                        'command_title' => 'activation_redirect'
+                    ),
                     'fieldset-approved_member_notification' => array(
                         'trail' => [
                             'member_settings'
@@ -1811,6 +1832,22 @@ class JumpMenu extends AbstractJumpMenu
                 'target' => 'utilities/debug-tools/debug-fieldtypes',
                 'permission' => 'is_super_admin'
             ),
+            'systemUtilitiesDebugDuplicateTemplateGroups' => array(
+                'icon' => 'fa-hammer',
+                'command' => 'system_utilities debug_tools_debug_duplicate_template_groups',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'utilities/debug-tools/duplicate-template-groups',
+                'permission' => 'is_super_admin'
+            ),
+            'systemUtilitiesDebugToolsChannelEntries' => array(
+                'icon' => 'fa-hammer',
+                'command' => 'system_utilities debug_tools_channel_entries',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'utilities/debug-tools/debug-entries',
+                'permission' => 'is_super_admin'
+            ),
             'systemUtilitiesFileConverter' => array(
                 'icon' => 'fa-hammer',
                 'command' => 'system_utilities member_tools import_converter',
@@ -1859,7 +1896,7 @@ class JumpMenu extends AbstractJumpMenu
                 'target' => 'utilities/query',
                 'permission' => 'can_access_sql_manager'
             ),
-            'systemUtilitiesSearchReindex' => array(
+            'systemUtilitiesContentReindex' => array(
                 'icon' => 'fa-hammer',
                 'command' => 'system_utilities search_reindex',
                 'dynamic' => false,

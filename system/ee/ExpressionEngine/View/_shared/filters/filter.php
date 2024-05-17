@@ -10,6 +10,7 @@
 		<?php if ($has_custom_value || $has_list_filter): ?>
 			<div class="dropdown__search">
 				<div class="search-input">
+				<label for="<?=$name?>" class="sr-only"><?=$name?></label>
 				<input
 					type="text"
 					name="<?=$name?>"
@@ -19,6 +20,7 @@
 					data-fuzzy-filter="true"
 					<?php endif; ?>
 					class="search-input__input input--small"
+					id="<?=$name?>"
 				>
 				</div>
 			</div>
@@ -26,11 +28,15 @@
 
 		<div class="dropdown__scroll">
 		<?php foreach ($options as $url => $label): ?>
-			<a class="dropdown__link" href="<?=$url?>"><?=$label?></a>
+            <?php if (is_array($label) && ($label['type'] ?? '' == 'header')): ?>
+                <div class="dropdown__header"><?=$label['label']?></div>
+            <?php else: ?>
+			    <a class="dropdown__link" href="<?=$url?>"><?=$label?></a>
+            <?php endif; ?>
 		<?php endforeach; ?>
 		</div>
 	</div>
 	<?php if ($value && isset($url_without_filter)): ?>
-		<a class="filter-clear" href="<?=$url_without_filter?>"><i class="fal fa-times"></i></a>
+		<a class="filter-clear" href="<?=$url_without_filter?>"><span class="sr-only"><?=lang('clear_filter')?></span><i class="fal fa-times"></i></a>
 	<?php endif; ?>
 </div>

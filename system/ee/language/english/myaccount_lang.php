@@ -190,7 +190,7 @@ $lang = array(
 
     'email_taken' => 'The email you chose is not available',
 
-    'email_too_long' => 'Your email address cannot be over ' . USERNAME_MAX_LENGTH . ' characters in length',
+    'email_too_long' => 'Your email address cannot be over 254 characters in length',
 
     'email_username' => 'Email %s',
 
@@ -260,10 +260,6 @@ $lang = array(
 
     'location_desc' => 'Your physical location.',
 
-    'login_as' => 'Login as %s',
-
-    'login_as_member' => 'Login as Member',
-
     'login_as_warning' => "<b>Warning</b>: You will be logged in as the member '%s' and redirected to the page below.",
 
     'main_menu_manager' => 'Main Menu Manager',
@@ -278,11 +274,7 @@ $lang = array(
 
     'member_email' => 'Email Member',
 
-    'member_group_assignment' => 'Member Group Assignment',
-
-    'member_group_default' => 'Member group default',
-
-    'member_group_warning' => 'Be very careful assigning this',
+    'member_group_default' => 'Role\'s default',
 
     'user_ip_address' => 'IP Address',
 
@@ -473,8 +465,6 @@ $lang = array(
     'subscriptions' => 'Current Subscriptions',
 
     'subscriptions_removed' => 'Subscriptions have been removed',
-
-    'super_admin_demotion_alert' => 'As a Super Admin, you are not allowed to change your member group assignment',
 
     'system_offline_indicator' => 'System offline indicator',
 

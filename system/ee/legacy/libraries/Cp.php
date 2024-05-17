@@ -153,6 +153,7 @@ class Cp
             'slate_theme' => lang('slate_theme'),
             'snow_theme' => lang('snow_theme'),
             'many_jump_results' => lang('many_jump_results'),
+            'password_icon' => lang('password_icon')
         );
 
         $lastUpdateCheck = false;
@@ -1088,7 +1089,7 @@ class Cp
             'if', 'else', 'elseif'
         );
 
-        return array_unique(array_merge(
+        return $invalid_fields = array_unique(array_merge(
             $channel_vars,
             $global_vars,
             $orderby_vars,

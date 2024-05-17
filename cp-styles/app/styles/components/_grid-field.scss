@@ -7,6 +7,21 @@
 		border: 1px solid color(border);
 		overflow-x: auto;
 	}
+
+	.ui-sortable-placeholder > * {
+		display: none !important;
+	}
+
+	.required {
+		&:after {
+			content: "\*";
+			color: var(--ee-brand-danger);
+			font-size: 1em;
+			position: relative;
+			top: 0px;
+			margin-left: 0;
+		}
+	}
 }
 
 .grid-field__table {
@@ -132,7 +147,7 @@
 	display: none;
 
 	label {
-		display: block;
+		display: inline-block;
 		color: var(--ee-text-normal);
 		margin-bottom: 5px;
 		font-weight: 500;

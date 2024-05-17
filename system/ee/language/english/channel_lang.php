@@ -20,6 +20,10 @@ $lang = array(
 
     'category_groups_desc' => 'Assign one or more category groups to this channel.',
 
+    'cat_required' => 'Required?',
+
+    'cat_allow_multiple' => 'Allow multiple?',
+
     'channel' => 'Channel',
 
     'channel_form_layouts' => '%s &ndash; Publish Layouts',
@@ -141,8 +145,6 @@ $lang = array(
     'manage_channels' => 'Manage Channels',
 
     'maximum_channels_reached' => 'You have reached the maximum number of Channels allowed.',
-
-    'member_group' => 'Member group',
 
     'rename_tab' => 'Rename tab',
 
@@ -366,7 +368,7 @@ $lang = array(
 
     'moderate_comments' => 'Moderate comments?',
 
-    'moderate_comments_desc' => 'When enabled, submitted comments will be put into a moderation queue, and must be approved by a Super Admin or other member group with moderation permissions.',
+    'moderate_comments_desc' => 'When enabled, submitted comments will be put into a moderation queue, and must be approved by a Super Admin or member with a role that has moderation permissions.',
 
     'notifications' => 'Notifications',
 
@@ -446,6 +448,8 @@ $lang = array(
     'category_ajax_reorder_fail' => 'Attention: Failed to save category order',
 
     'category_ajax_reorder_fail_desc' => 'We failed to save your new categories order. Refresh the page and make sure you\'re logged in.',
+
+    'category_group_no_permissions' => 'You do not have permissions to modify categories in this group.',
 
     'category_created' => 'Category Created',
 
@@ -544,8 +548,6 @@ $lang = array(
     'edit_category_field' => 'Edit Category Field',
 
     'edit_category_group' => 'Edit Category Group',
-
-    'edit_member_groups' => 'Edit Member Groups',
 
     'exclude_group_form' => 'Exclude group from?',
 

@@ -151,7 +151,7 @@ context('Status Create/Edit', () => {
         cy.get('input[data-group-toggle="[]"][value = "3"]').should('not.be.checked')
 
         //New edit
-        cy.get('span').contains('Featured').click()
+        page.get('status_names').contains('Featured').click({force: true})
         cy.wait(300)
         cy.get('input[name=status]').clear().type('Test2')
         cy.get('.app-modal button[value="save"]').filter(':visible').first().click({force:true}) //AJ

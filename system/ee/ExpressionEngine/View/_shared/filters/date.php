@@ -8,6 +8,7 @@
 	<div class="dropdown">
 		<div class="dropdown__search">
 			<div class="search-input">
+			<label for="<?=$name?>" class="sr-only"><?=$name?></label>
 			<input
 				type="text"
 				name="<?=$name?>"
@@ -15,6 +16,7 @@
 				placeholder="<?=htmlentities($placeholder, ENT_QUOTES, 'UTF-8')?>"
 				rel="date-picker"
 				class="search-input__input input--small"
+				id="<?=$name?>"
 				<?php if ($timestamp): ?>data-timestamp="<?=$timestamp?>" <?php endif; ?>
 			>
 			</div>
@@ -26,6 +28,6 @@
 		</div>
 	</div>
 	<?php if ($value): ?>
-		<a class="filter-clear" href="<?=$url_without_filter?>"><i class="fal fa-times"></i></a>
+		<a class="filter-clear" href="<?=$url_without_filter?>"><span class="sr-only"><?=lang('clear_filter')?></span><i class="fal fa-times"></i></a>
 	<?php endif; ?>
 </div>

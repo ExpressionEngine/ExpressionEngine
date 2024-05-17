@@ -281,6 +281,9 @@ class EE_Upload
             return false;
         }
 
+        // Remove invisible control characters
+        $this->file_name = preg_replace('#\\p{C}+#u', '', $this->file_name);
+
         // Truncate the file name if it's too long
         if ($this->max_filename > 0) {
             $this->file_name = $this->limit_filename_length($this->file_name, $this->max_filename);

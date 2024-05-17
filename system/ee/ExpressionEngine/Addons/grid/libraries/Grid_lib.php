@@ -22,6 +22,7 @@ class Grid_lib
     public $fluid_field_data_id = 0;
     public $in_modal_context = false;
     public $settings_form_field_name; //grid or file_grid
+    public $field_short_name;
     public $field_required = false;
 
     protected $_fieldtypes = [];
@@ -72,12 +73,17 @@ class Grid_lib
 
         $column_headings = array();
         $blank_column = array();
+        $i = 0;
         foreach ($columns as $column) {
-            $column_headings[] = array(
+            $column_headings[$i] = array(
                 'label' => $column['col_label'],
                 'desc' => $column['col_instructions'],
                 'required' => ($column['col_required'] == 'y')
             );
+
+            if (ee()->session->userdata('member_id') !== 0 && ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->show_field_names == 'y' && !empty($this->field_short_name)) {
+                $column_headings[$i]['badge'] = ee('View')->make('publish/partials/field_name_badge')->render(['name' => (empty($this->fluid_field_data_id) ? $this->field_short_name : 'content') . ':' . $column['col_name']]);
+            }
 
             $attrs = array(
                 'class' => $this->get_class_for_column($column),
@@ -93,6 +99,7 @@ class Grid_lib
                 'html' => $this->_publish_field_cell($column),
                 'attrs' => $attrs
             );
+            $i++;
         }
         $grid->setColumns($column_headings);
         $grid->setBlankRow($blank_column);
@@ -250,14 +257,21 @@ class Grid_lib
         }
 
         if (isset($data['rows'])) {
+            $total_rows = count($data['rows']);
             foreach ($data['rows'] as $key => $row) {
                 if (substr($key, 0, 6) == 'row_id') {
                     $row_key = str_replace('row_id_', '', $key);
 
                     if (! in_array($row_key, $valid_rows)) {
-                        if (ee('Permission')->isSuperAdmin()) {
-                            return array('value' => '', 'error' => lang('not_authorized'));
+                        if (ee('Request')->get('version')) {
+                            //if we have loaded version, restore the fields that are missing
+                            $keys = array_keys($data['rows']);
+                            $values = array_values($data['rows']);
+                            $index = array_search($key, $keys);
+                            $keys[$index] = 'new_row_' . ($total_rows + (int) $row_key);
+                            $data['rows'] = array_combine($keys, $values);
                         } else {
+                            // otherwise assume someone else removed the row, and they know what they are doing
                             unset($data['rows'][$key]);
                         }
                     }
@@ -291,8 +305,16 @@ class Grid_lib
      */
     public function save($data)
     {
+        if (ee('Request')->get('version')) {
+            if (isset($data['rows'])) {
+                // only need to do this once
+                $data['rows'] = ee()->grid_model->remap_revision_rows($data['rows'], $this->field_id, $this->entry_id, $this->fluid_field_data_id, $this->content_type);
+            }
+        }
         $field_data = $this->_process_field_data('save', $data);
 
+        // save the Grid field
+        // and get back the rows that are no longer present
         $deleted_rows = ee()->grid_model->save_field_data(
             $field_data['value'],
             $this->field_id,

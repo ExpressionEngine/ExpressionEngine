@@ -506,6 +506,8 @@ class Addons extends CP_Controller
             $return = ee('CP/URL')->decodeUrl(ee()->input->get('return'));
         }
 
+        $return .= '#tab=t-update';
+
         ee()->functions->redirect($return);
     }
 

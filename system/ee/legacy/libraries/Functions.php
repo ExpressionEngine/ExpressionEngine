@@ -24,15 +24,17 @@ class EE_Functions
     public $file_paths = array();
     public $conditional_debug = false;
     public $catfields = array();
+    protected $cat_array = array();
+    protected $temp_array = array();
     public static $protected_data = array();
 
     /**
      * Fetch base site index
      *
-     * @access	public
-     * @param	bool
-     * @param	bool
-     * @return	string
+     * @access public
+     * @param bool
+     * @param bool
+     * @return string
      */
     public function fetch_site_index($add_slash = false, $sess_id = true)
     {
@@ -69,10 +71,10 @@ class EE_Functions
      * The input to this function is parsed and added to the
      * full site URL to create a full URL/URI
      *
-     * @access	public
-     * @param	string
-     * @param	bool
-     * @return	string
+     * @access public
+     * @param string
+     * @param bool
+     * @return string
      */
     public function create_route($segment, $sess_id = true)
     {
@@ -119,10 +121,10 @@ class EE_Functions
      * The input to this function is parsed and added to the
      * full site URL to create a full URL/URI
      *
-     * @access	public
-     * @param	string
-     * @param	bool
-     * @return	string
+     * @access public
+     * @param string
+     * @param bool
+     * @return string
      */
     public function create_url($segment, $sess_id = true)
     {
@@ -167,8 +169,8 @@ class EE_Functions
     /**
      * Creates a url for Pages links
      *
-     * @access	public
-     * @return	string
+     * @access public
+     * @return string
      */
     public function create_page_url($base_url, $segment, $trailing_slash = false)
     {
@@ -194,8 +196,8 @@ class EE_Functions
     /**
      * Fetch site index with URI query string
      *
-     * @access	public
-     * @return	string
+     * @access public
+     * @return string
      */
     public function fetch_current_uri()
     {
@@ -211,9 +213,9 @@ class EE_Functions
      * This function checks to see if "Force Query Strings" is on.
      * If so it adds a question mark to the URL if needed
      *
-     * @access	public
-     * @param	string
-     * @return	string
+     * @access public
+     * @param string
+     * @return string
      */
     public function prep_query_string($str)
     {
@@ -235,7 +237,7 @@ class EE_Functions
     /**
      * Convert EE Tags to Entities
      *
-     * @access	public
+     * @access public
      * @param string $str            String with EE Tags to encode
      * @param bool   $convert_curly  Set to TRUE to convert all curly brackets
      *                               to entities, otherwise only {exp:...,
@@ -254,9 +256,9 @@ class EE_Functions
      * We use this to extract the template group/template name
      * from path variables, like {some_var path="channel/index"}
      *
-     * @access	public
-     * @param	string
-     * @return	string
+     * @access public
+     * @param string
+     * @return string
      */
     public function extract_path($str)
     {
@@ -288,10 +290,10 @@ class EE_Functions
     /**
      * Replace variables
      *
-     * @access	public
-     * @param	string
-     * @param	string
-     * @return	string
+     * @access public
+     * @param string
+     * @param string
+     * @return string
      */
     public function var_swap($str, $data)
     {
@@ -409,9 +411,9 @@ class EE_Functions
     /**
      * Redirect
      *
-     * @access	public
-     * @param	string
-     * @return	void
+     * @access public
+     * @param string
+     * @return void
      */
     public function redirect($location, $method = false, $status_code = null)
     {
@@ -464,10 +466,10 @@ class EE_Functions
     /**
      * Random number/password generator
      *
-     * @access	public
-     * @param	string
-     * @param	int
-     * @return	string
+     * @access public
+     * @param string
+     * @param int
+     * @return string
      */
     public function random($type = 'encrypt', $len = 8)
     {
@@ -479,19 +481,22 @@ class EE_Functions
      *
      * This function is used by modules when they need to create forms
      *
-     * @access	public
-     * @param	string
-     * @return	string
+     * @access public
+     * @param string
+     * @return string
      */
     public function form_declaration($data)
     {
         // Load the form helper
         ee()->load->helper('form');
 
+        // Load the default values for parameters that can be provided via $data array variable
+        // NB. secure and hidden_fields are not legit HTML form tags, and so excluded from pass_thru
         $deft = array(
             'hidden_fields' => array(),
             'action' => '',
             'id' => '',
+            'name' => '',
             'class' => '',
             'secure' => true,
             'enctype' => '',
@@ -500,6 +505,7 @@ class EE_Functions
             'target' => ''
         );
 
+        // Set values for 'missing' default keys in $data to their default values
         foreach ($deft as $key => $val) {
             if (! isset($data[$key])) {
                 $data[$key] = $val;
@@ -547,7 +553,17 @@ class EE_Functions
             $data['action'] = substr($data['action'], 0, -1);
         }
 
-        $data['name'] = (isset($data['name']) && $data['name'] != '') ? 'name="' . $data['name'] . '" ' : '';
+        if (isset(ee()->TMPL)) {
+            // set form ID and class, if set by tagparam
+            if (empty($data['id'])) {
+                $data['id'] = ee()->TMPL->form_id;
+            }
+            if (empty($data['class'])) {
+                $data['form_class'] = ee()->TMPL->form_class;
+            }
+        }
+
+        $data['name'] = ($data['name'] != '') ? 'name="' . $data['name'] . '" ' : '';
         $data['id'] = ($data['id'] != '') ? 'id="' . $data['id'] . '" ' : '';
         $data['class'] = ($data['class'] != '') ? 'class="' . $data['class'] . '" ' : '';
         $data['target'] = ($data['target'] != '') ? 'target="' . $data['target'] . '" ' : '';
@@ -557,12 +573,46 @@ class EE_Functions
         }
 
         foreach ($data as $key => $val) {
-            if (strpos($key, 'data-') === 0) {
+            if (strpos($key, 'data-') === 0 || strpos($key, 'aria-') === 0) {
                 $data['data_attributes'] .= ee('Security/XSS')->clean($key) . '="' . htmlentities(ee('Security/XSS')->clean($val), ENT_QUOTES, 'UTF-8') . '" ';
             }
         }
 
-        $form = '<form ' . $data['id'] . $data['class'] . $data['name'] . $data['target'] . $data['data_attributes'] . 'method="post" action="' . $data['action'] . '" ' . $data['onsubmit'] . ' ' . $data['enctype']. ">\n";
+        // Next section is for the 'pass-through' functionality
+        $_pass_thru = array();
+        $valid_form_attributes = array();
+        $_pass_thru_string = '';
+
+        /**
+         * Valid HTML Form attributes are determined based on the list in
+         * on the config/valid_form_attributes.php file .
+         */
+
+        $valid_form_attributes = ee()->config->loadFile('valid_form_attributes');
+
+        if (isset(ee()->TMPL) && ! empty(ee()->TMPL->tagparams) && ! empty($valid_form_attributes)) {
+            foreach (ee()->TMPL->tagparams as $key => $val) {
+                // Ignore the parameter if $key is defined in $deft (and so already being processed by function)
+                // or if the parameter is not in the list of approved attributes
+                // or if the parameter begins with either aria- or data-
+                if (! array_key_exists(strtolower($key), $deft) && in_array(strtolower($key), $valid_form_attributes)) {
+                    // Append the key to end of the $_pass_thru variable
+                    // If the attribute has a value set then add this value to the key enclosed within an ="" construct
+                    $_pass_thru[$key] = (strlen($val) > 0) ? '="' . htmlentities(ee('Security/XSS')->clean($val), ENT_QUOTES, 'UTF-8') . '"' : '';
+                }
+                // data- and aria- attributes can also be passed through
+                if (strpos($key, 'data-') === 0 || strpos($key, 'aria-') === 0) {
+                    $data['data_attributes'] .= ee('Security/XSS')->clean(strip_tags($key)) . '="' . htmlentities(ee('Security/XSS')->clean($val), ENT_QUOTES, 'UTF-8') . '" ';
+                }
+            }
+        }
+        // Build pass-through attribute string
+        foreach ($_pass_thru as $key => $val) {
+            $_pass_thru_string .= " " . $key . (strlen($val) > 0 ? $val : '');
+        }
+
+        // Construct the opening form tag - including appending any pass_thru parameters
+        $form = '<form ' . $data['id'] . $data['class'] . $data['name'] . $data['target'] . $data['data_attributes'] . 'method="post" action="' . $data['action'] . '" ' . $data['onsubmit'] . ' ' . $data['enctype'] . $_pass_thru_string . ">\n";
 
         if ($data['secure'] == true) {
             unset($data['hidden_fields']['XID']);
@@ -590,9 +640,9 @@ class EE_Functions
      * is determined by the offset that the admin
      * places in each form
      *
-     * @access	public
-     * @param	string
-     * @return	string
+     * @access public
+     * @param string
+     * @return string
      */
     public function form_backtrack($offset = '')
     {
@@ -617,9 +667,11 @@ class EE_Functions
                 }
             } else {
                 if (strpos($_POST['RET'], '/') !== false) {
-                    if (strncasecmp($_POST['RET'], 'http://', 7) == 0 or
+                    if (
+                        strncasecmp($_POST['RET'], 'http://', 7) == 0 or
                         strncasecmp($_POST['RET'], 'https://', 8) == 0 or
-                        strncasecmp($_POST['RET'], 'www.', 4) == 0) {
+                        strncasecmp($_POST['RET'], 'www.', 4) == 0
+                    ) {
                         $ret = $_POST['RET'];
                     } else {
                         $ret = $this->create_url($_POST['RET']);
@@ -661,9 +713,9 @@ class EE_Functions
      *
      * Evaluates a string as PHP
      *
-     * @access	public
-     * @param	string
-     * @return	mixed
+     * @access public
+     * @param string
+     * @return mixed
      */
     public function evaluate($str)
     {
@@ -673,9 +725,9 @@ class EE_Functions
     /**
      * Encode email from template callback
      *
-     * @access	public
-     * @param	string
-     * @return	string
+     * @access public
+     * @param string
+     * @return string
      */
     public function encode_email($str)
     {
@@ -706,9 +758,9 @@ class EE_Functions
     /**
      * Character limiter
      *
-     * @access	public
-     * @param	string
-     * @return	string
+     * @access public
+     * @param string
+     * @return string
      */
     public function char_limiter($str, $num = 500)
     {
@@ -741,9 +793,9 @@ class EE_Functions
     /**
      * Word limiter
      *
-     * @access	public
-     * @param	string
-     * @return	string
+     * @access public
+     * @param string
+     * @return string
      */
     public function word_limiter($str, $num = 100)
     {
@@ -769,9 +821,9 @@ class EE_Functions
     /**
      * Fetch Email Template
      *
-     * @access	public
-     * @param	string
-     * @return	string
+     * @access public
+     * @param string
+     * @return string
      */
     public function fetch_email_template($name)
     {
@@ -823,10 +875,10 @@ class EE_Functions
     /**
      * Create pull-down optios from dirctory map
      *
-     * @access	public
-     * @param	array
-     * @param	string
-     * @return	string
+     * @access public
+     * @param array
+     * @param string
+     * @return string
      */
     public function render_map_as_select_options($zarray, $array_name = '')
     {
@@ -856,9 +908,9 @@ class EE_Functions
      *
      * DEPRECATED IN 2.0
      *
-     * @access	public
-     * @param	string
-     * @return	string
+     * @access public
+     * @param string
+     * @return string
      */
     public function language_pack_names($default)
     {
@@ -871,9 +923,9 @@ class EE_Functions
     /**
      * Delete cache files
      *
-     * @access	public
-     * @param	string
-     * @return	string
+     * @access public
+     * @param string
+     * @return string
      */
     public function clear_caching($which, $sub_dir = '')
     {
@@ -897,10 +949,10 @@ class EE_Functions
     /**
      * Delete Direcories
      *
-     * @access	public
-     * @param	string
-     * @param	bool
-     * @return	void
+     * @access public
+     * @param string
+     * @param bool
+     * @return void
      */
     public function delete_directory($path, $del_root = false)
     {
@@ -913,9 +965,9 @@ class EE_Functions
      * This function fetches the ID numbers of the
      * channels assigned to the currently logged in user.
      *
-     * @access	public
-     * @param	bool
-     * @return	array
+     * @access public
+     * @param bool
+     * @return array
      */
     public function fetch_assigned_channels($all_sites = false)
     {
@@ -936,10 +988,10 @@ class EE_Functions
     /**
      * Log Search terms
      *
-     * @access	public
-     * @param	string
-     * @param	string
-     * @return	void
+     * @access public
+     * @param string
+     * @param string
+     * @return void
      */
     public function log_search_terms($terms = '', $type = 'site')
     {
@@ -983,10 +1035,10 @@ class EE_Functions
     /**
      * Fetch Action ID
      *
-     * @access	public
-     * @param	string
-     * @param	string
-     * @return	string
+     * @access public
+     * @param string
+     * @param string
+     * @return string
      */
     public function fetch_action_id($class, $method)
     {
@@ -1002,9 +1054,9 @@ class EE_Functions
     /**
      * Insert Action IDs
      *
-     * @access	public
-     * @param	string
-     * @return	string
+     * @access public
+     * @param string
+     * @return string
      */
     public function insert_action_ids($str)
     {
@@ -1034,10 +1086,10 @@ class EE_Functions
     /**
      * Get Categories for Channel Entry/Entries
      *
-     * @access	public
-     * @param	string
-     * @param	string
-     * @return	array
+     * @access public
+     * @param string
+     * @param string
+     * @return array
      */
     public function get_categories($cat_group, $entry_id)
     {
@@ -1110,9 +1162,9 @@ class EE_Functions
     /**
      * Process Subcategories
      *
-     * @access	public
-     * @param	string
-     * @return	void
+     * @access public
+     * @param string
+     * @return void
      */
     public function process_subcategories($parent_id)
     {
@@ -1127,9 +1179,9 @@ class EE_Functions
     /**
      * Add security hashes to forms
      *
-     * @access	public
-     * @param	string
-     * @return	string
+     * @access public
+     * @param string
+     * @return string
      */
     public function add_form_security_hash($str)
     {
@@ -1147,9 +1199,9 @@ class EE_Functions
     /**
      * Generate CAPTCHA
      *
-     * @access	public
-     * @param	string
-     * @return	string
+     * @access public
+     * @param string
+     * @return string
      */
     public function create_captcha($old_word = '', $force_word = false)
     {
@@ -1177,12 +1229,12 @@ class EE_Functions
      * We should probably put this in the DB class but it's not
      * something that is typically used
      *
-     * @access	public
-     * @param	string
-     * @param	string
-     * @param	string
-     * @param	bool
-     * @return	string
+     * @access public
+     * @param string
+     * @param string
+     * @param string
+     * @param bool
+     * @return string
      */
     public function sql_andor_string($str, $field, $prefix = '', $null = false)
     {
@@ -1247,11 +1299,11 @@ class EE_Functions
      * We should probably put this in the DB class but it's not
      * something that is typically used
      *
-     * @access	public
-     * @param	string
-     * @param	string
-     * @param	string
-     * @param	bool
+     * @access public
+     * @param string
+     * @param string
+     * @param string
+     * @param bool
      */
     public function ar_andor_string($str, $field, $prefix = '', $null = false)
     {
@@ -1317,12 +1369,12 @@ class EE_Functions
     /**
      * Assign Conditional Variables
      *
-     * @access	public
-     * @param	string
-     * @param	string
-     * @param	string
-     * @param	string
-     * @return	array
+     * @access public
+     * @param string
+     * @param string
+     * @param string
+     * @param string
+     * @return array
      */
     public function assign_conditional_variables($str, $slash = '/', $LD = '{', $RD = '}')
     {
@@ -1481,7 +1533,7 @@ class EE_Functions
      *
      * Deprecated in 4.0.0
      *
-     * @see	ExpressionEngine\Service\Template\Variables\LegacyParser::extractVariables()
+     * @see ExpressionEngine\Service\Template\Variables\LegacyParser::extractVariables()
      */
     public function assign_variables($str = '', $slash = '/')
     {
@@ -1496,7 +1548,7 @@ class EE_Functions
      *
      * Deprecated in 4.0.0
      *
-     * @see	ExpressionEngine\Service\Template\Variables\LegacyParser::getFullTag()
+     * @see ExpressionEngine\Service\Template\Variables\LegacyParser::getFullTag()
      */
     public function full_tag($str, $chunk = '', $open = '', $close = '')
     {
@@ -1523,9 +1575,9 @@ class EE_Functions
     /**
      * Fetch simple conditionals
      *
-     * @access	public
-     * @param	string
-     * @return	string
+     * @access public
+     * @param string
+     * @return string
      */
     public function fetch_simple_conditions($str)
     {
@@ -1543,7 +1595,7 @@ class EE_Functions
      *
      * Deprecated in 4.0.0
      *
-     * @see	ExpressionEngine\Service\Template\Variables\LegacyParser::extractDateFormat()
+     * @see ExpressionEngine\Service\Template\Variables\LegacyParser::extractDateFormat()
      */
     public function fetch_date_variables($datestr)
     {
@@ -1555,7 +1607,7 @@ class EE_Functions
      *
      * Deprecated in 4.0.0
      *
-     * @see	ExpressionEngine\Service\Template\Variables\LegacyParser::parseTagParameters()
+     * @see ExpressionEngine\Service\Template\Variables\LegacyParser::parseTagParameters()
      */
     public function assign_parameters($str, $defaults = array())
     {
@@ -1574,9 +1626,9 @@ class EE_Functions
      * This function lets us do a little prepping before
      * running any conditionals through eval()
      *
-     * @access	public
-     * @param	string
-     * @return	string
+     * @access public
+     * @param string
+     * @return string
      */
     public function prep_conditional($cond = '')
     {
@@ -1602,10 +1654,10 @@ class EE_Functions
     /**
      * Reverse Key Sort
      *
-     * @access	public
-     * @param	string
-     * @param	string
-     * @return	string
+     * @access public
+     * @param string
+     * @param string
+     * @return string
      */
     public function reverse_key_sort($a, $b)
     {
@@ -1615,16 +1667,16 @@ class EE_Functions
     /**
      * Prep conditionals
      *
-     * @access	public
-     * @param	string $str		The template string containing conditionals
-     * @param	string $vars	The variables to look for in the conditionals
-     * @param	string $safety	If y, make sure conditionals are fully parseable
-     *							by replacing unknown variables with FALSE. This
-     *							defaults to n so that conditionals are slowly
-     *							filled and then turned into safely executable
-     *							ones with the safety on at the end.
-     * @param	string $prefix	Prefix for the variables in $vars.
-     * @return	string The new template to use instead of $str.
+     * @access public
+     * @param string $str   The template string containing conditionals
+     * @param string $vars  The variables to look for in the conditionals
+     * @param string $safety If y, make sure conditionals are fully parseable
+     *                      by replacing unknown variables with FALSE. This
+     *                      defaults to n so that conditionals are slowly
+     *                      filled and then turned into safely executable
+     *                      ones with the safety on at the end.
+     * @param string $prefix Prefix for the variables in $vars.
+     * @return string The new template to use instead of $str.
      */
     public function prep_conditionals($str, $vars, $safety = 'n', $prefix = '')
     {
@@ -1653,7 +1705,7 @@ class EE_Functions
         }
 
         /* ---------------------------------
-        /*	Hidden Configuration Variables
+        /* Hidden Configuration Variables
         /*  - protect_javascript => Prevents advanced conditional parser from processing anything in <script> tags
         /* ---------------------------------*/
 
@@ -1670,9 +1722,10 @@ class EE_Functions
                 strrchr(get_class($e), '\\')
             );
 
-            if (ee()->config->item('debug') == 2
-                or (ee()->config->item('debug') == 1
-                    && ee('Permission')->isSuperAdmin())) {
+            if (
+                ee()->config->item('debug') == 2
+                or (ee()->config->item('debug') == 1 && ee('Permission')->isSuperAdmin())
+            ) {
                 $error = lang('error_invalid_conditional') . "\n\n";
                 $error .= '<strong>' . $thrower . ' State:</strong> ' . $e->getMessage();
             } else {
@@ -1685,14 +1738,14 @@ class EE_Functions
             exit;
         }
 
-        return $prepped_string;
+        return $str;
     }
 
     /**
      * Fetch file upload paths
      *
-     * @access	public
-     * @return	array
+     * @access public
+     * @return array
      */
     public function fetch_file_paths()
     {
@@ -1708,7 +1761,7 @@ class EE_Functions
     /**
      * bookmarklet qstr decode
      *
-     * @param 	string
+     * @param string
      */
     public function bm_qstr_decode($str)
     {

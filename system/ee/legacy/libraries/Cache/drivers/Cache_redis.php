@@ -179,7 +179,8 @@ class EE_Cache_redis extends CI_Driver
             'host' => '127.0.0.1',
             'password' => null,
             'port' => 6379,
-            'timeout' => 0
+            'timeout' => 0,
+            'database' => 0
         );
 
         if (($user_config = ee()->config->item('redis')) !== false) {
@@ -212,6 +213,13 @@ class EE_Cache_redis extends CI_Driver
         // If a password is set, attempt to authenticate
         if (! empty($config['password']) && $result) {
             $result = $this->_redis->auth($config['password']);
+        }
+
+        // If a database is specified, attempt to use it
+        if($config['database'] > 0) {
+            if(!$this->_redis->select($config['database'])) {
+                log_message('debug', "Redis failed to select database: {$config['database']}");
+            }
         }
 
         return $result;

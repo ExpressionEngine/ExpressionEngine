@@ -63,8 +63,36 @@ class Members extends Settings
                                 'none' => lang('req_mbr_activation_opt_none'),
                                 'email' => lang('req_mbr_activation_opt_email'),
                                 'manual' => lang('req_mbr_activation_opt_manual')
+                            ),
+                            'group_toggle' => array(
+                                'none' => 'activation_none',
+                                'email' => 'activation_email'
                             )
                         )
+                    )
+                ),
+                array(
+                    'title' => 'registration_auto_login',
+                    'desc' => 'registration_auto_login_desc',
+                    'group' => 'activation_none',
+                    'fields' => array(
+                        'registration_auto_login' => array('type' => 'yes_no')
+                    )
+                ),
+                array(
+                    'title' => 'activation_auto_login',
+                    'desc' => 'activation_auto_login_desc',
+                    'group' => 'activation_email',
+                    'fields' => array(
+                        'activation_auto_login' => array('type' => 'yes_no')
+                    )
+                ),
+                array(
+                    'title' => 'activation_redirect',
+                    'desc' => 'activation_redirect_desc',
+                    'group' => 'activation_email',
+                    'fields' => array(
+                        'activation_redirect' => array('type' => 'text')
                     )
                 ),
                 array(
