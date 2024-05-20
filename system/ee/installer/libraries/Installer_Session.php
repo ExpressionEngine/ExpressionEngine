@@ -11,7 +11,7 @@
 /**
  * Installer Session
  */
-class Installer_Session
+class Installer_Session extends EE_Session
 {
     public $userdata = array();
     protected $cache = array();
