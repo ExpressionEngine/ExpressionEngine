@@ -164,7 +164,7 @@ class Fields extends AbstractFieldsController
 
             $data[] = [
                 'id' => $field->getId(),
-                'label' => ee('Format')->make('Text', $field->field_label)->convertToEntities(),
+                'label' => ee('Format')->make('Text', $field->field_label)->convertToEntities()->compile(),
                 'faded' => strtolower($fieldtype),
                 'href' => $edit_url,
                 'extra' => LD . $field->field_name . RD,
