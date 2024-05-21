@@ -32,7 +32,7 @@ class AlphaDashPeriodEmoji extends ValidationRule
 
     protected function stripEmojis($value)
     {
-        $regex = '/(?:' . ee('Emoji')->emojiRegex . ')/u';
+        $regex = '/(?:[' . ee('Emoji')->emojiRegex . '])/iu';
         $value = preg_replace($regex, '', $value);
 
         return $value;
