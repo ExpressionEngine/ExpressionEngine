@@ -1246,12 +1246,13 @@ class Members extends CP_Controller
 
         $vars['bulk_options'] = [];
         if (!empty($primaryRole) && $primaryRole->role_id == Member::PENDING) {
-            if (ee('Permission')->can('edit_members')) {
-                $vars['bulk_options'][] = [
-                    'value' => "approve",
-                    'text' => lang('approve')
-                ];
-            }
+            // Removing for now - confirmation modals (like decline/delete) do not currently play well with other options
+            // if (ee('Permission')->can('edit_members')) {
+            //     $vars['bulk_options'][] = [
+            //         'value' => "approve",
+            //         'text' => lang('approve')
+            //     ];
+            // }
             if (ee('Permission')->can('delete_members')) {
                 $vars['bulk_options'][] = [
                     'value' => "decline",
