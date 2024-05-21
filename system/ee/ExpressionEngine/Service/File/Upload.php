@@ -486,6 +486,10 @@ class Upload
                     $file->getFilesystem()->forceCopy($file->getAbsoluteThumbnailPath(), $original->getAbsoluteThumbnailPath());
                 }
 
+                // Remove generated files for the original file. This must run before we rename the new file's
+                // manipulations otherwise they will take the same names as the original and would be deleted
+                $original->deleteGeneratedFiles();
+
                 foreach ($file->UploadDestination->FileDimensions as $fd) {
                     $src = $file->getAbsoluteManipulationPath($fd->short_name);
                     $dest = $original->getAbsoluteManipulationPath($fd->short_name);
@@ -495,7 +499,7 @@ class Upload
                         $file->getFilesystem()->forceCopy($src, $dest);
                     }
                 }
-                $original->deleteGeneratedFiles();
+
                 $file->delete();
 
                 $result['params']['file'] = $original;
