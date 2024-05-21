@@ -872,25 +872,28 @@ abstract class EE_Fieldtype
             if (array_key_first($field_options) === '') {
                 $firstEmptyValue = array_shift($field_options);
             }
-            $multidimensional = count(array_filter($field_options, 'is_array')) > 0;
-            $data = array_reverse($data);
-            foreach ($data as $item) {
-                if ($item === 0 || !empty($item)) {
-                    if (array_key_exists($item, $field_options)) {
-                        continue;
-                    }
-                    if ($multidimensional) {
-                        foreach ($field_options as $key => $value) {
-                            if (!is_array($value)) {
-                                continue;
-                            }
-                            if (array_key_exists($item, $value)) {
-                                continue 2;
-                            }
-                        }
+
+            // Get keys from a multidimensional array recursively
+            $arrayKeysRecursive = function($array) use(&$arrayKeysRecursive) {
+                $keys = array_keys($array);
+
+                foreach ($array as $value) {
+                    if (is_array($value)) {
+                        $keys = array_merge($keys, $arrayKeysRecursive($value));
                     }
                 }
-                $field_options = [$item => $item] + $field_options;
+
+                return $keys;
+            };
+
+            $fieldOptionKeys = $arrayKeysRecursive($field_options);
+
+            $data = array_reverse($data);
+            foreach ($data as $key) {
+                // Loop through saved keys in $data that might have a value in $field_options, if not we will add them.
+                if (($key === 0 || !empty($key)) && !in_array($key, $fieldOptionKeys)) {
+                    $field_options = [$key => $key] + $field_options;
+                }
             }
             if (!is_null($firstEmptyValue)) {
                 $field_options = ['' => $firstEmptyValue] + $field_options;

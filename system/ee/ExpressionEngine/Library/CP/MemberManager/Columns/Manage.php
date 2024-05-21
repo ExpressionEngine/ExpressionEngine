@@ -48,7 +48,7 @@ class Manage extends EntryManager\Columns\Column
         //if (! ee('Permission')->can('ban_users')) {
         if ($member->role_id == Member::PENDING) {
             $toolbar['approve'] = array(
-                'href' => ee('CP/URL')->make('files/directory/' . $member->upload_location_id, ['directory_id' => $member->getId()]),
+                'href' => ee('CP/URL')->make('members/approve/' . $member->getId()),
                 'title' => lang('approve'),
             );
             if (ee()->config->item('req_mbr_activation') !== 'email' && ee('Permission')->can('edit_members')) {

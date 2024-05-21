@@ -23,6 +23,7 @@ class Installer
     public $actions = []; //module actions
     public $settings = []; //extension settings
     public $methods = []; //extensions methods
+    public $install_errors = []; //errors raised during install
 
     public function __construct($settings = [])
     {
