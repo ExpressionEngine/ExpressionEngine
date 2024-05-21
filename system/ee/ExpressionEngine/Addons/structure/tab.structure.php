@@ -590,7 +590,24 @@ class Structure_tab
 
             $structure_uri = $uri; // contents of uri input field
 
-            $uri = $structure_uri == '' ? $this->create_uri($title) : $this->create_uri($structure_uri);
+            // if the submitted URI is valid, we can just use it
+            $validUriSubmitted = false;
+            if (!empty($structure_uri)) {
+                $validator = ee('Validation')->make(array(
+                    'uri' => 'alphaDashPeriodEmoji'
+                ));
+
+                $validation = $validator->validate(['uri' => $uri]);
+
+                if ($validation->isValid()) {
+                    $validUriSubmitted = true;
+                }
+            }
+
+            // create Structure URI out of submitted information
+            if ($validUriSubmitted === false) {
+                $uri = $structure_uri == '' ? $this->create_uri($title) : $this->create_uri($structure_uri);
+            }
 
             // If the current channel is not assigned as any sort of Structure channel, then stop
             if ($channel_type == 'page') {

@@ -229,7 +229,7 @@ class SyncConditionalFields extends Utilities
             if ($entry->conditionalFieldsOutdated()) {
                 // Conditional fields are outdated, so we evaluate the conditions and save
                 $entry->evaluateConditionalFields();
-                $entry->HiddenFields->save();
+                $entry->getAssociation('HiddenFields')->save();
             }
         }
 

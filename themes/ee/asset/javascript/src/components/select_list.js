@@ -739,6 +739,7 @@ var SelectItem = /*#__PURE__*/function (_React$Component2) {
       }), props.editable && React.createElement("a", {
         href: "#",
         "class": "flyout-edit",
+        "data-id": props.item.value,
         dangerouslySetInnerHTML: {
           __html: label
         }

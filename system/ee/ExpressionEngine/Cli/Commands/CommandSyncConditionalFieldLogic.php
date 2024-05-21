@@ -111,7 +111,7 @@ class CommandSyncConditionalFieldLogic extends Cli
 
                 // Evaluate the conditions and save
                 $entry->evaluateConditionalFields();
-                $entry->HiddenFields->save();
+                $entry->getAssociation('HiddenFields')->save();
 
                 unset($entry);
 
