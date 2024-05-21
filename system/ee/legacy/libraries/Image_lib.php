@@ -287,7 +287,7 @@ class EE_Image_lib
         }
 
         if ($this->wm_overlay_path != '') {
-            $this->wm_overlay_path = str_replace("\\", "/", $this->realpath($this->wm_overlay_path));
+            $this->wm_overlay_path = str_replace("\\", "/", $this->realpath(parse_config_variables($this->wm_overlay_path)));
         }
 
         if (isset($props['wm_opacity']) and $props['wm_opacity'] != 100) {
