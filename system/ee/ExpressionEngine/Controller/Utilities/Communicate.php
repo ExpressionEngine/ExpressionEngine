@@ -294,7 +294,7 @@ class Communicate extends Utilities
                 // filter empty inputs, like a hidden no-value input from React
                 $roles = array_filter(ee()->input->post($key));
             } elseif (in_array($key, $form_fields)) {
-                $$key = ee()->input->post($key);
+                $$key = ee('Request')->post($key);
             }
         }
 

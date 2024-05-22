@@ -23,8 +23,8 @@ class Request
 
     public function __construct($get, $post, $cookies, $files, $environment)
     {
-        $this->get = $get;
-        $this->post = $post;
+        $this->get = $this->trimInput($get);
+        $this->post = $this->trimInput($post);
         $this->cookies = $cookies;
         $this->files = $files;
         $this->environment = $environment;
@@ -44,61 +44,61 @@ class Request
     /**
      * Get a get value
      *
-     * @param String $key the name of the get value
+     * @param String|null $key the name of the get value
      * @param Mixed $default Value to return if $key doesn't exist
      * @return Mixed The get value [or $default]
      */
-    public function get($key, $default = null)
+    public function get($key = null, $default = null)
     {
-        return $this->fetch('get', $key, $default);
+        return ($key) ? $this->fetch('get', $key, $default): $this->get;
     }
 
     /**
      * Get a post value
      *
-     * @param String $key the name of the post value
+     * @param String|null $key the name of the post value
      * @param Mixed $default Value to return if $key doesn't exist
      * @return Mixed The post value [or $default]
      */
-    public function post($key, $default = null)
+    public function post($key = null, $default = null)
     {
-        return $this->fetch('post', $key, $default);
+        return ($key) ? $this->fetch('post', $key, $default) : $this->post;
     }
 
     /**
      * Get a cookie value
      *
-     * @param String $key the name of the cookie value
+     * @param String|null $key the name of the cookie value
      * @param Mixed $default Value to return if $key doesn't exist
      * @return Mixed The cookie value [or $default]
      */
-    public function cookie($key, $default = null)
+    public function cookie($key = null, $default = null)
     {
-        return $this->fetch('cookies', $key, $default);
+        return ($key) ? $this->fetch('cookies', $key, $default) : $this->cookies;
     }
 
     /**
      * Get a file value
      *
-     * @param String $key the name of the file value
+     * @param String|null $key the name of the file value
      * @param Mixed $default Value to return if $key doesn't exist
      * @return Mixed The file value [or $default]
      */
-    public function file($key, $default = null)
+    public function file($key = null, $default = null)
     {
-        return $this->fetch('files', $key, $default);
+        return ($key) ? $this->fetch('files', $key, $default) : $this->files;
     }
 
     /**
      * Get a server value
      *
-     * @param String $key the name of the server value
+     * @param String|null $key the name of the server value
      * @param Mixed $default Value to return if $key doesn't exist
      * @return Mixed The server value [or $default]
      */
     public function server($key, $default = null)
     {
-        return $this->fetch('environment', $key, $default);
+        return ($key) ? $this->fetch('environment', $key, $default) : $this->environment;
     }
 
     /**
@@ -236,6 +236,20 @@ class Request
     }
 
     /**
+     * Set a key and value on the current request method
+     *
+     * @param string $key
+     * @param mixed $value
+     * @return void
+     */
+    public function set($key, $value)
+    {
+        $method = strtolower($this->method());
+        $this->$method[$key] = $this->trimInput($value);
+        ${"_{$this->method()}"}[$key] = $value;
+    }
+
+    /**
      * Helper method to get with default
      *
      * @param String $arr Class array name
@@ -252,6 +266,21 @@ class Request
         }
 
         return $default;
+    }
+
+    /**
+     * Helper method for recursively trimming nested input values
+     *
+     * @param mixed $input
+     * @return mixed
+     */
+    protected function trimInput($input)
+    {
+        if (is_array($input)) {
+            return array_map([$this, 'trimInput'], $input);
+        }
+
+        return trim($input);
     }
 }
 
