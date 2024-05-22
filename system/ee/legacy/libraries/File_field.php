@@ -772,6 +772,10 @@ class File_field
 
         if (! empty($manipulations)) {
 
+            if (!$upload_dir->getFilesystem()->isLocal()) {
+                $upload_dir->eagerLoadContents();
+            }
+
             $isManipulated = isset($file['mime_type']) && strpos($file['mime_type'], 'image/') === 0 && strpos($file['mime_type'], 'image/svg') !== 0;
 
             foreach ($manipulations as $manipulation) {
