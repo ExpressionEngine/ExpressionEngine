@@ -3126,7 +3126,7 @@ class Pro_search_mcp
             $row = array_merge($row, $params);
 
             // remove =, +, -, @ from the start of keywords
-            $row['keywords'] = preg_replace('/^[\=\+\-\@]/', '', $row['keywords']);
+            $row['keywords'] = preg_replace('/^[\=\+\-\@]+/', '', $row['keywords']);
 
             $log_row = array();
 
