@@ -519,21 +519,12 @@ class Upload
 
         $action = ($file->isNew()) ? 'upload_filedata' : 'edit_file_metadata';
 
-        $fields = [
+        $file->set(array_intersect_key($_POST, [
             'title', 'description', 'credit', 'location', 'categories',
             'crop_width', 'crop_height', 'crop_x', 'crop_y',
             'rotate', 'resize_width', 'resize_height'
-        ];
+        ]));
 
-        // create $data array using all variables in POST that are in $fields
-        $data = [];
-        foreach ($fields as $field) {
-            if (isset($_POST[$field])) {
-                $data[$field] = $_POST[$field];
-            }
-        }
-
-        $file->set($data);
         $file->title = (ee()->input->post('title')) ?: $file->file_name;
 
         $cats = array_key_exists('categories', $_POST) ? $_POST['categories'] : array();
