@@ -164,7 +164,7 @@ class Fields extends AbstractFieldsController
 
             $data[] = [
                 'id' => $field->getId(),
-                'label' => ee('Format')->make('Text', $field->field_label)->convertToEntities()->compile(),
+                'label' => \htmlentities($field->field_label, ENT_QUOTES, 'UTF-8'),
                 'faded' => strtolower($fieldtype),
                 'href' => $edit_url,
                 'extra' => LD . $field->field_name . RD,
@@ -175,7 +175,7 @@ class Fields extends AbstractFieldsController
                     'name' => 'selection[]',
                     'value' => $field->getId(),
                     'data' => [
-                        'confirm' => lang('field') . ': <b>' . ee('Format')->make('Text', $field->field_label)->convertToEntities() . '</b>'
+                        'confirm' => lang('field') . ': <b>' . \htmlentities($field->field_label, ENT_QUOTES, 'UTF-8') . '</b>'
                     ]
                 ] : null
             ];
