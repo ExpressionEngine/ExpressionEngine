@@ -41,7 +41,7 @@ class CommandGenerateTemplates extends Cli
      */
     public $commandOptions = [
         'list,l'        => 'command_generate_templates_list_generators',
-        'themes,t'      => 'command_generate_templates_list_themes',
+        /* 'themes,t'      => 'command_generate_templates_list_themes', */
         'show,s'        => 'command_generate_templates_show_template_content'
     ];
 
@@ -55,17 +55,12 @@ class CommandGenerateTemplates extends Cli
     {
         $generatorsList = ee('TemplateGenerator')->registerAllTemplateGenerators();
 
-       /* ee()->load->library('api');
-            ee()->legacy_api->instantiate('template_structure');
-            dd(ee()->api_template_structure->all_file_extensions());*/
-
         // do we need to just list all possible generators?
         if ($this->option('--list', false)) {
             $this->info('command_generate_templates_listing_generators');
             $this->data['table'] = [];
-            array_walk($generatorsList, function ($info, $key) {
-                ee('TemplateGenerator')->setGenerator($key);
-                $name = ee('TemplateGenerator')->getGenerator()->getInstance()->getName();
+            array_walk($generatorsList, function ($generator, $key) {
+                $name = $generator->getName();
                 if (!empty($name)) {
                     $this->data['table'][] = [$key, $name];
                 }
@@ -78,7 +73,7 @@ class CommandGenerateTemplates extends Cli
         }
 
         // list the themes that are additionally available
-        if ($this->option('--themes', false)) {
+        /* if ($this->option('--themes', false)) {
             $this->info('command_generate_templates_listing_themes');
             $this->data['table'] = [];
             $themes = ee('TemplateGenerator')->getThemes();
@@ -90,7 +85,7 @@ class CommandGenerateTemplates extends Cli
                 lang('description'),
             ], $this->data['table']);
             $this->complete();
-        }
+        }*/
 
         if (! $this->option('--help', false)) {
             $this->info('generate_templates_started');
@@ -98,33 +93,29 @@ class CommandGenerateTemplates extends Cli
 
         //get the generator to use
         $askText = lang('command_generate_templates_ask_generator');
-        array_walk($generatorsList, function ($info, $key) use (&$askText) {
-            ee('TemplateGenerator')->setGenerator($key);
-            $name = ee('TemplateGenerator')->getGenerator()->getInstance()->getName();
+        array_walk($generatorsList, function ($generator, $key) use (&$askText) {
+            $name = $generator->getName();
             $askText .= "\n" . $key . ' : ' . $name;
         });
         $askText .= "\n: ";
         $generatorKey = $this->getFirstUnnamedArgument($askText, null, true);
+
         if (!isset($generatorsList[$generatorKey])) {
             $this->fail('command_generate_templates_invalid_generator');
         }
+
+        // instantiate the generator
         try {
-            ee('TemplateGenerator')->setGenerator($generatorKey);
+            $generator = ee('TemplateGenerator')->make($generatorKey);
         } catch (\Exception $e) {
             $this->fail($e->getMessage());
         }
 
         $showOnly = $this->option('--show', false);
-
-        // instantiate the generator
-        $generator = ee('TemplateGenerator')->getGenerator()->getInstance();
         $this->data['options'] = [];
 
         // get the options list for the generator
-        $options = ee('TemplateGenerator')->getOptions();
-
-        // set up validator for the options
-        $validator = ee('TemplateGenerator')->getValidator();
+        $options = $generator->getOptions();
 
         // for each of the options, we need to get name, type, whether is required and options
         $normalizedOptions = [];
@@ -155,7 +146,7 @@ class CommandGenerateTemplates extends Cli
             $required = isset($optionParams['required']) ? $optionParams['required'] : false;
             // populate the choices, if dynamic
             if (isset($optionParams['callback']) && !empty($optionParams['callback'])) {
-                $optionParams['choices'] = ee('TemplateGenerator')->populateOptionCallback($optionParams['callback'], $this->data['options']);
+                $optionParams['choices'] = $generator->populateOptionCallback($optionParams['callback'], $this->data['options']);
             }
             if (
                 in_array($optionParams['type'], ['radio', 'select']) &&
@@ -195,56 +186,21 @@ class CommandGenerateTemplates extends Cli
             $this->data['options'][$option] = $optionValue;
 
             // if there is validation rule for this option, process it (e.g. template group needs to be unique)
-            $validationResult = $validator->validatePartial($this->data['options']);
+            $validationResult = $generator->validatePartial($this->data['options']);
             if ($validationResult->isNotValid() && $validationResult->hasErrors($option)) {
                 $this->fail(implode("\n", $validationResult->getErrors($option)));
             }
-
-            // options are inter-dependant, set those each time
-            ee('TemplateGenerator')->setOptionValues($this->data['options']);
         }
-
-        // Generate the templates
-
-        // get the list of templates
-        $templates = $generator->getTemplates();
-        if (isset($this->data['options']['templates']) && !empty($this->data['options']['templates']) && reset($this->data['options']['templates']) != 'all') {
-            $templates = array_filter($templates, function ($key) {
-                return in_array($key, $this->data['options']['templates']);
-            }, ARRAY_FILTER_USE_KEY);
-        }
-        if (empty($templates)) {
-            $this->fail('generate_templates_no_templates');
-        }
-
-        // for each of the templates, run the build process and pass it on for saving
 
         try {
-            if (!$showOnly) {
-                $group = ee('TemplateGenerator')->createTemplateGroup($this->data['options']['template_group']);
-            }
-            // we'll start with index templates
-            if (isset($templates['index'])) {
-                $indexTmpl = $templates['index'];
-                unset($templates['index']);
-                $templates = array_merge(['index' => $indexTmpl], $templates); // we want index to be created first
-            }
-            foreach ($templates as $template => $templateDescription) {
-                $this->info('command_generate_templates_building_template');
-                $this->info($this->data['options']['template_group'] . '/' . $template . ': ' . $templateDescription);
-                $templateData = ee('TemplateGenerator')->generate($template);
+            $this->info('command_generate_templates_building_templates');
+            $result = $generator->generate($this->data['options'], !$showOnly);
+
+            foreach ($result['templates'] as $templateName => $template) {
+                $this->info($this->data['options']['template_group'] . '/' . $templateName . ': ' . $template['template_notes']);
 
                 if ($showOnly) {
-                    $this->info($templateData);
-                }
-
-                if (!$showOnly) {
-                    // now we need to save the template
-                    $templateInfo = [
-                        'template_data' => $templateData,
-                        'template_notes' => $templateDescription
-                    ];
-                    ee('TemplateGenerator')->createTemplate($group, $template, $templateInfo);
+                    $this->info($template['template_data']);
                 }
             }
         } catch (\Exception $e) {

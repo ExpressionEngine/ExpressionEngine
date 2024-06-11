@@ -11,20 +11,19 @@
 namespace ExpressionEngine\Addons\Member\TemplateGenerators;
 
 use ExpressionEngine\Service\TemplateGenerator\AbstractTemplateGenerator;
-use ExpressionEngine\Service\TemplateGenerator\TemplateGeneratorInterface;
 
-class Profile extends AbstractTemplateGenerator implements TemplateGeneratorInterface
+class Profile extends AbstractTemplateGenerator
 {
-    protected $name = 'Member Profile Template Generator';
+    protected $name = 'member_profile_template_generator';
 
     protected $templates = [
         'index' => 'Members list page',
-        'register' => 'Register new member',
+        'registration' => 'New member registration',
         'login' => 'Member login page',
-        'forgot_password' => 'Forgot password page',
-        'reset_password' => 'Reset password page',
+        'forgot-password' => 'Forgot password page',
+        'reset-password' => 'Reset password page',
         'profile' => 'Public member profile page',
-        'edit' => 'Edit member profile page'
+        'edit-profile' => 'Edit member profile page'
     ];
 
     public function getVariables(): array
@@ -33,7 +32,7 @@ class Profile extends AbstractTemplateGenerator implements TemplateGeneratorInte
         $vars = ee('TemplateGenerator')->getOptionValues();
         $vars['fields'] = [];
         // get list of assigned channel fields and pass the data to array
-        // for simple fields, we'll just pass field info as variables, 
+        // for simple fields, we'll just pass field info as variables,
         // for complex fields we'll have to spin their own generators
         if (!is_array($vars['channel'])) {
             $vars['channel'] = [$vars['channel']];

@@ -971,9 +971,11 @@ $lang = array(
 
     'generate_templates_started' => 'Generating templates...',
 
-    'channel_entries_template_generator' => 'Channel Entries Template Generator',
+    'channel_entries_template_generator' => 'Channel Entries',
 
-    'channel_form_template_generator' => 'Channel Form Template Generator',
+    'channel_form_template_generator' => 'Channel Form',
+
+    'member_profile_template_generator' => 'Member Profile',
 
     'list_all_entries' => 'List of all entries',
 

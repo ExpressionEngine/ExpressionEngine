@@ -11,16 +11,19 @@
 namespace ExpressionEngine\Addons\Channel\TemplateGenerators;
 
 use ExpressionEngine\Service\TemplateGenerator\AbstractTemplateGenerator;
-use ExpressionEngine\Service\TemplateGenerator\TemplateGeneratorInterface;
 use ExpressionEngine\Service\TemplateGenerator\FieldTemplateGeneratorInterface;
 
-class Entries extends AbstractTemplateGenerator implements TemplateGeneratorInterface
+class Entries extends AbstractTemplateGenerator
 {
     protected $name = 'channel_entries_template_generator';
 
     protected $templates = [
-        'index' => 'List all entries',
-        'entry' => 'Entry details page'
+        'index' => 'Listing for all entries',
+        'entry' => 'Entry detail page',
+        'archive' => 'Entry listing for a given year and month',
+        'category' => 'Entry listing for a given category',
+        'feed' => ['name' => 'RSS feed for all entries', 'type' => 'feed'],
+        'sitemap' => ['name' => 'XML sitemap for all entries', 'type' => 'xml'],
     ];
 
     protected $options = [
@@ -69,10 +72,10 @@ class Entries extends AbstractTemplateGenerator implements TemplateGeneratorInte
         return true;
     }
 
-    public function getVariables(): array
+    public function prepareVariables($options): array
     {
-        ee()->load->library('session'); //getAllCustomFields requres session
-        $vars = ee('TemplateGenerator')->getOptionValues();
+        ee()->load->library('session'); //getAllCustomFields requires session
+        $vars = $options;
         $vars['fields'] = [];
         // get list of assigned channel fields and pass the data to array
         // for simple fields, we'll just pass field info as variables,
@@ -80,8 +83,6 @@ class Entries extends AbstractTemplateGenerator implements TemplateGeneratorInte
         if (!is_array($vars['channel'])) {
             $vars['channel'] = [$vars['channel']];
         }
-        //loop through installed fieldtypes and grab the stubs and generators
-        $stubsAndGenerators = ee('TemplateGenerator')->getFieldtypeStubsAndGenerators();
 
         // get the fields for assigned channels
         $channels = ee('Model')->get('Channel')->filter('channel_name', 'IN', $vars['channel'])->all();
@@ -91,10 +92,13 @@ class Entries extends AbstractTemplateGenerator implements TemplateGeneratorInte
                 $channel_titles[] = $channel->channel_title;
                 $fields = $channel->getAllCustomFields();
                 foreach ($fields as $fieldInfo) {
-                    if (!isset($stubsAndGenerators[$fieldInfo->field_type])) {
-                        // fieldtype is not installed, skip it
+                    $fieldtypeGenerator = ee('TemplateGenerator')->getFieldtype($fieldInfo->field_type);
+
+                    // fieldtype is not installed, skip it
+                    if (!$fieldtypeGenerator) {
                         continue;
                     }
+
                     // by default, we'll use generic field stub
                     // but we'll let each field type to override it
                     // by either providing stub property, or calling its own generator
@@ -103,19 +107,19 @@ class Entries extends AbstractTemplateGenerator implements TemplateGeneratorInte
                         'field_name' => $fieldInfo->field_name,
                         'field_label' => $fieldInfo->field_label,
                         'field_settings' => $fieldInfo->field_settings,
-                        'stub' => $stubsAndGenerators[$fieldInfo->field_type]['stub'],
-                        'docs_url' => $stubsAndGenerators[$fieldInfo->field_type]['docs_url'],
-                        'is_tag_pair' => $stubsAndGenerators[$fieldInfo->field_type]['is_tag_pair'],
+                        'stub' => $fieldtypeGenerator['stub'],
+                        'docs_url' => $fieldtypeGenerator['docs_url'],
+                        'is_tag_pair' => $fieldtypeGenerator['is_tag_pair'],
                         'is_search_excerpt' => $channel->search_excerpt == $fieldInfo->field_id,
                     ];
+
+                    $generator = $this->makeField($fieldInfo->field_type, $fieldInfo);
+
                     // if the field has its own generator, instantiate the field and pass to generator
-                    if (!empty($stubsAndGenerators[$fieldInfo->field_type]['generator'])) {
-                        $interfaces = class_implements($stubsAndGenerators[$fieldInfo->field_type]['generator']);
-                        if (!empty($interfaces) && in_array(FieldTemplateGeneratorInterface::class, $interfaces)) {
-                            $generator = new $stubsAndGenerators[$fieldInfo->field_type]['generator']($fieldInfo);
-                            $field = array_merge($field, $generator->getVariables());
-                        }
+                    if ($generator) {
+                        $field = array_merge($field, $generator->getVariables());
                     }
+
                     $vars['fields'][$fieldInfo->field_name] = $field;
                 }
             }

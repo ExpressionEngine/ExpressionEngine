@@ -60,35 +60,5 @@ class ViewFactory
     {
         return new StringView($string);
     }
-
-    /**
-     * This will make and return a Stub object
-     * Unlike Views, Stubs are passed as string with 3 parts separated by colons
-     *
-     * @param string $name The path to the stub file, prefixed with add-on name and generator folder
-     * @return object A ExpressionEngine\Service\View\Stub object
-     */
-    public function makeStub($path)
-    {
-        $provider = $this->provider;
-
-        if (strpos($path, ':')) {
-            $parts = explode(':', $path, 3);
-            $prefix = $parts[0];
-            if (isset($parts[2])) {
-                $generatorFolder = $parts[1]; //adding leading slash as that makes building full path easier
-                $path = $parts[2];
-            } else {
-                $generatorFolder = '';
-                $path = $parts[1];
-            }
-            $provider = $provider->make('App')->get($prefix);
-        }
-
-        $stub = new Stub($path, $provider);
-        $stub->generatorFolder = $generatorFolder;
-
-        return $stub;
-    }
 }
 // EOF

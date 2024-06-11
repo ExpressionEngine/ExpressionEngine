@@ -56,5 +56,5 @@ interface TemplateGeneratorInterface
      *
      * @return array
      */
-    public function getVariables(): array;
+    public function prepareVariables($options): array;
 }

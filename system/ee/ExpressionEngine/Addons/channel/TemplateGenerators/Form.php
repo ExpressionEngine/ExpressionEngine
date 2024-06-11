@@ -10,10 +10,7 @@
 
 namespace ExpressionEngine\Addons\Channel\TemplateGenerators;
 
-use ExpressionEngine\Service\TemplateGenerator\TemplateGeneratorInterface;
-use ExpressionEngine\Service\TemplateGenerator\FieldTemplateGeneratorInterface;
-
-class Form extends Entries implements TemplateGeneratorInterface
+class Form extends Entries
 {
     protected $name = 'channel_form_template_generator';
 
@@ -35,7 +32,7 @@ class Form extends Entries implements TemplateGeneratorInterface
         'channel' => 'validateChannelExists'
     ];
 
-    public function getVariables(): array
+    public function prepareVariables($options): array
     {
         ee()->load->library('session'); //getAllCustomFields requres session
         // we need to make sure the fields can load their JS and that might be, um, tricky
@@ -44,14 +41,11 @@ class Form extends Entries implements TemplateGeneratorInterface
         ee()->load->library('cp');
         ee()->router->set_class('ee');
         ee()->load->library('javascript');
-        $vars = ee('TemplateGenerator')->getOptionValues();
+        $vars = $options;
         $vars['fields'] = [];
         // get list of assigned channel fields and pass the data to array
         // for simple fields, we'll just pass field info as variables,
         // for complex fields we'll have to spin their own generators
-
-        //loop through installed fieldtypes and grab the stubs and generators
-        $stubsAndGenerators = ee('TemplateGenerator')->getFieldtypeStubsAndGenerators();
 
         // get the fields for assigned channels
         $channel = ee('Model')->get('Channel')->filter('channel_name', $vars['channel'])->first();
@@ -59,37 +53,38 @@ class Form extends Entries implements TemplateGeneratorInterface
         $vars['channel_name'] = $channel->channel_name;
         $fields = $channel->getAllCustomFields();
         foreach ($fields as $fieldInfo) {
-            if (!isset($stubsAndGenerators[$fieldInfo->field_type])) {
-                // fieldtype is not installed, skip it
+            $fieldtypeGenerator = ee('TemplateGenerator')->getFieldtype($fieldInfo->field_type);
+
+            // fieldtype is not installed, skip it
+            if (!$fieldtypeGenerator) {
                 continue;
             }
+
             // by default, we'll use generic field stub
             // but we'll let each field type to override it
             // by either providing stub property, or calling its own generator
-            $stub = explode(":", $stubsAndGenerators[$fieldInfo->field_type]['stub']);
+            $stub = explode(":", $fieldtypeGenerator['stub']);
             $field = [
                 'field_type' => $fieldInfo->field_type,
                 'field_name' => $fieldInfo->field_name,
                 'field_label' => $fieldInfo->field_label,
                 'field_maxl' => $fieldInfo->field_maxl,
                 'stub' => $stub[0] . ':' . 'form/' . $stub[1],
-                'docs_url' => $stubsAndGenerators[$fieldInfo->field_type]['docs_url'],
+                'docs_url' => $fieldtypeGenerator['docs_url'],
                 'field_settings' => $fieldInfo->field_settings,
                 'field_text_direction' => $fieldInfo->field_text_direction,
                 'field_ta_rows' => $fieldInfo->field_ta_rows,
                 'field_list_items' => $fieldInfo->getPossibleValuesForEvaluation()
             ];
+
+            $generator = $this->makeField($fieldInfo->field_type, $fieldInfo);
+
             // if the field has its own generator, instantiate the field and pass to generator
-            if (!empty($stubsAndGenerators[$fieldInfo->field_type]['generator'])) {
-                $interfaces = class_implements($stubsAndGenerators[$fieldInfo->field_type]['generator']);
-                if (!empty($interfaces) && in_array(FieldTemplateGeneratorInterface::class, $interfaces)) {
-                    $generator = new $stubsAndGenerators[$fieldInfo->field_type]['generator']($fieldInfo);
-                    if (method_exists($generator, 'getFormVariables')) {
-                        $field = array_merge($field, $generator->getFormVariables());
-                    } else {
-                        $field = array_merge($field, $generator->getVariables());
-                    }
-                }
+            if ($generator) {
+                $field = array_merge(
+                    $field,
+                    (method_exists($generator, 'getFormVariables')) ? $generator->getFormVariables() : $generator->getVariables()
+                );
             }
             $vars['fields'][$fieldInfo->field_name] = $field;
         }

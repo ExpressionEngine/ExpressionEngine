@@ -24,6 +24,34 @@ class Stub extends View
      */
     public $generatorFolder;
 
+    protected $theme;
+
+    protected $templateEngine;
+
+    protected $templateType = 'webpage';
+
+    /**
+     * @var string A copy of the path argument sent to `render()` this avoids
+     * a scope issue where `extract()` could override that value and try to
+     * include something unintended.
+     */
+    private $path_for_parse;
+
+    public function setTheme($theme)
+    {
+        $this->theme = $theme;
+    }
+
+    public function setTemplateEngine($engine)
+    {
+        $this->templateEngine = $engine;
+    }
+
+    public function setTemplateType($type)
+    {
+        $this->templateType = $type;
+    }
+
     /**
      * Create a new stub object. Because stub path format is different, we need to override this
      *
@@ -50,8 +78,104 @@ class Stub extends View
 
         $stub = new static($view, $provider);
         $stub->generatorFolder = $generatorFolder;
+        $stub->setTemplateType($this->templateType);
+
+        if ($this->theme) {
+            $stub->setTheme($this->theme);
+        }
+
+        if ($this->templateEngine) {
+            $stub->setTemplateEngine($this->templateEngine);
+        }
 
         return $stub;
+    }
+
+    /**
+     * Loads, renders, and (optionally) returns a sub-view
+     *
+     * @param String $view The name of the sub-view
+     * @param Array  $vars Additional variables to pass to the sub-view
+     * @param bool  $return Whether to return a string or output the results
+     * @return String The parsed sub-view
+     */
+    public function embed($view, $vars = array(), $disable = array())
+    {
+        if (empty($vars)) {
+            $vars = array();
+        }
+
+        $vars = array_merge($this->processing, $vars);
+        $view = $this->make($view)->disable($disable);
+
+        // Special case for variable modifiers
+        if(array_key_exists('modifiers', $vars) && is_array($vars['modifiers'])) {
+            $vars['modifiers_string'] = trim(array_reduce(array_keys($vars['modifiers']), function($carry, $modifier) use($vars) {
+                $usePrefix = count($vars['modifiers']) > 1;
+                $parameters = $vars['modifiers'][$modifier];
+                $parameterString = array_reduce(array_keys($parameters), function($carry, $parameter) use($parameters, $usePrefix, $modifier) {
+                    return $carry .= (($usePrefix) ? "$modifier:$parameter" : $parameter) . "='{$parameters[$parameter]}'";
+                }, '');
+                $carry .= ":$modifier $parameterString";
+                return $carry;
+            }, ''));
+        }else{
+            $vars['modifiers_string'] = '';
+        }
+
+        $out = $view->render($vars);
+
+        //indent everything at the same level
+        $indent = 0;
+        $buffer = ob_get_contents();
+        if (!empty($buffer)) {
+            $bufferLines = explode("\n", $buffer);
+            $indent = strlen(end($bufferLines));
+        }
+
+        $lines = explode("\n", $out);
+        foreach ($lines as $i => &$line) {
+            if ($i > 0) {
+                $line = str_repeat(' ', $indent) . $line;
+            }
+        }
+        $out = implode("\n", $lines);
+
+        ob_start();
+        // echo $view->render($vars);
+        echo $out;
+
+        ob_end_flush();
+    }
+
+    /**
+     * Load a view file, replace variables, and return the result
+     *
+     * @param  String $path Full path to a view file
+     * @param  Array  $vars Variables to replace in the view file
+     * @return String Parsed view file
+     */
+    protected function parse($path, $vars)
+    {
+        $this->path_for_parse = $path;
+
+        extract($vars);
+
+        ob_start();
+
+        if ((version_compare(PHP_VERSION, '5.4.0') < 0 && @ini_get('short_open_tag') == false)) {
+            echo eval('?>' . preg_replace("/;*\s*\?>/", "; ?>", str_replace('<?=', '<?php echo ', file_get_contents($this->path_for_parse))));
+        } else {
+            /*dd(str_replace('?>', '?>\n', file_get_contents($this->path_for_parse)));
+            echo eval(str_replace('?>', '?>\n', file_get_contents($this->path_for_parse)));*/
+            include($this->path_for_parse);
+        }
+
+        $buffer = ob_get_contents();
+
+        ob_end_clean();
+
+        return $buffer;
     }
 
     /**
@@ -61,34 +185,34 @@ class Stub extends View
      */
     protected function getPath()
     {
-        // if template engine selected, add suffix
-        $origTemplatePath = $this->path;
-        if (!empty(ee('TemplateGenerator')->templateEngine) && ee('TemplateGenerator')->templateEngine != 'native') {
-            $this->path .= '.' . ee('TemplateGenerator')->templateEngine;
-        }
-
         // do not allow any path traversal
         if (strpos($this->path, '..') !== false) {
             throw new \Exception('Invalid stub path: ' . htmlentities($this->path));
         }
 
-        // set the stub path that are specific to this stub and shared ones
-        $stubPaths = ee('TemplateGenerator')->getStubPaths($this->provider, $this->generatorFolder);
+        ee()->load->library('api');
+        ee()->legacy_api->instantiate('template_structure');
 
-        foreach ($stubPaths as $path) {
-            if (strpos($path, '..') !== false) {
-                throw new \Exception('The stub path is not allowed');
-            }
-            if (file_exists($path . '/' . $this->path . '.php')) {
-                return $path . '/' . $this->path . '.php';
-            }
-        }
+        // We will look for filenames from most specific to least specific until we find a match
+        $paths = ee('View/Stub')->getGeneratorStubPaths($this->provider, $this->generatorFolder, $this->theme);
+        $fileNames = array_unique([
+            $this->path . ee()->api_template_structure->file_extensions($this->templateType, $this->templateEngine),
+            "{$this->path}.{$this->templateEngine}",
+            $this->path . ee()->api_template_structure->file_extensions($this->templateType),
+            $this->path,
+        ]);
 
-        // if still not there, try fallback to no engine extension
-        if ($origTemplatePath != $this->path) {
-            foreach ($stubPaths as $path) {
-                if (file_exists($path . '/' . $origTemplatePath . '.php')) {
-                    return $path . '/' . $origTemplatePath . '.php';
+        foreach($fileNames as $fileName) {
+            foreach ($paths as $path) {
+                $files = [
+                    "$path/$fileName.php",
+                    "$path/$fileName"
+                ];
+                // Check with and without the .php extension
+                foreach($files as $file) {
+                    if ((strpos($file, '..') == false) && file_exists($file)) {
+                        return $file;
+                    }
                 }
             }
         }

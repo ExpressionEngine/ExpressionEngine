@@ -227,6 +227,10 @@ $setup = [
             return new View\ViewFactory($ee);
         },
 
+        'View/Stub' => function ($ee) {
+            return new View\StubFactory($ee);
+        },
+
         'Memory' => function ($ee) {
             return new Memory\Memory();
         },

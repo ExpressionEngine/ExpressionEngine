@@ -96,7 +96,7 @@
                     </fieldset>
                     {!-- End field: <?=$field['field_label']?> --}
                 <?php endforeach; ?>
-                {pagination}
+                <button type="submit">Submit</button>
             {/exp:channel:form}
         </div>
     </body>

@@ -1,21 +1,24 @@
-{<?=$field_name?>}
+{<?= $field_name ?>}
+    Title: {title}
+    URL: {url}
+    Mime Type: {mime_type}
+    Credit: {credit}
+    Location: {location}
+    File Name: {file_name}
+    File Size: {file_size}
+    Description: {description}
+    Upload Directory: {directory_title}
+    Upload Date: {upload_date format="%Y %m %d"}
+    Modified Date: {modified_date format="%Y %m %d"}
+
     {if mime_type ^= 'image/'}
-        <img src="{url}" alt="{title}">
-        <picture>
-            <?php foreach ($dimensions as $dimension) : ?>
-            <source type="{mime_type}" srcset="{url:<?=$dimension?>}" width="{width:<?=$dimension?>}" height="{height:<?=$dimension?>}" alt="{title}">
-            <?php endforeach; ?>
-            <img src="{url}" width="{width}" height="{height}" alt="{title}">
-        </picture>
-    {if:else}
-        <b><a href="{url}" target="_blank">View {title}</a></b>
+        Width: {width}
+        Height: {height}
+
+        <?php foreach ($dimensions as $dimension) : ?>
+            <?= $dimension ?> URL: {url:<?= $dimension ?>}
+            <?= $dimension ?> Width: {width:<?= $dimension ?>}
+            <?= $dimension ?> Height: {height:<?= $dimension ?>}
+        <?php endforeach; ?>
     {/if}
-    <br>Credit: {credit}
-    <br>Location: {location}
-    <br>File Name: {file_name}
-    <br>File Size: {file_size}
-    <br>Description: {description}
-    <br>Upload Directory: {directory_title} (<a href="{path}">#{directory_id}</a>)
-    <br>Upload Date: {upload_date format="%Y %m %d"}
-    <br>Modified Date: {modified_date format="%Y %m %d"}
-{/<?=$field_name?>}
+{/<?= $field_name ?>}

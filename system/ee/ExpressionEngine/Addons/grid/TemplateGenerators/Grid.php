@@ -11,9 +11,8 @@
 namespace ExpressionEngine\Addons\Grid\TemplateGenerators;
 
 use ExpressionEngine\Service\TemplateGenerator\AbstractFieldTemplateGenerator;
-use ExpressionEngine\Service\TemplateGenerator\FieldTemplateGeneratorInterface;
 
-class Grid extends AbstractFieldTemplateGenerator implements FieldTemplateGeneratorInterface
+class Grid extends AbstractFieldTemplateGenerator
 {
     public function getVariables(): array
     {
@@ -21,9 +20,11 @@ class Grid extends AbstractFieldTemplateGenerator implements FieldTemplateGenera
         $vars = [
             'columns' => []
         ];
-        $stubsAndGenerators = ee('TemplateGenerator')->getFieldtypeStubsAndGenerators();
+
         //get the list of columns for this field
         foreach ($this->field->GridColumns as $column) {
+            $fieldtypeGenerator = ee('TemplateGenerator')->getFieldtype($column->col_type);
+
             $vars['columns']['grid_col_' . $column->col_id] = [
                 'col_type' => $column->col_type,
                 'col_name' => $column->col_name,
@@ -31,19 +32,17 @@ class Grid extends AbstractFieldTemplateGenerator implements FieldTemplateGenera
                 'field_type' => $column->col_type,
                 'field_name' => $prefix . ':' . $column->col_name,
                 'field_label' => $column->col_label,
-                'stub' => $stubsAndGenerators[$column->col_type]['stub'],
-                'docs_url' => $stubsAndGenerators[$column->col_type]['docs_url'],
-                'is_tag_pair' => $stubsAndGenerators[$column->col_type]['is_tag_pair'],
+                'stub' => $fieldtypeGenerator['stub'],
+                'docs_url' => $fieldtypeGenerator['docs_url'],
+                'is_tag_pair' => $fieldtypeGenerator['is_tag_pair'],
             ];
 
+            $generator = $this->makeField($column->col_type, $column);
+
             // if the field has its own generator, instantiate the field and pass to generator
-            if (!empty($stubsAndGenerators[$column->col_type]['generator'])) {
-                $interfaces = class_implements($stubsAndGenerators[$column->col_type]['generator']);
-                if (!empty($interfaces) && in_array(FieldTemplateGeneratorInterface::class, $interfaces)) {
-                    $generator = new $stubsAndGenerators[$column->col_type]['generator']($column);
-                    $generator->settings = array_merge($this->settings, $generator->settings); // file grid settings are saved in different place
-                    $vars['columns']['grid_col_' . $column->col_id] = array_merge($vars['columns']['grid_col_' . $column->col_id], $generator->getVariables());
-                }
+            if ($generator) {
+                $generator->settings = array_merge($this->settings, $generator->settings); // file grid settings are saved in different place
+                $vars['columns']['grid_col_' . $column->col_id] = array_merge($vars['columns']['grid_col_' . $column->col_id], $generator->getVariables());
             }
         }
 

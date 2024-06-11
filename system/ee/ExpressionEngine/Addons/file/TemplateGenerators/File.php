@@ -11,15 +11,14 @@
 namespace ExpressionEngine\Addons\File\TemplateGenerators;
 
 use ExpressionEngine\Service\TemplateGenerator\AbstractFieldTemplateGenerator;
-use ExpressionEngine\Service\TemplateGenerator\FieldTemplateGeneratorInterface;
 
-class File extends AbstractFieldTemplateGenerator implements FieldTemplateGeneratorInterface
+class File extends AbstractFieldTemplateGenerator
 {
     public function getVariables(): array
     {
         $vars = [];
         $dimensions = ee('Model')->get('FileDimension')
-            ->filter('site_id', ee('TemplateGenerator')->site_id);
+            ->filter('site_id', $this->site_id);
         if (isset($this->settings['allowed_directories']) && $this->settings['allowed_directories'] != 'all') {
             $dimensions->filter('upload_location_id', $this->settings['allowed_directories']);
         }

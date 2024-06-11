@@ -161,26 +161,8 @@ class View
         $vars = array_merge($this->processing, $vars);
         $view = $this->make($view)->disable($disable);
 
-        $out = $view->render($vars);
-
-        //indent everything at the same level
-        $indent = 0;
-        $buffer = ob_get_contents();
-        if (!empty($buffer)) {
-            $bufferLines = explode("\n", $buffer);
-            $indent = strlen(end($bufferLines));
-        }
-
-        $lines = explode("\n", $out);
-        foreach ($lines as $i => &$line) {
-            if ($i > 0) {
-                $line = str_repeat(' ', $indent) . $line;
-            }
-        }
-        $out = implode("\n", $lines);
-
         ob_start();
-        echo $out;
+        echo $view->render($vars);
 
         ob_end_flush();
     }

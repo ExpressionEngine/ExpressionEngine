@@ -15,6 +15,8 @@ use ExpressionEngine\Addons\Grid\Model\GridColumn;
 
 abstract class AbstractFieldTemplateGenerator implements FieldTemplateGeneratorInterface
 {
+    protected $site_id = 1;
+
     /**
      * The field that we'll be working with
      *
@@ -44,5 +46,29 @@ abstract class AbstractFieldTemplateGenerator implements FieldTemplateGeneratorI
             $this->settings = $this->field->col_settings;
         }
         $this->settings = array_merge($this->settings, $settings);
+    }
+
+    /**
+     * We only need to make sure field template generator
+     * returns array of variables
+     * that we'll use for replacement in stubs
+     *
+     * @return array
+     */
+    public function getVariables(): array {
+        return [];
+    }
+
+    public function setSiteId($id)
+    {
+        $this->site_id = $id;
+        return $this;
+    }
+
+    public function makeField($fieldtype, $field, $settings = [])
+    {
+        $generator = ee('TemplateGenerator')->makeField($fieldtype, $field, $settings);
+
+        return ($generator) ? $generator->setSiteId($this->site_id) : null;
     }
 }

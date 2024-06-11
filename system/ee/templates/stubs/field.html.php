@@ -7,7 +7,7 @@
     {/<?=$field_name?>}
 </div>
 <?php else : ?>
-<div class="text-justify text-base mb-1.5">
-    {<?=$field_name?>}
+<div>
+    {<?=$field_name . $modifiers_string?>}
 </div>
 <?php endif; ?>

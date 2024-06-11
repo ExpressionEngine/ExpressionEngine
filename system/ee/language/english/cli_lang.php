@@ -515,7 +515,7 @@ $lang = array(
     'command_generate_templates_ask_generator' => 'What is the generator that you want to use?',
     'command_generate_templates_invalid_generator' => 'The generator is not valid',
     'separate_choices_commas' => 'Separate multiple options with commas',
-    'command_generate_templates_building_template' => 'Building template',
+    'command_generate_templates_building_templates' => 'Building templates',
 
 
 );
