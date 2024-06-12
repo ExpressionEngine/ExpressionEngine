@@ -519,11 +519,11 @@ class Upload
 
         $action = ($file->isNew()) ? 'upload_filedata' : 'edit_file_metadata';
 
-        $file->set(array_intersect_key($_POST, [
+        $file->set(array_intersect_key($_POST, array_flip([
             'title', 'description', 'credit', 'location', 'categories',
             'crop_width', 'crop_height', 'crop_x', 'crop_y',
             'rotate', 'resize_width', 'resize_height'
-        ]));
+        ])));
 
         $file->title = (ee()->input->post('title')) ?: $file->file_name;
 
