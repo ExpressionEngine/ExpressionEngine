@@ -1171,13 +1171,33 @@ class Filesystem
     }
 
     /**
+     * Get the adapter for the filesystem
+     *
+     * @return Flysystem\AdapterInterface
+     */
+    public function getAdapter()
+    {
+        return $this->flysystem->getAdapter();
+    }
+
+    /**
+     * Determine whether or not the Filesystem is using a CachedAdapter
+     *
+     * @return boolean
+     */
+    public function hasCachedAdapter()
+    {
+        return ($this->getAdapter() instanceof Flysystem\Cached\CachedAdapter);
+    }
+
+    /**
      * Get the base adapter for the filesystem
      *
-     * @return void
+     * @return Flysystem\AdapterInterface
      */
     public function getBaseAdapter()
     {
-        $adapter = $this->flysystem->getAdapter();
+        $adapter = $this->getAdapter();
 
         return ($adapter instanceof Flysystem\Cached\CachedAdapter) ? $adapter->getAdapter() : $adapter;
     }

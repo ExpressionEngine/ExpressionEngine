@@ -258,11 +258,13 @@ class EE_Upload
 
                 if ($auto_resize === false) {
                     $this->set_error('upload_invalid_dimensions');
+
                     return false;
                 }
                 $this->file_size = filesize($this->file_temp);
             } else {
                 $this->set_error('upload_invalid_dimensions');
+
                 return false;
             }
             $this->image_processed = true;
@@ -342,26 +344,41 @@ class EE_Upload
 
         /*
          * Move the file to the final destination
-         * To deal with different server configurations
-         * we'll attempt to use copy() first.  If that fails
-         * we'll use move_uploaded_file().  One of the two should
-         * reliably work in most environments
+         *
+         * If we have an UploadDestination and it is not a local filesystem
+         * we will write the stream of data to that remote filesystem
+         *
+         * Otherwise we will act locally to avoid potentially losing EXIF data
+         * To deal with different server configurations we'll attempt to use
+         * copy() first.  If that fails we'll use move_uploaded_file().
+         * One of the two should reliably work in most environments
          */
         $result = true;
+        $destination = $this->upload_path . $this->file_name;
+        $filesystem = $this->upload_destination ? $this->upload_destination->getFilesystem() : null;
 
-        if ($this->upload_destination) {
-            $stream = fopen($this->file_temp, 'r+');
-            $result = $this->upload_destination->getFilesystem()->writeStream($this->upload_path . $this->file_name, $stream);
-        } elseif (! @copy($this->file_temp, $this->upload_path . $this->file_name)) {
-            if (! @move_uploaded_file($this->file_temp, $this->upload_path . $this->file_name)) {
+        if ($filesystem && !$filesystem->isLocal()) {
+            $result = $filesystem->writeStream($destination, fopen($this->file_temp, 'r+'));
+        } elseif (! @copy($this->file_temp, $destination)) {
+            if (! @move_uploaded_file($this->file_temp, $destination)) {
                 $this->set_error('upload_destination_error');
 
                 return false;
             }
         }
 
-        if (!$this->upload_destination || $this->upload_destination->getFilesystem()->isLocal()) {
-            @chmod($this->upload_path . $this->file_name, FILE_WRITE_MODE);
+        // Since we use native functions to copy/move uploads in the local filesystem
+        // we need to explicitly update the existence in the adapter's cache
+        if ($filesystem && $filesystem->isLocal() && $filesystem->hasCachedAdapter()) {
+            $filesystem->getAdapter()->getCache()->updateObject($filesystem->relative($destination), [
+                'type' => 'file',
+                'contents' => false,
+                'path' => $destination
+            ], true);
+        }
+
+        if (!$filesystem || $filesystem->isLocal()) {
+            @chmod($destination, FILE_WRITE_MODE);
         }
 
         return $result;
