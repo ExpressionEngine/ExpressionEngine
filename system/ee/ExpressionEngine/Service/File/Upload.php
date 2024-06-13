@@ -14,6 +14,7 @@ use ExpressionEngine\Model\File\File as FileModel;
 use ExpressionEngine\Model\Content\FieldFacade;
 use ExpressionEngine\Model\Content\Display\FieldDisplay;
 use ExpressionEngine\Service\Validation\Result as ValidationResult;
+use ExpressionEngine\Service\Model\Collection;
 
 /**
  * File Service Upload
@@ -331,6 +332,9 @@ class Upload
                 ee()->load->library('filemanager');
                 $upload_response = ee()->filemanager->upload_file($upload_location_id, 'file', false, $directory_id);
                 if (isset($upload_response['error'])) {
+                    if (AJAX_REQUEST) {
+                        ee()->output->send_ajax_response(array('error' => $upload_response['error']));
+                    }
                     ee('CP/Alert')->makeInline('shared-form')
                         ->asIssue()
                         ->withTitle(lang('upload_filedata_error'))
@@ -759,6 +763,30 @@ class Upload
                 'message_type' => 'success'
             ));
         }
+    }
+
+    /**
+     * List of directories the current user can upload to
+     *
+     * @return array
+     */
+    public function getUserUploadDirectories()
+    {
+        if (!isset(ee()->session)) {
+            return new Collection();
+        }
+
+        $dirs = ee('Model')->get('UploadDestination')
+            ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
+            ->filter('module_id', 0)
+            ->order('name', 'asc')
+            ->all();
+
+        $member = ee()->session->getMember();
+
+        return $dirs->filter(function ($dir) use ($member) {
+            return $dir->memberHasAccess($member);
+        });
     }
 }
 

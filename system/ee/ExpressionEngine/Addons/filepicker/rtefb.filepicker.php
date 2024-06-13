@@ -33,7 +33,8 @@ class Filepicker_rtefb extends AbstractRteFilebrowser
             'hasUpload' => true,
         ));
         ee()->javascript->set_global([
-            'Rte.fpUrl' => $fpUrl->compile(),
+            'Rte.fpUrl' => $fpUrl->compile(), // legacy
+            'Rte.filePickerUrl' => ee('CP/URL')->make('addons/settings/filepicker/modal')->compile(),
         ]);
         ee()->javascript->output("window.Rte_browseImages = function(sourceElement, params) {
             Rte.loadEEFileBrowser(sourceElement, params, '" . $uploadDir . "', 'image');
@@ -46,6 +47,7 @@ class Filepicker_rtefb extends AbstractRteFilebrowser
         $uploadDestinations = ee('Model')
             ->get('UploadDestination')
             ->with('Site')
+            ->filter('module_id', 0)
             ->order('Site.site_label', 'asc')
             ->order('UploadDestination.name', 'asc')
             ->all();

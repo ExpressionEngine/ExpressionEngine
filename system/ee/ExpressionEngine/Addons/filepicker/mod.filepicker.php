@@ -8,6 +8,8 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+use ExpressionEngine\Addons\FilePicker\FilePicker as Picker;
+
 /**
  * File Picker Module
  */

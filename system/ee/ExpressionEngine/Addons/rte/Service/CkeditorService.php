@@ -20,6 +20,7 @@ class CkeditorService extends AbstractRteService implements RteService
     protected $toolset;
     private static $_includedFieldResources = false;
     private static $_includedConfigs;
+    private static $uploadActionId;
 
     protected function includeFieldResources()
     {
@@ -112,6 +113,28 @@ class CkeditorService extends AbstractRteService implements RteService
         $config = array_merge($config, $this->buildToolbarConfig($config));
         if (REQ == 'CP') {
             $config['toolbar']->viewportOffset = (object) ['top' => 59];
+            // configure drag&drop upload
+            $config['eeUpload'] = new \stdClass();
+            $config['eeUpload']->uploadUrl = ee('CP/URL')->make('addons/settings/filepicker/ajax-upload', ['from' => 'rte'])->compile();
+        } else {
+            if (empty(self::$uploadActionId)) {
+                $actionQuery = ee()->db->select('action_id')
+                    ->where('class', 'File')
+                    ->where('method', 'ajaxUpload')
+                    ->get('actions');
+                if ($actionQuery->num_rows() > 0) {
+                    self::$uploadActionId = $actionQuery->row('action_id');
+                }
+            }
+            if (!empty(self::$uploadActionId)) {
+                $config['eeUpload'] = new \stdClass();
+                $config['eeUpload']->uploadUrl = ee()->functions->fetch_site_index() . QUERY_MARKER . 'ACT=' . self::$uploadActionId . '&from=rte';
+            }
+        }
+
+        // if there are no image buttons, we don't want to allow drag&drop images either
+        if (!in_array('filemanager', $config['toolbar']->items) && !in_array('uploadImage', $config['toolbar']->items)) {
+            unset($config['eeUpload']);
         }
 
         $config['editorClass'] = 'rte_' . $configHandle;
@@ -149,7 +172,6 @@ class CkeditorService extends AbstractRteService implements RteService
 
         // EE FilePicker is not available on frontend channel forms
         if (stripos($fqcn, 'filepicker_rtefb') !== false && REQ != 'CP') {
-            unset($config['image']);
             $filemanager_key = array_search('filemanager', $config['toolbar']->items);
             if ($filemanager_key !== false) {
                 $items = $config['toolbar']->items;
@@ -412,6 +434,7 @@ class CkeditorService extends AbstractRteService implements RteService
                 "indent",
                 "link",
                 "filemanager",
+                "uploadImage",
                 "insertImage",
                 "insertTable",
                 "mediaEmbed",

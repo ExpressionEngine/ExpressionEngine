@@ -26,6 +26,15 @@ window.Rte;
 
         this.config = (EE.Rte.configs[config] || EE.Rte.configs['default']);
 
+        // set the config for upload directories individually for each field
+        if (this.$element.data('directories')) {
+            this.config.directories = this.$element.data('directories');
+        }
+
+        if (this.$element.data('defaultdir')) {
+            this.config.defaultdir = this.$element.data('defaultdir');
+        }
+
         if (typeof defer == "undefined") {
             this.defer = this.$element.data('defer') == "y";
         } else {
@@ -191,7 +200,8 @@ window.Rte;
     /**
      * Load EE File Browser
      */
-    Rte.loadEEFileBrowser = function(params, directory, content_type) {
+    Rte.loadEEFileBrowser = function(sourceElement, params, directory, content_type) {
+        console.log('loadEEFileBrowser', params, directory);
         // Set up the temporary increase of z-indexes.
         var modalZIndex = $('.modal-file').css('z-index'),
             overlayZindex = $('.overlay').css('z-index');
@@ -210,7 +220,11 @@ window.Rte;
             $('body').css({ position:'initial', width:'initial' });
         };
 
-        var $trigger = $('<trigger class="m-link filepicker" rel="modal-file" href="' + EE.Rte.fpUrl + '"/>').appendTo('body');
+        var pickerUrl = EE.Rte.fpUrl;
+        if (typeof EE.Rte.filePickerUrl !== 'undefined' && typeof params.directories !== 'undefined' && typeof params.defaultdir !== 'undefined') {
+            pickerUrl = EE.Rte.filePickerUrl + '&field_upload_locations=' + params.directories + '&requested_directory=' + params.defaultdir;
+        }
+        var $trigger = $('<trigger class="m-link filepicker" rel="modal-file" href="' + pickerUrl + '"/>').appendTo('body');
 
         $trigger.FilePicker({
             callback: function(data, references)
