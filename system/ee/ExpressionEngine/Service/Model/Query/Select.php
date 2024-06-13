@@ -179,14 +179,15 @@ class Select extends Query
 
         foreach ($tables as $table => $table_fields) {
             $table_alias = "{$alias}_{$table}";
+            $isMainTable = $table === $main_table;
 
             if (! $will_join) {
-                $query->from("{$table} as {$table_alias}");
-
-                if ($table != $main_table) {
-                    $query->where("{$table_alias}.{$primary_key} = {$alias}_{$main_table}.{$primary_key}", null, false);
+                if ($isMainTable) {
+                    $query->from("{$table} as {$table_alias}");
+                } else {
+                    $query->join("{$table} as {$table_alias}", "{$table_alias}.{$primary_key} = {$alias}_{$main_table}.{$primary_key}", 'LEFT');
                 }
-            } elseif ($table != $main_table) {
+            } elseif (! $isMainTable) {
                 $queued_joins[] = array(
                     "{$table} as {$table_alias}",
                     "{$table_alias}.{$primary_key} = {$alias}_{$main_table}.{$primary_key}",
@@ -195,6 +196,11 @@ class Select extends Query
             }
 
             foreach ($table_fields as $column) {
+                // Do not add selects for additional tables if that column is already selected by the main table.
+                if (! $isMainTable && array_key_exists("{$alias}__{$column}", $this->model_fields[$alias])) {
+                    continue;
+                }
+
                 // remember the name so we can translate filters and order_bys
                 $this->model_fields[$alias]["{$alias}__{$column}"] = "{$table_alias}.{$column}";
 

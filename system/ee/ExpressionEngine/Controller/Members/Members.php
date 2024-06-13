@@ -1111,8 +1111,7 @@ class Members extends CP_Controller
 
         $base_url = ee('CP/URL')->make('members');
 
-        $members = ee('Model')->get('Member')
-            ->with('PrimaryRole', 'Roles');
+        $members = ee('Model')->get('Member');
 
         $filters = ee('CP/Filter');
         $roleFilter = $this->createRoleFilter($primaryRole);
@@ -1222,18 +1221,6 @@ class Members extends CP_Controller
         }
         $columns = array_filter($columns);
 
-        foreach ($columns as $column) {
-            if (!empty($column)) {
-                if (!empty($column->getEntryManagerColumnModels())) {
-                    foreach ($column->getEntryManagerColumnModels() as $with) {
-                        if (!empty($with)) {
-                            $members->with($with);
-                        }
-                    }
-                }
-            }
-        }
-
         $column_renderer = new ColumnRenderer($columns);
         $table_columns = $column_renderer->getTableColumnsConfig();
         $table->setColumns($table_columns);
@@ -1309,9 +1296,26 @@ class Members extends CP_Controller
             ->offset($offset)
             ->all();
 
-        $data = array();
+        // Re-query the members with relationship data eager loaded for display
+        $memberData = ee('Model')->get('Member')->filter('member_id', 'IN', $members->pluck('member_id'))
+            ->with('PrimaryRole', 'Roles');
 
-        foreach ($members as $member) {
+        // Apply eager loads for columns
+        foreach ($columns as $column) {
+            if (!empty($column) && !empty($column->getEntryManagerColumnModels())) {
+                foreach ($column->getEntryManagerColumnModels() as $with) {
+                    if (!empty($with)) {
+                        $memberData->with($with);
+                    }
+                }
+            }
+        }
+
+        $data = array();
+        $memberData = $memberData->all()->indexBy('member_id');
+
+        foreach ($members->pluck('member_id') as $member_id) {
+            $member = $memberData[$member_id];
             $attrs = [
                 'member_id' => $member->member_id,
                 'title' => $member->screen_name,
