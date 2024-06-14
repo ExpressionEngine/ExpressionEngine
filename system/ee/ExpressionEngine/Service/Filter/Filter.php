@@ -27,7 +27,7 @@ abstract class Filter
     /**
      * @var stirng A language key to use for the display label
      */
-    protected $label;
+    public $label;
 
     /**
      * @var mixed The default value to use for this filter when no value is
@@ -219,9 +219,17 @@ abstract class Filter
         $options = array();
         $base_url->removeQueryStringVariable('columns');
         foreach ($this->options as $show => $label) {
+            $label = !is_null($label) ? $label : $show;
             $url = clone $base_url;
             $url->setQueryStringVariable($this->name, $show);
-            $options[$url->compile()] = htmlentities($label, ENT_QUOTES, 'UTF-8');
+
+            if(is_array($label) && isset($label['label'])) {
+                $label['label'] = htmlentities($label['label'], ENT_QUOTES, 'UTF-8');
+            } else {
+                $label = htmlentities($label, ENT_QUOTES, 'UTF-8');
+            }
+
+            $options[$url->compile()] = $label;
         }
 
         return $options;

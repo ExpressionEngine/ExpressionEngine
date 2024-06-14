@@ -13,7 +13,7 @@ context('Member Roles / Members Permissions', () => {
 
 		cy.visit('admin.php?/cp/members/roles')
 
-		cy.get('div[class="list-item__title"]').contains('MemberManager').parent().find('.list-item__secondary').click()
+		cy.get('a.list-item__content:contains("MemberManager")').click()
 
 		cy.get('button').contains('CP Access').click()
 		cy.get('#fieldset-can_access_cp .toggle-btn').click(); //access CP
@@ -36,20 +36,20 @@ context('Member Roles / Members Permissions', () => {
 		cy.auth()
 		cy.visit('admin.php?/cp/members/roles')
 
-		cy.get('div[class="list-item__title"]').contains('MemberManager').parents('.list-item').find('.status-wrap .status-tag').contains('Unlocked').should('exist')
-		cy.get('div[class="list-item__title"]').contains('MemberManager').parent().find('.list-item__secondary').click()
+		cy.get('a.list-item__content:contains("MemberManager")').parents('.list-item').find('.list-item__secondary').contains('Unlocked').should('exist')
+		cy.get('a.list-item__content:contains("MemberManager")').click()
 		cy.get('#fieldset-is_locked [data-toggle-for="is_locked"]').click()
 		cy.get('body').type('{ctrl}', {release: false}).type('s')
 
 		cy.visit('admin.php?/cp/members/roles')
-		cy.get('div[class="list-item__title"]').contains('MemberManager').parents('.list-item').find('.status-wrap .status-tag').contains('Locked').should('exist')
+		cy.get('a.list-item__content:contains("MemberManager")').parents('.list-item').find('.list-item__secondary').contains('Locked').should('exist')
 
-		cy.get('div[class="list-item__title"]').contains('MemberManager').parent().find('.list-item__secondary').click()
+		cy.get('a.list-item__content:contains("MemberManager")').click()
 		cy.get('#fieldset-is_locked [data-toggle-for="is_locked"]').click()
 		cy.get('body').type('{ctrl}', {release: false}).type('s')
 
 		cy.visit('admin.php?/cp/members/roles')
-		cy.get('div[class="list-item__title"]').contains('MemberManager').parents('.list-item').find('.status-wrap .status-tag').contains('Unlocked').should('exist')
+		cy.get('div[class="list-item__title"]').contains('MemberManager').parents('.list-item').find('.list-item__secondary').contains('Unlocked').should('exist')
 	})
 
 	it('Cannot add members to "locked" groups (Super admins only)', () => {
@@ -99,21 +99,66 @@ context('Member Roles / Members Permissions', () => {
 	   cy.contains('You are not authorized')
 	})
 
+	it('Cannot access member roles before permissions saved', () => {
+		cy.auth();
+
+		cy.visit('admin.php?/cp/members/roles')
+
+		cy.get('a.list-item__content:contains("MemberManager")').click()
+
+		cy.get('button').contains('CP Access').click()
+
+		cy.get('#fieldset-can_admin_roles .toggle-btn').click();
+		cy.get('#fieldset-role_actions .checkbox-label:nth-child(1) > input').click();
+		cy.get('#fieldset-role_actions .checkbox-label:nth-child(2) > input').click();
+		cy.get('#fieldset-role_actions .checkbox-label:nth-child(3) > input').click();
+
+		cy.logout()
+		
+		cy.auth({
+			email: 'MemberManager1',
+			password: 'password'
+		})
+
+	   cy.visit('admin.php?/cp/members/roles',{failOnStatusCode:false})
+
+	   cy.on('uncaught:exception', (err, runnable) => {
+			    expect(err.message).to.include('something about the error')
+			    done()
+			    return false
+		}) //got this block off of cypress docs
+	   cy.contains('You are not authorized')
+
+	   cy.logout()
+	   cy.auth();
+
+		cy.visit('admin.php?/cp/members/roles')
+
+		cy.get('a.list-item__content:contains("MemberManager")').click()
+
+		cy.get('button').contains('CP Access').click()
+
+		cy.get('#fieldset-can_admin_roles .toggle-btn').click();
+		cy.get('#fieldset-role_actions .checkbox-label:nth-child(1) > input').should('not.be.checked');
+		cy.get('#fieldset-role_actions .checkbox-label:nth-child(2) > input').should('not.be.checked');
+		cy.get('#fieldset-role_actions .checkbox-label:nth-child(3) > input').should('not.be.checked');
+	})
+
 	it('Can accecss member roles after it is assigned',() =>{
 		cy.auth();
 
 
 		cy.visit('admin.php?/cp/members/roles')
 
-		cy.get('div[class="list-item__title"]').contains('MemberManager').parent().find('.list-item__secondary').click()
+		cy.get('a.list-item__content:contains("MemberManager")').click()
 
 		cy.get('button').contains('CP Access').click()
-
 
 		cy.get('#fieldset-can_admin_roles .toggle-btn').click();
 		cy.get('#fieldset-role_actions .checkbox-label:nth-child(1) > input').click();
 		cy.get('#fieldset-role_actions .checkbox-label:nth-child(2) > input').click();
 		cy.get('#fieldset-role_actions .checkbox-label:nth-child(3) > input').click();
+		cy.get('body').type('{ctrl}', {release: false}).type('s')
 
 		cy.logout()
 

@@ -11,7 +11,10 @@ return array(
     'built_in' => true,
     'fieldtypes' => array(
         'multi_select' => array(
-            'compatibility' => 'list'
+            'compatibility' => 'list',
+            'use' => array(
+                'MemberField'
+            )
         )
     )
 );

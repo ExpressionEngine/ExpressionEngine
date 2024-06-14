@@ -1,3 +1,15 @@
+[TOC]
+
+# Updating version number for release
+
+Update `build.json` with the new version number.
+
+Run `gulp version_bump` to update the version number in the core, test config files, and create necessary update file.
+
+Open a PR with the changes.
+
+This script is also part of general build process, so it will be run automatically when building the app on GitHub.
+
 # Building ExpressionEngine
 
 > NOTE: If you try the `npm` or `gulp` commands below and receive errors about "primordials", "dyld", or "ic4u", you may have incompatible versions of NodeJS, NPM, and/or PHP. Follow the instructions below to make sure you're running the proper version of NodeJS (using ASDF). For PHP version help, please reach out to one of the team members.

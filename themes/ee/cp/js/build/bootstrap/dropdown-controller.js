@@ -105,7 +105,7 @@ var DropdownController = function () {
   function hideAllDropdowns(excludeDropdown) {
     $('.has-open-dropdown').removeClass('has-open-dropdown');
     $('.dropdown--open').not(excludeDropdown).removeClass('dropdown--open');
-    $('.dropdown-open').removeClass('dropdown-open');
+    $('.dropdown-open').removeClass('dropdown-open').removeClass('open');
   }
 
   function showDropdown(dropdown, button) {
@@ -120,10 +120,21 @@ var DropdownController = function () {
     dropdown._popper.update();
 
     dropdown._popper.scheduleUpdate();
+
+    if ($('div[data-input-value="field_type"').length) {
+      var search_input = $('div[data-input-value="field_type"] .search-input .search-input__input');
+      var interval = setInterval(function () {
+        if (search_input.is(':visible')) {
+          search_input.focus();
+          clearInterval(interval);
+        }
+      }, 50);
+    }
   }
 
   function hideDropdown(dropdown, button) {
     button.classList.remove('dropdown-open');
+    button.classList.remove('open');
     $(button).parent().removeClass('has-open-dropdown');
     dropdown.classList.remove('dropdown--open');
   } // Refreshes the position of any visible dropdowns

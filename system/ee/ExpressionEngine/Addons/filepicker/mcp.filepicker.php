@@ -368,7 +368,8 @@ class Filepicker_mcp
                         'isImage' => $file->isImage(),
                         'isSVG' => $file->isSVG(),
                         'thumb_path' => $file->getAbsoluteThumbnailURL(),
-                        'upload_location_id' => $file->upload_location_id
+                        'upload_location_id' => $file->upload_location_id,
+                        'file_hw_original' => $result['upload_response']['file_hw_original'],
                     ]
                 ];
             }

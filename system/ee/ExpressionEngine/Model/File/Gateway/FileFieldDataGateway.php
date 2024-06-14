@@ -19,6 +19,7 @@ class FileFieldDataGateway extends VariableColumnGateway
 {
     protected static $_table_name = 'file_data';
     protected static $_primary_key = 'file_id';
+    protected static $_gateway_model = 'FileField'; // model that defines elements fetched by this gateway
 
     protected static $_related_gateways = array(
         'file_id' => array(

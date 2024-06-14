@@ -11,6 +11,7 @@ namespace ExpressionEngine\Model\Role;
 
 use ExpressionEngine\Service\Model\Model;
 use ExpressionEngine\Service\Model\Collection;
+use ExpressionEngine\Service\Member\Member;
 
 /**
  * Role Model
@@ -139,8 +140,46 @@ class Role extends Model
     protected $name;
     protected $short_name;
     protected $description;
+    protected $highlight;
     protected $total_members;
     protected $is_locked;
+
+    /**
+     * Getter for highlight property
+     * Will ensure default colors for built-in roles
+     *
+     * @return string
+     */
+    public function get__highlight()
+    {
+        $highlight = $this->getRawProperty('highlight');
+        if (empty($highlight)) {
+            switch ($this->role_id) {
+                case Member::SUPERADMIN:
+                    $highlight = '00C571'; //--ee-brand-success
+                    break;
+                case Member::BANNED:
+                    $highlight = 'FA5252'; //--ee-brand-danger
+                    break;
+                case Member::GUESTS:
+                    $highlight = '8F90B0'; //--ee-text-secondary
+                    break;
+                case Member::PENDING:
+                    $highlight = 'FFB40B'; //--ee-brand-warning
+                    break;
+                case Member::MEMBERS:
+                default:
+                    $highlight = '5D63F1'; //--ee-brand-primary
+                    break;
+            }
+        }
+        return $highlight;
+    }
+
+    public function set__highlight($highlight)
+    {
+        $this->setRawProperty('highlight', ltrim((string) $highlight, '#'));
+    }
 
     /**
      * Get all members that are assigned to this role (as primary or extra one)

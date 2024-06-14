@@ -86,7 +86,10 @@ export default class ReadMoreEditing extends Plugin {
 
 		conversion.for( 'upcast' )
 			.elementToElement( {
-				view: { name: 'div' },/*element => {
+				view: { 
+					name: 'div',
+					classes: 'readmore'
+				},/*element => {
 					// The "page break" div must have specified value for the 'readmore-after' definition and single child only.
 					if ( !element.is( 'div' ) || !element.hasClass( 'readmore' ) || element.childCount != 1 ) {
 						return;

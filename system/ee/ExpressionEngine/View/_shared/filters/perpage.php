@@ -13,7 +13,7 @@
 			<input
 				type="text"
 				name="<?=$name?>"
-				id="<?=$name?>"
+				id="<?=$name . uniqid()?>"
 				value="<?=htmlentities($custom_value, ENT_QUOTES, 'UTF-8')?>"
 				placeholder="<?=htmlentities($placeholder, ENT_QUOTES, 'UTF-8')?>"
 				data-threshold="<?=$threshold?>"
