@@ -78,13 +78,22 @@ class JumpMenu extends AbstractJumpMenu
                 'target' => 'design',
                 'permission' => 'can_access_design'
             ),
-            //cache
-            'systemUtilitiesCacheManager' => array(
-                'icon' => 'fa-database',
-                'command' => 'system_utilities cache_manager caches_to_clear',
+            //categories
+            'viewCategories' => array(
+                'icon' => 'fa-eye',
+                'command' => 'view edit_categories',
                 'dynamic' => false,
                 'addon' => false,
-                'target' => 'utilities/cache',
+                'target' => 'categories',
+                'permission' => 'can_edit_categories'
+            ),
+            //cache
+            'clearCaches' => array(
+                'icon' => 'fa-database',
+                'command' => 'btn_clear_caches',
+                'dynamic' => true,
+                'addon' => false,
+                'target' => 'caches/clear',
                 'permission' => 'can_access_data'
             ),
             //addons
@@ -203,14 +212,6 @@ class JumpMenu extends AbstractJumpMenu
                 'permission' => 'ban_users'
             ),
             //categories
-            'viewCategories' => array(
-                'icon' => 'fa-eye',
-                'command' => 'view edit_categories',
-                'dynamic' => false,
-                'addon' => false,
-                'target' => 'categories',
-                'permission' => 'can_edit_categories'
-            ),
             'createCategoryIn' => array(
                 'icon' => 'fa-plus',
                 'command' => 'add_category',
@@ -1760,6 +1761,14 @@ class JumpMenu extends AbstractJumpMenu
                 'permission' => 'can_access_sys_prefs',
             ),
             //utilities
+            'systemUtilitiesCacheManager' => array(
+                'icon' => 'fa-database',
+                'command' => 'system_utilities cache_manager caches_to_clear',
+                'dynamic' => false,
+                'addon' => false,
+                'target' => 'utilities/cache',
+                'permission' => 'can_access_data'
+            ),
             'systemUtilitiesCommunicate' => array(
                 'icon' => 'fa-hammer',
                 'command' => 'system_utilities communicate send_email',
@@ -1937,13 +1946,6 @@ class JumpMenu extends AbstractJumpMenu
                 'addon' => false,
                 'target' => 'homepage/toggle-viewmode'
             ),
-            /*'clearCaches' => array(
-                'icon' => 'fa-database',
-                'command' => 'btn_clear_caches',
-                'dynamic' => true,
-                'addon' => false,
-                'target' => 'caches/clear'
-            ),*/
         )
     );
 

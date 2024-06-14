@@ -233,6 +233,18 @@ EE.cp.JumpMenu = {
   },
 
   /**
+   * Handles actionable controllers, such as clearing the caches
+   * @param {string} actionUrl 
+   */
+  handleAction: function handleAction(actionUrl) {
+    var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+
+    EE.cp.JumpMenu._closeJumpMenu();
+
+    this._loadData(actionUrl, data);
+  },
+
+  /**
    * This is trigged when a user clicks or presses [enter] on a jump option that has dynamic content.
    * We either have to show a secondary input or load data depending on which command was selected.
    * @param  {string} commandKey The unique index for the selected command.
@@ -244,23 +256,26 @@ EE.cp.JumpMenu = {
     // Load the secondary input field and focus it. This also shows the secondary results box.
     this._showResults(2);
 
-    jumpContainer.document.querySelector('#jumpEntry2').focus();
+    jumpContainer.document.querySelector('#jumpEntry2').focus(); // Target our jump menu controller end point and attach the extra method info to the URL.
 
-    this._loadData(commandKey, searchString);
+    var jumpTarget = EE.cp.jumpMenuURL.replace('JUMPTARGET', 'jumps/' + EE.cp.JumpMenuCommands[EE.cp.JumpMenu.currentFocus - 1][commandKey].target);
+    var data = {
+      command: commandKey,
+      searchString: searchString
+    };
+
+    this._loadData(jumpTarget, data);
   },
 
   /**
    * Loads secondary information for the jump menu via ajax.
-   * @param  {string} commandKey  Unique identifier for the command we've triggered on
+   * @param  {string} jumpTarget  URL for the POST request
+   * @param  {object} data        Data to send with the POST request
    */
-  _loadData: function _loadData(commandKey) {
-    var searchString = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+  _loadData: function _loadData(jumpTarget) {
+    var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     // Save our "this" context as it'll be overridden inside our XHR functions.
-    var that = this;
-    var data = {
-      command: commandKey,
-      searchString: searchString
-    }; // Abort any previous running requests.
+    var that = this; // Abort any previous running requests.
 
     if (_typeof(EE.cp.JumpMenu.ajaxRequest) == 'object') {
       EE.cp.JumpMenu.ajaxRequest.abort();
@@ -268,11 +283,11 @@ EE.cp.JumpMenu = {
 
     EE.cp.JumpMenu.ajaxRequest = new XMLHttpRequest(); // Make a query string of the JSON POST data
 
-    data = Object.keys(data).map(function (key) {
-      return encodeURIComponent(key) + '=' + encodeURIComponent(data[key]);
-    }).join('&'); // Target our jump menu controller end point and attach the extra method info to the URL.
-
-    var jumpTarget = EE.cp.jumpMenuURL.replace('JUMPTARGET', 'jumps/' + EE.cp.JumpMenuCommands[EE.cp.JumpMenu.currentFocus - 1][commandKey].target); // let jumpTarget = EE.cp.jumpMenuURL + '/' + EE.cp.JumpMenuCommands[EE.cp.JumpMenu.currentFocus-1][commandKey].target;
+    if (_typeof(data) == 'object') {
+      data = Object.keys(data).map(function (key) {
+        return encodeURIComponent(key) + '=' + encodeURIComponent(data[key]);
+      }).join('&');
+    }
 
     EE.cp.JumpMenu.ajaxRequest.open('POST', jumpTarget, true);
     EE.cp.JumpMenu.ajaxRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
@@ -289,7 +304,13 @@ EE.cp.JumpMenu = {
       }
 
       if (EE.cp.JumpMenu.ajaxRequest.status >= 200 && EE.cp.JumpMenu.ajaxRequest.status < 400) {
-        if (response.status == undefined || response.data == undefined) {
+        if ((response.status == 'success' || response.success == true) && typeof response.message !== 'undefined') {
+          that._presentError(response.message, 'success');
+
+          return;
+        }
+
+        if (response.status == undefined) {
           that._presentError(response);
 
           return;
@@ -297,6 +318,12 @@ EE.cp.JumpMenu = {
 
         if (response.status == 'error') {
           that._presentError(response.message);
+
+          return;
+        }
+
+        if (response.data == undefined) {
+          that._presentError(response);
 
           return;
         }
@@ -385,14 +412,32 @@ EE.cp.JumpMenu = {
         }
 
         var jumpTarget = '#';
+
+        if (commandSet[commandKey].hasOwnProperty('target')) {
+          if (commandSet[commandKey].target.indexOf('?') >= 0) {
+            jumpTarget = commandSet[commandKey].target;
+          } else {
+            jumpTarget = EE.cp.jumpMenuURL.replace('JUMPTARGET', commandSet[commandKey].target);
+          }
+        }
+
         var jumpClick = '';
 
         if (commandSet[commandKey].dynamic === true) {
           jumpClick = 'onclick="EE.cp.JumpMenu.handleClick(\'' + commandKey + '\');"';
-        } else if (commandSet[commandKey].target.indexOf('?') >= 0) {
-          jumpTarget = commandSet[commandKey].target;
-        } else {
-          jumpTarget = EE.cp.jumpMenuURL.replace('JUMPTARGET', commandSet[commandKey].target);
+          jumpTarget = '#';
+        } else if (commandSet[commandKey].action === true) {
+          var postData = '';
+
+          if (typeof commandSet[commandKey].data !== 'undefined') {
+            var data = commandSet[commandKey].data;
+            postData = Object.keys(data).map(function (key) {
+              return encodeURIComponent(key) + '=' + encodeURIComponent(data[key]);
+            }).join('&');
+          }
+
+          jumpClick = 'onclick="EE.cp.JumpMenu.handleAction(\'' + jumpTarget + '\', \'' + postData + '\');"';
+          jumpTarget = '#';
         }
 
         var commandContext = '';
@@ -449,10 +494,15 @@ EE.cp.JumpMenu = {
    * @param	string	text	Error message
    */
   _presentError: function _presentError(text) {
-    console.log('_presentError', text); // var alert = EE.db_backup.backup_ajax_fail_banner.replace('%body%', text),
-    // alert_div = jumpContainer.document.createElement('div');
-    // alert_div.innerHTML = alert;
-    // $('.form-standard .form-btns-top').after(alert_div);
+    var status = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'error';
+
+    if (status === 'error' && typeof text !== 'string') {
+      console.log('_presentError', text);
+      return;
+    }
+
+    var banner = $("<div class=\"app-notice app-notice-jumpMenuBanner app-notice--banner app-notice---" + status + "\">\n\t\t<div class=\"app-notice__tag\">\n\t\t\t<span class=\"app-notice__icon\"></span>\n\t\t</div>\n\t\t<div class=\"app-notice__content\">\n\t\t\t<p>" + text + "</p>\n\t\t</div>\n\t\t</div>");
+    $('body').append(banner);
   }
 };
 
