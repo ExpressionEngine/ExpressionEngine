@@ -44,6 +44,11 @@
             ?>
             <button type="button" class="tab-bar__tab js-tab-button <?=$class?>" rel="t-<?=$index?>"><?=lang($tab->title)?></button>
             <?php endforeach; ?>
+
+            <?php if($layout_id && $can_edit_layouts): ?>
+                <a href="<?php echo ee('CP/URL', 'channels/layouts/edit/' . $layout_id); ?>" class="link-to-layout" target="_blank" title="<?=lang('use_publish_layout')?>"><i class="fa-regular fa-object-group"></i></a>
+            <?php endif; ?>
+
             <?php if ($entry->getAutosaves()->filter('channel_id', $entry->channel_id)->count()): ?>
                 <button type="button" class="tab-bar__tab js-tab-button" rel="t-autosaves"><?=lang('autosaves')?></button>
             <?php endif; ?>
