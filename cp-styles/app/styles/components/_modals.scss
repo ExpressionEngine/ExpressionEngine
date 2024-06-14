@@ -187,3 +187,26 @@
     transform: translateX(100px);
   }
 }
+
+.modal.dialog--danger {
+  .ee-form-error-message{
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    font-style: normal;
+
+    li {
+      list-style-type: none;
+    }
+  }
+}
+
+.modal .invalid-input {
+  border: 1px solid var(--ee-error);
+  box-shadow: none;
+
+  &:focus {
+    border-color: var(--ee-error);
+    box-shadow: none;
+  }
+}

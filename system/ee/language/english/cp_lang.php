@@ -769,6 +769,8 @@ $lang = array(
     /* moving */
     'btn_confirm_and_move' => 'Confirm and Move',
 
+    'btn_confirm_and_rename' => 'Confirm and Rename',
+
     /* HTML Buttons */
     'html_btn_anchor' => 'Link',
 
