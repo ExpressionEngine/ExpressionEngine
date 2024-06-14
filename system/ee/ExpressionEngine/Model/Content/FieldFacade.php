@@ -283,6 +283,11 @@ class FieldFacade
         return $this->data = $this->api->apply('reindex', array($value, $model));
     }
 
+    /**
+     * Display field publish form
+     *
+     * @return string
+     */
     public function getForm()
     {
         $data = $this->initField();
