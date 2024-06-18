@@ -48556,6 +48556,9 @@ table .field-no-results {
   -ms-user-select: none;
   user-select: none;
 }
+.label-app-badge.not-clickable {
+  cursor: auto;
+}
 .label-app-badge i {
   margin-left: 5px;
   opacity: 0;
