@@ -775,6 +775,12 @@ class Member_settings extends Member
 
         $result_row = $member->getValues();
 
+        $error_tags = array();
+        if (ee()->TMPL->fetch_param('error_handling') == 'inline') {
+            // get the field errors
+            $error_tags = ee()->session->flashdata('error_tags');
+        }
+
         ee()->load->library('api');
         ee()->legacy_api->instantiate('channel_fields');
         // we need to reset this, because might have already been populated by channel:entries tag
@@ -813,6 +819,7 @@ class Member_settings extends Member
                             '{maxlength}',
                             '{field_required}',
                             '{field_type}',
+                            '{error}'
                         ],
                         [
                             $required . $field->getLabel(),
@@ -827,7 +834,8 @@ class Member_settings extends Member
                             $field->get('field_text_direction'),
                             $field->get('field_maxl'),
                             $field->isRequired(),
-                            $field->getType()
+                            $field->getType(),
+                            !empty($error_tags) && isset($error_tags['error:' . $field->getShortName()]) ? $error_tags['error:' . $field->getShortName()] : '',
                         ],
                         $temp
                     );
@@ -878,7 +886,10 @@ class Member_settings extends Member
         if (strpos($template, LD . 'field:') !== false) {
             foreach ($member->getDisplay()->getFields() as $field) {
                 if (ee('Permission')->isSuperAdmin() || $field->get('field_public') == 'y') {
-                    $template = str_replace(LD . 'field:' . $field->get('field_name') . RD, $field->getForm(), $template);
+                    $fieldShorName = $field->getShortName();
+                    $template = str_replace(LD . 'field:' . $fieldShorName . RD, $field->getForm(), $template);
+                    $error = !empty($error_tags) && isset($error_tags['error:' . $fieldShorName]) ? $error_tags['error:' . $fieldShorName] : '';
+                    $template = str_replace(LD . 'error:' . $fieldShorName . RD, $error, $template);
                 }
             }
         }
@@ -953,19 +964,20 @@ class Member_settings extends Member
     /** ----------------------------------------*/
     public function update_profile()
     {
+        $error_return_link = ee()->functions->determine_error_return();
 
         /** -------------------------------------
         /**  Safety....
         /** -------------------------------------*/
         if (count($_POST) == 0) {
-            return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_action')));
+            return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_action')), '', $error_return_link);
         }
 
         /** ----------------------------------------
         /**  Blocked/Allowed List Check
         /** ----------------------------------------*/
         if (ee()->blockedlist->blocked == 'y' && ee()->blockedlist->allowed == 'n') {
-            return ee()->output->show_user_error('general', array(ee()->lang->line('not_authorized')));
+            return ee()->output->show_user_error('general', array(ee()->lang->line('not_authorized')), '', $error_return_link);
         }
 
         ee()->db->select('m_field_id, m_field_label, m_field_type, m_field_name');
@@ -1112,6 +1124,34 @@ class Member_settings extends Member
         }
 
         if ($result->failed()) {
+            // set the data for inline errors
+            if (!empty($error_return_link)) {
+                $error_tags = array();
+                $e = $result->getAllErrors();
+                $errors = array_map('current', $e);
+
+                $fieldNames = array();
+                $fieldLabels = array();
+                foreach ($member->getDisplay()->getFields() as $field) {
+                    $fieldNames[$field->getName()] = $field->getShortName();
+                    $fieldLabels[$field->getName()] = $field->getLabel();
+                }
+
+                $fieldErrors = array();
+                foreach ($errors as $field => $error) {
+                    $error_tags['error:' . $field] = $error;
+                    if (isset($fieldNames[$field])) {
+                        $error_tags['error:' . $fieldNames[$field]] = $error;
+                    }
+                    $fieldErrors[] = (isset($fieldLabels[$field]) ? '<b>' . $fieldLabels[$field] . '</b>: ' : '') . $error;
+                }
+
+                // populate flash data for custom error tags
+                ee()->session->set_flashdata('error_tags', $error_tags);
+
+                return ee()->output->show_user_error('general', $fieldErrors, '', $error_return_link);
+            }
+
             return ee()->output->show_user_error('general', $result->renderErrors());
         }
 

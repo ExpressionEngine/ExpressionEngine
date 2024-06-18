@@ -99,6 +99,7 @@ class EE_Template
 
     public $form_id = '';       //  Form Id
     public $form_class = '';        //  Form Class
+    public $inline_errors = 'no'; // set Form to display inline errors
 
     public $realm = 'Restricted Content';  // Localize?
     public $marker = '0o93H7pQ09L8X1t49cHY01Z5j4TT91fGfr'; // Temporary marker used as a place-holder for template data
@@ -477,20 +478,16 @@ class EE_Template
         // ee()->session->_age_flashdata();
 
         // If we have any errors from the submit, display those inline.
+        $this->log_item("Parsing inline errors");
         if (strpos($this->template, "{if errors}") !== false) {
-            // If we have field errors, remove the template conditional and leave the error tags,
-            // otherwise, remove the conditional and error tags completely.
-            if (!empty($errors)) {
-                if (preg_match("/{if errors}(.+?){\/if}/s", $this->template, $match)) {
-                    $this->template = preg_replace("/{if errors}.+?{\/if}/s", $match['1'], $this->template);
-                }
-            } else {
-                $this->template = preg_replace("/{if errors}.+?{\/if}/s", '', $this->template);
-            }
+            $this->template = ee()->functions->prep_conditionals($this->template, ['errors' => !empty($errors)]);
         }
 
         if (!empty($errors)) {
             // Make sure our errors are an associative array so the {errors}{error}{/errors} field tags work properly.
+            if (is_string($errors)) {
+                $errors = array($errors);
+            }
             $errors = array_map(function ($error) {
                 return array('error' => $error);
             }, $errors);
@@ -3603,6 +3600,12 @@ class EE_Template
             $this->form_class = $tag_data['params']['form_class'];
         }
 
+        if (array_key_exists('error_handling', $tag_data['params'])) {
+            $this->inline_errors = $tag_data['params']['error_handling'] == 'inline' ? 'yes' : 'no';
+        } elseif (array_key_exists('inline_errors', $tag_data['params'])) {
+            $this->inline_errors = $tag_data['params']['inline_errors'] == 'yes' ? 'yes' : 'no';
+        }
+
         return $tag_data;
     }
 
@@ -3785,6 +3788,9 @@ class EE_Template
                     // require developers to take care of this. This hack will blank them out.
                     $value = array(array());
                 }
+
+                // make sure array is indexed, not associative
+                $value = array_values($value);
 
                 if (isset($value[0]) && is_array($value[0])) {
                     $tagdata = $this->_parse_var_pair($name, $value, $tagdata, 1);

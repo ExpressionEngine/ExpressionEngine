@@ -950,6 +950,8 @@ class Member_memberlist extends Member
         // Handle our protected data if any. This contains our extra params.
         $protected = ee()->functions->handle_protected();
 
+        $error_return_link = ee()->functions->determine_error_return();
+
         /** ----------------------------------------
         /**  Fetch the search language file
         /** ----------------------------------------*/
@@ -981,7 +983,7 @@ class Member_memberlist extends Member
             $text = str_replace("%x", ee()->session->userdata['search_flood_control'], ee()->lang->line('search_time_not_expired'));
 
             if ($query->num_rows() > 0) {
-                return ee()->output->show_user_error('general', array($text));
+                return ee()->output->show_user_error('general', array($text), '', $error_return_link);
             }
         }
 
@@ -1085,7 +1087,7 @@ class Member_memberlist extends Member
                 }
             }
 
-            return ee()->output->show_user_error('off', array(ee()->lang->line('search_no_result')), ee()->lang->line('search_result_heading'));
+            return ee()->output->show_user_error('off', array(ee()->lang->line('search_no_result')), ee()->lang->line('search_result_heading'), $error_return_link);
         }
 
         /** ----------------------------------------
