@@ -985,6 +985,7 @@ a.ck.ck-button.ck-on {
     background-color: var(--ee-bg-dropdown) !important;
     color: var(--ee-text-primary);
     box-shadow: 0 1px 4px 0 var(--ee-shadow-dropdown) !important;
+    z-index: 1000 !important;
 
     .rx-popup-header {
         color: var(--ee-text-primary);
