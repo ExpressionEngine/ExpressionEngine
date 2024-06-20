@@ -15,7 +15,7 @@ use ExpressionEngine\Addons\Grid\Model\GridColumn;
 
 abstract class AbstractFieldTemplateGenerator implements FieldTemplateGeneratorInterface
 {
-    protected $site_id = 1;
+    protected $input;
 
     /**
      * The field that we'll be working with
@@ -40,6 +40,8 @@ abstract class AbstractFieldTemplateGenerator implements FieldTemplateGeneratorI
     public function __construct($field, $settings = [])
     {
         $this->field = $field;
+        $this->input = new Input;
+
         if ($field instanceof FieldModel) {
             $this->settings = $this->field->getSettingsValues()['field_settings'];
         } elseif ($field instanceof GridColumn) {
@@ -59,9 +61,10 @@ abstract class AbstractFieldTemplateGenerator implements FieldTemplateGeneratorI
         return [];
     }
 
-    public function setSiteId($id)
+    public function setInput(Input $input)
     {
-        $this->site_id = $id;
+        $this->input = $input;
+
         return $this;
     }
 
@@ -69,6 +72,6 @@ abstract class AbstractFieldTemplateGenerator implements FieldTemplateGeneratorI
     {
         $generator = ee('TemplateGenerator')->makeField($fieldtype, $field, $settings);
 
-        return ($generator) ? $generator->setSiteId($this->site_id) : null;
+        return ($generator) ? $generator->setInput($this->input) : null;
     }
 }

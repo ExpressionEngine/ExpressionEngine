@@ -144,10 +144,6 @@ class CommandGenerateTemplates extends Cli
             }
             $default = isset($optionParams['default']) ? $optionParams['default'] : '';
             $required = isset($optionParams['required']) ? $optionParams['required'] : false;
-            // populate the choices, if dynamic
-            if (isset($optionParams['callback']) && !empty($optionParams['callback'])) {
-                $optionParams['choices'] = $generator->populateOptionCallback($optionParams['callback'], $this->data['options']);
-            }
             if (
                 in_array($optionParams['type'], ['radio', 'select']) &&
                 (

@@ -32,4 +32,5 @@ interface FieldTemplateGeneratorInterface
      * @return array
      */
     public function getVariables(): array;
+
 }

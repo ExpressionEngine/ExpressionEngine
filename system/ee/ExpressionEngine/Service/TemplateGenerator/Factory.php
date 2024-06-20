@@ -102,9 +102,7 @@ class Factory
         if (!isset($this->generators[$generatorKey])) {
             throw new \Exception('Template Generator could not be found');
         }
-        // if (!($this->generators[$generatorKey] instanceof RegisteredGenerator)) {
-        //     throw new \Exception('Template Generator is not properly registered');
-        // }
+
         $generator = $this->generators[$generatorKey];
         ee()->lang->loadfile($generator->getPrefix(), '', false);
 
@@ -211,31 +209,6 @@ class Factory
         ee()->lang->loadfile($provider->getPrefix(), '', false);
 
         return $this->generators;
-    }
-
-    /**
-     * Populates choices for a given option from callback function in generator (or directly in factory)
-     * The callback function must return an array of choices
-     *
-     * @param string $callback function name
-     * @param array $options the list of options populated so far (might be not complete)
-     * @return array
-     */
-    public function populateOptionCallback($callback, $options = [])
-    {
-        if (! method_exists($this->getGenerator()->getInstance(), $callback) && ! method_exists($this, $callback)) {
-            throw new \Exception($callback . ' is not callable');
-        }
-        if (method_exists($this->getGenerator()->getInstance(), $callback)) {
-            $result = $this->getGenerator()->getInstance()->{$callback}($options);
-        } else {
-            $result = $this->{$callback}($options);
-        }
-        if (!is_array($result)) {
-            throw new \Exception($callback . ' must return an array');
-        }
-
-        return $result;
     }
 
     /**
@@ -403,25 +376,11 @@ class Factory
      */
     public function createTemplate(TemplateGroup $group, string $name, array $data = [], $site_id = 1)
     {
-        // Allow for other formats too
-        // $ext = '.html';
-        #ee()->load->library('api');
-        #ee()->legacy_api->instantiate('template_structure');
-        #$templateEngine = ($this->templateEngine == 'native') ? null : $this->templateEngine;
-        #$ext = ee()->api_template_structure->file_extensions($data['template_type'], $templateEngine);
-
-        // if (!empty($this->templateEngine) && $this->templateEngine != 'native') {
-        //     $ext .= '.' . $this->templateEngine;
-        // }
-        // $fileName = $name . $ext;
-        // ee()->load->library('api');
-        // ee()->legacy_api->instantiate('template_structure');
-        // $info = ee()->api_template_structure->get_template_file_info($fileName);
         $template = ee('Model')->make('Template');
         $template->site_id = $site_id;
         $template->template_name = $name;
         $template->template_data = $data['template_data'];
-        $template->template_type = $data['template_type']; //$info['type'];
+        $template->template_type = $data['template_type'];
         $template->template_notes = $data['template_notes'] ?? '';
         $template->template_engine = ($data['template_engine'] == 'native') ? null : $data['template_engine'];
         $template->TemplateGroup = $group;

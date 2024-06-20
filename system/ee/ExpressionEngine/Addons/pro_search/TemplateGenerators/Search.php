@@ -21,8 +21,7 @@ class Search extends AbstractTemplateGenerator
         'keyword' => 'Keyword Search',
     ];
 
-
-    public function prepareVariables($options): array
+    public function getVariables(): array
     {
         return [];
     }

@@ -31,8 +31,7 @@ class Entries extends AbstractTemplateGenerator
             'desc' => 'select_channels_to_generate',
             'type' => 'checkbox',
             'required' => true,
-            'choices' => [],
-            'callback' => 'getChannelList',
+            'choices' => 'getChannelList',
         ],
     ];
 
@@ -47,8 +46,7 @@ class Entries extends AbstractTemplateGenerator
      */
     public function getChannelList()
     {
-        $channels = ee('Model')->get('Channel')->all(true)->getDictionary('channel_name', 'channel_title');
-        return $channels;
+        return ee('Model')->get('Channel')->all(true)->getDictionary('channel_name', 'channel_title');
     }
 
     /**
@@ -72,14 +70,15 @@ class Entries extends AbstractTemplateGenerator
         return true;
     }
 
-    public function prepareVariables($options): array
+    public function getVariables(): array
     {
         ee()->load->library('session'); //getAllCustomFields requires session
-        $vars = $options;
-        $vars['fields'] = [];
-        // get list of assigned channel fields and pass the data to array
-        // for simple fields, we'll just pass field info as variables,
-        // for complex fields we'll have to spin their own generators
+
+        $vars = [
+            'fields' => [],
+            'channel' => $this->input->get('channel')
+        ];
+
         if (!is_array($vars['channel'])) {
             $vars['channel'] = [$vars['channel']];
         }

@@ -15,7 +15,7 @@ class Form extends Entries
     protected $name = 'channel_form_template_generator';
 
     protected $templates = [
-        'index' => 'Front-end Publish Entry Page'
+        'index' => 'Entry Publish Page'
     ];
 
     protected $options = [
@@ -24,7 +24,7 @@ class Form extends Entries
             'desc' => 'select_channels_to_generate',
             'type' => 'select',
             'required' => true,
-            'callback' => 'getChannelList',
+            'choices' => 'getChannelList',
         ],
     ];
 

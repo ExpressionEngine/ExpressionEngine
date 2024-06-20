@@ -15,14 +15,8 @@ use ExpressionEngine\Core\Provider;
 abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
 {
 
-    /**
-     * Template engine to use
-     *
-     * @var string
-     */
-    protected $templateEngine;
 
-    protected $site_id = 1;
+    protected $input;
 
     /**
      * Generator name to be displayed in the UI
@@ -54,6 +48,11 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
     protected $_validation_rules = [];
 
     protected $provider;
+
+    public function __construct()
+    {
+        $this->input = new Input;
+    }
 
     /**
      * Return the name of the generator
@@ -107,21 +106,28 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
         return $this->getProvider()->getPrefix();
     }
 
-    public function generate($options, $save = true)
+    public function generate($input, $save = true)
     {
-        if(isset($options['site_id'])) {
-            $this->site_id = (int) $options['site_id'];
+        $validationResult = ($save) ? $this->validate($input) : $this->validatePartial(array_filter($input));
+
+        if (!$validationResult->isValid()) {
+            // Flash previous input to the session if it's available
+            if(ee()->has('session') && !empty($_POST)) {
+                foreach($_POST as $key => $value) {
+                    ee()->session->set_flashdata($key, $value);
+                }
+                ee()->session->_age_flashdata();
+            }
+            throw new Exceptions\ValidationException('Template Generator validation failed.', $validationResult);
         }
 
-        if (isset($options['template_engine'])) {
-            $this->templateEngine = (string) $options['template_engine'];
-        }
+        $this->input = new Input($input);
 
         $templates = $this->getTemplates();
 
-        if (isset($options['templates']) && !empty($options['templates']) && current($options['templates']) !== 'all') {
-            $templates = array_filter($templates, function ($key) use ($options) {
-                return in_array($key, $options['templates']);
+        if (!empty($this->input->get('templates', [])) && current($this->input->get('templates')) !== 'all') {
+            $templates = array_filter($templates, function ($key) {
+                return in_array($key, $this->input->get('templates'));
             }, ARRAY_FILTER_USE_KEY);
         }
 
@@ -136,18 +142,20 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
             $templates = array_merge(['index' => $indexTmpl], $templates); // we want index to be created first
         }
 
-        $group = ($save) ? ee('TemplateGenerator')->createTemplateGroup($options['template_group'], $this->site_id) : $options['template_group'];
+        $site_id = (int) $this->input->get('site_id', 1);
+
+        $group = ($save) ? ee('TemplateGenerator')->createTemplateGroup($this->input->get('template_group'), $site_id) : $this->input->get('template_group');
 
         foreach ($templates as $templateName => $templateData) {
             $templateInfo = [
-                'template_engine' => $options['template_engine'] ?? null,
-                'template_data' => $this->render($templateName, $templateData['type'], $options),
+                'template_engine' => $this->input->get('template_engine'),
+                'template_data' => $this->render($templateName, $templateData['type']),
                 'template_type' => $templateData['type'],
                 'template_notes' => $templateData['description'] ?? $templateData['name']
             ];
 
             if($save) {
-                ee('TemplateGenerator')->createTemplate($group, $templateName, $templateInfo, $this->site_id);
+                ee('TemplateGenerator')->createTemplate($group, $templateName, $templateInfo, $site_id);
             }
 
             $templates[$templateName] = array_merge($templateData, $templateInfo);
@@ -156,28 +164,21 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
         return ['group' => $group, 'templates' => $templates];
     }
 
-    protected function render($template, $type, $options = [])
+    protected function render($template, $type)
     {
-        // we'll be mimicing the View service here
+        $stub = $this->makeTemplateStub($template)->setTemplateType($type);
 
-        // get the variables that we'll replace in the template
-        // by default, these are just options - the generators will add their variables
-        $vars = array_merge($options, $this->prepareVariables($options));
-
-        $stub = $this->makeTemplateStub($template);
-
-        $stub->setTemplateType($type);
-
-        if(!empty($options['theme'] ?? null)) {
-            $stub->setTheme($options['theme']);
+        if($this->input->get('theme')) {
+            $stub->setTheme($this->input->get('theme'));
         }
 
-        if (!empty($options['template_engine']) && $options['template_engine'] != 'native') {
-            $stub->setTemplateEngine($options['template_engine']);
+        if ($this->input->get('template_engine', 'native') !== 'native') {
+            $stub->setTemplateEngine($this->input->get('template_engine'));
         }
 
-        // parse the stub, including the embeds
-        return $stub->render($vars);
+        // Parse the stub and all embeds.
+        // Use the generator's input as well as any provided variables
+        return $stub->render(array_merge($this->input->all(), $this->getVariables()));
     }
 
     /**
@@ -198,9 +199,7 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
         return $stub;
     }
 
-    public function prepareVariables($options): array {
-        return $options;
-    }
+    abstract public function getVariables(): array;
 
     /**
      * Return list of options provided by this generator
@@ -217,19 +216,19 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
         $defaults = [
             'template_engine' => [
                 'type' => 'select',
-                'callback' => 'getTemplateEnginesList',
+                'choices' => 'getTemplateEnginesList',
                 'desc' => 'select_template_engine',
                 'default' => ''
             ],
             /* 'theme' => [
                 'type' => 'select',
-                'callback' => 'getThemesList',
+                'choices' => 'getThemesList',
                 'desc' => 'select_theme',
                 'default' => 'none'
             ],*/
             'site_id' => [
                 'type' => 'select',
-                'callback' => 'getSitesList',
+                'choices' => 'getSitesList',
                 'default' => '1',
                 'required' => true
             ],
@@ -241,13 +240,37 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
             ],
             'templates' => [
                 'type' => 'checkbox',
-                'callback' => 'getTemplatesList',
+                'choices' => 'getTemplatesList',
                 'desc' => 'select_templates_to_generate',
                 'default' => 'all',
             ],
         ];
 
-        return array_merge($defaults, $this->options());
+        return $this->prepareOptions(array_merge($defaults, $this->options()));
+    }
+
+    protected function prepareOptions($options)
+    {
+        return array_reduce(array_keys($options), function($carry, $key) use($options) {
+            $value = $options[$key];
+            if(isset($value['choices'])) {
+                $classes = [null, $this, ee('TemplateGenerator')];
+
+                foreach($classes as $class) {
+                    $callable = !empty($class) ? [$class, $value['choices']] : $value['choices'];
+                    if(is_callable($callable)) {
+                        $value['choices'] = (is_array($callable)) ? call_user_func_array($callable, []) : $callable();
+                    }
+                }
+
+                if(!is_array($value['choices'])) {
+                    throw new \Exception('Option choices must return an array');
+                }
+            }
+
+            $carry[$key] = $value;
+            return $carry;
+        }, []);
     }
 
     /**
@@ -304,30 +327,6 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
         return $this->getValidator()->validatePartial($input);
     }
 
-
-    /**
-     * Populates choices for a given option from callback function in generator (or directly in factory)
-     * The callback function must return an array of choices
-     *
-     * @param string $callback function name
-     * @param array $options the list of options populated so far (might be not complete)
-     * @return array
-     */
-    public function populateOptionCallback($callback, $options = [])
-    {
-        if (!method_exists($this, $callback) && !method_exists(ee('TemplateGenerator'), $callback)) {
-            throw new \Exception($callback . ' is not callable');
-        }
-
-        $result = (method_exists($this, $callback)) ? $this->{$callback}($options) : ee('TemplateGenerator')->{$callback}($options);
-
-        if (!is_array($result)) {
-            throw new \Exception($callback . ' must return an array');
-        }
-
-        return $result;
-    }
-
     /**
      * Get the list of template engines available
      *
@@ -349,15 +348,10 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
      */
     public function getSitesList()
     {
-        $sites = ee('Model')->get('Site')
+        return ee('Model')->get('Site')
             ->order('site_label', 'asc')
             ->all()
             ->getDictionary('site_id', 'site_label');
-        if (!bool_config_item('multiple_sites_enabled') || count($sites) == 1) {
-            $this->site_id = array_key_first($sites);
-        }
-
-        return $sites;
     }
 
     /**
@@ -406,7 +400,7 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
 
         // does the theme support the template engine?
         $theme = ee('TemplateGenerator')->getTheme($value);
-        $selectedTemplateEngine = empty($this->templateEngine) ? 'native' : $this->templateEngine;
+        $selectedTemplateEngine = (string) $this->input->get('template_engine', 'native'); //empty($this->templateEngine) ? 'native' : $this->templateEngine;
         if (!in_array($selectedTemplateEngine, $theme['template_engines'])) {
             return sprintf(lang('theme_does_not_support_template_engine'), $selectedTemplateEngine);
         }
@@ -439,7 +433,7 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
      */
     public function validateTemplateGroup($key, $value, $params, $rule)
     {
-        $model = ee('Model')->make('TemplateGroup', ['site_id' => $this->site_id]);
+        $model = ee('Model')->make('TemplateGroup', ['site_id' => (int) $this->input->get('site_id', 1)]);
 
         $valid = $model->validateTemplateGroupName('group_name', $value, $params, $rule);
 
@@ -454,6 +448,6 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
     {
         $generator = ee('TemplateGenerator')->makeField($fieldtype, $field, $settings);
 
-        return ($generator) ? $generator->setSiteId($this->site_id) : null;
+        return ($generator) ? $generator->setInput($this->input) : null;
     }
 }

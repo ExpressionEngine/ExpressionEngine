@@ -21,9 +21,8 @@ class Fluid extends AbstractFieldTemplateGenerator
             'fluidFieldGroups' => []
         ];
 
-        $fields = ee('Model')->get('ChannelField', $this->settings['field_channel_fields'])
-            ->order('field_label')
-            ->all();
+        $fields = ee('Model')->get('ChannelField', $this->settings['field_channel_fields'])->order('field_label')->all();
+
         foreach ($fields as $field) {
             $fieldtypeGenerator = ee('TemplateGenerator')->getFieldtype($field->field_type);
             $vars['fluidFields'][$field->field_name] = [
@@ -39,7 +38,9 @@ class Fluid extends AbstractFieldTemplateGenerator
 
             // if the field has its own generator, instantiate the field and pass to generator
             if ($generator) {
-                $vars['fluidFields'][$field->field_name] = array_merge($vars['fluidFields'][$field->field_name], $generator->getVariables());
+                $vars['fluidFields'][$field->field_name] = array_merge(
+                    $vars['fluidFields'][$field->field_name], $generator->getVariables()
+                );
             }
         }
 
@@ -47,6 +48,7 @@ class Fluid extends AbstractFieldTemplateGenerator
             ->with('ChannelFields')
             ->order('group_name')
             ->all();
+
         foreach ($fieldGroups as $group) {
             $groupFields = [];
             foreach ($group->ChannelFields as $field) {

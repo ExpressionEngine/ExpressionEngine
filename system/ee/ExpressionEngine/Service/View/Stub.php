@@ -40,16 +40,22 @@ class Stub extends View
     public function setTheme($theme)
     {
         $this->theme = $theme;
+
+        return $this;
     }
 
     public function setTemplateEngine($engine)
     {
         $this->templateEngine = $engine;
+
+        return $this;
     }
 
     public function setTemplateType($type)
     {
         $this->templateType = $type;
+
+        return $this;
     }
 
     /**

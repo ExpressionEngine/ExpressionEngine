@@ -16,14 +16,14 @@ class File extends AbstractFieldTemplateGenerator
 {
     public function getVariables(): array
     {
-        $vars = [];
         $dimensions = ee('Model')->get('FileDimension')
-            ->filter('site_id', $this->site_id);
+            ->filter('site_id', (int) $this->input->get('site_id', 1));
         if (isset($this->settings['allowed_directories']) && $this->settings['allowed_directories'] != 'all') {
             $dimensions->filter('upload_location_id', $this->settings['allowed_directories']);
         }
-        $vars['dimensions'] = $dimensions->all()->getDictionary('short_name', 'short_name');
 
-        return $vars;
+        return [
+            'dimensions' => $dimensions->all()->getDictionary('short_name', 'short_name')
+        ];
     }
 }

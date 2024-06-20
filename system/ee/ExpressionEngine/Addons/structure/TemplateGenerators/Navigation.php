@@ -22,4 +22,9 @@ class Navigation extends AbstractTemplateGenerator
         'sitemap' => ['name' => 'XML sitemap built from Structure entries', 'type' => 'xml'],
     ];
 
+    public function getVariables(): array
+    {
+        return [];
+    }
+
 }

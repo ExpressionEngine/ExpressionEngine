@@ -42,7 +42,9 @@ class Grid extends AbstractFieldTemplateGenerator
             // if the field has its own generator, instantiate the field and pass to generator
             if ($generator) {
                 $generator->settings = array_merge($this->settings, $generator->settings); // file grid settings are saved in different place
-                $vars['columns']['grid_col_' . $column->col_id] = array_merge($vars['columns']['grid_col_' . $column->col_id], $generator->getVariables());
+                $vars['columns']['grid_col_' . $column->col_id] = array_merge(
+                    $vars['columns']['grid_col_' . $column->col_id], $generator->getVariables()
+                );
             }
         }
 

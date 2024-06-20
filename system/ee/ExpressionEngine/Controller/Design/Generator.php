@@ -11,8 +11,7 @@
 namespace ExpressionEngine\Controller\Design;
 
 use ExpressionEngine\Controller\Design\AbstractDesign as AbstractDesignController;
-use ExpressionEngine\Model\Template\TemplateGroup as TemplateGroupModel;
-use ExpressionEngine\Service\Validation\Result as ValidationResult;
+use ExpressionEngine\Service\TemplateGenerator\Exceptions\ValidationException;
 
 /**
  * Template Generator Controller
@@ -65,13 +64,11 @@ class Generator extends AbstractDesignController
         foreach ($generatorsList as $key => $generator) {
             $generators[$key] = $generator->getName();
             $generatorsToggle[$key] = $key;
+            $flashData = ee()->session->flashdata($key) ?: [];
 
             foreach ($generator->getOptions() as $optionKey => $optionParams) {
                 if ($optionKey == 'site_id') {
                     continue; //always current site
-                }
-                if (isset($optionParams['callback']) && !empty($optionParams['callback'])) {
-                    $optionParams['choices'] = $generator->populateOptionCallback($optionParams['callback']);
                 }
                 if ($optionKey == 'template_engine' && count($optionParams['choices']) == 1) {
                     continue;
@@ -79,6 +76,10 @@ class Generator extends AbstractDesignController
                 if ($optionKey == 'templates') {
                     unset($optionParams['choices']['all']);
                     $optionParams['value'] = array_keys($optionParams['choices']);
+                }
+
+                if(isset($flashData[$optionKey])) {
+                    $optionParams['value'] = $flashData[$optionKey];
                 }
 
                 $options[] = [
@@ -144,11 +145,11 @@ class Generator extends AbstractDesignController
         );
         $options['template_group'] = ee('Security/XSS')->clean($options['template_group']);
 
-        // dd($options, $generatorName, $_POST);
-        $validationResult = $generator->validate($options);
+        // $validationResult = $generator->validate($options);
 
         // Single ajax field validation
         if (ee('Request')->isAjax() && ($field = ee()->input->post('ee_fv_field'))) {
+            $validationResult = $generator->validate($options);
             $_POST['ee_fv_field'] = str_replace(['[', ']', $generatorName], '', $field);
             if ($response = $this->ajaxValidation($validationResult)) {
                 return ee()->output->send_ajax_response($response);
@@ -156,11 +157,30 @@ class Generator extends AbstractDesignController
         }
 
         // Full validation
-        if (!$validationResult->isValid()) {
-            foreach ($validationResult->getFailedRules() as $field => $rules) {
+        // if (!$validationResult->isValid()) {
+        //     foreach ($validationResult->getFailedRules() as $field => $rules) {
+        //         $field = $generatorName . '[' . $field . ']';
+        //         foreach ($rules as $rule) {
+        //             $validationResult->addFailed($field, $rule);
+        //         }
+        //     }
+        //     ee('CP/Alert')->makeInline('shared-form')
+        //         ->asIssue()
+        //         ->withTitle(lang('generate_templates_error'))
+        //         ->addToBody(lang('create_template_group_error_desc'))
+        //         ->now();
+
+        //     return $validationResult;
+        // }
+
+        try {
+            $result = $generator->generate($options);
+        } catch (ValidationException $e) {
+            // Full validation
+            foreach ($e->getResult()->getFailedRules() as $field => $rules) {
                 $field = $generatorName . '[' . $field . ']';
                 foreach ($rules as $rule) {
-                    $validationResult->addFailed($field, $rule);
+                    $e->getResult()->addFailed($field, $rule);
                 }
             }
             ee('CP/Alert')->makeInline('shared-form')
@@ -168,13 +188,9 @@ class Generator extends AbstractDesignController
                 ->withTitle(lang('generate_templates_error'))
                 ->addToBody(lang('create_template_group_error_desc'))
                 ->now();
-
-            return $validationResult;;
-        }
-
-        try {
-            $result = $generator->generate($options);
+            return $e->getResult();
         } catch (\Exception $e) {
+            throw $e;
             // note: if the exception was triggered in embed, we might still get part of template
             // because embed is echo'ing stuff instead of returning
             show_error($e->getMessage());
