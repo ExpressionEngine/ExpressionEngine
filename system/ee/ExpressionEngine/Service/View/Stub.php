@@ -148,7 +148,7 @@ class Stub extends View
         $out = implode("\n", $lines);
 
         ob_start();
-        // echo $view->render($vars);
+
         echo $out;
 
         ob_end_flush();
@@ -172,8 +172,6 @@ class Stub extends View
         if ((version_compare(PHP_VERSION, '5.4.0') < 0 && @ini_get('short_open_tag') == false)) {
             echo eval('?>' . preg_replace("/;*\s*\?>/", "; ?>", str_replace('<?=', '<?php echo ', file_get_contents($this->path_for_parse))));
         } else {
-            /*dd(str_replace('?>', '?>\n', file_get_contents($this->path_for_parse)));
-            echo eval(str_replace('?>', '?>\n', file_get_contents($this->path_for_parse)));*/
             include($this->path_for_parse);
         }
 
@@ -201,15 +199,15 @@ class Stub extends View
 
         // We will look for filenames from most specific to least specific until we find a match
         $paths = ee('View/Stub')->getGeneratorStubPaths($this->provider, $this->generatorFolder, $this->theme);
-        $fileNames = array_unique([
+        $fileNames = array_unique(array_filter([
             $this->path . ee()->api_template_structure->file_extensions($this->templateType, $this->templateEngine),
-            "{$this->path}.{$this->templateEngine}",
+            $this->templateEngine ? "{$this->path}.{$this->templateEngine}" : null,
             $this->path . ee()->api_template_structure->file_extensions($this->templateType),
             $this->path,
-        ]);
+        ]));
 
-        foreach($fileNames as $fileName) {
-            foreach ($paths as $path) {
+        foreach ($paths as $path) {
+            foreach($fileNames as $fileName) {
                 $files = [
                     "$path/$fileName.php",
                     "$path/$fileName"
