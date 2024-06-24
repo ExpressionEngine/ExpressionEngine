@@ -22,7 +22,8 @@ context('channel:field tag', () => {
     })
 
     it('Field using Value/Label Pairs', () => {
-        cy.visit('admin.php?/cp/fields')
+        channel_field_form.authLoad()
+
         cy.dismissLicenseAlert()
         channel_field_form.createField({
             group_id: 1,
@@ -55,12 +56,12 @@ context('channel:field tag', () => {
             cy.get('.field_options p').eq(2).find('.value').invoke('text').should('eq', '3')
             cy.get('.field_options p').eq(2).find('.label').invoke('text').should('eq', 'three')
         })
-        
-        
+
+
     })
 
     it('Field populated manually', () => {
-        cy.authVisit('admin.php?/cp/fields')
+        channel_field_form.authLoad()
         cy.dismissLicenseAlert()
         channel_field_form.createField({
             group_id: 1,
