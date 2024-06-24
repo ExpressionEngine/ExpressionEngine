@@ -486,6 +486,10 @@ class Upload
                     $file->getFilesystem()->forceCopy($file->getAbsoluteThumbnailPath(), $original->getAbsoluteThumbnailPath());
                 }
 
+                // Remove generated files for the original file. This must run before we rename the new file's
+                // manipulations otherwise they will take the same names as the original and would be deleted
+                $original->deleteGeneratedFiles();
+
                 foreach ($file->UploadDestination->FileDimensions as $fd) {
                     $src = $file->getAbsoluteManipulationPath($fd->short_name);
                     $dest = $original->getAbsoluteManipulationPath($fd->short_name);
@@ -515,7 +519,12 @@ class Upload
 
         $action = ($file->isNew()) ? 'upload_filedata' : 'edit_file_metadata';
 
-        $file->set($_POST);
+        $file->set(array_intersect_key($_POST, array_flip([
+            'title', 'description', 'credit', 'location', 'categories',
+            'crop_width', 'crop_height', 'crop_x', 'crop_y',
+            'rotate', 'resize_width', 'resize_height'
+        ])));
+
         $file->title = (ee()->input->post('title')) ?: $file->file_name;
 
         $cats = array_key_exists('categories', $_POST) ? $_POST['categories'] : array();

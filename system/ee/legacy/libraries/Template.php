@@ -716,10 +716,11 @@ class EE_Template
                 $val = []; // undefined or empty value that is supposed to be an array
             }
             if (is_array($val)) {
-                $layout_conditionals['layout:' . $key] = true;
+                $layout_conditionals['layout:' . $key] = !empty($val);
 
                 $total_items = count($val);
                 $variables = [];
+                $item = ''; // initial value for catch-all replacement
 
                 foreach ($val as $idx => $item) {
                     $variables[] = [
@@ -3661,8 +3662,16 @@ class EE_Template
      */
     public function parse_variables($tagdata, $variables, $enable_backspace = true)
     {
-        if ($tagdata == '' or !is_array($variables) or empty($variables) or !is_array($variables[0])) {
+        if ($tagdata == '' or !is_array($variables)) {
             return $tagdata;
+        }
+
+        // When variables are empty we should still parse the added loop variables
+        if (empty($variables) or !is_array($variables[0])) {
+            return $this->parse_variables_row($tagdata, [
+                'count' => 0,
+                'total_results' => 0
+            ], false);
         }
 
         // Reset and Match date variables

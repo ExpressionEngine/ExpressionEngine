@@ -62,6 +62,11 @@ class EE_Config
             show_error('ExpressionEngine does not appear to be installed.  If you are accessing this page for the first time, please consult the user guide for installation instructions.', 503);
         }
 
+        if (array_key_exists('global_vars', $config) && is_array($config['global_vars'])) {
+            $this->_global_vars = $config['global_vars'];
+            unset($config['global_vars']);
+        }
+
         // Add the EE config data to the master CI config array
         foreach ($config as $key => $val) {
             $this->set_item($key, $val);
@@ -129,7 +134,7 @@ class EE_Config
         }
 
         // Assign global variables if they exist
-        $this->_global_vars = (! isset($params['global_vars']) or ! is_array($params['global_vars'])) ? array() : $params['global_vars'];
+        $this->_global_vars = (! isset($params['global_vars']) or ! is_array($params['global_vars'])) ? $this->_global_vars : array_merge($this->_global_vars, $params['global_vars']);
 
         $exceptions = array();
         foreach (array('site_url', 'site_index', 'site_404', 'template_group', 'template', 'cp_url', 'newrelic_app_name') as $exception) {
@@ -628,6 +633,9 @@ class EE_Config
             'allow_member_registration',
             'allow_member_localization',
             'req_mbr_activation',
+            'registration_auto_login',
+            'activation_auto_login',
+            'activation_redirect',
             'new_member_notification',
             'mbr_notification_emails',
             'require_terms_of_service',

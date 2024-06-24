@@ -2,6 +2,7 @@ const { defineConfig } = require('cypress')
 
 
 module.exports = defineConfig({
+  projectId: 'a8u2xo',
     "e2e": {
         "baseUrl": "http://localhost:8888/",
         "specPattern": "cypress/integration/!(updater)/**.ee6.js",

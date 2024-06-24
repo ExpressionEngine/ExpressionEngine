@@ -666,15 +666,8 @@ class Member_register extends Member
             $message = lang('mbr_membership_instructions_email');
         } elseif (ee()->config->item('req_mbr_activation') == 'manual') {
             $message = lang('mbr_admin_will_activate');
-        } else {
-            // Log user in (the extra query is a little annoying)
-            ee()->load->library('auth');
-            $member_data_q = ee()->db->get_where('members', array('member_id' => $member_id));
-
-            $incoming = new Auth_result($member_data_q->row());
-            $incoming->remember_me();
-            $incoming->start_session();
-
+        } elseif (ee()->config->item('registration_auto_login') === 'y' || ee()->config->item('registration_auto_login') === false) {
+            $this->startMemberSession($member_id);
             $message = lang('mbr_your_are_logged_in');
         }
 
@@ -805,18 +798,45 @@ class Member_register extends Member
         //
         // -------------------------------------------
 
-        // Upate Stats
+        $loginStateMessage = lang('mbr_may_now_log_in');
 
+        if (bool_config_item('activation_auto_login')) {
+            $this->startMemberSession($member->getId());
+            $loginStateMessage = lang('mbr_your_are_logged_in');
+        }
+
+        if (!empty(ee()->config->item('activation_redirect'))) {
+            return ee()->functions->redirect(ee()->functions->create_url(ee()->config->item('activation_redirect')));
+        }
+
+        // Upate Stats
         ee()->stats->update_member_stats();
 
         // Show success message
         $data = array('title' => lang('mbr_activation'),
             'heading' => lang('thank_you'),
-            'content' => lang('mbr_activation_success') . "\n\n" . lang('mbr_may_now_log_in'),
+            'content' => lang('mbr_activation_success') . "\n\n" . $loginStateMessage,
             'link' => array($return, $site_name)
         );
 
         ee()->output->show_message($data);
+    }
+
+    /**
+     * Helper function to authenticate and start a session for a newly activated Member
+     *
+     * @param int $member_id
+     * @return void
+     */
+    private function startMemberSession($member_id)
+    {
+        // Log user in (the extra query is a little annoying)
+        ee()->load->library('auth');
+        $member_data_q = ee()->db->get_where('members', array('member_id' => $member_id));
+
+        $incoming = new Auth_result($member_data_q->row());
+        $incoming->remember_me();
+        $incoming->start_session();
     }
 }
 // END CLASS

@@ -57,8 +57,9 @@ class EntryList
 
         $entries = ee('Model')->get('ChannelEntry')
             ->with('Channel')
-            ->fields('Channel.channel_title', 'title', 'status')
-            ->order($order_field, $order_dir);
+            ->fields('Channel.channel_title', 'title', 'status', 'entry_date')
+            ->order($order_field, $order_dir)
+            ->order('entry_id', $order_dir);
 
         if ($related == 'related') {
             $entries->filter('entry_id', 'IN', $show_selected);

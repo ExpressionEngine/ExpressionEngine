@@ -299,6 +299,13 @@ class Colorpicker_ft extends EE_Fieldtype
         ]];
     }
 
+    public function grid_display_settings($data)
+    {
+        return array(
+            'field_options' => $this->display_settings($data)['field_options_colorpicker']['settings']
+        );
+    }
+
     /**
      * Validate the settings
      *
@@ -391,10 +398,16 @@ class Colorpicker_ft extends EE_Fieldtype
             $pairs = [];
             $i = 1;
 
+            if (isset($data['value_swatches']['rows'])) {
+                $data['value_swatches'] = $data['value_swatches']['rows'];
+            }
+
             foreach ($data['value_swatches'] as $color) {
                 $name = '';
-
-                if (strpos($color, '|') !== false) {
+                if (is_array($color)) {
+                    $name = $color['name'];
+                    $color = $color['color'];
+                } elseif (strpos($color, '|') !== false) {
                     $parts = explode('|', $color);
                     $color = $parts[0];
                     $name = $parts[1];

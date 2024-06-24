@@ -1,5 +1,6 @@
 @viewport{width:extend-to-zoom;zoom:1}@font-face{font-family:FontAwesome;font-style:normal;font-weight:400;src:url(../../asset/fonts/fontawesome-webfont.eot),url(../../asset/fonts/fontawesome-webfont.eot?#iefix) format('embedded-opentype'),url(../../asset/fonts/fontawesome-webfont.woff2) format('woff2'),url(../../asset/fonts/fontawesome-webfont.woff) format('woff'),url(../../asset/fonts/fontawesome-webfont.ttf) format('truetype'),url(../../asset/fonts/fontawesome-webfont.svg#fontawesome) format('svg')}.font-wk{-webkit-font-smoothing:antialiased}
-:root, body {
+/*:root, body {*/
+.ee-cform {
     --ee-panel-bg: #fff;
     --ee-panel-border: #dfe0ef;
     --ee-input-border: #cbcbda;
@@ -1795,6 +1796,10 @@ iframe.Rte:hover {
 .ck.ck-reset_all .ck-mentions .mention-extra {
     color: #666;
 }
+.ee-cform .ck.ck-reset_all input:not([type=submit]):not([type=file]):not([type=radio]):not([type=checkbox]):not([type=color]) {
+    font-size: inherit;
+}
+
 .ck.ck-editor__main>.ck-editor__editable {
     color: var(--ck-color-base-text);
 }
@@ -3018,4 +3023,44 @@ iframe.Rte:hover {
 
 .ck.ck-balloon-panel.ck-balloon-panel_visible {
     z-index: 2000 !important;
+}
+
+.ee-cform input.ck-input::placeholder {
+  font-size: var(--ck-font-size-base);
+}
+
+.ck.ck-find-and-replace-form__actions .ck-button-find {
+    color: #5D63F1 !important;
+    background-color: #e0e2fc;
+    border-color: #e0e2fc;
+    font-weight: normal;
+    cursor: pointer;
+}
+
+.ck.ck-find-and-replace-form__actions .ck-button-find span {
+   color: #5D63F1 !important;
+}
+
+.ck.ck-find-and-replace-form__actions .ck-button-find:hover {
+    color: #5D63F1 !important;
+    background-color: #cecffb !important;
+    border-color: #cecffb !important;
+}
+
+.ck.ck-dialog {
+  background: #fff !important;
+  color: #0d0d19 !important;
+  border-color: #dfe0ef !important;
+}
+
+.ck.ck-dialog h2 {
+  color: #0d0d19 !important;
+}
+
+.ck.ck-find-and-replace-form__actions {
+  margin-top: 10px !important;
+}
+
+.ck.ck-labeled-field-view .ck-labeled-field-view__status.ck-labeled-field-view__status_error {
+    color: #FA5252 !important;
 }

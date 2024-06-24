@@ -688,15 +688,19 @@ class EE_Output
      *
      * @access  public
      * @param   string
-     * @param   bool    whether or not the response is an error
+     * @param   bool|int    HTTP status code. If boolean, status code to send.
      * @return  void
      */
-    public function send_ajax_response($msg, $error = false)
+    public function send_ajax_response($msg, $statusCode = false)
     {
         $this->enable_profiler(false);
 
-        if ($error === true) {
+        if ($statusCode === true) {
             $this->set_status_header(500);
+        } else if ($statusCode === false || (!is_int($statusCode) && !is_bool($statusCode))) {
+            $this->set_status_header(200);
+        } else {
+            $this->set_status_header($statusCode);
         }
 
         if (ee()->config->item('send_headers') == 'y') {

@@ -253,7 +253,7 @@ class EE_Upload
                 if (!empty($orientation)) {
                     $file_data = $orientation;
                 }
-                
+
                 $auto_resize = ee()->filemanager->max_hw_check($this->file_temp, $file_data);
 
                 if ($auto_resize === false) {
@@ -774,6 +774,11 @@ class EE_Upload
         $checkAsImage = true;
         if (strpos($this->file_type, 'image/svg') === 0) {
             $checkAsImage = false;
+
+            // if it's an SVG, we need to check for XSS in the SVG itself
+            if ($data !== ee('Security/XSS')->clean($data)) {
+                return false;
+            }
         }
 
         return ee('Security/XSS')->clean($data, $checkAsImage);

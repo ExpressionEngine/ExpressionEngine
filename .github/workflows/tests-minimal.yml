@@ -43,8 +43,19 @@ jobs:
                 coverage: none
                 ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
 
+          - name: Check for Organization access
+            id: organization-access
+            shell: bash
+            run: |
+              if [ "${{ secrets.ORG_ACCESS_TOKEN }}" != '' ]; then
+                echo "available=true" >> $GITHUB_OUTPUT;
+              else
+                echo "available=false" >> $GITHUB_OUTPUT;
+              fi
+
           - name: Checkout RedactorX
             uses: actions/checkout@v4
+            if: ${{ steps.organization-access.outputs.available == 'true' }}
             with:
               repository: ExpressionEngine/RedactorX
               token: ${{ secrets.ORG_ACCESS_TOKEN }}
@@ -66,14 +77,22 @@ jobs:
               content=`node -pe 'JSON.parse(process.argv[1]).tag' "$(cat build.json)"`
               echo "BUILD_VERSION=$content" >> $GITHUB_OUTPUT
 
-          - name: Run build process 
+          - name: Run full build process
             working-directory: build-tools
+            if: ${{ steps.organization-access.outputs.available == 'true' }}
             env:
               RELEASE_PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
               RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
               APP_REPO_PATH: ${{ github.workspace }}
               REDACTORX_REPO_PATH: ${{ github.workspace }}/__redactorx
             run: gulp build-app --local --nogit --head --skip-lint --skip-pro --version=${{ steps.build_json.outputs.BUILD_VERSION }}
+
+          - name: Run build process
+            working-directory: build-tools
+            if: ${{ steps.organization-access.outputs.available != 'true' }}
+            env:
+              APP_REPO_PATH: ${{ github.workspace }}
+            run: gulp build-app --local --nogit --head --skip-lint --skip-pro --skip-redactorx --version=${{ steps.build_json.outputs.BUILD_VERSION }}
 
           - name: Rename build directory
             working-directory: build-tools/builds
@@ -86,7 +105,7 @@ jobs:
               path: build-tools/builds/ExpressionEngine
               key: cache-ee-build-${{ github.sha }}
               enableCrossOsArchive: true
-          
+
           - name: Directory Listing on Failure
             if: failure()
             run: |
@@ -121,7 +140,7 @@ jobs:
               run: |
                 ls -lar build-tools/builds/ExpressionEngine/
                 cp -R build-tools/builds/ExpressionEngine/. ./
-            
+
             - name: Restore cached git history
               uses: actions/cache@v4
               with:
@@ -194,7 +213,7 @@ jobs:
               run: |
                 npm install -g maildev
                 maildev &
-            
+
             - name: Get Cypress Specs
               if: "${{ env.CYPRESS_RECORD_KEY == '' }}"
               env:

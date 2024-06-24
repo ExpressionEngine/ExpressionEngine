@@ -240,6 +240,10 @@ class EE_Exceptions
         // Replace system path
         $filepath = str_replace($syspath, '', $filepath);
         $message = str_replace($syspath, '', $message);
+		
+        if (strpos($message, 'SQLSTATE') !== false) {
+			log_message('error', 'MySQL Error: ' . $message);
+        }
 
         $message = htmlentities($message, ENT_QUOTES, 'UTF-8', false);
 

@@ -232,6 +232,11 @@ class Channel extends StructureModel
     protected $allow_preview = true;
     protected $conditional_sync_required = false;
 
+    public function get__channel_title()
+    {
+        return ee('Security/XSS')->clean($this->getRawProperty('channel_title'));
+    }
+
     /**
      * Custom validation callback to validate a comma-separated list of email
      * addresses

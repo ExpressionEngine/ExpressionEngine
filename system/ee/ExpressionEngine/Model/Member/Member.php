@@ -518,6 +518,7 @@ class Member extends ContentModel
 
     public static function onAfterBulkDelete()
     {
+        ee()->load->library('stats');
         ee()->stats->update_member_stats();
 
         // Quick and dirty private message count update; due to the order of
@@ -1220,15 +1221,16 @@ class Member extends ContentModel
      */
     public function getAllCustomFields()
     {
-        $member_cfields = ee()->session->cache('ExpressionEngine::RoleModel', 'getCustomFields');
-
-        // might be empty, so need to be specific
-        if (! is_array($member_cfields)) {
-            $member_cfields = $this->getModelFacade()->get('MemberField')->all()->asArray();
-            ee()->session->set_cache('ExpressionEngine::RoleModel', 'getCustomFields', $member_cfields);
+        $cache_key = "CustomFields";
+        if (!isset(ee()->session) || ($fields = ee()->session->cache(__CLASS__, $cache_key, false)) === false) {
+            // if there's no session (e.g. cli request), use different means of caching
+            $fields = $this->getModelFacade()->get('MemberField')->all(!isset(ee()->session))->asArray();
+            if (isset(ee()->session)) {
+                ee()->session->set_cache(__CLASS__, $cache_key, $fields);
+            }
         }
 
-        return $member_cfields;
+        return $fields;
     }
 
     /**
