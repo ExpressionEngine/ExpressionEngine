@@ -79,6 +79,7 @@ class SelectList extends React.Component {
           toggles: items[key].toggles ? items[key].toggles : null,
           status: items[key].status ? items[key].status : null,
           editable: items[key].editable ? items[key].editable : false,
+          can_edit: items[key].can_edit ? items[key].can_edit : false,
         }
 
         if (items[key].children) {
