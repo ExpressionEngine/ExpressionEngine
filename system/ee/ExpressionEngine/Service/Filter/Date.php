@@ -12,6 +12,7 @@ namespace ExpressionEngine\Service\Filter;
 
 use ExpressionEngine\Library\CP\URL;
 use ExpressionEngine\Service\View\ViewFactory;
+use ExpressionEngine\Library\Date\DateTrait;
 
 /**
  * Date Filter
@@ -26,6 +27,8 @@ use ExpressionEngine\Service\View\ViewFactory;
  */
 class Date extends Filter
 {
+    use DateTrait;
+
     /**
      * @var int The unix timestamp value of the filter
      */
@@ -53,50 +56,7 @@ class Date extends Filter
         $date_format = ee()->session->userdata('date_format', ee()->config->item('date_format'));
         ee()->javascript->set_global('date.date_format', $date_format);
 
-        $week_start = ee()->session->userdata('week_start', (ee()->config->item('week_start') ?: 'sunday'));
-        ee()->javascript->set_global('date.week_start', $week_start);
-
-        ee()->lang->loadfile('calendar');
-        ee()->javascript->set_global('lang.date.months.full', array(
-            lang('cal_january'),
-            lang('cal_february'),
-            lang('cal_march'),
-            lang('cal_april'),
-            lang('cal_may'),
-            lang('cal_june'),
-            lang('cal_july'),
-            lang('cal_august'),
-            lang('cal_september'),
-            lang('cal_october'),
-            lang('cal_november'),
-            lang('cal_december')
-        ));
-        ee()->javascript->set_global('lang.date.months.abbreviated', array(
-            lang('cal_jan'),
-            lang('cal_feb'),
-            lang('cal_mar'),
-            lang('cal_apr'),
-            lang('cal_may'),
-            lang('cal_june'),
-            lang('cal_july'),
-            lang('cal_aug'),
-            lang('cal_sep'),
-            lang('cal_oct'),
-            lang('cal_nov'),
-            lang('cal_dec')
-        ));
-        ee()->javascript->set_global('lang.date.days', array(
-            lang('cal_su'),
-            lang('cal_mo'),
-            lang('cal_tu'),
-            lang('cal_we'),
-            lang('cal_th'),
-            lang('cal_fr'),
-            lang('cal_sa'),
-        ));
-        ee()->cp->add_js_script(array(
-            'file' => array('cp/date_picker'),
-        ));
+        $this->addDatePickerScript();
 
         $value = $this->value();
         if ($value && ! array_key_exists($value, $this->options)) {

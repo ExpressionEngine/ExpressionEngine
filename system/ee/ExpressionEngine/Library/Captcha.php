@@ -15,6 +15,8 @@ namespace ExpressionEngine\Library;
  */
 class Captcha
 {
+    public $cached_captcha;
+
     /**
      * Returns a boolean indicating if a CAPTCHA should be displayed or not
      * according to the site's CAPTCHA settings
@@ -110,7 +112,7 @@ class Captcha
                 if ($filename != "." and $filename != ".." and $filename != "index.html") {
                     $name = str_replace(".jpg", "", $filename);
 
-                    if (($name + $expiration) < microtime(true)) {
+                    if ((intval($name) + $expiration) < microtime(true)) {
                         @unlink($img_path . $filename);
                     }
                 }

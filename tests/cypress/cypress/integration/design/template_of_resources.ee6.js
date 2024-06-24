@@ -151,6 +151,8 @@ context('JS and CSS templates', () => {
 				})
 			})
 
+            cy.visit('index.php/resources/index')
+
 			cy.get("#first").should('have.css', 'background-color', 'rgb(0, 255, 255)')
 
 			cy.get("#second").should('have.css', 'background-color', 'rgb(255, 0, 255)')

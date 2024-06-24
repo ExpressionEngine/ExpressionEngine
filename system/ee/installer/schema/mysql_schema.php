@@ -23,6 +23,158 @@ class EE_Schema
     public $version;
     public $userdata;
 
+    public $roles = array(
+        1 => array(
+            'name' => 'Super Admin',
+            'short_name' => 'super_admin',
+            'role_id' => 1,
+            'is_locked' => 'y',
+            'exclude_from_moderation' => 'y',
+            'include_in_authorlist' => 'y',
+            'search_flood_control' => '0',
+            'show_field_names' => 'y'
+        ),
+        2 => array(
+            'name' => 'Banned',
+            'short_name' => 'banned',
+            'role_id' => 2,
+            'is_locked' => 'n',
+            'include_in_memberlist' => 'n',
+            'search_flood_control' => '60'
+        ),
+        3 => array(
+            'name' => 'Guests',
+            'short_name' => 'guests',
+            'role_id' => 3,
+            'is_locked' => 'n',
+            'search_flood_control' => '10'
+        ),
+        4 => array(
+            'name' => 'Pending',
+            'short_name' => 'pending',
+            'role_id' => 4,
+            'is_locked' => 'n',
+            'search_flood_control' => '10'
+        ),
+        5 => array(
+            'name' => 'Members',
+            'short_name' => 'members',
+            'role_id' => 5,
+            'is_locked' => 'n',
+            'search_flood_control' => '10'
+        )
+    );
+
+    public $role_permissions = [
+        1 => [
+            'can_view_offline_system',
+            'can_access_cp',
+            'can_access_dock',
+            'can_access_footer_report_bug',
+            'can_access_footer_new_ticket',
+            'can_access_footer_user_guide',
+            'can_view_homepage_news',
+            'can_upload_new_files',
+            'can_edit_files',
+            'can_delete_files',
+            'can_upload_new_toolsets',
+            'can_edit_toolsets',
+            'can_delete_toolsets',
+            'can_create_upload_directories',
+            'can_edit_upload_directories',
+            'can_delete_upload_directories',
+            'can_access_files',
+            'can_access_design',
+            'can_access_addons',
+            'can_access_members',
+            'can_access_sys_prefs',
+            'can_access_comm',
+            'can_access_utilities',
+            'can_access_data',
+            'can_access_logs',
+            'can_admin_channels',
+            'can_create_channels',
+            'can_edit_channels',
+            'can_delete_channels',
+            'can_create_channel_fields',
+            'can_edit_channel_fields',
+            'can_delete_channel_fields',
+            'can_create_statuses',
+            'can_delete_statuses',
+            'can_edit_statuses',
+            'can_create_categories',
+            'can_create_roles',
+            'can_delete_roles',
+            'can_edit_roles',
+            'can_admin_design',
+            'can_create_members',
+            'can_edit_members',
+            'can_delete_members',
+            'can_admin_roles',
+            'can_admin_mbr_templates',
+            'can_ban_users',
+            'can_admin_addons',
+            'can_create_templates',
+            'can_edit_templates',
+            'can_delete_templates',
+            'can_create_template_groups',
+            'can_edit_template_groups',
+            'can_delete_template_groups',
+            'can_create_template_partials',
+            'can_edit_template_partials',
+            'can_delete_template_partials',
+            'can_create_template_variables',
+            'can_delete_template_variables',
+            'can_edit_template_variables',
+            'can_edit_categories',
+            'can_delete_categories',
+            'can_view_other_entries',
+            'can_edit_other_entries',
+            'can_assign_post_authors',
+            'can_delete_self_entries',
+            'can_delete_all_entries',
+            'can_view_other_comments',
+            'can_edit_own_comments',
+            'can_delete_own_comments',
+            'can_edit_all_comments',
+            'can_delete_all_comments',
+            'can_moderate_comments',
+            'can_send_cached_email',
+            'can_email_roles',
+            'can_email_from_profile',
+            'can_view_profiles',
+            'can_edit_html_buttons',
+            'can_post_comments',
+            'can_delete_self',
+            'can_send_private_messages',
+            'can_attach_in_private_messages',
+            'can_send_bulletins',
+            'can_search',
+            'can_create_entries',
+            'can_edit_self_entries',
+            'can_access_security_settings',
+            'can_access_translate',
+            'can_access_import',
+            'can_access_sql_manager',
+            'can_moderate_spam',
+            'can_manage_consents',
+        ],
+        3 => [
+            'can_view_online_system',
+        ],
+        4 => [
+            'can_view_online_system',
+        ],
+        5 => [
+            'can_view_online_system',
+            'can_email_from_profile',
+            'can_view_profiles',
+            'can_edit_html_buttons',
+            'can_delete_self',
+            'can_send_private_messages',
+            'can_attach_in_private_messages',
+        ]
+    ];
 
     private $default_engine = 'InnoDB';
 
@@ -105,12 +257,12 @@ class EE_Schema
 			total_forum_topics mediumint(8) default '0' NOT NULL,
 			total_forum_posts mediumint(8) default '0' NOT NULL,
 			total_comments mediumint(8) default '0' NOT NULL,
-			last_entry_date int(10) unsigned default '0' NOT NULL,
-			last_forum_post_date int(10) unsigned default '0' NOT NULL,
-			last_comment_date int(10) unsigned default '0' NOT NULL,
-			last_visitor_date int(10) unsigned default '0' NOT NULL,
+			last_entry_date bigint(10) unsigned default '0' NOT NULL,
+			last_forum_post_date bigint(10) unsigned default '0' NOT NULL,
+			last_comment_date bigint(10) unsigned default '0' NOT NULL,
+			last_visitor_date bigint(10) unsigned default '0' NOT NULL,
 			most_visitors mediumint(7) NOT NULL default '0',
-			most_visitor_date int(10) unsigned default '0' NOT NULL,
+			most_visitor_date bigint(10) unsigned default '0' NOT NULL,
 			last_cache_clear int(10) unsigned default '0' NOT NULL,
 			PRIMARY KEY `stat_id` (`stat_id`),
 			KEY `site_id` (`site_id`)
@@ -197,7 +349,7 @@ class EE_Schema
 
         $Q[] = "CREATE TABLE exp_password_lockout (
 			lockout_id int(10) unsigned NOT NULL auto_increment,
-			login_date int(10) unsigned NOT NULL,
+			login_date bigint(10) unsigned NOT NULL,
 			ip_address varchar(45) default '0' NOT NULL,
 			user_agent varchar(120) NOT NULL,
 			username varchar(" . USERNAME_MAX_LENGTH . ") NOT NULL,
@@ -224,10 +376,10 @@ class EE_Schema
 
         $Q[] = "CREATE TABLE exp_email_cache (
 			cache_id int(6) unsigned NOT NULL auto_increment,
-			cache_date int(10) unsigned default '0' NOT NULL,
+			cache_date bigint(10) unsigned default '0' NOT NULL,
 			total_sent int(6) unsigned NOT NULL,
 			from_name varchar(70) NOT NULL,
-			from_email varchar(75) NOT NULL,
+			from_email varchar(254) NOT NULL,
 			recipient text NOT NULL,
 			cc text NOT NULL,
 			bcc text NOT NULL,
@@ -268,7 +420,7 @@ class EE_Schema
 
         $Q[] = "CREATE TABLE exp_email_console_cache (
 			cache_id int(6) unsigned NOT NULL auto_increment,
-			cache_date int(10) unsigned default '0' NOT NULL,
+			cache_date bigint(10) unsigned default '0' NOT NULL,
 			member_id int(10) unsigned NOT NULL,
 			member_name varchar(50) NOT NULL,
 			ip_address varchar(45) default '0' NOT NULL,
@@ -294,7 +446,7 @@ class EE_Schema
 			crypt_key varchar(40) NULL DEFAULT NULL,
 			backup_mfa_code varchar(128) NULL DEFAULT NULL,
 			authcode varchar(10) NULL DEFAULT NULL,
-			email varchar(" . USERNAME_MAX_LENGTH . ") NOT NULL,
+			email varchar(254) NOT NULL,
 			signature text NULL,
 			avatar_filename varchar(120) NULL DEFAULT NULL,
 			avatar_width int(4) unsigned NULL DEFAULT NULL,
@@ -309,19 +461,19 @@ class EE_Schema
 			private_messages int(4) unsigned DEFAULT '0' NOT NULL,
 			accept_messages char(1) NOT NULL default 'y',
 			last_view_bulletins int(10) NOT NULL default 0,
-			last_bulletin_date int(10) NOT NULL default 0,
+			last_bulletin_date bigint(10) NOT NULL default 0,
 			ip_address varchar(45) default '0' NOT NULL,
-			join_date int(10) unsigned default '0' NOT NULL,
+			join_date bigint(10) unsigned default '0' NOT NULL,
 			last_visit int(10) unsigned default '0' NOT NULL,
 			last_activity int(10) unsigned default '0' NOT NULL,
 			total_entries mediumint(8) unsigned NOT NULL default '0',
 			total_comments mediumint(8) unsigned NOT NULL default '0',
 			total_forum_topics mediumint(8) default '0' NOT NULL,
 			total_forum_posts mediumint(8) default '0' NOT NULL,
-			last_entry_date int(10) unsigned default '0' NOT NULL,
-			last_comment_date int(10) unsigned default '0' NOT NULL,
-			last_forum_post_date int(10) unsigned default '0' NOT NULL,
-			last_email_date int(10) unsigned default '0' NOT NULL,
+			last_entry_date bigint(10) unsigned default '0' NOT NULL,
+			last_comment_date bigint(10) unsigned default '0' NOT NULL,
+			last_forum_post_date bigint(10) unsigned default '0' NOT NULL,
+			last_email_date bigint(10) unsigned default '0' NOT NULL,
 			in_authorlist char(1) NOT NULL default 'n',
 			accept_admin_email char(1) NOT NULL default 'y',
 			accept_user_email char(1) NOT NULL default 'y',
@@ -363,8 +515,10 @@ class EE_Schema
 			`name` varchar(100) NOT NULL,
 			`short_name` varchar(50) NOT NULL,
 			`description` text,
+			`site_color` varchar(6) NOT NULL default '',
 			`total_members` mediumint(8) unsigned NOT NULL DEFAULT '0',
 			`is_locked` char(1) NOT NULL DEFAULT 'n',
+            `highlight` varchar(6) NOT NULL default '',
 			PRIMARY KEY (`role_id`)
 		)";
 
@@ -420,6 +574,7 @@ class EE_Schema
 			`cp_homepage_channel` int(10) unsigned NOT NULL DEFAULT '0',
 			`cp_homepage_custom` varchar(100) DEFAULT NULL,
 			`require_mfa` char(1) NOT NULL DEFAULT 'n',
+			`show_field_names` char(1) NOT NULL DEFAULT 'y',
 			PRIMARY KEY (`id`),
 			KEY `role_id_site_id` (`role_id`, `site_id`)
 		)";
@@ -459,7 +614,7 @@ class EE_Schema
 			m_field_name varchar(32) NOT NULL,
 			m_field_label varchar(50) NOT NULL,
 			m_field_description text NOT NULL,
-			m_field_type varchar(12) NOT NULL default 'text',
+			m_field_type varchar(50) NOT NULL default 'text',
 			m_field_list_items text NOT NULL,
 			m_field_ta_rows tinyint(2) default '8',
 			m_field_maxl smallint(3) NULL DEFAULT NULL,
@@ -512,8 +667,8 @@ class EE_Schema
 			total_entries mediumint(8) default '0' NOT NULL,
 			total_records mediumint(8) unsigned NOT NULL DEFAULT '0',
 			total_comments mediumint(8) default '0' NOT NULL,
-			last_entry_date int(10) unsigned default '0' NOT NULL,
-			last_comment_date int(10) unsigned default '0' NOT NULL,
+			last_entry_date bigint(10) unsigned default '0' NOT NULL,
+			last_comment_date bigint(10) unsigned default '0' NOT NULL,
 			cat_group varchar(255) NULL DEFAULT NULL,
 			deft_status varchar(50) NOT NULL default 'open',
 			search_excerpt int(4) unsigned NULL DEFAULT NULL,
@@ -583,14 +738,14 @@ class EE_Schema
 			view_count_four int(10) unsigned NOT NULL default 0,
 			allow_comments varchar(1) NOT NULL default 'y',
 			sticky varchar(1) NOT NULL default 'n',
-			entry_date int(10) NOT NULL,
+			entry_date bigint(10) NOT NULL,
 			year char(4) NOT NULL,
 			month char(2) NOT NULL,
 			day char(3) NOT NULL,
-			expiration_date int(10) NOT NULL default 0,
-			comment_expiration_date int(10) NOT NULL default 0,
+			expiration_date bigint(10) NOT NULL default 0,
+			comment_expiration_date bigint(10) NOT NULL default 0,
 			edit_date bigint(14),
-			recent_comment_date int(10) NULL DEFAULT NULL,
+			recent_comment_date bigint(10) NULL DEFAULT NULL,
 			comment_total int(4) unsigned NOT NULL default 0,
 			PRIMARY KEY `entry_id` (`entry_id`),
 			KEY `channel_id` (`channel_id`),
@@ -623,14 +778,14 @@ class EE_Schema
 			view_count_four int(10) unsigned NOT NULL default 0,
 			allow_comments varchar(1) NOT NULL default 'y',
 			sticky varchar(1) NOT NULL default 'n',
-			entry_date int(10) NOT NULL,
+			entry_date bigint(10) NOT NULL,
 			year char(4) NOT NULL,
 			month char(2) NOT NULL,
 			day char(3) NOT NULL,
-			expiration_date int(10) NOT NULL default 0,
-			comment_expiration_date int(10) NOT NULL default 0,
+			expiration_date bigint(10) NOT NULL default 0,
+			comment_expiration_date bigint(10) NOT NULL default 0,
 			edit_date bigint(14),
-			recent_comment_date int(10) NULL DEFAULT NULL,
+			recent_comment_date bigint(10) NULL DEFAULT NULL,
 			comment_total int(4) unsigned NOT NULL default 0,
 			entry_data text NULL,
 			PRIMARY KEY `entry_id` (`entry_id`),
@@ -648,7 +803,7 @@ class EE_Schema
 			entry_id int(10) unsigned NOT NULL,
 			channel_id int(4) unsigned NOT NULL,
 			author_id int(10) unsigned NOT NULL,
-			version_date int(10) NOT NULL,
+			version_date bigint(10) NOT NULL,
 			version_data mediumtext NOT NULL,
 			PRIMARY KEY `version_id` (`version_id`),
 			KEY `entry_id` (`entry_id`)
@@ -722,6 +877,13 @@ class EE_Schema
 			PRIMARY KEY `channel_id_status_id` (`channel_id`, `status_id`)
 		)";
 
+        $Q[] = "CREATE TABLE exp_channel_category_groups (
+			channel_id int(6) unsigned NOT NULL,
+			group_id int(6) unsigned NOT NULL,
+			PRIMARY KEY `channel_id_group_id` (`channel_id`, `group_id`),
+			KEY `group_id` (`group_id`)
+		)";
+
         // Frontend Channel Form Settings
 
         $Q[] = "CREATE TABLE `exp_channel_form_settings` (
@@ -739,6 +901,26 @@ class EE_Schema
         // Relationships table
 
         $Q[] = "CREATE TABLE exp_relationships (
+			relationship_id int(6) UNSIGNED NOT NULL auto_increment,
+			parent_id int(10) UNSIGNED NOT NULL default 0,
+			child_id int(10) UNSIGNED NOT NULL default 0,
+			field_id int(10) UNSIGNED NOT NULL default 0,
+			fluid_field_data_id int(10) UNSIGNED NOT NULL default 0,
+			grid_field_id int(10) UNSIGNED NOT NULL default 0,
+			grid_col_id int(10) UNSIGNED NOT NULL default 0,
+			grid_row_id int(10) UNSIGNED NOT NULL default 0,
+			`order` int(10) UNSIGNED NOT NULL default 0,
+			PRIMARY KEY `relationship_id` (`relationship_id`),
+			KEY `parent_id` (`parent_id`),
+			KEY `child_id` (`child_id`),
+			KEY `field_id` (`field_id`),
+			KEY `fluid_field_data_id` (`fluid_field_data_id`),
+			KEY `grid_row_id` (`grid_row_id`)
+		)";
+
+        // Member Relationships table
+
+        $Q[] = "CREATE TABLE exp_member_relationships (
 			relationship_id int(6) UNSIGNED NOT NULL auto_increment,
 			parent_id int(10) UNSIGNED NOT NULL default 0,
 			child_id int(10) UNSIGNED NOT NULL default 0,
@@ -795,6 +977,21 @@ class EE_Schema
 			`can_delete_categories` TEXT NULL,
 			PRIMARY KEY `group_id` (`group_id`),
 			KEY `site_id` (`site_id`)
+		)";
+
+        // Category Group Settings
+
+        $Q[] = "CREATE TABLE exp_category_group_settings (
+			category_group_settings_id int(10) unsigned NOT NULL auto_increment,
+			site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
+			channel_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
+			group_id INT(6) UNSIGNED NOT NULL DEFAULT 1,
+			cat_required char(1) NOT NULL default 'n',
+			cat_allow_multiple char(1) NOT NULL default 'y',
+			PRIMARY KEY `category_group_settings_id` (`category_group_settings_id`),
+			KEY `channel_id_group_id` (`channel_id`, `group_id`),
+			KEY `site_id` (`site_id`),
+			KEY `group_id` (`group_id`)
 		)";
 
         // Category data
@@ -865,7 +1062,7 @@ class EE_Schema
 			member_id int(10) unsigned NOT NULL,
 			username varchar(" . USERNAME_MAX_LENGTH . ") NOT NULL,
 			ip_address varchar(45) default '0' NOT NULL,
-			act_date int(10) NOT NULL,
+			act_date bigint(10) NOT NULL,
 			action text NOT NULL,
 			PRIMARY KEY `id` (`id`),
 			KEY `site_id` (`site_id`)
@@ -934,7 +1131,7 @@ class EE_Schema
             template_engine varchar(24) DEFAULT NULL,
 			template_data mediumtext NULL,
 			template_notes text NULL,
-			edit_date int(10) NOT NULL DEFAULT 0,
+			edit_date bigint(10) NOT NULL DEFAULT 0,
 			last_author_id int(10) UNSIGNED NOT NULL default 0,
 			cache char(1) NOT NULL default 'n',
 			refresh int(6) unsigned NOT NULL default 0,
@@ -988,7 +1185,7 @@ class EE_Schema
 			template_subtype varchar(16) NULL,
 			template_data text NOT NULL,
 			template_notes text NULL,
-			edit_date int(10) NOT NULL DEFAULT 0,
+			edit_date bigint(10) NOT NULL DEFAULT 0,
 			last_author_id int(10) UNSIGNED NOT NULL default 0,
 			PRIMARY KEY `template_id` (`template_id`),
 			KEY `template_name` (`template_name`),
@@ -1003,7 +1200,7 @@ class EE_Schema
 			site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
 			variable_name varchar(50) NOT NULL,
 			variable_data text NOT NULL,
-			`edit_date` int(10) NOT NULL DEFAULT 0,
+			`edit_date` bigint(10) NOT NULL DEFAULT 0,
 			PRIMARY KEY `variable_id` (`variable_id`),
 			KEY `variable_name` (`variable_name`),
 			KEY `site_id` (`site_id`)
@@ -1018,7 +1215,7 @@ class EE_Schema
 			`site_id` int(4) NOT NULL,
 			`snippet_name` varchar(75) NOT NULL,
 			`snippet_contents` text NULL,
-			`edit_date` int(10) NOT NULL DEFAULT 0,
+			`edit_date` bigint(10) NOT NULL DEFAULT 0,
 			PRIMARY KEY (`snippet_id`),
 			KEY `site_id` (`site_id`)
 		)";
@@ -1032,7 +1229,7 @@ class EE_Schema
 			item_id int(10) unsigned NOT NULL,
 			item_table varchar(50) NOT NULL,
 			item_field varchar(32) NOT NULL,
-			item_date int(10) NOT NULL,
+			item_date bigint(10) NOT NULL,
 			item_author_id int(10) UNSIGNED NOT NULL,
 			item_data mediumtext NOT NULL,
 			PRIMARY KEY `tracker_id` (`tracker_id`),
@@ -1069,6 +1266,13 @@ class EE_Schema
 			KEY `site_id` (`site_id`)
 		)";
 
+        $Q[] = "CREATE TABLE exp_upload_prefs_category_groups (
+			upload_location_id int(4) unsigned NOT NULL,
+			group_id int(6) unsigned NOT NULL,
+			PRIMARY KEY `upload_location_id_group_id` (`upload_location_id`, `group_id`),
+			KEY `group_id` (`group_id`)
+		)";
+
         // Upload "no access"
         // We store the member groups that can not access various upload destinations
 
@@ -1088,7 +1292,7 @@ class EE_Schema
 			attachment_hash varchar(40) NOT NULL default '',
 			attachment_extension varchar(20) NOT NULL default '',
 			attachment_location varchar(150) NOT NULL default '',
-			attachment_date int(10) unsigned NOT NULL default 0,
+			attachment_date bigint(10) unsigned NOT NULL default 0,
 			attachment_size int(10) unsigned NOT NULL default 0,
 			is_temp char(1) NOT NULL default 'y',
 			PRIMARY KEY `attachment_id` (`attachment_id`)
@@ -1116,7 +1320,7 @@ class EE_Schema
         $Q[] = "CREATE TABLE exp_message_data (
 			message_id int(10) unsigned NOT NULL auto_increment,
 			sender_id int(10) unsigned NOT NULL default 0,
-			message_date int(10) unsigned NOT NULL default 0,
+			message_date bigint(10) unsigned NOT NULL default 0,
 			message_subject varchar(255) NOT NULL default '',
 			message_body text NOT NULL,
 			message_tracking char(1) NOT NULL default 'y',
@@ -1171,7 +1375,7 @@ class EE_Schema
         $Q[] = "CREATE TABLE `exp_member_search`(
 			`search_id` varchar(32) NOT NULL,
 			`site_id` INT(4) UNSIGNED NOT NULL DEFAULT 1,
-			`search_date` int(10) unsigned NOT NULL,
+			`search_date` bigint(10) unsigned NOT NULL,
 			`keywords` varchar(200) NOT NULL,
 			`fields` varchar(200) NOT NULL,
 			`member_id` int(10) unsigned NOT NULL,
@@ -1187,7 +1391,7 @@ class EE_Schema
 			`bulletin_id` int(10) unsigned NOT NULL auto_increment,
 			`sender_id` int(10) unsigned NOT NULL,
 			`bulletin_group` int(8) unsigned NOT NULL,
-			`bulletin_date` int(10) unsigned NOT NULL,
+			`bulletin_date` bigint(10) unsigned NOT NULL,
 			`hash` varchar(10) NOT NULL DEFAULT '',
 			`bulletin_expires` int(10) unsigned NOT NULL DEFAULT 0,
 			`bulletin_message` text NOT NULL,
@@ -1263,9 +1467,9 @@ class EE_Schema
 			`credit` varchar(255) DEFAULT NULL,
 			`location` varchar(255) DEFAULT NULL,
 			`uploaded_by_member_id` int(10) unsigned DEFAULT '0',
-			`upload_date` int(10) DEFAULT NULL,
+			`upload_date` bigint(10) DEFAULT NULL,
 			`modified_by_member_id` int(10) unsigned DEFAULT '0',
-			`modified_date` int(10) DEFAULT NULL,
+			`modified_date` bigint(10) DEFAULT NULL,
 			`file_hw_original` varchar(20) NOT NULL DEFAULT '',
 			`total_records` int(10) unsigned DEFAULT '0',
 			PRIMARY KEY (`file_id`),
@@ -1306,9 +1510,11 @@ class EE_Schema
 		)";
 
         $Q[] = "CREATE TABLE `exp_file_usage` (
+            `file_usage_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`file_id` int(10) unsigned NOT NULL,
 			`entry_id` int(10) unsigned NOT NULL DEFAULT '0',
 			`cat_id` int(10) unsigned NOT NULL DEFAULT '0',
+            PRIMARY KEY (`file_usage_id`),
 			KEY `file_id` (`file_id`),
 			KEY `entry_id` (`entry_id`),
 			KEY `cat_id` (`cat_id`)
@@ -1433,8 +1639,10 @@ class EE_Schema
 		)";
 
         $Q[] = "CREATE TABLE `exp_dashboard_layout_widgets` (
+            `dashboard_layout_widgets_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`layout_id` int(10) unsigned NOT NULL,
 			`widget_id` int(10) unsigned NOT NULL,
+            PRIMARY KEY (`dashboard_layout_widgets_id`),
 			KEY `layouts_widgets` (`layout_id`, `widget_id`)
 		)";
 
@@ -1475,15 +1683,17 @@ class EE_Schema
 			`consent_request_id` int(10) unsigned NOT NULL,
 			`request` mediumtext,
 			`request_format` varchar(255) NOT NULL DEFAULT '',
-			`create_date` int(10) NOT NULL DEFAULT '0',
+			`create_date` bigint(10) NOT NULL DEFAULT '0',
 			`author_id` int(10) unsigned NOT NULL DEFAULT '0',
 			PRIMARY KEY (`consent_request_version_id`),
 			KEY `consent_request_id` (`consent_request_id`)
 		)";
 
         $Q[] = "CREATE TABLE `exp_consent_request_version_cookies` (
+            `consent_request_version_cookies_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`consent_request_version_id` int(10) unsigned NOT NULL,
 			`cookie_id` int(10) unsigned NOT NULL,
+            PRIMARY KEY (`consent_request_version_cookies_id`),
 			KEY `consent_request_version_cookies` (`consent_request_version_id`, `cookie_id`)
 		)";
 
@@ -1496,8 +1706,8 @@ class EE_Schema
 			`request_format` varchar(255) NOT NULL DEFAULT '',
 			`consent_given` char(1) NOT NULL DEFAULT 'n',
 			`consent_given_via` varchar(32) DEFAULT NULL,
-			`expiration_date` int(10) DEFAULT NULL,
-			`response_date` int(10) DEFAULT NULL,
+			`expiration_date` bigint(10) DEFAULT NULL,
+			`response_date` bigint(10) DEFAULT NULL,
 			PRIMARY KEY (`consent_id`),
 			KEY `consent_request_version_id` (`consent_request_version_id`),
 			KEY `member_id` (`member_id`)
@@ -1511,7 +1721,7 @@ class EE_Schema
 			`ip_address` varchar(45) default '0' NOT NULL,
 			`user_agent` varchar(120) NOT NULL,
 			`action` text NOT NULL,
-			`log_date` int(10) NOT NULL DEFAULT '0',
+			`log_date` bigint(10) NOT NULL DEFAULT '0',
 			PRIMARY KEY (`consent_audit_id`),
 			KEY `consent_request_id` (`consent_request_id`),
 			KEY `consent_request_version_id` (`consent_request_version_id`)
@@ -1547,6 +1757,17 @@ class EE_Schema
 			`columns` text NOT NULL,
 			PRIMARY KEY (`view_id`),
 			KEY `viewtype_upload_id_member_id` (`viewtype`, `upload_id`, `member_id`)
+		);";
+
+        // member manager
+        $Q[] = "CREATE TABLE `exp_member_manager_views` (
+			`view_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+			`role_id` int(6) unsigned NOT NULL,
+			`member_id` int(10) unsigned NOT NULL,
+			`name` varchar(128) NOT NULL DEFAULT '',
+			`columns` text NOT NULL,
+			PRIMARY KEY (`view_id`),
+			KEY `role_id_member_id` (`role_id`, `member_id`)
 		);";
 
         // Default menu set
@@ -1625,53 +1846,11 @@ class EE_Schema
 
         $Q[] = ee()->db->insert_string('sites', $site);
 
-        // Roles
-        $roles = array(
-            array(
-                'name' => 'Super Admin',
-                'short_name' => 'super_admin',
-                'role_id' => 1,
-                'is_locked' => 'y',
-                'exclude_from_moderation' => 'y',
-                'include_in_authorlist' => 'y',
-                'search_flood_control' => '0'
-            ),
-            array(
-                'name' => 'Banned',
-                'short_name' => 'banned',
-                'role_id' => 2,
-                'is_locked' => 'n',
-                'include_in_memberlist' => 'n',
-                'search_flood_control' => '60'
-            ),
-            array(
-                'name' => 'Guests',
-                'short_name' => 'guests',
-                'role_id' => 3,
-                'is_locked' => 'n',
-                'search_flood_control' => '10'
-            ),
-            array(
-                'name' => 'Pending',
-                'short_name' => 'pending',
-                'role_id' => 4,
-                'is_locked' => 'n',
-                'search_flood_control' => '10'
-            ),
-            array(
-                'name' => 'Members',
-                'short_name' => 'members',
-                'role_id' => 5,
-                'is_locked' => 'n',
-                'search_flood_control' => '10'
-            )
-        );
-
         $add_quotes = function ($value) {
             return (is_string($value)) ? "'{$value}'" : $value;
         };
 
-        foreach ($roles as $role) {
+        foreach ($this->roles as $role) {
             $Q[] = "INSERT INTO exp_roles
 				(role_id, name, short_name, is_locked)
 				VALUES (" . $role['role_id'] . ", '" . $role['name'] . "', '" . $role['short_name'] . "', '" . $role['is_locked'] . "')";
@@ -1685,118 +1864,7 @@ class EE_Schema
 				VALUES (" . implode(', ', array_map($add_quotes, $role)) . ")";
         }
 
-        $role_permissions = [
-            1 => [
-                'can_view_offline_system',
-                'can_access_cp',
-                'can_access_dock',
-                'can_access_footer_report_bug',
-                'can_access_footer_new_ticket',
-                'can_access_footer_user_guide',
-                'can_view_homepage_news',
-                'can_upload_new_files',
-                'can_edit_files',
-                'can_delete_files',
-                'can_upload_new_toolsets',
-                'can_edit_toolsets',
-                'can_delete_toolsets',
-                'can_create_upload_directories',
-                'can_edit_upload_directories',
-                'can_delete_upload_directories',
-                'can_access_files',
-                'can_access_design',
-                'can_access_addons',
-                'can_access_members',
-                'can_access_sys_prefs',
-                'can_access_comm',
-                'can_access_utilities',
-                'can_access_data',
-                'can_access_logs',
-                'can_admin_channels',
-                'can_create_channels',
-                'can_edit_channels',
-                'can_delete_channels',
-                'can_create_channel_fields',
-                'can_edit_channel_fields',
-                'can_delete_channel_fields',
-                'can_create_statuses',
-                'can_delete_statuses',
-                'can_edit_statuses',
-                'can_create_categories',
-                'can_create_roles',
-                'can_delete_roles',
-                'can_edit_roles',
-                'can_admin_design',
-                'can_create_members',
-                'can_edit_members',
-                'can_delete_members',
-                'can_admin_roles',
-                'can_admin_mbr_templates',
-                'can_ban_users',
-                'can_admin_addons',
-                'can_create_templates',
-                'can_edit_templates',
-                'can_delete_templates',
-                'can_create_template_groups',
-                'can_edit_template_groups',
-                'can_delete_template_groups',
-                'can_create_template_partials',
-                'can_edit_template_partials',
-                'can_delete_template_partials',
-                'can_create_template_variables',
-                'can_delete_template_variables',
-                'can_edit_template_variables',
-                'can_edit_categories',
-                'can_delete_categories',
-                'can_view_other_entries',
-                'can_edit_other_entries',
-                'can_assign_post_authors',
-                'can_delete_self_entries',
-                'can_delete_all_entries',
-                'can_view_other_comments',
-                'can_edit_own_comments',
-                'can_delete_own_comments',
-                'can_edit_all_comments',
-                'can_delete_all_comments',
-                'can_moderate_comments',
-                'can_send_cached_email',
-                'can_email_roles',
-                'can_email_from_profile',
-                'can_view_profiles',
-                'can_edit_html_buttons',
-                'can_post_comments',
-                'can_delete_self',
-                'can_send_private_messages',
-                'can_attach_in_private_messages',
-                'can_send_bulletins',
-                'can_search',
-                'can_create_entries',
-                'can_edit_self_entries',
-                'can_access_security_settings',
-                'can_access_translate',
-                'can_access_import',
-                'can_access_sql_manager',
-                'can_moderate_spam',
-                'can_manage_consents',
-            ],
-            3 => [
-                'can_view_online_system',
-            ],
-            4 => [
-                'can_view_online_system',
-            ],
-            5 => [
-                'can_view_online_system',
-                'can_email_from_profile',
-                'can_view_profiles',
-                'can_edit_html_buttons',
-                'can_delete_self',
-                'can_send_private_messages',
-                'can_attach_in_private_messages',
-            ]
-        ];
-
-        foreach ($role_permissions as $role_id => $permissions) {
+        foreach ($this->role_permissions as $role_id => $permissions) {
             foreach ($permissions as $permission) {
                 $Q[] = "INSERT INTO exp_permissions (site_id, role_id, permission) VALUES(1, $role_id, '$permission')";
             }
@@ -1820,7 +1888,7 @@ class EE_Schema
         }
 
         // Default fieldtypes
-        $default_fts = array('select', 'text', 'number', 'textarea', 'date', 'duration', 'email_address', 'file', 'fluid_field', 'grid', 'file_grid', 'multi_select', 'checkboxes', 'radio', 'relationship', 'rte', 'slider', 'range_slider', 'toggle', 'url', 'colorpicker', 'selectable_buttons', 'notes');
+        $default_fts = array('select', 'text', 'number', 'textarea', 'date', 'duration', 'email_address', 'file', 'fluid_field', 'grid', 'file_grid', 'multi_select', 'checkboxes', 'radio', 'relationship', 'rte', 'slider', 'range_slider', 'toggle', 'url', 'colorpicker', 'selectable_buttons', 'notes', 'member');
 
         foreach ($default_fts as $name) {
             $addon_setup_path = SYSPATH . '/ee/ExpressionEngine/Addons/' . $name . '/addon.setup.php';

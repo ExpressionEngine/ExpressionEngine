@@ -70,8 +70,10 @@ context('Upload Destinations on MSM sites', () => {
   })
 
   it('Upload an image', () => {
+	// Cleaning up before we upload
     cy.task('filesystem:delete', '../../uploads/programming.gif')
     cy.task('filesystem:delete', '../../uploads/_thumbs/programming.gif')
+
     cy.authVisit('admin.php?/cp/files')
     cy.get('.sidebar').contains('Dir 2').click()
 

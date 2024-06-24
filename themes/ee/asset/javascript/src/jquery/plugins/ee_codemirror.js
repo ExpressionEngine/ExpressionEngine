@@ -61,7 +61,7 @@ function detectUseTabs(code)
 	return (spacelength > tablength) ? false : true;
 }
 
-function createCodeMirror(code_textarea)
+function createCodeMirror(code_textarea, mode = "ee")
 {
 	var orig_height = code_textarea.height();
 
@@ -74,7 +74,7 @@ function createCodeMirror(code_textarea)
 		autoCloseBrackets: true,
 		styleActiveLine: true,
 		showCursorWhenSelecting: true,
-		mode: "ee",
+		mode: mode,
 		smartIndent: false,
 		indentWithTabs: usetabs,
 		lint: EE.codemirror_linter
@@ -109,7 +109,7 @@ function createCodeMirror(code_textarea)
 	return cm;
 }
 
-$.fn.toggleCodeMirror = function () {
+$.fn.toggleCodeMirror = function (mode = "ee") {
 
 	this.each(function() {
 
@@ -119,7 +119,7 @@ $.fn.toggleCodeMirror = function () {
 			editor = textarea.data('codemirror.editor');
 
 		if (typeof(initialized) === 'undefined' || ( ! initialized && ! disabled) || (initialized && disabled)) {
-			editor = createCodeMirror(textarea);
+			editor = createCodeMirror(textarea, mode);
 			store.removeItem('codemirror.disabled');
 			textarea.data('codemirror.editor', editor);
 		} else if (initialized) {

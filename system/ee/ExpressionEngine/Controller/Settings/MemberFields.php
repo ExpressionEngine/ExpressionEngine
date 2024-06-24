@@ -8,23 +8,21 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace ExpressionEngine\Controller\Members;
+namespace ExpressionEngine\Controller\Settings;
 
-use CP_Controller;
-use ExpressionEngine\Library\CP;
 use ExpressionEngine\Library\CP\Table;
 use ExpressionEngine\Service\Filter\FilterFactory;
-use ExpressionEngine\Controller\Members;
 
 /**
  * Member Fields Controller
  */
-class Fields extends Members\Members
+class MemberFields extends Settings
 {
     protected $perpage;
     protected $params;
     protected $page = 1;
     protected $offset = 0;
+    protected $base_url;
 
     /**
      * Constructor
@@ -39,8 +37,7 @@ class Fields extends Members\Members
 
         ee()->lang->loadfile('members');
         ee()->lang->loadfile('channel');
-        $this->base_url = ee('CP/URL')->make('members/fields');
-        $this->generateSidebar('fields');
+        $this->base_url = ee('CP/URL')->make('settings/member-fields');
     }
 
     /**
@@ -81,7 +78,7 @@ class Fields extends Members\Members
             'sort_dir' => $sort_dir,
             'limit' => $this->perpage,
             'reorder' => true,
-            'save' => ee('CP/URL')->make("members/fields/order")
+            'save' => ee('CP/URL')->make("settings/member-fields/order")
         ));
 
         $table->setColumns(
@@ -106,7 +103,7 @@ class Fields extends Members\Members
         $table->setNoResultsText(
             sprintf(lang('no_found'), lang('custom_member_fields')),
             'add_new',
-            ee('CP/URL')->make('members/fields/create')
+            ee('CP/URL')->make('settings/member-fields/create')
         );
 
         $data = array();
@@ -131,16 +128,10 @@ class Fields extends Members\Members
 
         $fields = $fields->all();
 
-        $type_map = array(
-            'text' => lang('text_input'),
-            'textarea' => lang('textarea'),
-            'select' => lang('select_dropdown'),
-            'date' => lang('date'),
-            'url' => lang('url')
-        );
+        $type_map = ee('Model')->make('MemberField')->getUsableFieldtypes('MemberField');
 
         foreach ($fields as $field) {
-            $edit_url = ee('CP/URL')->make('members/fields/edit/' . $field->m_field_id);
+            $edit_url = ee('CP/URL')->make('settings/member-fields/edit/' . $field->m_field_id);
             $toolbar = array('toolbar_items' => array(
                 'edit' => array(
                     'href' => $edit_url,
@@ -180,8 +171,8 @@ class Fields extends Members\Members
 
         $table->setData($fieldData);
         $data['table'] = $table->viewData($this->base_url);
-        $data['form_url'] = ee('CP/URL')->make('members/fields/delete');
-        $data['new'] = ee('CP/URL')->make('members/fields/create');
+        $data['form_url'] = ee('CP/URL')->make('settings/member-fields/delete');
+        $data['new'] = ee('CP/URL')->make('settings/member-fields/create');
         $base_url = $data['table']['base_url'];
 
         if (! empty($data['table']['data'])) {
@@ -202,7 +193,7 @@ class Fields extends Members\Members
             ->withTitle(lang('member_field_ajax_reorder_fail'))
             ->addToBody(lang('member_field_ajax_reorder_fail_desc'));
 
-        ee()->javascript->set_global('member_fields.reorder_url', ee('CP/URL')->make('members/fields/order/')->compile());
+        ee()->javascript->set_global('member_fields.reorder_url', ee('CP/URL')->make('settings/member-fields/order/')->compile());
         ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());
 
         ee()->view->base_url = $this->base_url;
@@ -210,7 +201,6 @@ class Fields extends Members\Members
         ee()->view->cp_page_title = lang('custom_profile_fields');
 
         ee()->view->cp_breadcrumbs = array(
-            ee('CP/URL')->make('members')->compile() => lang('members'),
             '' => lang('custom_member_fields')
         );
 
@@ -220,8 +210,7 @@ class Fields extends Members\Members
     public function create()
     {
         ee()->view->cp_breadcrumbs = array(
-            ee('CP/URL')->make('members')->compile() => lang('members'),
-            ee('CP/URL')->make('members/fields')->compile() => lang('custom_member_fields'),
+            ee('CP/URL')->make('settings/member-fields')->compile() => lang('custom_member_fields'),
             '' => lang('create_member_field')
         );
 
@@ -231,8 +220,7 @@ class Fields extends Members\Members
     public function edit($id)
     {
         ee()->view->cp_breadcrumbs = array(
-            ee('CP/URL')->make('members')->compile() => lang('members'),
-            ee('CP/URL')->make('members/fields')->compile() => lang('custom_member_fields'),
+            ee('CP/URL')->make('settings/member-fields')->compile() => lang('custom_member_fields'),
             '' => lang('edit_member_field')
         );
 
@@ -293,22 +281,14 @@ class Fields extends Members\Members
 
     private function form($field_id = null)
     {
-        $fieldtype_choices = [
-            'date' => lang('date'),
-            'text' => lang('text_input'),
-            'textarea' => lang('textarea'),
-            'select' => lang('select_dropdown'),
-            'url' => lang('url'),
-        ];
-
         if ($field_id) {
             $field = ee('Model')->get('MemberField', array($field_id))->first();
 
-            $fieldtype_choices = array_intersect_key($fieldtype_choices, $field->getCompatibleFieldtypes());
+            $fieldtype_choices = array_intersect_key($field->getUsableFieldtypes('MemberField'), $field->getCompatibleFieldtypes());
 
             ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('field'));
             ee()->view->cp_page_title = lang('edit_member_field');
-            ee()->view->base_url = ee('CP/URL')->make('members/fields/edit/' . $field_id);
+            ee()->view->base_url = ee('CP/URL')->make('settings/member-fields/edit/' . $field_id);
         } else {
             // Only auto-complete field short name for new fields
             ee()->cp->add_js_script('plugin', 'ee_url_title');
@@ -319,16 +299,23 @@ class Fields extends Members\Members
 			');
 
             $field = ee('Model')->make('MemberField');
+            $fieldtype_choices = $field->getUsableFieldtypes('MemberField');
             $field->field_type = 'text';
 
             ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('field'));
             ee()->view->cp_page_title = lang('create_member_field');
-            ee()->view->base_url = ee('CP/URL')->make('members/fields/create');
+            ee()->view->base_url = ee('CP/URL')->make('settings/member-fields/create');
         }
 
         if (! $field) {
             show_error(lang('unauthorized_access'), 403);
         }
+
+        $fieldtypes = ee('Model')->get('Fieldtype')
+            ->fields('name')
+            ->filter('name', 'IN', array_keys($fieldtype_choices))
+            ->order('name')
+            ->all();
 
         ee()->lang->loadfile('admin_content');
 
@@ -341,13 +328,7 @@ class Fields extends Members\Members
                         'm_field_type' => array(
                             'type' => 'dropdown',
                             'choices' => $fieldtype_choices,
-                            'group_toggle' => array(
-                                'date' => 'date',
-                                'text' => 'text',
-                                'textarea' => 'textarea',
-                                'select' => 'select',
-                                'url' => 'url'
-                            ),
+                            'group_toggle' => $fieldtypes->getDictionary('name', 'name'),
                             'value' => $field->field_type
                         )
                     )
@@ -428,14 +409,28 @@ class Fields extends Members\Members
             )
         );
 
-        $vars['sections'] = array_merge($vars['sections'], $field->getSettingsForm());
+        $field_options = $field->getSettingsForm();
+        if (is_array($field_options) && ! empty($field_options)) {
+            $vars['sections'] = array_merge($vars['sections'], $field_options);
+        }
 
-        // These are currently the only fieldtypes we allow; get their settings forms
-        foreach (array_keys($fieldtype_choices) as $fieldtype) {
-            if ($field->field_type != $fieldtype) {
+        foreach ($fieldtypes as $fieldtype) {
+            // If editing an option field, populate the dummy fieldtype with the
+            // same settings to make switching between the different types easy
+            if (! $field->isNew()) {
+                $dummy_field = clone $field;
+            } else {
                 $dummy_field = ee('Model')->make('MemberField');
-                $dummy_field->field_type = $fieldtype;
-                $vars['sections'] = array_merge($vars['sections'], $dummy_field->getSettingsForm());
+            }
+            $dummy_field->field_type = $fieldtype->name;
+
+            if ($fieldtype->name == $field->field_type) {
+                continue;
+            }
+
+            $field_options = $dummy_field->getSettingsForm();
+            if (is_array($field_options) && ! empty($field_options)) {
+                $vars['sections'] = array_merge($vars['sections'], $field_options);
             }
         }
 
@@ -472,10 +467,16 @@ class Fields extends Members\Members
                     ->addToBody(lang('member_field_saved_desc'))
                     ->defer();
 
-                ee()->functions->redirect(ee('CP/URL')->make('/members/fields'));
+                if (ee('Request')->post('submit') == 'save_and_new') {
+                    $redirectUrl = ee('CP/URL')->make('/settings/member-fields/create');
+                } elseif (ee()->input->post('submit') == 'save_and_close') {
+                    $redirectUrl = ee('CP/URL')->make('/settings/member-fields');
+                } else {
+                    $redirectUrl = ee('CP/URL')->make('/settings/member-fields/edit/' . $field->field_id);
+                }
+                ee()->functions->redirect($redirectUrl);
             } else {
-                ee()->load->library('form_validation');
-                ee()->form_validation->_error_array = $result->renderErrors();
+                $vars['errors'] = $result;
                 ee('CP/Alert')->makeInline('shared-form')
                     ->asIssue()
                     ->withTitle(lang('member_field_not_saved'))
@@ -484,8 +485,31 @@ class Fields extends Members\Members
             }
         }
 
+        $vars['buttons'] = [
+            [
+                'name' => 'submit',
+                'type' => 'submit',
+                'value' => 'save',
+                'text' => 'save',
+                'working' => 'btn_saving'
+            ],
+            [
+                'name' => 'submit',
+                'type' => 'submit',
+                'value' => 'save_and_new',
+                'text' => 'save_and_new',
+                'working' => 'btn_saving'
+            ],
+            [
+                'name' => 'submit',
+                'type' => 'submit',
+                'value' => 'save_and_close',
+                'text' => 'save_and_close',
+                'working' => 'btn_saving'
+            ]
+        ];
+
         ee()->view->ajax_validate = true;
-        ee()->view->save_btn_text_working = 'btn_saving';
 
         ee()->javascript->output('$(document).ready(function () {
 			EE.cp.fieldToggleDisable(null, "m_field_type");

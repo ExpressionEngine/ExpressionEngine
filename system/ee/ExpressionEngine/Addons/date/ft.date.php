@@ -8,11 +8,15 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+use ExpressionEngine\Library\Date\DateTrait;
+
 /**
  * Date Fieldtype
  */
 class Date_ft extends EE_Fieldtype
 {
+    use DateTrait;
+
     public $info = array(
         'name' => 'Date',
         'version' => '1.0.0'
@@ -86,10 +90,7 @@ class Date_ft extends EE_Fieldtype
             $data = $this->_parse_date($data);
         }
 
-        if (
-            $data === false or is_null($data)
-            or (is_numeric($data) && ($data > 2147483647 or $data < -2147483647))
-        ) {
+        if ($data === false or is_null($data)) {
             return lang('invalid_date');
         }
 
@@ -172,55 +173,16 @@ class Date_ft extends EE_Fieldtype
             $date = $field_data;
         }
 
-        ee()->lang->loadfile('calendar');
+        $include_seconds = ee()->session->userdata('include_seconds', ee()->config->item('include_seconds'));
+        $show_time_on_fe = isset($this->settings['localization']) ? get_bool_from_string($this->settings['show_time']) : false;
 
         ee()->javascript->set_global('date.date_format', ee()->localize->get_date_format(false, $include_time));
-        $week_start = ee()->session->userdata('week_start', (ee()->config->item('week_start') ?: 'sunday'));
-        ee()->javascript->set_global('date.week_start', $week_start);
+        ee()->javascript->set_global('date.include_seconds', $include_seconds);
+        ee()->javascript->set_global('date.time_format', ee()->session->userdata('time_format', ee()->config->item('time_format')));
 
-        ee()->javascript->set_global('lang.date.months.full', array(
-            lang('cal_january'),
-            lang('cal_february'),
-            lang('cal_march'),
-            lang('cal_april'),
-            lang('cal_may'),
-            lang('cal_june'),
-            lang('cal_july'),
-            lang('cal_august'),
-            lang('cal_september'),
-            lang('cal_october'),
-            lang('cal_november'),
-            lang('cal_december')
-        ));
-        ee()->javascript->set_global('lang.date.months.abbreviated', array(
-            lang('cal_jan'),
-            lang('cal_feb'),
-            lang('cal_mar'),
-            lang('cal_apr'),
-            lang('cal_may'),
-            lang('cal_june'),
-            lang('cal_july'),
-            lang('cal_aug'),
-            lang('cal_sep'),
-            lang('cal_oct'),
-            lang('cal_nov'),
-            lang('cal_dec')
-        ));
-        ee()->javascript->set_global('lang.date.days', array(
-            lang('cal_su'),
-            lang('cal_mo'),
-            lang('cal_tu'),
-            lang('cal_we'),
-            lang('cal_th'),
-            lang('cal_fr'),
-            lang('cal_sa'),
-        ));
-        ee()->cp->add_js_script(array(
-            'file' => array('cp/date_picker'),
-        ));
+        $this->addDatePickerScript();
 
         $localized = (! isset($_POST[$date_local])) ? (($localize === true) ? 'y' : 'n') : ee()->input->post($date_local, true);
-
         $show_localize_options = 'ask';
         if (isset($this->settings['localization']) && $this->settings['localization'] == 'fixed') {
             $show_localize_options = 'fixed';
@@ -236,7 +198,8 @@ class Date_ft extends EE_Fieldtype
             'localize_option_name' => $date_local,
             'localized' => $localized,
             'date_format' => ee()->localize->get_date_format(false, $include_time),
-            'disabled' => $this->get_setting('field_disabled')
+            'disabled' => $this->get_setting('field_disabled'),
+            'include_time' => $include_time,
         ));
     }
 
@@ -389,7 +352,7 @@ class Date_ft extends EE_Fieldtype
     public function settings_modify_column($data)
     {
         $fields['field_id_' . $data['field_id']] = array(
-            'type' => 'INT',
+            'type' => 'BIGINT',
             'constraint' => 10,
             'default' => 0
         );

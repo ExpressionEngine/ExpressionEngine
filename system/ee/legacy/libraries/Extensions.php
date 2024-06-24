@@ -154,6 +154,13 @@ class EE_Extensions
 
         if ($automatically_load_path) {
             if (! file_exists($extension_path)) {
+                $error = 'Unable to load the following extension file:<br /><br />' . 'ext.' . $name . '.php';
+
+                //if this is early loaded extension, and the session is not set yet
+                //we have no other solution that just show the error
+                if (!isset(ee()->session)) {
+                    return ee()->output->fatal_error($error);
+                }
 
                 $can_view_system = false;
                 if (
@@ -173,7 +180,6 @@ class EE_Extensions
                 if (REQ != 'ACTION' && $can_view_system !== true) {
                     return ee()->output->system_off_msg();
                 }
-                $error = 'Unable to load the following extension file:<br /><br />' . 'ext.' . $name . '.php';
 
                 return ee()->output->fatal_error($error);
             }

@@ -2,7 +2,7 @@
 
 	<div class="login__logo">
 		<?php if (ee('pro:Access')->hasRequiredLicense() && ee()->config->item('login_logo')) : ?>
-		<img src="<?=ee()->config->item('login_logo')?>" alt="Powered by ExpressionEngine&reg;">
+		<img src="<?=ee()->config->item('login_logo')?>" alt="<?=ee()->config->item('site_name')?>">
 		<?php else: ?>
 		<?php $this->embed('ee:_shared/ee-logo')?>
 		<?php endif; ?>
@@ -16,7 +16,7 @@
 	<?=form_open(ee('CP/URL')->make('login/authenticate'), array(), array('return_path' => $return_path, 'after' => $after))?>
 		<fieldset>
 			<div class="field-instruct">
-				<?=lang('username', 'username')?>
+				<label for="username"><?=lang('username')?> / <?=lang('email')?></label>
 			</div>
 			<?=form_input(array('dir' => 'ltr', 'name' => "username", 'id' => "username", 'value' => $username, 'maxlength' => USERNAME_MAX_LENGTH, 'tabindex' => 1))?>
 		</fieldset>
