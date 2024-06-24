@@ -682,22 +682,15 @@ class Fluid_field_ft extends EE_Fieldtype
                             }, $field_data),
                             'field_name' => $field_group->short_name,
                         ]);
-
-                        $fields .= ee('View')->make($view)->render($viewData);
                     } else {
-                        foreach ($field_data as $field_datum) {
-                            $field = $field_datum->getField();
-
-                            $field->setName($this->name() . '[fields][field_' . $field_datum->getId() . '][field_group_id_0][field_id_' . $field->getId() . ']');
-
-                            $viewData = array_merge($viewData, [
-                               'field' => $field,
-                               'field_name' => $field_datum->ChannelField->field_name,
-                            ]);
-
-                            $fields .= ee('View')->make($view)->render($viewData);
-                        }
+                        $field = $field_data[0]->getField();
+                        $field->setName($this->name() . '[fields][field_' . $field_data[0]->getId() . '][field_group_id_0][field_id_' . $field->getId() . ']');
+                        $viewData = array_merge($viewData, [
+                            'field' => $field,
+                            'field_name' => $field_data[0]->ChannelField->field_name,
+                        ]);
                     }
+                    $fields .= ee('View')->make($view)->render($viewData);
                 }
             }
         // This happens when we have a validation issue and data was not saved
