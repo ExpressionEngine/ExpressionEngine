@@ -1,14 +1,10 @@
 /// <reference types="Cypress" />
 
 import Publish from '../../elements/pages/publish/Publish';
-import ForumTab from '../../elements/pages/publish/ForumTab';
 import FileModal from '../../elements/pages/publish/FileModal';
 import FluidField from '../../elements/pages/publish/FluidField';
-import EntryManager from '../../elements/pages/publish/EntryManager';
-import ChannelFieldForm from '../../elements/pages/channel/ChannelFieldForm';
 
 const page = new Publish;
-const edit = new EntryManager;
 const fluid_field = new FluidField;
 let file_modal = new FileModal;
 
@@ -86,7 +82,7 @@ context('Publish Entry with Fluid', () => {
         cy.wait(5000)
         cy.get('[data-input-value="field_channel_field_groups"] input[type=checkbox][value=1]').check();
 
-        cy.get('body').type('{ctrl}', {release: false}).type('s')
+        cy.get('body').type('{ctrl}', { release: false }).type('s')
 
         cy.visit(Cypress._.replace(page.url, '{channel_id}', 3))
         page.get('title').type("Fluid Field Test the First")
@@ -95,12 +91,40 @@ context('Publish Entry with Fluid', () => {
 
         cy.get('.fluid__footer a').contains('Add News').click();
 
-        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-fieldset:visible').contains('News')
-        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').should('have.length', 4);
-        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').eq(0).should('contain', 'Body')
-        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').eq(1).should('contain', 'Extended text')
-        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').eq(2).should('contain', 'Image')
-        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').eq(3).should('contain', 'Item')
+        // Check that News Group fields are visible and set some test values
+        cy.get('.fluid__item[data-field-type="field_group"]').first().within(() => {
+            cy.get('.fluid__item-fieldset:visible').contains('News')
+            cy.get('.fluid__item-field:visible').should('have.length', 4);
+
+            cy.get('.fluid__item-field:visible').eq(0)
+                .should('contain', 'Body')
+                .find('textarea').type('News Body Textarea')
+
+            cy.get('.fluid__item-field:visible').eq(1)
+                .should('contain', 'Extended text')
+                .find('textarea').type('News Extended Textarea')
+
+            cy.get('.fluid__item-field:visible').eq(2).should('contain', 'Image')
+            cy.get('.fluid__item-field:visible').eq(2).within(() => {
+                cy.get('button:contains("Choose Existing")').click()
+                cy.get('button:contains("Choose Existing")').next('.dropdown').find('a:contains("About")').click()
+                cy.document().its('body').within(() => {
+                    file_modal.get('files').should('be.visible')
+                    file_modal.get('files').eq(0).click()
+                    page.get('modal').should('not.exist')
+                })
+            })
+
+            cy.get('.fluid__item-field:visible').eq(3).should('contain', 'Item')
+            cy.get('.fluid__item-field:visible').eq(3)
+                .find('.js-dropdown-toggle:contains("Relate Entry")')
+                .click()
+                .next('.dropdown.dropdown--open').find('.dropdown__link:visible').eq(0).click();
+                cy.document().its('body').within(() => {
+                    page.get('title').click()
+                })
+
+        })
 
         page.get('save').click()
         //cy.screenshot({capture: 'fullPage'});
@@ -108,12 +132,14 @@ context('Publish Entry with Fluid', () => {
 
         // Make sure the fields stuck around after save
         cy.log('Make sure the fields stuck around after save')
-        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-fieldset:visible').contains('News')
-        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').should('have.length', 4);
-        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').eq(0).should('contain', 'Body')
-        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').eq(1).should('contain', 'Extended text')
-        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').eq(2).should('contain', 'Image')
-        cy.get('.fluid__item[data-field-type="field_group"] .fluid__item-field:visible').eq(3).should('contain', 'Item')
+        cy.get('.fluid__item[data-field-type="field_group"]').first().within(() => {
+            cy.get('.fluid__item-fieldset:visible').contains('News')
+            cy.get('.fluid__item-field:visible').should('have.length', 4);
+            cy.get('.fluid__item-field:visible').eq(0).should('contain', 'Body')
+            cy.get('.fluid__item-field:visible').eq(1).should('contain', 'Extended text')
+            cy.get('.fluid__item-field:visible').eq(2).should('contain', 'Image')
+            cy.get('.fluid__item-field:visible').eq(3).should('contain', 'Item')
+        })
 
         page.get('save').click()
 
@@ -121,16 +147,39 @@ context('Publish Entry with Fluid', () => {
 
         page.get('alert').contains('Entry Updated')
 
-        cy.visit('index.php/entries/complex-w-fluid')
+        cy.visit('index.php/entries/fluid-group/fluid-field-test-first')
         cy.hasNoErrors();
-      })
 
-      it('adds a field to Fluid', () => {
+        // Check contents
+        cy.get('.tag__news_body').contains('News Body Textarea');
+        cy.get('.tag__news_body.modifier__length').contains('18');
+        cy.get('.tag__news_extended').contains('News Extended Textarea');
+        cy.get('.tag__news_extended.modifier__attr_safe').contains('News Extended Textarea');
+        cy.get('.tag__news_image').contains('staff_jane.png');
+        cy.get('.tag__news_image.modifier__resize').contains('staff_jane_resize_');
+        cy.get('.tag__rel_item').contains('About the Label');
+        cy.get('.tag__rel_item.modifier__length').contains('15');
 
-        available_fields.forEach(function(field, index) {
-          fluid_field.get('actions_menu.fields').eq(index).click()
+        // Check meta
+        cy.get('.field__news_body .meta__index').contains('0')
+        cy.get('.field__news_body .meta__current_fieldtype').contains('textarea')
+        cy.get('.field__news_extended .meta__index_in_group').contains('1')
+        cy.get('.field__news_extended .meta__current_fieldtype').contains('textarea')
+        cy.get('.field__news_image .meta__count').contains('3')
+        cy.get('.field__news_image .meta__current_fieldtype').contains('file')
+        cy.get('.field__rel_item .meta__count_in_group').contains('4')
+        cy.get('.field__rel_item .meta__current_fieldtype').contains('relationship')
+        cy.get('.meta__current_group_short_name').contains('news');
+        cy.get('.meta__first_group').contains('1')
+        cy.get('.meta__total_fields').contains('4')
+    })
 
-          fluid_field.get('items').eq(index).find('label').contains(field)
+    it('adds a field to Fluid', () => {
+
+        available_fields.forEach(function (field, index) {
+            fluid_field.get('actions_menu.fields').eq(index).click()
+
+            fluid_field.get('items').eq(index).find('label').contains(field)
         })
 
         page.get('save').click()
@@ -211,9 +260,6 @@ context('Publish Entry with Fluid', () => {
         })
       })
 
-      // This cannot be tested headlessly yet. See test_statuses.rb:37
-      // it('s fields', () => {
-      // }
 
       it('removes fields from Fluid', () => {
         // First: without saving
