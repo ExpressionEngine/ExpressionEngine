@@ -297,7 +297,7 @@ class Factory
                         }
                         $this->ftStubsAndGenerators[$fieldtype] = [
                             'stub' => $provider->getPrefix() . ':' . $stub,
-                            'docs_url' => $provider->get('docs_url') ?? $provider->get('author_url'),
+                            'docs_url' => $metadata['docs_url'] ?? ($provider->get('docs_url') ?? $provider->get('author_url')),
                             'generator' => $generator,
                             'is_tag_pair' => (isset($instance->has_array_data) && $instance->has_array_data === true)
                         ];
