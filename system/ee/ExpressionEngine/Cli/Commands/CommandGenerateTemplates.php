@@ -53,6 +53,7 @@ class CommandGenerateTemplates extends Cli
      */
     public function handle()
     {
+        // Get all the template generators
         $generatorsList = ee('TemplateGenerator')->registerAllTemplateGenerators();
 
         // do we need to just list all possible generators?
@@ -91,15 +92,23 @@ class CommandGenerateTemplates extends Cli
             $this->info('generate_templates_started');
         }
 
-        //get the generator to use
-        $askText = lang('command_generate_templates_ask_generator');
-        array_walk($generatorsList, function ($generator, $key) use (&$askText) {
-            $name = $generator->getName();
-            $askText .= "\n" . $key . ' : ' . $name;
-        });
-        $askText .= "\n: ";
-        $generatorKey = $this->getFirstUnnamedArgument($askText, null, true);
+        // Get the generator from the first argument
+        $generatorKey = $this->getFirstUnnamedArgument();
 
+        // If its not a valid generator, ask the user to select one
+        if (!$generatorKey || !isset($generatorsList[$generatorKey])) {
+            $askText = lang('command_generate_templates_ask_generator');
+
+            $genList = [];
+            array_walk($generatorsList, function ($generator, $key) use (&$genList) {
+                $name = $generator->getName();
+                $genList[$key] = $name;
+            });
+
+            $generatorKey = $this->askFromList($askText, $genList, null);
+        }
+
+        // Check to see if the generator is valid
         if (!isset($generatorsList[$generatorKey])) {
             $this->fail('command_generate_templates_invalid_generator');
         }
@@ -130,6 +139,7 @@ class CommandGenerateTemplates extends Cli
             }
             $normalizedOptions[$command] = isset($optionParams['desc']) ? $optionParams['desc'] : $option;
         }
+
         $this->commandOptions = array_merge($normalizedOptions, $this->commandOptions);
         $this->loadOptions(); // need to have those re-loaded now
 
@@ -160,9 +170,9 @@ class CommandGenerateTemplates extends Cli
                     $askText .= "\n - " . $key . " : " . lang($val);
                 }
                 if ($optionParams['type'] == 'checkbox') {
-                    $askText .= "\n" . lang('separate_choices_commas') . ":";
+                    $askText .= "\n\n" . lang('separate_choices_commas') . ":";
                 } else {
-                    $askText .= "\n: ";
+                    $askText .= "\n\n: ";
                 }
             }
             $optionValue = $this->getOptionOrAsk(
@@ -181,7 +191,7 @@ class CommandGenerateTemplates extends Cli
             }
             $this->data['options'][$option] = $optionValue;
 
-            // if there is validation rule for this option, process it (e.g. template group needs to be unique)
+            // if there is a validation rule for this option, process it (e.g. template group needs to be unique)
             $validationResult = $generator->validatePartial($this->data['options']);
             if ($validationResult->isNotValid() && $validationResult->hasErrors($option)) {
                 $this->fail(implode("\n", $validationResult->getErrors($option)));
@@ -190,6 +200,7 @@ class CommandGenerateTemplates extends Cli
 
         try {
             $this->info('command_generate_templates_building_templates');
+            $this->info('');
             $result = $generator->generate($this->data['options'], !$showOnly);
 
             foreach ($result['templates'] as $templateName => $template) {
@@ -205,6 +216,7 @@ class CommandGenerateTemplates extends Cli
             $this->fail(addslashes($e->getMessage()));
         }
 
+        $this->info('');
         $this->info('generate_templates_created_successfully');
     }
 }
