@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?='<?xml version="1.0"?>'."\n"?>
 <rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/">
     <channel>
         <title>{site_name}</title>
