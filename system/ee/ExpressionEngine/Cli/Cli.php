@@ -450,6 +450,34 @@ class Cli
         return $result ? addslashes($result) : $default;
     }
 
+    public function askFromList($question, $options, $default = '')
+    {
+        $this->output->outln(lang($question));
+
+        $optionNumber = 1;
+        // numbered list of options
+        foreach ($options as $key => $option) {
+            $this->output->outln(" {$optionNumber}. {$key} : {$option}");
+            $optionNumber++;
+        }
+
+        $this->output->outln('');
+        $this->output->out('Selection: ');
+
+        $result = (string) $this->input->in();
+
+        // If the result is a number, we can use it to get the key
+        if (is_numeric($result)) {
+            $keys = array_keys($options);
+            // if the result is one of the keys, return the key
+            if (isset($keys[$result - 1])) {
+                $result = $keys[$result - 1];
+            }
+        }
+
+        return $result ? addslashes($result) : $default;
+    }
+
     public function getFirstUnnamedArgument($question = null, $default = null, $required = false)
     {
         $argument = isset($this->arguments[0]) ? $this->arguments[0] : null;
