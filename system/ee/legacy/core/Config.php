@@ -326,6 +326,10 @@ class EE_Config
                 }
 
                 $config['site_bootstrap_checksums'] = unserialize($data);
+            } elseif ($name == 'site_color') {
+                if (! isset($config['site_color'])) {
+                  $config[str_replace('sites_', 'site_', $name)] = $data;
+                }
             } else {
                 $config[str_replace('sites_', 'site_', $name)] = $data;
             }
