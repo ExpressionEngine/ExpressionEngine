@@ -87,6 +87,12 @@ class Updater
     private function modifyDateColumns()
     {
         $dateColumns = [
+            "search" => [
+                "search_date" => "bigint(10) unsigned NOT NULL",
+            ],
+            "search_log" => [
+                "search_date" => "bigint(10) unsigned NOT NULL",
+            ],
             "stats" => [
                 "last_entry_date" => "bigint(10) unsigned default '0' NOT NULL",
                 "last_forum_post_date" => "bigint(10) unsigned default '0' NOT NULL",
