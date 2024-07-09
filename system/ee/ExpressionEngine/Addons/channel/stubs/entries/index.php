@@ -19,7 +19,7 @@
 
                         {!-- End field: <?=$field['field_label']?> --}
                     </div>
-                <?php endforeach; ?>
+                <?php endforeach; ?> 
             {/exp:channel:entries}
         </div>
     </body>
