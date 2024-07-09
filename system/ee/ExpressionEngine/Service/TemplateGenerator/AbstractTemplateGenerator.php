@@ -34,6 +34,14 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
     protected $templates = [];
 
     /**
+     * A list of supporting templates that should be included during generation
+     *
+     *
+     * @var array
+     */
+    protected $includes = [];
+
+    /**
      * Custom options supported by this generator
      *
      * @var array
@@ -106,6 +114,40 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
         return $this->getProvider()->getPrefix();
     }
 
+    /**
+     * Get a list of includes for given a set of $templates
+     * The following formats are supported for $this->includes =
+     * [
+     *      // Included for ANY template, and template type = 'webpage'
+     *      '_layout',
+     *      // Included when 'index' or 'single' are chosen, and template type = 'webpage'
+     *      'embed' => ['templates' => ['index', 'single']],
+     *      // Included for ANY Template, and template type = 'feed'
+     *      'rssEmbed' => ['type' => 'feed'],
+     *      // Included with the 'sitemap' template, and template type = 'xml'
+     *      'xmlEmbed' => ['templates' => ['sitemap'], 'type' => 'xml']
+     * ]
+     */
+    public function getIncludes($templates)
+    {
+        return array_reduce(array_keys($this->includes), function($carry, $key) use ($templates) {
+            $defaults = ['templates' => null, 'type' => 'webpage'];
+            $value = $this->includes[$key];
+
+            if(is_int($key)) {
+                $carry[$value] = array_merge($defaults, ['name' => $value]);
+            }else{
+                $value = array_merge($defaults, $value);
+
+                if(empty($value['templates']) || !empty(array_intersect_key($templates, $value['templates']))) {
+                    $carry[$key] = array_merge($value, ['name' => $key]);
+                }
+            }
+
+            return $carry;
+        }, []);
+    }
+
     public function generate($input, $save = true)
     {
         $validationResult = ($save) ? $this->validate($input) : $this->validatePartial(array_filter($input));
@@ -134,6 +176,9 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
         if (empty($templates)) {
             throw new \Exception(lang('generate_templates_no_templates'));
         }
+
+        // Add any includes for the specified templates
+        $templates = array_merge($templates, $this->getIncludes($templates));
 
         // we'll start with index templates
         if (isset($templates['index'])) {

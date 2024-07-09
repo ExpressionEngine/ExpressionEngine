@@ -210,33 +210,33 @@
                 {if logged_in}
                     <p>Logged in as <b>{username}</b></p>
                     <ul>
-                        <li><a href="{path=members/logout}">Logout ✔</a></li>
-                        <li><a href="{path=members/delete}">Delete</a></li>
-                        <li><a href="{path=members/profile}">View Profile</a></li>
-                        <li><a href="{path=members/profile-edit}">Edit Profile</a></li>
-                        <li><a href="{path=members/invite}">Invite</a></li>
+                        <li><a href="{path=<?=$template_group?>/logout}">Logout ✔</a></li>
+                        <li><a href="{path=<?=$template_group?>/delete}">Delete</a></li>
+                        <li><a href="{path=<?=$template_group?>/profile}">View Profile</a></li>
+                        <li><a href="{path=<?=$template_group?>/profile-edit}">Edit Profile</a></li>
+                        <li><a href="{path=<?=$template_group?>/invite}">Invite</a></li>
                     </ul>
                 {if:else}
                     <p>Logged out</p>
                     <ul>
-                        <li><a href="{path=members/login}">Login ✔</a>
+                        <li><a href="{path=<?=$template_group?>/login}">Login ✔</a>
                             <ul>
-                                <li><a href="{path=members/forgot-password}">Forgot Password ✔</a></li>
-                                <li><a href="{path=members/forgot-username}">Forgot Username ✔</a></li>
-                                <li><a href="{path=members/reset-password}">Reset Password ✔</a></li>
+                                <li><a href="{path=<?=$template_group?>/forgot-password}">Forgot Password ✔</a></li>
+                                <li><a href="{path=<?=$template_group?>/forgot-username}">Forgot Username ✔</a></li>
+                                <li><a href="{path=<?=$template_group?>/reset-password}">Reset Password ✔</a></li>
                             </ul>
                         </li>
-                        <li><a href="{path=members/registration}">Register ✔</a></li>
-                        <li><a href="{path=members/registration-custom}">Register - Custom ✔</a></li>
+                        <li><a href="{path=<?=$template_group?>/registration}">Register ✔</a></li>
+                        <li><a href="{path=<?=$template_group?>/registration-custom}">Register - Custom ✔</a></li>
                     </ul>
                 {/if}
 
                 <ul>
-                    <li><a href="{path=members/members}">Members</a></li>
-                    <li><a href="{path=members/search}">Search for Members</a></li>
-                    <li><a href="{path=members/results}">Search Results</a></li>
-                    <li><a href="{path=members/role-groups}">Role Groups</a></li>
-                    <li><a href="{path=members/roles}">Roles</a></li>
+                    <li><a href="{path=<?=$template_group?>/members}">Members</a></li>
+                    <li><a href="{path=<?=$template_group?>/search}">Search for Members</a></li>
+                    <li><a href="{path=<?=$template_group?>/results}">Search Results</a></li>
+                    <li><a href="{path=<?=$template_group?>/role-groups}">Role Groups</a></li>
+                    <li><a href="{path=<?=$template_group?>/roles}">Roles</a></li>
                 </ul>
             </div>
             <section class="docs-content-wrapper">

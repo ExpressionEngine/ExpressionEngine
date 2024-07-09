@@ -1,4 +1,4 @@
-{layout="members/_layout"}
+{layout="<?=$template_group?>/_layout"}
 
 <h1>Forgot Username Form</h1>
 
@@ -15,10 +15,10 @@
     {/if}
 
     {exp:member:forgot_username_form
-        return="members/login/forgot-username"
+        return="<?=$template_group?>/login/forgot-username"
         inline_errors="yes"
         email_subject="Your Username"
-        email_template="members/email-forgot-username"
+        email_template="<?=$template_group?>/email-forgot-username"
         }
 
         {if errors}
@@ -36,6 +36,6 @@
 
         <p><input type="submit" name="submit" value="Submit" /></p>
 
-        <p><a href="{path='members/login'}">Login</a> &nbsp; &nbsp; <a href="{path='members/registration'}">Register</a></p>
+        <p><a href="{path='<?=$template_group?>/login'}">Login</a> &nbsp; &nbsp; <a href="{path='<?=$template_group?>/registration'}">Register</a></p>
     {/exp:member:forgot_username_form}
 </div>

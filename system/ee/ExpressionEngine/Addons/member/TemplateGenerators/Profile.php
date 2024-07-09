@@ -26,6 +26,10 @@ class Profile extends AbstractTemplateGenerator
         'edit-profile' => 'Edit member profile page'
     ];
 
+    protected $includes = [
+        '_layout'
+    ];
+
     public function getVariables(): array
     {
         ee()->load->library('session'); //getAllCustomFields requires session

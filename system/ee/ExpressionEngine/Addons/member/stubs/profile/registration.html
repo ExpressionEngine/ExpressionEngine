@@ -1,4 +1,4 @@
-{layout="members/_layout"}
+{layout="<?=$template_group?>/_layout"}
 
 <h1>Member Registration</h1>
 
@@ -15,16 +15,16 @@
 
         <h4>Go forth and do stuff!</h4>
     {if:else}
-        <p>You can now <a href="{path=members/login}">login</a>.</p>
+        <p>You can now <a href="{path=<?=$template_group?>/login}">login</a>.</p>
         <p>Depending on your member activation settings you will receive an email to confirm your registration.</p>
     {/if}
 {if:elseif logged_in}
     <p>You are already registered and logged in.</p>
 
-    <p><a class="btn btn-primary" href="{path=members/profile}">Go to Profile</a> &nbsp;&nbsp;&nbsp; <a class="btn btn-sm btn-warning" href="{path=logout}">Logout</a></p>
+    <p><a class="btn btn-primary" href="{path=<?=$template_group?>/profile}">Go to Profile</a> &nbsp;&nbsp;&nbsp; <a class="btn btn-sm btn-warning" href="{path=logout}">Logout</a></p>
 {if:else}
     {exp:member:registration_form
-        return="members/registration/success"
+        return="<?=$template_group?>/registration/success"
         inline_errors="no"
         }
 

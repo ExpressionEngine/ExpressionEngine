@@ -1,4 +1,4 @@
-{layout="members/_layout"}
+{layout="<?=$template_group?>/_layout"}
 
 <h1>Login Form</h1>
 
@@ -14,7 +14,7 @@
         </div>
     {/if}
 
-    {exp:member:login_form return="members/index"}
+    {exp:member:login_form return="<?=$template_group?>/index"}
         <p>
             <label>Username</label><br />
             <input type="text" name="username" value="" maxlength="32" size="25" />
@@ -35,6 +35,6 @@
 
         <p><input type="submit" name="submit" value="Submit" /></p>
 
-        <p><a href="{path='members/forgot-password'}">Forgot password?</a> &nbsp; &nbsp; <a href="{path='members/forgot-username'}">Forgot username?</a></p>
+        <p><a href="{path='<?=$template_group?>/forgot-password'}">Forgot password?</a> &nbsp; &nbsp; <a href="{path='<?=$template_group?>/forgot-username'}">Forgot username?</a></p>
     {/exp:member:login_form}
 </div>

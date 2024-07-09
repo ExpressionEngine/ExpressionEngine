@@ -1,4 +1,4 @@
-{layout="members/_layout"}
+{layout="<?=$template_group?>/_layout"}
 
 <h1>Member Listing</h1>
 
@@ -11,10 +11,10 @@
     {/if}
 
     {exp:member:memberlist
-        return="members/login/forgot-username"
+        return="<?=$template_group?>/login/forgot-username"
         inline_errors="yes"
         email_subject="Your Username"
-        email_template="members/email-forgot-username"
+        email_template="<?=$template_group?>/email-forgot-username"
         }
 
         {if errors}
