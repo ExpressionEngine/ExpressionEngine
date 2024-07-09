@@ -165,6 +165,7 @@ class Stub extends View
     {
         $this->path_for_parse = $path;
 
+        // Extract all variables to local scope so they can be used in the view
         extract($vars);
 
         ob_start();
@@ -172,6 +173,7 @@ class Stub extends View
         if ((version_compare(PHP_VERSION, '5.4.0') < 0 && @ini_get('short_open_tag') == false)) {
             echo eval('?>' . preg_replace("/;*\s*\?>/", "; ?>", str_replace('<?=', '<?php echo ', file_get_contents($this->path_for_parse))));
         } else {
+            // Include the stub file in a scope with the variables available
             include($this->path_for_parse);
         }
 

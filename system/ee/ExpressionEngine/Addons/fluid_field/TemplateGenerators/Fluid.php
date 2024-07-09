@@ -66,7 +66,7 @@ class Fluid extends AbstractFieldTemplateGenerator
 
                 // if the field has its own generator, instantiate the field and pass to generator
                 if ($generator) {
-                    $groupFields = array_merge($groupFields, $generator->getVariables());
+                    $groupFields[$field->field_name] = array_merge($groupFields[$field->field_name], $generator->getVariables());
                 }
             }
             $vars['fluidFieldGroups'][$group->short_name] = $groupFields;
