@@ -18,16 +18,19 @@ class Profile extends AbstractTemplateGenerator
 
     protected $templates = [
         'index' => 'Members list page',
+        'search' => 'Member search page',
         'registration' => 'New member registration',
-        'login' => 'Member login page',
+        'login' => 'Login page',
+        'logout' => 'Logout page',
         'forgot-password' => 'Forgot password page',
         'reset-password' => 'Reset password page',
-        'profile' => 'Public member profile page',
-        'edit-profile' => 'Edit member profile page'
+        'profile' => 'Public profile page',
+        'edit-profile' => 'Edit profile page'
     ];
 
     protected $includes = [
-        '_layout'
+        '_layout',
+        'index' => ['templates' => 'search']
     ];
 
     public function getVariables(): array
