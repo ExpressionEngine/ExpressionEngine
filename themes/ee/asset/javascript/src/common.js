@@ -1269,4 +1269,9 @@ $(document).ready(function(){
 			return false;
 		})
 
+		$('body').on('click', '.js-lv-banner__close-btn', function(e) {
+			e.preventDefault();
+			$('.lv-banner').hide();
+		})
+
 }); // close (document).ready

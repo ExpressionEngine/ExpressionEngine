@@ -68,6 +68,27 @@ $current_page = ee()->uri->segment(2);
             endif; ?>
             <div class="ee-main" role="main">
 
+        <section class="lv-banner">
+            <!-- For Site maintainers we need to use class `alert--error`-->
+            <!-- For Content Admins we need to use class `alert--warning`-->
+            <div class="lv-banner__inner alert alert--error">
+                <div class="lv-banner__info alert__content">
+                    <p class="alert__title">Please note, the following licenses have expired in your ExpressionEngine Install.</p>
+                    <p>We recommend they are renewed to ensure the smoothest operating ExpressionEngine Site, and to maintain access to updates, as well as bug and security fixes:</p>
+                    <p class="lv-banner__addons-list">
+                        <span><a href="#">ExpressionEngine</a></span>,
+                        <span><a href="#">Add-on 1</a></span>,
+                        <span><a href="#">Add-on 2</a></span>
+                        +
+                        <a href="#">3 more</a>
+                    </p>
+                </div>
+                <a class="js-lv-banner__close-btn alert__close">
+                    <i class="fal fa-times alert__close-icon"></i>
+                </a>
+            </div>
+        </section>
+
         <?php if (!isset($hide_topbar) || $hide_topbar != true) : ?>
         <div class="ee-main-header <?php if (!empty($head['class']) ): echo $head['class']; endif ?>">
 
