@@ -23083,6 +23083,14 @@ dialog {
   margin-bottom: 20px;
 }
 
+.lv-banner__inner {
+  margin-bottom: 0;
+}
+.lv-banner__inner .lv-banner__addons-list span a {
+  color: var(--ee-text-primary);
+  font-weight: 500;
+}
+
 .button-group,
 .button-group-vertical {
   position: relative;
