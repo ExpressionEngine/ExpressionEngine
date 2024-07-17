@@ -235,7 +235,6 @@
                 <ul>
                     <li><a href="{path=<?=$template_group?>/}">Members</a></li>
                     <li><a href="{path=<?=$template_group?>/search}">Search for Members</a></li>
-                    <li><a href="{path=<?=$template_group?>/results}">Search Results</a></li>
                 </ul>
             </div>
             <section class="docs-content-wrapper">
