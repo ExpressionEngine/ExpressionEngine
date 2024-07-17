@@ -25,7 +25,9 @@ class Profile extends AbstractTemplateGenerator
         'forgot-password' => 'Forgot password page',
         'reset-password' => 'Reset password page',
         'profile' => 'Public profile page',
-        'edit-profile' => 'Edit profile page'
+        'edit-profile' => 'Edit profile page',
+        'roles' => 'List roles for current member',
+        'role-groups' => 'List role groups for current member',
     ];
 
     protected $includes = [
