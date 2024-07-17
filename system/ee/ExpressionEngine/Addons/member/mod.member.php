@@ -2577,7 +2577,7 @@ class Member
         $vars = [];
         // Role groups that are assigned directly to member
         foreach ($member->RoleGroups as $roleGroup) {
-            if ($roleGroup->group_id === 0 && $roleGroup->name === null) {
+            if ($roleGroup->group_id === 0 && empty($roleGroup->name)) {
                 continue;
             }
 
