@@ -1,16 +1,12 @@
 {layout="<?=$template_group?>/_layout"}
 
+<h1>Role Groups</h1>
+
 <div class="result">
-
-  <h1>Role Groups</h1>
-
-  {if logged_in}
-    <h2>Your member role groups:</h2>
-    <ul>
-      {exp:member:role_groups}
-        <li>{role_group_name} ({role_group_id})</li>
-      {/exp:member:role_groups}
-    </ul>
-  {/if}
-
+  <h2>Your member role groups:</h2>
+  <ul>
+    {exp:member:role_groups}
+      <li>{role_group_name} ({role_group_id})</li>
+    {/exp:member:role_groups}
+  </ul>
 </div>

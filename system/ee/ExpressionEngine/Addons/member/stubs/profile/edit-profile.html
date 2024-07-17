@@ -10,91 +10,100 @@
     <h4>Edited successfully!</h4>
 {/if}
 
-{exp:member:edit_profile
-        return="<?=$template_group?>/edit-profile/success"
-        include_assets="yes"
-        datepicker="yes"
-    }
+<div class="result">
 
-    <p>* Required fields</p>
-    <fieldset>
-        <h4>Profile</h4>
+    {exp:member:edit_profile
+            return="<?=$template_group?>/edit-profile/success"
+            include_assets="yes"
+            datepicker="yes"
+        }
 
-        <p>
-            <label for="username">Username*:</label><br />
-            <input type="text" name="username" id="username" value="{username}" /><br />
-        </p>
+        <p>* Required fields</p>
+        <fieldset>
+            <h4>Profile</h4>
 
-        <p>
-            <label for="email">Email:</label><br />
-            <input type="text" name="email" id="email" value="{email}" /><br />
-        </p>
+            <p>
+                <label for="username">Username*:</label><br />
+                <input type="text" name="username" id="username" value="{username}" /><br />
+            </p>
 
-        <p>
-            <label for="password">Password:</label><br />
-            <input type="password" name="password" id="password" value="" />
-        </p>
+            <p>
+                <label for="email">Email:</label><br />
+                <input type="text" name="email" id="email" value="{email}" /><br />
+            </p>
 
-        <p>
-            <label for="password_confirm">Confirm password*:</label><br />
-            <input type="password" name="password_confirm" id="password_confirm" value="" />
-        </p>
+            <p>
+                <label for="password">Password:</label><br />
+                <input type="password" name="password" id="password" value="" />
+            </p>
 
-        <p>
-            <label for="current_password">Current password*:</label><br />
-            <em>You <b>must</b> enter your current password to change your password, username or email.</em>
-            <input type="password" name="current_password" id="current_password" value="" />
-        </p>
+            <p>
+                <label for="password_confirm">Confirm password*:</label><br />
+                <input type="password" name="password_confirm" id="password_confirm" value="" />
+            </p>
+
+            <p>
+                <label for="current_password">Current password*:</label><br />
+                <em>You <b>must</b> enter your current password to change your password, username or email.</em>
+                <input type="password" name="current_password" id="current_password" value="" />
+            </p>
 
 
-        {custom_profile_fields}
-        <p>
-            <label>{lang:profile_field}</label><br>
-            <small>{lang:profile_field_description}</small><br>
+            {custom_profile_fields}
+            <p>
+                <label>{lang:profile_field}</label><br>
+                <small>{lang:profile_field_description}</small><br>
 
-            {form:custom_profile_field}
+                {form:custom_profile_field}
 
-        </p>
-        {/custom_profile_fields}
+            </p>
+            {/custom_profile_fields}
 
-    </fieldset>
-    <input type="submit" value="Save" class="btn btn-primary" />
-{/exp:member:edit_profile}
+            <input type="submit" value="Save" class="btn btn-primary" />
+
+        </fieldset>
+    {/exp:member:edit_profile}
+</div>
 
 <hr>
 
+
 <h2>Edit your avatar</h2>
 
-{exp:member:edit_avatar return="{segment_1}/profile-avatar"}
+<div class="result">
+    {exp:member:edit_avatar return="{segment_1}/profile-avatar"}
 
-    Current Avatar:
-    {if avatar}
-        My avatar: <img src="{avatar_url}" border="0" width="{avatar_width}" height="{avatar_height}" />
-    {/if}
+        Current Avatar:
+        {if avatar}
+            My avatar: <img src="{avatar_url}" border="0" width="{avatar_width}" height="{avatar_height}" />
+        {/if}
 
-    {if no_avatar}No avatar{/if}
+        {if no_avatar}No avatar{/if}
 
-    <div>
-        Upload an avatar: <input type="file" name="userfile" size="20" class="input" /><br>
-    </div>
+        <div>
+            Upload an avatar: <input type="file" name="userfile" size="20" class="input" /><br>
+        </div>
 
-    <input type='submit' class='submit' value='Upload Avatar' />
+        <input type='submit' class='submit' value='Upload Avatar' />
 
-    {if avatar}
-        <input type='submit' class='submit' value='Remove Avatar' name="remove" />
-    {/if}
+        {if avatar}
+            <input type='submit' class='submit' value='Remove Avatar' name="remove" />
+        {/if}
 
-{/exp:member:edit_avatar}
+    {/exp:member:edit_avatar}
+</div>
 
 <hr>
 
 
 <h2>Multi-Factor Authentication</h2>
 
-{exp:member:mfa_links}
-    {if mfa_enabled}
-        <a href="{disable_mfa_link}">Disable MFA</a>
-    {if:else}
-        <a href="{enable_mfa_link}">Enable MFA</a>
-    {/if}
-{/exp:member:mfa_links}
+<div class="result">
+    {exp:member:mfa_links}
+        {if mfa_enabled}
+            <a href="{disable_mfa_link}">Disable MFA</a>
+        {if:else}
+            <a href="{enable_mfa_link}">Enable MFA</a>
+        {/if}
+    {/exp:member:mfa_links}
+</div>

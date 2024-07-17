@@ -6,61 +6,64 @@
 
 <h1>Profile</h1>
 
-{exp:member:custom_profile_data}
+<div class="result">
 
-  <table id="memberprofile" class="tableborder" border="0" cellpadding="3" cellspacing="0" style="width:100%;">
-    <thead>
-      <tr>
-        <td class="memberprofileHead" style="width:25%;"><h3>Key</h3></td>
-        <td class="memberprofileHead" style="width:75%;"><h3>Member Data</h3></td>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Username</td>
-        <td>{username}</td>
-      </tr>
-      <tr>
-        <td>Email</td>
-        <td>{email}</td>
-      </tr>
-      <tr>
-        <td>Screen Name</td>
-        <td>{screen_name}</td>
-      </tr>
-      <tr>
-        <td>Member ID</td>
-        <td>{member_id}</td>
-      </tr>
-      <tr>
-        <td>Member Group</td>
-        <td>{group_title}</td>
-      </tr>
-      <tr>
-        <td>Join Date</td>
-        <td>{join_date format="%Y-%m-%d %H:%i:%s"}</td>
-      </tr>
-      <tr>
-        <td>Last Visit</td>
-        <td>{last_visit format="%Y-%m-%d %H:%i:%s"}</td>
-      </tr>
-      <tr>
-        <td>Local Time</td>
-        <td>{local_time format="%Y-%m-%d %H:%i:%s"}</td>
-      </tr>
-      {if avatar}
+  {exp:member:custom_profile_data}
+
+    <table id="memberprofile" class="tableborder" border="0" cellpadding="3" cellspacing="0" style="width:100%;">
+      <thead>
         <tr>
-          <td>Avatar</td>
-          <td><img src="{avatar_url}" width="{avatar_width}" height="{avatar_height}" alt="{screen_name}'s avatar"></td>
+          <td class="memberprofileHead" style="width:25%;"><h3>Key</h3></td>
+          <td class="memberprofileHead" style="width:75%;"><h3>Member Data</h3></td>
         </tr>
-      {/if}
+      </thead>
+      <tbody>
+        <tr>
+          <td>Username</td>
+          <td>{username}</td>
+        </tr>
+        <tr>
+          <td>Email</td>
+          <td>{email}</td>
+        </tr>
+        <tr>
+          <td>Screen Name</td>
+          <td>{screen_name}</td>
+        </tr>
+        <tr>
+          <td>Member ID</td>
+          <td>{member_id}</td>
+        </tr>
+        <tr>
+          <td>Member Group</td>
+          <td>{group_title}</td>
+        </tr>
+        <tr>
+          <td>Join Date</td>
+          <td>{join_date format="%Y-%m-%d %H:%i:%s"}</td>
+        </tr>
+        <tr>
+          <td>Last Visit</td>
+          <td>{last_visit format="%Y-%m-%d %H:%i:%s"}</td>
+        </tr>
+        <tr>
+          <td>Local Time</td>
+          <td>{local_time format="%Y-%m-%d %H:%i:%s"}</td>
+        </tr>
+        {if avatar}
+          <tr>
+            <td>Avatar</td>
+            <td><img src="{avatar_url}" width="{avatar_width}" height="{avatar_height}" alt="{screen_name}'s avatar"></td>
+          </tr>
+        {/if}
 
-      <tr>
-        <td>Signature</td>
-        <td>{signature}</td>
-      </tr>
+        <tr>
+          <td>Signature</td>
+          <td>{signature}</td>
+        </tr>
 
-    </tbody>
-  </table>
+      </tbody>
+    </table>
 
-{/exp:member:custom_profile_data}
+  {/exp:member:custom_profile_data}
+</div>
