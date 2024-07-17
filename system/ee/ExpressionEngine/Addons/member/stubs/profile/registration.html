@@ -3,7 +3,7 @@
 <h1>Member Registration</h1>
 
 {if logged_in}
-    <h2>You are already registered.</h2>
+    {redirect="<?=$template_group?>/index"}
 {/if}
 
 <div class="result">
