@@ -1,7 +1,11 @@
 {layout="members/_layout"}
+
 {if logged_out}
     {redirect="<?=$template_group?>/login"}
 {/if}
+
+<h1>Profile</h1>
+
 {exp:member:custom_profile_data}
 
   <table id="memberprofile" class="tableborder" border="0" cellpadding="3" cellspacing="0" style="width:100%;">
