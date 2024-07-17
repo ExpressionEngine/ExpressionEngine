@@ -211,10 +211,11 @@
                     <p>Logged in as <b>{username}</b></p>
                     <ul>
                         <li><a href="{path=<?=$template_group?>/logout}">Logout ✔</a></li>
-                        <li><a href="{path=<?=$template_group?>/delete}">Delete</a></li>
                         <li><a href="{path=<?=$template_group?>/profile}">View Profile</a></li>
                         <li><a href="{path=<?=$template_group?>/profile-edit}">Edit Profile</a></li>
                         <li><a href="{path=<?=$template_group?>/invite}">Invite</a></li>
+                        <li><a href="{path=<?=$template_group?>/roles}">Roles</a></li>
+                        <li><a href="{path=<?=$template_group?>/role-groups}">Role Groups</a></li>
                     </ul>
                 {if:else}
                     <p>Logged out</p>
@@ -235,8 +236,6 @@
                     <li><a href="{path=<?=$template_group?>/}">Members</a></li>
                     <li><a href="{path=<?=$template_group?>/search}">Search for Members</a></li>
                     <li><a href="{path=<?=$template_group?>/results}">Search Results</a></li>
-                    <li><a href="{path=<?=$template_group?>/role-groups}">Role Groups</a></li>
-                    <li><a href="{path=<?=$template_group?>/roles}">Roles</a></li>
                 </ul>
             </div>
             <section class="docs-content-wrapper">
