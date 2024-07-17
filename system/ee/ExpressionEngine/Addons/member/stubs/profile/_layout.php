@@ -212,8 +212,8 @@
                     <ul>
                         <li><a href="{path=<?=$template_group?>/logout}">Logout ✔</a></li>
                         <li><a href="{path=<?=$template_group?>/profile}">View Profile</a></li>
-                        <li><a href="{path=<?=$template_group?>/profile-edit}">Edit Profile</a></li>
-                        <li><a href="{path=<?=$template_group?>/invite}">Invite</a></li>
+                        <li><a href="{path=<?=$template_group?>/edit-profile}">Edit Profile</a></li>
+                        <!-- <li><a href="{path=<?=$template_group?>/invite}">Invite</a></li> -->
                         <li><a href="{path=<?=$template_group?>/roles}">Roles</a></li>
                         <li><a href="{path=<?=$template_group?>/role-groups}">Role Groups</a></li>
                     </ul>
