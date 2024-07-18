@@ -29,6 +29,8 @@ class Profile extends AbstractTemplateGenerator
         'email-forgot-username' => 'Email forgot username page',
         'profile' => 'Public profile page',
         'edit-profile' => 'Edit profile page',
+        'edit-avatar' => 'Edit avatar page',
+        'multi-factor-authentication' => 'Multi-factor authentication page',
         'roles' => 'List roles for current member',
         'role-groups' => 'List role groups for current member',
     ];

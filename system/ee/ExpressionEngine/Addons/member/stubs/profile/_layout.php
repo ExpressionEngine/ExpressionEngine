@@ -213,6 +213,8 @@
                         <li><a href="{path=<?=$template_group?>/logout}">Logout</a></li>
                         <li><a href="{path=<?=$template_group?>/profile}">View Profile</a></li>
                         <li><a href="{path=<?=$template_group?>/edit-profile}">Edit Profile</a></li>
+                        <li><a href="{path=<?=$template_group?>/edit-avatar}">Edit Avatar</a></li>
+                        <li><a href="{path=<?=$template_group?>/multi-factor-authentication}">Multi-Factor Authentication</a></li>
                         <li><a href="{path=<?=$template_group?>/roles}">Roles</a></li>
                         <li><a href="{path=<?=$template_group?>/role-groups}">Role Groups</a></li>
                     </ul>
