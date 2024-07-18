@@ -219,15 +219,15 @@
                 {if:else}
                     <p>Logged out</p>
                     <ul>
-                        <li><a href="{path=members/login}">Login</a>
+                        <li><a href="{path=<?=$template_group?>/login}">Login</a>
                             <ul>
-                                <li><a href="{path=members/forgot-password}">Forgot Password</a></li>
-                                <li><a href="{path=members/forgot-username}">Forgot Username</a></li>
+                                <li><a href="{path=<?=$template_group?>/forgot-password}">Forgot Password</a></li>
+                                <li><a href="{path=<?=$template_group?>/forgot-username}">Forgot Username</a></li>
                             </ul>
                         </li>
 
                         <li>
-                            <a href="{path=members/registration}">Register</a>
+                            <a href="{path=<?=$template_group?>/registration}">Register</a>
                             <ul>
                                 <li>Note: to enable registration, go to Settings -> Member Settings and then turn on "Allow registrations?".</li>
                             </ul>
