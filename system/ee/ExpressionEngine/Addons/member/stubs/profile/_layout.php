@@ -210,31 +210,46 @@
                 {if logged_in}
                     <p>Logged in as <b>{username}</b></p>
                     <ul>
-                        <li><a href="{path=<?=$template_group?>/logout}">Logout ✔</a></li>
+                        <li><a href="{path=<?=$template_group?>/logout}">Logout</a></li>
                         <li><a href="{path=<?=$template_group?>/profile}">View Profile</a></li>
                         <li><a href="{path=<?=$template_group?>/edit-profile}">Edit Profile</a></li>
-                        <!-- <li><a href="{path=<?=$template_group?>/invite}">Invite</a></li> -->
                         <li><a href="{path=<?=$template_group?>/roles}">Roles</a></li>
                         <li><a href="{path=<?=$template_group?>/role-groups}">Role Groups</a></li>
                     </ul>
                 {if:else}
                     <p>Logged out</p>
                     <ul>
-                        <li><a href="{path=<?=$template_group?>/login}">Login ✔</a>
+                        <li><a href="{path=members/login}">Login</a>
                             <ul>
-                                <li><a href="{path=<?=$template_group?>/forgot-password}">Forgot Password ✔</a></li>
-                                <li><a href="{path=<?=$template_group?>/forgot-username}">Forgot Username ✔</a></li>
-                                <li><a href="{path=<?=$template_group?>/reset-password}">Reset Password ✔</a></li>
+                                <li><a href="{path=members/forgot-password}">Forgot Password</a></li>
+                                <li><a href="{path=members/forgot-username}">Forgot Username</a></li>
                             </ul>
                         </li>
-                        <li><a href="{path=<?=$template_group?>/registration}">Register ✔</a></li>
-                        <li><a href="{path=<?=$template_group?>/registration-custom}">Register - Custom ✔</a></li>
+
+                        <li>
+                            <a href="{path=members/registration}">Register</a>
+                            <ul>
+                                <li>Note: to enable registration, go to Settings -> Member Settings and then turn on "Allow registrations?".</li>
+                            </ul>
+                        </li>
                     </ul>
                 {/if}
 
                 <ul>
-                    <li><a href="{path=<?=$template_group?>/}">Members</a></li>
-                    <li><a href="{path=<?=$template_group?>/search}">Search for Members</a></li>
+                    <li><a href="{path=<?=$template_group?>/}">Members</a>
+                        {if logged_out}
+                            <ul>
+                                <li>Note: to allow public access to member list, grant "Access public profiles" permission to guests.</li>
+                            </ul>
+                        {/if}
+                    </li>
+                    <li><a href="{path=<?=$template_group?>/search}">Search for Members</a>
+                        {if logged_out}
+                            <ul>
+                                <li>Note: to allow public access to member list, grant "Access search utility" permission to guests.</li>
+                            </ul>
+                        {/if}
+                    </li>
                 </ul>
             </div>
             <section class="docs-content-wrapper">
