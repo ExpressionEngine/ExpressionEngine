@@ -715,6 +715,7 @@ class Login extends CP_Controller
         $this->session->destroy();
 
         $this->input->delete_cookie('read_topics');
+        $this->input->delete_cookie('license_notice_seen');
 
         $this->logger->log_action(lang('member_logged_out'));
 
@@ -942,7 +943,7 @@ class Login extends CP_Controller
                 $this->db->where('date <', $a_day_ago)
                     ->or_where('member_id', $member_id)
                     ->delete('reset_password');
-				
+
 		        /* -------------------------------------------
 		        /* 'cp_member_reset_password' hook.
 		        /*  - Additional processing after user resets password

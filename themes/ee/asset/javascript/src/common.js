@@ -1261,7 +1261,9 @@ $(document).ready(function(){
 
 		$('body').on('click', '.js-lv-banner__close-btn', function(e) {
 			e.preventDefault();
-			$('.lv-banner').hide();
+		    $.get(EE.cp.acknowledgeLicenseNoticeURL, function(data) {
+                $('.lv-banner').hide();
+            });
 		})
 
 }); // close (document).ready

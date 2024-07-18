@@ -181,6 +181,7 @@ class Cp
             'site_url' => ee()->config->item('site_url'),
             'cp.collapseNavURL' => ee('CP/URL', 'homepage/toggle-sidebar-nav')->compile(),
             'cp.dismissBannerURL' => ee('CP/URL', 'homepage/dismiss-banner')->compile(),
+            'cp.acknowledgeLicenseNoticeURL' => ee('CP/URL', 'homepage/acknowledge-license-notice')->compile(),
             'cp.collapseSecondaryNavURL' => ee('CP/URL', 'homepage/toggle-secondary-sidebar-nav')->compile(),
             'fileManagerCompatibilityMode' => bool_config_item('file_manager_compatibility_mode'),
         ));
