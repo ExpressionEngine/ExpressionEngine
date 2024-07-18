@@ -196,7 +196,7 @@
 
         <div class="header">
             <div class="header-content">
-                <img src="{theme_folder_url}asset/img/ee-logo-white.svg"> <a href="/" class="header-title">Sample Templates</a>
+                <img src="{theme_folder_url}asset/img/ee-logotype-white.svg"> <a href="/" class="header-title">Sample Templates</a>
 
                 <nav>
                     <a href="https://u.expressionengine.com" class="eeu">{ee:u}</a>
