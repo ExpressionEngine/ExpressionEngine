@@ -32,7 +32,7 @@
             height: 100%;
             width: 100%;
             margin: auto;
-            max-width: 1200px;
+            max-width: 100%;
             display: flex;
             flex-flow: row nowrap;
             align-items: center;
@@ -40,6 +40,7 @@
         .header-content img {
             margin-left: 20px;
             margin-right: 10px;
+            max-width: 200px;
         }
         .header nav {
             display: flex;
