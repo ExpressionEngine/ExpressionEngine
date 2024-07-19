@@ -91,7 +91,7 @@ class Mcp extends Controller
      * @return string
      * @throws ControllerException
      */
-    protected function buildObject($domain, $useMcpClass = true)
+    protected function buildObject($domain, $useMcpClass = false)
     {
         // This is to support the old way (Mcp/ folder) and the new supported way (ControlPanel/ folder)
         if ($useMcpClass) {
@@ -111,8 +111,8 @@ class Mcp extends Controller
 
         // If we cant find the old location in the Mcp folder, try the new location in the ControlPanel folder.
         // This is done in this order so the error message shows the new way
-        if (! class_exists($object) && $useMcpClass) {
-            return $this->buildObject($domain, false);
+        if (! class_exists($object) && !$useMcpClass) {
+            return $this->buildObject($domain, true);
         }
 
         return $object;
