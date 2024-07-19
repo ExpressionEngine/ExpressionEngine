@@ -975,7 +975,7 @@ $lang = array(
 
     'channel_form_template_generator' => 'Channel Form',
 
-    'member_profile_template_generator' => 'Member Profile',
+    'member_profile_template_generator' => 'Member Management',
 
     'list_all_entries' => 'List of all entries',
 

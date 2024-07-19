@@ -1,6 +1,7 @@
 {layout="<?=$template_group?>/_layout"}
 
 <h1>Member Listing</h1>
+<a href="{cp_url}?/cp/design/template/edit/{template_id}" target="_blank">View Template</a>
 
 <div class="result">
     {if segment_3 == 'sent'}
@@ -31,27 +32,21 @@
             <table id="memberlist" class='tableborder' border="0" cellpadding="3" cellspacing="0" style="width:100%;">
             <thead>
             <tr>
-                <td class='memberlistHead' style="width:21%;">Name</td>
-                <td class='memberlistHead' style="width:13%;">Forum Posts</td>
-                <td class='memberlistHead' style="width:8%;">Email Short</td>
-                <td class='memberlistHead' style="width:13%;">Join Date</td>
-                <td class='memberlistHead' style="width:13%;">Last Visit</td>
-                <td class='memberlistHead' style="width:13%;">Primary Role</td>
+                <td class='memberlistHead' style="width:21%; font-weight: bold;">Name</td>
+                <td class='memberlistHead' style="width:13%; font-weight: bold;">Forum Posts</td>
+                <td class='memberlistHead' style="width:13%; font-weight: bold;">Join Date</td>
+                <td class='memberlistHead' style="width:13%; font-weight: bold;">Last Visit</td>
+                <td class='memberlistHead' style="width:13%; font-weight: bold;">Primary Role</td>
             </tr>
             </thead>
             <tbody>
             {member_rows}
                 <tr>
                     <td class='{member_css}' style="width:20%;">
-                        <span class="defaultBold"><a href="{path:profile}">{name}</a></span>
+                        <span class="defaultBold"><a href="<?=$template_group?>/profile/{member_id}">{name}</a></span>
                         {if avatar}<img src="{path:avatar}" />{/if}
                     </td>
                     <td class='{member_css}'>{total_combined_posts}</td>
-                    <td class='{member_css}'>
-                        {if accept_email}
-                            <a href="#" {email_console}>Email Console</a>
-                        {/if}
-                    </td>
                     <td class='{member_css}'>{join_date  format="%m/%d/%Y"}</td>
                     <td class='{member_css}'>{last_visit  format="%m/%d/%Y"}</td>
                     <td class='{member_css}'>{role} ({member_group})</td>

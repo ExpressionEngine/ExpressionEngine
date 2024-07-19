@@ -5,6 +5,7 @@
 {/if}
 
 <h1>Logout</h1>
+<a href="{cp_url}?/cp/design/template/edit/{template_id}" target="_blank">View Template</a>
 
 {exp:member:logout_form return="<?=$template_group?>/login"}
     <input type="submit" value="Logout">
