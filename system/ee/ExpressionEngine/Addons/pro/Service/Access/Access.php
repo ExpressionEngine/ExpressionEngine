@@ -344,7 +344,7 @@ class Access
         }
 
         ee()->logger->developer($message, true, 60 * 60 * 24 * 7);
-        if (REQ == 'CP' && $showAlert) {
+        if (REQ == 'CP' && $showAlert && $this->canManageLicenses()) {
             // The user has seen the banner, so we're marking it in the session
             ee('Session')->setProBannerSeen();
 
