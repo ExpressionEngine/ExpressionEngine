@@ -23,6 +23,8 @@
             background: linear-gradient(to bottom,#351344,#2e124a);
             color: #fff;
             height: 70px;
+            max-width: 1440px;
+            margin: 0 auto;
         }
         .header a {
             color: #fff;
@@ -60,6 +62,8 @@
         .main {
             display: flex;
             flex: 2;
+            max-width: 1440px;
+            margin: 0 auto;
         }
         hr {
             margin: 4em 0;
