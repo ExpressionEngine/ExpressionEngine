@@ -69,7 +69,7 @@ class Updater
         foreach ($templatesQuery->result_array() as $row) {
             if (isset($EE2Hashes[$row['template_name']])) {
                 $hash = md5($row['template_data']);
-                if ($hash === $EE2Hashes[$row['template_name']]) {
+                if ($hash != $EE2Hashes[$row['template_name']]) {
                     continue;
                 }
                 if (function_exists($row['template_name'])) {
