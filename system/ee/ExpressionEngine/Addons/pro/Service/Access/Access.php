@@ -212,7 +212,7 @@ class Access
      */
     public function getLicenseNotices($status = null, $includePro = false)
     {
-        if(time() - (int) ee('Cookie')->getSignedCookie('license_notice_seen') <=  min(ee()->config->item('cp_session_length') ?: 3600, 14400)) {
+        if(time() - (int) ee('Cookie')->getSignedCookie('license_notice_seen') <=  $this->getLicenseBannerDuration()) {
             return [];
         }
 
@@ -250,6 +250,11 @@ class Access
         }
 
         return $addonStatuses;
+    }
+
+    public function getLicenseBannerDuration()
+    {
+        return $this->canManageLicenses() ? min(ee()->config->item('cp_session_length') ?: 3600, 14400) : 604800;
     }
 
     /**

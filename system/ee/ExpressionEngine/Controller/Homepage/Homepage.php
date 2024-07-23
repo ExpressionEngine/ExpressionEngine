@@ -216,7 +216,7 @@ class Homepage extends CP_Controller
     public function acknowledgeLicenseNotice()
     {
         if (!ee('Cookie')->getSignedCookie('license_notice_seen')) {
-            ee('Cookie')->setSignedCookie('license_notice_seen', time(), min(ee()->config->item('cp_session_length') ?: 3600, 14400));
+            ee('Cookie')->setSignedCookie('license_notice_seen', time(), ee('pro:Access')->getLicenseBannerDuration());
         }
 
         ee()->output->send_ajax_response(['success']);
