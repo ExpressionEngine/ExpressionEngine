@@ -46,44 +46,36 @@ class Profile extends AbstractTemplateGenerator
 
         $vars = [
             'fields' => [],
-            'channel' => $this->input->get('channel')
         ];
 
-        if (!is_array($vars['channel'])) {
-            $vars['channel'] = [$vars['channel']];
-        }
+        // get the fields for members
+        $fields = ee('Model')->get('MemberField')->all();
+        foreach ($fields as $fieldInfo) {
+            $fieldtypeGenerator = ee('TemplateGenerator')->getFieldtype($fieldInfo->m_field_type);
 
-        // get the fields for assigned channels
-        $channels = ee('Model')->get('Channel')->filter('channel_name', 'IN', $vars['channel'])->all();
-        foreach ($channels as $channel) {
-            $fields = $channel->getAllCustomFields();
-            foreach ($fields as $fieldInfo) {
-                $fieldtypeGenerator = ee('TemplateGenerator')->getFieldtype($fieldInfo->field_type);
-
-                // fieldtype is not installed, skip it
-                if (!$fieldtypeGenerator) {
-                    continue;
-                }
-                // by default, we'll use generic field stub
-                // but we'll let each field type to override it
-                // by either providing stub property, or calling its own generator
-                $field = [
-                    'field_type' => $fieldInfo->field_type,
-                    'field_name' => $fieldInfo->field_name,
-                    'field_label' => $fieldInfo->field_label,
-                    'stub' => $fieldtypeGenerator['stub'],
-                    'docs_url' => $fieldtypeGenerator['docs_url'],
-                    'is_tag_pair' => $fieldtypeGenerator['is_tag_pair'],
-                ];
-                // if the field has its own generator, spin it
-                // we'll not be using service (as it's singleton),
-                // but spin and destroy new factory for each field
-                // ... or something on that front
-                $vars['fields'][$fieldInfo->field_name] = $field;
+            // fieldtype is not installed, skip it
+            if (!$fieldtypeGenerator) {
+                continue;
             }
+            // by default, we'll use generic field stub
+            // but we'll let each field type to override it
+            // by either providing stub property, or calling its own generator
+            $field = [
+                'field_type' => $fieldInfo->m_field_type,
+                'field_name' => $fieldInfo->m_field_name,
+                'field_label' => $fieldInfo->m_field_label,
+                'show_profile' => $fieldInfo->m_field_public,
+                'show_registration' => $fieldInfo->m_field_reg,
+                'stub' => $fieldtypeGenerator['stub'],
+                'docs_url' => $fieldtypeGenerator['docs_url'],
+                'is_tag_pair' => $fieldtypeGenerator['is_tag_pair'],
+            ];
+            // if the field has its own generator, spin it
+            // we'll not be using service (as it's singleton),
+            // but spin and destroy new factory for each field
+            // ... or something on that front
+            $vars['fields'][$fieldInfo->m_field_name] = $field;
         }
-        // channel is array at this point, but for replacement it needs to be a string
-        $vars['channel'] = implode('|', $vars['channel']);
 
         return $vars;
     }

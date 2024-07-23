@@ -57,6 +57,22 @@
           </tr>
         {/if}
 
+
+        <?php foreach (array_filter($fields, function ($field) { return $field['show_profile']; }) as $field) : ?>
+
+            <tr>
+                {!-- Field: <?=$field['field_label']?> --}
+                {!-- Fieldtype: <?=$field['field_type']?> --}
+                {!-- Docs: <?=$field['docs_url']?> --}
+                <td><?=$field['field_label']?></td>
+                <td>
+                    <?=$this->embed($field['stub'], $field);?>
+                </td>
+                {!-- End field: <?=$field['field_label']?> --}
+            </tr>
+
+        <?php endforeach; ?>
+
         <tr>
           <td>Signature</td>
           <td>{signature}</td>

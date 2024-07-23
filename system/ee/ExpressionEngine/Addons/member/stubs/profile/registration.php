@@ -73,6 +73,20 @@
                 <label><input type="checkbox" name="accept_terms" value="y" {if accept_terms == 'y'}checked="checked"{/if} /> I accept these terms</label>
             </p>
 
+            <?php foreach (array_filter($fields, function ($field) { return $field['show_registration']; }) as $field) : ?>
+
+                <p>
+                    {!-- Field: <?=$field['field_label']?> --}
+                    {!-- Fieldtype: <?=$field['field_type']?> --}
+                    {!-- Docs: <?=$field['docs_url']?> --}
+                    <label for="<?=$field['field_name']?>" ><?=$field['field_label']?></label><br/>
+                    {field:<?=$field['field_name']?>}
+                    {error:<?=$field['field_name']?>}
+                    {!-- End field: <?=$field['field_label']?> --}
+                </p>
+
+            <?php endforeach; ?>
+
             {if captcha}
             <p>
                 <label for="captcha">{lang:captcha}*</label>
