@@ -10,7 +10,7 @@
         <h1>{title}</h1>
         <p>by {author} on <a href="{path=<?=$template_group?>/archive/{entry_date format='%Y'}}">{entry_date format="%F %d, %Y"}</a></p>
         {categories}
-             <a href="{path='<?=$template_group?>/category/{category_url_title}'}">{category_name}</a>
+            <a href="{site_url}/<?=$template_group?>/category/{category_url_title}">{category_name}</a>
         {/categories}
         <?php foreach ($fields as $field) : ?>
 
