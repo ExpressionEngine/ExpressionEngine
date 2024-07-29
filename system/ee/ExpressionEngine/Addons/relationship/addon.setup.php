@@ -11,7 +11,12 @@ return array(
     'built_in' => true,
     'fieldtypes' => array(
         'relationship' => array(
+            'name' => 'Relationships',
             'compatibility' => 'relationship'
+        ),
+        'reverse_relationship' => array(
+            'name' => 'Reverse Relationships',
+            'compatibility' => 'reverse_relationship'
         )
     )
 );
