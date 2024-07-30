@@ -67,6 +67,7 @@ class Entries extends AbstractTemplateGenerator
         if (count($channels) !== count($value)) {
             return 'invalid_channel';
         }
+
         return true;
     }
 
@@ -91,38 +92,20 @@ class Entries extends AbstractTemplateGenerator
                 $channel_titles[] = $channel->channel_title;
                 $fields = $channel->getAllCustomFields();
                 foreach ($fields as $fieldInfo) {
-                    $fieldtypeGenerator = ee('TemplateGenerator')->getFieldtype($fieldInfo->field_type);
+                    // get the field variables
+                    $field = ee('TemplateGenerator')->getFieldVariables($fieldInfo);
 
-                    // fieldtype is not installed, skip it
-                    if (!$fieldtypeGenerator) {
+                    // if field is null, continue to the next field
+                    if (is_null($field)) {
                         continue;
                     }
 
-                    // by default, we'll use generic field stub
-                    // but we'll let each field type to override it
-                    // by either providing stub property, or calling its own generator
-                    $field = [
-                        'field_type' => $fieldInfo->field_type,
-                        'field_name' => $fieldInfo->field_name,
-                        'field_label' => $fieldInfo->field_label,
-                        'field_settings' => $fieldInfo->field_settings,
-                        'stub' => $fieldtypeGenerator['stub'],
-                        'docs_url' => $fieldtypeGenerator['docs_url'],
-                        'is_tag_pair' => $fieldtypeGenerator['is_tag_pair'],
-                        'is_search_excerpt' => $channel->search_excerpt == $fieldInfo->field_id,
-                    ];
-
-                    $generator = $this->makeField($fieldInfo->field_type, $fieldInfo);
-
-                    // if the field has its own generator, instantiate the field and pass to generator
-                    if ($generator) {
-                        $field = array_merge($field, $generator->getVariables());
-                    }
-
+                    // add the field to the list of fields
                     $vars['fields'][$fieldInfo->field_name] = $field;
                 }
             }
         }
+
         // channel is array at this point, but for replacement it needs to be a string
         $vars['channel'] = implode('|', $vars['channel']);
         $vars['channel_title'] = implode(', ', $channel_titles);

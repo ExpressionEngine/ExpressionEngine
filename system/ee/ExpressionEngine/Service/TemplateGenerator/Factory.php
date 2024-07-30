@@ -27,7 +27,6 @@ use ExpressionEngine\Model\Template\Template;
  */
 class Factory
 {
-
     /**
      * The list of extra themes that are available
      *
@@ -61,7 +60,6 @@ class Factory
         ee()->lang->load('cp');
         ee()->lang->load('design');
     }
-
 
     public function hasTheme($theme)
     {
@@ -136,6 +134,39 @@ class Factory
         return ($instance instanceof AbstractFieldTemplateGenerator) ? $instance : null;
     }
 
+    public function getFieldVariables($fieldInfo, $channelContext = null)
+    {
+        $fieldtypeGenerator = $this->getFieldtype($fieldInfo->field_type);
+
+        // fieldtype is not installed, skip it
+        if (!$fieldtypeGenerator) {
+            return null;
+        }
+
+        // by default, we'll use generic field stub
+        // but we'll let each field type to override it
+        // by either providing stub property, or calling its own generator
+        $field = [
+            'field_type' => $fieldInfo->field_type,
+            'field_name' => $fieldInfo->field_name,
+            'field_label' => $fieldInfo->field_label,
+            'field_settings' => $fieldInfo->field_settings,
+            'stub' => $fieldtypeGenerator['stub'],
+            'docs_url' => $fieldtypeGenerator['docs_url'],
+            'is_tag_pair' => $fieldtypeGenerator['is_tag_pair'],
+            'is_search_excerpt' => (!is_null($channelContext) && isset($channelContext->search_excerpt)) ? ($channelContext->search_excerpt == $fieldInfo->field_id) : false,
+        ];
+
+        $generator = $this->makeField($fieldInfo->field_type, $fieldInfo);
+
+        // if the field has its own generator, instantiate the field and pass to generator
+        if ($generator) {
+            $field = array_merge($field, $generator->getVariables());
+        }
+
+        return $field;
+    }
+
     /**
      * List the generators available in the system
      *
@@ -172,7 +203,7 @@ class Factory
     protected function getInstalledProviders()
     {
         $providers = ee('App')->getProviders();
-        $installed = array_map(function($name) {
+        $installed = array_map(function ($name) {
             return strtolower($name);
         }, ee('Model')->get('Module')->all(true)->pluck('module_name'));
 
@@ -199,7 +230,7 @@ class Factory
         }
 
         // Does it extend the base template generator?
-        $instance = new $class;
+        $instance = new $class();
         if (!$instance instanceof AbstractTemplateGenerator) {
             return $this->generators;
         }

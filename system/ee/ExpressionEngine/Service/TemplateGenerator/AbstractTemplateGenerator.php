@@ -14,8 +14,6 @@ use ExpressionEngine\Core\Provider;
 
 abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
 {
-
-
     protected $input;
 
     /**
@@ -59,7 +57,7 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
 
     public function __construct()
     {
-        $this->input = new Input;
+        $this->input = new Input();
     }
 
     /**
@@ -80,12 +78,12 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
      */
     public function getTemplates(): array
     {
-        return array_combine(array_keys($this->templates), array_map(function($data) {
+        return array_combine(array_keys($this->templates), array_map(function ($data) {
             $data = (is_string($data)) ? ['name' => $data] : $data;
+
             return array_merge(['type' => 'webpage'], $data);
         }, $this->templates));
     }
-
 
     /**
      * Return validation rules for the options passed to this generator
@@ -130,13 +128,13 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
      */
     public function getIncludes($templates)
     {
-        return array_reduce(array_keys($this->includes), function($carry, $key) use ($templates) {
+        return array_reduce(array_keys($this->includes), function ($carry, $key) use ($templates) {
             $defaults = ['templates' => null, 'type' => 'webpage'];
             $value = $this->includes[$key];
 
             if(is_int($key)) {
                 $carry[$value] = array_merge($defaults, ['name' => $value]);
-            }else{
+            } else {
                 $value = array_merge($defaults, $value);
                 $value['templates'] = (is_string($value['templates'])) ? explode(',', $value['templates']) : $value['templates'];
 
@@ -161,6 +159,7 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
                 }
                 ee()->session->_age_flashdata();
             }
+
             throw new Exceptions\ValidationException('Template Generator validation failed.', $validationResult);
         }
 
@@ -297,7 +296,7 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
 
     protected function prepareOptions($options)
     {
-        return array_reduce(array_keys($options), function($carry, $key) use($options) {
+        return array_reduce(array_keys($options), function ($carry, $key) use ($options) {
             $value = $options[$key];
             if(isset($value['choices'])) {
                 $classes = [null, $this, ee('TemplateGenerator')];
@@ -315,6 +314,7 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
             }
 
             $carry[$key] = $value;
+
             return $carry;
         }, []);
     }
