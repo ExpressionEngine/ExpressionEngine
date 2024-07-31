@@ -646,6 +646,10 @@ $lang = array(
 
     'invalid_channel' => 'No valid channel selected',
 
+    'select_fields_to_generate' => 'Select the fields that you want to use in templates',
+
+    'invalid_field' => 'No valid field selected',
+
 );
 
 // EOF

@@ -11,6 +11,7 @@ return array(
     'built_in' => true,
     'templateGenerators' => array(
         'Entries',
+        'Fields',
         'Form'
     )
 );
