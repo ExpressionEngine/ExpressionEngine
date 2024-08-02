@@ -83,6 +83,23 @@ class FieldFacade
         return '';
     }
 
+    public function getTemplateBadge($field_name_prefix = '')
+    {
+        if (ee()->session->userdata('member_id') == 0) {
+            return '';
+        }
+        if (ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->show_field_names == 'y') {
+
+            // check to see if this is a custom field
+            $field_id = $this->getId();
+            $field = ee('Model')->get('ChannelField', $field_id)->first();
+            if($field && is_integer($field->field_id)) {
+                return ee('View')->make('publish/partials/field_template_badge')->render(['field_id' => $this->getId(), 'name' => $field_name_prefix . $this->getShortName()]);
+            }
+        }
+        return '';
+    }
+
     public function setContentId($id)
     {
         $this->content_id = $id;

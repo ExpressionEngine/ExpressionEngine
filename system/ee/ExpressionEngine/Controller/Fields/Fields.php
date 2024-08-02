@@ -624,6 +624,31 @@ class Fields extends AbstractFieldsController
         ee()->cp->render('settings/form', $vars);
     }
 
+    public function exampleTemplate($id)
+    {
+        $field = ee('Model')->get('ChannelField', $id)
+            ->first();
+
+        if (! $field) {
+            show_404();
+        }
+
+        $data = [
+            'field' => $field->field_name,
+            'template_group' => '',
+            'templates' => ['all']
+        ];
+
+        $generator = ee('TemplateGenerator')->make('channel:fields');
+
+        $generatorsList = ee('TemplateGenerator')->registerAllTemplateGenerators();
+        $validationResult = $generator->validatePartial($data);
+        $result = $generator->generate($data, false);
+
+        // return the template_data
+        return $result['templates']['index']['template_data'];
+    }
+
     // This builds a simple array we can compare so we know if a condition has changed
     private function getConditionArray($conditionSets)
     {
