@@ -988,7 +988,7 @@ class EE_Typography
             $str = preg_replace("#<img(.*?)src=\s*[\"'](.+?)[\"'](.*?)\s*\>#si", "[img]\${2}{$this->safe_img_src_end}\\3\\1[/img]", $str);
         }
 
-        if (stristr($str, '://') !== false) {
+        if (stristr($str, '://') !== false && $this->text_format !== 'none') {
             $str = preg_replace("#(^|\s|\()((http(s?)://)|(www\.))(\w+[^\s\)\<]+)\.(jpg|jpeg|gif|png)#i", "\\1[img]http\\4://\\5\\6.\\7[/img]", $str);
         }
 
