@@ -47,6 +47,8 @@ $lang = array(
 
     'template_settings' => 'Template Settings',
 
+    'uri_variables' => 'URI Variables',
+
     'upload_directories' => 'Upload Directories',
 
     'url_path_settings' => 'URL and Path Settings',
@@ -910,6 +912,34 @@ $lang = array(
     'cookie_consent_disabled' => 'Cookie Consent Disabled',
 
     'cookie_consent_disabled_desc' => 'Cookie-related consent requests have no affect on the setting of cookies unless the <a href="%s">cookie consent setting</a> is enabled.',
+
+    /* URI Variables */
+
+    'enable_category_uri_variables' => 'Enable Category URI Variables',
+
+    'enable_category_uri_variables_desc' => 'Always parse URI segments as category URI variables for category URLs.',
+
+    'category_uri_variables_settings' => 'Category URI Variables Settings',
+
+    'category_uri_variables_category_groups' => 'Category groups',
+
+    'category_uri_variables_uri_pattern' => 'URI pattern',
+
+    'category_uri_variables_set_all_segments' => 'Set all segments',
+
+    'category_uri_variables_ignore_pagination' => 'Ignore pagination',
+
+    'category_uri_variables_parse_file_paths' => 'Parse file paths',
+
+    'category_uri_variables_category_groups_desc' => 'Limit the search for matching categories by selected groups. When no groups are selected, all groups will be searched.',
+
+    'category_uri_variables_uri_pattern_desc' => 'Enter a regex pattern or leave blank. If you enter a pattern, the variables will only be registered if the current URI matches it.',
+
+    'category_uri_variables_set_all_segments_desc' => 'Always set variables for all (9) segments, regardless of their presence.',
+
+    'category_uri_variables_ignore_pagination_desc' => 'Ignore the presence of a pagination segment at the end of a URI.',
+
+    'category_uri_variables_parse_file_paths_desc' => 'Parse upload directory variables inside the Category Image field',
 
     /* Logging */
 

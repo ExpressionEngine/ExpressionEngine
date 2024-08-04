@@ -412,6 +412,11 @@ class EE_Core
             ee()->stats->update_stats();
         }
 
+        // Load more URI variables
+        if (REQ == 'PAGE') {
+            $this->loadUriVariables();
+        }
+
         // Load up any Snippets
         if (REQ == 'ACTION' or REQ == 'PAGE') {
             $this->loadSnippets();
@@ -448,6 +453,212 @@ class EE_Core
                 header("Location: " . ee()->functions->fetch_current_uri());
                 exit();
             }
+        }
+    }
+
+    /**
+     * Load URI variables into config's _global_vars
+     */
+    public function loadUriVariables()
+    {
+        if (bool_config_item('enable_category_uri_variables')) {
+            // --------------------------------------
+            // Only continue if request is a page
+            // and we have segments to check
+            // --------------------------------------
+
+            if (empty(ee()->uri->segments) && ee()->config->item('category_uri_variables_set_all_segments') == 'n') {
+                return;
+            }
+
+            /**
+             * Category fields to set
+             */
+            $fields = array(
+                'cat_id'          => 'category_id',
+                'parent_id'       => 'category_parent_id',
+                'group_id'        => 'category_group_id',
+                'cat_name'        => 'category_name',
+                'cat_description' => 'category_description',
+                'cat_image'       => 'category_image'
+            );
+
+            /**
+             * Format category name?
+             */
+            $format = true;
+
+            // --------------------------------------
+            // Initiate uri instance
+            // --------------------------------------
+
+            $uri = new EE_URI();
+            $uri->_fetch_uri_string();
+
+            if (ee()->config->item('category_uri_variables_ignore_pagination') == 'y') {
+                // Get rid of possible pagination segment at the end
+                $uri->uri_string = preg_replace('#/[PC]\d+$#', '', $uri->uri_string);
+            }
+
+            $uri->_explode_segments();
+            $uri->_reindex_segments();
+
+            // --------------------------------------
+            // Suggestion by Leevi Graham:
+            // check for pattern before continuing
+            // --------------------------------------
+
+            if (! empty(ee()->config->item('category_uri_variables_uri_pattern')) && ! preg_match(ee()->config->item('category_uri_variables_uri_pattern'), $uri->uri_string)) {
+                return;
+            }
+
+            // --------------------------------------
+            // Initiate some vars
+            // $data is used to add to global vars
+            // $ids is used to keep track of all category ids found
+            // --------------------------------------
+
+            $data = $ids = array();
+
+            // Also initiate this single var to an empty string
+            $data['segment_category_ids'] = '';
+            $data['segment_category_ids_piped'] = '';
+
+            // --------------------------------------
+            // Number of segments to register
+            // --------------------------------------
+
+            $max = (int) (ee()->config->item('max_url_segments') ?: 12);
+
+            $num_segs = (ee()->config->item('category_uri_variables_set_all_segments') == 'y') ? $max : $uri->total_segments();
+
+            // --------------------------------------
+            // loop through segments and set data array thus: segment_1_category_id etc
+            // --------------------------------------
+
+            for ($nr = 1; $nr <= $num_segs; $nr++) {
+                foreach ($fields as $field) {
+                    $data["segment_{$nr}_{$field}"] = '';
+                }
+            }
+
+            // Initiate last segment vars
+            foreach ($fields as $field) {
+                $data["last_segment_{$field}"] = '';
+            }
+
+            // --------------------------------------
+            // Execute the rest only if there are segments to check
+            // --------------------------------------
+
+            if ($segment_array = $uri->segment_array()) {
+                // --------------------------------------
+                // Use Model to get the categories
+                // --------------------------------------
+
+                $model = ee('Model')
+                    ->get('Category')
+                    ->filter('cat_url_title', 'IN', $segment_array)
+                    ->limit($num_segs);
+
+                // --------------------------------------
+                // Filter by site and its category groups
+                // --------------------------------------
+
+                $model->filter('site_id', ee()->config->item('site_id'));
+
+                if (
+                    !empty(ee()->config->item('category_uri_variables_category_groups')) &&
+                    ($groups = array_filter(ee()->config->item('category_uri_variables_category_groups')))
+                ) {
+                    $model->filter('group_id', 'IN', $groups);
+                }
+
+                // --------------------------------------
+                // Execute query and get results
+                // --------------------------------------
+
+                $cats = $model->all();
+
+                // --------------------------------------
+                // If we have matching categories, continue...
+                // --------------------------------------
+
+                if ($cats->count()) {
+                    // --------------------------------------
+                    // Associate the results
+                    // --------------------------------------
+
+                    $cats = $cats->indexBy('cat_url_title');
+
+                    // --------------------------------------
+                    // Load typography if private var is set
+                    // --------------------------------------
+
+                    if ($format || ee()->config->item('category_uri_variables_parse_file_paths') == 'y') {
+                        ee()->load->library('typography');
+                    }
+
+                    // --------------------------------------
+                    // loop through segments
+                    // --------------------------------------
+
+                    foreach ($segment_array as $n => $seg) {
+                        // Skip non-matching segments
+                        if (! isset($cats[$seg])) {
+                            continue;
+                        }
+
+                        // Get the category row
+                        $cat = $cats[$seg];
+
+                        // Overwrite values in data array
+                        foreach ($fields as $name => $field) {
+                            // Value of this key
+                            $val = $cat->$name;
+
+                            // Format category name if private var is set
+                            if ($name == 'cat_name' && $format) {
+                                $val = ee()->typography->format_characters($val);
+                            }
+
+                            // Parse file paths
+                            if ($name == 'cat_image' && ee()->config->item('category_uri_variables_parse_file_paths') == 'y') {
+                                $val = ee()->typography->parse_file_paths($val);
+                            }
+
+                            // Set value in for segment_x_yyy
+                            $data["segment_{$n}_{$field}"] = $val;
+                        }
+
+                        // Add found id to cats array
+                        $ids[] = $cat->cat_id;
+                    }
+
+                    // --------------------------------------
+                    // Set last_segment_category_x vars
+                    // --------------------------------------
+
+                    $last = $uri->total_segments();
+
+                    foreach ($fields as $name => $field) {
+                        $data['last_segment_' . $field] = $data['segment_' . $last . '_' . $field];
+                    }
+
+                    // --------------------------------------
+                    // Create inclusive stack of all category ids present in segments
+                    // --------------------------------------
+
+                    $data['segment_category_ids'] = implode('&', $ids);
+                    $data['segment_category_ids_piped'] = implode('|', $ids);
+                }
+            }
+
+            // --------------------------------------
+            // Finally, add data to global vars
+            // --------------------------------------
+
+            ee()->config->_global_vars = array_merge(ee()->config->_global_vars, $data);
         }
     }
 

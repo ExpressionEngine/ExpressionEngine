@@ -625,6 +625,12 @@ class EE_Config
             'automatic_frontedit_links',
             'enable_mfa',
             'anonymize_consent_logs',
+            'enable_category_uri_variables',
+            'category_uri_variables_category_groups',
+            'category_uri_variables_uri_pattern',
+            'category_uri_variables_set_all_segments',
+            'category_uri_variables_ignore_pagination',
+            'category_uri_variables_parse_file_paths'
         );
 
         $member_default = array(
