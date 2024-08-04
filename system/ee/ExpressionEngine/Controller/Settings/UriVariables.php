@@ -31,6 +31,17 @@ class UriVariables extends Settings
         $vars['sections'] = array(
             array(
                 array(
+                    'title' => 'enable_request_variables',
+                    'desc' => 'enable_request_variables_desc',
+                    'fields' => array(
+                        'enable_request_variables' => array(
+                            'type' => 'yes_no',
+                        ),
+                    )
+                ),
+            ),
+            array(
+                array(
                     'title' => 'enable_category_uri_variables',
                     'desc' => 'enable_category_uri_variables_desc',
                     'fields' => array(

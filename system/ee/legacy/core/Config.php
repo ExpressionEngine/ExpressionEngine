@@ -630,7 +630,8 @@ class EE_Config
             'category_uri_variables_uri_pattern',
             'category_uri_variables_set_all_segments',
             'category_uri_variables_ignore_pagination',
-            'category_uri_variables_parse_file_paths'
+            'category_uri_variables_parse_file_paths',
+            'enable_request_variables'
         );
 
         $member_default = array(

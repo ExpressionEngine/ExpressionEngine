@@ -461,6 +461,22 @@ class EE_Core
      */
     public function loadUriVariables()
     {
+        // $data is used to add to global vars
+        $data = array();
+
+        if (bool_config_item('enable_request_variables')) {
+            $data['https'] = ee('Request')->isEncrypted();
+            foreach ($_POST as $key => $val) {
+                if (in_array($key, ['password', 'password_confirm', 'csrf_token', 'XID'])) {
+                    continue;
+                }
+                $data['post:' . ee()->input->_clean_input_keys($key)] = ee('Security/XSS')->clean($val);
+            }
+            foreach ($_GET as $key => $val) {
+                $data['get:' . ee()->input->_clean_input_keys($key)] = ee('Security/XSS')->clean($val);
+            }
+        }
+
         if (bool_config_item('enable_category_uri_variables')) {
             // --------------------------------------
             // Only continue if request is a page
@@ -514,11 +530,10 @@ class EE_Core
 
             // --------------------------------------
             // Initiate some vars
-            // $data is used to add to global vars
             // $ids is used to keep track of all category ids found
             // --------------------------------------
 
-            $data = $ids = array();
+            $ids = array();
 
             // Also initiate this single var to an empty string
             $data['segment_category_ids'] = '';
@@ -653,11 +668,12 @@ class EE_Core
                     $data['segment_category_ids_piped'] = implode('|', $ids);
                 }
             }
+        }
 
-            // --------------------------------------
-            // Finally, add data to global vars
-            // --------------------------------------
-
+        // --------------------------------------
+        // Finally, add data to global vars
+        // --------------------------------------
+        if (!empty($data)) {
             ee()->config->_global_vars = array_merge(ee()->config->_global_vars, $data);
         }
     }

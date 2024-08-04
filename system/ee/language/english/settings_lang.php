@@ -919,6 +919,10 @@ $lang = array(
 
     'enable_category_uri_variables_desc' => 'Always parse URI segments as category URI variables for category URLs.',
 
+    'enable_request_variables' => 'Enable Request Variables',
+
+    'enable_request_variables_desc' => 'Populate HTTP request data as template variables',
+
     'category_uri_variables_settings' => 'Category URI Variables Settings',
 
     'category_uri_variables_category_groups' => 'Category groups',
