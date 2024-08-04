@@ -55,6 +55,7 @@ $lang = array(
     'jump_systemSettingsButtons' => 'Content & Design &raquo; <b>HTML Buttons</b> Settings',
     'jump_systemSettingsTemplate' => 'Content & Design &raquo; <b>Template</b> Settings',
     'jump_systemSettingsTracking' => 'Content & Design &raquo; <b>Tracking</b> Settings',
+    'jump_systemSettingsUriVariables' => 'Content & Design &raquo; <b>URI Variables</b> Settings',
     'jump_systemSettingsWordCensoring' => 'Content & Design &raquo; <b>Word Censoring</b> Settings',
     'jump_systemSettingsFrontedit' => 'Content & Design &raquo; <b>Front-End Editing</b> Settings',
     'jump_systemSettingsBranding' => 'Content & Design &raquo; <b>Branding</b> Settings',
