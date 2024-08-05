@@ -9,10 +9,10 @@
 
 $(document).ready(function(){
 
-	// the code is responsible for preventing the page scrolling when press on 
+	// the code is responsible for preventing the page scrolling when press on
 	// the dropdown list using the spacebar (code 32)
 	window.addEventListener('keydown', (e) => {
-		if ((e.keyCode === 32 || e.keyCode === 13) && (e.target.classList.contains('select__button') || e.target.classList.contains('select__dropdown-item')) ) { 
+		if ((e.keyCode === 32 || e.keyCode === 13) && (e.target.classList.contains('select__button') || e.target.classList.contains('select__dropdown-item')) ) {
 		  e.preventDefault();
 		  e.target.click();
 		}
@@ -1066,7 +1066,7 @@ $(document).ready(function(){
 			}
 		});
 
-		// Check if Toggle button has data-group-toggle and 
+		// Check if Toggle button has data-group-toggle and
 		// show and hide dependent blocks depending on toggle button value
 		$('.toggle-btn').find('[data-group-toggle]').each(function() {
 			var val = $(this).val();
@@ -1258,6 +1258,40 @@ $(document).ready(function(){
 
 			return false;
 		})
+
+		$('body').on('click', '.js-copy-template', function(e) {
+			var el = $(this);
+
+			// id is the data-id attribute of the clicked element
+			var id = el.data('id');
+
+			// GET cp/fields/exampleTemplate/' + id to get the template
+			$.get(EE.cp.fieldExampleTemplateUrl + '/' + id, function(data) {
+				// copy asset link to clipboard and show notification
+				var copyText = data;
+
+				document.addEventListener('copy', function(e) {
+					e.clipboardData.setData('text/plain', copyText);
+					e.preventDefault();
+				} , true);
+
+				document.execCommand('copy');
+
+				// show notification
+				el.addClass('success');
+				el.find('.fa-copy').addClass('hidden');
+				el.find('.fa-circle-check').removeClass('hidden');
+
+				// hide notification in 2 sec
+				setTimeout(function() {
+					el.removeClass('success');
+					el.find('.fa-copy').removeClass('hidden');
+					el.find('.fa-circle-check').addClass('hidden');
+				}, 2000);
+			});
+
+			return false;
+		});
 
 		$('body').on('click', '.js-lv-banner__close-btn', function(e) {
 			e.preventDefault();

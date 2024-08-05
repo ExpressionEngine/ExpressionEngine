@@ -175,6 +175,7 @@ class Cp
             'hasRememberMe' => (bool) ee()->remember->exists(),
             'cp.updateCheckURL' => ee('CP/URL', 'settings/general/version-check')->compile(),
             'cp.accessResponseURL' => ee('CP/URL', 'license/handleAccessResponse')->compile(),
+            'cp.fieldExampleTemplateUrl' => ee('CP/URL', 'fields/exampleTemplate')->compile(),
             'cp.lastUpdateCheck' => $lastUpdateCheck,
             'site_id' => ee()->config->item('site_id'),
             'site_name' => ee()->config->item('site_name'),
