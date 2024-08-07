@@ -1237,24 +1237,27 @@ $(document).ready(function(){
 			// copy asset link to clipboard
 			var copyText = el.find('.txt-only').text();
 
-			document.addEventListener('copy', function(e) {
-				e.clipboardData.setData('text/plain', copyText);
-				e.preventDefault();
-			}, true);
+			if (navigator.clipboard) {
+				navigator.clipboard.writeText(copyText)
+					.then(() => {
+						console.log('copyText', copyText);
+					})
+					.catch((error) => {
+						console.log('copyText wasnt copy');
+					})
 
-			document.execCommand('copy');
+				// show notification
+				el.addClass('success');
+				el.find('.fa-copy').addClass('hidden');
+				el.find('.fa-circle-check').removeClass('hidden');
 
-			// show notification
-			el.addClass('success');
-			el.find('.fa-copy').addClass('hidden');
-			el.find('.fa-circle-check').removeClass('hidden');
-
-			// hide notification in 2 sec
-			setTimeout(function() {
-				el.removeClass('success');
-				el.find('.fa-copy').removeClass('hidden');
-				el.find('.fa-circle-check').addClass('hidden');
-			}, 2000);
+				// hide notification in 2 sec
+				setTimeout(function() {
+					el.removeClass('success');
+					el.find('.fa-copy').removeClass('hidden');
+					el.find('.fa-circle-check').addClass('hidden');
+				}, 2000);
+			}
 
 			return false;
 		})
