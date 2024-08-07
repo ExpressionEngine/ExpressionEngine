@@ -185,14 +185,14 @@ class Factory
      *
      * @return array
      */
-    public function registerAllTemplateGenerators()
+    public function registerAllTemplateGenerators($showDisabledTemplates = false)
     {
         $this->getInstalledProviders();
         if (is_null($this->generators)) {
             $providers = $this->getInstalledProviders(); // ee('App')->getProviders();
             foreach ($providers as $provider) {
                 if (method_exists($provider, 'registerTemplateGenerators')) {
-                    $provider->registerTemplateGenerators();
+                    $provider->registerTemplateGenerators($showDisabledTemplates);
                 }
             }
         }
@@ -217,7 +217,7 @@ class Factory
      * @param Provider $provider
      * @return array all registered generators
      */
-    public function register(string $className, Provider $provider)
+    public function register(string $className, Provider $provider, $showDisabledTemplates = false)
     {
         if (empty($className) || empty($provider)) {
             return $this->generators;
@@ -232,6 +232,11 @@ class Factory
         // Does it extend the base template generator?
         $instance = new $class();
         if (!$instance instanceof AbstractTemplateGenerator) {
+            return $this->generators;
+        }
+
+        // if the generator is disabled for templates, skip it when generating a template
+        if($instance->generatorDisabledForTemplates() && !$showDisabledTemplates) {
             return $this->generators;
         }
 

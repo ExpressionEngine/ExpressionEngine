@@ -336,7 +336,7 @@ class Provider extends InjectionBindingDecorator
         }
     }
 
-    
+
     /**
      * Registers cookie settings in memory and database
      *
@@ -431,7 +431,7 @@ class Provider extends InjectionBindingDecorator
 
     /**
      * Register variable modifiers
-     * 
+     *
      * @return void
      */
     public function registerVariableModifiers()
@@ -447,15 +447,15 @@ class Provider extends InjectionBindingDecorator
 
     /**
      * Register Template Generators
-     * 
+     *
      * @return void
      */
-    public function registerTemplateGenerators()
+    public function registerTemplateGenerators($showDisabledTemplates)
     {
         $generators = $this->get('templateGenerators', array());
         if (!empty($generators)) {
             foreach ($generators as $generator) {
-                ee('TemplateGenerator')->register($generator, $this);
+                ee('TemplateGenerator')->register($generator, $this, $showDisabledTemplates);
             }
         }
         unset($generators);

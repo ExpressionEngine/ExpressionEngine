@@ -633,15 +633,17 @@ class Fields extends AbstractFieldsController
             show_404();
         }
 
+        // Get the template data
         $data = [
             'field' => $field->field_name,
             'template_group' => '',
             'templates' => ['all']
         ];
 
+        // Register all template generators, and include ones disabled for template generation
+        ee('TemplateGenerator')->registerAllTemplateGenerators($showDisabled = true);
         $generator = ee('TemplateGenerator')->make('channel:fields');
 
-        $generatorsList = ee('TemplateGenerator')->registerAllTemplateGenerators();
         $validationResult = $generator->validatePartial($data);
         $result = $generator->generate($data, false);
 

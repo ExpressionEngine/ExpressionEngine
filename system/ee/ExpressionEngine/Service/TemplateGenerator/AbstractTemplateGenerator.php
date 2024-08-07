@@ -24,6 +24,14 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
     protected $name;
 
     /**
+     * Whether the generator should be disabled from creating templates
+     * This is useful for generators that are generating a snippet of code, but should not be a full template
+     *
+     * @var bool
+     */
+    protected $disableForTemplateGeneration = false;
+
+    /**
      * The list of templates that this generator can create
      * We expect the array key to be the template name and the value to be the template description
      *
@@ -110,6 +118,16 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
     public function getPrefix()
     {
         return $this->getProvider()->getPrefix();
+    }
+
+    /**
+     * Check if the generator is disabled for templates
+     *
+     * @return bool
+     */
+    public function generatorDisabledForTemplates()
+    {
+        return $this->disableForTemplateGeneration;
     }
 
     /**
