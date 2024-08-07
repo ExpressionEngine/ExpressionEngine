@@ -17,6 +17,10 @@ class Fields extends AbstractTemplateGenerator
 {
     protected $name = 'channel_fields_template_generator';
 
+    // This is a basic field generator, so we don't want it to show up in the template generator list
+    // This is because it's not a full template generator, it's just a field generator
+    protected $disableForTemplateGeneration = true;
+
     protected $templates = [
         'index' => 'Basic field usage',
     ];
@@ -81,7 +85,6 @@ class Fields extends AbstractTemplateGenerator
 
         // get the fields for assigned channels
         $fields = ee('Model')->get('ChannelField')->filter('field_name', 'IN', $vars['field'])->all();
-
 
         foreach ($fields as $field) {
             // get the field variables
