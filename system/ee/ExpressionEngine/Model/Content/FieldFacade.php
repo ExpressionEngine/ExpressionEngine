@@ -75,27 +75,15 @@ class FieldFacade
         }
         if (ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->show_field_names == 'y') {
             $field_name = $this->getShortName();
+            $field_id = $this->getId();
+
             if (strpos($field_name, 'categories[cat_group_id_') === 0) {
                 $field_name = "categories show_group=\"" . rtrim(substr($field_name, 24), ']') . "\"";
             }
-            return ee('View')->make('publish/partials/field_name_badge')->render(['name' => $field_name_prefix . $field_name]);
-        }
-        return '';
-    }
-
-    public function getTemplateBadge($field_name_prefix = '')
-    {
-        if (ee()->session->userdata('member_id') == 0) {
-            return '';
-        }
-        if (ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->show_field_names == 'y') {
-
-            // check to see if this is a custom field
-            $field_id = $this->getId();
-            $field = ee('Model')->get('ChannelField', $field_id)->first();
-            if($field && is_integer($field->field_id)) {
-                return ee('View')->make('publish/partials/field_template_badge')->render(['field_id' => $this->getId(), 'name' => $field_name_prefix . $this->getShortName()]);
-            }
+            return ee('View')->make('publish/partials/field_name_badge')->render([
+                'name' => $field_name_prefix . $field_name,
+                'field_id' => $field_id
+            ]);
         }
         return '';
     }

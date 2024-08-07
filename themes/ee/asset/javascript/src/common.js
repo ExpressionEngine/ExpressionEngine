@@ -1232,21 +1232,27 @@ $(document).ready(function(){
 			});
 		}
 
-		$('body').on('click', '.js-app-badge', function(e) {
+		$('body').on('click', '.js-app-badge', async function(e) {
 			var el = $(this);
-			// copy asset link to clipboard
+
+			// id is the data-id attribute of the clicked element
+			var id = el.data('id');
 			var copyText = el.find('.txt-only').text();
 
-			if (navigator.clipboard) {
-				navigator.clipboard.writeText(copyText)
-					.then(() => {
-						console.log('copyText', copyText);
-					})
-					.catch((error) => {
-						console.log('copyText wasnt copy');
-					})
+			// if the id is an integer, get the template from the server
+			if(Number.isInteger(id)) {
+				// GET cp/fields/exampleTemplate/' + id to get the template
+				await $.get(EE.cp.fieldExampleTemplateUrl + '/' + id, function(data) {
+					// copy asset link to clipboard and show notification
+					copyText = data;
+				});
+			}
 
-				// show notification
+			// copy asset link to clipboard and show notification
+			var success = await copyToClipboard(copyText);
+
+			// show notification if success
+			if (success) {
 				el.addClass('success');
 				el.find('.fa-copy').addClass('hidden');
 				el.find('.fa-circle-check').removeClass('hidden');
@@ -1262,39 +1268,25 @@ $(document).ready(function(){
 			return false;
 		})
 
-		$('body').on('click', '.js-copy-template', function(e) {
-			var el = $(this);
-
-			// id is the data-id attribute of the clicked element
-			var id = el.data('id');
-
-			// GET cp/fields/exampleTemplate/' + id to get the template
-			$.get(EE.cp.fieldExampleTemplateUrl + '/' + id, function(data) {
-				// copy asset link to clipboard and show notification
-				var copyText = data;
-
-				document.addEventListener('copy', function(e) {
-					e.clipboardData.setData('text/plain', copyText);
-					e.preventDefault();
-				} , true);
-
-				document.execCommand('copy');
-
-				// show notification
-				el.addClass('success');
-				el.find('.fa-copy').addClass('hidden');
-				el.find('.fa-circle-check').removeClass('hidden');
-
-				// hide notification in 2 sec
-				setTimeout(function() {
-					el.removeClass('success');
-					el.find('.fa-copy').removeClass('hidden');
-					el.find('.fa-circle-check').addClass('hidden');
-				}, 2000);
-			});
+		// add a function to copy text to clipboard
+		async function copyToClipboard(copyText) {
+			// if the browser supports clipboard
+			if (navigator.clipboard) {
+				return await navigator.clipboard.writeText(copyText)
+					.then(() => {
+						console.log('copyText copied:', copyText);
+						return true;
+					})
+					.catch((error) => {
+						console.log('copyText wasnt copied')
+						return false;
+					}
+				);
+			}
 
 			return false;
-		});
+		}
+
 
 		$('body').on('click', '.js-lv-banner__close-btn', function(e) {
 			e.preventDefault();
