@@ -11,7 +11,6 @@
 namespace ExpressionEngine\Addons\Channel\TemplateGenerators;
 
 use ExpressionEngine\Service\TemplateGenerator\AbstractTemplateGenerator;
-use ExpressionEngine\Service\TemplateGenerator\FieldTemplateGeneratorInterface;
 
 class Fields extends AbstractTemplateGenerator
 {
