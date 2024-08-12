@@ -779,7 +779,8 @@ class Member_auth extends Member
                 'link' => array($return, $site_name)
             );
 
-            ee()->output->show_message($data);
+            // If we have a success return link, go to that, otherwise, output the standard message.
+            ee()->output->show_message($data, true, $return_success_link);	
         }
 
         $member_id = $memberQuery->row('member_id');
