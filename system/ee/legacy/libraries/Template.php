@@ -10,6 +10,7 @@
  */
 
 use ExpressionEngine\Service\Template;
+use ExpressionEngine\Dependency\Webit\Util\EvalMath\EvalMath;
 
 /**
  * Template Parser
@@ -1010,6 +1011,12 @@ class EE_Template
                         $this->layout_vars[$params['name']] = [];
                     }
                     array_unshift($this->layout_vars[$params['name']], $value);
+
+                    break;
+                case 'math':
+                    $mathEvaluator = new EvalMath();
+                    $value = $mathEvaluator->evaluate($value);
+                    $this->layout_vars[$params['name']] = $value;
 
                     break;
                 case 'set':
