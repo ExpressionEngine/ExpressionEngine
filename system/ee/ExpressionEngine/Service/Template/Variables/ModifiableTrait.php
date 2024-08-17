@@ -10,6 +10,8 @@
 
 namespace ExpressionEngine\Service\Template\Variables;
 
+use ExpressionEngine\Dependency\Webit\Util\EvalMath\EvalMath;
+
 /**
  * :modifier variable replacement methods
  *
@@ -229,6 +231,36 @@ trait ModifiableTrait
     public function replace_url_slug($data, $params = array(), $tagdata = false)
     {
         return (string) ee('Format')->make('Text', $data)->urlSlug($params);
+    }
+
+    /**
+     * :math modifier
+     */
+    public function replace_math($data, $params = array(), $tagdata = false)
+    {
+        if (! is_numeric($data)) {
+            return '';
+        }
+
+        $mathEvaluator = new EvalMath();
+        if (DEBUG == 0) {
+            $mathEvaluator->suppress_errors = true;
+        }
+        $expression = $data;
+        if (isset($params['expression'])) {
+            $expression .= $params['expression'];
+        }
+        if (isset($params['function'])) {
+            $expression = (string) $params['function'] . '(' . $expression . ')';
+        }
+
+        $value = $mathEvaluator->evaluate($expression);
+
+        if (is_nan($value)) {
+            return '';
+        }
+
+        return (string) ee('Format')->make('Number', $value)->number_format($params);
     }
 }
 // END TRAIT
