@@ -484,6 +484,12 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
             $result = $validator->validatePartial($this);
         }
 
+        if ($result->failed()) {
+            $class = explode('\\', get_class($this));
+            $loggingChannel = end($class);
+            ee('Logger')->get($loggingChannel)->debug('Validation failed; ID: ' . $this->getId(), $result->getAllErrors());
+        }
+
         $this->emit('afterValidate');
 
         return $result;

@@ -329,6 +329,7 @@ class Alert
     {
         if (! $this->isEmpty()) {
             $this->collection->defer($this);
+            $this->logAlert();
         }
 
         return $this;
@@ -343,9 +344,24 @@ class Alert
     {
         if (! $this->isEmpty()) {
             $this->collection->save($this);
+            $this->logAlert();
         }
 
         return $this;
+    }
+
+    /**
+     * Add a log record for this alert in debug mode
+     *
+     * @return void
+     */
+    protected function logAlert()
+    {
+        // The severity here does not match the severity levels in the monolog
+        // error could be validation error, which is more like notice
+        // we we just add severity as text
+        $logMessage = $this->severity . ': ' . strip_tags($this->title . ' ' . $this->body);
+        ee('Logger')->get('cp')->debug($logMessage);
     }
 }
 

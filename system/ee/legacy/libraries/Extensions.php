@@ -181,6 +181,7 @@ class EE_Extensions
                     return ee()->output->system_off_msg();
                 }
 
+                ee('Logger')->get()->error($error);
                 return ee()->output->fatal_error($error);
             }
 

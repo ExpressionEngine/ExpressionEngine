@@ -28,7 +28,8 @@ abstract class ContentModel extends VariableColumnModel
         'afterSave',
         'afterInsert',
         'afterUpdate',
-        'beforeDelete'
+        'beforeDelete',
+        'afterDelete'
     );
 
     protected $_field_facades;
@@ -65,6 +66,18 @@ abstract class ContentModel extends VariableColumnModel
     }
 
     /**
+     * Title or name of content model entity
+     * Since the property name can be different, this needs to be implemtened for each model
+     * But we provide a fallback here
+     *
+     * @return string
+     */
+    public function getTitle()
+    {
+        return $this->getId();
+    }
+
+    /**
      * Make sure we update our custom fields when save is triggered
      */
     public function onAfterSave()
@@ -80,6 +93,26 @@ abstract class ContentModel extends VariableColumnModel
     public function onAfterInsert()
     {
         $this->saveFieldData($this->getValues());
+
+        // generic logger call for all content models
+        // relection is required to get the short class name and list of properties
+        // we will not include custom fields into log, as that could be too much
+        $refl = new \ReflectionClass($this);
+        $logChannel = $refl->getShortName();
+        $props = array_map(
+            function ($prop) {
+                return $prop->name;
+            },
+            $refl->getProperties(\ReflectionProperty::IS_PROTECTED)
+        );
+        $props = array_filter($props, function ($prop) {
+            return substr($prop, 0, 1) !== '_';
+        });
+        $logContext = [];
+        foreach ($props as $prop) {
+            $logContext[$prop] = $this->$prop;
+        }
+        ee('Logger')->get($logChannel)->info('Created: ' . $this->getTitle(), $logContext);
     }
 
     public function onAfterUpdate($changed)
@@ -101,6 +134,29 @@ abstract class ContentModel extends VariableColumnModel
         }
 
         $this->deleteFieldData();
+    }
+
+    public function onAfterDelete()
+    {
+        // generic logger call for all content models
+        // relection is required to get the short class name and list of properties
+        // we will not include custom fields into log, as that could be too much
+        $refl = new \ReflectionClass($this);
+        $logChannel = $refl->getShortName();
+        $props = array_map(
+            function ($prop) {
+                return $prop->name;
+            },
+            $refl->getProperties(\ReflectionProperty::IS_PROTECTED)
+        );
+        $props = array_filter($props, function ($prop) {
+            return substr($prop, 0, 1) !== '_';
+        });
+        $logContext = [];
+        foreach ($props as $prop) {
+            $logContext[$prop] = $this->$prop;
+        }
+        ee('Logger')->get($logChannel)->info('Deleted: ' . $this->getTitle(), $logContext);
     }
 
     /**

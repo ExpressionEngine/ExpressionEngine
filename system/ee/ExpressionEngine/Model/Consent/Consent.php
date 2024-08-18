@@ -141,6 +141,8 @@ class Consent extends Model
         $log->action = $action;
         $log->log_date = ee()->localize->now;
         $log->save();
+
+        ee('Logger')->get('consent')->log($level, $message);
     }
 
     public function onAfterSave()

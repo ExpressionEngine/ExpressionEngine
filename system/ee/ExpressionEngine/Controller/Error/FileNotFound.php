@@ -21,6 +21,7 @@ class FileNotFound extends CP_Controller
     {
         ee()->remove('__legacy_controller');
         parent::__construct();
+        ee()->output->enable_profiler(false);
     }
 
     public function index($url = '')

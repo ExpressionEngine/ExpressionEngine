@@ -26,7 +26,8 @@
         "expressionengine/flysystem-cached-adapter": "^1.1",
         "mlocati/ip-lib": "^1.18",
         "bacon/bacon-qr-code": "^2.0",
-        "spomky-labs/otphp": "^10.0"
+        "spomky-labs/otphp": "^10.0",
+        "monolog/monolog": "^2.0"
     },
     "repositories": [
         {

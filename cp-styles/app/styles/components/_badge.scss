@@ -55,6 +55,10 @@
 	-ms-user-select: none;
 	user-select: none;
 
+	&.not-clickable {
+		cursor: auto;
+	}
+
 	i {
 		margin-left: 5px;
 		opacity: 0;

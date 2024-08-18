@@ -662,6 +662,7 @@ class Addons extends CP_Controller
 
             foreach (array('first', 'third') as $party) {
                 if (! empty($installed[$party])) {
+                    ee('Logger')->get('cp')->info(lang('addons_installed_desc') . ' ' . implode(', ', $installed[$party]));
                     $alert = ee('CP/Alert')->makeInline($party . '-party')
                         ->asSuccess()
                         ->withTitle(lang('addons_installed'))
@@ -765,6 +766,7 @@ class Addons extends CP_Controller
 
         foreach (array('first', 'third') as $party) {
             if (! empty($uninstalled[$party])) {
+                ee('Logger')->get('cp')->info(lang('addons_uninstalled_desc') . ' ' . implode(', ', $uninstalled[$party]));
                 $alert = ee('CP/Alert')->makeInline($party . '-party')
                     ->asSuccess()
                     ->withTitle(lang('addons_uninstalled'))
