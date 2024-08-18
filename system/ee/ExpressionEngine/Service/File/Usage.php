@@ -56,7 +56,7 @@ class Usage
     protected function initializeFieldsAndTables()
     {
         $data = ee()->cache->get(self::CACHE_KEY);
-        if ($data === false || $data['updating'] === false) {
+        if ($data === false || ! isset($data['updating']) || $data['updating'] === false) {
             $this->buildFieldsAndTables();
             $this->cache();
         } else {
