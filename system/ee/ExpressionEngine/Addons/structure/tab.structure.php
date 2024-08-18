@@ -175,7 +175,7 @@ class Structure_tab
                 'field_label'           => lang('tab_parent_entry'),
                 'field_required'        => 'n',
                 'field_data'            => $selected_parent,
-                'field_list_items'      => $parent_ids,
+                'value_label_pairs'     => $parent_ids,
                 'field_fmt'             => '',
                 'field_instructions'    => '',
                 'field_show_fmt'        => 'n',
@@ -454,7 +454,7 @@ class Structure_tab
             $parent_id = $params['parent_id']; // EE3
         } elseif (isset($params['mod_data']['parent_id'])) {
             $parent_id = $params['mod_data']['parent_id']; // EE2
-        } elseif (!empty($structure_alt_parent_id)) {
+        } elseif (!is_null($structure_alt_parent_id)) {
             $parent_id = $structure_alt_parent_id;
         } else {
             // do we have an entry id as well as a template?
@@ -590,7 +590,24 @@ class Structure_tab
 
             $structure_uri = $uri; // contents of uri input field
 
-            $uri = $structure_uri == '' ? $this->create_uri($title) : $this->create_uri($structure_uri);
+            // if the submitted URI is valid, we can just use it
+            $validUriSubmitted = false;
+            if (!empty($structure_uri)) {
+                $validator = ee('Validation')->make(array(
+                    'uri' => 'alphaDashPeriodEmoji'
+                ));
+
+                $validation = $validator->validate(['uri' => $uri]);
+
+                if ($validation->isValid()) {
+                    $validUriSubmitted = true;
+                }
+            }
+
+            // create Structure URI out of submitted information
+            if ($validUriSubmitted === false) {
+                $uri = $structure_uri == '' ? $this->create_uri($title) : $this->create_uri($structure_uri);
+            }
 
             // If the current channel is not assigned as any sort of Structure channel, then stop
             if ($channel_type == 'page') {
@@ -698,7 +715,9 @@ class Structure_tab
             StaticCache::set('get_template_fields', $templates);
         }
 
-        $options = array();
+        $options = array(
+            0 => 'NONE',
+        );
 
         foreach ($templates as $template_row) {
             $template_id = $template_row['template_id'];
@@ -714,7 +733,7 @@ class Structure_tab
         // Build Parent Entries Select Box
         $parent_id = ee()->input->get_post('structure__parent_id') ? ee()->input->get_post('structure__parent_id') : 0;
         $parent_ids = array();
-        $parent_ids['n'] = "NONE";
+        $parent_ids['0'] = "NONE";
 
         // PARENT BUG
         // Update: Changed this to `$entry_id` which may cause some oddity with the Parent dropdown.

@@ -74,7 +74,7 @@ class EE_Core
 
         // application constants
         define('APP_NAME', 'ExpressionEngine');
-        define('APP_BUILD', '20240122');
+        define('APP_BUILD', '20240624');
         define('APP_VER', '7.5.0');
         define('APP_VER_ID', '');
         define('SLASH', '&#47;');
@@ -263,9 +263,6 @@ class EE_Core
         ee()->load->library('functions');
         ee()->load->library('extensions');
         ee()->load->library('api');
-
-        //we're fully booted now
-        define('APP_BOOTED', true);
     }
 
     /**

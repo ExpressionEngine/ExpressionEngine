@@ -45,7 +45,8 @@ $link = str_replace('&amp;', '&', $link);
 // so this will also fail if an IDN is used as a redirect on a server that is missing PHP's intl extension,
 // but that's okay, as it probably means this redirect was not created by the site owner
 // if we have an invalid url (not a root relative url and does not validate) OR if our link contains an XSS threat throw an error
-if ((substr($_GET['URL'], 0, 1) != '/' && !filter_var($url, FILTER_VALIDATE_URL)) || $link !== ee('Security/XSS')->clean($link)) {
+$rootRelative = substr($_GET['URL'], 0, 1) === '/' && substr($_GET['URL'], 0, 2) !== '//';
+if ((!$rootRelative && !filter_var($url, FILTER_VALIDATE_URL)) || $url !== ee('Security/XSS')->clean($url) || $link !== ee('Security/XSS')->clean($link)) {
     show_error(sprintf(lang('redirect_xss_fail'), ee()->typography->encode_email(ee()->config->item('webmaster_email'))));
 }
 
@@ -59,7 +60,7 @@ $referrer_parts = isset($_SERVER['HTTP_REFERER'])
 $url_parts = parse_url($url);
 $url_host = empty($url_parts['host']) ? '' : $url_parts['host'];
 
-if (substr($_GET['URL'], 0, 1) != '/'
+if (!$rootRelative
     && ($force_redirect == true
     or ! stristr($url_host, $host) // external link
     or (! $referrer_parts or ! stristr($referrer_parts['host'], $host)))) {

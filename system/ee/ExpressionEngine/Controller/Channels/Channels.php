@@ -69,7 +69,7 @@ class Channels extends AbstractChannelsController
 
             $data[] = [
                 'id' => $channel->getId(),
-                'label' => $channel->channel_title,
+                'label' => \htmlentities((string)$channel->channel_title, ENT_QUOTES, 'UTF-8'),
                 'href' => $edit_url,
                 'extra' => LD . $channel->channel_name . RD,
                 'selected' => ($highlight_id && $channel->getId() == $highlight_id) or in_array($channel->getId(), $imported_channels),
@@ -81,7 +81,7 @@ class Channels extends AbstractChannelsController
                     ],
                     'layout-set' => [
                         'href' => ee('CP/URL', 'channels/layouts/' . $channel->getId()),
-                        'title' => $channel->channel_title . ' ' . lang('layouts'),
+                        'title' => \htmlentities((string)$channel->channel_title, ENT_QUOTES, 'UTF-8') . ' ' . lang('layouts'),
                         'content' => ' ' . lang('layouts')
                     ]
                 ],
@@ -344,7 +344,7 @@ class Channels extends AbstractChannelsController
             'channelManager.catGroup.createUrl' => ee('CP/URL')->make('categories/groups/create')->compile(),
             'channelManager.catGroup.editUrl' => ee('CP/URL')->make('categories/groups/edit/###')->compile(),
             'channelManager.catGroup.toggleUrl' => ee('CP/URL')->make('channels/groups/edit/###')->compile(),
-            'channelManager.catGroup.fieldUrl' => ee('CP/URL')->make('channels/render-category-groups-field')->compile(),
+            'channelManager.catGroup.fieldUrl' => ee('CP/URL')->make('channels/render-category-groups-field/' . $channel_id)->compile(),
 
             'channelManager.statuses.createUrl' => ee('CP/URL')->make('channels/status/create')->compile(),
             'channelManager.statuses.editUrl' => ee('CP/URL')->make('channels/status/edit/###')->compile(),
@@ -738,6 +738,11 @@ class Channels extends AbstractChannelsController
      */
     public function renderCategoryGroupsField($channel = null)
     {
+        // Channel might be coming as GET parameter, then it's channel ID
+        if (!empty($channel) && is_numeric($channel)) {
+            $channel = ee('Model')->get('Channel', $channel)->first();
+        }
+
         $categoryGroups = ee('Model')->get('CategoryGroup')
             ->filter('site_id', ee()->config->item('site_id'))
             ->filter('exclude_group', '!=', 1)
@@ -751,7 +756,7 @@ class Channels extends AbstractChannelsController
         $categoryGroupSettings = $channel ? $channel->CategoryGroupSettings->indexBy('group_id') : null;
 
         if (!ee('Request')->isPost() && !is_null($channel) && ! is_null($channel->CategoryGroups)) {
-            $selected =  $channel->CategoryGroups->pluck('group_id');
+            $selected = $channel->CategoryGroups->pluck('group_id');
         }
 
         foreach ($categoryGroups as $categoryGroup) {
@@ -762,6 +767,15 @@ class Channels extends AbstractChannelsController
                     'cat_required' => ($categoryGroupSettings && isset($categoryGroupSettings[$categoryGroup->group_id])) ? $categoryGroupSettings[$categoryGroup->group_id]->cat_required : false
                 ]
             ];
+        }
+
+        $no_results = [
+            'text' => sprintf(lang('no_found'), lang('category_groups'))
+        ];
+
+        if (ee('Permission')->can('create_categories')) {
+            $no_results['link_text'] = 'add_new';
+            $no_results['link_href'] = ee('CP/URL')->make('categories/groups/create');
         }
 
         ee()->javascript->set_global([
@@ -779,6 +793,7 @@ class Channels extends AbstractChannelsController
             'reorderable' => false,
             'removable' => false,
             'editable' => true,
+            'no_results' => $no_results,
             'toggles' => [
                 'cat_allow_multiple',
                 'cat_required'

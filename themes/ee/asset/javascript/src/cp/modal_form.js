@@ -67,6 +67,12 @@ EE.cp.ModalForm = {
 			})
 
 			this.modal.append(iframe)
+		} else if (typeof options.postData !== 'undefined') {
+			$.post(options.url, options.postData, function(result) {
+				that.modalContentsContainer.html(result)
+				that._bindForm(options)
+				options.load(that.modalContentsContainer)
+			})
 		} else {
 			this.modalContentsContainer.load(options.url, function() {
 				that._bindForm(options)

@@ -53,6 +53,11 @@ class RoleGroup extends Model
     // Properties
     protected $group_id;
     protected $name;
+
+    public function get__name()
+    {
+        return ee('Security/XSS')->clean($this->getRawProperty('name'));
+    }
 }
 
 // EOF

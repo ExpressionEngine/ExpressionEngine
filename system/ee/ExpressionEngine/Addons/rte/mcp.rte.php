@@ -224,6 +224,10 @@ class Rte_mcp
         $toolsetType = ee('Security/XSS')->clean(ee('Request')->post('toolset_type', 'ckeditor'));
         if (ee('Request')->isPost()) {
             $settings = ee('Security/XSS')->clean(ee('Request')->post('settings'));
+            if (isset($settings['rte_config_json'])) {
+                // need to allow some extra stuff here
+                $settings['rte_config_json'] = ee('Request')->post('settings')['rte_config_json'];
+            }
 
             // -------------------------------------------
             //  Save and redirect to Index
@@ -251,7 +255,7 @@ class Rte_mcp
             $jsonError = false;
             if ($settings['rte_advanced_config'] == 'y' && !empty($settings['rte_config_json'])) {
                 //override with JSON
-                $json = json_decode(ee('Request')->post('settings')['rte_config_json']);
+                $json = json_decode($settings['rte_config_json']);
                 if (empty($json)) {
                     $jsonError = true;
                     $settings['toolbar'] = $settings[$toolsetType . '_toolbar'];
@@ -281,13 +285,16 @@ class Rte_mcp
             if (!$jsonError && $validate->isValid()) {
                 $config->save();
 
-                ee('CP/Alert')->makeInline('shared-form')
+                $alert = ee('CP/Alert')->makeInline('shared-form')
                     ->asSuccess()
                     ->withTitle($toolset_id ? lang('toolset_updated') : lang('toolset_created'))
-                    ->addToBody(sprintf($toolset_id ? lang('toolset_updated_desc') : lang('toolset_created_desc'), $configName))
-                    ->defer();
+                    ->addToBody(sprintf($toolset_id ? lang('toolset_updated_desc') : lang('toolset_created_desc'), $configName));
 
-                ee()->functions->redirect($this->base_url);
+                if (ee('Request')->post('submit') == 'save_and_close') {
+                    $alert->defer();
+                    ee()->functions->redirect($this->base_url);
+                }
+                $alert->now();
             } else {
                 $variables['errors'] = $validate;
                 ee('CP/Alert')->makeInline('shared-form')
@@ -397,7 +404,7 @@ class Rte_mcp
                             'choices' => [
                                 'ckeditor'  => 'CKEditor',
                                 'redactorX'  => 'RedactorX',
-                                'redactor'  => 'Redactor (deprecated)',
+                                'redactor'  => 'Redactor Classic (deprecated)',
                             ],
                             'group_toggle' => [
                                 'ckeditor' => 'ckeditor_toolbar',
@@ -474,7 +481,7 @@ class Rte_mcp
                             'group_toggle' => array(
                                 'y' => 'redactorX_toolbar_hide',
                             ),
-                            'value' => isset($config->settings['toolbar']['toolbar_hide']) && !empty($config->settings['toolbar']['toolbar_hide']) ? $config->settings['toolbar']['toolbar_hide'] : 'y',
+                            'value' => is_array($config->settings['toolbar']) && isset($config->settings['toolbar']['toolbar_hide']) && !empty($config->settings['toolbar']['toolbar_hide']) ? $config->settings['toolbar']['toolbar_hide'] : 'y',
                         )
                     )
                 ),
@@ -492,14 +499,11 @@ class Rte_mcp
                 array(
                     'title' => 'rte_toolbar_sticky',
                     'desc' => 'rte_show_main_toolbar_desc',
-                    'group' => 'redactorX_toolbar',
+                    'group' => 'redactorX_toolbar|redactorX_toolbar_hide',
                     'fields' => array(
-                        'settings[redactorX_toolbar][toolbar_hide]' => array(
+                        'settings[redactorX_toolbar][sticky]' => array(
                             'type' => 'yes_no',
-                            'group_toggle' => array(
-                                'y' => 'redactorX_toolbar_hide',
-                            ),
-                            'value' => isset($config->settings['toolbar']['toolbar_hide']) && !empty($config->settings['toolbar']['toolbar_hide']) ? $config->settings['toolbar']['toolbar_hide'] : 'y',
+                            'value' => is_array($config->settings['toolbar']) && isset($config->settings['toolbar']['sticky']) && !empty($config->settings['toolbar']['sticky']) ? $config->settings['toolbar']['sticky'] : 'y',
                         )
                     )
                 ),
@@ -513,7 +517,7 @@ class Rte_mcp
                             'group_toggle' => array(
                                 'y' => 'redactorX_toolbar_topbar',
                             ),
-                            'value' => isset($config->settings['toolbar']['toolbar_topbar']) && !empty($config->settings['toolbar']['toolbar_topbar']) ? $config->settings['toolbar']['toolbar_topbar'] : 'y',
+                            'value' => is_array($config->settings['toolbar']) && isset($config->settings['toolbar']['toolbar_topbar']) && !empty($config->settings['toolbar']['toolbar_topbar']) ? $config->settings['toolbar']['toolbar_topbar'] : 'y',
                         )
                     )
                 ),
@@ -538,7 +542,7 @@ class Rte_mcp
                             'group_toggle' => array(
                                 'y' => 'redactorX_toolbar_addbar',
                             ),
-                            'value' => isset($config->settings['toolbar']['toolbar_addbar']) && !empty($config->settings['toolbar']['toolbar_addbar']) ? $config->settings['toolbar']['toolbar_addbar'] : 'y',
+                            'value' => is_array($config->settings['toolbar']) && isset($config->settings['toolbar']['toolbar_addbar']) && !empty($config->settings['toolbar']['toolbar_addbar']) ? $config->settings['toolbar']['toolbar_addbar'] : 'y',
                         )
                     )
                 ),
@@ -563,7 +567,7 @@ class Rte_mcp
                             'group_toggle' => array(
                                 'y' => 'redactorX_toolbar_context',
                             ),
-                            'value' => isset($config->settings['toolbar']['toolbar_context']) && !empty($config->settings['toolbar']['toolbar_context']) ? $config->settings['toolbar']['toolbar_context'] : 'y',
+                            'value' => is_array($config->settings['toolbar']) && isset($config->settings['toolbar']['toolbar_context']) && !empty($config->settings['toolbar']['toolbar_context']) ? $config->settings['toolbar']['toolbar_context'] : 'y',
                         )
                     )
                 ),
@@ -608,7 +612,7 @@ class Rte_mcp
                     'fields' => array(
                         'settings[redactorX_toolbar][toolbar_control]' => array(
                             'type' => 'yes_no',
-                            'value' => isset($config->settings['toolbar']['toolbar_control']) && !empty($config->settings['toolbar']['toolbar_control']) ? $config->settings['toolbar']['toolbar_control'] : 'y',
+                            'value' => is_array($config->settings['toolbar']) && isset($config->settings['toolbar']['toolbar_control']) && !empty($config->settings['toolbar']['toolbar_control']) ? $config->settings['toolbar']['toolbar_control'] : 'y',
                         )
                     )
                 ),
@@ -624,7 +628,7 @@ class Rte_mcp
                                 'browser' => lang('browser'),
                                 'grammarly' => lang('grammarly')
                             ],
-                            'value' => isset($config->settings['toolbar']['spellcheck']) && !empty($config->settings['toolbar']['spellcheck']) ? $config->settings['toolbar']['spellcheck'] : 'browser'
+                            'value' => is_array($config->settings['toolbar']) && isset($config->settings['toolbar']['spellcheck']) && !empty($config->settings['toolbar']['spellcheck']) ? $config->settings['toolbar']['spellcheck'] : 'browser'
                         )
                     )
                 ),
@@ -731,8 +735,22 @@ class Rte_mcp
         $variables['base_url'] = ee('CP/URL')->make('addons/settings/rte/edit_toolset');
         $variables['cp_page_title'] = $headingTitle;
 
-        $variables['save_btn_text'] = lang('save');
-        $variables['save_btn_text_working'] = lang('btn_saving');
+        $variables['buttons'] = [
+            [
+                'name' => 'submit',
+                'type' => 'submit',
+                'value' => 'save',
+                'text' => 'save',
+                'working' => 'btn_saving'
+            ],
+            [
+                'name' => 'submit',
+                'type' => 'submit',
+                'value' => 'save_and_close',
+                'text' => 'save_and_close',
+                'working' => 'btn_saving'
+            ]
+        ];
 
         ee()->cp->add_js_script([
             'plugin' => 'ee_codemirror',

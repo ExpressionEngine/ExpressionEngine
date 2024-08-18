@@ -14,16 +14,16 @@
     "author": "",
     "license": "ISC",
     "devDependencies": {
+        "cypress": "^13.7.1",
         "find-test-names": "^1.28.12"
     },
     "dependencies": {
-        "cypress": "^13",
         "cypress-audit": "^1",
+        "cypress-log-to-output": "^1",
         "cypress-maildev": "^1",
         "cypress-otp": "^1",
-        "cypress-xpath": "^1",
-        "cypress-log-to-output": "^1",
         "cypress-real-events": "^1",
+        "cypress-xpath": "^1",
         "del": "^6",
         "fs-extra": "^11",
         "glob": "^8",

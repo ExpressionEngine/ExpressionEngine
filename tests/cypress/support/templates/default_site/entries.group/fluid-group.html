@@ -1,0 +1,86 @@
+<html>
+<head>
+<style>
+    .field + .field {margin-top: 30px; border-top: 1px solid #ccc;}
+    .meta {padding: 5px; background: #ddd;}
+    .meta li {display: inline-block; margin: 0 5px;}
+</style>
+</head>
+<body>
+{exp:channel:entries channel="fluid_fields" limit="1" dynamic="yes"}
+<div id="{url_title}">
+    <h3>#{entry_id} - {title}</h3>
+    <div class="fluid">
+    {corpse}
+        {!-- News Group --}
+        {corpse:news}
+            <h3>News Group</h3>
+
+            <h4>Fields Loop</h4>
+            {fields}
+                <div class="field field__{corpse:current_field_name}">
+                    <ul class="meta">
+                        <li class="meta__index">Index: {corpse:index}</li>
+                        <li class="meta__count">Count: {corpse:count}</li>
+                        <li class="meta__index_in_group">Index In Group: {corpse:index_in_group}</li>
+                        <li class="meta__count_in_group">Count In Group: {corpse:count_in_group}</li>
+                        <li class="meta__first_in_group">First In Group: {corpse:first_in_group}</li>
+                        <li class="meta__last_in_group">Last In Group: {corpse:last_in_group}</li>
+                        <li class="meta__current_field_name">Fieldname: {corpse:current_field_name}</li>
+                        <li class="meta__current_fieldtype">Fieldtype: {corpse:current_fieldtype}</li>
+                    </ul>
+
+                    {corpse:news_body}
+                        <div class="tag__news_body">News Body: {content}</div>
+                        <div class="tag__news_body modifier__length">News Body Length: {content:length}</div>
+                    {/corpse:news_body}
+                    {corpse:news_extended}
+                        <div class="tag__news_extended">News Extended: {content}</div>
+                        <div class="tag__news_extended modifier__attr_safe">News Extended Attribute Safe: {content:attr_safe}</div>
+                    {/corpse:news_extended}
+                    {corpse:news_image}
+                        <div class="tag__news_image">News Image: {content}</div>
+                        <div class="tag__news_image modifier__resize">News Image Resize: {content:resize width="10" height="10"}</div>
+                    {/corpse:news_image}
+                    {corpse:rel_item}
+                        {content}
+                            <div class="tag__rel_item">Related Item: {content:title}</div>
+                            <div class="tag__rel_item modifier__length">Related Item Title Length: {content:title:length}</div>
+                        {/content}
+                    {/corpse:rel_item}
+                </div>
+            {/fields}
+
+            <h4>Fields Individual</h4>
+            <div class="tag__news_body">News Body: {news:news_body}</div>
+            <div class="tag__news_body modifier__length">News Body Length: {news:news_body:length}</div>
+
+            <div class="tag__news_extended">News Extended: {news:news_extended}</div>
+            <div class="tag__news_extended modifier__attr_safe">News Extended Attribute Safe: {news:news_extended:attr_safe}</div>
+
+            <div class="tag__news_image">News Image: {news:news_image}</div>
+            <div class="tag__news_image modifier__resize">News Image Resize: {news:news_image:resize width="10" height="10"}</div>
+
+            {news:rel_item}
+                <div class="tag__rel_item">Related Item: {rel_item:title} </div>
+                <div class="tag__rel_item modifier__length">Related Item Title Length: {rel_item:title:length}</div>
+            {/news:rel_item}
+
+            <h4>Group Meta</h4>
+            <ul class="meta">
+                <li class="meta__current_group_name">Current Group Name: {corpse:current_group_name}</li>
+                <li class="meta__current_group_short_name">Current Group Shortname: {corpse:current_group_short_name}</li>
+                <li class="meta__first_group">First Group: {corpse:first_group}</li>
+                <li class="meta__last_group">Last Group: {corpse:last_group}</li>
+            </ul>
+        {/corpse:news}
+        <h4>Fluid Meta</h4>
+        <ul class="meta">
+            <li class="meta__total_fields">Total Fields: {corpse:total_fields}</li>
+        </ul>
+    {/corpse}
+    </div>
+</div>
+{/exp:channel:entries}
+</body>
+</html>

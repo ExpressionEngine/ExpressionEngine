@@ -42,7 +42,7 @@ class MemberManagerColumns extends Columns
                 $role_id = 4;
             }
         } elseif (!empty(ee()->input->get('role_id')) && is_numeric(ee()->input->get('role_id'))) {
-            $role_id = (int) ee()->input->get('requested_directory');
+            $role_id = (int) ee()->input->get('role_id');
         }
 
         $query = ee('Model')->get('MemberManagerView')

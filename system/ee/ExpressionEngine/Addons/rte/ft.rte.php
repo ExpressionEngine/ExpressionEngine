@@ -457,7 +457,7 @@ class Rte_ft extends EE_Fieldtype
      */
     public function replace_has_excerpt($data)
     {
-        return (strpos($data, '<div class="readmore') !== false) ? 'y' : '';
+        return (!empty($data) && strpos($data, '<div class="readmore') !== false) ? 'y' : '';
     }
 
     /**
@@ -470,7 +470,7 @@ class Rte_ft extends EE_Fieldtype
      */
     public function replace_excerpt($data, $params)
     {
-        if (($read_more_tag_pos = strpos($data, '<div class="readmore')) !== false) {
+        if (!empty($data) && ($read_more_tag_pos = strpos($data, '<div class="readmore')) !== false) {
             $data = substr($data, 0, $read_more_tag_pos);
         }
 

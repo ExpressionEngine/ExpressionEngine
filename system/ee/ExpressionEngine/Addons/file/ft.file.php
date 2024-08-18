@@ -586,6 +586,17 @@ JSC;
                 }
             }
 
+            // if position parameter is provided, use it to calculate x and y
+            if ($function == 'crop' && isset($params['position'])) {
+                $props = ee()->image_lib->get_image_properties($source['path'], true);
+                if (isset($params['width'])) {
+                    $imageLibConfig['x_axis'] += floor(($props['width'] - (int) $params['width']) / 2);
+                }
+                if (isset($params['height'])) {
+                    $imageLibConfig['y_axis'] += floor(($props['height'] - (int) $params['height']) / 2);
+                }
+            }
+
             ee()->image_lib->clear();
             if (!isset($imageLibConfig['width'])) {
                 ee()->image_lib->width = '';
@@ -793,7 +804,7 @@ JSC;
             if (is_null($tagdata)) {
                 // null means we're chaning modifier to pre-defined manipulation
                 // need to set some data and return array instead of string
-                if (array_key_exists('path:' . $modifier, $data)) {
+                if (is_array($data) && array_key_exists('path:' . $modifier, $data)) {
                     $data['fs_filename'] = $modifier . '_' . ($data['fs_filename'] ?? $data['model_object']->file_name);
                     $data['source_image'] = $data['path:' . $modifier];
                     $data['url'] = $full_path;

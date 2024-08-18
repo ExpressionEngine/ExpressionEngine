@@ -19,16 +19,6 @@ use Mexitek\PHPColors\Color;
  */
 class Categories extends Column
 {
-    public function getEntryManagerColumnModels()
-    {
-        return ['Categories'];
-    }
-
-    public function getEntryManagerColumnFields()
-    {
-        return ['Categories.cat_name'];
-    }
-
     public function getTableColumnLabel()
     {
         return 'column_categories';
@@ -43,7 +33,19 @@ class Categories extends Column
 
     public function renderTableCell($data, $field_id, $entry)
     {
-        $categories = $entry->Categories->getDictionary('cat_id', 'cat_name');
+        // eager loading breaks the pagination
+        // so we'll pre-fetch all categories and cache them
+        // and then use direct query instead of getting relationships
+        // because that would include things like groups and fields that we don't need here
+        $allCategories = ee('Model')->get('Category')->fields('cat_id', 'cat_name')->all(true)->getDictionary('cat_id', 'cat_name');
+
+        $related = ee('db')->select('cat_id')
+            ->where('entry_id', $entry->entry_id)
+            ->get('category_posts')
+            ->result_array();
+        $categories = array_filter($allCategories, function ($cat_id) use ($related) {
+            return in_array($cat_id, array_column($related, 'cat_id'));
+        }, ARRAY_FILTER_USE_KEY);
 
         return implode(", ", $categories);
     }

@@ -297,7 +297,9 @@ $lang = array(
 
     'line_rte' => 'Horizontal rule',
 
-    'filemanager_rte' => 'Image',
+    'filemanager_rte' => 'Image or File Picker',
+
+    'insertImage_rte' => 'Insert image via URL',
 
     'insertTable_rte' => 'Table',
 
@@ -338,6 +340,8 @@ $lang = array(
     'codeBlock_rte' => 'Code block',
 
     'sourceEditing_rte' =>  'Source editing',
+
+    'findAndReplace_rte' =>  'Find and replace',
 
     'open_in_new_tab' => 'Open in a new tab',
 

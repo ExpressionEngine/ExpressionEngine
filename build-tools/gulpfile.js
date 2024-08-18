@@ -171,7 +171,11 @@ gulp.task('_archive_pro', function (cb) {
 });
 
 gulp.task('_archive_redactorx', function (cb) {
-	archive_repo('redactorx', cb);
+    if (process.argv.indexOf('--skip-redactorx') > -1) {
+        cb();
+    } else {
+        archive_repo('redactorx', cb);
+    }
 });
 
 /**
@@ -575,9 +579,13 @@ gulp.task('_properties', function () {
 
 	// Generate ud_n_n_n.php build version
 	var normalizedVersion = properties.version;
-	if (properties.version.lastIndexOf('-') >= 0) {
+	// strip out the DP part to get proper update file name
+	if (normalizedVersion.lastIndexOf('-dp.') >= 0) {
+		normalizedVersion = normalizedVersion.substr(0, normalizedVersion.lastIndexOf('-dp.'));
+	}
+	if (normalizedVersion.lastIndexOf('-') >= 0) {
 		// Replace the hyphen in the identifier with a dot so we can build the update file name properly.
-		normalizedVersion = properties.version.replace('-', '.');
+		normalizedVersion = normalizedVersion.replace('-', '.');
 	}
 
 	var segments = normalizedVersion.split('.');

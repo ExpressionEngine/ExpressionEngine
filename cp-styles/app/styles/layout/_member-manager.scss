@@ -26,6 +26,10 @@
 
                 &-no-search {
                     flex-grow: 0;
+
+                    div[rev="toggle-columns"] {
+                        width: fit-content;
+                    }
                 }
 
                 &-search {

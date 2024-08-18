@@ -68,6 +68,10 @@ class RedactorXService extends RedactorService implements RteService {
         if (!isset($config['toolbar']['toolbar']) || !is_object($config['toolbar']['toolbar'])) {
             $config['toolbar']['toolbar'] = new \stdClass();
         }
+        if (isset($config['toolbar']['sticky'])) {
+            $config['toolbar']['toolbar']->sticky = get_bool_from_string($config['toolbar']['sticky']);
+            unset($config['toolbar']['sticky']);
+        }
         $config['toolbar']['toolbar']->stickyTopOffset = 60;
 
         if (isset($config['toolbar']['hide'])) {
