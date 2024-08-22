@@ -15,14 +15,35 @@
         </div>
     {/if}
 
-    {exp:member:login_form return="<?=$template_group?>/index"}
+    {exp:member:login_form return="<?=$template_group?>/index" inline_errors="yes"}
+        {!-- You can display all errors at the top of the page or use the individual field {error:} tags shown later --}
+        {!--
+        {if errors}
+            <fieldset class="error">
+                <legend>Errors</legend>
+                {errors}
+                    <p>{error}</p>
+                {/errors}
+            </fieldset>
+        {/if}
+        --}
+
+        {if error:general}
+            <span class="error">{error:general}</span>
+        {/if}
         <p>
             <label>Username</label><br />
             <input type="text" name="username" value="" maxlength="32" size="25" />
+            {if error:username}
+                <span class="error">{error:username}</span>
+            {/if}
         </p>
         <p>
             <label>Password</label><br />
             <input type="password" name="password" value="" maxlength="32" size="25" />
+            {if error:password}
+                <span class="error">{error:password}</span>
+            {/if}
         </p>
         {if auto_login}
         <p>

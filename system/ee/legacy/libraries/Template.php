@@ -490,10 +490,15 @@ class EE_Template
         }
 
         if (!empty($errors)) {
+            $this->log_item("Parsing inline errors");
             // Make sure our errors are an associative array so the {errors}{error}{/errors} field tags work properly.
-            $errors = array_map(function ($error) {
-                return array('error' => $error);
-            }, $errors);
+            $errors = (is_array($errors)) ? $errors : [$errors];
+            $errors = array_values(array_map(function ($error, $key) {
+                // Remove error: prefix from key if present
+                $key = (substr($key, 0, 6) === 'error:') ? substr($key, 6) : $key;
+
+                return ['error' => $error, 'error_key' => is_numeric($key) ? '' : str_replace('error:', '', $key)];
+            }, $errors, array_keys($errors)));
 
             $this->template = $this->parse_variables($this->template, array(array('errors' => $errors)));
         }
@@ -4566,6 +4571,25 @@ class EE_Template
         }
 
         return $vars;
+    }
+
+    /**
+     * Parse inline errors from session flashdata
+     *
+     * @param string $str
+     * @return string
+     */
+    public function parse_inline_errors($str)
+    {
+        if (ee()->TMPL->fetch_param('inline_errors') == 'yes'
+            && strpos($str, LD . 'error:') !== false
+            && isset(ee()->session)
+            && !empty(ee()->session->flashdata('errors'))
+        ) {
+            $str = ee()->TMPL->parse_variables($str, [ee()->session->flashdata('errors')]);
+        }
+
+        return $str;
     }
 
     public function set_data($data)

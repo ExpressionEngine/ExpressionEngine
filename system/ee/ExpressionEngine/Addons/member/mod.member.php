@@ -1608,7 +1608,9 @@ class Member
 
         $res = ee()->functions->form_declaration($data);
 
-        $res .= stripslashes(ee()->TMPL->tagdata);
+        $template = ee()->TMPL->parse_inline_errors(ee()->TMPL->tagdata);
+
+        $res .= stripslashes($template);
 
         $res .= "</form>";
 
@@ -1724,6 +1726,7 @@ class Member
             'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->TMPL->fetch_param('return') : '-1',
             'P' => ee()->functions->get_protected_form_params(array(
                 'result_page' => $result_page,
+                'inline_errors' => ee()->TMPL->fetch_param('inline_errors'),
             ))
         );
 
@@ -1745,7 +1748,8 @@ class Member
 
         $res = ee()->functions->form_declaration($data);
 
-        $res .= stripslashes(ee()->TMPL->tagdata);
+        $template = ee()->TMPL->parse_inline_errors(ee()->TMPL->tagdata);
+        $res .= stripslashes($template);
 
         $res .= "</form>";
 

@@ -946,7 +946,8 @@ class EE_Session
 
             if (! isset($tracker['0'])) {
                 $tracker[] = $uri;
-            } else {
+            // Do not track requests inside the themes folder
+            } else if(strpos($uri, 'themes/') !== 0) {
                 if (count($tracker) == 5) {
                     array_pop($tracker);
                 }
@@ -971,7 +972,7 @@ class EE_Session
         if (ee()->config->item('enable_tracking_cookie') === 'n') {
             return true;
         }
-        
+
         if (is_null($tracker)) {
             $tracker = $this->tracker;
         }
