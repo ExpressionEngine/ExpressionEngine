@@ -75,11 +75,22 @@ class Fields extends AbstractFieldsController
         $fieldtype_filter->setPlaceholder(lang('all'));
         $fieldtype_filter->disableCustomValue();
 
+        // Add channel filter
+        $channels = ee('Model')->get('Channel')
+            ->filter('site_id', ee()->config->item('site_id'))
+            ->all()
+            ->getDictionary('channel_id', 'channel_title');
+
+        $channel_filter = $filters->make('channel_id', 'channel_filter', $channels);
+        $channel_filter->setPlaceholder(lang('all'));
+        $channel_filter->disableCustomValue();
+
         $page = ee('Request')->get('page') ?: 1;
         $per_page = 10;
 
         $filters->add($group_filter)
-            ->add($fieldtype_filter);
+            ->add($fieldtype_filter)
+            ->add($channel_filter);
 
         $filter_values = $filters->values();
 
@@ -110,6 +121,12 @@ class Fields extends AbstractFieldsController
                 });
             }
 
+            if ($channel_id = $filter_values['channel_id']) {
+                $fields = array_filter($fields, function ($field) use ($channel_id, $group) {
+                    return in_array($channel_id, $group->getChannels()->pluck('channel_id'));
+                });
+            }
+
             $total_fields = count($fields);
         } else {
             $vars['cp_page_title'] = lang('all_fields');
@@ -122,6 +139,13 @@ class Fields extends AbstractFieldsController
 
             if ($fieldtype = $filter_values['fieldtype']) {
                 $fields->filter('field_type', $fieldtype);
+            }
+
+            if ($channel_id = $filter_values['channel_id']) {
+                $channel = ee('Model')->get('Channel', $channel_id)->first();
+                $allChannelFields = $channel->getAllCustomFields()->pluck('field_id');
+
+                $fields->filter('field_id', 'IN', $allChannelFields);
             }
 
             if ((string) $group_id === '0') {
