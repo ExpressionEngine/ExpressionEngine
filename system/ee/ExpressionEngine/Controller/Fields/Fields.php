@@ -191,7 +191,13 @@ class Fields extends AbstractFieldsController
                 'label' => \htmlentities((string)$field->field_label, ENT_QUOTES, 'UTF-8'),
                 'faded' => strtolower($fieldtype),
                 'href' => $edit_url,
-                'extra' => LD . $field->field_name . RD,
+                'extra' => [
+                    'encode' => false,
+                    'content' => ee('View')->make('publish/partials/field_name_badge')->render([
+                        'name' => ee('Format')->make('Text', $field->field_name)->convertToEntities(),
+                        'field_id' => $field->getId()
+                    ])
+                ],
                 'selected' => ($field_id && $field->getId() == $field_id),
                 'reorderable' => $group,
                 'toolbar_items' => null,
