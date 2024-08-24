@@ -54,6 +54,10 @@ class Number_ft extends Text_ft
             $field['step'] = $this->settings['field_step'];
         }
 
+        if (isset($this->settings['field_content_type']) && $this->settings['field_content_type'] == 'decimal' && (!isset($field['step']) || $field['step'] === '')) {
+            $field['step'] = 0.01;
+        }
+
         if ($this->settings['datalist_items']) {
             $field['datalist'] = [];
             $datalist = explode("\n", $this->settings['datalist_items']);
