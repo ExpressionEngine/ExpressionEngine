@@ -132,10 +132,10 @@ class EE_Addons
     public function package_list($map, $type = '', $native = false, $path_prefix = '')
     {
         $type_ident = array(
-            'modules' => 'mcp',
-            'extensions' => 'ext',
-            'plugins' => 'pi',
-            'fieldtypes' => 'ft'
+            'modules' => ['mcp', 'mod'],
+            'extensions' => ['ext'],
+            'plugins' => ['pi'],
+            'fieldtypes' => ['ft']
         );
 
         // First party is plural, third party is singular
@@ -161,44 +161,46 @@ class EE_Addons
                     continue;
                 }
 
-                foreach ($type_ident as $addon_type => $ident) {
-                    // Fieldtypes can have names that do not match the $pkg_name
-                    $valid = ($ident === 'ft') ? preg_match('/^' . $ident . '\.(.*?)\.php$/', $file, $match) : ($file == $ident . '.' . $pkg_name . '.php');
+                foreach ($type_ident as $addon_type => $identArray) {
+                    foreach ($identArray as $ident) {
+                        // Fieldtypes can have names that do not match the $pkg_name
+                        $valid = ($ident === 'ft') ? preg_match('/^' . $ident . '\.(.*?)\.php$/', $file, $match) : ($file == $ident . '.' . $pkg_name . '.php');
 
-                    if ($valid) {
-                        $name = ($ident === 'ft') ? $match[1] : $pkg_name;
+                        if ($valid) {
+                            $name = ($ident === 'ft') ? $match[1] : $pkg_name;
 
-                        if (in_array($name, $this->_exclusions)) {
-                            continue;
-                        }
-
-                        // Plugin classes don't have a suffix
-                        $class = ($ident == 'pi') ? ucfirst($name) : ucfirst($name) . '_' . $ident;
-                        $path = $path_prefix . $pkg_name . '/';
-                        $author = ($native) ? 'native' : 'third_party';
-
-                        $this->_map[$addon_type][$name] = array(
-                            'path' => $path,
-                            'file' => $file,
-                            'name' => ucwords(str_replace('_', ' ', $name)),
-                            'class' => $class,
-                            'package' => $pkg_name,
-                            'type' => $author
-                        );
-
-                        // Add cross-reference for package lookups - singular keys
-                        if ($ident === 'ft') {
-                            // For fieldtypes, _packages is an array, since there can be multiple fieldtypes per package
-                            if (! isset($this->_packages[$pkg_name][$_plural_map[$addon_type]])) {
-                                $this->_packages[$pkg_name][$_plural_map[$addon_type]] = array();
+                            if (in_array($name, $this->_exclusions)) {
+                                continue;
                             }
 
-                            $this->_packages[$pkg_name][$_plural_map[$addon_type]][$name] = & $this->_map[$addon_type][$name];
-                        } else {
-                            $this->_packages[$pkg_name][$_plural_map[$addon_type]] = & $this->_map[$addon_type][$pkg_name];
-                        }
+                            // Plugin classes don't have a suffix
+                            $class = ($ident == 'pi') ? ucfirst($name) : ucfirst($name) . '_' . $ident;
+                            $path = $path_prefix . $pkg_name . '/';
+                            $author = ($native) ? 'native' : 'third_party';
 
-                        break;
+                            $this->_map[$addon_type][$name] = array(
+                                'path' => $path,
+                                'file' => $file,
+                                'name' => ucwords(str_replace('_', ' ', $name)),
+                                'class' => $class,
+                                'package' => $pkg_name,
+                                'type' => $author
+                            );
+
+                            // Add cross-reference for package lookups - singular keys
+                            if ($ident === 'ft') {
+                                // For fieldtypes, _packages is an array, since there can be multiple fieldtypes per package
+                                if (! isset($this->_packages[$pkg_name][$_plural_map[$addon_type]])) {
+                                    $this->_packages[$pkg_name][$_plural_map[$addon_type]] = array();
+                                }
+
+                                $this->_packages[$pkg_name][$_plural_map[$addon_type]][$name] = & $this->_map[$addon_type][$name];
+                            } else {
+                                $this->_packages[$pkg_name][$_plural_map[$addon_type]] = & $this->_map[$addon_type][$pkg_name];
+                            }
+
+                            break 2;
+                        }
                     }
                 }
             }
