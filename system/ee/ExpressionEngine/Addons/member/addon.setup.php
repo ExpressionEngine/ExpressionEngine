@@ -16,6 +16,6 @@ return array(
         )
     ),
     'templateGenerators' => array(
-        'Profile'
+        'Management'
     )
 );

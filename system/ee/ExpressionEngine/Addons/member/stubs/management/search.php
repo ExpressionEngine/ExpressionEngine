@@ -1,5 +1,6 @@
 {layout="<?=$template_group?>/_layout"}
-<h1>Search for Members</h1>
+{layout:set name="title"}Member Search{/layout:set}
+
 <a href="{cp_url}?/cp/design/template/edit/{template_id}" target="_blank">View Template</a>
 
 <div class="result">

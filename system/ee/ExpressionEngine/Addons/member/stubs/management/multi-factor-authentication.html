@@ -1,10 +1,10 @@
 {layout="<?=$template_group?>/_layout"}
+{layout:set name="title"}Multi-Factor Authentication{/layout:set}
 
 {if logged_out}
     {redirect="<?=$template_group?>/login"}
 {/if}
 
-<h1>Multi-Factor Authentication</h1>
 <a href="{cp_url}?/cp/design/template/edit/{template_id}" target="_blank">View Template</a>
 
 <div class="result">

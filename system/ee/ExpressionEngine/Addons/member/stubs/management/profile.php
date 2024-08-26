@@ -5,7 +5,7 @@
 {/if}
 
 {exp:member:custom_profile_data  {if segment_3} member_id="{segment_3}" {/if}}
-<h1>{username} Profile</h1>
+{layout:set name="title"}{username} Profile{/layout:set}
 <a href="{cp_url}?/cp/design/template/edit/{template_id}" target="_blank">View Template</a>
 
 <div class="result">

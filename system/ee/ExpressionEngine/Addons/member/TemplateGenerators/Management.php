@@ -12,9 +12,9 @@ namespace ExpressionEngine\Addons\Member\TemplateGenerators;
 
 use ExpressionEngine\Service\TemplateGenerator\AbstractTemplateGenerator;
 
-class Profile extends AbstractTemplateGenerator
+class Management extends AbstractTemplateGenerator
 {
-    protected $name = 'member_profile_template_generator';
+    protected $name = 'member_management_template_generator';
 
     protected $templates = [
         'index' => 'Members list page',
@@ -40,12 +40,34 @@ class Profile extends AbstractTemplateGenerator
         'index' => ['templates' => 'search']
     ];
 
+    protected $options = [
+        'include_navigation' => [
+            'desc' => 'include_navigation_desc',
+            'type' => 'toggle',
+            'required' => false,
+        ],
+    ];
+
+    // protected $_validation_rules = [
+    //     'channel' => 'required|validateChannelExists'
+    // ];
+
     public function getVariables(): array
     {
         ee()->load->library('session'); //getAllCustomFields requires session
 
+        $selectedTemplates = array_intersect_key($this->templates, array_flip($this->input->get('templates')));
+
         $vars = [
             'fields' => [],
+            'publicTemplates' => array_intersect_key(
+                $selectedTemplates,
+                array_flip(['login', 'forgot-username', 'forgot-password', 'registration'])
+            ),
+            'privateTemplates' => array_diff_key(
+                $selectedTemplates,
+                array_flip(['login', 'forgot-username', 'forgot-password', 'registration'])
+            ),
         ];
 
         // get the fields for members

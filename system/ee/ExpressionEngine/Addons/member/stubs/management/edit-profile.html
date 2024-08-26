@@ -1,10 +1,10 @@
 {layout="<?=$template_group?>/_layout"}
+{layout:set name="title"}Edit Profile{/layout:set}
 
 {if logged_out}
     {redirect="<?=$template_group?>/login"}
 {/if}
 
-<h1>Edit Profile</h1>
 <a href="{cp_url}?/cp/design/template/edit/{template_id}" target="_blank">View Template</a>
 
 {if last_segment == "success"}
@@ -79,7 +79,9 @@
             {custom_profile_fields}
             <p>
                 <label>{lang:profile_field}</label><br>
-                <small>{lang:profile_field_description}</small><br>
+                {if lang:profile_field_description}
+                    <small>{lang:profile_field_description}</small><br>
+                {/if}
 
                 {form:custom_profile_field}
                 {if has_error}
