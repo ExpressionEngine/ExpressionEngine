@@ -1,6 +1,6 @@
 {layout="<?=$template_group?>/_layout"}
+{layout:set name="title"}Member Listing{/layout:set}
 
-<h1>Member Listing</h1>
 <a href="{cp_url}?/cp/design/template/edit/{template_id}" target="_blank">View Template</a>
 
 <div class="result">

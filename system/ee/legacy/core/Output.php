@@ -627,6 +627,76 @@ class EE_Output
     }
 
     /**
+     * Show form error
+     *
+     * @access  public
+     * @param   string
+     * @param   mixed
+     * @param   string
+     * @return  void
+     */
+    public function show_form_error($errors = '', $type = 'general')
+    {
+        return $this->show_form_error_aliases($errors, [], $type);
+    }
+
+    /**
+     * Show form error
+     *
+     * @access  public
+     * @param   string
+     * @param   mixed
+     * @param   string
+     * @return  void
+     */
+    public function show_form_error_aliases($errors = '', $aliases = [], $type = 'general')
+    {
+        $url = ee()->functions->determine_error_return();
+
+        if($errors instanceof \ExpressionEngine\Service\Validation\Result) {
+            $validationErrors = $errors->getFirstErrors();
+            $errors = [];
+
+            foreach ($validationErrors as $field => $error) {
+                $label = $field;
+
+                // Handle aliased field names
+                if(!empty($aliases) && array_key_exists($field, $aliases)) {
+                    $original = $field;
+                    $field = $aliases[$field]['field'] ?? $aliases[$field];
+                    $label = $aliases[$original]['label'] ?? $field;
+                }
+
+                // Build error for system error page
+                // or store as field name for inline error display
+                if($url === false) {
+                    $label = lang($label);
+                    $errors[] = "<b>{$label}: </b>{$error}";
+                }else {
+                    $errors['error:' . $field] = $error;
+                }
+            }
+        }else if(is_array($errors) && $url !== false) {
+            // Automatically prefix error keys
+            $errors = array_reduce(array_keys($errors), function($carry, $key) use($errors) {
+                $error = $errors[$key];
+                if(!is_numeric($key) && strpos($key, 'error:') !== 0) {
+                    $key = "error:$key";
+                }
+                $carry[$key] = $error;
+                return $carry;
+            }, []);
+        }
+
+        // Flash errors for redirect
+        if($url !== false) {
+            ee()->session->set_flashdata('errors', $errors);
+        }
+
+        return $this->show_user_error($type, $errors, '', $url);
+    }
+
+    /**
      * Show user error
      *
      * @access  public

@@ -1,6 +1,6 @@
 {layout="<?=$template_group?>/_layout"}
+{layout:set name="title"}Member Registration{/layout:set}
 
-<h1>Member Registration</h1>
 <a href="{cp_url}?/cp/design/template/edit/{template_id}" target="_blank">View Template</a>
 
 {if logged_in}
@@ -13,8 +13,7 @@
 
     {if logged_in}
         <p>We took the liberty of logging you in already!</p>
-
-        <h4>Go forth and do stuff!</h4>
+        <h5>Go forth and do stuff!</h5>
     {if:else}
         <p>You can now <a href="{path=<?=$template_group?>/login}">login</a>.</p>
         <p>Depending on your member activation settings you will receive an email to confirm your registration.</p>
@@ -26,40 +25,55 @@
 {if:else}
     {exp:member:registration_form
         return="<?=$template_group?>/registration/success"
-        inline_errors="no"
+        inline_errors="yes"
         }
 
+        {!-- You can display all errors at the top of the page or use the individual field {error:} tags shown later --}
+        {!--
         {if errors}
             <fieldset class="error">
                 <legend>Errors</legend>
-            {errors}
-                {error}<br />
-            {/errors}
+                {errors}
+                    <p>{error_key}: {error}</p>
+                {/errors}
             </fieldset>
         {/if}
+        --}
 
-            <p>* Required fields</p>
+        <p>* Required fields</p>
         <fieldset>
             <h4>Login details</h4>
 
             <p>
                 <label for="username">Username*:</label><br />
                 <input type="text" name="username" id="username" value="{if username}{username}{/if}"/><br />
+                {if error:username}
+                    <span class="error">{error:username}</span>
+                {/if}
             </p>
 
             <p>
                 <label for="email">Email*:</label><br />
                 <input type="text" name="email" id="email" value="{if email}{email}{/if}"/><br />
+                {if error:email}
+                    <span class="error">{error:email}</span>
+                {/if}
             </p>
 
             <p>
                 <label for="password">Password*:</label><br />
                 <input type="password" name="password" id="password" value="{if password}{password}{/if}"/>
+                {if error:password}
+                    <span class="error">{error:password}</span>
+                {/if}
             </p>
 
             <p>
                 <label for="password_confirm">Confirm password*:</label><br />
                 <input type="password" name="password_confirm" id="password_confirm" value="{if password_confirm}{password_confirm}{/if}"/>
+                {if error:password_confirm}
+                    <span class="error">{error:password_confirm}</span>
+                {/if}
             </p>
 
             <p>
@@ -71,6 +85,9 @@
 
             <p>
                 <label><input type="checkbox" name="accept_terms" value="y" {if accept_terms == 'y'}checked="checked"{/if} /> I accept these terms</label>
+                {if error:accept_terms}
+                    <span class="error">{error:accept_terms}</span>
+                {/if}
             </p>
 
             <?php foreach (array_filter($fields, function ($field) { return $field['show_registration']; }) as $field) : ?>
@@ -81,7 +98,9 @@
                     {!-- Docs: <?=$field['docs_url']?> --}
                     <label for="<?=$field['field_name']?>" ><?=$field['field_label']?></label><br/>
                     {field:<?=$field['field_name']?>}
-                    {error:<?=$field['field_name']?>}
+                    {if error:<?=$field['field_name']?>}
+                        <span class="error">{error:<?=$field['field_name']?>}</span>
+                    {/if}
                     {!-- End field: <?=$field['field_label']?> --}
                 </p>
 
@@ -92,6 +111,9 @@
                 <label for="captcha">{lang:captcha}*</label>
                 {captcha}<br/>
                 <input type="text" id="captcha" name="captcha" value="" size="20" maxlength="20" style="width:140px;"/>
+                {if error:captcha}
+                    <span class="error">{error:captcha}</span>
+                {/if}
             </p>
             {/if}
         </fieldset>

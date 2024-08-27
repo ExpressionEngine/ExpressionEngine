@@ -141,6 +141,17 @@ class Result
     }
 
     /**
+     * Get the first error for all failed fields
+     *
+     * @param View|null $view
+     * @return array
+     */
+    public function getFirstErrors(View $view = null)
+    {
+        return array_map('current', $this->getAllErrors());
+    }
+
+    /**
      * Get failed rule objects
      */
     public function getFailedRules($field = null)
