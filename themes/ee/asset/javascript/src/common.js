@@ -1242,19 +1242,13 @@ $(document).ready(function(){
 
 			// if the id is an integer, get the template from the server
 			if(Number.isInteger(id)) {
-				if(contentType == 'channel') {
-					// GET cp/channels/exampleTemplate/' + id to get the template
-					var url = EE.cp.channelExampleTemplateUrl + '/' + id;
-				} else if(contentType == 'field_group') {
-					// GET cp/fields/exampleTemplate/' + id to get the template
-					var url = EE.cp.fieldGroupExampleTemplateUrl + '/' + id;
-				} else if(contentType == 'field') {
-					// GET cp/fields/exampleTemplate/' + id to get the template
-					var url = EE.cp.fieldExampleTemplateUrl + '/' + id;
-				} else {
-					// GET cp/fields/exampleTemplate/' + id to get the template
-					var url = EE.cp.fieldExampleTemplateUrl + '/' + id;
+				// if EE.cp.exampleTemplateUrls[contentType] not defined, use the default url
+				if(!EE.cp.exampleTemplateUrls[contentType]) {
+					contentType = 'default';
 				}
+
+				// get the template from the server
+				var url = EE.cp.exampleTemplateUrls[contentType] + '/' + id;
 
 				await $.get(url, function(data) {
 					// copy asset link to clipboard and show notification
@@ -1288,11 +1282,11 @@ $(document).ready(function(){
 			if (navigator.clipboard) {
 				return await navigator.clipboard.writeText(copyText)
 					.then(() => {
-						console.log('copyText copied:', copyText);
+						// console.log('copyText copied:', copyText);
 						return true;
 					})
 					.catch((error) => {
-						console.log('copyText wasnt copied')
+						// console.log('copyText wasnt copied')
 						return false;
 					}
 				);

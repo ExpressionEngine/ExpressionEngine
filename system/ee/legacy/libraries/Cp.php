@@ -175,6 +175,12 @@ class Cp
             'hasRememberMe' => (bool) ee()->remember->exists(),
             'cp.updateCheckURL' => ee('CP/URL', 'settings/general/version-check')->compile(),
             'cp.accessResponseURL' => ee('CP/URL', 'license/handleAccessResponse')->compile(),
+            'cp.exampleTemplateUrls' => [
+                'default' => ee('CP/URL', 'fields/exampleTemplate')->compile(),
+                'fields' => ee('CP/URL', 'fields/exampleTemplate')->compile(),
+                'field_groups' => ee('CP/URL', 'groups/exampleTemplate')->compile(),
+                'channels' => ee('CP/URL', 'channels/exampleTemplate')->compile(),
+            ],
             'cp.fieldExampleTemplateUrl' => ee('CP/URL', 'fields/exampleTemplate')->compile(),
             'cp.groupsExampleTemplateUrl' => ee('CP/URL', 'groups/exampleTemplate')->compile(),
             'cp.channelExampleTemplateUrl' => ee('CP/URL', 'channels/exampleTemplate')->compile(),
