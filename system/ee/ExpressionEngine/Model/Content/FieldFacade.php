@@ -80,9 +80,10 @@ class FieldFacade
             if (strpos($field_name, 'categories[cat_group_id_') === 0) {
                 $field_name = "categories show_group=\"" . rtrim(substr($field_name, 24), ']') . "\"";
             }
-            return ee('View')->make('publish/partials/field_name_badge')->render([
+            return ee('View')->make('publish/partials/name_badge_copy')->render([
                 'name' => $field_name_prefix . $field_name,
-                'field_id' => $field_id
+                'id' => $field_id,
+                'content_type' => $this->getContentType()
             ]);
         }
         return '';

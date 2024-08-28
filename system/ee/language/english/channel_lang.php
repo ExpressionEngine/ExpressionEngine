@@ -651,6 +651,10 @@ $lang = array(
     'invalid_field' => 'No valid field selected',
 
     'channel_fields_template_generator' => 'Channel Fields',
+
+    'channel_channels_template_generator' => 'Channels',
+
+    'channel_field_groups_template_generator' => 'Channel Field Groups',
 );
 
 // EOF

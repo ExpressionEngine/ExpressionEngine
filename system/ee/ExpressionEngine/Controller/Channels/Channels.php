@@ -71,7 +71,14 @@ class Channels extends AbstractChannelsController
                 'id' => $channel->getId(),
                 'label' => \htmlentities((string)$channel->channel_title, ENT_QUOTES, 'UTF-8'),
                 'href' => $edit_url,
-                'extra' => LD . $channel->channel_name . RD,
+                'extra' => [
+                    'encode' => false,
+                    'content' => ee('View')->make('publish/partials/name_badge_copy')->render([
+                        'name' => ee('Format')->make('Text', $channel->channel_name)->convertToEntities(),
+                        'id' => $channel->getId(),
+                        'content_type' => 'channel'
+                    ])
+                ],
                 'selected' => ($highlight_id && $channel->getId() == $highlight_id) or in_array($channel->getId(), $imported_channels),
                 'toolbar_items' => [
                     'download' => [
@@ -687,6 +694,33 @@ class Channels extends AbstractChannelsController
             'multi' => true,
             'no_results' => $no_results
         ]);
+    }
+
+    public function exampleTemplate($id)
+    {
+        $channel = ee('Model')->get('Channel', $id)
+            ->first();
+
+        if (! $channel) {
+            show_404();
+        }
+
+        // Get the template data
+        $data = [
+            'channel' => $channel->channel_name,
+            'template_group' => '',
+            'templates' => ['all']
+        ];
+
+        // Register all template generators, and include ones disabled for template generation
+        $tgs = ee('TemplateGenerator')->registerAllTemplateGenerators($showDisabled = true);
+        $generator = ee('TemplateGenerator')->make('channel:channels');
+        $validationResult = $generator->validatePartial($data);
+
+        $result = $generator->generate($data, false);
+
+        // return the template_data
+        return $result['templates']['index']['template_data'];
     }
 
     /**

@@ -155,7 +155,10 @@ class ChannelFieldGroup extends Model
             return '';
         }
         if (ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->show_field_names == 'y') {
-            return ee('View')->make('publish/partials/field_name_badge')->render(['name' => $prefix . $this->short_name]);
+            return ee('View')->make('publish/partials/name_badge_copy')->render([
+                'name' => $prefix . $this->short_name,
+                'id' => $this->group_id
+            ]);
         }
         return '';
     }

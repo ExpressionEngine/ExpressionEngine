@@ -104,7 +104,14 @@ class Fields extends AbstractFieldsController
         // because we are acting on a collection instead of a query builder
         if ($group) {
             $vars['cp_page_title'] = $group->group_name . ' &mdash; ' . lang('fields');
-            $vars['group_tag'] = '{' . $group->short_name . '}';
+            $vars['group_tag'] = ee('View')->make('publish/partials/name_badge_copy')->render([
+                'name' => ee('Format')->make('Text', $group->short_name)->convertToEntities(),
+                'id' => $group->getId(),
+                'content_type' => 'field_group'
+            ]);
+
+            // '{' . $group->short_name . '}';
+
             $fields = $group->ChannelFields->sortBy('field_label')->sortBy('field_order')->asArray();
 
             if ($search = ee()->input->get_post('filter_by_keyword')) {
@@ -193,9 +200,10 @@ class Fields extends AbstractFieldsController
                 'href' => $edit_url,
                 'extra' => [
                     'encode' => false,
-                    'content' => ee('View')->make('publish/partials/field_name_badge')->render([
+                    'content' => ee('View')->make('publish/partials/name_badge_copy')->render([
                         'name' => ee('Format')->make('Text', $field->field_name)->convertToEntities(),
-                        'field_id' => $field->getId()
+                        'id' => $field->getId(),
+                        'content_type' => 'field'
                     ])
                 ],
                 'selected' => ($field_id && $field->getId() == $field_id),
@@ -672,6 +680,7 @@ class Fields extends AbstractFieldsController
 
         // Register all template generators, and include ones disabled for template generation
         ee('TemplateGenerator')->registerAllTemplateGenerators($showDisabled = true);
+
         $generator = ee('TemplateGenerator')->make('channel:fields');
 
         $validationResult = $generator->validatePartial($data);

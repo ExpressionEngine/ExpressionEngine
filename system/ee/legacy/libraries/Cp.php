@@ -176,6 +176,8 @@ class Cp
             'cp.updateCheckURL' => ee('CP/URL', 'settings/general/version-check')->compile(),
             'cp.accessResponseURL' => ee('CP/URL', 'license/handleAccessResponse')->compile(),
             'cp.fieldExampleTemplateUrl' => ee('CP/URL', 'fields/exampleTemplate')->compile(),
+            'cp.groupsExampleTemplateUrl' => ee('CP/URL', 'groups/exampleTemplate')->compile(),
+            'cp.channelExampleTemplateUrl' => ee('CP/URL', 'channels/exampleTemplate')->compile(),
             'cp.lastUpdateCheck' => $lastUpdateCheck,
             'site_id' => ee()->config->item('site_id'),
             'site_name' => ee()->config->item('site_name'),

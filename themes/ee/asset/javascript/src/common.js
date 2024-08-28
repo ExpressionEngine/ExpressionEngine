@@ -1237,12 +1237,23 @@ $(document).ready(function(){
 
 			// id is the data-id attribute of the clicked element
 			var id = el.data('id');
+			var contentType = el.data('content_type');
 			var copyText = el.find('.txt-only').text();
 
 			// if the id is an integer, get the template from the server
 			if(Number.isInteger(id)) {
-				// GET cp/fields/exampleTemplate/' + id to get the template
-				await $.get(EE.cp.fieldExampleTemplateUrl + '/' + id, function(data) {
+				if(contentType == 'channel') {
+					// GET cp/channels/exampleTemplate/' + id to get the template
+					var url = EE.cp.channelExampleTemplateUrl + '/' + id;
+				} else if(contentType == 'field') {
+					// GET cp/fields/exampleTemplate/' + id to get the template
+					var url = EE.cp.fieldExampleTemplateUrl + '/' + id;
+				} else {
+					// GET cp/fields/exampleTemplate/' + id to get the template
+					var url = EE.cp.fieldExampleTemplateUrl + '/' + id;
+				}
+
+				await $.get(url, function(data) {
 					// copy asset link to clipboard and show notification
 					copyText = data;
 				});

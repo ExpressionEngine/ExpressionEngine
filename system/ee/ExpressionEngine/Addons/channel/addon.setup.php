@@ -10,6 +10,7 @@ return array(
     'settings_exist' => true,
     'built_in' => true,
     'templateGenerators' => array(
+        'Channels',
         'Entries',
         'Fields',
         'Form'

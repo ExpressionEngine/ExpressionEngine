@@ -12,17 +12,16 @@ namespace ExpressionEngine\Addons\Channel\TemplateGenerators;
 
 use ExpressionEngine\Service\TemplateGenerator\AbstractTemplateGenerator;
 
-class Entries extends AbstractTemplateGenerator
+class Channels extends AbstractTemplateGenerator
 {
-    protected $name = 'channel_entries_template_generator';
+    protected $name = 'channel_channels_template_generator';
+
+    // This is a basic channel generator, so we don't want it to show up in the template generator list
+    // This is because it's not a full template generator, it's just a channel generator
+    protected $disableForTemplateGeneration = true;
 
     protected $templates = [
-        'index' => 'Listing for all entries',
-        'entry' => 'Entry detail page',
-        'archive' => 'Entry listing for a given year and month',
-        'category' => 'Entry listing for a given category',
-        'feed' => ['name' => 'RSS feed for all entries', 'type' => 'feed'],
-        'sitemap' => ['name' => 'XML sitemap for all entries', 'type' => 'xml'],
+        'index' => 'Basic channel usage',
     ];
 
     protected $options = [
