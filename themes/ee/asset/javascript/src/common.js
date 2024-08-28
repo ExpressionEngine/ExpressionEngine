@@ -1245,6 +1245,9 @@ $(document).ready(function(){
 				if(contentType == 'channel') {
 					// GET cp/channels/exampleTemplate/' + id to get the template
 					var url = EE.cp.channelExampleTemplateUrl + '/' + id;
+				} else if(contentType == 'field_group') {
+					// GET cp/fields/exampleTemplate/' + id to get the template
+					var url = EE.cp.fieldGroupExampleTemplateUrl + '/' + id;
 				} else if(contentType == 'field') {
 					// GET cp/fields/exampleTemplate/' + id to get the template
 					var url = EE.cp.fieldExampleTemplateUrl + '/' + id;
