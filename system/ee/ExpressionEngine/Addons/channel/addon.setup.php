@@ -13,6 +13,7 @@ return array(
         'Channels',
         'Entries',
         'Fields',
+        'FieldGroups',
         'Form'
     )
 );
