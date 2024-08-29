@@ -178,7 +178,7 @@ class Cp
             'cp.exampleTemplateUrls' => [
                 'default' => ee('CP/URL', 'fields/exampleTemplate')->compile(),
                 'fields' => ee('CP/URL', 'fields/exampleTemplate')->compile(),
-                'field_groups' => ee('CP/URL', 'groups/exampleTemplate')->compile(),
+                'field_groups' => ee('CP/URL', 'fields/groups/exampleTemplate')->compile(),
                 'channels' => ee('CP/URL', 'channels/exampleTemplate')->compile(),
             ],
             'cp.fieldExampleTemplateUrl' => ee('CP/URL', 'fields/exampleTemplate')->compile(),

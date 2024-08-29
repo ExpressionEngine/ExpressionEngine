@@ -167,6 +167,33 @@ class Factory
         return $field;
     }
 
+    public function getFieldGroupVariables($fieldGroupName) : array
+    {
+        $vars = [
+            'fields' => [],
+            'field_group' => $fieldGroupName
+        ];
+
+        $fieldGroup = ee('Model')->get('ChannelFieldGroup')->filter('group_name', $fieldGroupName)->first();
+
+        // get the fields for assigned field_groups
+        $fields = $fieldGroup->ChannelFields;
+        foreach ($fields as $fieldInfo) {
+            // get the field variables
+            $field = ee('TemplateGenerator')->getFieldVariables($fieldInfo);
+
+            // if field is null, continue to the next field
+            if (is_null($field)) {
+                continue;
+            }
+
+            // add the field to the list of fields
+            $vars['fields'][$fieldInfo->field_name] = $field;
+        }
+
+        return $vars;
+    }
+
     public function getChannelVariables($channel_names) : array
     {
         ee()->load->library('session'); //getAllCustomFields requires session

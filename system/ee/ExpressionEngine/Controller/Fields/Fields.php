@@ -107,7 +107,7 @@ class Fields extends AbstractFieldsController
             $vars['group_tag'] = ee('View')->make('publish/partials/name_badge_copy')->render([
                 'name' => ee('Format')->make('Text', $group->short_name)->convertToEntities(),
                 'id' => $group->getId(),
-                'content_type' => 'field_group'
+                'content_type' => 'field_groups'
             ]);
 
             // '{' . $group->short_name . '}';
