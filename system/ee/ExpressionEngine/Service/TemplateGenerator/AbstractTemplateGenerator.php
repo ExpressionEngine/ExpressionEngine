@@ -24,12 +24,11 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
     protected $name;
 
     /**
-     * Whether the generator should be disabled from creating templates
-     * This is useful for generators that are generating a snippet of code, but should not be a full template
+     * List of areas where this generator should be excluded. Possible values are 'CLI', 'CP'
      *
-     * @var bool
+     * @var array
      */
-    protected $disableForTemplateGeneration = false;
+    protected $excludeFrom = [];
 
     /**
      * The list of templates that this generator can create
@@ -121,13 +120,11 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
     }
 
     /**
-     * Check if the generator is disabled for templates
-     *
-     * @return bool
+     * Check if the generator is disabled for the current location
      */
-    public function generatorDisabledForTemplates()
+    public function generatorDisabledForLocation($location)
     {
-        return $this->disableForTemplateGeneration;
+        return in_array($location, $this->excludeFrom);
     }
 
     /**

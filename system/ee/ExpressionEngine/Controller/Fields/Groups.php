@@ -301,7 +301,7 @@ class Groups extends AbstractFieldsController
         ];
 
         // Register all template generators, and include ones disabled for template generation
-        ee('TemplateGenerator')->registerAllTemplateGenerators($showDisabled = true);
+        ee('TemplateGenerator')->setCallLocation('copy')->registerAllTemplateGenerators();
         $generator = ee('TemplateGenerator')->make('channel:fieldGroups');
 
         $validationResult = $generator->validatePartial($data);

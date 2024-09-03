@@ -16,9 +16,8 @@ class Fields extends AbstractTemplateGenerator
 {
     protected $name = 'channel_fields_template_generator';
 
-    // This is a basic field generator, so we don't want it to show up in the template generator list
-    // This is because it's not a full template generator, it's just a field generator
-    protected $disableForTemplateGeneration = true;
+    // This is a list of locations to exclude this generator from
+    protected $excludeFrom = ['CP'];
 
     protected $templates = [
         'index' => ['name' => 'Basic field usage', 'type' => ''],

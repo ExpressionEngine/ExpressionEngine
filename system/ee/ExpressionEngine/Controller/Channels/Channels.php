@@ -713,7 +713,7 @@ class Channels extends AbstractChannelsController
         ];
 
         // Register all template generators, and include ones disabled for template generation
-        $tgs = ee('TemplateGenerator')->registerAllTemplateGenerators($showDisabled = true);
+        ee('TemplateGenerator')->setCallLocation('copy')->registerAllTemplateGenerators();
         $generator = ee('TemplateGenerator')->make('channel:channels');
         $validationResult = $generator->validatePartial($data);
 

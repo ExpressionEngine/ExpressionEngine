@@ -55,10 +55,23 @@ class Factory
      */
     protected $ftStubsAndGenerators;
 
+    /**
+     * Call location
+     * @var string
+     */
+    protected $callLocation;
+
     public function __construct()
     {
         ee()->lang->load('cp');
         ee()->lang->load('design');
+
+        // Set the call location
+        if (REQ === 'CLI') {
+            $this->setCallLocation('CLI');
+        } else if (REQ === 'CP') {
+            $this->setCallLocation('CP');
+        }
     }
 
     public function hasTheme($theme)
@@ -80,6 +93,12 @@ class Factory
         $theme = $this->getTheme($theme);
 
         return ($theme) ? ee('App')->get($theme['prefix']) : null;
+    }
+
+    public function setCallLocation($location)
+    {
+        $this->callLocation = $location;
+        return $this;
     }
 
     /**
@@ -254,14 +273,15 @@ class Factory
      *
      * @return array
      */
-    public function registerAllTemplateGenerators($showDisabledTemplates = false)
+    public function registerAllTemplateGenerators()
     {
         $this->getInstalledProviders();
         if (is_null($this->generators)) {
             $providers = $this->getInstalledProviders(); // ee('App')->getProviders();
             foreach ($providers as $provider) {
+                $provider->setCallLocation($this->callLocation);
                 if (method_exists($provider, 'registerTemplateGenerators')) {
-                    $provider->registerTemplateGenerators($showDisabledTemplates);
+                    $provider->registerTemplateGenerators();
                 }
             }
         }
@@ -286,7 +306,7 @@ class Factory
      * @param Provider $provider
      * @return array all registered generators
      */
-    public function register(string $className, Provider $provider, $showDisabledTemplates = false)
+    public function register(string $className, Provider $provider)
     {
         if (empty($className) || empty($provider)) {
             return $this->generators;
@@ -305,7 +325,7 @@ class Factory
         }
 
         // if the generator is disabled for templates, skip it when generating a template
-        if($instance->generatorDisabledForTemplates() && !$showDisabledTemplates) {
+        if($instance->generatorDisabledForLocation($provider->getCallLocation())) {
             return $this->generators;
         }
 

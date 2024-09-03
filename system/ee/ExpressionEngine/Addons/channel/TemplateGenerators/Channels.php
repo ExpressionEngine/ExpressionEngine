@@ -16,9 +16,8 @@ class Channels extends AbstractTemplateGenerator
 {
     protected $name = 'channel_channels_template_generator';
 
-    // This is a basic channel generator, so we don't want it to show up in the template generator list
-    // This is because it's not a full template generator, it's just a channel generator
-    protected $disableForTemplateGeneration = true;
+    // This is a list of locations to exclude this generator from
+    protected $excludeFrom = ['CP'];
 
     protected $templates = [
         'index' => ['name' => 'Basic channel usage', 'type' => ''],

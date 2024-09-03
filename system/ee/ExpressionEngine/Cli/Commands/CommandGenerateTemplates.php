@@ -53,8 +53,8 @@ class CommandGenerateTemplates extends Cli
      */
     public function handle()
     {
-        // Get all the template generators, including disabled ones
-        $generatorsList = ee('TemplateGenerator')->registerAllTemplateGenerators($showDisabled = true);
+        // Get all the template generators
+        $generatorsList = ee('TemplateGenerator')->registerAllTemplateGenerators();
 
         // do we need to just list all possible generators?
         if ($this->option('--list', false)) {
@@ -122,8 +122,8 @@ class CommandGenerateTemplates extends Cli
 
         $showOnly = $this->option('--show', false);
 
-        // If the generator is disabled for templates, we can only show the templates
-        if($generator->generatorDisabledForTemplates()) {
+        // If the generator is disabled for the CP, we will only show the templates rather than trying to generate them as files
+        if($generator->generatorDisabledForLocation('CP')) {
             $showOnly = true;
         }
 

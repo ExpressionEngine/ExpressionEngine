@@ -16,9 +16,8 @@ class FieldGroups extends AbstractTemplateGenerator
 {
     protected $name = 'channel_field_groups_template_generator';
 
-    // This is a basic field_group generator, so we don't want it to show up in the template generator list
-    // This is because it's not a full template generator, it's just a field_group generator
-    protected $disableForTemplateGeneration = true;
+    // This is a list of locations to exclude this generator from
+    protected $excludeFrom = ['CP'];
 
     protected $templates = [
         'index' => ['name' => 'Basic field group usage', 'type' => ''],
