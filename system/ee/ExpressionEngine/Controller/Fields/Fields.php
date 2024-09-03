@@ -664,8 +664,7 @@ class Fields extends AbstractFieldsController
 
     public function exampleTemplate($id)
     {
-        $field = ee('Model')->get('ChannelField', $id)
-            ->first();
+        $field = ee('Model')->get('ChannelField', $id)->first();
 
         if (! $field) {
             show_404();

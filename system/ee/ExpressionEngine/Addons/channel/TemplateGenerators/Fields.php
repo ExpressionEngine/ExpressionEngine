@@ -21,7 +21,7 @@ class Fields extends AbstractTemplateGenerator
     protected $disableForTemplateGeneration = true;
 
     protected $templates = [
-        'index' => 'Basic field usage',
+        'index' => ['name' => 'Basic field usage', 'type' => ''],
     ];
 
     protected $options = [

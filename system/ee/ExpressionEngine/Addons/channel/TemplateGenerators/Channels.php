@@ -21,7 +21,7 @@ class Channels extends AbstractTemplateGenerator
     protected $disableForTemplateGeneration = true;
 
     protected $templates = [
-        'index' => 'Basic channel usage',
+        'index' => ['name' => 'Basic channel usage', 'type' => ''],
     ];
 
     protected $options = [

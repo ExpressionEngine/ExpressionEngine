@@ -21,7 +21,7 @@ class FieldGroups extends AbstractTemplateGenerator
     protected $disableForTemplateGeneration = true;
 
     protected $templates = [
-        'index' => 'Basic field group usage',
+        'index' => ['name' => 'Basic field group usage', 'type' => ''],
     ];
 
     protected $options = [
