@@ -55,7 +55,7 @@ class Multi_select_ft extends OptionFieldtype
         $selected = (empty($selected) || $selected == array('')) ? array() : (array) $selected;
 
         // in case another fieldtype was here
-        $field_options = $this->_get_field_options($data);
+        $field_options = (REQ == 'CP') ? $this->_get_historic_field_options($data) : $this->_get_field_options($data);
 
         if ($selected) {
             if (! is_array($selected)) {
@@ -77,7 +77,7 @@ class Multi_select_ft extends OptionFieldtype
         ee()->load->helper('custom_field');
 
         $values = decode_multi_field($data);
-        $field_options = $this->_get_field_options($data);
+        $field_options = $this->_get_historic_field_options($data);
 
         $extra = ($this->get_setting('field_disabled')) ? 'disabled' : '';
 
