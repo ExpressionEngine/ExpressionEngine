@@ -100,10 +100,11 @@ class Member_register extends Member
                     // Parse input fields
                     $field = $member_fields[$row['m_field_id']]->getField();
                     $field->setName('m_field_id_' . $row['m_field_id']);
+                    $fieldShortname = $field->getShortName();
                     $field = $field->getForm();
 
                     $temp = ee()->functions->prep_conditionals($temp, [
-                        'has_error' => !empty(ee()->session->flashdata('errors')['error:'. $field->getShortName()] ?? '')
+                        'has_error' => !empty($field) && !empty(ee()->session->flashdata('errors')['error:'. $fieldShortname] ?? '')
                     ]);
 
                     if (! empty($tagdata)) {
@@ -115,7 +116,7 @@ class Member_register extends Member
                             'required' => get_bool_from_string($row['m_field_required']),
                             'field' => $field,
                             'form:custom_profile_field' => $field,
-                            'error' => ee()->session->flashdata('errors')['error:'. $field->getShortName()] ?? '',
+                            'error' => ee()->session->flashdata('errors')['error:'. $fieldShortname] ?? '',
                         ];
                         $str .= ee()->TMPL->parse_variables_row($temp, $field_vars);
                         continue;
