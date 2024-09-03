@@ -33,7 +33,7 @@
         {/if}
         <p>
             <label>Username</label><br />
-            <input type="text" name="username" value="" maxlength="32" size="25" />
+            <input type="text" name="username" value="{if old:username}{old:username}{/if}" maxlength="32" size="25" />
             {if error:username}
                 <span class="error">{error:username}</span>
             {/if}

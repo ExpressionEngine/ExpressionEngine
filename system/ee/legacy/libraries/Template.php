@@ -4587,6 +4587,8 @@ class EE_Template
             && !empty(ee()->session->flashdata('errors'))
         ) {
             $str = ee()->TMPL->parse_variables($str, [ee()->session->flashdata('errors')]);
+            // Replace old input variables
+            $str = ee()->TMPL->parse_variables($str, [ee()->session->flashdata('old')]);
         }
 
         return $str;

@@ -294,6 +294,10 @@ class FieldFacade
         $data = $this->initField();
 
         $field_value = $data['field_data'];
+        // Check for an "old" value flashed during inline_error handling
+        if(ee()->has('session') && !empty(ee()->session->flashdata('old'))) {
+            $field_value = ee()->session->flashdata('old')["old:{$data['field_name']}"] ?? $field_value;
+        }
 
         return $this->api->apply('display_publish_field', array($field_value));
     }

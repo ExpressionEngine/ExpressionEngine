@@ -30,7 +30,7 @@
         {/if}
         <p>
             <label>Your Email Address</label><br />
-            <input type="email" name="email" value="" maxlength="120" size="40" />
+            <input type="email" name="email" value="{if old:email}{old:email}{/if}" maxlength="120" size="40" />
         </p>
 
         <p><input type="submit" name="submit" value="Submit" /></p>

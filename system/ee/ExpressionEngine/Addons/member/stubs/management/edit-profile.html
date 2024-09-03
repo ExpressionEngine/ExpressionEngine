@@ -36,7 +36,7 @@
 
             <p>
                 <label for="username">Username*:</label><br />
-                <input type="text" name="username" id="username" value="{username}" /><br />
+                <input type="text" name="username" id="username" value="{if old:username}{old:username}{if:else}{username}{/if}" /><br />
                 {if error:username}
                     <span class="error">{error:username}</span>
                 {/if}
@@ -44,7 +44,7 @@
 
             <p>
                 <label for="email">Email:</label><br />
-                <input type="text" name="email" id="email" value="{email}" /><br />
+                <input type="text" name="email" id="email" value="{if old:email}{old:email}{if:else}{email}{/if}" /><br />
                 {if error:email}
                     <span class="error">{error:email}</span>
                 {/if}

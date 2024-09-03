@@ -691,6 +691,18 @@ class EE_Output
         // Flash errors for redirect
         if($url !== false) {
             ee()->session->set_flashdata('errors', $errors);
+
+            // Save old input values from POST for error redirect.  Filter out temporary hashes and sensitive values
+            $old = array_filter($_POST, function ($key) {
+                $key = strtolower($key);
+                return !in_array($key, ['act', 'ret', 'from', 'p', 'site_id', 'csrf', 'csrf_token', 'xid', 'captcha'])
+                    && strpos($key, 'password') === false;
+            }, ARRAY_FILTER_USE_KEY);
+
+            // Prefix old input variables for template display
+            $old = array_combine(array_map(function($key) {return "old:$key";}, array_keys($old)), $old);
+
+            ee()->session->set_flashdata('old', $old);
         }
 
         return $this->show_user_error($type, $errors, '', $url);
