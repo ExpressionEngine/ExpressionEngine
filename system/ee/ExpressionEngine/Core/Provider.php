@@ -67,9 +67,9 @@ class Provider extends InjectionBindingDecorator
         $this->data = $data;
 
         // Set the call location
-        if (REQ === 'CLI') {
+        if (defined('REQ') && REQ === 'CLI') {
             $this->setCallLocation('CLI');
-        } else if (REQ === 'CP') {
+        } else if (defined('REQ') && REQ === 'CP') {
             $this->setCallLocation('CP');
         }
 
