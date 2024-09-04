@@ -43,7 +43,7 @@
             {member_rows}
                 <tr>
                     <td class='{member_css}' style="width:20%;">
-                        <span class="defaultBold"><a href="<?=$template_group?>/profile/{member_id}">{name}</a></span>
+                        <span class="defaultBold"><a href="{path=<?=$template_group?>/profile/{member_id}}">{name}</a></span>
                         {if avatar}<img src="{path:avatar}" />{/if}
                     </td>
                     <td class='{member_css}'>{total_combined_posts}</td>
