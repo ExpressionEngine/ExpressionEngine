@@ -76,7 +76,7 @@ class Channels extends AbstractChannelsController
                     'content' => ee('View')->make('publish/partials/name_badge_copy')->render([
                         'name' => ee('Format')->make('Text', $channel->channel_name)->convertToEntities(),
                         'id' => $channel->getId(),
-                        'content_type' => 'channel'
+                        'content_type' => 'channels'
                     ])
                 ],
                 'selected' => ($highlight_id && $channel->getId() == $highlight_id) or in_array($channel->getId(), $imported_channels),
