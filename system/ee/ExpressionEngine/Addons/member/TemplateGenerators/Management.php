@@ -92,6 +92,9 @@ class Management extends AbstractTemplateGenerator
                 'docs_url' => $fieldtypeGenerator['docs_url'],
                 'is_tag_pair' => $fieldtypeGenerator['is_tag_pair'],
             ];
+
+            $field = array_merge($field, ee('TemplateGenerator')->getFieldVariables($fieldInfo));
+
             // if the field has its own generator, spin it
             // we'll not be using service (as it's singleton),
             // but spin and destroy new factory for each field
