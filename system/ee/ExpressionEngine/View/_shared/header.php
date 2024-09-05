@@ -69,21 +69,12 @@ $current_page = ee()->uri->segment(2);
             <div class="ee-main" role="main">
 
             <section class="lv-banner">
-                <?php if(!empty(ee('pro:Access')->getLicenseNotices(['expired','invalid'], true))): ?>
+                <?php if(ee('pro:Access')->requiresValidLicense() && ee('pro:Access')->hasProNotice('expired')): ?>
                     <div class="lv-banner__inner alert <?= ee('pro:Access')->canManageLicenses() ? 'alert--error' : 'alert--warning'; ?>">
                         <div class="lv-banner__info alert__content">
                             <p class="alert__title">Software License Notice.</p>
                             <?php if(ee('pro:Access')->canManageLicenses()): ?>
-                                <?php if(ee('pro:Access')->requiresValidLicense() && !empty(ee('pro:Access')->hasProNotice('invalid'))): ?>
-                                    <p>Your ExpressionEngine site needs a license. <a href="https://expressionengine.com/store/purchase-pro" target="_blank">Please purchase ExpressionEngine Pro today.</a>
-                                <?php elseif(!empty(ee('pro:Access')->hasProNotice('expired'))): ?>
-                                    <p>Your ExpressionEngine license has expired. <a href="https://expressionengine.com/store/purchase-pro#renew" target="_blank">Please renew ExpressionEngine Pro today</a>.
-                                <?php endif; ?>
-                                <?php if(!empty(ee('pro:Access')->getLicenseNotices(['expired','invalid']))): ?>
-                                    <p>
-                                        There <?= count(ee('pro:Access')->getLicenseNotices(['invalid','expired'])) > 1 ? 'are several Add-ons' : 'is an Add-on'; ?> with a license problem. <a href="<?= ee('CP/URL', 'addons'); ?>">Please review and correct these issues.</a>
-                                    </p>
-                                <?php endif; ?>
+                                <p>Your ExpressionEngine license has expired. <a href="https://expressionengine.com/store/purchase-pro#renew" target="_blank">Please renew ExpressionEngine Pro today</a>.
                                 <p>We recommend keeping licenses current to ensure smooth site operation, access to updates, and security fixes.</p>
                             <?php else: ?>
                                 <p>Contact the site administrator and ask that they login to resolve any license notices.</p>
