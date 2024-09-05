@@ -24,7 +24,7 @@
         {/exp:channel:categories}
         {!-- Otherwise show entries for this category --}
         {if:else}
-        {exp:channel:category_heading channel="<?= $channel ?>" category_url_title="{segment_3}" }
+        {exp:channel:category_heading channel="<?= $channel ?>" category_url_title="{segment_3}" <?=(strpos($channel, '|') !== false) ? 'relaxed_categories="yes"' : ''?>}
             <h1>{category_name}</h1>
             {if category_description}
             <p>{category_description}</p>
