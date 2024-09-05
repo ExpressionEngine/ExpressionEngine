@@ -90,7 +90,7 @@
                 {/if}
             </p>
 
-            <?php foreach (array_filter($fields, function ($field) { return $field['show_registration']; }) as $field) : ?>
+            <?php foreach (array_filter($fields, function ($field) { return ($field['show_registration'] === 'y'); }) as $field) : ?>
 
                 <p>
                     {!-- Field: <?=$field['field_label']?> --}
