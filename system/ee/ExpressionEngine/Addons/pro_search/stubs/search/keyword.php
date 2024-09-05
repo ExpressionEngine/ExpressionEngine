@@ -6,6 +6,12 @@
     </fieldset>
 {/exp:pro_search:form}
 
+{exp:pro_search:collections}
+    {if no_results}
+        <p>No search collections are available at the moment. To see results, please create a collection and index it first.</p>
+    {/if}
+{/exp:pro_search:collections}
+
 {exp:pro_search:results
     query="{segment_3}"
     keywords:lang="en"
