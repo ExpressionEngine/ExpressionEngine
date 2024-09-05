@@ -1,4 +1,4 @@
-{exp:pro_search:form required="keywords"}
+{exp:pro_search:form required="keywords" result_page="<?=$template_group?>/keyword"}
     <fieldset>
         <input type="search" name="keywords" placeholder="Search this site...">
         <button type="submit">Go</button>
