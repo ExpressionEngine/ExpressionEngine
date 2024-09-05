@@ -166,7 +166,7 @@ class Access
 
                 case 'expired':
                     static::$hasValidLicense = false;
-                    $this->logLicenseError('pro_license_error_expired', $showAlert);
+                    $this->logLicenseError('pro_license_error_expired');
 
                     break;
 
@@ -349,7 +349,7 @@ class Access
         }
 
         ee()->logger->developer($message, true, 60 * 60 * 24 * 7);
-        if (REQ == 'CP' && $showAlert && $this->canManageLicenses()) {
+        if (REQ == 'CP' && $showAlert) {
             // The user has seen the banner, so we're marking it in the session
             ee('Session')->setProBannerSeen();
 
