@@ -375,7 +375,10 @@ trait FileManagerTrait
                 if ($file->isDirectory()) {
                     $attrs['href'] = ee('CP/URL')->make('files/directory/' . $file->upload_location_id, array_merge($queryStringVariables, ['directory_id' => $file->file_id]));
                 } elseif (ee('Permission')->can('edit_files')) {
-                    $attrs['href'] = ee('CP/URL')->make('files/file/view/' . $file->file_id);
+                    if (ee()->uri->segment(3) == 'directory') {
+                        $queryStringVariables['upload_location_id'] = (int) ee()->uri->segment(4);
+                    }
+                    $attrs['href'] = ee('CP/URL')->make('files/file/view/' . $file->file_id, $queryStringVariables);
                 }
             }
 
