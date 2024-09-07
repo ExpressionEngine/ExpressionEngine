@@ -204,7 +204,7 @@ class Members extends CP_Controller
      * @param array $ids The ID(s) of the member(s) being approved
      * @return void
      */
-    public function resend(array $ids)
+    public function resend($ids)
     {
         if (! ee('Permission')->can('edit_members') || ee()->config->item('req_mbr_activation') !== 'email') {
             show_error(lang('unauthorized_access'), 403);
@@ -225,13 +225,16 @@ class Members extends CP_Controller
 
         $action_id = ee()->functions->fetch_action_id('Member', 'activate_member');
 
+        ee()->load->library('email');
+        ee()->email->EE_initialize();
+
         foreach ($members as $member) {
             $swap = array(
                 'email' => $member->email,
                 'activation_url' => ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id . '&id=' . $member->authcode
             );
 
-            if (!$this->pendingMemberNotification($template, $member, $swap)) {
+            if (empty($member->authcode) || !$this->pendingMemberNotification($template, $member, $swap)) {
                 $debug_msg = ee()->email->print_debugger(array());
                 show_error(lang('error_sending_email') . BR . BR . $debug_msg);
             }
