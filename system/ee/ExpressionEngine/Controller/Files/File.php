@@ -113,7 +113,7 @@ class File extends AbstractFilesController
             'download_url' => ee('CP/URL')->make('files/file/download/' . $file->file_id),
             'modal_form' => ee('Request')->get('modal_form') === 'y',
             'ajax_validate' => true,
-            'base_url' => ee('CP/URL')->make('files/file/view/' . $id),
+            'base_url' => ee('CP/URL')->getCurrentUrl(),
             'save_btn_text' => 'btn_edit_file_meta',
             'save_btn_text_working' => 'btn_saving',
             'tabs' => $tabs,
