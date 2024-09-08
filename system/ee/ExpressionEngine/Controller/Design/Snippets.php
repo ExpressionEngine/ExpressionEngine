@@ -307,6 +307,14 @@ class Snippets extends AbstractDesignController
             show_404();
         }
 
+        if ($version_id = ee()->input->get('version')) {
+            $version = ee('Model')->get('RevisionTracker', $version_id)->filter('snippet_id', $snippet_id)->first();
+
+            if ($version) {
+                $snippet->snippet_contents = $version->item_data;
+            }
+        }
+
         $vars = array(
             'ajax_validate' => true,
             'base_url' => ee('CP/URL')->make('design/snippets/edit/' . $snippet_id),
@@ -360,6 +368,7 @@ class Snippets extends AbstractDesignController
             );
         }
 
+        $result = null;
         if (! empty($_POST)) {
             if ($this->msm) {
                 $snippet->site_id = ee()->input->post('site_id');
@@ -375,6 +384,8 @@ class Snippets extends AbstractDesignController
 
             if ($result->isValid()) {
                 $snippet->save();
+                // Save a new revision
+                $snippet->saveNewRevision($snippet);
 
                 ee()->session->set_flashdata('snippet_id', $snippet->snippet_id);
 
@@ -392,6 +403,13 @@ class Snippets extends AbstractDesignController
                     ->addToBody(lang('edit_template_partial_error_desc'))
                     ->now();
             }
+        }
+
+        if (bool_config_item('save_tmpl_revisions')) {
+            $vars['tabs']['edit'] = ee('View')->make('_shared/form/section')
+                ->render(array('name' => null, 'settings' => $vars['sections'][0], 'errors' => $result));
+            unset($vars['sections'][0]);
+            $vars['tabs']['revisions'] = $this->renderRevisionsPartial($snippet, $version_id);
         }
 
         ee()->view->cp_page_title = lang('edit_partial');

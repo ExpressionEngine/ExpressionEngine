@@ -308,6 +308,14 @@ class Variables extends AbstractDesignController
             show_404();
         }
 
+        if ($version_id = ee()->input->get('version')) {
+            $version = ee('Model')->get('RevisionTracker', $version_id)->filter('variable_id', $variable_id)->first();
+
+            if ($version) {
+                $variable->variable_data = $version->item_data;
+            }
+        }
+
         $vars = array(
             'ajax_validate' => true,
             'base_url' => ee('CP/URL')->make('design/variables/edit/' . $variable_id),
@@ -361,6 +369,7 @@ class Variables extends AbstractDesignController
             );
         }
 
+        $result = null;
         if (! empty($_POST)) {
             if ($this->msm) {
                 $variable->site_id = ee()->input->post('site_id');
@@ -376,6 +385,8 @@ class Variables extends AbstractDesignController
 
             if ($result->isValid()) {
                 $variable->save();
+                // Save a new revision
+                $variable->saveNewRevision($variable);
 
                 ee()->session->set_flashdata('variable_id', $variable->variable_id);
 
@@ -393,6 +404,13 @@ class Variables extends AbstractDesignController
                     ->addToBody(lang('edit_template_variable_error_desc'))
                     ->now();
             }
+        }
+
+        if (bool_config_item('save_tmpl_revisions')) {
+            $vars['tabs']['edit'] = ee('View')->make('_shared/form/section')
+                ->render(array('name' => null, 'settings' => $vars['sections'][0], 'errors' => $result));
+            unset($vars['sections'][0]);
+            $vars['tabs']['revisions'] = $this->renderRevisionsPartial($variable, $version_id);
         }
 
         $this->loadCodeMirrorAssets('variable_data');

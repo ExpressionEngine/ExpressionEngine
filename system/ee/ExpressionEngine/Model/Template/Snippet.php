@@ -27,6 +27,11 @@ class Snippet extends FileSyncedModel
     protected static $_relationships = array(
         'Site' => array(
             'type' => 'BelongsTo'
+        ),
+        'Versions' => array(
+            'type' => 'hasMany',
+            'model' => 'RevisionTracker',
+            'to_key' => 'snippet_id',
         )
     );
 
@@ -341,6 +346,38 @@ class Snippet extends FileSyncedModel
         }
 
         return true;
+    }
+
+    /**
+     * Saves a new revision and rotates revisions based on 'max_tmpl_revisions' config item
+     */
+    public function saveNewRevision()
+    {
+        if (! bool_config_item('save_tmpl_revisions')) {
+            return;
+        }
+
+        // Create the new version
+        $version = ee('Model')->make('RevisionTracker');
+        $version->Snippet = $this;
+        $version->item_table = 'exp_snippets';
+        $version->item_field = 'snippet_contents';
+        $version->item_data = $this->snippet_contents;
+        $version->item_date = ee()->localize->now;
+        $version->item_author_id = ee()->session->userdata('member_id');
+        $version->save();
+
+        // Now, rotate template revisions based on 'max_tmpl_revisions' config item
+        $versions = ee('Model')->get('RevisionTracker')
+            ->filter('snippet_id', $this->getId())
+            ->filter('item_field', 'snippet_contents')
+            ->order('item_date', 'desc')
+            ->limit(ee()->config->item('max_tmpl_revisions'))
+            ->all();
+
+        // Reassign versions and delete the leftovers
+        $this->Versions = $versions;
+        $this->save();
     }
 }
 
