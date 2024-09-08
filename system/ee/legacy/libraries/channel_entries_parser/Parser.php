@@ -213,7 +213,17 @@ class EE_Channel_data_parser
             $row['absolute_reverse_count'] = $row['absolute_results'] - $row['absolute_count'] + 1;
             $row['comment_subscriber_total'] = (isset($subscriber_totals[$row['entry_id']])) ? $subscriber_totals[$row['entry_id']] : 0;
             $row['has_categories'] = ! empty($data['categories'][$row['entry_id']]);
-            $row['cp_edit_entry_url'] = isset(ee()->session) ? ee('CP/URL')
+            $can_edit = false;
+            if (isset(ee()->session) && ee()->session->userdata('member_id') != 0) {
+                if (ee()->session->userdata('member_id') == $row['author_id']) {
+                    if (ee('Permission')->has('can_edit_self_entries_channel_id_' . $row['channel_id'])) {
+                        $can_edit = true;
+                    }
+                } elseif (ee('Permission')->has('can_edit_other_entries_channel_id_' . $row['channel_id'])) {
+                    $can_edit = true;
+                }
+            }
+            $row['cp_edit_entry_url'] = $can_edit ? ee('CP/URL')
                 ->make(
                     'publish/edit/entry/' . $row['entry_id'],
                     array('site_id' => $row['site_id']),
