@@ -15,6 +15,9 @@ use ZipArchive;
 use ExpressionEngine\Library\CP\Table;
 use ExpressionEngine\Library\Data\Collection;
 use ExpressionEngine\Model\Template\TemplateRoute;
+use ExpressionEngine\Model\Template\Template;
+use ExpressionEngine\Model\Template\Snippet;
+use ExpressionEngine\Model\Template\GlobalVariable;
 use ExpressionEngine\Service\CP\Filter\Filter;
 use ExpressionEngine\Service\Filter\FilterFactory;
 use ExpressionEngine\Service\CP\Filter\FilterRunner;
@@ -617,6 +620,88 @@ abstract class AbstractDesign extends CP_Controller
             ->addToBody(lang('templates_deleted_desc'))
             ->addToBody($template_names)
             ->defer();
+    }
+
+
+    /**
+     * Renders the template revisions table for the Revisions tab
+     *
+     * @param TemplateModel $template A Template entity
+     * @param int $version_id ID of template version to mark as selected
+     * @return string Table HTML for insertion into Template edit form
+     */
+    protected function renderRevisionsPartial($template, $version_id = false)
+    {
+        if (! bool_config_item('save_tmpl_revisions')) {
+            return false;
+        }
+
+        // determine what these revisions are for
+        $controller = 'template';
+        if ($template instanceof Snippet) {
+            $controller = 'snippets';
+        } elseif ($template instanceof GlobalVariable) {
+            $controller = 'variables';
+        }
+
+        $table = ee('CP/Table');
+
+        $table->setColumns(
+            array(
+                'rev_id',
+                'rev_date',
+                'rev_author',
+                'manage' => array(
+                    'encode' => false
+                )
+            )
+        );
+        $table->setNoResultsText(lang('no_revisions'));
+
+        $data = array();
+
+        $i = $template->Versions->count();
+
+        foreach ($template->Versions->sortBy('item_date')->reverse() as $version) {
+            $attrs = array();
+
+            // Last item should be marked as current
+            if ($template->Versions->count() == $i) {
+                $toolbar = '<span class="st-open">' . lang('current') . '</span>';
+            } else {
+                $toolbar = ee('View')->make('_shared/toolbar')->render(
+                    array(
+                        'toolbar_items' => array(
+                            'txt-only' => array(
+                                'href' => ee('CP/URL')->make('design/' . $controller . '/edit/' . $template->getId(), array('version' => $version->getId())),
+                                'title' => lang('view'),
+                                'content' => lang('view')
+                            ),
+                        )
+                    )
+                );
+            }
+
+            // Mark currently-loaded version as selected
+            if ((! $version_id && $template->Versions->count() == $i) or $version_id == $version->getId()) {
+                $attrs = array('class' => 'selected');
+            }
+
+            $data[] = array(
+                'attrs' => $attrs,
+                'columns' => array(
+                    $i,
+                    ee()->localize->human_time($version->item_date),
+                    ($version->getAuthorName()) ?: lang('author_unknown'),
+                    $toolbar
+                )
+            );
+            $i--;
+        }
+
+        $table->setData($data);
+
+        return ee('View')->make('_shared/table')->render($table->viewData(''));
     }
 }
 

@@ -27,6 +27,11 @@ class GlobalVariable extends FileSyncedModel
     protected static $_relationships = array(
         'Site' => array(
             'type' => 'belongsTo'
+        ),
+        'Versions' => array(
+            'type' => 'hasMany',
+            'model' => 'RevisionTracker',
+            'to_key' => 'variable_id',
         )
     );
 
@@ -340,6 +345,38 @@ class GlobalVariable extends FileSyncedModel
         }
 
         return true;
+    }
+
+    /**
+     * Saves a new revision and rotates revisions based on 'max_tmpl_revisions' config item
+     */
+    public function saveNewRevision()
+    {
+        if (! bool_config_item('save_tmpl_revisions')) {
+            return;
+        }
+
+        // Create the new version
+        $version = ee('Model')->make('RevisionTracker');
+        $version->GlobalVariable = $this;
+        $version->item_table = 'exp_snippets';
+        $version->item_field = 'variable_data';
+        $version->item_data = $this->variable_data;
+        $version->item_date = ee()->localize->now;
+        $version->item_author_id = ee()->session->userdata('member_id');
+        $version->save();
+
+        // Now, rotate template revisions based on 'max_tmpl_revisions' config item
+        $versions = ee('Model')->get('RevisionTracker')
+            ->filter('variable_id', $this->getId())
+            ->filter('item_field', 'variable_data')
+            ->order('item_date', 'desc')
+            ->limit(ee()->config->item('max_tmpl_revisions'))
+            ->all();
+
+        // Reassign versions and delete the leftovers
+        $this->Versions = $versions;
+        $this->save();
     }
 }
 

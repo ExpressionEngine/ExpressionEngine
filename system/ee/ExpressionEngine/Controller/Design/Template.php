@@ -213,7 +213,7 @@ class Template extends AbstractDesignController
             ->first();
 
         if ($version_id = ee()->input->get('version')) {
-            $version = ee('Model')->get('RevisionTracker', $version_id)->first();
+            $version = ee('Model')->get('RevisionTracker', $version_id)->filter('item_id', $template_id)->first();
 
             if ($version) {
                 $template->template_data = $version->item_data;
@@ -343,79 +343,6 @@ class Template extends AbstractDesignController
         ee()->output->set_header("X-XSS-Protection: 0");
 
         ee()->cp->render('settings/form', $vars);
-    }
-
-    /**
-     * Renders the template revisions table for the Revisions tab
-     *
-     * @param TemplateModel $template A Template entity
-     * @param int $version_id ID of template version to mark as selected
-     * @return string Table HTML for insertion into Template edit form
-     */
-    protected function renderRevisionsPartial($template, $version_id = false)
-    {
-        if (! bool_config_item('save_tmpl_revisions')) {
-            return false;
-        }
-
-        $table = ee('CP/Table');
-
-        $table->setColumns(
-            array(
-                'rev_id',
-                'rev_date',
-                'rev_author',
-                'manage' => array(
-                    'encode' => false
-                )
-            )
-        );
-        $table->setNoResultsText(lang('no_revisions'));
-
-        $data = array();
-
-        $i = $template->Versions->count();
-
-        foreach ($template->Versions->sortBy('item_date')->reverse() as $version) {
-            $attrs = array();
-
-            // Last item should be marked as current
-            if ($template->Versions->count() == $i) {
-                $toolbar = '<span class="st-open">' . lang('current') . '</span>';
-            } else {
-                $toolbar = ee('View')->make('_shared/toolbar')->render(
-                    array(
-                        'toolbar_items' => array(
-                            'txt-only' => array(
-                                'href' => ee('CP/URL')->make('design/template/edit/' . $template->getId(), array('version' => $version->getId())),
-                                'title' => lang('view'),
-                                'content' => lang('view')
-                            ),
-                        )
-                    )
-                );
-            }
-
-            // Mark currently-loaded version as selected
-            if ((! $version_id && $template->Versions->count() == $i) or $version_id == $version->getId()) {
-                $attrs = array('class' => 'selected');
-            }
-
-            $data[] = array(
-                'attrs' => $attrs,
-                'columns' => array(
-                    $i,
-                    ee()->localize->human_time($version->item_date),
-                    ($version->getAuthorName()) ?: lang('author_unknown'),
-                    $toolbar
-                )
-            );
-            $i--;
-        }
-
-        $table->setData($data);
-
-        return ee('View')->make('_shared/table')->render($table->viewData(''));
     }
 
     public function settings($template_id)

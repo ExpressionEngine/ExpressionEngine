@@ -23,14 +23,24 @@ class RevisionTracker extends Model
     protected static $_typed_columns = array(
         'tracker_id' => 'int',
         'item_id' => 'int',
+        'snippet_id' => 'int',
+        'variable_id' => 'int',
         'item_date' => 'int',
         'item_author_id' => 'int'
     );
 
     protected static $_relationships = array(
         'Template' => array(
-            'type' => 'BelongsTo',
+            'type' => 'belongsTo',
             'from_key' => 'item_id',
+        ),
+        'Snippet' => array(
+            'type' => 'belongsTo',
+            'from_key' => 'snippet_id',
+        ),
+        'GlobalVariable' => array(
+            'type' => 'belongsTo',
+            'from_key' => 'variable_id',
         ),
         'Author' => array(
             'type' => 'belongsTo',
@@ -42,6 +52,8 @@ class RevisionTracker extends Model
 
     protected $tracker_id;
     protected $item_id;
+    protected $snippet_id;
+    protected $variable_id;
     protected $item_table;
     protected $item_field;
     protected $item_date;
