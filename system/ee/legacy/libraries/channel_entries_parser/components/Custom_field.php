@@ -97,7 +97,7 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
                 && isset($ft_api->settings[$field_id]['note_content'])
             ) {
                 // set the note content as the field data
-                $data['field_id_' . $field_id] = $ft_api->settings[3]['note_content'];
+                $data['field_id_' . $field_id] = $ft_api->settings[$field_id]['note_content'];
             }
 
 
