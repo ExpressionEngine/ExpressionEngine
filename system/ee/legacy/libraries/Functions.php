@@ -219,6 +219,10 @@ class EE_Functions
      */
     public function prep_query_string($str)
     {
+        if (is_null($str)) {
+            $str = '';
+        }
+
         if (stristr($str, '.php') && substr($str, -7) == '/index/') {
             $str = substr($str, 0, -6);
         }
