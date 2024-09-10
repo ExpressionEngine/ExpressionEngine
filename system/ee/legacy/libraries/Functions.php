@@ -219,7 +219,7 @@ class EE_Functions
      */
     public function prep_query_string($str)
     {
-        if ($str == null) {
+        if (is_null($str)) {
             $str = '';
         }
 
