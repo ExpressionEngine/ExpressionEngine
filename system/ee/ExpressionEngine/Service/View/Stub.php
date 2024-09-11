@@ -178,6 +178,8 @@ class Stub extends View
         }
 
         $buffer = ob_get_contents();
+        // clean up extra lines from php tags
+        $buffer = preg_replace('/\n[ \t]+\n/i', "\n", $buffer);
 
         ob_end_clean();
 

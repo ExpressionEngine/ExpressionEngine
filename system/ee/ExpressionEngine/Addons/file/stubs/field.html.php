@@ -5,6 +5,7 @@
             <?php foreach ($dimensions as $dimension) : ?>
             <source type="{mime_type}" srcset="{url:<?=$dimension?>}" width="{width:<?=$dimension?>}" height="{height:<?=$dimension?>}" alt="{title}">
             <?php endforeach; ?>
+
             <img src="{url}" width="{width}" height="{height}" alt="{title}">
         </picture>
     {if:else}

@@ -12,9 +12,11 @@ namespace ExpressionEngine\Addons\Channel\TemplateGenerators;
 
 use ExpressionEngine\Service\TemplateGenerator\AbstractTemplateGenerator;
 
-class Entries extends AbstractTemplateGenerator
+class Entries extends Channels
 {
     protected $name = 'channel_entries_template_generator';
+
+    protected $excludeFrom = [];
 
     protected $templates = [
         'index' => 'Listing for all entries',
@@ -32,46 +34,12 @@ class Entries extends AbstractTemplateGenerator
             'required' => true,
             'choices' => 'getChannelList',
         ],
+        'show_comments' => [
+            'desc' => 'show_comments_desc',
+            'type' => 'toggle',
+            'required' => false,
+        ],
     ];
 
-    protected $_validation_rules = [
-        'channel' => 'required|validateChannelExists'
-    ];
 
-    /**
-     * Populate list of channels for the channel option
-     *
-     * @return array
-     */
-    public function getChannelList()
-    {
-        return ee('Model')->get('Channel')->all(true)->getDictionary('channel_name', 'channel_title');
-    }
-
-    /**
-     * Validate that the channel exists
-     *
-     * @param [type] $key
-     * @param [type] $value
-     * @param [type] $params
-     * @param [type] $rule
-     * @return mixed
-     */
-    public function validateChannelExists($key, $value, $params, $rule)
-    {
-        if (!is_array($value)) {
-            $value = [$value];
-        }
-        $channels = ee('Model')->get('Channel')->filter('channel_name', 'IN', $value)->all();
-        if (count($channels) !== count($value)) {
-            return 'invalid_channel';
-        }
-
-        return true;
-    }
-
-    public function getVariables(): array
-    {
-        return ee('TemplateGenerator')->getChannelVariables($this->input->get('channel'));
-    }
 }

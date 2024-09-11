@@ -61,14 +61,20 @@
         <?php foreach (array_filter($fields, function ($field) { return $field['show_profile']; }) as $field) : ?>
 
             <tr>
+                <?php if($show_comments ?? false): ?>
+
                 {!-- Field: <?=$field['field_label']?> --}
                 {!-- Fieldtype: <?=$field['field_type']?> --}
                 {!-- Docs: <?=$field['docs_url']?> --}
+                <?php endif; ?>
                 <td><?=$field['field_label']?></td>
                 <td>
                     <?=$this->embed($field['stub'], $field);?>
                 </td>
+                <?php if($show_comments ?? false): ?>
+
                 {!-- End field: <?=$field['field_label']?> --}
+                <?php endif; ?>
             </tr>
 
         <?php endforeach; ?>

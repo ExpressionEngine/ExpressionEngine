@@ -93,15 +93,21 @@
             <?php foreach (array_filter($fields, function ($field) { return ($field['show_registration'] === 'y'); }) as $field) : ?>
 
                 <p>
+                    <?php if($show_comments ?? false): ?>
+
                     {!-- Field: <?=$field['field_label']?> --}
                     {!-- Fieldtype: <?=$field['field_type']?> --}
                     {!-- Docs: <?=$field['docs_url']?> --}
+                    <?php endif; ?>
                     <label for="<?=$field['field_name']?>" ><?=$field['field_label']?></label><br/>
                     {field:<?=$field['field_name']?>}
                     {if error:<?=$field['field_name']?>}
                         <span class="error">{error:<?=$field['field_name']?>}</span>
                     {/if}
+                    <?php if($show_comments ?? false): ?>
+
                     {!-- End field: <?=$field['field_label']?> --}
+                    <?php endif; ?>
                 </p>
 
             <?php endforeach; ?>

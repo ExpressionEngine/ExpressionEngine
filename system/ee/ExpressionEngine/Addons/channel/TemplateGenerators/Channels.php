@@ -70,6 +70,44 @@ class Channels extends AbstractTemplateGenerator
 
     public function getVariables(): array
     {
-        return ee('TemplateGenerator')->getChannelVariables($this->input->get('channel'));
+        ee()->load->library('session'); //getAllCustomFields requires session
+
+        $vars = [
+            'fields' => [],
+            'channel' => $this->input->get('channel'),
+            'show_comments' => $this->input->get('show_comments', false),
+        ];
+
+        if (!is_array($vars['channel'])) {
+            $vars['channel'] = [$vars['channel']];
+        }
+
+        // get the fields for assigned channels
+        $channels = ee('Model')->get('Channel')->filter('channel_name', 'IN', $vars['channel'])->all();
+        $channel_titles = [];
+        if (!empty($channels)) {
+            foreach ($channels as $channel) {
+                $channel_titles[] = $channel->channel_title;
+                $fields = $channel->getAllCustomFields();
+                foreach ($fields as $fieldInfo) {
+                    // get the field variables
+                    $field = ee('TemplateGenerator')->getFieldVariables($fieldInfo);
+
+                    // if field is null, continue to the next field
+                    if (is_null($field)) {
+                        continue;
+                    }
+
+                    // add the field to the list of fields
+                    $vars['fields'][$fieldInfo->field_name] = $field;
+                }
+            }
+        }
+
+        // channel is array at this point, but for replacement it needs to be a string
+        $vars['channel'] = implode('|', $vars['channel']);
+        $vars['channel_title'] = implode(', ', $channel_titles);
+
+        return $vars;
     }
 }

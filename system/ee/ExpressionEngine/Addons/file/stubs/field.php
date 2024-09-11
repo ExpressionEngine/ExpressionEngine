@@ -14,11 +14,11 @@
     {if mime_type ^= 'image/'}
         Width: {width}
         Height: {height}
-
         <?php foreach ($dimensions as $dimension) : ?>
             <?= $dimension ?> URL: {url:<?= $dimension ?>}
             <?= $dimension ?> Width: {width:<?= $dimension ?>}
             <?= $dimension ?> Height: {height:<?= $dimension ?>}
         <?php endforeach; ?>
+
     {/if}
 {/<?= $field_name ?>}

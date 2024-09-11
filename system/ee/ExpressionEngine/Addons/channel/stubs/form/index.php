@@ -3,6 +3,7 @@
         <title>Publish Entry in <?=$channel_title?></title>
         {!-- https://docs.expressionengine.com/latest/channels/channel-form/overview.html --}
         <link href="{path='css/_ee_channel_form_css'}" type="text/css" rel="stylesheet" media="screen">
+        themes/ee/cform/css/eecms-cform.min.css
     </head>
     <body>
         <div>
@@ -32,15 +33,21 @@
 
                 <?php foreach ($fields as $field) : ?>
 
+                    <?php if($show_comments ?? false): ?>
+
                     {!-- Field: <?=$field['field_label']?> --}
                     {!-- Fieldtype: <?=$field['field_type']?> --}
                     {!-- Docs: <?=$field['docs_url']?> --}
+                    <?php endif; ?>
                     <fieldset class="element-wrapper <?=$field['field_type']?>-wrap">
                         <label for="<?=$field['field_name']?>" class="element-label"><?=$field['field_label']?></label>
                         {field:<?=$field['field_name']?>}
                         {error:<?=$field['field_name']?>}
                     </fieldset>
+                    <?php if($show_comments ?? false): ?>
+
                     {!-- End field: <?=$field['field_label']?> --}
+                    <?php endif; ?>
                 <?php endforeach; ?>
 
                 <button type="submit">Submit</button>

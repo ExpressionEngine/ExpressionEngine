@@ -18,6 +18,7 @@
                     <?=$this->embed($field['stub'], $field);?>
                 </description>
             <?php endforeach; ?>
+
         </item>
         {/exp:channel:entries}
     </channel>
