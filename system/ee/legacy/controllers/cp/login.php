@@ -715,7 +715,6 @@ class Login extends CP_Controller
         $this->session->destroy();
 
         $this->input->delete_cookie('read_topics');
-        $this->input->delete_cookie('license_notice_seen');
 
         $this->logger->log_action(lang('member_logged_out'));
 
