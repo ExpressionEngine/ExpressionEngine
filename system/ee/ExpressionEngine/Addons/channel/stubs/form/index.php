@@ -3,7 +3,6 @@
         <title>Publish Entry in <?=$channel_title?></title>
         {!-- https://docs.expressionengine.com/latest/channels/channel-form/overview.html --}
         <link href="{path='css/_ee_channel_form_css'}" type="text/css" rel="stylesheet" media="screen">
-        themes/ee/cform/css/eecms-cform.min.css
     </head>
     <body>
         <div>
