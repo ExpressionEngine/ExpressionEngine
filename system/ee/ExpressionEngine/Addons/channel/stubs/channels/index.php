@@ -1,4 +1,3 @@
-{!-- This template will only include title and search excerpt --}
 <?=$channel_title?>
 
 {exp:channel:entries channel="<?=$channel?>" dynamic="no" paginate="bottom"}

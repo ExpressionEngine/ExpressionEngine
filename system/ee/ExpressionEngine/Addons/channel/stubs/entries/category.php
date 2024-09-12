@@ -1,6 +1,7 @@
+<?php if($show_comments ?? false): ?>
 {!-- This template will only include title and search excerpt --}
 {!-- URL Format template_group/category/CATEGORY_URL_TITLE --}
-
+<?php endif; ?>
 
 <html>
 

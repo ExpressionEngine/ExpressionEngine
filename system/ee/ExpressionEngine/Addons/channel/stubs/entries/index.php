@@ -1,4 +1,6 @@
+<?php if($show_comments ?? false): ?>
 {!-- This template will only include title and search excerpt --}
+<?php endif; ?>
 <html>
     <head>
         <title><?=$channel_title?></title>
