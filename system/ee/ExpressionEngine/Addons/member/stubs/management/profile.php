@@ -57,8 +57,7 @@
           </tr>
         {/if}
 
-
-        <?php foreach (array_filter($fields, function ($field) { return $field['show_profile']; }) as $field) : ?>
+        <?php foreach (array_filter($fields, function ($field) { return $field['show_profile'] === 'y'; }) as $field) : ?>
 
             <tr>
                 <?php if($show_comments ?? false): ?>
