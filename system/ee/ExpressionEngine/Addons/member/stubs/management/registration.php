@@ -114,7 +114,7 @@
 
             {if captcha}
             <p>
-                <label for="captcha">{lang:captcha}*</label>
+                <label for="captcha">Please enter the word you see in the image below:</label><br/>
                 {captcha}<br/>
                 <input type="text" id="captcha" name="captcha" value="" size="20" maxlength="20" style="width:140px;"/>
                 {if error:captcha}
