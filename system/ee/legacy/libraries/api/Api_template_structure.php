@@ -339,6 +339,21 @@ class Api_template_structure extends Api
     }
 
     /**
+     * Get the default template engine
+     *
+     * @return string
+     */
+    public function get_default_template_engine()
+    {
+        if(count($this->template_engines) <= 1) {
+            return '';
+        };
+
+        $default = ee()->config->item('default_template_engine') ?? null;
+        return array_key_exists($default, $this->template_engines) ? $default : '';
+    }
+
+    /**
      * Retrieve information about a given template file
      *
      * @param string $template

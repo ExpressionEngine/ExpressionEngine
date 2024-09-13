@@ -273,13 +273,14 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
 
     public function getOptions(): array
     {
+        ee()->legacy_api->instantiate('template_structure');
         $defaults = [
             'template_engine' => [
                 'type' => 'select',
                 'choices' => 'getTemplateEnginesList',
                 'desc' => 'select_template_engine',
-                'default' => ee()->config->item('default_template_engine') ?? '',
-                'value' => ee()->config->item('default_template_engine') ?? ''
+                'default' => ee()->api_template_structure->get_default_template_engine(),
+                'value' => ee()->api_template_structure->get_default_template_engine()
             ],
             /* 'theme' => [
                 'type' => 'select',
