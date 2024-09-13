@@ -178,7 +178,7 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
             throw new Exceptions\ValidationException('Template Generator validation failed.', $validationResult);
         }
 
-        $this->input = new Input($input);
+        $this->input = new Input($this->mergeDefaults($input));
 
         $templates = $this->getTemplates();
 
@@ -278,7 +278,8 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
                 'type' => 'select',
                 'choices' => 'getTemplateEnginesList',
                 'desc' => 'select_template_engine',
-                'default' => ''
+                'default' => ee()->config->item('default_template_engine') ?? '',
+                'value' => ee()->config->item('default_template_engine') ?? ''
             ],
             /* 'theme' => [
                 'type' => 'select',
@@ -332,6 +333,26 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
 
             return $carry;
         }, []);
+    }
+
+    /**
+     * Add any default values from the generator's options to the provided input
+     *
+     * @param array $input
+     * @return array
+     */
+    protected function mergeDefaults($input)
+    {
+        $options = $this->getOptions();
+        $defaults = array_reduce(array_keys($options), function($carry, $key) use ($options) {
+            if(array_key_exists('default', $options[$key])) {
+                $carry[$key] = $options[$key]['default'];
+            }
+
+            return $carry;
+        }, []);
+
+        return array_merge($defaults, $input);
     }
 
     /**

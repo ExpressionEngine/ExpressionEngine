@@ -254,7 +254,7 @@ class Api_template_structure extends Api
             }
         }
 
-        return '';
+        return (!empty($engine)) ? $engine : '';
     }
 
     /**
