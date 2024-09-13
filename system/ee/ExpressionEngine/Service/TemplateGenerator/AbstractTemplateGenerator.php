@@ -153,7 +153,7 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
                 $value = array_merge($defaults, $value);
                 $value['templates'] = (is_string($value['templates'])) ? explode(',', $value['templates']) : $value['templates'];
 
-                if(empty($value['templates']) || !empty(array_intersect_key($templates, $value['templates']))) {
+                if(empty($value['templates']) || !empty(array_intersect_key($templates, array_flip($value['templates'])))) {
                     $carry[$key] = array_merge($value, ['name' => $key]);
                 }
             }

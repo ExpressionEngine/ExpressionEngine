@@ -27,6 +27,10 @@ class Entries extends Channels
         'sitemap' => ['name' => 'XML sitemap for all entries', 'type' => 'xml'],
     ];
 
+    protected $includes = [
+        '_comment_form' => ['templates' => 'entry']
+    ];
+
     protected $options = [
         'channel' => [
             'desc' => 'select_channels_to_generate',

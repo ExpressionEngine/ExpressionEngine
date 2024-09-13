@@ -409,7 +409,8 @@ class EE_Functions
             return self::$protected_data['return_error'];
         } elseif (! empty(self::$protected_data['inline_errors']) && self::$protected_data['inline_errors'] === 'yes') {
             // If they specified inline errors, return to the page the form submitted from.
-            return ee()->functions->form_backtrack(1);
+            // When the request is handled by an action then "this" page is not in the tracker
+            return ee()->functions->form_backtrack(REQ === 'ACTION' ? 0 : 1);
         }
 
         // There was no return page or inline specified so the error will go to the standard output.

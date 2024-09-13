@@ -1001,6 +1001,9 @@ class Comment
             }
         }
 
+        // Parse inline errors
+        $tagdata = ee()->TMPL->parse_inline_errors($tagdata);
+
         // -------------------------------------------
         // 'comment_form_hidden_fields' hook.
         //  - Add/Remove Hidden Fields for Comment Form
