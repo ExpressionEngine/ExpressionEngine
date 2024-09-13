@@ -34,6 +34,10 @@
         <?php endforeach; ?>
 
         {/exp:channel:entries}
+
+        <hr>
+        {embed="<?=$template_group?>/_comment_form"}
+
         <hr>
         {exp:channel:next_entry channel="<?=$channel?>"}
             <p>Next entry: <a href="{path='<?=$template_group?>/entry'}">{title}</a></p>

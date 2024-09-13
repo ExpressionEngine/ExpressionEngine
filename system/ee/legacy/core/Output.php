@@ -641,7 +641,7 @@ class EE_Output
     }
 
     /**
-     * Show form error
+     * Show form error with aliases
      *
      * @access  public
      * @param   string
@@ -692,10 +692,12 @@ class EE_Output
         if($url !== false) {
             ee()->session->set_flashdata('errors', $errors);
 
-            // Save old input values from POST for error redirect.  Filter out temporary hashes and sensitive values
+            // Save old input values from POST for error redirect.
+            // Filter out temporary hashes and sensitive values and any keys found in $_FILES
             $old = array_filter($_POST, function ($key) {
                 $key = strtolower($key);
                 return !in_array($key, ['act', 'ret', 'from', 'p', 'site_id', 'csrf', 'csrf_token', 'xid', 'captcha'])
+                    && !in_array($key, array_keys($_FILES ?: []))
                     && strpos($key, 'password') === false;
             }, ARRAY_FILTER_USE_KEY);
 

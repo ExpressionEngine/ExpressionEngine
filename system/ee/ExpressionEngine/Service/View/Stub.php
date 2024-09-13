@@ -211,7 +211,9 @@ class Stub extends View
         ]));
 
         foreach ($paths as $path) {
+            $path = rtrim($path, '/');
             foreach($fileNames as $fileName) {
+                $fileName = ltrim($fileName, '/');
                 $files = [
                     "$path/$fileName.php",
                     "$path/$fileName"
