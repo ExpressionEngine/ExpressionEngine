@@ -82,16 +82,6 @@
           <td>Signature</td>
           <td>{signature}</td>
         </tr>
-        <tr>
-          {exp:member:mfa_links}
-            <td>MFA</td>
-            {if mfa_enabled}
-              <td><a href="{disable_mfa_link}">Disable MFA</a></td>
-            {if:else}
-              <td><a href="{enable_mfa_link}">Enable MFA</a></td>
-            {/if}
-          {/exp:member:mfa_links}
-        </tr>
       </tbody>
     </table>
 

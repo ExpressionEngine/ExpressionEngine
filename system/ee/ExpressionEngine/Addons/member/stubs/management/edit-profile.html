@@ -12,7 +12,16 @@
 {/if}
 
 <div class="result">
-
+    <p>
+    {exp:member:mfa_links}
+        <h4>MFA</h4>
+        {if mfa_enabled}
+            <a href="{disable_mfa_link}">Disable MFA</a>
+        {if:else}
+            <a href="{enable_mfa_link}">Enable MFA</a>
+        {/if}
+    {/exp:member:mfa_links}
+    </p>
     {exp:member:edit_profile
             return="<?=$template_group?>/edit-profile/success"
             include_assets="yes"
@@ -33,7 +42,6 @@
         <p>* Required fields</p>
         <fieldset>
             <h4>Profile</h4>
-
             <p>
                 <label for="username">Username*:</label><br />
                 <input type="text" name="username" id="username" value="{if old:username}{old:username}{if:else}{username}{/if}" /><br />
