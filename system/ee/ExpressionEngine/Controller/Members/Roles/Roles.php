@@ -141,7 +141,7 @@ class Roles extends AbstractRolesController
                 'selected' => ($role_id && $role->getId() == $role_id),
                 'toolbar_items' => [
                     'members' => [
-                        'href' => ee('CP/URL', 'members', ['role_filter' => $role->getId()]),
+                        'href' => ee('CP/URL')->make('members', ['role_filter' => $role->getId()]),
                         'title' => lang('members'),
                         'content' => '<i class="fal fa-users"></i> ' . $role->total_members . ' ' . lang('members')
                     ]
