@@ -656,11 +656,11 @@ JSC;
             return ($return_as_path ? $destination_path : $destination_url);
         } else {
             // tag pair
-            $vars = [
+            $vars = array_merge($data, [
                 'url' => $destination_url,
                 'width' => $props['width'],
                 'height' => $props['height']
-            ];
+            ]);
 
             return ee()->TMPL->parse_variables($tagdata, [$vars]);
         }
