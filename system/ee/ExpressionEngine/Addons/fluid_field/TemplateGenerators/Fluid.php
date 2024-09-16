@@ -44,6 +44,11 @@ class Fluid extends AbstractFieldTemplateGenerator
             }
         }
 
+        // Set the field_channel_field_groups setting to an empty array if it doesn't exist
+        if(! isset($this->settings['field_channel_field_groups'])) {
+            $this->settings['field_channel_field_groups'] = [];
+        }
+
         $fieldGroups = ee('Model')->get('ChannelFieldGroup', $this->settings['field_channel_field_groups'])
             ->with('ChannelFields')
             ->order('group_name')
