@@ -28170,6 +28170,22 @@ input[type=button].btn-block {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+.title-bar__title .label-app-badge {
+  font-size: 0.9rem;
+  margin-left: 0;
+}
+.title-bar__title .label-app-badge i {
+  font-size: inherit;
+}
+.title-bar__title .label-app-badge i.fa-circle-check {
+  display: none;
+}
+.title-bar__title .label-app-badge.success i.fa-copy {
+  display: none;
+}
+.title-bar__title .label-app-badge.success i.fa-circle-check {
+  display: block;
+}
 
 .title-bar__extra-tools {
   display: flex;
