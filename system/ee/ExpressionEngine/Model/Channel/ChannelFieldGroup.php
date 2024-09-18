@@ -149,8 +149,10 @@ class ChannelFieldGroup extends Model
         return new Collection($channels);
     }
 
-    public function getNameBadge($prefix = '')
+    public function getNameBadge(array $options = [])
     {
+        $prefix = (isset($options['prefix'])) ? $options['prefix'] : '';
+
         if (ee()->session->userdata('member_id') == 0) {
             return '';
         }

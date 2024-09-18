@@ -68,8 +68,10 @@ class FieldFacade
         return $this->getItem('field_name') ?: $this->getName();
     }
 
-    public function getNameBadge($field_name_prefix = '')
+    public function getNameBadge(array $options = [])
     {
+        $field_name_prefix = (isset($options['prefix'])) ? $options['prefix'] : '';
+
         if (ee()->session->userdata('member_id') == 0) {
             return '';
         }
@@ -80,10 +82,13 @@ class FieldFacade
             if (strpos($field_name, 'categories[cat_group_id_') === 0) {
                 $field_name = "categories show_group=\"" . rtrim(substr($field_name, 24), ']') . "\"";
             }
+
+            $content_type = (isset($options['content_type'])) ? $options['content_type'] : $this->getContentType();
+
             return ee('View')->make('publish/partials/name_badge_copy')->render([
                 'name' => $field_name_prefix . $field_name,
                 'id' => $field_id,
-                'content_type' => $this->getContentType()
+                'content_type' => $content_type,
             ]);
         }
         return '';
