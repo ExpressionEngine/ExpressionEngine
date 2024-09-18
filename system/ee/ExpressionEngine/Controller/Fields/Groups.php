@@ -285,32 +285,6 @@ class Groups extends AbstractFieldsController
         ee()->cp->render('settings/form', $vars);
     }
 
-    public function exampleTemplate($id)
-    {
-        $field_group = ee('Model')->get('ChannelFieldGroup', $id)->first();
-
-        if (! $field_group) {
-            show_404();
-        }
-
-        // Get the template data
-        $data = [
-            'field_group' => $field_group->group_name,
-            'template_group' => '',
-            'templates' => ['all']
-        ];
-
-        // Register all template generators, and include ones disabled for template generation
-        ee('TemplateGenerator')->setCallLocation('copy')->registerAllTemplateGenerators();
-        $generator = ee('TemplateGenerator')->make('channel:fieldGroups');
-
-        $validationResult = $generator->validatePartial($data);
-        $result = $generator->generate($data, false);
-
-        // return the template_data
-        return $result['templates']['index']['template_data'];
-    }
-
     private function setWithPost(ChannelFieldGroup $field_group)
     {
         $field_group->site_id = ($field_group->site_id) ?: 0;

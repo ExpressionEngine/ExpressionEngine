@@ -696,33 +696,6 @@ class Channels extends AbstractChannelsController
         ]);
     }
 
-    public function exampleTemplate($id)
-    {
-        $channel = ee('Model')->get('Channel', $id)
-            ->first();
-
-        if (! $channel) {
-            show_404();
-        }
-
-        // Get the template data
-        $data = [
-            'channel' => $channel->channel_name,
-            'template_group' => '',
-            'templates' => ['all']
-        ];
-
-        // Register all template generators, and include ones disabled for template generation
-        ee('TemplateGenerator')->setCallLocation('copy')->registerAllTemplateGenerators();
-        $generator = ee('TemplateGenerator')->make('channel:channels');
-        $validationResult = $generator->validatePartial($data);
-
-        $result = $generator->generate($data, false);
-
-        // return the template_data
-        return $result['templates']['index']['template_data'];
-    }
-
     /**
      * Renders the Categories tab for the Channel create/edit form
      *

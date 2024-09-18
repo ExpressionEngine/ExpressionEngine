@@ -195,7 +195,7 @@ class Fields extends AbstractFieldsController
 
             $data[] = [
                 'id' => $field->getId(),
-                'label' => \htmlentities((string)$field->field_label, ENT_QUOTES, 'UTF-8'),
+                'label' => \htmlentities((string) $field->field_label, ENT_QUOTES, 'UTF-8'),
                 'faded' => strtolower($fieldtype),
                 'href' => $edit_url,
                 'extra' => [
@@ -660,32 +660,6 @@ class Fields extends AbstractFieldsController
         );
 
         ee()->cp->render('settings/form', $vars);
-    }
-
-    public function exampleTemplate($id)
-    {
-        $field = ee('Model')->get('ChannelField', $id)->first();
-
-        if (! $field) {
-            show_404();
-        }
-
-        // Get the template data
-        $data = [
-            'field' => $field->field_name,
-            'template_group' => '',
-            'templates' => ['all']
-        ];
-
-        // Register all template generators, and include ones disabled for template generation
-        ee('TemplateGenerator')->setCallLocation('copy')->registerAllTemplateGenerators();
-
-        $generator = ee('TemplateGenerator')->make('channel:fields');
-        $validationResult = $generator->validatePartial($data);
-        $result = $generator->generate($data, false);
-
-        // return the template_data
-        return $result['templates']['index']['template_data'];
     }
 
     // This builds a simple array we can compare so we know if a condition has changed
