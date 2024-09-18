@@ -13,6 +13,10 @@ $(document).ready(function () {
 
 	var searchingTimeout = null
 
+	if (localStorage.getItem('search_everywhere') && $('input[name="search_in"]').is(':checked')) {
+		$('input[name="search_in"]').prop('checked', false);
+	}
+
 	if (typeof(EE.viewManager)!=='undefined') {
 		var saveDefaultUrl = EE.viewManager.saveDefaultUrl;
 	}
@@ -149,7 +153,13 @@ $(document).ready(function () {
 		if ($('input[name="filter_by_keyword"]').val()!='') {
 			searchEntries('POST');
 		}
-	
+		
+		if (!$(this).is(':checked')) {
+			localStorage.setItem('search_everywhere', true);
+		} else {
+			localStorage.removeItem('search_everywhere');
+		}
+
 	});
 
 	// Selecting a channel filter
