@@ -181,6 +181,17 @@ context('Copy template code from channel entries, fields, channels, and field gr
       // cy.get('fieldset[data-field_id=10] [data-field-name=stupid_grid]:visible .grid-field__table tr th:nth-child(3) .app-badge').trigger('click')
       // cy.window().its('navigator.clipboard').then((clip) => clip.readText()).should('equal', '{stupid_grid:text_two}')
     })
+
+    it.skip('Copies channel data', () => {
+      // TODO: Add these tests
+    })
+
+    it.skip('Copies field data from field listing', () => {
+      // TODO: Add these tests
+    })
+
+    it.skip('Copies field group data', () => {
+      // TODO: Add these tests
     })
 
     it('Field short names not visible when turned off for Role', () => {

@@ -2550,6 +2550,7 @@ class Member
                     'entry_site_id' => null,
                     'channel_url' => null,
                     'comment_url' => null,
+                    'title' => '',
                 ],
                 $default_fields
             )]
