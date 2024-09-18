@@ -70,7 +70,7 @@ class Copy extends AbstractDesignController
         return $result['templates']['index']['template_data'];
     }
 
-    public function field_groups($id)
+    public function fieldGroups($id)
     {
         $field_group = ee('Model')->get('ChannelFieldGroup', $id)->first();
 
@@ -96,9 +96,13 @@ class Copy extends AbstractDesignController
         return $result['templates']['index']['template_data'];
     }
 
-    public function fluid_subfield($id)
+    public function fluidSubfield($id)
     {
         // TODO: get the fluid field subfield
+        echo '<pre>';
+        var_dump('fluid_subfield');
+        echo '</pre>';
+        exit();
     }
 }
 

@@ -177,9 +177,9 @@ class Cp
             'cp.accessResponseURL' => ee('CP/URL', 'license/handleAccessResponse')->compile(),
             'cp.exampleTemplateUrls' => [
                 'default' => ee('CP/URL', 'design/copy/fields')->compile(),
-                'fluid_subfield' => ee('CP/URL', 'design/copy/fluid_subfield')->compile(),
+                'fluid_subfield' => ee('CP/URL', 'design/copy/fluidsubfield')->compile(),
                 'fields' => ee('CP/URL', 'design/copy/fields')->compile(),
-                'field_groups' => ee('CP/URL', 'design/copy/field_groups')->compile(),
+                'field_groups' => ee('CP/URL', 'design/copy/fieldgroups')->compile(),
                 'channels' => ee('CP/URL', 'design/copy/channels')->compile(),
             ],
             'cp.lastUpdateCheck' => $lastUpdateCheck,
