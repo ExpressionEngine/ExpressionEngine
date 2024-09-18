@@ -123,16 +123,6 @@ class Mfa
 
     public function formEnableMfa()
     {
-        $sessions = ee('Model')
-            ->get('Session')
-            ->filter('member_id', ee()->session->userdata('member_id'))
-            ->filter('fingerprint', ee()->session->userdata('fingerprint'))
-            ->all();
-        foreach ($sessions as $session) {
-            $session->mfa_flag = 'required';
-            $session->save();
-        }
-
         ee()->lang->load('login');
         ee()->lang->load('pro');
         $formVars = [
