@@ -164,22 +164,36 @@ context('Copy template code from channel entries, fields, channels, and field gr
         fluid_field.get('items').eq(index).find('label').contains(field)
       })
 
-      // // Fluid field subfields:
-      // cy.get('fieldset[data-field_id=10] [data-field-name=rel_item]:visible .app-badge').should('exist').should('contain', '{corpse:rel_item}')
-      // cy.get('fieldset[data-field_id=10] [data-field-name=rel_item]:visible .app-badge').trigger('click')
-      // cy.window().its('navigator.clipboard').then((clip) => clip.readText()).should('equal', '{corpse:rel_item}')
+      // Fluid field subfields:
+      cy.get('fieldset[data-field_id=10] [data-field-name=rel_item]:visible .app-badge').should('exist').should('contain', '{corpse:rel_item}')
+      cy.get('fieldset[data-field_id=10] [data-field-name=rel_item]:visible .app-badge').trigger('click')
 
-      // cy.get('fieldset[data-field_id=10] [data-field-name=stupid_grid]:visible .field-instruct .app-badge').should('exist').should('contain', '{corpse:stupid_grid}')
-      // cy.get('fieldset[data-field_id=10] [data-field-name=stupid_grid]:visible .field-instruct .app-badge').trigger('click')
-      // cy.window().its('navigator.clipboard').then((clip) => clip.readText()).should('equal', '{corpse:stupid_grid}')
+      cy.assertValueCopiedToClipboard("{corpse}\
+          {corpse:rel_item}\
+              {content}\
+                  {content:title} - {content:url_title}\
+              {/content}\
+          {/corpse:rel_item}\
+      {/corpse}", true);
 
-      // cy.get('fieldset[data-field_id=10] [data-field-name=stupid_grid]:visible .grid-field__table tr th:nth-child(2) .app-badge').should('exist').should('contain', '{stupid_grid:text_one}')
-      // cy.get('fieldset[data-field_id=10] [data-field-name=stupid_grid]:visible .grid-field__table tr th:nth-child(2) .app-badge').trigger('click')
-      // cy.window().its('navigator.clipboard').then((clip) => clip.readText()).should('equal', '{stupid_grid:text_one}')
+      cy.get('fieldset[data-field_id=10] [data-field-name=stupid_grid]:visible .field-instruct .app-badge').should('exist').should('contain', '{corpse:stupid_grid}')
+      cy.get('fieldset[data-field_id=10] [data-field-name=stupid_grid]:visible .field-instruct .app-badge').trigger('click')
+      cy.assertValueCopiedToClipboard("{corpse}\
+          {corpse:stupid_grid}\
+              {content}\
+                {content:text_one}\
+                {content:text_two}\
+              {/content}\
+          {/corpse:stupid_grid}\
+      {/corpse}", true);
 
-      // cy.get('fieldset[data-field_id=10] [data-field-name=stupid_grid]:visible .grid-field__table tr th:nth-child(3) .app-badge').should('exist').should('contain', '{stupid_grid:text_two}')
-      // cy.get('fieldset[data-field_id=10] [data-field-name=stupid_grid]:visible .grid-field__table tr th:nth-child(3) .app-badge').trigger('click')
-      // cy.window().its('navigator.clipboard').then((clip) => clip.readText()).should('equal', '{stupid_grid:text_two}')
+      cy.get('fieldset[data-field_id=10] [data-field-name=stupid_grid]:visible .grid-field__table tr th:nth-child(2) .app-badge').should('exist').should('contain', '{stupid_grid:text_one}')
+      cy.get('fieldset[data-field_id=10] [data-field-name=stupid_grid]:visible .grid-field__table tr th:nth-child(2) .app-badge').trigger('click')
+      cy.assertValueCopiedToClipboard('{stupid_grid:text_one}')
+
+      cy.get('fieldset[data-field_id=10] [data-field-name=stupid_grid]:visible .grid-field__table tr th:nth-child(3) .app-badge').should('exist').should('contain', '{stupid_grid:text_two}')
+      cy.get('fieldset[data-field_id=10] [data-field-name=stupid_grid]:visible .grid-field__table tr th:nth-child(3) .app-badge').trigger('click')
+      cy.assertValueCopiedToClipboard('{stupid_grid:text_two}')
     })
 
     it.skip('Copies channel data', () => {
@@ -229,7 +243,7 @@ context('Copy template code from channel entries, fields, channels, and field gr
 
     // Ignore whitespace as an option
     Cypress.Commands.add('assertValueCopiedToClipboard', (value, ignoreWhitespace = false) => {
-      cy.wait(200)
+      cy.wait(300)
       cy.window().then(win => {
         win.navigator.clipboard.readText().then(text => {
           if (ignoreWhitespace) {
