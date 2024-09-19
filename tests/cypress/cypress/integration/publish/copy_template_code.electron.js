@@ -356,32 +356,16 @@ context('Copy template code from channel entries, fields, channels, and field gr
         cy.visit(channel_fields_page.url)
         cy.hasNoErrors()
 
-        // Click "A Date" field's copy button
-        channel_fields_page.getCopyButtonByFieldName('A Date').click();
-        // Wait for the GET request to complete and assert its properties
-        cy.wait('@fieldCopyGetRequest').wait(200).then((interception) => {
-            expect(interception.response.statusCode).to.eq(200);
-            // assert the copied value
-            cy.assertValueCopiedToClipboard('{a_date format="%F %d %Y"}', true);
-        });
+        // Copy each field and assert the copied value
+        cy.copyFieldAndAssert('A Date', '{a_date format="%F %d %Y"}', true);
+        cy.copyFieldAndAssert('Checkboxes', '{checkboxes}\
+            {item:label}: {item:value}\
+        {/checkboxes}', true);
 
-        channel_fields_page.getCopyButtonByFieldName('Checkboxes').click();
-        // Wait for the GET request to complete and assert its properties
-        cy.wait('@fieldCopyGetRequest').wait(200).then((interception) => {
-          expect(interception.response.statusCode).to.eq(200);
-          // assert the copied value
-            cy.assertValueCopiedToClipboard('{checkboxes}\
-                {item:label}: {item:value}\
-            {/checkboxes}', true);
-        });
+        cy.copyFieldAndAssert('Electronic-Mail Address', '{electronic_mail_address}', true);
+        cy.copyFieldAndAssert('Home Page', '{home_page}', true);
 
-
-        channel_fields_page.getCopyButtonByFieldName('Corpse').click();
-        // Wait for the GET request to complete and assert its properties
-        cy.wait('@fieldCopyGetRequest').wait(200).then((interception) => {
-          expect(interception.response.statusCode).to.eq(200);
-          // assert the copied value
-          cy.assertValueCopiedToClipboard('{corpse}\
+        cy.copyFieldAndAssert('Corpse', '{corpse}\
               {corpse:a_date}\
                   {content format="%F %d %Y"}\
               {/corpse:a_date}\
@@ -455,42 +439,18 @@ context('Copy template code from channel entries, fields, channels, and field gr
                   {content}\
               {/corpse:youtube_url}\
           {/corpse}', true);
-        });
 
-
-        channel_fields_page.getCopyButtonByFieldName('Selectable Buttons').click();
-        // Wait for the GET request to complete and assert its properties
-        cy.wait('@fieldCopyGetRequest').wait(200).then((interception) => {
-          expect(interception.response.statusCode).to.eq(200);
-          // assert the copied value
-          cy.assertValueCopiedToClipboard('{selectable_buttons}\
+        cy.copyFieldAndAssert('Selectable Buttons', '{selectable_buttons}\
               {item:label}: {item:value}\
           {/selectable_buttons}', true);
-        });
 
-        channel_fields_page.getCopyButtonByFieldName('Selection').click();
-        // Wait for the GET request to complete and assert its properties
-        cy.wait('@fieldCopyGetRequest').wait(200).then((interception) => {
-          expect(interception.response.statusCode).to.eq(200);
-          // assert the copied value
-          cy.assertValueCopiedToClipboard('{selection:label}: {selection:value}', true);
-        });
+        cy.copyFieldAndAssert('Selection', '{selection:label}: {selection:value}', true);
+        cy.copyFieldAndAssert('Stupid Grid', '{stupid_grid}\
+              {stupid_grid:text_one}\
+              {stupid_grid:text_two}\
+          {/stupid_grid}', true);
 
-        channel_fields_page.getCopyButtonByFieldName('Stupid Grid').click();
-        // Wait for the GET request to complete and assert its properties
-        cy.wait('@fieldCopyGetRequest').wait(200).then((interception) => {
-          expect(interception.response.statusCode).to.eq(200);
-          // assert the copied value
-          cy.assertValueCopiedToClipboard('{stupid_grid}{stupid_grid:text_one}{stupid_grid:text_two}{/stupid_grid}', true);
-        });
-
-        channel_fields_page.getCopyButtonByFieldName('Truth or Dare?').click();
-        // Wait for the GET request to complete and assert its properties
-        cy.wait('@fieldCopyGetRequest').wait(200).then((interception) => {
-          expect(interception.response.statusCode).to.eq(200);
-          // assert the copied value
-          cy.assertValueCopiedToClipboard('{if truth_or_dare}On/Yes{if:else}Off/No{/if}', true);
-        });
+        cy.copyFieldAndAssert('Truth or Dare?', '{if truth_or_dare}On/Yes{if:else}Off/No{/if}', true);
     })
 
     it.skip('Copies field group data', () => {
@@ -544,4 +504,16 @@ context('Copy template code from channel entries, fields, channels, and field gr
         })
       })
     })
+
+    Cypress.Commands.add('copyFieldAndAssert', (fieldName, expectedClipboardValue, ignoreWhitespace = false) => {
+      // Click the field's copy button
+      channel_fields_page.getCopyButtonByFieldName(fieldName).click();
+
+      // Wait for the GET request to complete and assert its properties
+      cy.wait('@fieldCopyGetRequest').wait(200).then((interception) => {
+        expect(interception.response.statusCode).to.eq(200);
+        // Assert the copied value
+        cy.assertValueCopiedToClipboard(expectedClipboardValue, ignoreWhitespace);
+      });
+    });
 })
