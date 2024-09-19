@@ -98,13 +98,22 @@ class Channel extends ControlPanel {
         this.get('save_button').filter('[type=submit]').first().should('be.disabled')
     }
 
-    clickCopyButtonByChannelName(channelName) {
-        cy.get('ul.list-group li').each(($el) => {
-            if ($el.find('.list-item__title').text().trim() === channelName) {
-                cy.wrap($el).find('.app-badge').click();
+    getCopyButtonByChannelName(channelName) {
+        return cy.get('ul.list-group li').then(($listItems) => {
+            let foundElement;
+            $listItems.each((index, $el) => {
+                if ($el.querySelector('.list-item__title').textContent.trim().includes(channelName)) {
+                    foundElement = $el.querySelector('.app-badge');
+                    return false; // Break the loop
+                }
+            });
+            if (foundElement) {
+                return cy.wrap(foundElement);
+            } else {
+                throw new Error(`Channel with name "${channelName}" not found`);
             }
         });
-    };
+    }
 }
 
 export default Channel;

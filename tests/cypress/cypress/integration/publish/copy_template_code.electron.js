@@ -204,10 +204,9 @@ context('Copy template code from channel entries, fields, channels, and field gr
       // Visit the channel listing page
       cy.visit(channel_page.url)
       cy.hasNoErrors()
+      cy.intercept('GET', '/admin.php?/cp/design/copy/channels/**').as('channelCopyGetRequest');
 
-      channel_page.clickCopyButtonByChannelName('News');
-
-      cy.assertValueCopiedToClipboard('{exp:channel:entries channel="news" dynamic="no" paginate="bottom"}\
+      cy.copyChannelAndAssert('News', '{exp:channel:entries channel="news" dynamic="no" paginate="bottom"}\
         <h3><a href="{path=/entry/{url_title}}">{title}</a></h3>\
         {news_body}\
         {news_extended}\
@@ -233,9 +232,8 @@ context('Copy template code from channel entries, fields, channels, and field gr
         {/rel_item}\
       {/exp:channel:entries}', true);
 
-      channel_page.clickCopyButtonByChannelName('Information Pages');
-
-      cy.assertValueCopiedToClipboard('{exp:channel:entries channel="about" dynamic="no" paginate="bottom"}\
+      cy.copyChannelAndAssert('Information Pages',
+        '{exp:channel:entries channel="about" dynamic="no" paginate="bottom"}\
         <h3><a href="{path=/entry/{url_title}}">{title}</a></h3>\
         {about_body}\
         {about_image}\
@@ -261,9 +259,8 @@ context('Copy template code from channel entries, fields, channels, and field gr
       {/exp:channel:entries}', true);
 
 
-      channel_page.clickCopyButtonByChannelName('Fluid Fields');
-
-      cy.assertValueCopiedToClipboard('{exp:channel:entries channel="fluid_fields" dynamic="no" paginate="bottom"}\
+      cy.copyChannelAndAssert('Fluid Fields',
+        '{exp:channel:entries channel="fluid_fields" dynamic="no" paginate="bottom"}\
           <h3><a href="{path=/entry/{url_title}}">{title}</a></h3>\
           {corpse}\
               {corpse:a_date}\
@@ -453,7 +450,7 @@ context('Copy template code from channel entries, fields, channels, and field gr
         cy.copyFieldAndAssert('Truth or Dare?', '{if truth_or_dare}On/Yes{if:else}Off/No{/if}', true);
     })
 
-    it.skip('Copies field group data', () => {
+    it('Copies field group data', () => {
       // TODO: Add these tests
     })
 
@@ -511,6 +508,18 @@ context('Copy template code from channel entries, fields, channels, and field gr
 
       // Wait for the GET request to complete and assert its properties
       cy.wait('@fieldCopyGetRequest').wait(200).then((interception) => {
+        expect(interception.response.statusCode).to.eq(200);
+        // Assert the copied value
+        cy.assertValueCopiedToClipboard(expectedClipboardValue, ignoreWhitespace);
+      });
+    });
+
+    Cypress.Commands.add('copyChannelAndAssert', (channelName, expectedClipboardValue, ignoreWhitespace = false) => {
+      // Click the field's copy button
+      channel_page.getCopyButtonByChannelName(channelName).click();
+
+      // Wait for the GET request to complete and assert its properties
+      cy.wait('@channelCopyGetRequest').wait(200).then((interception) => {
         expect(interception.response.statusCode).to.eq(200);
         // Assert the copied value
         cy.assertValueCopiedToClipboard(expectedClipboardValue, ignoreWhitespace);
