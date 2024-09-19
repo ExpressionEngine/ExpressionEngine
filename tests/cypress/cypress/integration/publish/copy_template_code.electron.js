@@ -4,10 +4,13 @@ import Publish from '../../elements/pages/publish/Publish';
 import FluidField from '../../elements/pages/publish/FluidField';
 import Channel from '../../elements/pages/channel/Channel';
 import ChannelFields from '../../elements/pages/channel/ChannelFields';
+import FieldGroups from '../../elements/pages/channel/FieldGroups';
+
 
 const publish_page = new Publish;
 const channel_page = new Channel;
 const channel_fields_page = new ChannelFields;
+const field_groups_page = new FieldGroups;
 const fluid_field = new FluidField;
 
 // we're using Elecron browser, because we can't reliably reach clipboard in Chrome
@@ -450,7 +453,79 @@ context('Copy template code from channel entries, fields, channels, and field gr
     })
 
     it('Copies field group data', () => {
-      // TODO: Add these tests
+        // Visit the field group 1 page
+        cy.visit(Cypress._.replace(field_groups_page.fieldGroupUrl, '{group_id}', 1))
+        cy.hasNoErrors()
+        cy.intercept('GET', '/admin.php?/cp/design/copy/fieldgroups/**').as('fieldGroupCopyGetRequest');
+
+        // Copy the field group and assert the copied value
+        cy.get('h3').contains('News — Fields').should('exist');
+
+        // span.app-badge should be visible and contain {news}
+        cy.get('span.app-badge').contains('{news}').should('exist');
+
+        // Click the app badge span to copy
+        cy.get('span.app-badge').contains('{news}').click();
+
+        // Wait for the GET request to complete and assert its properties
+        cy.interceptGetAndAssert('@fieldGroupCopyGetRequest', '{news_body}\
+          {news_extended}\
+          {news_image}\
+              Title: {title}\
+              URL: {url}\
+              Mime Type: {mime_type}\
+              Credit: {credit}\
+              Location: {location}\
+              File Name: {file_name}\
+              File Size: {file_size}\
+              Description: {description}\
+              Upload Directory: {directory_title}\
+              Upload Date: {upload_date format="%Y %m %d"}\
+              Modified Date: {modified_date format="%Y %m %d"}\
+              {if mime_type ^= \'image/\'}\
+                  Width: {width}\
+                  Height: {height}\
+              {/if}\
+          {/news_image}\
+          {rel_item}\
+              {rel_item:title} - {rel_item:url_title}\
+          {/rel_item}', true);
+
+        // Visit the field group 2 page
+        cy.visit(Cypress._.replace(field_groups_page.fieldGroupUrl, '{group_id}', 2))
+        cy.hasNoErrors()
+
+        // Copy the field group and assert the copied value
+        cy.get('h3').contains('About — Fields').should('exist');
+
+        // span.app-badge should be visible and contain {about}
+        cy.get('span.app-badge').contains('{about}').should('exist');
+
+        // Click the app badge span to copy
+        cy.get('span.app-badge').contains('{about}').click();
+
+        // Wait for the GET request to complete and assert its properties
+        cy.interceptGetAndAssert('@fieldGroupCopyGetRequest',
+          '{about_body}\
+          {about_image}\
+              Title: {title}\
+              URL: {url}\
+              Mime Type: {mime_type}\
+              Credit: {credit}\
+              Location: {location}\
+              File Name: {file_name}\
+              File Size: {file_size}\
+              Description: {description}\
+              Upload Directory: {directory_title}\
+              Upload Date: {upload_date format="%Y %m %d"}\
+              Modified Date: {modified_date format="%Y %m %d"}\
+              {if mime_type ^= \'image/\'}\
+                  Width: {width}\
+                  Height: {height}\
+              {/if}\
+          {/about_image}\
+          {about_staff_title}\
+          {about_extended}', true);
     })
 
     it('Field short names not visible when turned off for Role', () => {
