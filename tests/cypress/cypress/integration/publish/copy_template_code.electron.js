@@ -43,6 +43,8 @@ context('Copy template code from channel entries, fields, channels, and field gr
     })
 
     it('Field short names shown by default', () => {
+      cy.intercept('GET', '/admin.php?/cp/design/copy/**').as('copyGetRequest');
+
       cy.visit(Cypress._.replace(publish_page.url, '{channel_id}', 3))
       //cy.hasNoErrors()
       cy.get('fieldset[data-field_id=title] .app-badge').should('exist').should('contain', '{title}')
@@ -53,15 +55,12 @@ context('Copy template code from channel entries, fields, channels, and field gr
 
       cy.get('fieldset[data-field_id=url_title] .app-badge').should('exist').should('contain', '{url_title}')
       cy.get('fieldset[data-field_id=url_title] .app-badge').trigger('click')
-
       // Value should be copied to clipboard
       cy.assertValueCopiedToClipboard('{url_title}')
 
       cy.get('fieldset[data-field_id=17] .app-badge').should('exist').should('contain', '{rel_item}')
       cy.get('fieldset[data-field_id=17] .app-badge').trigger('click')
-
-      // wait for get request to the clipboard api
-      cy.assertValueCopiedToClipboard("{rel_item} {rel_item:title} - {rel_item:url_title} {/rel_item}", true)
+      cy.interceptGetAndAssert('@copyGetRequest', '{rel_item} {rel_item:title} - {rel_item:url_title} {/rel_item}', true);
 
       // Grid:
       // {stupid_grid}
@@ -71,7 +70,7 @@ context('Copy template code from channel entries, fields, channels, and field gr
       cy.get('[data-field_id=19] .field-instruct .app-badge').should('exist').should('contain', '{stupid_grid}')
       cy.get('[data-field_id=19] .field-instruct .app-badge').trigger('click')
 
-      cy.assertValueCopiedToClipboard("{stupid_grid}\
+      cy.interceptGetAndAssert('@copyGetRequest', "{stupid_grid}\
         {stupid_grid:text_one}\
         {stupid_grid:text_two}\
       {/stupid_grid}", true)
@@ -88,7 +87,7 @@ context('Copy template code from channel entries, fields, channels, and field gr
       cy.get('fieldset[data-field_id=10] > .field-instruct .app-badge').should('exist').should('contain', '{corpse}')
       cy.get('fieldset[data-field_id=10] > .field-instruct .app-badge').trigger('click')
 
-      cy.assertValueCopiedToClipboard("{corpse}\
+      cy.interceptGetAndAssert('@copyGetRequest', "{corpse}\
         {corpse:a_date}\
             {content format=\"%F %d %Y\"}\
         {/corpse:a_date}\
@@ -172,7 +171,7 @@ context('Copy template code from channel entries, fields, channels, and field gr
       cy.get('fieldset[data-field_id=10] [data-field-name=rel_item]:visible .app-badge').should('exist').should('contain', '{corpse:rel_item}')
       cy.get('fieldset[data-field_id=10] [data-field-name=rel_item]:visible .app-badge').trigger('click')
 
-      cy.assertValueCopiedToClipboard("{corpse}\
+      cy.interceptGetAndAssert('@copyGetRequest', "{corpse}\
           {corpse:rel_item}\
               {content}\
                   {content:title} - {content:url_title}\
@@ -182,7 +181,7 @@ context('Copy template code from channel entries, fields, channels, and field gr
 
       cy.get('fieldset[data-field_id=10] [data-field-name=stupid_grid]:visible .field-instruct .app-badge').should('exist').should('contain', '{corpse:stupid_grid}')
       cy.get('fieldset[data-field_id=10] [data-field-name=stupid_grid]:visible .field-instruct .app-badge').trigger('click')
-      cy.assertValueCopiedToClipboard("{corpse}\
+      cy.interceptGetAndAssert('@copyGetRequest', "{corpse}\
           {corpse:stupid_grid}\
               {content}\
                 {content:text_one}\
@@ -505,21 +504,18 @@ context('Copy template code from channel entries, fields, channels, and field gr
     Cypress.Commands.add('copyFieldAndAssert', (fieldName, expectedClipboardValue, ignoreWhitespace = false) => {
       // Click the field's copy button
       channel_fields_page.getCopyButtonByFieldName(fieldName).click();
-
-      // Wait for the GET request to complete and assert its properties
-      cy.wait('@fieldCopyGetRequest').wait(200).then((interception) => {
-        expect(interception.response.statusCode).to.eq(200);
-        // Assert the copied value
-        cy.assertValueCopiedToClipboard(expectedClipboardValue, ignoreWhitespace);
-      });
+      cy.interceptGetAndAssert('@fieldCopyGetRequest', expectedClipboardValue, ignoreWhitespace);
     });
 
     Cypress.Commands.add('copyChannelAndAssert', (channelName, expectedClipboardValue, ignoreWhitespace = false) => {
       // Click the field's copy button
       channel_page.getCopyButtonByChannelName(channelName).click();
+      cy.interceptGetAndAssert('@channelCopyGetRequest', expectedClipboardValue, ignoreWhitespace);
+    });
 
+    Cypress.Commands.add('interceptGetAndAssert', (getIntercept, expectedClipboardValue, ignoreWhitespace = false) => {
       // Wait for the GET request to complete and assert its properties
-      cy.wait('@channelCopyGetRequest').wait(200).then((interception) => {
+      cy.wait(getIntercept).wait(200).then((interception) => {
         expect(interception.response.statusCode).to.eq(200);
         // Assert the copied value
         cy.assertValueCopiedToClipboard(expectedClipboardValue, ignoreWhitespace);
