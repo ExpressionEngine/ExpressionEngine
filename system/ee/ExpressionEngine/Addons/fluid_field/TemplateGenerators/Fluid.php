@@ -57,6 +57,7 @@ class Fluid extends AbstractFieldTemplateGenerator
             'stub' => $fieldtypeGenerator['stub'],
             'docs_url' => $fieldtypeGenerator['docs_url'],
             'is_tag_pair' => $fieldtypeGenerator['is_tag_pair'],
+            'modifiers_string' => '',
         ];
 
         $generator = $this->makeField($field->field_type, $field, ['field_prefix' => 'content']);

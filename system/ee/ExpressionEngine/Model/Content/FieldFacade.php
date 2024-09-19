@@ -85,11 +85,18 @@ class FieldFacade
 
             $content_type = (isset($options['content_type'])) ? $options['content_type'] : $this->getContentType();
 
-            return ee('View')->make('publish/partials/name_badge_copy')->render([
+            $vars = [
                 'name' => $field_name_prefix . $field_name,
                 'id' => $field_id,
                 'content_type' => $content_type,
-            ]);
+            ];
+
+            // add other option values to the vars array
+            foreach ($options as $key => $value) {
+                $vars[$key] = $value;
+            }
+
+            return ee('View')->make('publish/partials/name_badge_copy')->render($vars);
         }
         return '';
     }

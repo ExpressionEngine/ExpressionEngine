@@ -582,6 +582,7 @@ class Fluid_field_ft extends EE_Fieldtype
                     $view = ($is_group) ? 'fluid_field:fieldgroup' : 'fluid_field:field';
 
                     $viewData = [
+                        'fluid_field_id' => $this->field_id,
                         'filters' => $filters,
                         'errors' => $this->errors,
                         'reorderable' => true,
@@ -711,6 +712,7 @@ class Fluid_field_ft extends EE_Fieldtype
                 $view = ($is_group) ? 'fluid_field:fieldgroup' : 'fluid_field:field';
 
                 $viewData = [
+                    'fluid_field_id' => $this->field_id,
                     'filters' => $filters,
                     'errors' => $this->errors,
                     'reorderable' => true,
@@ -761,6 +763,7 @@ class Fluid_field_ft extends EE_Fieldtype
 
             $templates .= ee('View')->make('fluid_field:field')->render([
                 'field' => $f,
+                'fluid_field_id' => $this->field_id,
                 'field_name' => $field->field_name,
                 'field_name_prefix' => $field_name_prefix,
                 'filters' => $filters,
@@ -776,6 +779,7 @@ class Fluid_field_ft extends EE_Fieldtype
                 return $field->getField()->acceptsContentType('fluid_field');
             });
             $templates .= ee('View')->make('fluid_field:fieldgroup')->render([
+                'fluid_field_id' => $this->field_id,
                 'field_group' => $field_group,
                 'field_group_fields' => $field_group_fields->map(function ($field) use ($field_group) {
                     $f = $field->getField();

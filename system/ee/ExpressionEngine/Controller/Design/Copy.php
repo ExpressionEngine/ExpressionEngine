@@ -105,7 +105,7 @@ class Copy extends AbstractDesignController
             show_404();
         }
 
-        if ($context == 'fieldGroup') {
+        if ($context == 'group') {
             return $this->fluidFieldGroup($fluidField, $content_id);
         } else {
             return $this->fluidSubfield($fluidField, $content_id);

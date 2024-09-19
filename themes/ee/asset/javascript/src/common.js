@@ -1238,6 +1238,8 @@ $(document).ready(function(){
 			// id is the data-id attribute of the clicked element
 			var id = el.data('id');
 			var contentType = el.data('content_type');
+			var fluid_id = el.data('fluid_id');
+
 			var copyText = el.find('.txt-only').text();
 
 			// if the id is an integer, get the template from the server
@@ -1247,9 +1249,14 @@ $(document).ready(function(){
 					contentType = 'default';
 				}
 
-				// get the template from the server
 				var url = EE.cp.exampleTemplateUrls[contentType] + '/' + id;
 
+				// if this is a fluid field, lets replace vars in the URL
+				if(contentType == 'fluid_field' || contentType == 'fluid_fieldgroup') {
+					url = url.replace('{fluid_id}', fluid_id);
+				}
+
+				// get the template from the server
 				await $.get(url, function(data) {
 					// copy asset link to clipboard and show notification
 					copyText = data;
