@@ -2,8 +2,10 @@
 
 import Publish from '../../elements/pages/publish/Publish';
 import FluidField from '../../elements/pages/publish/FluidField';
+import Channel from '../../elements/pages/channel/Channel';
 
 const publish_page = new Publish;
+const channel_page = new Channel;
 const fluid_field = new FluidField;
 
 // we're using Elecron browser, because we can't reliably reach clipboard in Chrome
@@ -11,23 +13,23 @@ const fluid_field = new FluidField;
 
 context('Copy template code from channel entries, fields, channels, and field groups', {browser: 'electron'}, () => {
 
-  const available_fields = [
-    "A Date",
-    "Checkboxes",
-    "Electronic-Mail Address",
-    "Home Page",
-    "Image",
-    "Item",
-    "Middle Class Text",
-    "Multi Select",
-    "Radio",
-    "Selectable Buttons",
-    "Selection",
-    "Stupid Grid",
-    "Text",
-    "Truth or Dare?",
-    "YouTube URL"
-  ];
+    const available_fields = [
+      "A Date",
+      "Checkboxes",
+      "Electronic-Mail Address",
+      "Home Page",
+      "Image",
+      "Item",
+      "Middle Class Text",
+      "Multi Select",
+      "Radio",
+      "Selectable Buttons",
+      "Selection",
+      "Stupid Grid",
+      "Text",
+      "Truth or Dare?",
+      "YouTube URL"
+    ];
 
     before(function(){
       cy.task('db:seed')
@@ -196,8 +198,153 @@ context('Copy template code from channel entries, fields, channels, and field gr
       cy.assertValueCopiedToClipboard('{stupid_grid:text_two}')
     })
 
-    it.skip('Copies channel data', () => {
-      // TODO: Add these tests
+    it('Copies channel data', () => {
+      // Visit the channel listing page
+      cy.visit(channel_page.url)
+      cy.hasNoErrors()
+
+      channel_page.clickCopyButtonByChannelName('News');
+
+      cy.assertValueCopiedToClipboard('{exp:channel:entries channel="news" dynamic="no" paginate="bottom"}\
+        <h3><a href="{path=/entry/{url_title}}">{title}</a></h3>\
+        {news_body}\
+        {news_extended}\
+        {news_image}\
+            Title: {title}\
+            URL: {url}\
+            Mime Type: {mime_type}\
+            Credit: {credit}\
+            Location: {location}\
+            File Name: {file_name}\
+            File Size: {file_size}\
+            Description: {description}\
+            Upload Directory: {directory_title}\
+            Upload Date: {upload_date format="%Y %m %d"}\
+            Modified Date: {modified_date format="%Y %m %d"}\
+            {if mime_type ^= \'image/\'}\
+                Width: {width}\
+                Height: {height}\
+            {/if}\
+        {/news_image}\
+        {rel_item}\
+            {rel_item:title} - {rel_item:url_title}\
+        {/rel_item}\
+      {/exp:channel:entries}', true);
+
+      channel_page.clickCopyButtonByChannelName('Information Pages');
+
+      cy.assertValueCopiedToClipboard('{exp:channel:entries channel="about" dynamic="no" paginate="bottom"}\
+        <h3><a href="{path=/entry/{url_title}}">{title}</a></h3>\
+        {about_body}\
+        {about_image}\
+            Title: {title}\
+            URL: {url}\
+            Mime Type: {mime_type}\
+            Credit: {credit}\
+            Location: {location}\
+            File Name: {file_name}\
+            File Size: {file_size}\
+            Description: {description}\
+            Upload Directory: {directory_title}\
+            Upload Date: {upload_date format="%Y %m %d"}\
+            Modified Date: {modified_date format="%Y %m %d"}\
+            {if mime_type ^= \'image/\'}\
+                Width: {width}\
+                Height: {height}\
+            {/if}\
+        {/about_image}\
+        \
+        {about_staff_title}\
+        {about_extended}\
+      {/exp:channel:entries}', true);
+
+
+      channel_page.clickCopyButtonByChannelName('Fluid Fields');
+
+      cy.assertValueCopiedToClipboard('{exp:channel:entries channel="fluid_fields" dynamic="no" paginate="bottom"}\
+          <h3><a href="{path=/entry/{url_title}}">{title}</a></h3>\
+          {corpse}\
+              {corpse:a_date}\
+                  {content format="%F %d %Y"}\
+              {/corpse:a_date}\
+              {corpse:checkboxes}\
+                  {content}\
+                      {item:label}: {item:value}\
+                  {/content}\
+              {/corpse:checkboxes}\
+              {corpse:electronic_mail_address}\
+                  {content}\
+              {/corpse:electronic_mail_address}\
+              {corpse:home_page}\
+                  {content}\
+              {/corpse:home_page}\
+              {corpse:image}\
+                  {content}\
+                      Title: {title}\
+                      URL: {url}\
+                      Mime Type: {mime_type}\
+                      Credit: {credit}\
+                      Location: {location}\
+                      File Name: {file_name}\
+                      File Size: {file_size}\
+                      Description: {description}\
+                      Upload Directory: {directory_title}\
+                      Upload Date: {upload_date format="%Y %m %d"}\
+                      Modified Date: {modified_date format="%Y %m %d"}\
+                      {if mime_type ^= \'image/\'}\
+                          Width: {width}\
+                          Height: {height}\
+                      {/if}\
+                  {/content}\
+              {/corpse:image}\
+              {corpse:rel_item}\
+                  {content}\
+                      {content:title} - {content:url_title}\
+                  {/content}\
+              {/corpse:rel_item}\
+              {corpse:middle_class_text}\
+                  {content}\
+              {/corpse:middle_class_text}\
+              {corpse:multi_select}\
+                  {content}\
+                      {item:label}: {item:value}\
+                  {/content}\
+              {/corpse:multi_select}\
+              {corpse:radio}\
+                  {content:label}: {content:value}\
+              {/corpse:radio}\
+              {corpse:selectable_buttons}\
+                  {content}\
+                      {item:label}: {item:value}\
+                  {/content}\
+              {/corpse:selectable_buttons}\
+              {corpse:selection}\
+                  {content:label}: {content:value}\
+              {/corpse:selection}\
+              {corpse:stupid_grid}\
+                  {content}\
+                      {content:text_one}\
+                      {content:text_two}\
+                  {/content}\
+              {/corpse:stupid_grid}\
+              {corpse:text}\
+                  {content}\
+              {/corpse:text}\
+              {corpse:truth_or_dare}\
+                  {if content}On/Yes{if:else}Off/No{/if}\
+              {/corpse:truth_or_dare}\
+              {corpse:youtube_url}\
+                  {content}\
+              {/corpse:youtube_url}\
+          {/corpse}\
+          {rel_item}\
+              {rel_item:title} - {rel_item:url_title}\
+          {/rel_item}\
+          {stupid_grid}\
+              {stupid_grid:text_one}\
+              {stupid_grid:text_two}\
+          {/stupid_grid}\
+      {/exp:channel:entries}', true);
     })
 
     it.skip('Copies field data from field listing', () => {
