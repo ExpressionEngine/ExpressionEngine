@@ -13,10 +13,6 @@ $(document).ready(function () {
 
 	var searchingTimeout = null
 
-	if (localStorage.getItem('search_everywhere') && $('input[name="search_in"]').is(':checked')) {
-		$('input[name="search_in"]').prop('checked', false);
-	}
-
 	if (typeof(EE.viewManager)!=='undefined') {
 		var saveDefaultUrl = EE.viewManager.saveDefaultUrl;
 	}
@@ -147,6 +143,16 @@ $(document).ready(function () {
 		}, 1000)
 	});
 
+
+	// set coolie to remember last user choose about 
+	// should there be a search only by titles or not
+	function setCookie(name, value, days) {
+		var date = new Date();
+		date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));  // Days in milliseconds
+		var expires = "expires=" + date.toUTCString();
+		document.cookie = name + "=" + value + "; " + expires + "; path=/";
+	}
+
 	//changind the search scope
 	$('body').on('change', 'input[name="search_in"]', function() {
 
@@ -155,9 +161,9 @@ $(document).ready(function () {
 		}
 		
 		if (!$(this).is(':checked')) {
-			localStorage.setItem('search_everywhere', true);
+			setCookie("search_everywhere", true, 30);
 		} else {
-			localStorage.removeItem('search_everywhere');
+			document.cookie = "search_everywhere=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 		}
 
 	});
