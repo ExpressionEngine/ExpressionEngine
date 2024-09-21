@@ -300,6 +300,7 @@ class Search
             'where' => ee()->TMPL->fetch_param('where', ''),
             'show_expired' => ee()->TMPL->fetch_param('show_expired', ''),
             'show_future_entries' => ee()->TMPL->fetch_param('show_future_entries'),
+            'show_offline_sites' => ee()->TMPL->fetch_param('show_offline_sites'),
             'orderby' => ee()->TMPL->fetch_param('orderby', 'entry_date'),
             'sort' => ee()->TMPL->fetch_param('sort', 'desc'),
             'result_page' => ee()->TMPL->fetch_param('result_page', 'search/results'),
@@ -577,6 +578,15 @@ class Search
             $sql .= "exp_channels.site_id IN ('" . implode("','", $this->_meta['site_ids']) . "') ";
         } else {
             $sql .= "exp_channels.site_id IS NOT NULL ";
+        }
+
+        if (isset($this->_meta['show_offline_sites']) and ($this->_meta['show_offline_sites']) == 'no') {
+            $onlineSiteIds = ee('Model')->get('Config')
+                ->filter('key', 'is_site_on')
+                ->filter('value', 'y')
+                ->all(true)
+                ->pluck('site_id');
+            $sql .= "\nAND exp_channel_titles.site_id IN ('" . implode("','", $onlineSiteIds) . "') ";
         }
 
         /** ----------------------------------------------

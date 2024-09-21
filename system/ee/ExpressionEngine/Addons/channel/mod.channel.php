@@ -95,7 +95,7 @@ class Channel
         }
 
         $this->_dynamic_parameters = array('channel', 'entry_id', 'category', 'orderby',
-            'sort', 'sticky', 'show_future_entries', 'show_expired', 'entry_id_from',
+            'sort', 'sticky', 'show_future_entries', 'show_expired', 'show_offline_sites', 'entry_id_from',
             'entry_id_to', 'not_entry_id', 'start_on', 'stop_before', 'year', 'month',
             'day', 'display_by', 'limit', 'username', 'status', 'group_id', 'primary_role_id', 'cat_limit',
             'month_limit', 'offset', 'author_id', 'url_title');
@@ -1157,6 +1157,15 @@ class Channel
         }
 
         $sql .= "WHERE t.entry_id != '' AND t.site_id IN ('" . implode("','", ee()->TMPL->site_ids) . "') ";
+
+        if (ee()->TMPL->fetch_param('show_offline_sites') == 'no') {
+            $onlineSiteIds = ee('Model')->get('Config')
+                ->filter('key', 'is_site_on')
+                ->filter('value', 'y')
+                ->all(true)
+                ->pluck('site_id');
+            $sql .= " AND t.site_id IN ('" . implode("','", $onlineSiteIds) . "') ";
+        }
 
         /**------
         /**  We only select entries that have not expired
@@ -2881,6 +2890,15 @@ class Channel
                     $sql .= "AND exp_channel_titles.site_id IN ('" . $site_ids_str . "') ";
                 }
 
+                if (ee()->TMPL->fetch_param('show_offline_sites') == 'no') {
+                    $onlineSiteIds = ee('Model')->get('Config')
+                        ->filter('key', 'is_site_on')
+                        ->filter('value', 'y')
+                        ->all(true)
+                        ->pluck('site_id');
+                    $sql .= " AND exp_channel_titles.site_id IN ('" . implode("','", $onlineSiteIds) . "') ";
+                }
+
                 if (($status = ee()->TMPL->fetch_param('status')) !== false) {
                     $status = str_replace(array('Open', 'Closed'), array('open', 'closed'), $status);
                     $sql .= ee()->functions->sql_andor_string($status, 'exp_channel_titles.status');
@@ -3161,7 +3179,7 @@ class Channel
             $group_ids = array_filter($group_ids, 'is_numeric');
         }
 
-        $sql = "SELECT exp_category_posts.cat_id, exp_channel_titles.entry_id, exp_channel_titles.title, exp_channel_titles.url_title, exp_channel_titles.entry_date,
+        $sql = "SELECT exp_category_posts.cat_id, exp_channel_titles.entry_id, exp_channel_titles.title, exp_channel_titles.url_title, exp_channel_titles.entry_date, exp_channel_titles.site_id,
             exp_channels.channel_id, exp_channels.channel_name AS channel_short_name, exp_channels.channel_title AS channel, exp_channels.channel_url
                 FROM exp_channel_titles, exp_category_posts, exp_channels
                 WHERE exp_channel_titles.channel_id IN ('" . implode("','", $channel_ids) . "')
@@ -3173,6 +3191,15 @@ class Channel
 
         if (ee()->TMPL->fetch_param('sticky') === 'only') {
             $sql .= "AND exp_channel_titles.sticky = 'y'";
+        }
+
+        if (ee()->TMPL->fetch_param('show_offline_sites') == 'no') {
+            $onlineSiteIds = ee('Model')->get('Config')
+                ->filter('key', 'is_site_on')
+                ->filter('value', 'y')
+                ->all(true)
+                ->pluck('site_id');
+            $sql .= " AND exp_channel_titles.site_id IN ('" . implode("','", $onlineSiteIds) . "') ";
         }
 
         if (ee()->TMPL->fetch_param('show_future_entries') != 'yes') {
@@ -3627,6 +3654,15 @@ class Channel
                 $sql .= ee()->functions->sql_andor_string($status, 'exp_channel_titles.status');
             } else {
                 $sql .= "AND exp_channel_titles.status != 'closed' ";
+            }
+
+            if (ee()->TMPL->fetch_param('show_offline_sites') == 'no') {
+                $onlineSiteIds = ee('Model')->get('Config')
+                    ->filter('key', 'is_site_on')
+                    ->filter('value', 'y')
+                    ->all(true)
+                    ->pluck('site_id');
+                $sql .= " AND exp_channel_titles.site_id IN ('" . implode("','", $onlineSiteIds) . "') ";
             }
 
             /**------
@@ -4459,6 +4495,15 @@ class Channel
 
         $sql .= ' WHERE t.entry_id != ' . ee()->session->cache['channel']['single_entry_id'] . ' ' . $ids;
 
+        if (ee()->TMPL->fetch_param('show_offline_sites') == 'no') {
+            $onlineSiteIds = ee('Model')->get('Config')
+                ->filter('key', 'is_site_on')
+                ->filter('value', 'y')
+                ->all(true)
+                ->pluck('site_id');
+            $sql .= " AND w.site_id IN ('" . implode("','", $onlineSiteIds) . "') ";
+        }
+
         $timestamp = (ee()->TMPL->cache_timestamp != '') ? ee()->TMPL->cache_timestamp : ee()->localize->now;
 
         if (ee()->TMPL->fetch_param('show_future_entries') != 'yes') {
@@ -4633,6 +4678,15 @@ class Channel
                         FROM exp_channel_titles
                         WHERE entry_id != ''
                         AND site_id IN ('" . implode("','", ee()->TMPL->site_ids) . "') ";
+
+        if (ee()->TMPL->fetch_param('show_offline_sites') == 'no') {
+            $onlineSiteIds = ee('Model')->get('Config')
+                ->filter('key', 'is_site_on')
+                ->filter('value', 'y')
+                ->all(true)
+                ->pluck('site_id');
+            $sql .= " AND site_id IN ('" . implode("','", $onlineSiteIds) . "') ";
+        }
 
         $timestamp = (ee()->TMPL->cache_timestamp != '') ? ee()->TMPL->cache_timestamp : ee()->localize->now;
 
