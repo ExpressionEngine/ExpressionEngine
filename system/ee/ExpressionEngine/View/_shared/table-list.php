@@ -20,23 +20,13 @@
                 </div>
                 <a href="<?=$row['href']?>" class="list-item__content">
                     <div class="list-item__title">
-                        <?=ee('Format')->make('Text', $row['label'])->convertToEntities()?>
+                        <?=(isset($row['htmlLabel']) && $row['htmlLabel']) ? $row['label'] : ee('Format')->make('Text', $row['label'])->convertToEntities()?>
                         <?php if (isset($row['faded'])): ?>
                             <span class="faded"<?php echo isset($row['faded-href']) ? ' data-href="' . $row['faded-href'] . '"' : ''; ?>><?=$row['faded']?></span>
                         <?php endif ?>
                     </div>
                     <div class="list-item__secondary">&#160;</div>
                 </a>
-
-                <?php if (isset($row['status'])): ?>
-                    <div class="status-wrap">
-                        <?php
-                            $class = $row['status'] ? 'locked' : 'unlocked';
-                            $status = $row['status'] ? lang('locked') : lang('unlocked');
-                        ?>
-                        <span class="status-tag st-<?=$class?>"><?=$status?></span>
-                    </div>
-                <?php endif; ?>
 
                 <?php if (isset($row['toolbar_items'])) : ?>
                 <div class="list-item__content-right">

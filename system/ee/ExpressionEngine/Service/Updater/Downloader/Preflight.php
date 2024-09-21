@@ -86,8 +86,16 @@ class Preflight
      */
     public function checkDiskSpace()
     {
+        if ($this->config->get('updater_skip_disk_space_check') === 'y') {
+            $this->logger->log('Checking free disk space skipped by config setting');
+            return;
+        }
+
         $this->logger->log('Checking free disk space');
         $free_space = $this->filesystem->getFreeDiskSpace($this->path());
+        if ($free_space === false) {
+            throw new UpdaterException("Unable to determine free disk space. Please check your server configuration for <code>disk_free_space()</code> function, or set <code>\$config['updater_skip_disk_space_check'] = 'y';</code> in <code>config.php</code> to skip this check.", 11);
+        }
         $this->logger->log('Free disk space (bytes): ' . $free_space);
 
         // Try to maintain at least 50MB free disk space

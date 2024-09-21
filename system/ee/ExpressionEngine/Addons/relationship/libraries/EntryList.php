@@ -57,8 +57,9 @@ class EntryList
 
         $entries = ee('Model')->get('ChannelEntry')
             ->with('Channel')
-            ->fields('Channel.channel_title', 'title', 'status')
-            ->order($order_field, $order_dir);
+            ->fields('Channel.channel_title', 'title', 'status', 'entry_date')
+            ->order($order_field, $order_dir)
+            ->order('entry_id', $order_dir);
 
         if ($related == 'related') {
             $entries->filter('entry_id', 'IN', $show_selected);
@@ -220,6 +221,7 @@ class EntryList
                 'label' => $entry->title,
                 'instructions' => $entry->Channel->channel_title,
                 'channel_id' => $entry->Channel->channel_id,
+                'editable' => (ee('Permission')->isSuperAdmin() || array_key_exists($entry->Channel->getId(), ee()->session->userdata('assigned_channels'))),
                 'status' => $entry->status
             ];
         }

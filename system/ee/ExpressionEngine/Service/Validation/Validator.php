@@ -178,6 +178,11 @@ class Validator
                     continue;
                 }
 
+                // categories are special case, we'll take care of them separately
+                if (strpos($key, 'categories[cat_group_id_') === 0 && $rule instanceof Rule\Required) {
+                    continue;
+                }
+
                 $rule->setAllValues($values);
 
                 $rule_return = $rule->validate($key, $value);
@@ -272,6 +277,13 @@ class Validator
     protected function setupRule($rule_definition)
     {
         list($name, $params) = $this->parseRuleString($rule_definition);
+
+        if ($name == 'regex' && count($params) > 1) {
+            // regular expressions can go wild
+            // we need to make sure the whole expression is passed in as single parameter
+            // it was exploded with a comma, so implode back in
+            $params = [implode(',', $params)];
+        }
 
         if (isset($this->custom[$name])) {
             $object = clone $this->custom[$name];

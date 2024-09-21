@@ -73,7 +73,6 @@ trait FileManagerTrait
         $breadcrumbs = [];
         if (! empty($uploadLocation)) {
             $directory_id = (int) ee('Request')->get('directory_id');
-            $files->filter('directory_id', $directory_id);
             if (! empty(ee('Request')->get('directory_id'))) {
                 do {
                     $directory = ee('Model')->get('Directory', $directory_id)->fields('file_id', 'directory_id', 'title')->first();
@@ -122,25 +121,30 @@ trait FileManagerTrait
         }
 
         $filters->add('FileManagerColumns', $this->createColumnFilter($uploadLocation), $uploadLocation, $view_type);
+        $needToFilterFiles = false;
 
         $search_terms = ee()->input->get_post('filter_by_keyword');
 
         if ($search_terms) {
             $files->search(['title', 'file_name', 'mime_type'], $search_terms);
             $vars['search_terms'] = htmlentities($search_terms, ENT_QUOTES, 'UTF-8');
+            $needToFilterFiles = true;
         }
 
         if (! empty($type_filter) && $type_filter->value()) {
             $files->filter('file_type', $type_filter->value());
+            $needToFilterFiles = true;
         }
 
         if ($category_filter->value()) {
             $files->with('Categories')
                 ->filter('Categories.cat_id', $category_filter->value());
+            $needToFilterFiles = true;
         }
 
         if (! empty($author_filter) && $author_filter->value()) {
             $files->filter('uploaded_by_member_id', $author_filter->value());
+            $needToFilterFiles = true;
         }
 
         $filter_values = $filters->values();
@@ -150,6 +154,33 @@ trait FileManagerTrait
                 $files->filter('upload_date', '<', $filter_values['filter_by_date'][1]);
             } else {
                 $files->filter('upload_date', '>=', ee()->localize->now - $filter_values['filter_by_date']);
+            }
+            $needToFilterFiles = true;
+        }
+
+        if (! empty($uploadLocation) && ! bool_config_item('file_manager_compatibility_mode')) {
+            $directory_id = (int) ee('Request')->get('directory_id');
+            if ($needToFilterFiles) {
+                // if searching in root directory, just return everything from subfolders
+                // not ideal, but that's what we also do when searching without selecting upload location
+                if ($directory_id !== 0) {
+                    // filters applied, we need to get tricky and also search what's in subfolders
+                    $directories = $subfolders = [$directory_id];
+                    do {
+                        $subfolders = ee('Model')
+                            ->get('Directory')
+                            ->fields('file_id', 'upload_location_id', 'directory_id')
+                            ->filter('upload_location_id', $uploadLocation->getId())
+                            ->filter('directory_id', 'IN', $subfolders)
+                            ->all()
+                            ->pluck('file_id');
+                        $directories = array_merge($directories, $subfolders);
+                    } while (!empty($subfolders));
+                    $files->filter('directory_id', 'IN', $directories);
+                }
+            } else {
+                // no filters applied, just get everything that's in the current directory
+                $files->filter('directory_id', $directory_id);
             }
         }
 
@@ -239,7 +270,8 @@ trait FileManagerTrait
             'createNewDirectory' => false,
             'ignoreChild' => false,
             'addInput' => false,
-            'imitationButton' => true
+            'imitationButton' => true,
+            'allowMultipleFiles' => false,
         ];
 
         if (!$filepickerMode || ee('Request')->get('hasUpload') == 1) {
@@ -505,7 +537,7 @@ trait FileManagerTrait
      */
     private function createCategoryFilter($uploadLocation = null)
     {
-        $cat_id = ($uploadLocation) ? explode('|', (string) $uploadLocation->cat_group) : null;
+        $cat_id = ($uploadLocation) ? $uploadLocation->CategoryGroups->pluck('group_id') : null;
 
         $category_groups = ee('Model')->get('CategoryGroup', $cat_id)
             ->with('Categories')
@@ -578,7 +610,7 @@ trait FileManagerTrait
                     'adapter' => $upload_pref->adapter,
                     'directory_id' => 0,
                     'path' => '',
-                    'children' => !bool_config_item('file_manager_compatibility_mode') ? $upload_pref->buildDirectoriesDropdown($upload_pref->getId(), true) : []
+                    'children' => !bool_config_item('file_manager_compatibility_mode') ? $upload_pref->getDirectoriesDropdown(true) : []
                 ];
             }
         }

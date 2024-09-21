@@ -14,71 +14,73 @@
 class EE_Messages
 {
     // URL Writing
-    public $allegiance = 'cp';				// Side of the divide: cp or user
-    public $messages_cp = false;			// CP Object
-    public $base_url = '';				// Base URL used throughout
-    public $form_url = '';				// For CP Forms, since Rick was a doofus and changed how they work
-    public $path = 'member/';		// User Side Path
-    public $request = 'inbox';			// User Side Request
-    public $cur_id = '';				// User Side ID, if any
+    public $allegiance = 'cp'; // Side of the divide: cp or user
+    public $messages_cp = false; // CP Object
+    public $base_url = ''; // Base URL used throughout
+    public $form_url = ''; // For CP Forms, since Rick was a doofus and changed how they work
+    public $path = 'member/'; // User Side Path
+    public $request = 'inbox'; // User Side Request
+    public $cur_id = ''; // User Side ID, if any
     public $theme_class = 'profile_theme';
-    public $images_folder = '';				// Location of Forum Images
+    public $images_folder = ''; // Location of Forum Images
+    public $theme_path;
+    public $MS; // is a strange way to refenece Member class
 
     // Member Specific
     public $member_id = '';
-    public $private_messages = '0';				// Number of unread private messages
-    public $block_tracking = 'n';				// Block Sender Tracking
+    public $private_messages = '0'; // Number of unread private messages
+    public $block_tracking = 'n'; // Block Sender Tracking
 
     // Member Group Specific
-    public $allow_pm = 'y';				// Allowed to PM?
-    public $attach_allowed = 'y';				// Attachments allowed?
+    public $allow_pm = 'y'; // Allowed to PM?
+    public $attach_allowed = 'y'; // Attachments allowed?
 
     // Private Message Preferences
-    public $storage_limit = 60;				// Limit for messages to store per user (does not count deleted)
-    public $send_limit = 20;				// Limit for messages sent a day
-    public $upload_path = '';				// Upload path for files
-    public $attach_maxsize = 250;				// Max size for attachments (KB)
-    public $attach_total = 100;				// Maximum amount for all PM attachments (MB)
-    public $html_format = 'safe';			// HTML Formatting?
-    public $auto_links = 'y';				// Auto convert URLs to links
-    public $max_chars = 6000;				// Maximum number of characters in a messages
-    public $max_attachments = 1;				// Maximum number of attachments per message
+    public $storage_limit = 60; // Limit for messages to store per user (does not count deleted)
+    public $send_limit = 20; // Limit for messages sent a day
+    public $upload_path = ''; // Upload path for files
+    public $attach_maxsize = 250; // Max size for attachments (KB)
+    public $attach_total = 100; // Maximum amount for all PM attachments (MB)
+    public $html_format = 'safe'; // HTML Formatting?
+    public $auto_links = 'y'; // Auto convert URLs to links
+    public $max_chars = 6000; // Maximum number of characters in a messages
+    public $max_attachments = 1; // Maximum number of attachments per message
 
     // User Data Variables
-    public $total_messages = '';				// Total Store Messages for User
-    public $current_folder = '1';				// If any...
-    public $folders = array();			// Folders for User
-    public $hide_preview = false;			// Whether to show the Preview of Message
-    public $attachments = array();			// Attachments for current message
-    public $baddies = array();			// Blocked List; IDs only
-    public $goodies = array();			// Buddies List; IDs only
-    public $blocked = false;			// Blocked List
-    public $buddies = false;			// Buddies List
-    public $invalid_name = false;			// Invalid name submitted?
+    public $total_messages = ''; // Total Store Messages for User
+    public $current_folder = '1'; // If any...
+    public $folders = array(); // Folders for User
+    public $hide_preview = false; // Whether to show the Preview of Message
+    public $attachments = array(); // Attachments for current message
+    public $baddies = array(); // Blocked List; IDs only
+    public $goodies = array(); // Buddies List; IDs only
+    public $blocked = false; // Blocked List
+    public $buddies = false; // Buddies List
+    public $invalid_name = false; // Invalid name submitted?
 
     // Menu Content
-    public $menu_items = array();			// Abstracted data for creating menu
-    public $menu = '';				// Menu fully formed
+    public $menu_items = array(); // Abstracted data for creating menu
+    public $menu = ''; // Menu fully formed
 
     // Processing and Returned Data
-    public $title = '';				// Title of Page
-    public $crumb = '';				// Crumb text for page
-    public $return_data = '';				// Output data
-    public $header_javascript = '';				// User Side Header JavaScript
-    public $error = '';				// Submission Error
-    public $single_parts = array();			// Parts of a page: text, form, images, content
-    public $conditionals = array();			// Conditionals
+    public $title = ''; // Title of Page
+    public $crumb = ''; // Crumb text for page
+    public $return_data = ''; // Output data
+    public $header_javascript = ''; // User Side Header JavaScript
+    public $error = ''; // Submission Error
+    public $single_parts = array(); // Parts of a page: text, form, images, content
+    public $conditionals = array(); // Conditionals
     public $mimes = '';
 
     // Changeable Class Variables
     public $default_folders = array('Inbox', 'Sent');
-    public $max_folders = 10;				// Maximum number of folders per user
-    public $per_page = 5;				// Messages on a Folder's Page
-    public $graph_width = '300';			// Width of Total Messages Graph
-    public $emoticons_per_row = 5;				// Number of Images Per Table Row
-    public $delete_expiration = 30;				// Erase deleted messages after X days
-    public $disable_emoticons = 'n';				// Disable the showing of emoticons
-    public $spellcheck_enabled = true;				// Enabled Spellcheck?
+    public $max_folders = 10; // Maximum number of folders per user
+    public $per_page = 5; // Messages on a Folder's Page
+    public $graph_width = '300'; // Width of Total Messages Graph
+    public $emoticons_per_row = 5; // Number of Images Per Table Row
+    public $delete_expiration = 30; // Erase deleted messages after X days
+    public $disable_emoticons = 'n'; // Disable the showing of emoticons
+    public $spellcheck_enabled = true; // Enabled Spellcheck?
 
     /** -----------------------------------
     /**  Constructor
@@ -901,7 +903,7 @@ class EE_Messages
             $folder_name = ee()->lang->line('deleted_messages');
         } elseif (! isset($this->folders[$folder_id]['0']) or $this->folders[$folder_id]['0'] == '') {
             if ($this->allegiance == 'cp') {
-                show_error($this->lang->line('unauthorized_access'));
+                show_error(ee()->lang->line('unauthorized_access'));
             } else {
                 return ee()->output->show_user_error('general', array(ee()->lang->line('not_authorized')));
             }
@@ -1217,7 +1219,7 @@ class EE_Messages
         /** ----------------------------------*/
         //$debug = debug_backtrace();
         //echo '<pre>';print_r($debug[1]);echo'</pre>';exit;
-        if ($this->theme_path == '') {
+        if (empty($this->theme_path)) {
             $theme = (ee()->config->item('member_theme') == '') ? 'default' : ee()->config->item('member_theme');
             $this->theme_path = ee('Theme')->getPath('member/' . $theme);
         }
@@ -1391,9 +1393,7 @@ DOH;
         /** --------------------------------
         /**  Parse the POST request
         /** --------------------------------*/
-        if ($_POST['screen_name'] == '' &&
-            $_POST['email'] == ''
-            ) {
+        if ($_POST['screen_name'] == '' && $_POST['email'] == '') {
             ee()->functions->redirect($redirect_url);
         }
 
@@ -1524,9 +1524,7 @@ DOH;
         /** --------------------------------
         /**  Parse the POST request
         /** --------------------------------*/
-        if ($_POST['screen_name'] == '' &&
-            $_POST['email'] == ''
-            ) {
+        if ($_POST['screen_name'] == '' && $_POST['email'] == '') {
             ee()->functions->redirect($redirect_url);
         }
 
@@ -2551,7 +2549,7 @@ DOH;
 
         try {
             $mime = ee('MimeType')->ofFile($filepath);
-        }catch(\Exception $e){
+        } catch(\Exception $e) {
             show_error(sprintf(lang('file_not_found'), $filepath));
         }
 

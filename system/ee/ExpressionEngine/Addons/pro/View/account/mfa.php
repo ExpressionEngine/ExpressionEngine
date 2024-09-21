@@ -6,7 +6,7 @@ else :
 ?>
     <div class="login__logo">
         <?php if (ee()->config->item('login_logo')) : ?>
-        <img src="<?=ee()->config->item('login_logo')?>" alt="Powered by ExpressionEngine&reg;">
+        <img src="<?=ee()->config->item('login_logo')?>" alt="<?=ee()->config->item('site_name')?>">
         <?php else :
             $this->embed('ee:_shared/ee-logo');
         endif; ?>

@@ -50,6 +50,15 @@ class UploadDestination extends StructureModel
             'model' => 'Module',
             'to_key' => 'module_id'
         ),
+        'CategoryGroups' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'CategoryGroup',
+            'pivot' => array(
+                'table' => 'upload_prefs_category_groups',
+                'left' => 'upload_location_id',
+                'right' => 'group_id'
+            )
+        ),
         'Files' => array(
             'type' => 'hasMany',
             'model' => 'File',
@@ -449,6 +458,220 @@ class UploadDestination extends StructureModel
     }
 
     /**
+     * Return list of all files in directory, with subfolders
+     *
+     * @return array
+     */
+    public function getAllFileNames() {
+        $directoryMap = $this->getDirectoryMap();
+        $flatDirectoryMap = [];
+        $this->flattenDirectoryMap($flatDirectoryMap, $directoryMap);
+        $files = array_keys($flatDirectoryMap);
+        return $files;
+    }
+
+    private function flattenDirectoryMap(&$flatMap = [], $nestedMap = [], $keyPrefix = '/')
+    {
+        foreach ($nestedMap as $key => $val) {
+            $flatKey = rtrim($keyPrefix . $key, '/');
+            if (! isset($flatMap[$flatKey])) {
+                $flatMap[$flatKey] = $flatKey;
+            }
+            if (is_array($val)) {
+                $flatMap[$flatKey] = $this->flattenDirectoryMap($flatMap, $val, $flatKey . '/');
+            }
+        }
+    }
+
+    public function syncFiles($files, $allSizes = [], $replaceSizeIds = [])
+    {
+        $errors = array();
+        $file_data = array();
+        $replace_sizes = array();
+
+        $id = $this->getId();
+        $missing_only_sizes = (array_key_exists($id, $allSizes) && is_array($allSizes[$id])) ? $allSizes[$id] : array();
+
+        if (is_array($replaceSizeIds)) {
+            foreach ($replaceSizeIds as $resize_id) {
+                if (!empty($resize_id) && isset($allSizes[$id][$resize_id])) {
+                    $replace_sizes[$resize_id] = $allSizes[$id][$resize_id];
+                    unset($missing_only_sizes[$resize_id]);
+                }
+            }
+        }
+
+        ee()->load->library('filemanager');
+        $mimes = ee()->config->loadFile('mimes');
+        $fileTypes = array_filter(array_keys($mimes), 'is_string');
+
+        $filesystem = $this->getFilesystem();
+
+        foreach ($files as $filePath) {
+            $fileInfo = $filesystem->getWithMetadata($filePath);
+            if (!isset($fileInfo['basename'])) {
+                $fileInfo['basename'] = basename($fileInfo['path']);
+            }
+            $mime = ($fileInfo['type'] != 'dir') ? $filesystem->getMimetype($filePath) : 'directory';
+
+            if ($mime == 'directory' && (!$this->allow_subfolders || bool_config_item('file_manager_compatibility_mode'))) {
+                //silently continue on subfolders if those are not allowed
+                continue;
+            }
+
+            if (empty($mime)) {
+                $errors[$fileInfo['basename']] = lang('invalid_mime');
+
+                continue;
+            }
+
+            $file = $this->getFileByPath($filePath);
+
+            // Clean filename
+            $clean_filename = ee()->filemanager->clean_subdir_and_filename($fileInfo['path'], $id, array(
+                'convert_spaces' => false,
+                'ignore_dupes' => true
+            ));
+
+            if ($fileInfo['path'] != $clean_filename) {
+                // Make sure clean filename is unique
+                $clean_filename = ee()->filemanager->clean_subdir_and_filename($clean_filename, $id, array(
+                    'convert_spaces' => false,
+                    'ignore_dupes' => false
+                ));
+                // Rename the file
+                if (! $filesystem->rename($fileInfo['path'], $clean_filename)) {
+                    $errors[$fileInfo['path']] = lang('invalid_filename');
+                    continue;
+                }
+
+                $filesystem->delete($fileInfo['path']);
+                $fileInfo['basename'] = $filesystem->basename($clean_filename);
+            }
+
+            if (! empty($file)) {
+                // It exists, but do we need to change sizes or add a missing thumb?
+
+                if (! $file->isEditableImage()) {
+                    continue;
+                }
+
+                // Note 'Regular' batch needs to check if file exists- and then do something if so
+                if (! empty($replace_sizes)) {
+                    $thumb_created = ee()->filemanager->create_thumb(
+                        $file->getAbsolutePath(),
+                        array(
+                            'directory' => $this,
+                            'server_path' => $this->getProperty('server_path'),
+                            'file_name' => $fileInfo['basename'],
+                            'dimensions' => $replace_sizes,
+                            'mime_type' => $mime
+                        ),
+                        true,	// Create thumb
+                        false	// Overwrite existing thumbs
+                    );
+
+                    if (! $thumb_created) {
+                        $errors[$fileInfo['basename']] = lang('thumb_not_created');
+                    }
+                }
+
+                // Now for anything that wasn't forcably replaced- we make sure an image exists
+                $thumb_created = ee()->filemanager->create_thumb(
+                    $file->getAbsolutePath(),
+                    array(
+                        'directory' => $this,
+                        'server_path' => $this->getProperty('server_path'),
+                        'file_name' => $fileInfo['basename'],
+                        'dimensions' => $missing_only_sizes,
+                        'mime_type' => $mime
+                    ),
+                    true, 	// Create thumb
+                    true 	// Don't overwrite existing thumbs
+                );
+
+                // Update dimensions
+                $image_dimensions = $file->actLocally(function ($path) {
+                    return ee()->filemanager->get_image_dimensions($path);
+                });
+                $file->setRawProperty('file_hw_original', $image_dimensions['height'] . ' ' . $image_dimensions['width']);
+                $file->file_size = $fileInfo['size'];
+                if ($file->file_type === null) {
+                    $file->setProperty('file_type', 'other'); // default
+                    foreach ($fileTypes as $fileType) {
+                        if (in_array($file->getProperty('mime_type'), $mimes[$fileType])) {
+                            $file->setProperty('file_type', $fileType);
+                            break;
+                        }
+                    }
+                }
+                $file->save();
+
+                continue;
+            }
+
+            $file = ee('Model')->make('FileSystemEntity');
+            $file_data = [
+                'upload_location_id' => $this->getId(),
+                'site_id' => ee()->config->item('site_id'),
+                'model_type' => ($mime == 'directory') ? 'Directory' : 'File',
+                'mime_type' => $mime,
+                'file_name' => $fileInfo['basename'],
+                'file_size' => isset($fileInfo['size']) ? $fileInfo['size'] : 0,
+                'uploaded_by_member_id' => ee()->session->userdata('member_id'),
+                'modified_by_member_id' => ee()->session->userdata('member_id'),
+                'upload_date' => $fileInfo['timestamp'],
+                'modified_date' => $fileInfo['timestamp']
+            ];
+            $pathInfo = explode('/', trim(str_replace(DIRECTORY_SEPARATOR, '/', $filePath), '/'));
+            //get the subfolder info, but at the same time, skip if no subfolder are allowed
+            if (count($pathInfo) > 1) {
+                if (!$this->allow_subfolders || bool_config_item('file_manager_compatibility_mode')) {
+                    continue;
+                }
+                array_pop($pathInfo);
+                $directory = $this->getFileByPath(implode('/', $pathInfo));
+                $file_data['directory_id'] = !is_null($directory) ? $directory->getId() : 0;
+            }
+            $file->set($file_data);
+            if ($file->isEditableImage()) {
+                try {
+                    $image_dimensions = $file->actLocally(function ($path) {
+                        return ee()->filemanager->get_image_dimensions($path);
+                    });
+                    $file_data['file_hw_original'] =  $image_dimensions['height'] . ' ' . $image_dimensions['width'];
+                    $file->setRawProperty('file_hw_original', $file_data['file_hw_original']);
+                } catch (\Exception $e) {
+                    //do nothing
+                }
+            }
+            //$file->save(); need to fallback to old saving because of the checks
+
+            try {
+                $saved = ee()->filemanager->save_file(
+                    $file->getAbsolutePath(),
+                    $id,
+                    $file_data,
+                    false
+                );
+            } catch (\Exception $e) {
+                $errors[$fileInfo['basename']] = $e->getMessage();
+                continue;
+            }
+
+            if (! $saved['status']) {
+                $errors[$fileInfo['basename']] = $saved['message'];
+            }
+        }
+
+        if (count($errors)) {
+            return $errors;
+        }
+
+        return true;
+    }
+
+    /**
      * Give the file relative path, returns File mode
      *
      * @param string $filePath
@@ -477,6 +700,63 @@ class UploadDestination extends StructureModel
 
         return $file;
     }
+    /**
+     * Get the subdirectories nested array
+     *
+     * @param boolean $includeIcon
+     * @return array
+     */
+    public function getDirectoriesDropdown($includeIcon = false)
+    {
+        $cache_key = '/' . __CLASS__ . '/' . md5(__METHOD__ . '__' . $this->getId() . (($includeIcon) ? 'icon' : ''));
+        $children = ee()->cache->get($cache_key);
+        if ($children !== false) {
+            return $children;
+        }
+
+        // Get all directories within this Upload Destination
+        $directories = ee('Model')->get('Directory')
+            ->fields('file_id', 'directory_id', 'file_name', 'title')
+            ->filter('upload_location_id', $this->getId())
+            ->order('title', 'asc')
+            ->all(true)
+            ->asArray();
+
+        // Group directories by directory_id
+        $directories = array_reduce($directories, function ($carry, $directory) {
+            if (!array_key_exists($directory->directory_id, $carry)) {
+                $carry[$directory->directory_id] = [];
+            }
+
+            $carry[$directory->directory_id][] = $directory;
+            return $carry;
+        }, []);
+
+        $children = $this->getDirectoryDropdownChildren(0, $directories, $includeIcon);
+        ee()->cache->save($cache_key, $children, 5); // Cache results for 5 seconds
+
+        return $children;
+    }
+
+    protected function getDirectoryDropdownChildren($parent_id, $directories, $icon = false, $path = '')
+    {
+        $items = [];
+        $children = array_key_exists($parent_id, $directories) ? $directories[$parent_id] : [];
+
+        foreach ($children as $directory) {
+            $label = (($icon) ? '<i class="fal fa-folder"></i>' : '') . $directory->title;
+            $path = $path . urlencode($directory->file_name) . '/';
+            $items[$this->getId() . '.' . $directory->getId()] = [
+                'label' => $label,
+                'upload_location_id' => $this->getId(),
+                'path' => $path,
+                'directory_id' => $directory->getId(),
+                'children' => $this->getDirectoryDropdownChildren($directory->file_id, $directories, $icon, $path)
+            ];
+        }
+
+        return $items;
+    }
 
     /**
      * Get the subdirectories nested array
@@ -484,14 +764,23 @@ class UploadDestination extends StructureModel
      * @param [type] $key_value
      * @param boolean $root_only
      * @return array
+     * @deprecated No longer used, prefer getDirectoriesDropdown()
      */
     public function buildDirectoriesDropdown($directory_id, $icon = false, $path = '', $root_only = true)
     {
+        // root requests can be cached
+        if ($root_only) {
+            $cache_key = '/' . __CLASS__ . '/' . md5(__METHOD__ . '__' . $directory_id);
+            $children = ee()->cache->get($cache_key);
+            if ($children !== false) {
+                return $children;
+            }
+        }
         $children = [];
         $i = 0;
         $directoriesCount = 0;
         do {
-            $directories = ee('Model')->get('Directory')->fields('file_id', 'upload_location_id', 'directory_id', 'file_name', 'title');
+            $directories = ee('Model')->get('Directory')->fields('file_id', 'upload_location_id', 'directory_id', 'file_name', 'title')->order('title', 'asc');
             if ($root_only) {
                 $directories = $directories->filter('upload_location_id', $directory_id)->filter('directory_id', 0)->all(true);
             } else {
@@ -520,6 +809,11 @@ class UploadDestination extends StructureModel
                 }
             }
         } while ($directoriesCount > ($i + 1));
+
+        if ($root_only) {
+            // cache for 5 seconds, which should suffice for page load even if it takes a while
+            ee()->cache->save($cache_key, $children, 5);
+        }
 
         return $children;
     }

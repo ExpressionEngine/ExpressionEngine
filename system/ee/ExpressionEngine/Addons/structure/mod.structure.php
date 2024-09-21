@@ -1238,7 +1238,8 @@ class Structure extends Channel
                 );
 
                 // create new node
-                $this->nset->newLastChild($parentNode['right'], $extra);
+                $newRight = !empty($parentNode) ? $parentNode['right'] : 0;
+                $this->nset->newLastChild($newRight, $extra);
 
                 // fetch newly created node to keep working with
                 $node = $this->nset->getNode($entry_id);
@@ -1246,7 +1247,9 @@ class Structure extends Channel
 
             // set uri entries
             $node['uri'] = (!empty($site_pages['uris'][$entry_id]) ? $site_pages['uris'][$entry_id] : $uri);
-            $parentNode['uri'] = (!empty($parent_id) && !empty($site_pages['uris'][$parent_id]) ? $site_pages['uris'][$parent_id] : '');
+            if (!empty($parentNode)) {
+                $parentNode['uri'] = (!empty($parent_id) && !empty($site_pages['uris'][$parent_id]) ? $site_pages['uris'][$parent_id] : '');
+            }
 
             // existing node
             $changed = $this->has_changed($node, $data);
@@ -1408,7 +1411,7 @@ class Structure extends Channel
                         }
                     }
 
-                    if ($changed === 'parent') {
+                    if ($changed === 'parent' && !empty($parentNode)) {
                         $this->nset->moveToLastChild($node, $parentNode);
                     }
 
@@ -1958,7 +1961,7 @@ class Structure extends Channel
                 unset($site_pages['templates'][$entry_id]);
 
                 if (! in_array($entry_id, $l_ids)) {
-                    $this->set_status($entry_id, 'closed');
+                    ee('Model')->get('ChannelEntry', $entry_id)->fields('status')->first()->setProperty('status', 'closed')->save();
                 }
             }
             // Delete from exp_structure
