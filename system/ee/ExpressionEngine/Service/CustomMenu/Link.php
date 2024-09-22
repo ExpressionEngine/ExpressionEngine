@@ -10,13 +10,17 @@
 
 namespace ExpressionEngine\Service\CustomMenu;
 
+use ExpressionEngine\Service\Sidebar\Navigation\NavigationItem;
+
 /**
  * Custom Menu Link
  */
-class Link
+class Link extends NavigationItem
 {
-    public $title;
+    public $title; // legacy property
+    public $text;
     public $url;
+    public $icon;
 
     /**
      * Create a new menu item
@@ -24,9 +28,9 @@ class Link
      * @param String $title Text of the menu item
      * @param Mixed $url URL string or CP/URL object
      */
-    public function __construct($title, $url)
+    public function __construct($title, $url, $icon = null)
     {
-        $this->title = htmlspecialchars($title);
+        $this->text = $this->title = htmlspecialchars($title);
 
         $base = ee('CP/URL')->make('')->compile();
 
@@ -37,6 +41,7 @@ class Link
         }
 
         $this->url = $url;
+        $this->icon = (!empty($icon) && strpos($icon, 'default-addon-icon.svg') === false) ? $icon : null;
     }
 
     /**

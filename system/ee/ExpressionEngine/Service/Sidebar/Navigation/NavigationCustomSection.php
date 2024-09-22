@@ -56,7 +56,10 @@ class NavigationCustomSection extends NavigationSection
                     ee()->extensions->call_class($item->data, 'cp_custom_menu', $metadata, $args);
                 }
             } elseif ($item->type == 'addon') { //module
-                $custom->addItem($item->name, ee('CP/URL')->make('addons/settings/' . lcfirst($item->data)));
+                $addon = ee('Addon')->get(lcfirst($item->data));
+                if (!empty($addon) && $addon->isInstalled()) {
+                    $custom->addItem($item->name, ee('CP/URL')->make('addons/settings/' . lcfirst($item->data)), $addon->getIconUrl());
+                }
             } elseif ($item->type == 'submenu') {
                 $sub = $custom->addSubmenu($item->name);
 
