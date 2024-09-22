@@ -237,17 +237,42 @@ abstract class AbstractDesign extends CP_Controller
         $header = array(
             'title' => lang('template_manager'),
             'search_form_url' => ee('CP/URL')->make('design/template/search', array('return' => $return)),
-            'toolbar_items' => array(
-                'settings' => array(
-                    'href' => ee('CP/URL')->make('settings/template'),
-                    'title' => lang('settings')
-                ),
-            ),
+            'toolbar_items' => array(),
             'search_button_value' => lang('search_templates')
         );
 
-        if (! ee('Permission')->hasAll('can_access_sys_prefs', 'can_admin_design')) {
-            unset($header['toolbar_items']['settings']);
+        // Template Partials
+        if (ee('Permission')->hasAny('can_create_template_partials', 'can_edit_template_partials', 'can_delete_template_partials')) {
+            $header['toolbar_items']['snippets'] = array(
+                'href' => ee('CP/URL', 'design/snippets'),
+                'class' => 'fal fa-shapes',
+                'title' => lang('template_partials')
+            );
+        }
+
+        // Template Variables
+        if (ee('Permission')->hasAny('can_create_template_variables', 'can_edit_template_variables', 'can_delete_template_variables')) {
+            $header['toolbar_items']['variables'] = array(
+                'href' => ee('CP/URL', 'design/variables'),
+                'class' => 'fal fa-cube',
+                'title' => lang('template_variables')
+            );
+        }
+
+        // Template Routes
+        if (! TemplateRoute::getConfig() && ee('Permission')->can('admin_design')) {
+            $header['toolbar_items']['routes'] = array(
+                'href' => ee('CP/URL', 'design/routes'),
+                'class' => 'fal fa-truck',
+                'title' => lang('template_routes')
+            );
+        }
+
+        if (ee('Permission')->hasAll('can_access_sys_prefs', 'can_admin_design')) {
+            $header['toolbar_items']['settings'] = array(
+                'href' => ee('CP/URL', 'settings/template'),
+                'title' => lang('settings')
+            );
         }
 
         if (ee('Model')->get('Template')->count() > 0 && ee('Permission')->isSuperAdmin()) {
