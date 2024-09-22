@@ -197,12 +197,6 @@ class Entries_pro extends Prolet\AbstractProlet
         $vars['table'] = $table->viewData($base_url);
         $vars['form_url'] = $vars['table']['base_url'];
 
-        $menu = ee()->menu->generate_menu();
-        $choices = [];
-        foreach ($menu['channels']['create'] as $text => $link) {
-            $choices[$link->compile()] = $text;
-        }
-
         if ($table->sort_dir != 'desc' && $table->sort_col != 'column_entry_date') {
             $base_url->addQueryStringVariables(
                 array(

@@ -34,7 +34,7 @@ class Spam_ext
             $total_spam += $trapped->total_spam;
         }
 
-        $sub = $menu->addSubmenu(lang('spam_queue') . ' (' . $total_spam . ')');
+        $sub = $menu->addSubmenu(lang('spam_queue') . ' (' . $total_spam . ')', 'spam');
         $sub->withFilterLink(lang('filter_by_type'), ee('CP/URL')->make('addons/settings/spam'));
 
         foreach ($trapped_spam as $trapped) {

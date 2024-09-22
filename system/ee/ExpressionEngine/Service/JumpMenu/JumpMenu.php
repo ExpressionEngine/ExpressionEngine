@@ -2179,9 +2179,10 @@ class JumpMenu extends AbstractJumpMenu
         //add custom menu links (addons to be included later)
         $menuItems = ee('Model')->get('MenuItem')
             ->fields('MenuItem.*', 'Children.*')
-            ->with(array('Set' => 'RoleSettings'), 'Children')
+            ->with(array('Set' => 'Roles'), 'Children')
             ->filter('type', 'IN', ['link', 'submenu'])
-            ->filter('RoleSettings.role_id', ee()->session->userdata('role_id'))
+            ->filter('Roles.role_id', ee()->session->userdata('role_id'))
+            ->filter('Set.site_id', 'IN', [ee()->config->item('site_id'), 0])
             ->order('MenuItem.sort')
             ->order('Children.sort')
             ->all();

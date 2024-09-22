@@ -612,6 +612,10 @@ $lang = array(
 
     'submenu_desc' => 'Links in dropdown',
 
+    'enable_on_all_sites' => 'Enable on all sites?',
+
+    'enable_menu_on_all_sites_desc' => 'When enabled, this menu will be displayed on all sites.',
+
     /* Messages */
     'attachment_settings' => 'Attachment Settings',
 

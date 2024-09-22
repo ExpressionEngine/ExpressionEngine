@@ -52136,6 +52136,11 @@ ul.field-reorder-drop,
   transition: background 200ms ease, color 200ms ease;
   margin-right: 10px;
 }
+.ee-sidebar__item > img {
+  margin-right: 10px;
+  top: 3px;
+  position: relative;
+}
 .ee-sidebar__item.active, .ee-sidebar__item:hover, .ee-sidebar__item.dropdown-open {
   background: var(--ee-sidebar-bg-active);
   color: var(--ee-sidebar-text-active);

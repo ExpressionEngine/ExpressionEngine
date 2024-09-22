@@ -23,9 +23,9 @@ class Menu
      * @param String $title Text of the menu item
      * @param Mixed $url URL string or CP/URL object
      */
-    public function addItem($title, $url)
+    public function addItem($title, $url, $icon = null)
     {
-        $this->items[] = new Link($title, $url);
+        $this->items[] = new Link($title, $url, $icon);
 
         return $this;
     }
@@ -36,10 +36,16 @@ class Menu
      * @param String $title Text of the dropdown
      * @return Submenu object
      */
-    public function addSubmenu($title)
+    public function addSubmenu($title, $addonName = null)
     {
         $sub = new Submenu();
         $sub->setTitle($title);
+        if ($addonName) {
+            $addon = ee('Addon')->get(lcfirst($addonName));
+            if (!empty($addon) && $addon->isInstalled()) {
+                $sub->setIcon($addon->getIconUrl());
+            }
+        }
 
         $this->items[] = $sub;
 

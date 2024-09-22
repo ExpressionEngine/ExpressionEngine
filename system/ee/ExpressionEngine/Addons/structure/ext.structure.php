@@ -206,7 +206,7 @@ class Structure_ext
             return true;
         }
 
-        $menu->addItem('Structure', ee('CP/URL')->make('addons/settings/structure/index'));
+        $menu->addItem('Structure', ee('CP/URL')->make('addons/settings/structure/index'), ee('Addon')->get('structure')->getIconUrl());
     }
 
     public function publish_live_preview_route($data, $uri, $template_id)

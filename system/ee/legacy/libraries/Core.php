@@ -74,8 +74,8 @@ class EE_Core
 
         // application constants
         define('APP_NAME', 'ExpressionEngine');
-        define('APP_BUILD', '20240613');
-        define('APP_VER', '7.4.11');
+        define('APP_BUILD', '20240921');
+        define('APP_VER', '7.6.0');
         define('APP_VER_ID', '');
         define('SLASH', '&#47;');
         define('LD', '{');
@@ -590,7 +590,9 @@ class EE_Core
         // Load the Super Model
         ee()->load->model('super_model');
 
-        // Laod Menu library
+        // Load Menu library
+        // Deprecated in 7.5
+        // we still load it, but will stop doing that in future versions
         ee()->load->library('menu');
 
         $this->set_newrelic_transaction(function () use ($get) {

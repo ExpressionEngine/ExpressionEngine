@@ -42,12 +42,12 @@ class DashboardLayout extends Core\DashboardLayout
      */
     public function generateDashboardHtml($edit_mode = false)
     {
-        //if the files are here, but Pro version not installed - fallaback
-        if (!ee('pro:Access')->hasRequiredLicense()) {
+        //because Pro is always part of the system, we never need to fallback
+        /*if (!ee('pro:Access')->hasRequiredLicense()) {
             $legacy_layout = new Core\DashboardLayout();
 
             return $legacy_layout->generateDashboardHtml();
-        }
+        }*/
 
         $widgets = $this->DashboardWidgets;
         $order = explode('|', $this->order);
