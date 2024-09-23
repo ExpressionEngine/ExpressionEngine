@@ -136,15 +136,10 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
       var url = _this.props.filebrowserEndpoint.replace('requested_directory=all', 'requested_directory=' + directory).replace('field_upload_locations=all', 'field_upload_locations=' + _this.props.allowedDirectory);
 
       if (!$.isEmptyObject(fileFolderObj)) {
-        console.log('requestedDirectory', parseInt(fileFolderObj.requestedDirectory));
-        console.log('directory', directory);
-
         if (directory == parseInt(fileFolderObj.requestedDirectory)) {
           url = fileFolderObj.lastOpenedFileFolderUrl;
         }
       }
-
-      console.log('url', url);
 
       _this.presentFilepicker(url, false);
 
@@ -152,8 +147,6 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
     });
 
     _defineProperty(_assertThisInitialized(_this), "uploadNew", function (directory) {
-      localStorage.removeItem('fileFolderObj');
-
       var that = _assertThisInitialized(_this);
 
       if (typeof directory == 'number') {
