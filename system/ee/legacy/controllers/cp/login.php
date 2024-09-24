@@ -499,6 +499,8 @@ class Login extends CP_Controller
             $return_path = ee('CP/URL')->make('/')->compile();
         }
 
+        ee('pro:Access')->expireAcknowledgement();
+
         $this->functions->redirect($return_path);
     }
 
@@ -715,6 +717,7 @@ class Login extends CP_Controller
         $this->session->destroy();
 
         $this->input->delete_cookie('read_topics');
+        ee('pro:Access')->expireAcknowledgement();
 
         $this->logger->log_action(lang('member_logged_out'));
 

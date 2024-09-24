@@ -212,7 +212,7 @@ class Access
      */
     public function getLicenseNotices($status = null, $includePro = false)
     {
-        if(time() - (int) ee('Cookie')->getSignedCookie('license_notice_seen') <=  $this->getLicenseBannerDuration()) {
+        if(time() - (int) ee('Cookie')->getSignedCookie('license_notice_seen') <= $this->getLicenseBannerDuration()) {
             return [];
         }
 
@@ -255,6 +255,13 @@ class Access
     public function getLicenseBannerDuration()
     {
         return $this->canManageLicenses() ? min(ee()->config->item('cp_session_length') ?: 3600, 14400) : 604800;
+    }
+
+    public function expireAcknowledgement()
+    {
+        if($this->canManageLicenses() || time() > (int) ee('Cookie')->getSignedCookie('license_notice_seen') +  $this->getLicenseBannerDuration()) {
+            ee()->input->delete_cookie('license_notice_seen');
+        }
     }
 
     /**
@@ -348,7 +355,9 @@ class Access
             $showAlert = false;
         }
 
-        ee()->logger->developer($message, true, 60 * 60 * 24 * 7);
+        // No longer writing these messages to the developer log but showing alerts when applicable
+        // ee()->logger->developer($message, true, 60 * 60 * 24 * 7);
+
         if (REQ == 'CP' && $showAlert) {
             // The user has seen the banner, so we're marking it in the session
             ee('Session')->setProBannerSeen();
