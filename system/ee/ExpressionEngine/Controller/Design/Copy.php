@@ -152,7 +152,10 @@ class Copy extends AbstractDesignController
         $vars['fluidFields'] = [];
         $vars['fluidFieldGroups'] = [];
 
-        foreach ($fieldGroup->ChannelFields as $field) {
+        // Get all fields in the group
+        $fields = ee('Model')->get('ChannelField')->with('ChannelFieldGroups')->filter('ChannelFieldGroups.group_id', $field_group_id)->all()->indexBy('field_id');
+
+        foreach ($fields as $field) {
             $vars['fluidFieldGroups'][$fieldGroup->short_name][$field->field_name] = $fluidTempGen->getFieldVars($field);
         }
 
