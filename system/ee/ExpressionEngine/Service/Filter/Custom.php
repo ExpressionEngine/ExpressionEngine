@@ -10,6 +10,9 @@
 
 namespace ExpressionEngine\Service\Filter;
 
+use ExpressionEngine\Library\CP\URL;
+use ExpressionEngine\Service\View\ViewFactory;
+
 /**
  * Custom Filter
  */
@@ -31,6 +34,27 @@ class Custom extends Filter
         $this->name = $name;
         $this->label = $label;
         $this->options = $options;
+    }
+
+    /**
+     * This renders the filter into HTML.
+     *
+     * @uses ViewFactory::make to create a View instance
+     * @uses \ExpressionEngine\Service\View\View::render to generate HTML
+     *
+     * @param ViewFactory $view A view factory responsible for making a view
+     * @param URL $url A URL object for use in generating URLs for the filter
+     *   options
+     * @return string Returns HTML
+     */
+    public function render(ViewFactory $view, URL $url)
+    {
+        //when we change upload location, we need to make sure to not pass subfolder id
+        if ($this->name == 'requested_directory') {
+            $url = clone $url;
+            $url->removeQueryStringVariable('directory_id');
+        }
+        return parent::render($view, $url);
     }
 
     /**
