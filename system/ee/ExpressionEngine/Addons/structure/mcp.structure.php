@@ -927,11 +927,11 @@ class Structure_mcp
         ];
         if (! empty($vars['groups'])) {
             foreach ($perms as $pref) {
-                $prefKey = $pref . '_' . $group['id'];
                 $row = array(
                     lang($pref),
                 );
                 foreach ($vars['groups'] as $group) {
+                    $prefKey = $pref . '_' . $group['id'];
                     if ($pref == 'perm_delete' || $pref == 'perm_reorder') {
                         $row[] = ee('View')->make('ee:_shared/form/field')->render([
                             'field_name' => $prefKey,
