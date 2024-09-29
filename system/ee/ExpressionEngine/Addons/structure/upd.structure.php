@@ -246,6 +246,7 @@ class Structure_upd
                 'dead'                => array('type' => 'varchar',  'constraint' => '100', 'null' => false),
                 'hidden'              => array('type' => 'char', 'null' => false, 'default' => 'n'),
                 'structure_url_title' => array('type' => 'varchar', 'constraint' => '200', 'null' => true),
+                'structure_uri'       => array('type' => 'varchar', 'constraint' => '200', 'null' => true),
                 'template_id'         => array('type' => 'int', 'constraint' => '10', 'unsigned' => true, 'null' => false, 'default' => '0'),
                 'updated'             => array('type' => 'datetime')
             );
@@ -373,7 +374,8 @@ class Structure_upd
                 'parent_id'     =>  array('type' => 'int', 'constraint' => '10', 'unsigned' => true, 'null' => false, 'default' => '0'),
                 'channel_id'    =>  array('type' => 'int', 'constraint' => '6',  'unsigned' => true, 'null' => false, 'default' => '0'),
                 'template_id'   =>  array('type' => 'int', 'constraint' => '6',  'unsigned' => true, 'null' => false, 'default' => '0'),
-                'uri'           =>  array('type' => 'varchar', 'constraint' => '200', 'null' => false)
+                'uri'           =>  array('type' => 'varchar', 'constraint' => '200', 'null' => false),
+                'structure_uri'       => array('type' => 'varchar', 'constraint' => '200', 'null' => true)
             );
 
             ee()->dbforge->add_field($fields);
@@ -665,6 +667,49 @@ class Structure_upd
             add_structure_nav_revision(false, 'Pre 5.1.2 update structure nav');
             $sql = "UPDATE exp_structure s, exp_channel_titles t SET s.channel_id = t.channel_id WHERE s.entry_id = t.entry_id;";
             ee()->db->query($sql);
+        }
+
+        if (version_compare($current, '6.1.0', "<")) {
+            // add column for full URI
+            if (!ee()->db->field_exists('structure_uri', 'structure')) {
+                ee()->dbforge->add_column('structure', array(
+                    'structure_uri' => array(
+                        'type' => 'varchar',
+                        'constraint' => '200',
+                        'null' => true
+                    )
+                ), 'structure_url_title');
+            }
+            if (!ee()->db->field_exists('structure_uri', 'structure_listings')) {
+                ee()->dbforge->add_column('structure_listings', array(
+                    'structure_uri' => array(
+                        'type' => 'varchar',
+                        'constraint' => '200',
+                        'null' => true
+                    )
+                ));
+            }
+            // put values in that column
+            $site_pages = array();
+            if (!bool_config_item('multiple_sites_enabled')) {
+                $site_pages[] = $this->sql->get_site_pages();
+            } else {
+                $sql = ee()->db->select('site_pages')->get('sites');
+                foreach ($sql->result_array() as $row) {
+                    $site_pages[] = unserialize(base64_decode($row['site_pages']));
+                }
+            }
+            foreach ($site_pages as $pages) {
+                if (isset($pages['uris'])) {
+                    foreach ($pages['uris'] as $entry_id => $uri) {
+                        $data = array(
+                            'structure_uri' => $uri
+                        );
+                        ee()->db->where('entry_id', $entry_id)->update('structure', $data);
+                        ee()->db->where('entry_id', $entry_id)->update('structure_listings', $data);
+                    }
+                }
+            }
         }
 
         // Add a history revision every time Structure is upgraded.

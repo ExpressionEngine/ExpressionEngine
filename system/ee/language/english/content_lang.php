@@ -156,6 +156,8 @@ $lang = array(
 
     'edit_date' => 'Last edit date',
 
+    'structure_uri'     => 'Structure URI',
+
     'filter_autosaves' => 'filter auto saves',
 
     'filter_by_author' => 'author',

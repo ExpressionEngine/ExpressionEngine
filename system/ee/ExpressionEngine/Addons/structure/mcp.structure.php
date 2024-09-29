@@ -17,7 +17,7 @@ require_once PATH_ADDONS . 'structure/helper.php';
 require_once PATH_ADDONS . 'structure/sql.structure.php';
 require_once PATH_ADDONS . 'structure/mod.structure.php';
 
-use ExpressionEngine\Structure\Conduit\McpNav as AddonNav;
+use ExpressionEngine\Addons\Structure\Conduit\McpNav as AddonNav;
 
 class Structure_mcp
 {
@@ -30,18 +30,6 @@ class Structure_mcp
     public $base_url;
     public $data;
 
-    public $perms = array(
-        'perm_admin_structure'         => 'Manage module settings',
-        'perm_admin_channels'          => 'Manage channel settings',
-        'perm_view_global_add_page'    => 'View global "Add page" link above page tree',
-        'perm_view_add_page'           => 'View "Add page" link in page tree rows',
-        'perm_view_view_page'          => 'View "View page" link in page tree rows',
-        'perm_view_validation'         => 'Can Access Validation',
-        'perm_view_nav_history'        => 'Can Access Nav History',
-        'perm_delete'                  => 'Can delete',
-        'perm_reorder'                 => 'Can reorder'
-
-    );
     // Enable additional reordering options on a per-level basis
     // Used only in conjunction with per-member group reorder settings
     public $extra_reorder_options = false; // Default: FALSE
@@ -100,6 +88,7 @@ class Structure_mcp
         // Check if we have admin permission
         $permissions = array();
         $permissions['admin'] = $this->sql->user_access('perm_admin_structure', $settings);
+        $permissions['view_status'] = $this->sql->user_access('perm_view_status', $settings);
         $permissions['view_add_page'] = $this->sql->user_access('perm_view_add_page', $settings);
         $permissions['view_view_page'] = $this->sql->user_access('perm_view_view_page', $settings);
         $permissions['view_global_add_page'] = $this->sql->user_access('perm_view_global_add_page', $settings);
@@ -776,8 +765,9 @@ class Structure_mcp
         $vars['ee_ver'] = substr(APP_VER, 0, 1);
         $vars['action_url'] = ee('CP/URL')->make('addons/settings/structure/module_settings_submit');
         $vars['attributes'] = array('class' => 'structure-form', 'id' => 'module_settings');
+        $vars['save_btn_text'] = 'btn_save_settings';
+        $vars['save_btn_text_working'] = 'btn_saving';
         $vars['groups'] = $groups;
-        $vars['perms'] = $this->perms;
         $vars['settings'] = $settings;
         $vars['permissions'] = $permissions;
         $vars['extension_is_installed'] = $this->sql->extension_is_installed();
@@ -808,6 +798,164 @@ class Structure_mcp
                 $vars['settings'][$key] = $default;
             }
         }
+
+        $table = ee('CP/Table', array('autosort' => false, 'autosearch' => false, 'limit' => 0));
+        $table->setColumns(
+            array(
+                lang('setting'),
+                '' => [
+                    'encode' => false,
+                    'attrs' => array(
+                        'width' => '25%'
+                    )
+                ],
+            )
+        );
+        $table->setData([
+            [
+                lang('setting_redirect_login'),
+                ee('View')->make('ee:_shared/form/field')->render([
+                    'field_name' => 'redirect_on_login',
+                    'field' => [
+                        'type' => 'yes_no',
+                        'value' => ($settings['redirect_on_login'] == '' || $settings['redirect_on_login'] == 'y')
+                    ]
+                ])
+            ],
+            [
+                lang('setting_redirect_publish'),
+                ee('View')->make('ee:_shared/form/field')->render([
+                    'field_name' => 'redirect_on_publish',
+                    'field' => [
+                        'type' => 'dropdown',
+                        'choices' => $vars['redirect_types'],
+                        'value' => isset($settings['redirect_on_publish']) ? $settings['redirect_on_publish'] : 'n'
+                    ]
+                ])
+            ],
+            [
+                lang('hide_hidden_templates'),
+                ee('View')->make('ee:_shared/form/field')->render([
+                    'field_name' => 'hide_hidden_templates',
+                    'field' => [
+                        'type' => 'yes_no',
+                        'value' => ($settings['redirect_on_login'] == '' || $settings['hide_hidden_templates'] == 'y')
+                    ]
+                ])
+            ],
+            [
+                lang('setting_trailing_slash'),
+                ee('View')->make('ee:_shared/form/field')->render([
+                    'field_name' => 'add_trailing_slash',
+                    'field' => [
+                        'type' => 'yes_no',
+                        'value' => ($settings['add_trailing_slash'] == '' || $settings['add_trailing_slash'] == 'y')
+                    ]
+                ])
+            ]
+        ]);
+        $vars['module_settings'] = $table->viewData();
+
+        $table = ee('CP/Table', array('autosort' => false, 'autosearch' => false, 'limit' => 0));
+        $groups = array_merge([['id' => 1, 'title' => 'SuperAdmin']], $vars['groups']);
+        $cols = array(
+            lang('setting'),
+        );
+        foreach ($groups as $group) {
+            $cols[$group['title']] = [
+                'encode' => false,
+                'attrs' => array(
+                    'width' => '10%'
+                )
+            ];
+        }
+        $table->setColumns($cols);
+        $data = array();
+        $viewPrefs = [
+            'perm_view_status',
+            'perm_view_global_add_page',
+            'perm_view_add_page',
+            'perm_view_view_page'
+        ];
+        foreach ($viewPrefs as $pref) {
+            $prefKey = $pref . '_' . $group['id'];
+            $row = array(
+                lang($pref),
+            );
+            foreach ($groups as $group) {
+                $selected = false;
+                if ($group['id'] == 1 && ! isset($settings[$prefKey])) {
+                    $selected = true;
+                } elseif (isset($settings[$prefKey]) && $settings[$prefKey] == 'y') {
+                    $selected = true;
+                }
+                $row[] = ee('View')->make('ee:_shared/form/field')->render([
+                    'field_name' => $prefKey,
+                    'field' => [
+                        'type' => 'yes_no',
+                        'value' => $selected
+                    ]
+                ]);
+            }
+            $data[] = $row;
+        }
+        $table->setData($data);
+        $vars['display_settings'] = $table->viewData();
+
+        $table = ee('CP/Table', array('autosort' => false, 'autosearch' => false, 'limit' => 0));
+        $table->setNoResultsText(lang('no_roles'), lang('no_roles_add'), ee('CP/URL')->make('members/roles')->compile());
+        $cols = array(
+            lang('setting'),
+        );
+        foreach ($vars['groups'] as $group) {
+            $cols[$group['title']] = [
+                'encode' => false,
+                'attrs' => array(
+                    'width' => '10%'
+                )
+            ];
+        }
+        $table->setColumns($cols);
+        $data = array();
+        $perms = [
+            'perm_admin_structure',
+            'perm_admin_channels',
+            'perm_view_validation',
+            'perm_view_nav_history',
+            'perm_delete',
+            'perm_reorder'
+        ];
+        if (! empty($vars['groups'])) {
+            foreach ($perms as $pref) {
+                $row = array(
+                    lang($pref),
+                );
+                foreach ($vars['groups'] as $group) {
+                    $prefKey = $pref . '_' . $group['id'];
+                    if ($pref == 'perm_delete' || $pref == 'perm_reorder') {
+                        $row[] = ee('View')->make('ee:_shared/form/field')->render([
+                            'field_name' => $prefKey,
+                            'field' => [
+                                'type' => 'dropdown',
+                                'choices' => $vars['level_permission_types'],
+                                'value' => isset($settings[$prefKey]) ? $settings[$prefKey] : 'all'
+                            ]
+                        ]);
+                    } else {
+                        $row[] = ee('View')->make('ee:_shared/form/field')->render([
+                            'field_name' => $prefKey,
+                            'field' => [
+                                'type' => 'yes_no',
+                                'value' => (isset($settings[$prefKey]) && $settings[$prefKey] == 'y')
+                            ]
+                        ]);
+                    }
+                }
+                $data[] = $row;
+            }
+        }
+        $table->setData($data);
+        $vars['member_permissions'] = $table->viewData();
 
         return ee()->general_helper->view('module_settings', $vars, true);
     }

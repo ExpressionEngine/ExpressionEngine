@@ -29,6 +29,11 @@ abstract class Column implements EntryManager\ColumnInterface
         return [];
     }
 
+    public function getEntryManagerModelAliases()
+    {
+        return [];
+    }
+
     public function getEntryManagerColumnFields()
     {
         return [];

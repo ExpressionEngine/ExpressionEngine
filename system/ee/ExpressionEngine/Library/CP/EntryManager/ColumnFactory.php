@@ -19,6 +19,7 @@ class ColumnFactory
         'entry_id' => Columns\EntryId::class,
         'title' => Columns\Title::class,
         'url_title' => Columns\UrlTitle::class,
+        'structure_uri' => Columns\StructureUri::class,
         'author' => Columns\Author::class,
         'status' => Columns\Status::class,
         'sticky' => Columns\Sticky::class,
@@ -36,6 +37,8 @@ class ColumnFactory
     ];
 
     protected static $instances = [];
+
+    private static $structureColumnAvailable;
 
     /**
      * Returns an instance of a column given its identifier. This factory uses
@@ -68,6 +71,7 @@ class ColumnFactory
      * Returns all available columns in the system, be it a system-standard
      * column, a custom field, or a column provided by an extension
      *
+     * @param mixed $channel The channel to get columns for
      * @return array[Column]
      */
     public static function getAvailableColumns($channel = false)
@@ -91,9 +95,19 @@ class ColumnFactory
      */
     private static function getStandardColumns()
     {
+        if (is_null(self::$structureColumnAvailable)) {
+            self::$structureColumnAvailable = false;
+            $structure = ee('Addon')->get('structure');
+            if (version_compare((string) $structure->getInstalledVersion(), '6.1.0', '>=')) {
+                self::$structureColumnAvailable = true;
+            }
+        }
         return array_filter(
             array_map(function ($identifier, $column) {
-                if ($identifier != 'comments' || bool_config_item('enable_comments')) {
+                if (
+                    ($identifier != 'comments' || bool_config_item('enable_comments')) &&
+                    ($identifier != 'structure_uri' || self::$structureColumnAvailable === true)
+                ) {
                     return static::getColumn($identifier);
                 }
             }, array_keys(static::$standard_columns), static::$standard_columns),
@@ -125,7 +139,7 @@ class ColumnFactory
                 });
         } else {
             $columns = ee('Model')->get('ChannelField')
-                ->all()
+                ->all(true)
                 ->filter(function ($field) {
                     return in_array(
                         $field->field_type,
