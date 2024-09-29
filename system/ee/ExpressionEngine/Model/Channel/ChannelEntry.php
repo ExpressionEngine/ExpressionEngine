@@ -224,6 +224,11 @@ class ChannelEntry extends ContentModel
         $this->setProperty('day', ee()->localize->format_date('%d', $entry_timestamp));
     }
 
+    public function get__title()
+    {
+        return ee('Security/XSS')->clean($this->getRawProperty('title'));
+    }
+
     public function set__expiration_date($expiration_date)
     {
         $this->setRawProperty('expiration_date', $this->stringToTimestamp($expiration_date));
@@ -567,6 +572,7 @@ class ChannelEntry extends ContentModel
             $this->Status = $this->getModelFacade()->get('Status')
                 ->filter('status', $this->getProperty('status'))
                 ->first();
+            $this->markAsDirty('status_id');
         }
     }
 
@@ -1353,7 +1359,7 @@ class ChannelEntry extends ContentModel
                 ? null : array_keys(ee()->session->userdata('assigned_channels'));
 
             $my_fields = $this->Channel->getAllCustomFields()->pluck('field_id');
-            
+
             // sort for comparison later
             sort($my_fields);
 

@@ -70,6 +70,14 @@ $lang = array(
 
     'column_title' => 'Title',
 
+    'column_view_count_one' => 'View Count 1',
+
+    'column_view_count_two' => 'View Count 2',
+
+    'column_view_count_three' => 'View Count 3',
+
+    'column_view_count_four' => 'View Count 4',
+
     'comment_content' => 'Comment content',
 
     'comment_content_desc' => 'Content of this comment.',

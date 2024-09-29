@@ -130,7 +130,8 @@ context('Rich Text Editor', () => {
             page.get('tool_sets').eq(1).find('a').first().click()
 
             page.get('tool_set_name').clear().type('Cypress Edited')
-            page.get('tool_set_save_button').click()
+            page.get('tool_set_save_button').eq(1).click() // save and close
+            cy.get('button').contains('Save & Close').first().click()
 
             cy.hasNoErrors()
             page.get('tool_sets').contains("Cypress Edited")
@@ -196,7 +197,8 @@ context('Rich Text Editor', () => {
 
         it('Can create a new tool set', function() {
             page.get('tool_set_name').type('Empty')
-            page.get('tool_set_save_button').click()
+            page.get('tool_set_save_button').eq(1).click() // save and close
+            cy.get('button').contains('Save & Close').first().click()
 
             cy.hasNoErrors()
             page.confirmSettings()
@@ -209,7 +211,7 @@ context('Rich Text Editor', () => {
 
         it('Ensures tool set names are unique', function() {
             page.get('tool_set_name').type('Empty')
-            page.get('tool_set_save_button').click()
+            page.get('tool_set_save_button').eq(0).click()
 
             cy.hasNoErrors()
             page.get('tool_set_name').invoke('val').should('eq', "Empty")
@@ -222,7 +224,8 @@ context('Rich Text Editor', () => {
         })
 
         it('Requires a tool set name', function() {
-            page.get('tool_set_save_button').click()
+            page.get('tool_set_save_button').eq(1).click() // save and close
+            cy.get('button').contains('Save & Close').first().click()
 
             cy.hasNoErrors()
 
@@ -237,7 +240,7 @@ context('Rich Text Editor', () => {
 
         it('Disallows XSS strings as a tool set name', function() {
             page.get('tool_set_name').type('<script>Haha')
-            page.get('tool_set_save_button').click()
+            page.get('tool_set_save_button').eq(0).click()
 
             cy.hasNoErrors()
                 // page.confirmToolset()
@@ -258,7 +261,7 @@ context('Rich Text Editor', () => {
             cy.get('.cke_button__inserttable').click()
 
             page.get('tool_set_name').type('<script>Haha')
-            page.get('tool_set_save_button').click()
+            page.get('tool_set_save_button').eq(0).click()
 
             cy.hasNoErrors()
 

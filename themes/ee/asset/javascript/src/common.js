@@ -664,6 +664,9 @@ $(document).ready(function(){
 			// reveal the modal
 			if ($(this).hasClass('modal-wrap')) {
 				$(this).fadeIn('slow');
+				if ($(this).find('input:visible').length) {
+					$(this).find('input:visible').focus();
+				}
 			} else {
 				$(this).removeClass('app-modal---closed')
 					.addClass('app-modal---open');
@@ -1227,6 +1230,8 @@ $(document).ready(function(){
 				if (!$(this).closest('div[data-input-value^="categories["]').length) {
 						$(this).css('pointer-events', 'none');
 						$(this).find('.checkbox-label__text').css('pointer-events', 'auto');
+						$(this).find('.flyout-edit').css('pointer-events', 'auto');
+						$(this).find('.icon-reorder').css('pointer-events', 'auto');
 						$(this).find('input').css('pointer-events', 'auto');
 
 						if ($(this).find('.checkbox-label__text-editable').length) {

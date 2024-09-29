@@ -3125,6 +3125,9 @@ class Pro_search_mcp
             $params = pro_search_decode($params, false);
             $row = array_merge($row, $params);
 
+            // remove =, +, -, @ from the start of keywords
+            $row['keywords'] = preg_replace('/^[\=\+\-\@]+/', '', $row['keywords']);
+
             $log_row = array();
 
             foreach ($keys as $k => $v) {

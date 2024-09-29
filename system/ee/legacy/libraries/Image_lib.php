@@ -159,11 +159,7 @@ class EE_Image_lib
          * full server path in order to more reliably read it.
          *
          */
-        if (function_exists('realpath') and @realpath($this->source_image) !== false) {
-            $full_source_path = str_replace("\\", "/", realpath($this->source_image));
-        } else {
-            $full_source_path = $this->source_image;
-        }
+        $full_source_path = str_replace("\\", "/", $this->realpath($this->source_image));
 
         $x = explode('/', $full_source_path);
         $this->source_image = end($x);
@@ -191,11 +187,7 @@ class EE_Image_lib
                 $this->dest_folder = $this->source_folder;
                 $this->dest_image = $this->new_image;
             } else {
-                if (function_exists('realpath') and @realpath($this->new_image) !== false) {
-                    $full_dest_path = str_replace("\\", "/", realpath($this->new_image));
-                } else {
-                    $full_dest_path = $this->new_image;
-                }
+                $full_dest_path = str_replace("\\", "/", $this->realpath($this->new_image));
 
                 // Are we writing to a temp file
                 if (stripos($full_dest_path, '/tmp') === 0
@@ -295,7 +287,7 @@ class EE_Image_lib
         }
 
         if ($this->wm_overlay_path != '') {
-            $this->wm_overlay_path = str_replace("\\", "/", realpath($this->wm_overlay_path));
+            $this->wm_overlay_path = str_replace("\\", "/", $this->realpath(parse_config_variables($this->wm_overlay_path)));
         }
 
         if (isset($props['wm_opacity']) and $props['wm_opacity'] != 100) {
@@ -1381,6 +1373,12 @@ class EE_Image_lib
 
         $vals = @getimagesize($path);
 
+        if (! $vals) {
+            $this->set_error('imglib_properties_failed');
+
+            return false;
+        }
+
         $types = array(IMAGETYPE_GIF => 'gif', IMAGETYPE_JPEG => 'jpeg', IMAGETYPE_PNG => 'png', '18' => 'webp');
 
         $mime = (isset($types[$vals['2']])) ? 'image/' . $types[$vals['2']] : 'image/jpg';
@@ -1539,6 +1537,21 @@ class EE_Image_lib
         }
 
         return $str;
+    }
+
+    /**
+     * A fail-safe wrapper for php's realpath() method
+     *
+     * @param string $path
+     * @return string
+     */
+    protected function realpath($path)
+    {
+        if (function_exists('realpath') and @realpath($path) !== false) {
+            return realpath($path);
+        }
+
+        return $path;
     }
 }
 // END Image_lib Class

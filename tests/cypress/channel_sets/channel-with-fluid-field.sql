@@ -19,6 +19,11 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
+# Remove testing entry from channel_titles
+# ------------------------------------------------------------
+
+DELETE FROM `exp_channel_titles` WHERE `url_title` IN ('fluid-field-test-first','fluid-field-test-the-first');
+
 
 # Dump of table exp_channel_data
 # ------------------------------------------------------------

@@ -66,7 +66,7 @@ class SelectList extends React.Component {
         // array of values for multi select
         var value = (multi) ? items[key] : key
         var newItem = {
-          value: items[key].value || items[key].value === '' ? items[key].value : value,
+          value: items[key].value || items[key].value === '' || items[key].value === 0 ? items[key].value : value,
           label: items[key].label !== undefined ? items[key].label : items[key],
           instructions: items[key].instructions ? items[key].instructions : '',
           children: null,
@@ -126,7 +126,7 @@ class SelectList extends React.Component {
 
     $(selector, this.container).sortable({
       axis: 'y',
-      containment: 'parent',
+      containment: false,
       handle: '.icon-reorder',
       items: this.props.nested ? '> li' : 'label',
       placeholder: 'field-reorder-placeholder',
@@ -483,7 +483,7 @@ class SelectList extends React.Component {
 
         {/* CHANGE THIS CODE BASED ON TOOGLE PROPS*/}
         { this.state.toggles.length != 0 &&
-          this.state.toggles.map(toggle => 
+          this.state.toggles.map(toggle =>
             <input type="hidden" key={toggle.name + '[' + toggle.value + ']'} name={props.multi ? toggle.name + '[]' : toggle.name} value={toggle.value} ref={(input) => { this.input = input }} />
           )
         }
@@ -614,12 +614,15 @@ class SelectItem extends React.Component {
           <span className="icon-reorder icon-left"></span>
         )}
         {props.editable && (
-            <a href="#" class="flyout-edit" dangerouslySetInnerHTML={{ __html: label }}></a>
+            <a href="#" class="flyout-edit" data-id={props.item.value} dangerouslySetInnerHTML={{ __html: label }}></a>
         )}
         { ! props.editable && <div dangerouslySetInnerHTML={{ __html: label }} />}
         {" "}
         {props.item.instructions && (
           <span className="meta-info">{props.item.instructions}</span>
+        )}
+        {props.name=="author_id" && (
+          <span className="meta-info">{"#" + props.item.value}</span>
         )}
         <div class="button-group button-group-xsmall button-group-flyout-right">
         {props.toggles && props.toggles.length != 0 && props.toggles.map((toggleName, index) =>

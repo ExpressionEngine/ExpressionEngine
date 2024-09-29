@@ -35,6 +35,11 @@ class File extends FileSystemEntity
         return $dimensions[0];
     }
 
+    public function get__title()
+    {
+        return \htmlentities((string)$this->getRawProperty('title'), ENT_QUOTES, 'UTF-8');
+    }
+
     public function get__file_hw_original()
     {
         if (empty($this->file_hw_original) && !empty($this->file_name)) {

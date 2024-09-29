@@ -72,6 +72,23 @@ class LivePreview
     }
 
     /**
+     * Determine whether the LivePreview is for a specific Entry
+     *
+     * @param int $id
+     * @return boolean
+     */
+    public function forEntryId($id)
+    {
+        if (!$this->hasEntryData()) {
+            return false;
+        }
+
+        $entryId = $this->getEntryData()['entry_id'] ?? null;
+
+        return $entryId === (int) $id;
+    }
+
+    /**
      * generate and display the live preview
      */
     public function preview($channel_id, $entry_id = null, $preview_url = null, $prefer_system_preview = false)
@@ -143,7 +160,7 @@ class LivePreview
 
         $template_id = null;
 
-        if (! empty($_POST['pages__pages_uri']) && 
+        if (! empty($_POST['pages__pages_uri']) &&
             ! empty($_POST['pages__pages_template_id'])
            ) {
             //pages data passed with POST

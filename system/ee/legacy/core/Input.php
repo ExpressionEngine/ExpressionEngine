@@ -974,11 +974,15 @@ class EE_Input
     * standardizes newline characters to \n
     *
     * @access   private
-    * @param    string
-    * @return   string
+    * @param    string|array
+    * @return   string|array
     */
     public function _clean_input_data($str)
     {
+        if (is_null($str) || $str === '') {
+            return (string) $str;
+        }
+
         if (is_array($str)) {
             $new_array = array();
             foreach ($str as $key => $val) {

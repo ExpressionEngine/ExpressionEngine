@@ -353,70 +353,79 @@ context('Publish Entry', () => {
           cy.wait('@upload')
           cy.hasNoErrors()
 
+          var readmeIndex = 0;
+          var licenseIndex = 0;
+
           //one of the files is not allowed, two should be successfully uploaded
           cy.get('.js-file-grid').eq(0).should('contain', 'File not allowed')
           cy.get('.js-file-grid').eq(0).find('a').contains('Dismiss').click()
           cy.get('.grid-field__table tbody tr:visible').should('have.length', 2)
-          cy.get('.grid-field__table tbody tr:visible').contains('README.md')
-          cy.get('.grid-field__table tbody tr:visible').contains('LICENSE.txt')
-          cy.get('.grid-field__table tbody tr:visible').should('not.contain', 'script.sh')
-
-          //data in place after validation error
-          cy.get('button[value="save"]').click()
-
-          cy.get('.grid-field__table tbody tr:visible').should('have.length', 2)
-          cy.get('.grid-field__table tbody tr:visible').contains('README.md')
-          cy.get('.grid-field__table tbody tr:visible').contains('LICENSE.txt')
-          cy.get('.grid-field__table tbody tr:visible').should('not.contain', 'script.sh')
-
-          //data in place after saving
-          page.get('title').clear().type('File Grid Test').blur()
-          page.get('url_title').focus().blur()
-          cy.wait('@validation')
-          cy.wait(3000)
-          cy.get('button[value="save"]').click()
-
-          cy.get('.grid-field__table tbody tr:visible').should('have.length', 2)
-          cy.get('.grid-field__table tbody tr:visible').contains('README.md')
-          cy.get('.grid-field__table tbody tr:visible').contains('LICENSE.txt')
-          cy.get('.grid-field__table tbody tr:visible').should('not.contain', 'script.sh')
-
-          // edit file metadata, only one row is updated
-          cy.get('.grid-field__table tbody tr:contains(README)').find('.edit-meta').should('be.visible').click()
-
-          cy.get('.app-modal--side').should('be.visible');
-          cy.get('.app-modal--side .title-bar__title').should('contain', 'README.md')
-
-          cy.get('.app-modal--side [name=title]').invoke('val').then((value) => { expect(value).to.eq('README.md') })
-          cy.get('.app-modal--side [name=description]').invoke('val').then((value) => { expect(value).to.be.empty })
-          cy.get('.app-modal--side [name=credit]').invoke('val').then((value) => { expect(value).to.be.empty })
-          cy.get('.app-modal--side [name=location]').invoke('val').then((value) => { expect(value).to.be.empty })
-
-          cy.get('.app-modal--side [name=title]').clear().type('Cypress README')
-          cy.get('.app-modal--side [name=description]').clear().type('README Description')
-          cy.get('.app-modal--side [name=credit]').clear().type('README Credits')
-          cy.get('.app-modal--side [name=location]').clear().type('README Location')
-
-          cy.get('.app-modal--side [value=save]').click()
-          cy.get('.app-modal--side').should('not.be.visible');
-          cy.wait(1000)
-
-          cy.get('.grid-field__table tbody tr:visible').eq(0).find('.fields-upload-chosen-name').invoke('text').then((text) => {
-            expect(text).to.eq('Cypress README')
+          cy.get('.grid-field__table tbody tr:visible').contains('README.md').parents('tr').invoke('index').then((index) => {
+            readmeIndex = index;
+            cy.log('readmeIndex', readmeIndex)
+            cy.get('.grid-field__table tbody tr:visible').contains('LICENSE.txt').parents('tr').invoke('index').then((index) => {
+              licenseIndex = index;
+              cy.log('licenseIndex', licenseIndex)
+              cy.get('.grid-field__table tbody tr:visible').should('not.contain', 'script.sh')
+  
+              //data in place after validation error
+              cy.get('button[value="save"]').click()
+    
+              cy.get('.grid-field__table tbody tr:visible').should('have.length', 2)
+              cy.get('.grid-field__table tbody tr').eq(readmeIndex).contains('README.md')
+              cy.get('.grid-field__table tbody tr').eq(licenseIndex).contains('LICENSE.txt')
+              cy.get('.grid-field__table tbody tr:visible').should('not.contain', 'script.sh')
+    
+              //data in place after saving
+              page.get('title').clear().type('File Grid Test').blur()
+              page.get('url_title').focus().blur()
+              cy.wait('@validation')
+              cy.wait(3000)
+              cy.get('button[value="save"]').click()
+    
+              cy.get('.grid-field__table tbody tr:visible').should('have.length', 2)
+              cy.get('.grid-field__table tbody tr').eq(readmeIndex).contains('README.md')
+              cy.get('.grid-field__table tbody tr').eq(licenseIndex).contains('LICENSE.txt')
+              cy.get('.grid-field__table tbody tr:visible').should('not.contain', 'script.sh')
+    
+              // edit file metadata, only one row is updated
+              cy.get('.grid-field__table tbody tr:contains(README)').find('.edit-meta').should('be.visible').click()
+    
+              cy.get('.app-modal--side').should('be.visible');
+              cy.get('.app-modal--side .title-bar__title').should('contain', 'README.md')
+    
+              cy.get('.app-modal--side [name=title]').invoke('val').then((value) => { expect(value).to.eq('README.md') })
+              cy.get('.app-modal--side [name=description]').invoke('val').then((value) => { expect(value).to.be.empty })
+              cy.get('.app-modal--side [name=credit]').invoke('val').then((value) => { expect(value).to.be.empty })
+              cy.get('.app-modal--side [name=location]').invoke('val').then((value) => { expect(value).to.be.empty })
+    
+              cy.get('.app-modal--side [name=title]').clear().type('Cypress README')
+              cy.get('.app-modal--side [name=description]').clear().type('README Description')
+              cy.get('.app-modal--side [name=credit]').clear().type('README Credits')
+              cy.get('.app-modal--side [name=location]').clear().type('README Location')
+    
+              cy.get('.app-modal--side [value=save]').click()
+              cy.get('.app-modal--side').should('not.be.visible');
+              cy.wait(1000)
+    
+              cy.get('.grid-field__table tbody tr').eq(readmeIndex).find('.fields-upload-chosen-name').invoke('text').then((text) => {
+                expect(text).to.eq('Cypress README')
+              })
+              cy.get('.grid-field__table tbody tr').eq(licenseIndex).find('.fields-upload-chosen-name').invoke('text').then((text) => {
+                expect(text).to.contain('LICENSE.txt')
+              })
+    
+              cy.get('.grid-field__table tbody tr:contains(README)').find('.edit-meta').should('be.visible').click()
+    
+              cy.get('.app-modal--side').should('be.visible');
+              cy.get('.app-modal--side .title-bar__title').should('contain', 'Cypress README')
+    
+              cy.get('.app-modal--side [name=title]').invoke('val').then((value) => { expect(value).to.eq('Cypress README') })
+              cy.get('.app-modal--side [name=description]').invoke('val').then((value) => { expect(value).to.eq('README Description') })
+              cy.get('.app-modal--side [name=credit]').invoke('val').then((value) => { expect(value).to.eq('README Credits') })
+              cy.get('.app-modal--side [name=location]').invoke('val').then((value) => { expect(value).to.eq('README Location') })
+            })
           })
-          cy.get('.grid-field__table tbody tr:visible').eq(1).find('.fields-upload-chosen-name').invoke('text').then((text) => {
-            expect(text).to.contain('LICENSE.txt')
-          })
-
-          cy.get('.grid-field__table tbody tr:contains(README)').find('.edit-meta').should('be.visible').click()
-
-          cy.get('.app-modal--side').should('be.visible');
-          cy.get('.app-modal--side .title-bar__title').should('contain', 'Cypress README')
-
-          cy.get('.app-modal--side [name=title]').invoke('val').then((value) => { expect(value).to.eq('Cypress README') })
-          cy.get('.app-modal--side [name=description]').invoke('val').then((value) => { expect(value).to.eq('README Description') })
-          cy.get('.app-modal--side [name=credit]').invoke('val').then((value) => { expect(value).to.eq('README Credits') })
-          cy.get('.app-modal--side [name=location]').invoke('val').then((value) => { expect(value).to.eq('README Location') })
       })
 
       it('File Grid respect min and max rows settings', () => {

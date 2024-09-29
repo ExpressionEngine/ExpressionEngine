@@ -151,7 +151,7 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
             ]);
         }
 
-        $r = '<div class="scroll-wrap pr">';
+        $r = '<div class="scroll-wrap pr checkbox-wrapper">';
 
         $r .= $this->_display_nested_form($field_options, $values);
 

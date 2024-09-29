@@ -212,7 +212,7 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
       var selector = this.props.nested ? '.field-nested' : '.field-inputs';
       $(selector, this.container).sortable({
         axis: 'y',
-        containment: 'parent',
+        containment: false,
         handle: '.icon-reorder',
         items: this.props.nested ? '> li' : 'label',
         placeholder: 'field-reorder-placeholder',
@@ -547,7 +547,7 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
           // array of values for multi select
           var value = multi ? items[key] : key;
           var newItem = {
-            value: items[key].value || items[key].value === '' ? items[key].value : value,
+            value: items[key].value || items[key].value === '' || items[key].value === 0 ? items[key].value : value,
             label: items[key].label !== undefined ? items[key].label : items[key],
             instructions: items[key].instructions ? items[key].instructions : '',
             children: null,
@@ -739,6 +739,7 @@ var SelectItem = /*#__PURE__*/function (_React$Component2) {
       }), props.editable && React.createElement("a", {
         href: "#",
         "class": "flyout-edit",
+        "data-id": props.item.value,
         dangerouslySetInnerHTML: {
           __html: label
         }
@@ -748,7 +749,9 @@ var SelectItem = /*#__PURE__*/function (_React$Component2) {
         }
       }), " ", props.item.instructions && React.createElement("span", {
         className: "meta-info"
-      }, props.item.instructions), React.createElement("div", {
+      }, props.item.instructions), props.name == "author_id" && React.createElement("span", {
+        className: "meta-info"
+      }, "#" + props.item.value), React.createElement("div", {
         "class": "button-group button-group-xsmall button-group-flyout-right"
       }, props.toggles && props.toggles.length != 0 && props.toggles.map(function (toggleName, index) {
         return React.createElement("a", {
