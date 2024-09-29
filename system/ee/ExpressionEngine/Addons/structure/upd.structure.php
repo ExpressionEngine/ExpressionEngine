@@ -696,8 +696,7 @@ class Structure_upd
             } else {
                 $sql = ee()->db->select('site_pages')->get('sites');
                 foreach ($sql->result_array() as $row) {
-                    $pages_array = ee()->sql_helper->row($row['site_pages']);
-                    $site_pages[] = unserialize(base64_decode($pages_array['site_pages']));
+                    $site_pages[] = unserialize(base64_decode($row['site_pages']));
                 }
             }
             foreach ($site_pages as $pages) {
