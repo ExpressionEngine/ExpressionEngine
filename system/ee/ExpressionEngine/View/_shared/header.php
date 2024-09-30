@@ -74,11 +74,11 @@ $current_page = ee()->uri->segment(2);
                         <div class="lv-banner__info alert__content">
                             <p class="alert__title">Software License Notice.</p>
                             <?php if(ee('pro:Access')->canManageLicenses()): ?>
-                                <p>Your ExpressionEngine license has expired. <a href="https://expressionengine.com/store/purchase-pro#renew" target="_blank">Please renew ExpressionEngine Pro today</a>.
+                                <p>Your ExpressionEngine license has expired. <a href="https://expressionengine.com/store/purchase-pro?utm_source=cp&utm_medium=cp-link&utm_campaign=cp-cta&utm_content=cp-banner#renew" target="_blank">Please renew ExpressionEngine Pro today</a>.
                                 <p>We recommend keeping licenses current to ensure smooth site operation, access to updates, and security fixes.</p>
                             <?php else: ?>
-                                <p>Contact the site administrator and ask that they login to resolve any license notices.</p>
-                                <p>Please note, this will not impact the operation of this site.</p>
+                                <p>Please contact the site administrator and ask them to log in to resolve any license notices.</p>
+                                <p>Note: This will not impact the operation of the site.</p>
                             <?php endif; ?>
                         </div>
                         <a class="js-lv-banner__close-btn alert__close">
