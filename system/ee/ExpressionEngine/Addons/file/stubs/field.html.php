@@ -1,6 +1,5 @@
 {<?=$field_name?>}
     {if mime_type ^= 'image/'}
-        <img src="{url}" alt="{title}">
         <picture>
             <?php foreach ($dimensions as $dimension) : ?>
             <source type="{mime_type}" srcset="{url:<?=$dimension?>}" width="{width:<?=$dimension?>}" height="{height:<?=$dimension?>}" alt="{title}">
