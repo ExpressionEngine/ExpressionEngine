@@ -1496,3 +1496,14 @@ h3.popup-modal-ee-44E4F0E59DFA295EB450397CA40D1169__window-header--title,
     display: none !important;
   }
 }
+
+span.eeFrontEdit {
+  display: block;
+  border-bottom: 1px dashed transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+span.eeFrontEdit:hover {
+  border-bottom: 1px dashed #5d63f1; 
+}
