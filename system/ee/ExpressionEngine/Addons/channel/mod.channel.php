@@ -390,7 +390,7 @@ class Channel
             $this->mpfields = ee()->session->cache['channel']['custom_member_field_pairs'];
             return;
         }
-        
+
         ee()->load->library('api');
         ee()->legacy_api->instantiate('channel_fields');
 
@@ -2122,7 +2122,7 @@ class Channel
         if (! $needed_fields_only = ee()->TMPL->fetch_param('needed_fields_only')) {
             // string is weird on this one.. but it keeps the query
             // well formatted for viewing when fully rendered
-            $sql .= ", 
+            $sql .= ",
                         wd.*";
         }
 
@@ -4722,6 +4722,7 @@ class Channel
         $year_limit = (is_numeric(ee()->TMPL->fetch_param('year_limit'))) ? ee()->TMPL->fetch_param('year_limit') : 50;
         $total_years = 0;
         $current_year = '';
+        $data = [];
 
         foreach ($query->result_array() as $row) {
             $tagdata = ee()->TMPL->tagdata;
@@ -4758,6 +4759,7 @@ class Channel
             $cond['month_num'] = $month;
             $cond['year'] = $year;
             $cond['year_short'] = substr($year, 2);
+            $data[] = $cond;
 
             $tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
 
@@ -4799,6 +4801,8 @@ class Channel
 
             $return .= trim($tagdata) . "\n";
         }
+
+        ee()->TMPL->set_data($data);
 
         return $return;
     }
