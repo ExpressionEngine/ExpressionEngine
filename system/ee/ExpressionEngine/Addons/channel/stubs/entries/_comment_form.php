@@ -31,5 +31,4 @@
     {!-- required to prevent EE from outputting form if commenting is disabled or expired --}
     {if comments_disabled}Comments on this entry are currently disabled.{/if}
     {if comments_expired}Commenting on this entry has expired.{/if}
-
 {/exp:comment:form}

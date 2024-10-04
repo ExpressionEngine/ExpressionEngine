@@ -4,14 +4,14 @@
 <?php endif; ?>
 
 <html>
-
 <head>
-    <title><?= $channel_title ?></title>
+    <title><?= $channel_title ?> Categories</title>
 </head>
-
 <body>
     <div>
+        <?php if($show_comments ?? false): ?>
         {!-- If a category url_title is not provided list all of the categories --}
+        <?php endif; ?>
         {if segment_3 == ''}
         <h1><?= $channel_title ?> Categories</h1>
         {exp:channel:categories channel="<?= $channel ?>"}
@@ -23,7 +23,9 @@
             {if category_description}{category_description}{/if}
         </div>
         {/exp:channel:categories}
+        <?php if($show_comments ?? false): ?>
         {!-- Otherwise show entries for this category --}
+        <?php endif; ?>
         {if:else}
         {exp:channel:category_heading channel="<?= $channel ?>" category_url_title="{segment_3}" <?=(strpos($channel, '|') !== false) ? 'relaxed_categories="yes"' : ''?>}
             <h1>{category_name}</h1>
@@ -56,5 +58,4 @@
         {/if}
     </div>
 </body>
-
 </html>

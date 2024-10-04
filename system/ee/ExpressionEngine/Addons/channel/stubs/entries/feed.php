@@ -23,4 +23,3 @@
         {/exp:channel:entries}
     </channel>
 </rss>
-

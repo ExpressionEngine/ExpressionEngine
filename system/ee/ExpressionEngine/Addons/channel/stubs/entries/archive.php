@@ -3,11 +3,9 @@
 {!-- URL Format template_group/archive/YEAR/MONTH --}
 <?php endif; ?>
 <html>
-
 <head>
-    <title><?= $channel_title ?></title>
+    <title><?= $channel_title ?> Archives</title>
 </head>
-
 <body>
     <div>
         <h1><?= $channel_title ?> Archives</h1>
@@ -16,10 +14,10 @@
                 {year_heading}
                     <h2><a href="{path='<?= $template_group ?>/archive/{year}'}">{year}</a></h2>
                 {/year_heading}
-                <a href="{path='<?= $template_group ?>/archive'}">{month}</a><br/>
+                <a href="{path='<?= $template_group ?>/archive/{year}/{month_num}'}">{month}</a><br/>
             {/exp:channel:month_links}
         {if:else}
-            <span>{segment_3}{if segment_4 != ''}/{segment_4}{/if}</span>
+            <h2>{segment_3}{if segment_4 != ''}/{segment_4}{/if}</h2>
             {exp:channel:entries channel="<?= $channel ?>" dynamic="no" limit="10" paginate="bottom" year="{segment_3}" {if segment_4 != ''}month="{segment_4}"{/if}}
                 {if no_results}
                 <p>No entries.</p>
@@ -49,5 +47,4 @@
         {/if}
     </div>
 </body>
-
 </html>

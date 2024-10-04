@@ -1,1 +1,1 @@
-<span>{<?=$field_name?>:mailto title="Send e-mail" subject="Question about {title}" encode="no"}</span> / <span>{<?=$field_name?>}</span>
+<span>{<?=$field_name?>:mailto title="Send e-mail" subject="Question" encode="no"}</span> / <span>{<?=$field_name?>}</span>

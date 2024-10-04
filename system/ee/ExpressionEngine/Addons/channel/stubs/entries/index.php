@@ -9,6 +9,9 @@
         <div>
             <h1><?=$channel_title?></h1>
             {exp:channel:entries channel="<?=$channel?>" dynamic="no" paginate="bottom"}
+                {if no_results}
+                    <p>No entries.</p>
+                {/if}
                 <h3><a href="{path=<?=$template_group?>/entry/{url_title}}">{title}</a></h3>
                 <?php foreach (array_filter($fields, function ($field) { return $field['is_search_excerpt']; }) as $field) : ?>
 
