@@ -52,7 +52,7 @@ class Fluid extends AbstractFieldTemplateGenerator
         $fieldtypeGenerator = ee('TemplateGenerator')->getFieldtype($field->field_type);
         $vars = [
             'field_type' => $field->field_type,
-            'field_name' => 'content',
+            'field_name' => $field->field_name,
             'field_label' => $field->field_label,
             'stub' => $fieldtypeGenerator['stub'],
             'docs_url' => $fieldtypeGenerator['docs_url'],
