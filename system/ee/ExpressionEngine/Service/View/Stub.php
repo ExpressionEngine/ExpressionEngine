@@ -51,6 +51,11 @@ class Stub extends View
         return $this;
     }
 
+    public function getTemplateEngine()
+    {
+        return $this->templateEngine;
+    }
+
     public function setTemplateType($type)
     {
         $this->templateType = $type;
@@ -221,6 +226,12 @@ class Stub extends View
                 // Check with and without the .php extension
                 foreach($files as $file) {
                     if ((strpos($file, '..') == false) && file_exists($file)) {
+                        // check for template engine agreement modify this stub's engine if the file differs
+                        $engine = $this->getEngineFromPath($file);
+                        if($this->templateEngine != $engine) {
+                            $this->templateEngine = $engine;
+                        }
+
                         return $file;
                     }
                 }
@@ -228,6 +239,27 @@ class Stub extends View
         }
 
         throw new \Exception('Stub file not found: ' . htmlentities($this->path));
+    }
+
+    protected function getEngineFromPath($path)
+    {
+        $path = rtrim($path, '.php');
+        $info = ee()->api_template_structure->get_template_file_info($path);
+
+        if(!is_null($info)) {
+            return $info['engine'];
+        }
+
+        $engines = array_filter(array_keys(ee()->api_template_structure->get_template_engines()));
+
+        foreach($engines as $engine) {
+            $extensionLength = strlen($engine);
+            if (substr_compare($path, $engine, -$extensionLength) === 0) {
+                return $engine;
+            }
+        }
+
+        return null;
     }
 }
 // EOF

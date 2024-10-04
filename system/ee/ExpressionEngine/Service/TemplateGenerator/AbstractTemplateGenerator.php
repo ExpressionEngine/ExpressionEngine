@@ -207,9 +207,10 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
         $group = ($save) ? ee('TemplateGenerator')->createTemplateGroup($this->input->get('template_group'), $site_id) : $this->input->get('template_group');
 
         foreach ($templates as $templateName => $templateData) {
+            $rendered = $this->render($templateName, $templateData['type']);
             $templateInfo = [
-                'template_engine' => $this->input->get('template_engine'),
-                'template_data' => $this->render($templateName, $templateData['type']),
+                'template_engine' => $rendered['engine'],
+                'template_data' => $rendered['data'],
                 'template_type' => $templateData['type'],
                 'template_notes' => $templateData['description'] ?? $templateData['name']
             ];
@@ -238,7 +239,12 @@ abstract class AbstractTemplateGenerator implements TemplateGeneratorInterface
 
         // Parse the stub and all embeds.
         // Use the generator's input as well as any provided variables
-        return $stub->render(array_merge($this->input->all(), $this->getVariables()));
+        $data = $stub->render(array_merge($this->input->all(), $this->getVariables()));
+
+        return [
+            'engine' => $stub->getTemplateEngine(),
+            'data' => $data
+        ];
     }
 
     /**
