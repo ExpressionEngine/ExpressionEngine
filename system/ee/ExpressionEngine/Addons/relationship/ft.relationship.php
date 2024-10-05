@@ -554,10 +554,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             'statuses' => $statuses,
             'rel_min' => isset($this->settings['rel_min']) ? (int) $this->settings['rel_min'] : 0,
             'rel_max' => isset($this->settings['rel_max']) ? (int) $this->settings['rel_max'] : '',
-            'canCreateNew' => ee('Permission')->has('can_create_entries') && (
-                empty($this->settings['channels']) ||
-                !empty($channelsForNewEntriesChoices)
-            )
+            'canCreateNew' => ee('Permission')->has('can_create_entries') && !empty($channelsForNewEntriesChoices),
         ]);
     }
 
