@@ -217,6 +217,16 @@ abstract class AbstractDesign extends CP_Controller
             }
         }
 
+        if (ee('Permission')->hasAll('can_access_design', 'can_create_template_groups')) {
+            $sidebar->addDivider();
+
+            $header = $sidebar->addItem(lang('template_generator'), ee('CP/URL')->make('design/generator'))->withIcon('trowel-bricks fa-flip-horizontal');
+
+            if ($active == 'generator') {
+                $header->isActive();
+            }
+        }
+
         ee()->cp->add_js_script(array(
             'file' => array('cp/design/menu'),
         ));

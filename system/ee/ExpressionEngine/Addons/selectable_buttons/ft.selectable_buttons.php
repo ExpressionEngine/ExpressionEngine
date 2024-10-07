@@ -83,7 +83,7 @@ class Selectable_buttons_ft extends Multi_select_ft
 
         return ee('View')->make('ee:_shared/form/fields/buttons')->render([
             'field_name' => $this->field_name . '[]',
-            'choices' => $this->_get_field_options($data),
+            'choices' => $this->_get_historic_field_options($data),
             'value' => $values,
             'multi' => isset($this->settings['allow_multiple']) ? $this->settings['allow_multiple'] : false,
             'disabled' => $this->get_setting('field_disabled'),
@@ -97,14 +97,14 @@ class Selectable_buttons_ft extends Multi_select_ft
             $extra .= ' class="multiselect_input"';
             return form_multiselect(
                 $this->field_name . '[]',
-                $this->_get_field_options($data),
+                $this->_get_historic_field_options($data),
                 $values,
                 $extra
             );
         } else {
             return form_dropdown(
                 $this->field_name,
-                $this->_get_field_options($data, '--'),
+                $this->_get_historic_field_options($data, '--'),
                 $data,
                 $extra
             );

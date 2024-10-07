@@ -16,7 +16,22 @@
                 <input type="hidden" name="order[]" value="<?=$row['id']?>" />
                 <?php endif; ?>
                 <div class="list-item__secondary"<?php if (isset($row['reorderable']) && $row['reorderable']) : ?> style="left: 51px;"<?php endif; ?>>
-                    #<?=$row['id']?> <?php if (! empty($row['extra'])):?> <span class="faded">/</span> <span class="click-select-text"><?=ee('Format')->make('Text', $row['extra'])->convertToEntities()?><?php endif ?></span>
+                    #<?=$row['id']?>
+                    <?php if (! empty($row['extra'])):?>
+                        <span class="faded">/</span> <span class="click-select-text">
+
+                        <!-- If it's not an array, print it out -->
+                        <?php if (!is_array($row['extra'])): ?>
+                            <?=ee('Format')->make('Text', $row['extra'])->convertToEntities()?>
+                        <?php else: ?>
+                            <!-- This is an array, check for formatting options -->
+                            <?php if (isset($row['extra']['encode']) && $row['extra']['encode'] === false): ?>
+                                <?=ee('Format')->make('Text', $row['extra']['content'])?>
+                            <?php else: ?>
+                                <?=ee('Format')->make('Text', $row['extra']['content'])->convertToEntities()?>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    <?php endif; ?></span>
                 </div>
                 <a href="<?=$row['href']?>" class="list-item__content">
                     <div class="list-item__title">

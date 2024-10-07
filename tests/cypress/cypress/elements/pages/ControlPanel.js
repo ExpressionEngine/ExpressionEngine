@@ -91,6 +91,10 @@ class ControlPanel {
         cy.visit(this.url.replace(/\{(.+?)\}/g, ''), {failOnStatusCode: false})
     }
 
+    authLoad() {
+        cy.authVisit(this.url.replace(/\{(.+?)\}/g, ''))
+    }
+
     get(selector) {
         // Cypress.log({
         //     name: 'PAGE GET',

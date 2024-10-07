@@ -149,13 +149,25 @@ class ChannelFieldGroup extends Model
         return new Collection($channels);
     }
 
-    public function getNameBadge($prefix = '')
+    public function getNameBadge(array $options = [])
     {
+        $prefix = (isset($options['prefix'])) ? $options['prefix'] : '';
+
         if (ee()->session->userdata('member_id') == 0) {
             return '';
         }
         if (ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->show_field_names == 'y') {
-            return ee('View')->make('publish/partials/field_name_badge')->render(['name' => $prefix . $this->short_name]);
+            $vars = [
+                'name' => $prefix . $this->short_name,
+                'id' => $this->group_id
+            ];
+
+            // add other option values to the vars array
+            foreach ($options as $key => $value) {
+                $vars[$key] = $value;
+            }
+
+            return ee('View')->make('publish/partials/name_badge_copy')->render($vars);
         }
         return '';
     }

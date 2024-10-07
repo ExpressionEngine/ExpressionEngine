@@ -296,11 +296,14 @@ class EE_Addons
                 $class = ucfirst($module) . '_upd';
 
                 $UPD = new $class();
-                $UPD->install_errors = array();
+
+                if(property_exists($UPD, 'install_errors')) {
+                    $UPD->install_errors = array();
+                }
 
                 if (method_exists($UPD, 'install')) {
                     $UPD->install();
-                    if (count($UPD->install_errors) > 0) {
+                    if (property_exists($UPD, 'install_errors') && count($UPD->install_errors) > 0) {
                         // clean and combine
                         $module_install_errors[$module] = array_map(
                             'htmlentities',

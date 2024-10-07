@@ -14,6 +14,7 @@ use ExpressionEngine\Cli\CliFactory;
 use ExpressionEngine\Cli\Help;
 use ExpressionEngine\Cli\Status;
 use ExpressionEngine\Cli\Context\OptionFactory;
+use ExpressionEngine\Cli\Exception;
 use ExpressionEngine\Library\Filesystem\Filesystem;
 
 class Cli
@@ -112,6 +113,9 @@ class Cli
         // Config
         'config:config' => Commands\CommandConfigConfig::class,
         'config:env' => Commands\CommandConfigEnv::class,
+
+        // Generate
+        'generate:templates' => Commands\CommandGenerateTemplates::class,
 
         // List
         'list' => Commands\CommandListCommands::class,
@@ -244,7 +248,12 @@ class Cli
         $command->loadOptions();
 
         if ($command->option('-h', false)) {
-            return $command->help();
+            // special case for generate:templates generator:name --help
+            if ($command->signature == 'generate:templates' && count($this->arguments) > 1 && in_array($this->arguments[1], ['--help', '-h'])) {
+                // template generator, when having generator specified, will handle displaying help later
+            } else {
+                return $command->help();
+            }
         }
 
         // -------------------------------------------
@@ -281,7 +290,7 @@ class Cli
             ->setOptions($this->commandOptions);
 
         // Echo out just the simple options for the command
-        if($this->option('--options')) {
+        if ($this->option('--options')) {
             $this->write($help->getHelpOptionsSimple());
             exit();
         }
@@ -364,7 +373,7 @@ class Cli
     public function table(array $headers, array $data)
     {
         // We need headers in order to print a table
-        if(empty($headers)) {
+        if (empty($headers)) {
             return;
         }
 
@@ -389,7 +398,7 @@ class Cli
             $format .= '%-' . $width . 's | ';
 
             // if last row by key
-            if($k === array_key_last($widths)) {
+            if ($k === array_key_last($widths)) {
                 $format = rtrim($format, '| ');
             }
         }
@@ -401,14 +410,14 @@ class Cli
         $dash_str = '';
         foreach ($widths as $k => $width) {
             $length = $width + 2;
-            if($k === array_key_first($widths)) {
+            if ($k === array_key_first($widths)) {
                 $length -= 1;
             }
 
             $dash_str .= str_repeat('-', $length) . '|';
 
             // if last row by key
-            if($k === array_key_last($widths)) {
+            if ($k === array_key_last($widths)) {
                 $dash_str = rtrim($dash_str, '|');
             }
         }
@@ -437,6 +446,34 @@ class Cli
         $this->output->out(lang($question) . ' ' . $defaultChoice);
 
         $result = (string) $this->input->in();
+
+        return $result ? addslashes($result) : $default;
+    }
+
+    public function askFromList($question, $options, $default = '')
+    {
+        $this->output->outln(lang($question));
+
+        $optionNumber = 1;
+        // numbered list of options
+        foreach ($options as $key => $option) {
+            $this->output->outln(" {$optionNumber}. {$key} : {$option}");
+            $optionNumber++;
+        }
+
+        $this->output->outln('');
+        $this->output->out('Selection: ');
+
+        $result = (string) $this->input->in();
+
+        // If the result is a number, we can use it to get the key
+        if (is_numeric($result)) {
+            $keys = array_keys($options);
+            // if the result is one of the keys, return the key
+            if (isset($keys[$result - 1])) {
+                $result = $keys[$result - 1];
+            }
+        }
 
         return $result ? addslashes($result) : $default;
     }
@@ -619,12 +656,18 @@ class Cli
         if ($this->options->hasErrors()) {
             $errors = $this->options->getErrors();
 
-            foreach ($errors as $error) {
+            foreach ($errors as $i => $error) {
+                if ($this->signature == 'generate:templates' && $error instanceof Exception\OptionNotDefined) {
+                    // a very specific exception that we make for command that's dynamically loading options
+                    unset($errors[$i]);
+                    continue;
+                }
                 // print error messages to stderr using a Stdio object
                 $this->error($error->getMessage());
             }
-
-            $this->fail();
+            if (count($errors) > 0) {
+                $this->fail();
+            }
         };
     }
 
