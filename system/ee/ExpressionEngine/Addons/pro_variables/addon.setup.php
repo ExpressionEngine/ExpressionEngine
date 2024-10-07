@@ -13,6 +13,6 @@ return array(
     'namespace'      => $addonJson->namespace,
     'author'         => 'ExpressionEngine',
     'author_url'     => 'https://expressionengine.com/',
-    'docs_url'       => 'https://docs.expressionengine.com/latest/add-ons/overview.html',
+    'docs_url'       => 'https://docs.expressionengine.com/latest/add-ons/pro-variables/fieldtype.html',
     'settings_exist' => true
 );

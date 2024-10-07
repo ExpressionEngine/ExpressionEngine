@@ -51,6 +51,12 @@ class Provider extends InjectionBindingDecorator
     protected $config_files = array();
 
     /**
+     * Call location
+     * @var string
+     */
+    protected $callLocation;
+
+    /**
      * @param ServiceProvider $delegate The root dependencies object
      * @param String $path Core namespace path
      * @param Array $data The setup file contents
@@ -59,6 +65,13 @@ class Provider extends InjectionBindingDecorator
     {
         $this->path = $path;
         $this->data = $data;
+
+        // Set the call location
+        if (defined('REQ') && REQ === 'CLI') {
+            $this->setCallLocation('CLI');
+        } else if (defined('REQ') && REQ === 'CP') {
+            $this->setCallLocation('CP');
+        }
 
         $this->setConfigPath($path . '/config');
 
@@ -74,6 +87,24 @@ class Provider extends InjectionBindingDecorator
     public function setConfigPath($path)
     {
         $this->config_path = rtrim($path, '/');
+    }
+
+    /**
+     * Set the call location
+     */
+    public function setCallLocation($location)
+    {
+        $this->callLocation = $location;
+    }
+
+    /**
+     * Get the call location
+     *
+     * @return string
+     */
+    public function getCallLocation()
+    {
+        return $this->callLocation;
     }
 
     /**
@@ -336,7 +367,7 @@ class Provider extends InjectionBindingDecorator
         }
     }
 
-    
+
     /**
      * Registers cookie settings in memory and database
      *
@@ -431,7 +462,7 @@ class Provider extends InjectionBindingDecorator
 
     /**
      * Register variable modifiers
-     * 
+     *
      * @return void
      */
     public function registerVariableModifiers()
@@ -443,6 +474,22 @@ class Provider extends InjectionBindingDecorator
             }
         }
         unset($modifiers);
+    }
+
+    /**
+     * Register Template Generators
+     *
+     * @return void
+     */
+    public function registerTemplateGenerators()
+    {
+        $generators = $this->get('templateGenerators', array());
+        if (!empty($generators)) {
+            foreach ($generators as $generator) {
+                ee('TemplateGenerator')->register($generator, $this);
+            }
+        }
+        unset($generators);
     }
 
     /**

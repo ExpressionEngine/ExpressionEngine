@@ -3,6 +3,7 @@
 return array(
     'author' => 'ExpressionEngine',
     'author_url' => 'https://expressionengine.com/',
+    'docs_url' => 'https://docs.expressionengine.com/latest/fieldtypes/duration.html',
     'name' => 'Duration',
     'description' => 'Duration Field',
     'version' => '1.0.0',

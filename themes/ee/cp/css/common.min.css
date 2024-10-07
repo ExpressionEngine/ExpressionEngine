@@ -23083,6 +23083,14 @@ dialog {
   margin-bottom: 20px;
 }
 
+.lv-banner__inner {
+  margin-bottom: 0;
+}
+.lv-banner__inner .lv-banner__addons-list span a {
+  color: var(--ee-text-primary);
+  font-weight: 500;
+}
+
 .button-group,
 .button-group-vertical {
   position: relative;
@@ -28161,6 +28169,22 @@ input[type=button].btn-block {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+.title-bar__title .label-app-badge {
+  font-size: 0.9rem;
+  margin-left: 0;
+}
+.title-bar__title .label-app-badge i {
+  font-size: inherit;
+}
+.title-bar__title .label-app-badge i.fa-circle-check {
+  display: none;
+}
+.title-bar__title .label-app-badge.success i.fa-copy {
+  display: none;
+}
+.title-bar__title .label-app-badge.success i.fa-circle-check {
+  display: block;
 }
 
 .title-bar__extra-tools {
@@ -48555,6 +48579,9 @@ table .field-no-results {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+.label-app-badge.not-clickable {
+  cursor: auto;
 }
 .label-app-badge i {
   margin-left: 5px;

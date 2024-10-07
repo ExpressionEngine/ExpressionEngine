@@ -90,6 +90,16 @@ class Mfa
 
         // If MFA not setup, show setup screen
         if (ee()->session->getMember()->enable_mfa !== true) {
+            $sessions = ee('Model')
+                ->get('Session')
+                ->filter('member_id', ee()->session->userdata('member_id'))
+                ->filter('fingerprint', ee()->session->userdata('fingerprint'))
+                ->all();
+            foreach ($sessions as $session) {
+                $session->mfa_flag = 'required';
+                $session->save();
+            }
+
             return $this->formEnableMfa();
         }
         // If user has MFA enabled, show the dialog screen
@@ -123,16 +133,6 @@ class Mfa
 
     public function formEnableMfa()
     {
-        $sessions = ee('Model')
-            ->get('Session')
-            ->filter('member_id', ee()->session->userdata('member_id'))
-            ->filter('fingerprint', ee()->session->userdata('fingerprint'))
-            ->all();
-        foreach ($sessions as $session) {
-            $session->mfa_flag = 'required';
-            $session->save();
-        }
-
         ee()->lang->load('login');
         ee()->lang->load('pro');
         $formVars = [

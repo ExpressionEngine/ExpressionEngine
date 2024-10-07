@@ -14,5 +14,8 @@ return array(
             'name' => 'Members',
             'compatibility' => 'member'
         )
+    ),
+    'templateGenerators' => array(
+        'Management'
     )
 );

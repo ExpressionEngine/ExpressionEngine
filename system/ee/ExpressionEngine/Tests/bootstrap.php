@@ -11,10 +11,11 @@ define('SYSPATH', $project_base);
 define('BASEPATH', SYSPATH . 'ee/legacy/');
 define('PATH_CACHE', SYSPATH . 'user/cache/');
 define('APPPATH', BASEPATH);
-define('APP_VER', '7.4.11');
+define('APP_VER', '7.5.0');
 define('PATH_THEMES', realpath(SYSPATH . '/../themes') . '/');
 define('DOC_URL', 'http://our.doc.url/');
 define('PATH_THIRD', SYSPATH . 'user/addons/');
+define('PATH_ADDONS', SYSPATH . 'ee/ExpressionEngine/Addons/');
 
 // application constants
 define('AMP', '&amp;');

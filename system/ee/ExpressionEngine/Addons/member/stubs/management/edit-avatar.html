@@ -1,0 +1,35 @@
+{layout="<?=$template_group?>/_layout"}
+{layout:set name="title"}Edit Avatar{/layout:set}
+
+{if logged_out}
+    {redirect="<?=$template_group?>/login"}
+{/if}
+
+<a href="{cp_url}?/cp/design/template/edit/{template_id}" target="_blank">View Template</a>
+
+{if last_segment == "success"}
+    <h4>Avatar edited successfully!</h4>
+{/if}
+
+<div class="result">
+    {exp:member:edit_avatar return="<?=$template_group?>/edit-avatar/success"}
+
+        Current Avatar:
+        {if avatar}
+            My avatar: <img src="{avatar_url}" border="0" width="{avatar_width}" height="{avatar_height}" />
+        {/if}
+
+        {if no_avatar}No avatar{/if}
+
+        <div>
+            Upload an avatar: <input type="file" name="userfile" size="20" class="input" /><br>
+        </div>
+
+        <input type='submit' class='submit' value='Upload Avatar' />
+
+        {if avatar}
+            <input type='submit' class='submit' value='Remove Avatar' name="remove" />
+        {/if}
+
+    {/exp:member:edit_avatar}
+</div>

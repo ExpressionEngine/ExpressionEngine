@@ -71,7 +71,14 @@ class Channels extends AbstractChannelsController
                 'id' => $channel->getId(),
                 'label' => \htmlentities((string)$channel->channel_title, ENT_QUOTES, 'UTF-8'),
                 'href' => $edit_url,
-                'extra' => LD . $channel->channel_name . RD,
+                'extra' => [
+                    'encode' => false,
+                    'content' => ee('View')->make('publish/partials/name_badge_copy')->render([
+                        'name' => ee('Format')->make('Text', $channel->channel_name)->convertToEntities(),
+                        'id' => $channel->getId(),
+                        'content_type' => 'channels'
+                    ])
+                ],
                 'selected' => ($highlight_id && $channel->getId() == $highlight_id) or in_array($channel->getId(), $imported_channels),
                 'toolbar_items' => [
                     'download' => [

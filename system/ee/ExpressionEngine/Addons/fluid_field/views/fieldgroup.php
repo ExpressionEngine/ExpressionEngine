@@ -9,7 +9,7 @@
                     <i class="icon--reorder reorder"></i>
                     <?= $field_group->group_name ?> <?php if ($show_field_type) : ?><span class="faded">(group)</span><?php endif; ?>
                 </label>
-                <?=(isset($field_name_prefix) ? $field_group->getNameBadge($field_name_prefix) : '')?>
+                <?=(isset($field_name_prefix) ? $field_group->getNameBadge(['prefix' => $field_name_prefix, 'content_type' => 'fluid_fieldgroup', 'fluid_id' => $fluid_field_id]) : '')?>
                 <em><?= $field_group->group_description ?></em>
             </div>
         </div>
@@ -22,8 +22,8 @@
                         <label>
                             <?=$field->getItem('field_label')?> <?php if ($show_field_type): ?><span class="faded">(<?=$field->getType()?>)</span><?php endif ?>
                         </label>
-                        <?=(isset($field_name_prefix) ? $field->getNameBadge($field_name_prefix) : '')?>
-                        <em><?=$field->getItem('field_instructions')?></em>
+                        <?=(isset($field_name_prefix) ? $field->getNameBadge(['prefix' => $field_name_prefix, 'content_type' => 'fluid_field', 'fluid_id' => $fluid_field_id]) : '')?>
+                <em><?=$field->getItem('field_instructions')?></em>
                     </div>
                     <?php
                         $field_name = $field->getName();
