@@ -26,6 +26,7 @@ class Fluid_field_parser
     protected $possible_fields = [];
     protected $fluid_fields = [];
     protected $_prefix;
+    protected $replacements = [];
 
     public function __construct()
     {
@@ -373,6 +374,8 @@ class Fluid_field_parser
         // The field blocks inside a Fluid field are essentially `{if fluid:field}...{/if}`
         // so we'll rewrite them and use the Conditional parser to get what we want each pass
         $cond_tagdata = $this->rewriteFluidTagsAsConditionals($tagdata, array_keys($cond));
+        // Protect {fields}...{/fields} which needs separate conditional evaluation
+        $cond_tagdata = $this->replaceInnerFieldsPairs($cond_tagdata);
 
         $output = '';
 
@@ -394,6 +397,9 @@ class Fluid_field_parser
             $group_cond = array_intersect_key($cond, $group_cond_keys);
             $has_group = $group['is_field_group'] && !empty(array_filter($group_cond));
             $group_tagdata = ee()->functions->prep_conditionals($cond_tagdata, $group_cond);
+            // Restore {fields}
+            $group_tagdata = $this->restoreInnerFieldsPairs($group_tagdata);
+
             $group_prefix = $group['short_name'];
             $group_tags = [];
             $group_output = '';
@@ -478,7 +484,7 @@ class Fluid_field_parser
                     // Flip this field's conditional to TRUE so all the other fields will be
                     // removed from the tagdata
                     $cond[$fluid_field_name . ':' . $field_name] = true;
-                    $my_tagdata = ee()->functions->prep_conditionals($chunk['content'], array_diff_key($cond, $group_cond));
+                    $my_tagdata = ee()->functions->prep_conditionals($chunk['content'], $cond);
                     $conditionalUsed = strlen($my_tagdata) !== strlen($chunk['content']);
                     $cond[$fluid_field_name . ':' . $field_name] = false; // Reset for the next pass
 
@@ -576,6 +582,44 @@ class Fluid_field_parser
         foreach ($field_names as $field) {
             $tagdata = str_replace(LD . $field . RD, LD . 'if ' . $field . RD, $tagdata);
             $tagdata = str_replace(LD . '/' . $field . RD, LD . '/if' . RD, $tagdata);
+        }
+
+        return $tagdata;
+    }
+
+    /**
+     * A helper function to replace {fields}...{/fields} content with a placeholder
+     * so that conditional evaluation does not effect the contents of a field group
+     *
+     * @param string $tagdata
+     * @return string
+     */
+    private function replaceInnerFieldsPairs($tagdata)
+    {
+        $pairs = ee()->api_channel_fields->get_pair_field($tagdata, 'fields');
+        $this->replacements = [];
+
+        foreach($pairs as $key => $tag)
+        {
+            $this->replacements[$key] = $tag[3];
+            $tagdata = str_replace($tag[3], "{!-- ff:fields:$key --}", $tagdata);
+        }
+
+        return $tagdata;
+    }
+
+    /**
+     * A helper function to restore {!-- ff:fields --} placeholders with the original tagdata
+     * so that conditional evaluation does not effect the contents of a field group
+     *
+     * @param string $tagdata
+     * @return string
+     */
+    private function restoreInnerFieldsPairs($tagdata)
+    {
+        foreach ($this->replacements as $key => $tag) {
+            $tagdata = str_replace("{!-- ff:fields:$key --}", $tag, $tagdata);
+            // $tagdata = str_replace(LD . '/' . $field . RD, LD . '/if' . RD, $tagdata);
         }
 
         return $tagdata;
