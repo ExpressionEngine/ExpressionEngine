@@ -1,5 +1,5 @@
-{exp:channel:entries channel="<?=$channel?>" dynamic="no" paginate="bottom"}
-    <h3><a href="{path=<?=$template_group?>/entry/{url_title}}">{title}</a></h3>
+{exp:channel:entries channel="<?=$channel?>" dynamic="no"}
+    {title} - {path=<?=$template_group?>/entry/{url_title}}
     <?php foreach ($fields as $field) : ?>
     <?php if($show_comments ?? false): ?>
 

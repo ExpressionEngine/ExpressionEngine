@@ -43,6 +43,10 @@
                     <?php endforeach; ?>
 
                 </div>
+
+                {paginate}
+                    <p>Page {current_page} of {total_pages} pages {pagination_links}</p>
+                {/paginate}
             {/exp:channel:entries}
         {/if}
     </div>

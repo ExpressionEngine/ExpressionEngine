@@ -31,6 +31,9 @@
                     </div>
                 <?php endforeach; ?>
 
+                {paginate}
+                    <p>Page {current_page} of {total_pages} pages {pagination_links}</p>
+                {/paginate}
             {/exp:channel:entries}
         </div>
     </body>

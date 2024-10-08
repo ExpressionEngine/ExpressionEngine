@@ -12,6 +12,7 @@
         <?php if($show_comments ?? false): ?>
         {!-- If a category url_title is not provided list all of the categories --}
         <?php endif; ?>
+
         {if segment_3 == ''}
         <h1><?= $channel_title ?> Categories</h1>
         {exp:channel:categories channel="<?= $channel ?>"}
@@ -26,6 +27,7 @@
         <?php if($show_comments ?? false): ?>
         {!-- Otherwise show entries for this category --}
         <?php endif; ?>
+
         {if:else}
         {exp:channel:category_heading channel="<?= $channel ?>" category_url_title="{segment_3}" <?=(strpos($channel, '|') !== false) ? 'relaxed_categories="yes"' : ''?>}
             <h1>{category_name}</h1>
@@ -53,6 +55,9 @@
 
             <?php endforeach; ?>
 
+            {paginate}
+                <p>Page {current_page} of {total_pages} pages {pagination_links}</p>
+            {/paginate}
             {/exp:channel:entries}
         {/exp:channel:category_heading}
         {/if}
