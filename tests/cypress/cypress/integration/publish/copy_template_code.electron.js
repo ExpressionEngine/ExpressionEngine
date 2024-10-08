@@ -208,8 +208,8 @@ context('Copy template code from channel entries, fields, channels, and field gr
       cy.hasNoErrors()
       cy.intercept('GET', '/admin.php?/cp/design/copy/channels/**').as('channelCopyGetRequest');
 
-      cy.copyChannelAndAssert('News', '{exp:channel:entries channel="news" dynamic="no" paginate="bottom"}\
-        <h3><a href="{path=/entry/{url_title}}">{title}</a></h3>\
+      cy.copyChannelAndAssert('News', '{exp:channel:entries channel="news" dynamic="no"}\
+        {title} - {path=/entry/{url_title}}\
         {news_body}\
         {news_extended}\
         {news_image}\
