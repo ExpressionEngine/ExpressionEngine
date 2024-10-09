@@ -51,7 +51,7 @@ class Generator extends AbstractDesignController
 
         if (!empty($_POST)) {
             $result = $this->create();
-            if($result !== true) {
+            if ($result !== true) {
                 $vars['errors'] = $result;
             }
         }
@@ -78,7 +78,7 @@ class Generator extends AbstractDesignController
                     $optionParams['value'] = array_keys($optionParams['choices']);
                 }
 
-                if(isset($flashData[$optionKey])) {
+                if (isset($flashData[$optionKey])) {
                     $optionParams['value'] = $flashData[$optionKey];
                 }
 
@@ -156,23 +156,6 @@ class Generator extends AbstractDesignController
             }
         }
 
-        // Full validation
-        // if (!$validationResult->isValid()) {
-        //     foreach ($validationResult->getFailedRules() as $field => $rules) {
-        //         $field = $generatorName . '[' . $field . ']';
-        //         foreach ($rules as $rule) {
-        //             $validationResult->addFailed($field, $rule);
-        //         }
-        //     }
-        //     ee('CP/Alert')->makeInline('shared-form')
-        //         ->asIssue()
-        //         ->withTitle(lang('generate_templates_error'))
-        //         ->addToBody(lang('create_template_group_error_desc'))
-        //         ->now();
-
-        //     return $validationResult;
-        // }
-
         try {
             $result = $generator->generate($options);
         } catch (ValidationException $e) {
@@ -188,6 +171,7 @@ class Generator extends AbstractDesignController
                 ->withTitle(lang('generate_templates_error'))
                 ->addToBody(lang('create_template_group_error_desc'))
                 ->now();
+
             return $e->getResult();
         } catch (\Exception $e) {
             throw $e;

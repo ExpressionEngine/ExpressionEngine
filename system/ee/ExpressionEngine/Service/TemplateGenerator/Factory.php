@@ -69,7 +69,7 @@ class Factory
         // Set the call location
         if (REQ === 'CLI') {
             $this->setCallLocation('CLI');
-        } else if (REQ === 'CP') {
+        } elseif (REQ === 'CP') {
             $this->setCallLocation('CP');
         }
     }
@@ -98,6 +98,7 @@ class Factory
     public function setCallLocation($location)
     {
         $this->callLocation = $location;
+
         return $this;
     }
 
@@ -153,7 +154,7 @@ class Factory
         return ($instance instanceof AbstractFieldTemplateGenerator) ? $instance : null;
     }
 
-    public function getFieldVariables($fieldInfo, $channelContext = null) : array
+    public function getFieldVariables($fieldInfo, $channelContext = null): array
     {
         $fieldtypeGenerator = $this->getFieldtype($fieldInfo->field_type);
 
@@ -186,7 +187,7 @@ class Factory
         return $field;
     }
 
-    public function getFieldGroupVariables($fieldGroupName) : array
+    public function getFieldGroupVariables($fieldGroupName): array
     {
         $vars = [
             'fields' => [],
@@ -283,7 +284,7 @@ class Factory
         }
 
         // if the generator is disabled for templates, skip it when generating a template
-        if($instance->generatorDisabledForLocation($provider->getCallLocation())) {
+        if ($instance->generatorDisabledForLocation($provider->getCallLocation())) {
             return $this->generators;
         }
 
@@ -441,8 +442,7 @@ class Factory
                     'role_id' => $role_id,
                     'site_id' => $site_id,
                     'permission' => $perm
-                ])
-                    ->save();
+                ])->save();
             }
         }
 

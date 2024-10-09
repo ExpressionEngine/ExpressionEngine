@@ -46,8 +46,7 @@ class Copy extends AbstractDesignController
 
     public function channels(int $id)
     {
-        $channel = ee('Model')->get('Channel', $id)
-        ->first();
+        $channel = ee('Model')->get('Channel', $id)->first();
 
         if (! $channel) {
             show_404();
@@ -97,7 +96,7 @@ class Copy extends AbstractDesignController
         return $result['templates']['index']['template_data'];
     }
 
-    public function fluid($fluid_id, $context, $content_id)
+    public function fluid(int $fluid_id, $context, $content_id)
     {
         $fluidField = ee('Model')->get('ChannelField', $fluid_id)->filter('field_type', 'fluid_field')->first();
 
