@@ -46,8 +46,7 @@ class Copy extends AbstractDesignController
 
     public function channels(int $id)
     {
-        $channel = ee('Model')->get('Channel', $id)
-        ->first();
+        $channel = ee('Model')->get('Channel', $id)->first();
 
         if (! $channel) {
             show_404();
