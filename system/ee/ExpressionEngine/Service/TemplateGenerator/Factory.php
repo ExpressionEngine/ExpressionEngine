@@ -441,8 +441,7 @@ class Factory
                     'role_id' => $role_id,
                     'site_id' => $site_id,
                     'permission' => $perm
-                ])
-                    ->save();
+                ])->save();
             }
         }
 
