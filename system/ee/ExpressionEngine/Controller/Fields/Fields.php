@@ -110,8 +110,6 @@ class Fields extends AbstractFieldsController
                 'content_type' => 'field_groups'
             ]);
 
-            // '{' . $group->short_name . '}';
-
             $fields = $group->ChannelFields->sortBy('field_label')->sortBy('field_order')->asArray();
 
             if ($search = ee()->input->get_post('filter_by_keyword')) {
@@ -213,7 +211,7 @@ class Fields extends AbstractFieldsController
                     'name' => 'selection[]',
                     'value' => $field->getId(),
                     'data' => [
-                        'confirm' => lang('field') . ': <b>' . \htmlentities((string)$field->field_label, ENT_QUOTES, 'UTF-8') . '</b>'
+                        'confirm' => lang('field') . ': <b>' . \htmlentities((string) $field->field_label, ENT_QUOTES, 'UTF-8') . '</b>'
                     ]
                 ] : null
             ];
