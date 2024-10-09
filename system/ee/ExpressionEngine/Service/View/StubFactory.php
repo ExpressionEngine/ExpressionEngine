@@ -103,13 +103,11 @@ class StubFactory
         $paths[] = $provider->getPath() . '/stubs/' . $generatorFolder;
         // e.g. system/ee/ExpressionEngine/addons/channel/entries
         // or system/user/addons/channel/entries
-        // twig and blade will be taking this from elswehere
-        // e.g. 'vendor/coilpack/stubs/' . $provider->getPrefix() . '/' . $generatorFolder;
 
         //if specifics not found, fallback to shared stubs (user first)
         $sharedPaths[] = SYSPATH . 'user/stubs';
+
         // ee/templates/stubs is shared folder for native template engine
-        // twig and blade will have their own folder elsewhere
         $sharedPaths[] = SYSPATH . 'ee/templates/stubs';
 
         return array_merge($paths, $sharedPaths);
