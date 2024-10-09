@@ -97,7 +97,7 @@ class Copy extends AbstractDesignController
         return $result['templates']['index']['template_data'];
     }
 
-    public function fluid($fluid_id, $context, $content_id)
+    public function fluid(int $fluid_id, $context, $content_id)
     {
         $fluidField = ee('Model')->get('ChannelField', $fluid_id)->filter('field_type', 'fluid_field')->first();
 
