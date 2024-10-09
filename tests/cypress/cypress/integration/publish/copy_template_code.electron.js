@@ -235,8 +235,8 @@ context('Copy template code from channel entries, fields, channels, and field gr
       {/exp:channel:entries}', true);
 
       cy.copyChannelAndAssert('Information Pages',
-        '{exp:channel:entries channel="about" dynamic="no" paginate="bottom"}\
-        <h3><a href="{path=/entry/{url_title}}">{title}</a></h3>\
+        '{exp:channel:entries channel="about" dynamic="no"}\
+        {title} - {path=/entry/{url_title}}\
         {about_body}\
         {about_image}\
             Title: {title}\
