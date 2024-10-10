@@ -296,10 +296,9 @@ class FrontEdit
                     . $elementId
                     . '" data-editableurl="'
                     . $fieldEditUrl
-                    . '" data-entry_id="ENTRY_ID" data-site_id="SITE_ID" data-size="WINDOW_SIZE" title="FIELD_NAME">';
-                    // . '<img src="' . $pencilUrl . '" width="24px" height="24px" alt="' . $altText . '" style="cursor:pointer !important; filter: drop-shadow(0 1px 3px rgba(0,0,0,.20)) !important; vertical-align: bottom !important; border-radius: 0 !important; width: unset !important;" />'
-                    // . '</span>';
-        $element_close = '</span>';
+                    . '" data-entry_id="ENTRY_ID" data-site_id="SITE_ID" data-size="WINDOW_SIZE" title="FIELD_NAME">'
+                    . '<img src="' . $pencilUrl . '" width="24px" height="24px" alt="' . $altText . '" style="cursor:pointer !important; filter: drop-shadow(0 1px 3px rgba(0,0,0,.20)) !important; vertical-align: bottom !important; border-radius: 0 !important; width: unset !important;" />'
+                    . '</span>';
         $frontEditPermission = [];
         $entry_data = [];
         if (preg_match_all("/{\s*frontedit_link\s+.*\}/sU", $output, $tags)) {
@@ -352,9 +351,8 @@ class FrontEdit
                         );
                     } else {
                         $editLink = '';
-                        $element_close = '';
                     }
-                    $output = str_replace($tag, $editLink, $output, $element_close);
+                    $output = str_replace($tag, $editLink, $output);
                 }
             }
         }
