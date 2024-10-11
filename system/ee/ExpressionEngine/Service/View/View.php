@@ -139,7 +139,9 @@ class View
 
         $buffer = ob_get_contents();
 
-        ob_end_clean();
+        if ($buffer !== false) {
+            ob_end_clean();
+        }
 
         return $buffer;
     }
@@ -161,10 +163,12 @@ class View
         $vars = array_merge($this->processing, $vars);
         $view = $this->make($view)->disable($disable);
 
-        ob_start();
+        $buffered = ob_start();
         echo $view->render($vars);
 
-        ob_end_flush();
+        if ($buffered !== false) {
+            ob_end_flush();
+        }
     }
 
     /**
