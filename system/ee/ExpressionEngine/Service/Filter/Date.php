@@ -59,7 +59,7 @@ class Date extends Filter
         $this->addDatePickerScript();
 
         $value = $this->value();
-        if ($value && ! array_key_exists($value, $this->options)) {
+        if ($value && (is_array($value) || ! array_key_exists($value, $this->options))) {
             if (is_numeric($value)) {
                 ee()->load->library('relative_date');
 
@@ -69,10 +69,16 @@ class Date extends Filter
                 $relative_date->calculate();
                 $this->display_value = $relative_date->render();
             } else {
-                $date = ee()->localize->string_to_timestamp($value . ' 0:00', true, $date_format . ' G:i');
-                $this->timestamp = $date;
-                $this->display_value = ee()->localize->format_date($date_format, $date);
-                $this->selected_value = array($date, $date + 86400);
+                if (is_array($value)) {
+                    $to = $value[1];
+                    $from = $value = $value[0];
+                } else {
+                    $from = ee()->localize->string_to_timestamp($value . ' 0:00', true, $date_format . ' G:i');
+                    $to = $from + 86400;
+                }
+                $this->timestamp = $from;
+                $this->display_value = ee()->localize->format_date($date_format, $from);
+                $this->selected_value = array($from, $to);
             }
         }
     }
