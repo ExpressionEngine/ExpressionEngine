@@ -11,6 +11,7 @@
 namespace ExpressionEngine\Controller\Members\Profile;
 
 use CP_Controller;
+use ExpressionEngine\Service\Member\Member;
 
 /**
  * Member Roles Settings Controller
@@ -112,9 +113,28 @@ class Roles extends Profile
                         ]
                     ]
                 ]
-            ],
-            'additional_roles' => $additional_roles_section
+            ]
         ];
+        if ($this->member->role_id === Member::PENDING) {
+            $vars['sections'][0][] = ee('CP/Alert')->makeInline('permissions-warn')
+                ->asTip()
+                ->addToBody(lang('pending_role_warning'))
+                ->cannotClose()
+                ->render();
+            $vars['sections'][0][] = [
+                'title' => 'pending_role',
+                'desc' => 'pending_role_desc',
+                'caution' => true,
+                'fields' => [
+                    'pending_role_id' => [
+                        'type' => 'radio',
+                        'choices' => ee('Model')->get('Role')->filter('is_locked', 'n')->filter('role_id', '!=', Member::PENDING)->all()->getDictionary('role_id', 'name'),
+                        'value' => ($this->member->pending_role_id != 0) ? $this->member->pending_role_id : ee()->config->item('default_primary_role')
+                    ]
+                ]
+            ];
+        }
+        $vars['sections']['additional_roles'] = $additional_roles_section;
 
         $rules = [
             [
@@ -169,6 +189,10 @@ class Roles extends Profile
                 $roles = [(int) ee('Request')->post('role_id')];
             }
             $this->member->Roles = ($roles) ? ee('Model')->get('Role', $roles)->all() : null;
+
+            if (!empty(ee('Request')->post('pending_role_id'))) {
+                $this->member->pending_role_id = (int) ee('Request')->post('pending_role_id');
+            }
 
             $this->member->save();
 
