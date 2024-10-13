@@ -249,6 +249,8 @@ class Edit extends AbstractPublishController
             ->currentPage($page)
             ->render($base_url);
 
+        ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/fields/rte/redactor/redactor.min.css" type="text/css" />');
+
         ee()->javascript->set_global([
             'lang.remove_confirm' => lang('entry') . ': <b>### ' . lang('entries') . '</b>',
 
@@ -265,8 +267,19 @@ class Edit extends AbstractPublishController
                 'clearAll' => lang('clear_all'),
                 'removeFromSelection' => lang('remove_from_selection'),
             ],
-            'viewManager.saveDefaultUrl' => ee('CP/URL')->make('publish/views/save-default', ['channel_id' => $channel_id])->compile()
+            'viewManager.saveDefaultUrl' => ee('CP/URL')->make('publish/views/save-default', ['channel_id' => $channel_id])->compile(),
+            'fileManager.fileDirectory.createUrl' => ee('CP/URL')->make('files/uploads/create')->compile(),
         ]);
+
+        ee()->load->library('file_field');
+        ee()->lang->loadfile('fieldtypes');
+        ee()->file_field->loadDragAndDropAssets();
+
+        if (!empty(ee()->config->item('rte_custom_ckeditor_build')) && ee()->config->item('rte_custom_ckeditor_build') === 'y') {
+            ee()->cp->load_package_js('ckeditor');
+        } else {
+            ee()->cp->add_js_script(['file' => 'fields/rte/ckeditor/ckeditor']);
+        }
 
         ee()->cp->add_js_script(array(
             'file' => array(
@@ -274,8 +287,19 @@ class Edit extends AbstractPublishController
                 'cp/confirm_remove',
                 'cp/publish/entry-list',
                 'components/bulk_edit_entries',
-                'cp/publish/bulk-edit'
-            ),
+                'cp/publish/bulk-edit',
+                'components/relationship',
+                'library/simplecolor',
+                'components/colorpicker',
+                'cp/grid',
+                'fields/file/file_field_drag_and_drop',
+                'fields/file/concurrency_queue',
+                'fields/file/file_upload_progress_table',
+                'fields/file/drag_and_drop_upload',
+                'fields/grid/file_grid',
+                'fields/rte/redactor/redactor.min',
+                'fields/rte/rte',
+            )
         ));
 
         ee()->view->cp_page_title = lang('edit_channel_entries');

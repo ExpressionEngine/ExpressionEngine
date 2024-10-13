@@ -64,7 +64,21 @@ class BulkEdit extends AbstractBulkEdit
             $this->standard_default_fields[] = 'comment_expiration_date';
         }
 
+        // add built-in fields
         $fields = $this->getFieldsForEntry($entry, $this->standard_default_fields);
+        // add custom fields, but only those that can work inside Fluid Field
+        $customFields = [];
+        foreach ($entry->Channel->getAllCustomFields() as $field) {
+            if ($field->field_type == 'fluid_field') {
+                continue;
+            }
+            if (! $field->getField()->acceptsContentType('fluid_field')) {
+                continue;
+            }
+            $customFields[] = 'field_id_' . $field->field_id;
+        }
+        $fields += $this->getFieldsForEntry($entry, $customFields);
+        // add category fields
         $fields += $this->getCategoryFieldsForEntry($entry);
 
         $data = $data ?: $_GET;

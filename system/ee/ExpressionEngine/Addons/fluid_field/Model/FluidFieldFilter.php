@@ -20,7 +20,8 @@ class FluidFieldFilter
     protected $fields = [
         'name',
         'label',
-        'icon'
+        'icon',
+        'type'
     ];
 
     public function __construct($attributes = [])
