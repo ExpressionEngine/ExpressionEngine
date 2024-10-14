@@ -133,7 +133,7 @@ class Copy extends AbstractDesignController
         return ee('View/Stub')->make('fluid_field:field')->setTemplateType('copy')->render($vars);
     }
 
-    private function fluidFieldGroup(ChannelField $fluidField, $field_group_id)
+    private function fluidFieldGroup(ChannelField $fluidField, int $field_group_id)
     {
         $fieldGroup = ee('Model')->get('ChannelFieldGroup', $field_group_id)
             ->with('ChannelFields')

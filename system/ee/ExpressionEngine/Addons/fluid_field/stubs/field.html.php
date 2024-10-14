@@ -8,7 +8,7 @@
     <?php endif; ?>
 
     {<?=$field_name . ':' . $fluidFieldName?>}
-        <?=$fluidField['field_label']?>
+        <h4><?=$fluidField['field_label']?></h4>
         <?php $fluidField['field_name'] = 'content'; ?>
 
         <?=$this->embed($fluidField['stub'], $fluidField)?>
@@ -24,7 +24,7 @@
 
     {!-- Fluid Field Group: <?=$fluidFieldGroupName?> --}
     <?php endif; ?>
-
+    <h3><?=$fluidFieldGroupName?></h3>
     {<?=$field_name . ':' . $fluidFieldGroupName?>}
         {fields}
         <?php foreach ($fluidFields as $fluidFieldName => $fluidField) : ?>
@@ -36,7 +36,7 @@
             <?php endif; ?>
 
             {<?=$field_name . ':' . $fluidFieldName?>}
-                <?=$fluidField['field_label']?>
+                <h4><?=$fluidField['field_label']?></h4>
                 <?php $fluidField['field_name'] = 'content'; ?>
 
                 <?=$this->embed($fluidField['stub'], $fluidField)?>
