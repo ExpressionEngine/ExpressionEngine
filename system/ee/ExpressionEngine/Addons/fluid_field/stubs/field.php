@@ -8,7 +8,6 @@
     <?php endif; ?>
 
     {<?=$field_name . ':' . $fluidFieldName?>}
-        <?=$fluidField['field_label']?>
         <?php $fluidField['field_name'] = 'content'; ?>
 
         <?=$this->embed($fluidField['stub'], $fluidField)?>
@@ -36,7 +35,6 @@
             <?php endif; ?>
 
             {<?=$field_name . ':' . $fluidFieldName?>}
-                <?=$fluidField['field_label']?>
                 <?php $fluidField['field_name'] = 'content'; ?>
 
                 <?=$this->embed($fluidField['stub'], $fluidField)?>
