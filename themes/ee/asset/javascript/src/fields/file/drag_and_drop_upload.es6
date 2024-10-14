@@ -370,7 +370,15 @@ class DragAndDropUpload extends React.Component {
   }
 
   chooseExisting = (directory) => {
+    var fileFolderObj = JSON.parse(localStorage.getItem('fileFolderObj'));
     let url = this.props.filebrowserEndpoint.replace('requested_directory=all', 'requested_directory=' + directory).replace('field_upload_locations=all', 'field_upload_locations=' + this.props.allowedDirectory);
+
+    if(!$.isEmptyObject(fileFolderObj)) {
+      if (directory ==  parseInt(fileFolderObj.requestedDirectory)) {
+        url = fileFolderObj.lastOpenedFileFolderUrl
+      }
+    }
+
     this.presentFilepicker(url, false)
     window.globalDropzone = $(this.dropZone)
   }
