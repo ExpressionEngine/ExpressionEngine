@@ -1050,7 +1050,7 @@ class Sql_structure
 
         if (!empty($cached_data)) {
             if ($cached_data === 'EMPTY') {
-                return false;
+                return [];
             }
 
             $result_row = $cached_data;
@@ -1060,7 +1060,7 @@ class Sql_structure
             if ($result->num_rows == 0) {
                 StaticCache::set('get_overview__' . $sql, 'EMPTY');
 
-                return false;
+                return [];
             }
 
             $result_row = "";
