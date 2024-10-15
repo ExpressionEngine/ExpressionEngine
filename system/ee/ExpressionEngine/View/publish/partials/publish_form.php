@@ -29,7 +29,7 @@
             <div class="tab-bar__tabs">
             <?php
             foreach ($layout->getTabs() as $index => $tab):
-                if (! $tab->isVisible()) {
+                if (! $tab->isVisible() && ! $tab->hasErrors($errors)) {
                     continue;
                 }
                 $class = '';
@@ -78,6 +78,9 @@
         <div class="tab t-<?=$index?><?php if ($index == 0): ?> tab-open<?php endif; ?>">
         <?=$tab->renderAlert()?>
         <?php foreach ($tab->getFields() as $field): ?>
+            <?php if (! $tab->isVisible()) {
+                continue; // tab is not visible, but we showed it because it has errors
+            } ?>
             <?php if (ee('Request')->get('field_id') != '') {
                 if ($field->getId() != ee('Request')->get('field_id')) {
                     continue;
