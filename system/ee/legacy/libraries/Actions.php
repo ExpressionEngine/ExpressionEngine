@@ -79,6 +79,19 @@ class EE_Actions
             $method = $query->row('method');
             $csrf_exempt = (bool) $query->row('csrf_exempt');
         } else {
+            // Just refreshing CSRF token?
+            if ($action_id == 'refresh_csrf_token') {
+                header("Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0");  //Don't cache
+                header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+                header("Pragma: no-cache");
+                $tokenIsValid = ee()->security->have_valid_xid();
+                if ($tokenIsValid) {
+                    ee()->output->send_ajax_response(array('success'));
+                } else {
+                    ee()->output->send_ajax_response(array('error' => lang('csrf_token_expired')));
+                }
+            }
+
             // If the ID is not numeric we'll invoke the class/method manually
             if (! isset($specials[$action_id])) {
                 return false;
