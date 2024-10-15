@@ -469,7 +469,6 @@ abstract class AbstractDesign extends CP_Controller
         foreach ($template_data as $template) {
             $group = $template->getTemplateGroup();
             $template_name = htmlentities($template->template_name, ENT_QUOTES, 'UTF-8');
-            $edit_url = ee('CP/URL')->make('design/template/edit/' . $template->template_id);
             $edit_url = ee('CP/URL', 'design/template/edit/' . $template->template_id);
 
             if ($include_group_name) {
