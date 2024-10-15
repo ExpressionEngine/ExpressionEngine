@@ -336,20 +336,46 @@ trait FileManagerTrait
         $data = array();
         $missing_files = false;
 
-        $destinationsToEagerLoad = [];
+        // Group files by destination and eager load first
+        $eagerLoads = array_reduce($files->asArray(), function ($carry, $file) use ($member) {
+            if ($file->UploadDestination->adapter != 'local' && $file->UploadDestination->exists()) {
+                if (!array_key_exists($file->upload_location_id, $carry)) {
+                    $carry[$file->upload_location_id] = [];
+                }
+                $carry[$file->upload_location_id][] = $file;
+            }
+
+            return $carry;
+        }, []);
+
+        // If we are loading a single destination or multiple destinations and
+        // a large number of files per page we will eager load the entire contents
+        // of the upload destination otherwise just eager load the files being shown
+        if(count($eagerLoads) == 1 || (!empty($eagerLoads) && $perpage > 100)) {
+            foreach($eagerLoads as $eagerLoadFiles) {
+                $uploadDestination = current($eagerLoadFiles)->UploadDestination;
+                $uploadDestination->eagerLoadContents();
+            }
+        } else {
+            foreach ($eagerLoads as $eagerLoadFiles) {
+                $paths = [];
+                $uploadDestination = $eagerLoadFiles[0]->UploadDestination;
+                $eagerLoadFiles = array_filter($eagerLoadFiles, function ($file) {
+                    return !$file->isDirectory();
+                });
+
+                foreach ($eagerLoadFiles as $file) {
+                    $paths[] = $file->getAbsolutePath();
+                    $paths[] = $file->getAbsoluteManipulationPath('thumbs');
+                }
+
+                $uploadDestination->getFilesystem()->eagerLoadPaths($paths);
+            }
+        }
 
         foreach ($files as $file) {
             if (! $file->memberHasAccess($member)) {
                 continue;
-            }
-
-            // We only need to eager load contents for destinations that are displaying
-            // files in this current page of the listing
-            if (! in_array($file->upload_location_id, $destinationsToEagerLoad)) {
-                if ($file->UploadDestination->adapter != 'local' && $file->UploadDestination->exists()) {
-                    $file->UploadDestination->eagerLoadContents();
-                }
-                $destinationsToEagerLoad[$file->upload_location_id] = $file->upload_location_id;
             }
 
             $attrs = [
@@ -443,6 +469,7 @@ trait FileManagerTrait
                 'cp/files/copy-url'
             ),
         ));
+
         return $vars;
     }
 
@@ -614,6 +641,7 @@ trait FileManagerTrait
                 ];
             }
         }
+
         return $uploadLocationsAndDirectoriesDropdownChoices;
     }
 }
