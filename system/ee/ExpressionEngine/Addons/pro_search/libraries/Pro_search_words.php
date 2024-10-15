@@ -330,7 +330,7 @@ class Pro_search_words
             $words = array_map('preg_quote', $words);
         }
 
-        $str = preg_replace('/<br\s?\/?>/iu', ' ', $str);
+        $str = preg_replace('/<br\s?\/?>/iu', ' ', (string) $str);
         $str = strip_tags($str);
         $str = html_entity_decode($str, ENT_QUOTES, 'UTF-8');
         $str = preg_replace('/[^\p{L}\p{N}]+/u', ' ', $str);
