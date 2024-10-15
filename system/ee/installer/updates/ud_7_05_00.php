@@ -29,7 +29,8 @@ class Updater
             [
                 'updateSpecialtyTemplates',
                 'modifyDateColumns',
-                'modifyDateFieldColumns'
+                'modifyDateFieldColumns',
+                'modifyVersionLengthInNewsViews',
             ]
         );
 
@@ -213,6 +214,11 @@ class Updater
                 ee()->db->query("ALTER TABLE " . ee()->db->dbprefix($table) . " CHANGE COLUMN `" . $column . "` `" . $column . "` bigint(10) DEFAULT 0");
             }
         }
+    }
+
+    private function modifyVersionLengthInNewsViews()
+    {
+        ee()->db->query("ALTER TABLE " . ee()->db->dbprefix('member_news_views') . " CHANGE COLUMN `version` `version` varchar(20) NULL");
     }
 }
 
