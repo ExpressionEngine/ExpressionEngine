@@ -22,7 +22,6 @@
                 {!-- Docs: <?=$field['docs_url']?> --}
                 <?php endif; ?>
 
-                <h4><?=$field['field_label']?></h4>
                 <?=$this->embed($field['stub'], $field);?>
                 <?php if($show_comments ?? false): ?>
 
