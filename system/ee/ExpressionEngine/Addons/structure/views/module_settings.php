@@ -72,7 +72,8 @@
                 </td>
             </tr>
         <?php else : ?>
-            <?php $i = 0; foreach ($perms as $perm_id => $perm) : ?>
+            <?php $i = 0;
+            foreach ($perms as $perm_id => $perm) : ?>
                 <tr class="<?php echo ($i++ % 2) ? 'even' : 'odd'; ?>">
                     <td><?=$perm?></td>
                     <?php foreach ($groups as $group) :
@@ -93,6 +94,15 @@
         <?php endif; ?>
     </tbody>
 </table>
+
+
+
+<div class="container">
+    <div class="padder ee7 structure-gui module_settings">
+        <h2>Named Navigations</h2>
+        <?= ee('View')->make('ee:_shared/form/mini_grid')->render($named_nav_grid->viewData()) ?>
+    </div>
+</div>
 
 <button type="submit" class="submit btn action">Save Module Settings</button>
 

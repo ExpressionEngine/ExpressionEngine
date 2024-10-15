@@ -2128,6 +2128,24 @@ body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls span i {
     display: none;
 }
 
+.structure-gui.module_settings h2 { margin-bottom: 30px; }
+
+.structure-gui.module_settings .field-no-results { background: var(--ee-panel-bg); }
+
+.structure-gui.module_settings .ui-sortable { background: none; }
+
+.structure-gui.module_settings .fields-keyvalue-item .field-control:first-of-type {
+  max-width: 42px;
+  display: inline-flex;
+  align-items: center;
+ }
+
+.structure-gui.module_settings select { width: 100%; }
+
+.structure-gui.module_settings .fields-keyvalue-header { margin-bottom: 10px; }
+
+.structure-gui.module_settings .fields-keyvalue-header .field-instruct:first-of-type { max-width: 42px; }
+
 @media screen and (max-width: 767px) {
     body[data-ee-version^="6."] #structure-ui .page-ui div.page-controls span a,
     body[data-ee-version^="7."] #structure-ui .page-ui div.page-controls span a {
