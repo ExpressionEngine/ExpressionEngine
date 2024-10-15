@@ -239,7 +239,7 @@ context('Member Registration on Front-end', () => {
             cy.get('#accept_terms').check();
             cy.get('#submit').click();
 
-            cy.contains('The password and password confirmation do not match')
+            cy.contains('This field does not match the password field')
             cy.clearCookies()
 
             cy.authVisit('admin.php?/cp/members');

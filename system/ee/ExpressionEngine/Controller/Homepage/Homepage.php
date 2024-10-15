@@ -212,6 +212,15 @@ class Homepage extends CP_Controller
 
         ee()->output->send_ajax_response(['success']);
     }
+
+    public function acknowledgeLicenseNotice()
+    {
+        if (!ee('Cookie')->getSignedCookie('license_notice_seen')) {
+            ee('Cookie')->setSignedCookie('license_notice_seen', time(), ee('pro:Access')->getLicenseBannerDuration());
+        }
+
+        ee()->output->send_ajax_response(['success']);
+    }
 }
 
 // EOF

@@ -97,6 +97,23 @@ class Channel extends ControlPanel {
     hasLocalErrors() {
         this.get('save_button').filter('[type=submit]').first().should('be.disabled')
     }
+
+    getCopyButtonByChannelName(channelName) {
+        return cy.get('ul.list-group li').then(($listItems) => {
+            let foundElement;
+            $listItems.each((index, $el) => {
+                if ($el.querySelector('.list-item__title').textContent.trim().includes(channelName)) {
+                    foundElement = $el.querySelector('.app-badge');
+                    return false; // Break the loop
+                }
+            });
+            if (foundElement) {
+                return cy.wrap(foundElement);
+            } else {
+                throw new Error(`Channel with name "${channelName}" not found`);
+            }
+        });
+    }
 }
 
 export default Channel;

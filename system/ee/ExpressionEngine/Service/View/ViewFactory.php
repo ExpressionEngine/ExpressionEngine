@@ -35,8 +35,8 @@ class ViewFactory
     /**
      * This will make and return a Service\View object
      *
-     * @param str $path The path to the view template file (ex: '_shared/form')
-     * @return obj A ExpressionEngine\Service\View\View object
+     * @param string $path The path to the view template file (ex: '_shared/form')
+     * @return object A ExpressionEngine\Service\View\View object
      */
     public function make($path)
     {
@@ -53,7 +53,7 @@ class ViewFactory
     /**
     * This will make and return a Service\View\StringView object
     *
-    * @param str $string The contents of the unrendered view
+    * @param string $string The contents of the unrendered view
     * @return object ExpressionEngine\Service\View\StringView
     */
     public function makeFromString($string)

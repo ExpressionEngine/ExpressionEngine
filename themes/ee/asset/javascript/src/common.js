@@ -9,10 +9,10 @@
 
 $(document).ready(function(){
 
-	// the code is responsible for preventing the page scrolling when press on 
+	// the code is responsible for preventing the page scrolling when press on
 	// the dropdown list using the spacebar (code 32)
 	window.addEventListener('keydown', (e) => {
-		if ((e.keyCode === 32 || e.keyCode === 13) && (e.target.classList.contains('select__button') || e.target.classList.contains('select__dropdown-item')) ) { 
+		if ((e.keyCode === 32 || e.keyCode === 13) && (e.target.classList.contains('select__button') || e.target.classList.contains('select__dropdown-item')) ) {
 		  e.preventDefault();
 		  e.target.click();
 		}
@@ -1066,7 +1066,7 @@ $(document).ready(function(){
 			}
 		});
 
-		// Check if Toggle button has data-group-toggle and 
+		// Check if Toggle button has data-group-toggle and
 		// show and hide dependent blocks depending on toggle button value
 		$('.toggle-btn').find('[data-group-toggle]').each(function() {
 			var val = $(this).val();
@@ -1199,16 +1199,6 @@ $(document).ready(function(){
 			}
 		}
 
-		if ($('.range-slider').length) {
-			$('.range-slider').each(function() {
-				var minValue = $(this).find('input[type="range"]').attr('min');
-				var maxValue = $(this).find('input[type="range"]').attr('max');
-
-				$(this).attr('data-min', minValue);
-				$(this).attr('data-max', maxValue);
-			});
-		}
-
 
 		$('body').on('click', '.title-bar a.upload, .main-nav__toolbar a.dropdown__link', function(e){
 			e.preventDefault();
@@ -1242,31 +1232,82 @@ $(document).ready(function(){
 			});
 		}
 
-		$('body').on('click', '.js-app-badge', function(e) {
+		$('body').on('click', '.js-app-badge', async function(e) {
 			var el = $(this);
-			// copy asset link to clipboard
+
+			// id is the data-id attribute of the clicked element
+			var id = el.data('id');
+			var contentType = el.data('content_type');
+			var fluid_id = el.data('fluid_id');
+
 			var copyText = el.find('.txt-only').text();
 
-			document.addEventListener('copy', function(e) {
-				e.clipboardData.setData('text/plain', copyText);
-				e.preventDefault();
-			}, true);
+			// if the id is an integer, get the template from the server
+			if(Number.isInteger(id)) {
+				// if EE.cp.exampleTemplateUrls[contentType] not defined, use the default url
+				if(!EE.cp.exampleTemplateUrls[contentType]) {
+					contentType = 'default';
+				}
 
-			document.execCommand('copy');
+				var url = EE.cp.exampleTemplateUrls[contentType] + '/' + id;
 
-			// show notification
-			el.addClass('success');
-			el.find('.fa-copy').addClass('hidden');
-			el.find('.fa-circle-check').removeClass('hidden');
+				// if this is a fluid field, lets replace vars in the URL
+				if(contentType == 'fluid_field' || contentType == 'fluid_fieldgroup') {
+					url = url.replace('{fluid_id}', fluid_id);
+				}
 
-			// hide notification in 2 sec
-			setTimeout(function() {
-				el.removeClass('success');
-				el.find('.fa-copy').removeClass('hidden');
-				el.find('.fa-circle-check').addClass('hidden');
-			}, 2000);
+				// get the template from the server
+				await $.get(url, function(data) {
+					// copy asset link to clipboard and show notification
+					copyText = data;
+				});
+			}
+
+			// copy asset link to clipboard and show notification
+			var success = await copyToClipboard(copyText);
+
+			// show notification if success
+			if (success) {
+				el.addClass('success');
+				el.find('.fa-copy').addClass('hidden');
+				el.find('.fa-circle-check').removeClass('hidden');
+
+				// hide notification in 2 sec
+				setTimeout(function() {
+					el.removeClass('success');
+					el.find('.fa-copy').removeClass('hidden');
+					el.find('.fa-circle-check').addClass('hidden');
+				}, 2000);
+			}
 
 			return false;
+		})
+
+		// add a function to copy text to clipboard
+		async function copyToClipboard(copyText) {
+			// if the browser supports clipboard
+			if (navigator.clipboard) {
+				return await navigator.clipboard.writeText(copyText)
+					.then(() => {
+						// console.log('copyText copied:', copyText);
+						return true;
+					})
+					.catch((error) => {
+						// console.log('copyText wasnt copied')
+						return false;
+					}
+				);
+			}
+
+			return false;
+		}
+
+
+		$('body').on('click', '.js-lv-banner__close-btn', function(e) {
+			e.preventDefault();
+		    $.get(EE.cp.acknowledgeLicenseNoticeURL, function(data) {
+                $('.lv-banner').hide();
+            });
 		})
 
 }); // close (document).ready

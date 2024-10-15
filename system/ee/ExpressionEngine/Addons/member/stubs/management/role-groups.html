@@ -1,0 +1,13 @@
+{layout="<?=$template_group?>/_layout"}
+{layout:set name="title"}Role Groups{/layout:set}
+
+<a href="{cp_url}?/cp/design/template/edit/{template_id}" target="_blank">View Template</a>
+
+<div class="result">
+  <h2>Your member role groups:</h2>
+  <ul>
+    {exp:member:role_groups}
+      <li>{role_group_name} ({role_group_id})</li>
+    {/exp:member:role_groups}
+  </ul>
+</div>

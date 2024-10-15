@@ -1,0 +1,1 @@
+{<?=$field_name?> format="%h hrs, %m min"}

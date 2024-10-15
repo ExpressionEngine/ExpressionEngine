@@ -87,6 +87,20 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
                 return $tagdata;
             }
 
+            // if the field is a note field type we need to get the note content and set it as the field data
+            if (
+                isset($ft_api->custom_fields)
+                && isset($ft_api->custom_fields[$field_id])
+                && $ft_api->custom_fields[$field_id] == 'notes'
+                && isset($ft_api->settings)
+                && isset($ft_api->settings[$field_id])
+                && isset($ft_api->settings[$field_id]['note_content'])
+            ) {
+                // set the note content as the field data
+                $data['field_id_' . $field_id] = $ft_api->settings[$field_id]['note_content'];
+            }
+
+
             if (
                 (isset($data['field_id_' . $field_id]) && $data['field_id_' . $field_id] !== '') or
                 array_key_exists($field['field_name'], $gfields) or // is a Grid single

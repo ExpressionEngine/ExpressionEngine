@@ -185,7 +185,7 @@ class Template extends AbstractDesignController
                     'template_engine' => array(
                         'type' => 'radio',
                         'choices' => $engines,
-                        'value' => $template->template_engine
+                        'value' => $template->template_engine ?: (ee()->api_template_structure->get_default_template_engine())
                     )
                 )
             )));

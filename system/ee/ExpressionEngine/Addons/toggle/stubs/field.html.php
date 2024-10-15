@@ -1,0 +1,1 @@
+{if <?=$field_name?>}<span class="on">Yes</span>{if:else}<span class="off">No</span>{/if}
