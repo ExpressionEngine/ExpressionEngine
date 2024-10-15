@@ -3161,7 +3161,8 @@ class EE_Template
                     ee()->functions->redirect(
                         ee()->functions->create_url(ee()->functions->extract_path("=" . $match['2'])),
                         false,
-                        $status_code
+                        $status_code,
+                        ee()->config->item('redirect_forward_url_parameters') === 'y'
                     );
                 }
             }
