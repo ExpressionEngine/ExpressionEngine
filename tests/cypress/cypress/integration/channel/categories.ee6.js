@@ -106,7 +106,7 @@ context('Categories', () => {
     })
 
     it('add category with all fields', function() {
-        cy.get('.button--primary').contains('New Category').click();
+        cy.get('.button--primary').contains('Add Category').click();
 
         cy.get('input[name=cat_name]').type('category one')
         cy.get('textarea[name=cat_description]').type('one description')

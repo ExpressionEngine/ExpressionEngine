@@ -92,7 +92,8 @@ abstract class AbstractChannels extends CP_Controller
                 ],
                 [
                     'text' => lang('new_channel'),
-                    'href' => ee('CP/URL', 'channels/create')
+                    'href' => ee('CP/URL', 'channels/create'),
+                    'shortcut' => 'a'
                 ]
             ];
         }
