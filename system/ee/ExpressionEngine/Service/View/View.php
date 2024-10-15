@@ -163,10 +163,10 @@ class View
         $vars = array_merge($this->processing, $vars);
         $view = $this->make($view)->disable($disable);
 
-        $buffered = ob_start();
+        ob_start();
         echo $view->render($vars);
 
-        if ($buffered !== false) {
+        if(ob_get_length() > 0) {
             ob_end_flush();
         }
     }
