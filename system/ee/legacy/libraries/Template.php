@@ -2641,7 +2641,7 @@ class EE_Template
                 // If no access redirect template was defined, 404
                 if ($query->row('no_auth_bounce') != '') {
                     $query = ee()->db->select('a.template_id, a.template_data,
-                        a.template_name, a.template_type, a.edit_date,
+                        a.template_name, a.template_type, a.template_engine, a.edit_date,
                         a.cache, a.refresh, a.hits, a.protect_javascript,
                         a.allow_php, a.php_parse_location, b.group_name, a.group_id, a.enable_frontedit')
                         ->from('templates a')
