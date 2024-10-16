@@ -823,6 +823,7 @@ class Fluid_field_ft extends EE_Fieldtype
     public function display_settings($data)
     {
         $custom_field_options = ee('Model')->get('ChannelField')
+            ->with('ChannelFieldGroups')
             ->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
             ->filter('field_type', '!=', 'fluid_field')
             ->order('field_label')
@@ -831,8 +832,10 @@ class Fluid_field_ft extends EE_Fieldtype
                 return $field->getField()->acceptsContentType('fluid_field');
             })
             ->map(function ($field) {
+                $group_names = $field->ChannelFieldGroups->pluck('group_name');
+                $groups = (!empty($group_names)) ? ' <i class="meta-info">[' . implode(', ', $group_names) . ']</i>' : '';
                 return [
-                    'label' => $field->field_label,
+                    'label' => $field->field_label . $groups,
                     'value' => $field->getId(),
                     'instructions' => LD . $field->field_name . RD
                 ];
