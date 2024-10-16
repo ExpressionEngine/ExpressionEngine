@@ -234,7 +234,7 @@ class Pro_search_params
 
             // No results? Then the value is now -1
             $val = ($res = $query->result_array())
-                ? $prefix . implode('|', pro_flatten_results($res, key($query->row())))
+                ? $prefix . implode('|', pro_flatten_results($res, key($query->row_array())))
                 : $no_results;
 
             // Make sure it's all set
