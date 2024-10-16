@@ -100,6 +100,12 @@ abstract class Filter
             $value = $this->isValid() ? $value : null;
         }
 
+        if (is_array($value)) {
+            return array_map(function ($value) {
+                return htmlentities($value, ENT_NOQUOTES, 'UTF-8');
+            }, $value);
+        }
+
         return is_null($value) ? null : htmlentities($value, ENT_NOQUOTES, 'UTF-8');
     }
 
