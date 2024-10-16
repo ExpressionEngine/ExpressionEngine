@@ -502,11 +502,18 @@ class Members extends CP_Controller
             $heir->updateAuthorStats();
         }
 
-        // If we got this far we're clear to delete the members
-        ee('Model')->get('Member')->filter('member_id', 'IN', $member_ids)->delete();
-
         // Send member deletion notifications
         $this->_member_delete_notifications($member_ids);
+        if (ee()->config->item('log_member_deletions') !== 'n') {
+            $members = ee('Model')->get('Member')->fields('screen_name', 'email')->filter('member_id', 'IN', $member_ids)->all();
+            ee()->load->library('logger');
+            foreach ($members as $member) {
+                ee()->logger->log_action(sprintf(lang('member_deleted_log'), $member->screen_name, $member->email));
+            }
+        }
+
+        // If we got this far we're clear to delete the members
+        ee('Model')->get('Member')->filter('member_id', 'IN', $member_ids)->delete();
 
         /* -------------------------------------------
         /* 'cp_members_member_delete_end' hook.

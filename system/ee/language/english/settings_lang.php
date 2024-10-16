@@ -917,6 +917,18 @@ $lang = array(
 
     'anonymize_consent_logs_desc' => 'Selected fields will be anonymized in Consent Audit logs',
 
+    'log_cp_visits' => 'Log CP Visits',
+
+    'log_cp_visits_desc' => 'Add record each time someone logs in or out of the Control Panel',
+
+    'log_member_deletions' => 'Log Member Deletions',
+
+    'log_member_deletions_desc' => 'Add record each time a member account is deleted. Disable if you need to delete many members and run into performance issues.',
+
+    'log_entry_deletions' => 'Log Entry Deletions',
+
+    'log_entry_deletions_desc' => 'Add record each time a channel entry is deleted. Disable if you need to delete many entries and run into performance issues.',
+
 );
 
 // EOF
