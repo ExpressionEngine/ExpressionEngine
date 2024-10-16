@@ -17,7 +17,7 @@ use ExpressionEngine\Service\Model\Collection;
  */
 class Reindex
 {
-    protected const CACHE_KEY = '/search/file-usage';
+    protected const CACHE_KEY = '/search/reindex';
 
     protected $field_ids = [];
     public $entry_ids = [];
@@ -40,7 +40,7 @@ class Reindex
     public function initialize()
     {
         $data = ee()->cache->get(self::CACHE_KEY);
-        if ($data === false || $data['reindexing'] === false) {
+        if ($data === false || ! isset($data['reindexing']) || $data['reindexing'] === false) {
             $fields = $this->getFields();
             $this->field_ids = $this->getFieldIdNames($fields);
             $this->entry_ids = [
