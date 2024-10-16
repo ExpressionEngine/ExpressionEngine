@@ -31725,6 +31725,7 @@ fieldset .field-control #eye {
   align-items: center;
   flex: 0 0 50px;
   margin-right: 20px;
+  margin-bottom: auto;
 }
 .add-on-card__icon .price {
   margin-top: 5px;
@@ -31771,9 +31772,6 @@ fieldset .field-control #eye {
 
 .add-on-card__desc {
   position: relative;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   max-width: 100%;
   color: var(--ee-text-secondary);
 }
