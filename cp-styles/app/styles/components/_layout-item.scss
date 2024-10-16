@@ -49,11 +49,38 @@
 	// font-weight: bold;
 	// font-size: 1.1em;
 
+	input {
+		display: inline-block;
+		width: auto;
+		line-height: 17px;
+		padding: 2px 5px;
+	}
+
   span {
     margin-left: 5px;
 
     &:last-child {
       margin-left: 2px;
+    }
+
+    &.title {
+    	margin: 0;
+    	cursor: pointer;
+			display: inline-flex;
+			align-items: center;
+			position: relative;
+
+			i {
+				font-size: 10px;
+				margin-left: 5px;
+				display: none;
+			}
+
+			&:hover {
+				i {
+					display: block;
+				}
+			}
     }
   }
 }
