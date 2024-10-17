@@ -502,7 +502,7 @@ function _exception_handler($severity, $message, $filepath, $line)
     // For example, if you are running PHP 5 and you use version 4 style
     // class functions (without prefixes like "public", "private", etc.)
     // you'll get notices telling you that these have been deprecated.
-    if ($severity == E_STRICT) {
+    if (PHP_VERSION_ID < 80000 && $severity == E_STRICT) {
         return;
     }
 
