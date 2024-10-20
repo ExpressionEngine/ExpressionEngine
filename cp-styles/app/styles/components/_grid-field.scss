@@ -22,6 +22,22 @@
 			margin-left: 0;
 		}
 	}
+
+	tbody {
+		td.required {
+			&:after { display: none; }
+
+			&:before {
+				content: "\*";
+				color: var(--ee-brand-danger);
+				font-size: 1em;
+				position: relative;
+				top: 0;
+				line-height: 0.7;
+				display: inline-block;
+			}
+		}
+	}
 }
 
 .grid-field__table {
@@ -357,6 +373,16 @@
 					}
 				}
 			}
+
+			td.required {
+				&:before {
+					top: 45px;
+				}
+
+				.grid-field__column-label {
+					margin-bottom: 15px;
+				}
+			}
 		}
 	}
 
@@ -616,6 +642,16 @@
 					.grid-field__item-tool {
 						transform: rotate(180deg);
 					}
+				}
+			}
+
+			td.required {
+				&:before {
+					top: 45px;
+				}
+
+				.grid-field__column-label {
+					margin-bottom: 15px !important;
 				}
 			}
 		}
