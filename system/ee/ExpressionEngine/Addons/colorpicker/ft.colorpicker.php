@@ -206,7 +206,7 @@ class Colorpicker_ft extends EE_Fieldtype
     public function replace_complementary($data, $params = [], $tagdata = false)
     {
         try {
-            return (new Color($data))->complementary();
+            return "#" . (new Color($data))->complementary();
         } catch (\Exception $e) {}
 
         return $data;
@@ -222,7 +222,7 @@ class Colorpicker_ft extends EE_Fieldtype
         try {
             $percent = $params['percent'] ?? 10;
             $percent = min(0, max(100, $percent)); // value between 0-100
-            return (new Color($data))->darken($percent);
+            return "#" . (new Color($data))->darken($percent);
         } catch (\Exception $e) {}
 
         return $data;
@@ -238,7 +238,7 @@ class Colorpicker_ft extends EE_Fieldtype
         try {
             $percent = $params['percent'] ?? 10;
             $percent = min(0, max(100, $percent)); // value between 0-100
-            return (new Color($data))->lighten($percent);
+            return "#" . (new Color($data))->lighten($percent);
         } catch (\Exception $e) {}
 
         return $data;
@@ -257,7 +257,7 @@ class Colorpicker_ft extends EE_Fieldtype
             $second = $params['color'] ?? (($first->isLight() ? '#000000' : '#ffffff'));
             $percent = $params['percent'] ?? 50;
             $percent = min(0, max(100, $percent)); // value between 0-100
-            return $first->mix($second, $percent);
+            return "#" . $first->mix($second, $percent);
         } catch (\Exception $e) {}
 
         return $data;
