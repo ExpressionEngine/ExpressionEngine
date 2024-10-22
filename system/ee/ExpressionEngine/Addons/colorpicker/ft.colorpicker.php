@@ -198,6 +198,71 @@ class Colorpicker_ft extends EE_Fieldtype
         return $contrast;
     }
 
+    /**
+     * :complementary modifier
+     *
+     * Returns the color "opposite" or complementary to your color.
+     */
+    public function replace_complementary($data, $params = [], $tagdata = false)
+    {
+        try {
+            return (new Color($data))->complementary();
+        } catch (\Exception $e) {}
+
+        return $data;
+    }
+
+    /**
+     * :darken modifier
+     *
+     * Returns a darker shade of your color
+     */
+    public function replace_darken($data, $params = [], $tagdata = false)
+    {
+        try {
+            $percent = $params['percent'] ?? 10;
+            $percent = min(0, max(100, $percent)); // value between 0-100
+            return (new Color($data))->darken($percent);
+        } catch (\Exception $e) {}
+
+        return $data;
+    }
+
+    /**
+     * :lighten modifier
+     *
+     * Returns a lighter tint of your color
+     */
+    public function replace_lighten($data, $params = [], $tagdata = false)
+    {
+        try {
+            $percent = $params['percent'] ?? 10;
+            $percent = min(0, max(100, $percent)); // value between 0-100
+            return (new Color($data))->lighten($percent);
+        } catch (\Exception $e) {}
+
+        return $data;
+    }
+
+
+    /**
+     * :mix modifier
+     *
+     * Returns a combination of two colors
+     */
+    public function replace_mix($data, $params = [], $tagdata = false)
+    {
+        try {
+            $first = new Color($data);
+            $second = $params['color'] ?? (($first->isLight() ? '#000000' : '#ffffff'));
+            $percent = $params['percent'] ?? 50;
+            $percent = min(0, max(100, $percent)); // value between 0-100
+            return $first->mix($second, $percent);
+        } catch (\Exception $e) {}
+
+        return $data;
+    }
+
     // -----------------------------------------------------------------------
     // Settings
     // -----------------------------------------------------------------------
