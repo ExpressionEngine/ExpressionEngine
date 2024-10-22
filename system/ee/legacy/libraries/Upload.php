@@ -799,8 +799,10 @@ class EE_Upload
         }
 
         // We can't simply check for `<?` because that's valid XML and is
-        // allowed in files.
-        return (stripos($data, '<?php') === false);
+        // allowed in files. Check for `<?php` and `<?=` instead.
+        if (strpos($data, '<?php') !== false || strpos($data, '<?=') !== false) {
+            return false;
+        }
     }
 
     /**
