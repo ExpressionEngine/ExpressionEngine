@@ -390,6 +390,17 @@ class Upload
             )
         );
 
+        // Check to see that the extension of $original_name is the same as the $file->file_name
+        if (substr($original_name, strrpos($original_name, '.')) != substr($file->file_name, strrpos($file->file_name, '.'))) {
+            ee('CP/Alert')->makeInline('shared-form')
+                ->asIssue()
+                ->withTitle(lang('file_conflict'))
+                ->addToBody(lang('invalid_filename'))
+                ->now();
+
+            return $result;
+        }
+
         if ($upload_options == 'rename') {
             $new_name = ee()->input->post('rename_custom');
 
