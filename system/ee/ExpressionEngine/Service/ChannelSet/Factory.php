@@ -36,11 +36,11 @@ class Factory
      * @param Array $channels Array/collection of channels
      * @return String Path to the zip file
      */
-    public function export($channels)
+    public function export($channels, $file_name = null)
     {
         $export = new Export();
 
-        return $export->zip($channels);
+        return $export->zip($channels, $file_name);
     }
 
     /**
