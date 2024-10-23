@@ -198,6 +198,164 @@ class Colorpicker_ft extends EE_Fieldtype
         return $contrast;
     }
 
+    /**
+     * :complementary modifier
+     *
+     * Returns the color "opposite" or complementary to your color.
+     */
+    public function replace_complementary($data, $params = [], $tagdata = false)
+    {
+        try {
+            return "#" . (new Color($data))->complementary();
+        } catch (\Exception $e) {}
+
+        return $data;
+    }
+
+    /**
+     * :darken modifier
+     *
+     * Returns a darker shade of your color
+     */
+    public function replace_darken($data, $params = [], $tagdata = false)
+    {
+        try {
+            $percent = $params['percent'] ?? 10;
+            $percent = max(0, min(100, $percent)); // value between 0-100
+            return "#" . (new Color($data))->darken($percent);
+        } catch (\Exception $e) {}
+
+        return $data;
+    }
+
+    /**
+     * :lighten modifier
+     *
+     * Returns a lighter tint of your color
+     */
+    public function replace_lighten($data, $params = [], $tagdata = false)
+    {
+        try {
+            $percent = $params['percent'] ?? 10;
+            $percent = max(0, min(100, $percent)); // value between 0-100
+            return "#" . (new Color($data))->lighten($percent);
+        } catch (\Exception $e) {}
+
+        return $data;
+    }
+
+     /**
+     * :rotate modifier
+     *
+     * Returns a color with a hue rotated X degrees
+     */
+    public function replace_rotate($data, $params = [], $tagdata = false)
+    {
+        try {
+            $degrees = $params['degrees'] ?? 0;
+            $hsl = Color::hexToHsl($data);
+            $hsl['H'] = ($hsl['H'] + $degrees) % 360;
+
+            return "#" . Color::hslToHex($hsl);
+        } catch (\Exception $e) {}
+
+        return $data;
+    }
+
+    /**
+     * :saturate modifier
+     *
+     * Returns a more saturated color
+     */
+    public function replace_saturate($data, $params = [], $tagdata = false)
+    {
+        try {
+            $percent = $params['percent'] ?? 10;
+            $percent = max(0, min(100, $percent)); // value between 0-100
+
+            $hsl = Color::hexToHsl($data);
+            $hsl['S'] = ($hsl['S'] * 100) + $percent;
+            $hsl['S'] = ($hsl['S'] > 100) ? 1 : $hsl['S'] / 100;
+
+            return "#" . Color::hslToHex($hsl);
+        } catch (\Exception $e) {}
+
+        return $data;
+    }
+
+    /**
+     * :desaturate modifier
+     *
+     * Returns a less saturated color
+     */
+    public function replace_desaturate($data, $params = [], $tagdata = false)
+    {
+        try {
+            $percent = $params['percent'] ?? 10;
+            $percent = max(0, min(100, $percent)); // value between 0-100
+
+            $hsl = Color::hexToHsl($data);
+            $hsl['S'] = ($hsl['S'] * 100) - $percent;
+            $hsl['S'] = ($hsl['S'] < 0) ? 0 : $hsl['S'] / 100;
+
+            return "#" . Color::hslToHex($hsl);
+        } catch (\Exception $e) {}
+
+        return $data;
+    }
+
+
+    /**
+     * :mix modifier
+     *
+     * Returns a combination of two colors
+     */
+    public function replace_mix($data, $params = [], $tagdata = false)
+    {
+        try {
+            $first = new Color($data);
+            $second = $params['color'] ?? (($first->isLight() ? '#000000' : '#ffffff'));
+            $percent = $params['percent'] ?? 50;
+            $percent = max(0, min(100, $percent)); // value between 0-100
+            return "#" . $first->mix($second, $percent);
+        } catch (\Exception $e) {}
+
+        return $data;
+    }
+
+    /**
+     * :rgb modifier
+     *
+     * Returns the rgb string for the color
+     */
+    public function replace_rgb($data, $params = [], $tagdata = false)
+    {
+        try {
+            return implode(', ',(new Color($data))->getRgb());
+        } catch (\Exception $e) {}
+
+        return $data;
+    }
+
+    /**
+     * :hsl modifier
+     *
+     * Returns the hsl string for the color
+     */
+    public function replace_hsl($data, $params = [], $tagdata = false)
+    {
+        try {
+            $hsl = (new Color($data))->getHsl();
+            return implode(' ', [
+                (int) $hsl['H'],
+                (int) ($hsl['S'] * 100),
+                (int) ($hsl['L'] * 100),
+            ]);
+        } catch (\Exception $e) {}
+
+        return $data;
+    }
+
     // -----------------------------------------------------------------------
     // Settings
     // -----------------------------------------------------------------------
