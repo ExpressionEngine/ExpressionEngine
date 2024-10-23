@@ -709,6 +709,17 @@ class Channel_form_lib
         $return .= ee()->TMPL->tagdata;
         $return .= "</form>";
 
+        // If we have a non-native template engine we must populate the custom field
+        // inputs now because they may add javascript that needs to be built
+        if(!empty(ee()->TMPL->template_engine)) {
+            foreach($custom_field_variables as $field => $fieldVariables) {
+                $custom_field_variables[$field] = [
+                    'settings' => $fieldVariables,
+                    'input' => $this->display_field($field),
+                ];
+            }
+        }
+
         $this->_build_javascript();
 
         $this->switch_site($current_site_id);
@@ -740,6 +751,12 @@ class Channel_form_lib
                 return;
             }
         }
+
+        ee()->TMPL->set_data([
+            'open' => $return,
+            'fields' => $custom_field_variables,
+            'errors' => array_merge($this->errors, $this->field_errors),
+        ]);
 
         return $return;
     }
