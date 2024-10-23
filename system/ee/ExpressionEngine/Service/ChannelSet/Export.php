@@ -43,10 +43,16 @@ class Export
      * @param Array $channels List of channel instances
      * @return String Path to the generated zip file
      */
-    public function zip($channels)
+    public function zip($channels, $file_name = null)
     {
         $this->zip = new ZipArchive();
-        $location = PATH_CACHE . "cset/{$channels[0]->channel_name}.zip";
+
+        if(empty($file_name)) {
+            $location = PATH_CACHE . "cset/{$channels[0]->channel_name}.zip";
+        }
+        else {
+            $location = PATH_CACHE . "cset/$file_name.zip";
+        }
 
         if (! is_dir(PATH_CACHE . 'cset/')) {
             ee('Filesystem')->mkdir(PATH_CACHE . 'cset/');
