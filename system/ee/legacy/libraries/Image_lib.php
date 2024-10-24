@@ -1553,6 +1553,36 @@ class EE_Image_lib
 
         return $path;
     }
+
+    /**
+     * Strip Image Tags
+     *
+     * Strips exif data from image files
+     * Requires Imagick extension
+     *
+     * @access  public
+     * @return  void
+     */
+    public function strip_metadata()
+    {
+        // If we dont have imagick installed, we can't strip metadata
+        if ($this->image_library != 'imagemagick' || ! extension_loaded('imagick') || ! class_exists('Imagick')) {
+            return false;
+        }
+
+        try {
+            $img = new Imagick($this->full_src_path);
+            $img->stripImage();
+            $img->writeImage($this->full_src_path);
+            $img->clear();
+            $img->destroy();
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        return true;
+
+    }
 }
 // END Image_lib Class
 
