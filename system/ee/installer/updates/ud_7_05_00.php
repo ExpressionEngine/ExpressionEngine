@@ -199,6 +199,13 @@ class Updater
             foreach ($fieldsQuery->result_array() as $row) {
                 $table = ($row['legacy_field_data'] == 'y') ? 'channel_data' : 'channel_data_field_' . $row['field_id'];
                 $column = 'field_id_' . $row['field_id'];
+
+                // Test for non-integer values and convert to DEFAULT 0 if found
+                $hasNonInteger = ee()->db->query("SELECT * FROM " . ee()->db->dbprefix($table) . " WHERE `" . $column . "` NOT REGEXP '^-?[0-9]+$' LIMIT 1");
+                if($hasNonInteger->num_rows() != 0) {
+                    ee()->db->query("UPDATE " . ee()->db->dbprefix($table) . " SET `" . $column . "` = 0 WHERE " . $column . " NOT REGEXP '^-?[0-9]+$'");
+                }
+
                 ee()->db->query("ALTER TABLE " . ee()->db->dbprefix($table) . " CHANGE COLUMN `" . $column . "` `" . $column . "` bigint(10) DEFAULT 0");
             }
         }
