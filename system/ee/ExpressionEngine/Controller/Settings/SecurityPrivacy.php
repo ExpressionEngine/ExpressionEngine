@@ -236,6 +236,16 @@ class SecurityPrivacy extends Settings
                     )
                 ),
                 array(
+                    'title' => 'strip_image_metadata',
+                    'desc' => sprintf(lang('strip_image_metadata_desc'), 'https://www.php.net/manual/en/book.imagick.php', extension_loaded('imagick') ? 'enabled' : 'disabled'),
+                    'fields' => array(
+                        'strip_image_metadata' => [
+                            'type' => 'yes_no',
+                            'disabled' => ! extension_loaded('imagick'),
+                        ]
+                    )
+                ),
+                array(
                     'title' => 'enable_rank_denial',
                     'desc' => sprintf(lang('enable_rank_denial_desc'), 'https://support.google.com/webmasters/answer/96569?hl=en'),
                     'fields' => array(
