@@ -201,9 +201,9 @@ class Updater
                 $column = 'field_id_' . $row['field_id'];
 
                 // Test for non-integer values and convert to DEFAULT 0 if found
-                $hasNonInteger = ee()->db->query("SELECT * FROM " . ee()->db->dbprefix($table) . " WHERE `" . $column . "` NOT REGEXP '^-?[0-9]+$') LIMIT 1");
+                $hasNonInteger = ee()->db->query("SELECT * FROM " . ee()->db->dbprefix($table) . " WHERE `" . $column . "` NOT REGEXP '^-?[0-9]+$' LIMIT 1");
                 if($hasNonInteger->num_rows() != 0) {
-                    ee()->db->query("UPDATE " . ee()->db->dbprefix($table) . " SET `" . $column . "` = 0 WHERE " . $column . " NOT REGEXP '^-?[0-9]+$'))");
+                    ee()->db->query("UPDATE " . ee()->db->dbprefix($table) . " SET `" . $column . "` = 0 WHERE " . $column . " NOT REGEXP '^-?[0-9]+$'");
                 }
 
                 ee()->db->query("ALTER TABLE " . ee()->db->dbprefix($table) . " CHANGE COLUMN `" . $column . "` `" . $column . "` bigint(10) DEFAULT 0");
