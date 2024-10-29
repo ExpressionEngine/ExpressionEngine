@@ -127,7 +127,7 @@ html.color-theme-in-transition *:after {
   --ee-input-toggle-active-fg: #ffffff;
   --ee-input-disabled-bg: #FDFDFE;
   --ee-input-jump-bg: #FFFFFF;
-  --ee-sidebar-text: #707294;
+  --ee-sidebar-text: #2A2C3C;
   --ee-sidebar-text-primary: #101020;
   --ee-sidebar-text-faded: #686988;
   --ee-sidebar-text-active: #575FEC;
@@ -625,7 +625,7 @@ body[data-theme=dark] .inverted-theme {
   --ee-input-toggle-active-fg: #ffffff;
   --ee-input-disabled-bg: #FDFDFE;
   --ee-input-jump-bg: #FFFFFF;
-  --ee-sidebar-text: #707294;
+  --ee-sidebar-text: #2A2C3C;
   --ee-sidebar-text-primary: #101020;
   --ee-sidebar-text-faded: #686988;
   --ee-sidebar-text-active: #575FEC;
