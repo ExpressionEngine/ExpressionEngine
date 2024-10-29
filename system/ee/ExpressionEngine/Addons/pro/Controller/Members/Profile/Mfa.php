@@ -32,7 +32,7 @@ class Mfa extends Profile\Pro
             $id = ee()->session->userdata['member_id'];
         }
 
-        if ($id != ee()->session->userdata['member_id']) {
+        if ($id != ee()->session->userdata['member_id'] && !ee('Permission')->isSuperAdmin()) {
             show_error(lang('unauthorized_access'), 403);
         }
 
@@ -86,8 +86,7 @@ class Mfa extends Profile\Pro
         if (ee('Request')->isPost() && (ee()->form_validation->run() !== false || empty($rules))) {
             $sessions = ee('Model')
                 ->get('Session')
-                ->filter('member_id', ee()->session->userdata('member_id'))
-                ->filter('fingerprint', ee()->session->userdata('fingerprint'))
+                ->filter('member_id', $this->member->member_id)
                 ->all();
             if (!empty($_POST['mfa_code'])) {
                 $validated = ee('pro:Mfa')->validateOtp(ee('Security/XSS')->clean(ee('Request')->post('mfa_code')), ee()->session->userdata('unique_id') . md5(ee('Security/XSS')->clean(ee('Request')->post('backup_mfa_code'))));
@@ -96,6 +95,12 @@ class Mfa extends Profile\Pro
                         ->asIssue()
                         ->withTitle(lang('mfa_wrong_code'))
                         ->addToBody(lang('mfa_wrong_code_desc'))
+                        ->now();
+                } elseif (ee()->session->userdata('member_id') != $this->member->member_id) {
+                    ee('CP/Alert')->makeInline('shared-form')
+                        ->asIssue()
+                        ->withTitle(lang('unauthorized_access'))
+                        ->addToBody(lang('mfa_wrong_user_desc'))
                         ->now();
                 } else {
                     $this->member->enable_mfa = true;
@@ -136,24 +141,37 @@ class Mfa extends Profile\Pro
                 ->now();
         }
 
-        $vars['sections'] = array(
-            array(
+        $vars['sections'] = [];
+        if (ee()->session->userdata('member_id') == $this->member->member_id || $this->member->enable_mfa === true) {
+            $vars['sections'] = array(
                 array(
-                    'title' => 'enable_mfa',
-                    'fields' => array(
-                        'enable_mfa' => array(
-                            'type' => 'yes_no',
-                            'disabled' => version_compare(PHP_VERSION, 7.1, '<'),
-                            'value' => $this->member->enable_mfa,
-                            'group_toggle' => array(
-                                'n' => 'password',
-                                'y' => 'qr_code'
+                    array(
+                        'title' => 'enable_mfa',
+                        'fields' => array(
+                            'enable_mfa' => array(
+                                'type' => 'yes_no',
+                                'disabled' => version_compare(PHP_VERSION, 7.1, '<'),
+                                'value' => $this->member->enable_mfa,
+                                'group_toggle' => array(
+                                    'n' => 'password',
+                                    'y' => 'qr_code'
+                                )
                             )
                         )
-                    )
-                ),
-            )
-        );
+                    ),
+                )
+            );
+        } else {
+            $vars['sections'] = array_merge($vars['sections'], [
+                [
+                ee('CP/Alert')->makeInline('mfa_not_available')
+                    ->asWarning()
+                    ->addToBody(lang('mfa_wrong_user_desc'))
+                    ->cannotClose()
+                    ->render()
+                ]
+            ]);
+        }
 
         if (version_compare(PHP_VERSION, 7.1, '<')) {
             ee()->lang->load('addons');
@@ -172,7 +190,7 @@ class Mfa extends Profile\Pro
             ]);
         }
 
-        if (version_compare(PHP_VERSION, 7.1, '>=') && $this->member->enable_mfa === false) {
+        if (version_compare(PHP_VERSION, 7.1, '>=') && $this->member->enable_mfa === false && ee()->session->userdata('member_id') == $this->member->member_id) {
             $vars['sections'][0] = array_merge($vars['sections'][0], array(
                 array(
                     'title' => 'mfa_qr_code',

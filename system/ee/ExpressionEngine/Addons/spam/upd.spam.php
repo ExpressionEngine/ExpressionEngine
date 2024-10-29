@@ -26,8 +26,8 @@ class Spam_upd extends Installer
     /**
      * Module Installer
      *
-     * @access	public
-     * @return	bool
+     * @access  public
+     * @return  bool
      */
     public function install()
     {
@@ -100,14 +100,16 @@ class Spam_upd extends Installer
         // Make sure the default kernel is created
         ee('Model')->make('spam:SpamKernel', array('name' => 'default'))->save();
 
+        $this->trapSpamComments();
+
         return true;
     }
 
     /**
      * Module Uninstaller
      *
-     * @access	public
-     * @return	bool
+     * @access  public
+     * @return  bool
      */
     public function uninstall()
     {
@@ -134,6 +136,10 @@ class Spam_upd extends Installer
     {
         if (version_compare($current, '2.0.0', '<')) {
             $this->do_2_00_00_update();
+        }
+
+        if (version_compare($current, '2.1.0', '<')) {
+            $this->trapSpamComments();
         }
 
         return true;
@@ -329,9 +335,9 @@ class Spam_upd extends Installer
             $entry_data = unserialize($trapped->entity);
 
             // array(
-            // 		postdata,
-            // 		channel_id or NULL,
-            // 		entry_id, or not set for new entries
+            //      postdata,
+            //      channel_id or NULL,
+            //      entry_id, or not set for new entries
             // )
             // If it's an existing entry, we don't have a way to deal with it,
             // HAMing an edit could revert changes made by previous non-spam edits.
@@ -475,6 +481,43 @@ class Spam_upd extends Installer
             $trap = ee('Model')->make('spam:SpamTrap', $data);
             $trap->save();
         }
+    }
+
+    /** Add comments with SPAM status to the trap */
+    private function trapSpamComments()
+    {
+        $offset = 0;
+
+        $trapped_comments = ee('Model')->get('spam:SpamTrap')
+            ->fields('comment_id')
+            ->filter('content_type', 'comment');
+
+        $trappedCommentIds = array();
+        if ($trapped_comments->count() > 0) {
+            foreach ($trapped_comments->all() as $trapped) {
+                $trappedCommentIds[] = $trapped->comment_id;
+            }
+        }
+
+        // get the comments so we can save a serialized entity model to the spam trap
+        do {
+            $spam_comments = ee('Model')->get('Comment')
+                ->filter('status', 's')
+                ->limit(100)
+                ->offset($offset);
+            if (!empty($trappedCommentIds)) {
+                $spam_comments->filter('comment_id', 'NOT IN', $trappedCommentIds);
+            }
+
+            $total = $spam_comments->count();
+            if ($total == 0) {
+                return;
+            }
+            foreach ($spam_comments->all() as $comment) {
+                ee('Spam')->moderate('comment', $comment, $comment->comment);
+            }
+            $offset += 100;
+        } while ($total > 0);
     }
 }
 

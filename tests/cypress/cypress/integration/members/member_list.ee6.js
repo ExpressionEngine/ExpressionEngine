@@ -4,11 +4,14 @@ import Members from '../../elements/pages/members/Members';
 
 const page = new Members
 
-context('Member List', () => {
+context('Member List in CP', () => {
 
   before(function(){
     cy.task('db:seed')
     cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })
+    cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' }).then(() => {
+      cy.authVisit('admin.php?/cp/design')
+    })
   })
   
   beforeEach(function() {
@@ -24,7 +27,7 @@ context('Member List', () => {
   })
 
   // Confirming phrase search
-  it('searches by phrases', () => {
+  it('search members by keyword', () => {
     page.get('keyword_search').clear().type('banned1{enter}')
     cy.hasNoErrors()
 
@@ -44,7 +47,7 @@ context('Member List', () => {
   })
 
    it('displays an itemized modal when attempting to remove 1 member', () => {
-    page.get('usernames').first().invoke('text').then((member_name) => {
+    cy.get('.ee-main__content form .table-responsive table tr td:nth-child(2) div > div > span').first().invoke('text').then((member_name) => {
       page.get('members').first().find('input[type="checkbox"]').check()
       page.get('bulk_action').should('be.visible')
       page.get('bulk_action').select("Delete")
@@ -62,6 +65,7 @@ context('Member List', () => {
 
 context('Member List frontend', () => {
   before(function() {
+    cy.wait(1000)
     cy.task('db:seed')
     //copy templates
     cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' }).then(() => {
@@ -70,11 +74,7 @@ context('Member List frontend', () => {
     cy.logout()
   })
 
-  beforeEach(function() {
-    
-  })
-
-  it('can access memberlist', () => {
+  it('check access memberlist permissions', () => {
     cy.visit('index.php/members/memberlist', {failOnStatusCode: false});
     cy.hasNoErrors()
     cy.get('body').should('contain', 'You are not allowed to view member profiles')
@@ -103,6 +103,12 @@ context('Member List frontend', () => {
     cy.logFrontendPerformance()
   })
 
+  it('Check backspace parameter for member_rows', () => {
+    cy.auth()
+    cy.visit('index.php/members/memberlist-backspace');
+    cy.get('div').contains("Admin").should('not.contain', 'Admin**')
+  })
+
   it('the paths are correct', () => {
 
     cy.visit('index.php/members/memberlist');
@@ -113,7 +119,7 @@ context('Member List frontend', () => {
     cy.get('tbody tr').its('length').should('eq', 2)
     cy.get('tbody tr').eq(1).find('img').should('exist')
     cy.get('tbody tr').eq(1).find('img').invoke('attr', 'src').then((src) => {
-      expect(src).to.contain('procotopus.png')
+      expect(src).to.contain('8bit_kevin.png')
     })
     cy.get('tbody tr').should('not.contain', 'Member')
     cy.logFrontendPerformance()

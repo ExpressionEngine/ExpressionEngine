@@ -16,11 +16,9 @@ context('Upload Destination Create/Edit', () => {
     cy.auth();
     page.load()
     cy.hasNoErrors()
-
-    cy.server()
   })
 
-  it('shows the Upload Destination Create/Edit page', () => {
+  it('Shows the Upload Destination Create/Edit page', () => {
     page.get('name').should('exist')
     page.get('adapter').should('exist')
     page.get('allowed_types').should('exist')
@@ -44,7 +42,7 @@ context('Upload Destination Create/Edit', () => {
       // Invalid path:
       // The validation for this field is only peformed when we submit 
       cy.log('Invalid path:')
-      cy.route("POST", "**/files/uploads/**").as("ajax9");
+      cy.intercept("POST", "**/files/uploads/**").as("ajax9");
       page.get('server_path').clear().type('sdfsdf')
       cy.get('body').type('{ctrl}', {release: false}).type('s')
 
@@ -53,7 +51,7 @@ context('Upload Destination Create/Edit', () => {
       page.hasErrors()
   })
 
-  it('Not writable path', () => {
+  it('Validate not writable path', () => {
       // Not writable path:
       page.load()
 
@@ -72,7 +70,7 @@ context('Upload Destination Create/Edit', () => {
       page.hasErrors()
   })
 
-  it('should validate regular fields', () => {
+  it('Validate regular fields', () => {
     const url_error = 'This field must contain a valid URL.'
     page.submit()
     cy.hasNoErrors()
@@ -89,14 +87,14 @@ context('Upload Destination Create/Edit', () => {
     cy.get('[data-input-value=adapter] .select__button').click()
     cy.get('[data-input-value=adapter] .select__dropdown .select__dropdown-item').contains('Local').click()
 
-    cy.route("POST", "**/files/uploads/**").as("ajax1");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax1");
     page.get('name').trigger('blur')
     cy.wait("@ajax1");
     page.hasError(page.get('name'), page.messages.validation.required)
     page.hasErrors()
 
 
-    cy.route("POST", "**/files/uploads/**").as("ajax2");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax2");
     page.get('name').clear().type('Dir')
     page.get('name').trigger('blur')
     cy.wait("@ajax2");
@@ -105,7 +103,7 @@ context('Upload Destination Create/Edit', () => {
 
     // Duplicate directory name
     cy.log('Duplicate directory name')
-    cy.route("POST", "**/files/uploads/**").as("ajax3");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax3");
     page.get('name').clear().type('Main Upload Directory')
     page.get('name').trigger('blur')
     cy.wait("@ajax3");
@@ -116,7 +114,7 @@ context('Upload Destination Create/Edit', () => {
     // Multiple errors for URL
     // Error when just submitting "http://"
     cy.log('Error when just submitting "http://"')
-    cy.route("POST", "**/files/uploads/**").as("ajax4");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax4");
     page.get('url').clear().type('http://').trigger('blur')
     cy.wait("@ajax4");
     page.hasErrorsCount(2)
@@ -124,7 +122,7 @@ context('Upload Destination Create/Edit', () => {
     page.hasErrors()
 
     // Resolve that error
-    cy.route("POST", "**/files/uploads/**").as("ajax5");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax5");
     page.get('url').clear().type('http://ee3/')
     page.get('url').trigger('blur')
     cy.wait("@ajax5");
@@ -134,7 +132,7 @@ context('Upload Destination Create/Edit', () => {
 
     // Error when left blank
     cy.log('Error when left blank')
-    cy.route("POST", "**/files/uploads/**").as("ajax6");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax6");
     page.get('url').clear().trigger('blur')
     cy.wait("@ajax6");
     page.hasErrorsCount(2)
@@ -144,7 +142,7 @@ context('Upload Destination Create/Edit', () => {
     // Server path errors, path must both exist and be writable
     // Required:
     cy.log(' Server path errors, path must both exist and be writable')
-    cy.route("POST", "**/files/uploads/**").as("ajax7");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax7");
     page.get('server_path').clear().trigger('blur')
     cy.wait("@ajax7");
     page.hasErrorsCount(3)
@@ -152,7 +150,7 @@ context('Upload Destination Create/Edit', () => {
     page.hasErrors()
 
     // Resolve so can break again:
-    cy.route("POST", "**/files/uploads/**").as("ajax8");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax8");
     page.get('server_path').clear().type(upload_path, {parseSpecialCharSequences: false}).trigger('blur')
     cy.wait("@ajax8");
     page.hasErrorsCount(2)
@@ -160,7 +158,7 @@ context('Upload Destination Create/Edit', () => {
     page.hasErrors()
 
     // Resolve so can break again:
-    cy.route("POST", "**/files/uploads/**").as("ajax10");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax10");
     page.get('server_path').clear().type(upload_path, {parseSpecialCharSequences: false})
     page.get('server_path').trigger('blur')
     cy.wait("@ajax10");
@@ -168,7 +166,7 @@ context('Upload Destination Create/Edit', () => {
     page.hasNoError(page.get('server_path'))
     page.hasErrors()
 
-    cy.route("POST", "**/files/uploads/**").as("ajax12");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax12");
     page.get('max_size').clear().type('sdf')
     page.get('max_size').trigger('blur')
     cy.wait("@ajax12");
@@ -176,7 +174,7 @@ context('Upload Destination Create/Edit', () => {
     page.hasError(page.get('max_size'), page.messages.validation.numeric)
     page.hasErrors()
 
-    cy.route("POST", "**/files/uploads/**").as("ajax13");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax13");
     page.get('max_width').clear().type('sdf')
     page.get('max_width').trigger('blur')
     cy.wait("@ajax13");
@@ -184,7 +182,7 @@ context('Upload Destination Create/Edit', () => {
     page.hasError(page.get('max_width'), page.messages.validation.natural_number)
     page.hasErrors()
 
-    cy.route("POST", "**/files/uploads/**").as("ajax14");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax14");
     page.get('max_height').clear().type('sdf')
     page.get('max_height').trigger('blur')
     cy.wait("@ajax14");
@@ -194,21 +192,21 @@ context('Upload Destination Create/Edit', () => {
 
     // These fields should not be required
     cy.log('These fields should not be required')
-    cy.route("POST", "**/files/uploads/**").as("ajax15");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax15");
     page.get('max_size').clear()
     page.get('max_size').trigger('blur')
     cy.wait("@ajax15");
     page.hasErrorsCount(4)
     page.hasNoError(page.get('max_size'))
 
-    cy.route("POST", "**/files/uploads/**").as("ajax16");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax16");
     page.get('max_width').clear()
     page.get('max_width').trigger('blur')
     cy.wait("@ajax16");
     page.hasErrorsCount(3)
     page.hasNoError(page.get('max_width'))
 
-    cy.route("POST", "**/files/uploads/**").as("ajax17");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax17");
     page.get('max_height').clear()
     page.get('max_height').trigger('blur')
     cy.wait("@ajax17");
@@ -217,7 +215,7 @@ context('Upload Destination Create/Edit', () => {
     page.hasErrors()
 
     // Fix rest of fields
-    cy.route("POST", "**/files/uploads/**").as("ajax18");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax18");
     page.get('name').clear().type('Dir2')
     page.get('name').trigger('blur')
     cy.wait("@ajax18");
@@ -225,14 +223,14 @@ context('Upload Destination Create/Edit', () => {
     page.hasNoError(page.get('name'))
     page.hasErrors()
 
-    cy.route("POST", "**/files/uploads/**").as("ajax19");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax19");
     page.get('url').clear().type('http://ee3/')
     page.get('url').trigger('blur')
     cy.wait("@ajax19");
     page.hasNoError(page.get('url'))
     page.hasNoErrors()
 
-    cy.route("POST", "**/files/uploads/**").as("ajax20");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax20");
     page.get('server_path').clear().type(upload_path, {parseSpecialCharSequences: false})
     page.get('server_path').trigger('blur')
     cy.wait("@ajax20");
@@ -246,7 +244,7 @@ context('Upload Destination Create/Edit', () => {
     cy.hasNoErrors()
   })
 
-  it('should validate image manipulation data', () => {
+  it('Validate image manipulation data', () => {
 
     watermark.load()
     watermark.get('wm_name').clear().type('Test')
@@ -304,13 +302,13 @@ context('Upload Destination Create/Edit', () => {
 
     // Name cell
     cy.log('Name cell')
-    cy.route("POST", "**/files/uploads/**").as("ajax21");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax21");
     page.name_for_row(1).trigger('blur')
     cy.wait("@ajax21");
     page.hasErrorsCount(1)
     page.name_for_row(1).parent().find('em.ee-form-error-message').should('exist').contains(page.messages.validation.required)
 
-    cy.route("POST", "**/files/uploads/**").as("ajax22");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax22");
     page.name_for_row(1).clear().type('some_name')
     page.name_for_row(1).trigger('blur')
     cy.wait("@ajax22");
@@ -318,14 +316,14 @@ context('Upload Destination Create/Edit', () => {
     page.hasNoGridErrors(page.name_for_row(1))
     page.name_for_row(1).parent().find('em.ee-form-error-message').should('not.exist')
 
-    cy.route("POST", "**/files/uploads/**").as("ajax23");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax23");
     page.name_for_row(1).clear().type('some name')
     page.name_for_row(1).trigger('blur')
     cy.wait("@ajax23");
     page.hasErrorsCount(1)
     page.name_for_row(1).parent().find('em.ee-form-error-message').should('exist').contains(page.messages.validation.alpha_dash)
 
-    cy.route("POST", "**/files/uploads/**").as("ajax24");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax24");
     page.name_for_row(1).clear().type('some_name')
     page.name_for_row(1).trigger('blur')
     cy.wait("@ajax24");
@@ -335,7 +333,7 @@ context('Upload Destination Create/Edit', () => {
 
     // Width cell
     cy.log('Width cell')
-    cy.route("POST", "**/files/uploads/**").as("ajax25");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax25");
     page.width_for_row(1).trigger('blur')
     cy.wait("@ajax25");
     page.hasErrorsCount(1)
@@ -343,7 +341,7 @@ context('Upload Destination Create/Edit', () => {
 
     // Not required when a watermark is selected
     cy.log('Not required when a watermark is selected')
-    cy.route("POST", "**/files/uploads/**").as("ajax26");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax26");
     page.watermark_for_row(1).select('Test')
     page.width_for_row(1).trigger('blur')
     cy.wait("@ajax26");
@@ -351,13 +349,13 @@ context('Upload Destination Create/Edit', () => {
     page.hasNoGridErrors(page.width_for_row(1))
     page.width_for_row(1).parent().find('em.ee-form-error-message').should('not.exist')
 
-    cy.route("POST", "**/files/uploads/**").as("ajax27");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax27");
     page.watermark_for_row(1).select('No watermark')
     page.width_for_row(1).trigger('blur')
     cy.wait("@ajax27");
     page.hasErrorsCount(1)
 
-    cy.route("POST", "**/files/uploads/**").as("ajax28");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax28");
     page.width_for_row(1).clear().type('4')
     page.width_for_row(1).trigger('blur')
     cy.wait("@ajax28");
@@ -365,14 +363,14 @@ context('Upload Destination Create/Edit', () => {
     page.hasNoGridErrors(page.width_for_row(1))
     page.width_for_row(1).parent().find('em.ee-form-error-message').should('not.exist')
 
-    cy.route("POST", "**/files/uploads/**").as("ajax29");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax29");
     page.width_for_row(1).clear().type('ssdfsdsd')
     page.width_for_row(1).trigger('blur')
     cy.wait("@ajax29");
     page.hasErrorsCount(1)
     page.width_for_row(1).parent().find('em.ee-form-error-message').should('exist').contains(page.messages.validation.natural_number)
 
-    cy.route("POST", "**/files/uploads/**").as("ajax30");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax30");
     page.width_for_row(1).clear().type('2')
     page.width_for_row(1).trigger('blur')
     cy.wait("@ajax30");
@@ -382,14 +380,14 @@ context('Upload Destination Create/Edit', () => {
 
     // Height cell
     cy.log('Height cell')
-    cy.route("POST", "**/files/uploads/**").as("ajax31");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax31");
     page.height_for_row(1).clear().type('ssdfsdsd')
     page.height_for_row(1).trigger('blur')
     cy.wait("@ajax31");
     page.hasErrorsCount(1)
     page.height_for_row(1).parent().find('em.ee-form-error-message').should('exist').contains(page.messages.validation.natural_number)
 
-    cy.route("POST", "**/files/uploads/**").as("ajax32");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax32");
     page.height_for_row(1).clear().type('4')
     page.height_for_row(1).trigger('blur')
     cy.wait("@ajax32");
@@ -400,13 +398,13 @@ context('Upload Destination Create/Edit', () => {
     page.get('grid_add').click()
     page.get('grid_rows').should('have.length', 3)
 
-    cy.route("POST", "**/files/uploads/**").as("ajax33");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax33");
     page.name_for_row(2).trigger('blur')
     cy.wait("@ajax33");
     page.hasErrorsCount(1)
     page.name_for_row(2).parent().find('em.ee-form-error-message').should('exist').contains(page.messages.validation.required)
 
-    cy.route("POST", "**/files/uploads/**").as("ajax34");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax34");
     page.name_for_row(2).clear().type('some_name2')
     page.name_for_row(2).trigger('blur')
     cy.wait("@ajax34");
@@ -415,7 +413,7 @@ context('Upload Destination Create/Edit', () => {
     page.name_for_row(2).parent().find('em.ee-form-error-message').should('not.exist')
 
     page.name_for_row(2).clear().type('some_name')
-    cy.route("POST", "**/files/uploads/**").as("ajax35");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax35");
     page.name_for_row(2).trigger('blur')
     cy.wait("@ajax35");
     page.hasErrorsCount(1)
@@ -423,7 +421,7 @@ context('Upload Destination Create/Edit', () => {
 
     page.name_for_row(2).parent().should('have.class', 'invalid')
 
-    cy.route("POST", "**/files/uploads/**").as("ajax36");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax36");
     page.name_for_row(2).clear().type('some_name2')
     page.name_for_row(2).trigger('blur')
     cy.wait("@ajax36");
@@ -434,7 +432,7 @@ context('Upload Destination Create/Edit', () => {
     page.hasNoErrors()
   })
 
-  it('should repopulate the form on validation error, and save', () => {
+  it('Repopulate the form on validation error, and save', () => {
     page.get('url').should('not.be.visible')
     cy.get('[data-input-value=adapter] .select__button').click()
     cy.get('[data-input-value=adapter] .select__dropdown .select__dropdown-item').contains('Local').click()
@@ -514,7 +512,7 @@ context('Upload Destination Create/Edit', () => {
     page.get('cat_group').eq(1).should('be.checked')
 
     // Fix error and make sure everything submitted ok
-    cy.route("POST", "**/files/uploads/**").as("ajax37");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax37");
     page.get('name').clear().type('Dir1')
     page.get('name').trigger('blur')
     cy.wait("@ajax37");
@@ -573,7 +571,7 @@ context('Upload Destination Create/Edit', () => {
 
   })
 
-  it('should save a new upload directory', () => {
+  it('Save a new upload directory', () => {
     page.get('url').should('not.be.visible')
     cy.get('[data-input-value=adapter] .select__button').click()
     cy.get('[data-input-value=adapter] .select__dropdown .select__dropdown-item').contains('Local').click()
@@ -664,7 +662,7 @@ context('Upload Destination Create/Edit', () => {
     // and that unique name validation works
     page.get('grid_add').click()
 
-    cy.route("POST", "**/files/uploads/**").as("ajax38");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax38");
     page.name_for_row(3).clear().type('some_name')
     page.name_for_row(3).trigger('blur')
     cy.wait("@ajax38");
@@ -714,7 +712,7 @@ context('Upload Destination Create/Edit', () => {
     })
   })
 
-  it('should edit an existing upload directory', () => {
+  it('Edit an existing upload directory', () => {
     page.load_edit_for_dir(1)
     cy.hasNoErrors()
 
@@ -726,10 +724,10 @@ context('Upload Destination Create/Edit', () => {
     // page.get('name').invoke('val').then((val) => { expect(val).to.be.equal('New name upload dir'
   })
 
-  it('should reject XSS', () => {
+  it('Reject XSS in name', () => {
 
     page.get('name').clear().type(page.messages.xss_vector)
-    cy.route("POST", "**/files/uploads/**").as("ajax39");
+    cy.intercept("POST", "**/files/uploads/**").as("ajax39");
     page.get('name').trigger('blur')
     cy.wait("@ajax39");
     page.hasErrorsCount(1)
@@ -743,7 +741,7 @@ context('Upload Destination Create/Edit', () => {
 	  it('should allow a file size of .1', () => {
 
       page.get('max_size').clear().type('.1')
-      cy.route("POST", "**/files/uploads/**").as("ajax40");
+      cy.intercept("POST", "**/files/uploads/**").as("ajax40");
       page.get('max_size').trigger('blur')
       cy.wait("@ajax40");
       page.hasNoError(page.get('max_size'))
@@ -753,7 +751,7 @@ context('Upload Destination Create/Edit', () => {
 	  it('should not allow a file size of 0', () => {
 
       page.get('max_size').clear().type('0')
-      cy.route("POST", "**/files/uploads/**").as("ajax41");
+      cy.intercept("POST", "**/files/uploads/**").as("ajax41");
       page.get('max_size').trigger('blur')
       cy.wait("@ajax41");
       page.hasErrorsCount(1)
@@ -764,7 +762,7 @@ context('Upload Destination Create/Edit', () => {
 	  it('should not allow a file size of -.1', () => {
 
       page.get('max_size').clear().type('-1')
-      cy.route("POST", "**/files/uploads/**").as("ajax42");
+      cy.intercept("POST", "**/files/uploads/**").as("ajax42");
       page.get('max_size').trigger('blur')
       cy.wait("@ajax42");
       page.hasErrorsCount(1)

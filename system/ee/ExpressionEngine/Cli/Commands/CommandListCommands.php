@@ -39,7 +39,9 @@ class CommandListCommands extends Cli
      * options available for use in command
      * @var array
      */
-    public $commandOptions = [];
+    public $commandOptions = [
+        'simple,s'   => 'command_list_option_simple',
+    ];
 
     /**
      * Sets the tablemask for the list table
@@ -66,6 +68,13 @@ class CommandListCommands extends Cli
     public function handle()
     {
         $available = $this->availableCommands();
+
+        // Simple flag just lists the commands without the description
+        if($this->option('--simple')) {
+            $this->write(implode("\n", array_keys($available)));
+            return;
+        }
+
         $this->generateMask($available);
 
         $total_dashes = $this->command_col_width + $this->desc_col_width + 5;

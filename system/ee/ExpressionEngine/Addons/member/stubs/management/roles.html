@@ -1,0 +1,13 @@
+{layout="<?=$template_group?>/_layout"}
+{layout:set name="title"}Roles{/layout:set}
+
+<a href="{cp_url}?/cp/design/template/edit/{template_id}" target="_blank">View Template</a>
+
+<div class="result">
+  <h2>Your member roles:</h2>
+  <ul>
+    {exp:member:roles}
+      <li>{name} ({role_id}{if is_primary_role}, Primary Role{/if})</li>
+    {/exp:member:roles}
+  </ul>
+</div>

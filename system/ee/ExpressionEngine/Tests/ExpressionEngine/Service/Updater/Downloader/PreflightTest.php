@@ -47,6 +47,7 @@ class PreflightTest extends TestCase
             ->andReturn(1048576000)
             ->once();
 
+        $this->config->shouldReceive('get');
         $this->preflight->checkDiskSpace();
 
         $this->filesystem->shouldReceive('getFreeDiskSpace')
@@ -130,6 +131,7 @@ class PreflightTest extends TestCase
             ->andReturn(true)
             ->once();
 
+        $this->filesystem->shouldReceive('exists')->andReturn(true);
         $this->preflight->checkPermissions();
 
         $this->filesystem->shouldReceive('isWritable')

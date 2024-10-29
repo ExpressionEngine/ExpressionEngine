@@ -21,6 +21,8 @@ class FieldtypeGenerator
     protected $generatorPath;
     protected $addonPath;
     protected $stubPath;
+    protected $version;
+    protected $str;
 
     public function __construct(Filesystem $filesystem, Str $str, array $data)
     {

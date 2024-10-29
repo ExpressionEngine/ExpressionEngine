@@ -34,8 +34,6 @@ $lang = array(
     /* Explanatory Blurbs */
     'channel_administration_blurb' => 'This area enables you to manage your channels, preferences, and content-related sub-systems.',
 
-    'members_and_groups_blurb' => 'This area allows you to manage members, member groups, and membership-related features.',
-
     'search' => 'Search',
 
     'search_preferences' => 'Search Preferences',
@@ -304,8 +302,6 @@ $lang = array(
 
     'default_html_buttons' => 'Default HTML Buttons',
 
-    'default_primary_role' => 'Default Member Group Assigned to New Members',
-
     'default_site_timezone' => 'Site Timezone',
 
     'deft_lang' => 'Default Language',
@@ -500,7 +496,7 @@ $lang = array(
 
     'manual_close' => 'Manual',
 
-    'max_caches' => 'Maximum Number of Cachable URIs',
+    'max_caches' => 'Maximum Number of Cacheable URIs',
 
     'max_caches_explanation' => 'If you cache your pages or database, this limits the number of cache instances. We recommend 150 for small sites and 300 for large sites. The allowed maximum is 1000.',
 

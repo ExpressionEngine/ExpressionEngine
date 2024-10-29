@@ -4,7 +4,7 @@
 <div class="panel-heading">
   <div class="app-notice-wrap"><?=ee('CP/Alert')->getAllInlines()?></div>
   <div class="form-btns form-btns-top">
-    <div class="title-bar js-filters-collapsable title-bar--large">
+    <div class="title-bar js-filters-collapsible title-bar--large">
       <h3 class="title-bar__title">
     		<?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?>
     	</h3>
@@ -54,10 +54,10 @@
       <?php $this->embed('ee:_shared/table', $table); ?>
     <?php endif; ?>
 
-	<?php 
+	<?php
 	if (! empty($pagination)) {
     	echo $pagination;
-	} 
+	}
 	?>
 	<?php if (! empty($upload) && is_numeric($dir)): ?>
 		<div class="panel-footer">

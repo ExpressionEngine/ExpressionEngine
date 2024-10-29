@@ -77,7 +77,7 @@ class Pro_variables_upd
         $lowVars = ee('Addon')->get('low_variables');
         if ($lowVars && $lowVars->isInstalled()) {
             $this->migrateFromLow();
-            $this->update($this->version);
+            $this->update($lowVars->getVersion());
             $this->updateVersionNumber();
 
             return true;
@@ -362,7 +362,7 @@ class Pro_variables_upd
         //  Upgrade to 5.0.0
         // ------------------------------------
 
-        if (version_compare($current, '5.0.1', '<')) {
+        if (version_compare($current, '5.0.3', '<')) {
             // Migrate content type
             ee()->db->update(
                 'content_types',
@@ -371,7 +371,7 @@ class Pro_variables_upd
             );
         }
 
-        if (version_compare($current, '5.0.2', '<')) {
+        if (version_compare($current, '5.0.3', '<')) {
             $this->convertLowVarsContentTypesToPro();
         }
 
@@ -420,7 +420,9 @@ class Pro_variables_upd
     {
         // Check to see if low variables is in the user folder. If so, leave a developer log item
         if (ee('Filesystem')->isDir(PATH_THIRD . 'low_variables')) {
-            ee()->load->library('logger');
+            if (!ee()->has('logger')) {
+                ee()->load->library('logger');
+            }
             ee()->logger->developer(lang('low_vars_in_third_party_folder_message'), true, 1209600);
         }
     }

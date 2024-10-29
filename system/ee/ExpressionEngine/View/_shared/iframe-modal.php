@@ -32,7 +32,18 @@
 		</div>
 		<?php endif; ?>
 
-		<?=$child_view?>
+		<?php if (isset($left_nav)): ?>
+			<div class="secondary-sidebar-container">
+				<?=$left_nav?>
+
+				<div class="container" style="position: relative;">
+					<?=$child_view?>
+				</div>
+			</div>
+		<?php else : ?>
+
+				<?=$child_view?>
+		<?php endif; ?>
 
 		<div class="overlay"></div>
 		<div class="app-overlay"></div>

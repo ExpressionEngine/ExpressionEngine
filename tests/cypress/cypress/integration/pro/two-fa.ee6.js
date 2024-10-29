@@ -4,7 +4,7 @@ var otpSecret = '';
 var backup_mfa_code = '';
 var unique_id = '';
 
-context('Two-Factor Authentication', function() {
+context('Multi-Factor Authentication', function() {
     
     before(function() {
         cy.intercept('**/check').as('check')
@@ -30,7 +30,7 @@ context('Two-Factor Authentication', function() {
         //cy.get('.app-notice---error').should('not.exist')
     })
 
-    it('Shows the links in template', () => {
+    it('Shows MFA links in template', () => {
         cy.logout();
         cy.visit('index.php/pro/mfa')
         cy.get('#enable_mfa_link').should('not.exist')
@@ -50,7 +50,7 @@ context('Two-Factor Authentication', function() {
         //cy.get('#invoke_mfa_link').should('exist')
     })
 
-    it('Can set up MFA', {retries: 2},() => {
+    it('Set up MFA on front-end', {retries: 2},() => {
         cy.authVisit('admin.php')
         cy.wait(5000)
         cy.visit('index.php/pro/mfa')

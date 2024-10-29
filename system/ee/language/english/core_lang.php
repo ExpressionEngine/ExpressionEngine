@@ -169,7 +169,7 @@ If you made these changes, please accept the modifications on the Control Panel 
     'license_error_file_not_writable' => 'The cache folder needs to be writable in order for ExpressionEngine Pro to work',
     'license_error_file_broken' => 'There has been an error validating ExpressionEngine Pro license status',
 
-    /* Member Groups */
+    /* Roles */
     'banned' => 'Banned',
 
     'guests' => 'Guests',

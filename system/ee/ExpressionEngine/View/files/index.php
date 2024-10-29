@@ -43,7 +43,7 @@ if (! AJAX_REQUEST) {
             <?php $i = 0; ?>
             <div class="f_manager-table-breadcrumbs">
                 <ul class="breadcrumb">
-                    <?php foreach($breadcrumbs as $url => $name) : ?>
+                    <?php foreach ($breadcrumbs as $url => $name) : ?>
                         <?php $i++; ?>
                         <?php if ($i < count($breadcrumbs)) : ?>
                         <li><a href="<?=$url?>" data-filter-url="<?=$url?>"><i class="fal fa-<?=($i == 1 ? 'hdd' : 'folder')?>"></i><?=$name?></a></li>
@@ -86,7 +86,7 @@ if (! AJAX_REQUEST) {
                         'text' => lang('copy_link'),
                         // 'attrs' => ' data-action="copy-link"'
                     ];
-                    if (ee('Permission')->can('edit_files') && ee()->uri->segment(3) == 'directory') {
+                    if (ee('Permission')->can('edit_files')) {
                         $options[] = [
                             'value' => "move",
                             'text' => lang('move'),
@@ -140,6 +140,8 @@ if (! AJAX_REQUEST) {
                     $moveChoices[$key] = $vars;
                 }
                 $selected = $dir_id . '.' . (int) ee('Request')->get('directory_id');
+            } else {
+                $moveChoices = $uploadLocationsAndDirectoriesDropdownChoices;
             }
             $modal_vars = array(
                 'name' => 'modal-confirm-move-file',

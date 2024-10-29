@@ -16,13 +16,9 @@ context('URL and Path Settings', () => {
     cy.hasNoErrors()
   })
 
-  it('shows the URL and Path Settings page', () => {
+  it('Load current URL and Path Settings into form fields', () => {
     page.get('wrap').contains('URL and Path Settings')
     page.get('wrap').contains('Website index page')
-    //page.all_there?.should == true
-  })
-
-  it('should load current path settings into form fields', () => {
 
     cy.eeConfig({item: 'site_index'}) .then((config) => {
       page.get('site_index').invoke('val').then((val) => {
@@ -87,7 +83,7 @@ context('URL and Path Settings', () => {
     
   })
 
-  it('should validate the form', () => {
+  it('Validate URL and Path Settings form', () => {
     const field_required = "This field is required."
 
     page.get('site_url').clear()
@@ -95,14 +91,12 @@ context('URL and Path Settings', () => {
     cy.get('button').contains('Save Settings').first().click()
 
     cy.hasNoErrors()
-    //page.hasErrors()
-//should_have_form_errors(page)
     page.get('wrap').contains('Attention: Settings not saved')
     page.hasError(page.get('site_url'), field_required)
 
   })
 
-  it('should validate the form, part 2', () => {
+  it('Validate URL and Path Settings form, part 2', () => {
     const field_required = "This field is required."
     // AJAX validation
     // Field not required, shouldn't do anything
@@ -163,7 +157,6 @@ context('URL and Path Settings', () => {
     page.hasErrorsCount(4)
 
     page.hasErrors()
-//should_have_form_errors(page)
     page.hasError(page.get('site_url'), field_required)
     page.hasError(page.get('cp_url'), field_required)
     page.hasError(page.get('theme_folder_url'), field_required)
@@ -177,20 +170,17 @@ context('URL and Path Settings', () => {
     page.hasErrorsCount(1)
     page.hasError(page.get('site_index'), page.messages.xss_error)
     page.hasErrors()
-//should_have_form_errors(page)
 
     page.get('site_url').clear().type(page.messages.xss_vector)
     page.get('site_url').blur()
     page.hasErrorsCount(2)
     page.hasError(page.get('site_url'), page.messages.xss_error)
     page.hasErrors()
-//should_have_form_errors(page)
 
     page.get('cp_url').clear().type(page.messages.xss_vector)
     page.get('cp_url').blur()
     page.hasErrorsCount(3)
     page.hasErrors()
-//should_have_form_errors(page)
     page.hasError(page.get('site_url'), page.messages.xss_error)
     page.hasError(page.get('cp_url'), page.messages.xss_error)
 
@@ -203,14 +193,13 @@ context('URL and Path Settings', () => {
     page.hasErrorsCount(5)
 
     page.hasErrors()
-//should_have_form_errors(page)
     page.hasError(page.get('site_url'), page.messages.xss_error)
     page.hasError(page.get('cp_url'), page.messages.xss_error)
     page.hasError(page.get('theme_folder_url'), page.messages.xss_error)
     page.hasError(page.get('theme_folder_path'), page.messages.xss_error)
   })
 
-  it('should save and load the settings', () => {
+  it('Save and load URL and Path Settings', () => {
     // We'll test one value for now to make sure the form is saving,
     // don't want to be changing values that could break the site
     // after submission

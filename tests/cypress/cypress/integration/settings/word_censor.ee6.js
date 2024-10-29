@@ -18,11 +18,7 @@ context('Word Censorship Settings', () => {
     cy.hasNoErrors()
   })
 
-  it('shows the Word Censorship Settings page', () => {
-    //page.all_there?.should == true
-  })
-
-  it('should load current settings into form fields', () => {
+  it('Load current Word Censorship Settings into form fields', () => {
 
     cy.eeConfig({item: 'enable_censoring'}) .then((config) => {
       page.get('enable_censoring').invoke('val').then((val) => {
@@ -54,7 +50,7 @@ context('Word Censorship Settings', () => {
 //should_have_form_errors(page)
   })
 
-  it('should save and load the settings', () => {
+  it('Save and load Word Censorship Settings', () => {
     page.get('enable_censoring_toggle').click()
     page.get('censor_replacement').clear().type('####')
     page.get('censored_words').clear().type("Poop\nPerl")

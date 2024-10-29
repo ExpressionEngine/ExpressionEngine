@@ -64,7 +64,7 @@ class CommandMakeCpRoute extends Cli
             $service = ee('CpRouteGenerator', $this->data);
             $service->build();
         } catch (\Exception $e) {
-            $this->fail($e->getMessage());
+            $this->fail(addslashes($e->getMessage()));
         }
 
         $this->info('command_make_cp_route_created_successfully');

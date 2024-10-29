@@ -28,7 +28,11 @@
 
 		<div class="dropdown__scroll">
 		<?php foreach ($options as $url => $label): ?>
-			<a class="dropdown__link" href="<?=$url?>"><?=$label?></a>
+            <?php if (is_array($label) && ($label['type'] ?? '' == 'header')): ?>
+                <div class="dropdown__header"><?=$label['label']?></div>
+            <?php else: ?>
+			    <a class="dropdown__link" href="<?=$url?>"><?=$label?></a>
+            <?php endif; ?>
 		<?php endforeach; ?>
 		</div>
 	</div>

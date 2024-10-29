@@ -23,7 +23,7 @@ class Title extends EntryManager\Columns\Title
 
         if ($viewtype == 'list') {
             if ($file->isDirectory()) {
-                $url = ee('CP/URL')->make('files/directory/' . $file->upload_location_id, ['directory_id' => $file->file_id]);
+                $url = ee('CP/URL')->make('files/directory/' . $file->upload_location_id, array_merge($addQueryString, ['directory_id' => $file->file_id]));
                 $title = '<a href="' . $url . '">' . $title . '</a>';
             } elseif (ee('Permission')->can('edit_files')) {
                 $title = '<a href="' . ee('CP/URL')->make('files/file/view/' . $file->file_id) . '">' . $title . '</a>';

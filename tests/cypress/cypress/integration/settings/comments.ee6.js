@@ -16,11 +16,7 @@ context('Comment Settings', () => {
     cy.hasNoErrors()
   })
 
-  it('shows the Comment Settings page', () => {
-    //page.all_there?.should == true
-  })
-
-  it('should load current settings into form fields', () => {
+  it('Load current Comment Settings into form fields', () => {
 
     cy.eeConfig({item: 'enable_comments'}) .then((config) => {
       page.get('enable_comments').invoke('val').then((val) => {
@@ -41,7 +37,7 @@ context('Comment Settings', () => {
     page.get('comment_edit_time_limit').invoke('val').then((val) => { expect(val).to.be.equal('0') })
   })
 
-  it('should validate the form', () => {
+  it('Validate Comment Settings form', () => {
     const comment_edit_time_error = 'This field must contain an integer.'
 
     page.get('comment_edit_time_limit').clear().type('sdfsdfsd')
@@ -50,8 +46,6 @@ context('Comment Settings', () => {
 
     cy.hasNoErrors()
 
-//should_have_form_errors(page)
-    
     page.get('wrap').contains(comment_edit_time_error)
 
     // AJAX validation
@@ -62,11 +56,9 @@ context('Comment Settings', () => {
 
     page.get('comment_edit_time_limit').clear().type('100')
     page.get('comment_edit_time_limit').blur()
-
-    //should_have_no_form_errors(page)
   })
 
-  it('should save and load the settings', () => {
+  it('Save and load Comment Settings settings', () => {
 
     let enable_comments, comment_word_censoring, comment_moderation_override
     cy.eeConfig({item: 'enable_comments'}) .then((config) => {

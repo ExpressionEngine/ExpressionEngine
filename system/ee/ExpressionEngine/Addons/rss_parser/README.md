@@ -10,7 +10,7 @@ This is the only tag available to this plugin, it is the meat and potatoes.
 
 #### Example Usage
 
-    {exp:rss_parser url="http://expressionengine.com/feeds/rss/full/" limit="10" refresh="720"}
+    {exp:rss_parser url="https://expressionengine.com/blog/rss-feed" limit="10" refresh="720"}
     <ul>
         {feed_items}
             <li><a href="{item_link}">{item_title}</a></li>
@@ -93,4 +93,3 @@ The `{item_categories}` variable contains all of the categories that a feed item
 ### 1.0
 
 - Updated plugin to be 2.0 compatible
-

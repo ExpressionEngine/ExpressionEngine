@@ -525,7 +525,7 @@ EOT;
                             'type' => 'select',
                             'choices' => ee('Model')->get('UploadDestination')
                                 ->fields('site_id', 'module_id', 'id', 'name')
-                                ->filter('site_id', ee()->config->item('site_id'))
+                                ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
                                 ->filter('module_id', 0)
                                 ->all()
                                 ->getDictionary('id', 'name'),
@@ -575,8 +575,8 @@ EOT;
      * Creates some javascript functions that are used to switch
      * various pull-down menus
      *
-     * @access	public
-     * @return	void
+     * @access public
+     * @return void
      */
     public function _filtering_menus($form_name)
     {
@@ -591,7 +591,7 @@ EOT;
 
         if (count($allowed_channels) > 0) {
             $channels = ee('Model')->get('Channel')
-                ->with('Statuses')
+                ->with('Statuses', 'CategoryGroups')
                 ->order('channel_title');
 
             if (! ee('Permission')->can('edit_other_entries')) {

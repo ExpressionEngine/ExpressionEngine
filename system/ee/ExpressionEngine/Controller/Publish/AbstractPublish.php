@@ -128,7 +128,7 @@ abstract class AbstractPublish extends CP_Controller
             'fileManager.fileDirectory.createUrl' => ee('CP/URL')->make('files/uploads/create')->compile(),
         ));
 
-        ee('Category')->addCategoryJS();
+        ee('Category')->addCategoryJS($channel_id);
 
         // -------------------------------------------
         //  Publish Page Title Focus - makes the title field gain focus when the page is loaded
@@ -178,7 +178,7 @@ abstract class AbstractPublish extends CP_Controller
                     'toolbar_items' => array(
                         'txt-only' => array(
                             'href' => ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id, array('version' => $version->version_id)),
-                            'title' => lang('view'),
+                            'title' => lang('load_revision'),
                             'content' => lang('view')
                         ),
                     )
@@ -191,7 +191,7 @@ abstract class AbstractPublish extends CP_Controller
                 'attrs' => $attrs,
                 'columns' => array(
                     $i,
-                    ee()->localize->human_time($version->version_date->format('U')),
+                    ee()->localize->human_time($version->version_date->format('U'), true, true),
                     $authors[$version->author_id],
                     $toolbar
                 )
@@ -206,7 +206,7 @@ abstract class AbstractPublish extends CP_Controller
 
             // Current
             $edit_date = ($entry->edit_date)
-                ? ee()->localize->human_time($entry->edit_date->format('U'))
+                ? ee()->localize->human_time($entry->edit_date->format('U'), true, true)
                 : null;
 
             array_unshift(
@@ -217,7 +217,7 @@ abstract class AbstractPublish extends CP_Controller
                         $current_id,
                         $edit_date,
                         $current_author_id,
-                        '<span class="st-open">' . lang('current') . '</span>'
+                        '<a href="' . ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id) . '"><span class="st-open">' . lang('current') . '</span></a>'
                     ))
             );
         }
@@ -269,7 +269,7 @@ abstract class AbstractPublish extends CP_Controller
 
             // Current
             $edit_date = ($entry->edit_date)
-                ? ee()->localize->human_time($entry->edit_date->format('U'))
+                ? ee()->localize->human_time($entry->edit_date->format('U'), true, true)
                 : null;
 
             $data[] = array(
@@ -313,7 +313,7 @@ abstract class AbstractPublish extends CP_Controller
                 'attrs' => $attrs,
                 'columns' => array(
                     $i,
-                    ee()->localize->human_time($autosave->edit_date),
+                    ee()->localize->human_time($autosave->edit_date, true, true),
                     isset($authors[$autosave->author_id]) ? $authors[$autosave->author_id] : '-',
                     $toolbar
                 )
@@ -385,8 +385,9 @@ abstract class AbstractPublish extends CP_Controller
 
         if (defined('CLONING_MODE') && CLONING_MODE === true && $this->entryCloningEnabled($entry)) {
             $entry->setId(null);
+            $word_separator = ee()->config->item('word_separator') != "dash" ? '_' : '-';
             while (true !== $entry->validateUniqueUrlTitle('url_title', $_POST['url_title'], ['channel_id'], null)) {
-                $_POST['url_title'] = 'copy_' . $_POST['url_title'];
+                $_POST['url_title'] = 'copy' . $word_separator . $_POST['url_title'];
             }
             if ($_POST['title'] == $entry->title) {
                 $_POST['title'] = lang('copy_of') . ' ' . $_POST['title'];
@@ -395,6 +396,13 @@ abstract class AbstractPublish extends CP_Controller
             $entry->set($_POST);
             $entry->markAsDirty();
         } else {
+            if ($entry->isNew() && $entry->Channel->enforce_auto_url_title) {
+                $_POST['url_title'] = ee('Format')->make('Text',  $entry->Channel->url_title_prefix . ee()->input->post('title', true))->urlSlug()->compile();
+                $word_separator = ee()->config->item('word_separator') != "dash" ? '_' : '-';
+                while (true !== $entry->validateUniqueUrlTitle('url_title', $_POST['url_title'], ['channel_id'], null)) {
+                    $_POST['url_title'] = $_POST['url_title'] . $word_separator . uniqid();
+                }
+            }
             $entry->set($_POST);
         }
 
@@ -419,6 +427,13 @@ abstract class AbstractPublish extends CP_Controller
                 ->withTitle(lang($action . '_entry_error'))
                 ->addToBody(lang($action . '_entry_error_desc'))
                 ->now();
+            // IP Address is not a field, but we need to display the error if it fails
+            if ($result->hasErrors('ip_address')) {
+                ee('CP/Alert')->makeInline('ip_address-error')
+                    ->asIssue()
+                    ->addToBody('ip_address: ' . implode(BR, $result->getErrors('ip_address')))
+                    ->now();
+            }
         }
 
         return $result;
@@ -453,7 +468,7 @@ abstract class AbstractPublish extends CP_Controller
             ? ee('CP/Alert')->makeStandard()
             : ee('CP/Alert')->makeInline('entry-form');
 
-        $lang_string = sprintf(lang($action . '_entry_success_desc'), htmlentities($edit_entry_url, ENT_QUOTES, 'UTF-8'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8'), ee()->localize->human_time($entry->edit_date));
+        $lang_string = sprintf(lang($action . '_entry_success_desc'), htmlentities($edit_entry_url, ENT_QUOTES, 'UTF-8'), htmlentities($entry->title, ENT_QUOTES, 'UTF-8'), ee()->localize->human_time($entry->edit_date, true, true));
 
         $alert->asSuccess()
             ->withTitle(lang($action . '_entry_success'))
@@ -461,7 +476,7 @@ abstract class AbstractPublish extends CP_Controller
             ->defer();
 
         $qs = $_GET;
-        unset($qs['S'], $qs['D'], $qs['C'], $qs['M']);
+        unset($qs['S'], $qs['D'], $qs['C'], $qs['M'], $qs['version']);
 
         // Loop through and clean GET values
         foreach ($qs as $key => $value) {

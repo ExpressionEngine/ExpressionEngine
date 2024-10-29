@@ -42,6 +42,10 @@ if (process.env.PRO_REPO_PATH) {
     properties.local_repositories.pro = process.env.PRO_REPO_PATH;
 }
 
+if (process.env.REDACTORX_REPO_PATH) {
+    properties.local_repositories.redactorx = process.env.REDACTORX_REPO_PATH;
+}
+
 if (process.env.DOCS_REPO_PATH) {
     properties.local_repositories.docs = process.env.DOCS_REPO_PATH;
 }
@@ -76,7 +80,8 @@ gulp.task('app', ['_preflight'], function (cb) {
 		'build-tools/',
 		'frontedit/',
 		'js-src/',
-		
+		'src/',
+
 		'images/*/*',
 		'images/about',
 		'!images/*/index.html',
@@ -134,6 +139,7 @@ gulp.task('_preflight', ['_properties'], function (cb) {
 	runSequence(
 		clone_or_archive,
 		'_archive_pro',
+		'_archive_redactorx',
 		'_version_bump',
 		['_update_exists', '_set_debug', '_replace_jira_collector', '_boot_hack', '_wizard_hack', '_create_config', '_dp_config', '_dp_license', '_fill_updater_dependencies', 'build_php_dependencies'],
 		['_phplint', '_compress_js'],
@@ -164,6 +170,14 @@ gulp.task('_archive_pro', function (cb) {
 	}
 });
 
+gulp.task('_archive_redactorx', function (cb) {
+    if (process.argv.indexOf('--skip-redactorx') > -1) {
+        cb();
+    } else {
+        archive_repo('redactorx', cb);
+    }
+});
+
 /**
  * Just copy over application folder
  */
@@ -173,12 +187,12 @@ gulp.task('_archive_pro', function (cb) {
 	console.log(paths.app);
 
 	var files = [
-		properties.local_repositories.app + 'images/**/*', 
-		properties.local_repositories.app + 'system/**/*', 
-		properties.local_repositories.app + 'themes/**/*', 
-		properties.local_repositories.app + 'admin.php', 
-		properties.local_repositories.app + 'index.php', 
-		properties.local_repositories.app + 'favicon.ico', 
+		properties.local_repositories.app + 'images/**/*',
+		properties.local_repositories.app + 'system/**/*',
+		properties.local_repositories.app + 'themes/**/*',
+		properties.local_repositories.app + 'admin.php',
+		properties.local_repositories.app + 'index.php',
+		properties.local_repositories.app + 'favicon.ico',
 		properties.local_repositories.app + 'LICENSE.txt'
 	];
 
@@ -223,7 +237,7 @@ gulp.task('_set_debug', function (cb) {
  */
 var copyrightDate = function (path) {
 	path = (typeof path !== 'undefined') ? path : properties.local_repositories.app + '/';
-	
+
 	var currentYear = new Date().getFullYear();
 	var pastYear = currentYear - 1;
 
@@ -251,7 +265,7 @@ gulp.task('_replace_jira_collector', function (cb) {
 		paths.app + 'system/ee/legacy/errors/error_exception.php',
 		paths.app + 'system/ee/legacy/errors/error_general.php'
 	];
-	
+
 	files.forEach(function(item, index) {
 		var dest = item.substring(0, item.lastIndexOf('/'));
 		gulp.src(item)
@@ -340,6 +354,7 @@ gulp.task('_delete_files', function (cb) {
 		'.git',
 		'.github',
 		'.gitignore',
+		'.git-blame-ignore-revs',
 		'.languagebabel',
 		'.mailmap',
 		'.php_cs.dist',
@@ -362,6 +377,7 @@ gulp.task('_delete_files', function (cb) {
 		'system/ee/legacy/libraries/Ldap.php',
 
 		'scoper.inc.php',
+		'scoper.fix.php',
 		'composer.json',
 		'composer.lock',
 
@@ -381,6 +397,7 @@ gulp.task('_delete_files', function (cb) {
 
 		'system/ee/EllisLab/Tests/',
 		'system/ee/ExpressionEngine/Tests/',
+		'system/ee/installer/updater/ExpressionEngine/Tests/',
 
 		'src',
 		'vue.config.js',
@@ -562,9 +579,13 @@ gulp.task('_properties', function () {
 
 	// Generate ud_n_n_n.php build version
 	var normalizedVersion = properties.version;
-	if (properties.version.lastIndexOf('-') >= 0) {
+	// strip out the DP part to get proper update file name
+	if (normalizedVersion.lastIndexOf('-dp.') >= 0) {
+		normalizedVersion = normalizedVersion.substr(0, normalizedVersion.lastIndexOf('-dp.'));
+	}
+	if (normalizedVersion.lastIndexOf('-') >= 0) {
 		// Replace the hyphen in the identifier with a dot so we can build the update file name properly.
-		normalizedVersion = properties.version.replace('-', '.');
+		normalizedVersion = normalizedVersion.replace('-', '.');
 	}
 
 	var segments = normalizedVersion.split('.');
@@ -626,7 +647,7 @@ var clone_repo = function (type, cb) {
 var archive_repo = function(type, cb) {
 	console.log('ARCHIVE_REPO');
 	console.log('Path Type:', type);
-	if (type=='pro') {
+	if (type=='pro' || type=='redactorx') {
 		paths[type] = paths['app']
 	} else {
 		console.log('Deleting:', paths[type]);

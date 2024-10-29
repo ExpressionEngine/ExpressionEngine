@@ -3,7 +3,7 @@
 import Homepage from '../../elements/pages/Homepage';
 const page = new Homepage;
 
-context('Homepage', () => {
+context('CP Homepage', () => {
 
     before(() => {
         cy.task('db:seed')

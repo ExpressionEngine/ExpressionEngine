@@ -20,12 +20,12 @@ context('Add-On Manager', () => {
         page.get('title').contains('Add-Ons')
     })
 
-    it('shows the Add-On Manager', function() {
+    it('Check that Add-On Manager page opens and has no errors', function() {
         page.get('first_party_section').should('exist')
-
+        cy.hasNoErrors()
     })
 
-    it('can install a single add-on', function() {
+    it('Can install a single add-on', function() {
 
 
         page.get('uninstalled_addons').eq(1).then(function(el) {
@@ -44,7 +44,7 @@ context('Add-On Manager', () => {
     })
 
     // The settings buttons "work"(200 response)
-    it('can navigate to a settings page', function() {
+    it('Can navigate to add-on settings page', function() {
         const btn = page.get('first_party_section').find('.add-on-card:contains("Rich Text Editor")').find('.js-dropdown-toggle')
         btn.click()
         btn.next('.dropdown').find('a:contains("Settings")').click()
@@ -52,21 +52,16 @@ context('Add-On Manager', () => {
     })
 
     // The guide buttons "work"(200 response)
-    it('can navigate to a manual page', function() {
-        let btn = page.get('first_party_section').find('.add-on-card:contains("Rich Text Editor")').find('.js-dropdown-toggle')
-        btn.click()
-        btn.next('.dropdown').find('a:contains("Settings")').click()
-        cy.hasNoErrors()
-
-        /*cy.visit(page.url);
-
-        btn = page.get('first_party_section').find('.add-on-card').first().find('.js-dropdown-toggle')
+    it('Install plugin and navigate to a manual page', function() {
+        page.get('first_party_addons').find('.add-on-card:contains("HTTP Header") a').click()
+        let btn = page.get('first_party_section').find('.add-on-card:contains("HTTP Header")').find('.js-dropdown-toggle')
         btn.click()
         btn.next('.dropdown').find('a:contains("Manual")').click()
-        cy.hasNoErrors()*/
+        cy.hasNoErrors()
+        cy.get('h2').should('contain', 'Usage')
     })
 
-    it('can uninstall add-ons', function() {
+    it('Can uninstall single add-on', function() {
 
         page.get('addons').first().then((addon_card) => {
             const addon_name = addon_card.find('.add-on-card__title').contents().filter(function(){ return this.nodeType == 3; }).text().trim();

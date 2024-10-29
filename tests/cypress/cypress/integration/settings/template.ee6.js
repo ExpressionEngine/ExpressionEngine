@@ -16,11 +16,7 @@ context('Template Settings', () => {
     cy.hasNoErrors()
   })
 
-  it('shows the Template Settings page', () => {
-    //page.all_there?.should == true
-  })
-
-  it('should load current settings into form fields', () => {
+  it('Load current Template Settings into form fields', () => {
 
     cy.eeConfig({item: 'strict_urls'}) .then((config) => {
       page.get('strict_urls').invoke('val').then((val) => {
@@ -38,7 +34,7 @@ context('Template Settings', () => {
 
   })
 
-  it('should validate the form', () => {
+  it('Validate Template Settings form', () => {
     page.get('max_tmpl_revisions').clear().type('sdfsdfsd')
     //page.submit()
     cy.get('button').contains('Save Settings').first().click()
@@ -66,7 +62,7 @@ context('Template Settings', () => {
     //page.hasNoErrors()
   })
 
-  it('should save and load the settings', () => {
+  it('Save and load Template Settings', () => {
     page.get('strict_urls_toggle').click()
     page.get('site_404').find('input[value="search/index"]').check()
     page.get('save_tmpl_revisions_toggle').click()

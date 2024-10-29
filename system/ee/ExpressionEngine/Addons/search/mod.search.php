@@ -13,15 +13,15 @@
  */
 class Search
 {
-    public $min_length = 3;			// Minimum length of search keywords
-    public $max_length = 60;			// Maximum length of search keywords (logged to varchar(60))...
-    public $cache_expire = 2;			// How many hours should we keep search caches?
+    public $min_length = 3;     // Minimum length of search keywords
+    public $max_length = 60;    // Maximum length of search keywords (logged to varchar(60))...
+    public $cache_expire = 2;   // How many hours should we keep search caches?
     public $keywords = "";
     public $terms = [];
-    public $text_format = 'xhtml';		// Excerpt text formatting
-    public $html_format = 'all';		// Excerpt html formatting
-    public $auto_links = 'y';			// Excerpt auto-linking: y/n
-    public $allow_img_url = 'n';			// Excerpt - allow images:  y/n
+    public $text_format = 'xhtml';  // Excerpt text formatting
+    public $html_format = 'all';    // Excerpt html formatting
+    public $auto_links = 'y';       // Excerpt auto-linking: y/n
+    public $allow_img_url = 'n';    // Excerpt - allow images:  y/n
     public $channel_array = array();
     public $cat_array = array();
     public $fields = array();
@@ -300,6 +300,8 @@ class Search
             'where' => ee()->TMPL->fetch_param('where', ''),
             'show_expired' => ee()->TMPL->fetch_param('show_expired', ''),
             'show_future_entries' => ee()->TMPL->fetch_param('show_future_entries'),
+            'orderby' => ee()->TMPL->fetch_param('orderby', 'entry_date'),
+            'sort' => ee()->TMPL->fetch_param('sort', 'desc'),
             'result_page' => ee()->TMPL->fetch_param('result_page', 'search/results'),
             'no_result_page' => ee()->TMPL->fetch_param('no_result_page', ''),
             'site_ids' => $site_ids
@@ -379,13 +381,31 @@ class Search
                             $channel_array[] = $channel->channel_id;
                         }
 
-                        $custom_fields = array_merge($custom_fields, $channel->getAllCustomFields()->asArray());
+                        if (
+                            empty($channel_meta['options']) ||
+                            ($channel_meta['not'] === false && in_array($channel->channel_name, $channel_meta['options'])) ||
+                            ($channel_meta['not'] === true && !in_array($channel->channel_name, $channel_meta['options']))
+                        ) {
+                            $channelSearchableFields = [];
+                            foreach ($channel->getAllCustomFields() as $field) {
+                                if ($field->field_search) {
+                                    $channelSearchableFields[$field->getId()] = $field;
+                                }
+                            }
+                            $custom_fields = array_merge($custom_fields, $channelSearchableFields);
+                        }
                     }
-                    $this->custom_fields = array_chunk($custom_fields, 50);
+                    if (count($custom_fields) > 50) {
+                        ee()->load->library('logger');
+                        ee()->logger->developer('Searching more than 50 custom fields is not supported. We recommend restricting search to specific channels, reducing number of searchable fields or switching to Pro Search.', true, 60 * 60 * 24 * 30);
+                        $this->custom_fields = array_chunk($custom_fields, 50);
+                    } else {
+                        $this->custom_fields = $custom_fields;
+                    }
                 }
             }
 
-            foreach (array_shift($this->custom_fields) as $field) {
+            foreach ($this->custom_fields as $field) {
                 if ($field->field_search) {
                     if (!isset($fields[$field->field_id])) {
                         $fields[$field->field_id] = $field->field_id;
@@ -420,7 +440,7 @@ class Search
         // "Any Channel" is chosen
 
         // If we get channel_ids on previous step, we don't need to get them again
-        if(empty($channel_array)) {
+        if (empty($channel_array)) {
             ee()->db->select('channel_id');
             if (!empty($this->_meta['channel'])) {
                 ee()->functions->ar_andor_string($this->_meta['channel'], 'channel_name');
@@ -536,15 +556,15 @@ class Search
         // is the comment module installed?
         if (ee()->addons_model->module_installed('comment')) {
             // do we need to search on comments?
-            if(isset($this->_meta['search_in']) && $this->_meta['search_in'] == 'everywhere') {
+            if (isset($this->_meta['search_in']) && $this->_meta['search_in'] == 'everywhere') {
                 $sql .= "LEFT JOIN exp_comments ON exp_channel_titles.entry_id = exp_comments.entry_id ";
             }
         }
 
         // do we need to limit to categories?
-        if (!empty($this->_meta['category']) OR !empty($_POST['cat_id'])) {
+        if (!empty($this->_meta['category']) or !empty($_POST['cat_id'])) {
             $sql .= "LEFT JOIN exp_category_posts ON exp_channel_titles.entry_id = exp_category_posts.entry_id
-			LEFT JOIN exp_categories ON exp_category_posts.cat_id = exp_categories.cat_id ";
+                LEFT JOIN exp_categories ON exp_category_posts.cat_id = exp_categories.cat_id ";
         }
 
         /** ----------------------------------------------
@@ -953,34 +973,52 @@ class Search
         /** ----------------------------------------------
         /**  Set sort order
         /** ----------------------------------------------*/
-        $order_by = (! isset($_POST['order_by'])) ? 'date' : $_POST['order_by'];
+
+        $order_by = isset($this->_meta['orderby']) ? $this->_meta['orderby'] : 'entry_date';
+        $order_by = (! isset($_POST['order_by'])) ? $order_by : $_POST['order_by'];
         $orderby = (! isset($_POST['orderby'])) ? $order_by : $_POST['orderby'];
 
         $end = '';
 
+        $sort = isset($this->_meta['sort']) ? $this->_meta['sort'] : 'desc';
+        $sort = (! isset($_POST['sort'])) ? $sort : $_POST['sort'];
+        $order = (! isset($_POST['sort_order'])) ? $sort : $_POST['sort_order'];
+
+        if (strtolower($order) !== 'asc' and strtolower($order) !== 'desc') {
+            $order = 'desc';
+        }
+
+        // Saniitize order fields
+        $order = ee()->db->escape_str($order);
+        $orderby = ee()->db->escape_str($orderby);
+
         switch ($orderby) {
             case 'most_comments':
-                $end .= " ORDER BY comment_total ";
+                $end .= " ORDER BY comment_total " . $order . ", entry_date";
 
                 break;
             case 'recent_comment':
-                $end .= " ORDER BY recent_comment_date ";
+                $end .= " ORDER BY recent_comment_date " . $order . ", entry_date";
 
                 break;
             case 'title':
-                $end .= " ORDER BY title ";
+            case 'status':
+            case 'entry_id':
+            case 'url_title':
+            case 'edit_date':
+            case 'comment_total':
+            case 'expiration_date':
+            case 'view_count_one':
+            case 'view_count_two':
+            case 'view_count_three':
+            case 'view_count_four':
+                $end .= " ORDER BY " . $orderby . " " . $order . ", entry_date";
 
                 break;
             default:
-                $end .= " ORDER BY entry_date ";
+                $end .= " ORDER BY entry_date";
 
                 break;
-        }
-
-        $order = (! isset($_POST['sort_order'])) ? 'desc' : $_POST['sort_order'];
-
-        if ($order != 'asc' and $order != 'desc') {
-            $order = 'desc';
         }
 
         $end .= " " . $order;
@@ -1060,8 +1098,8 @@ class Search
     /**
      * Returns a validated search id, checking first for a parameter and second in the query string
      *
-     * @access	private
-     * @return	mixed 	The validated search id or FALSE
+     * @access  private
+     * @return  mixed   The validated search id or FALSE
      */
     private function _get_search_id()
     {
@@ -1190,7 +1228,7 @@ class Search
             $pagination->build($pagination->total_items, $pagination->per_page);
             $sql .= " LIMIT " . $pagination->offset . ", " . $pagination->per_page;
         } else {
-            $sql .= " LIMIT 0, 100";
+            $sql .= " LIMIT 0, " . max($pagination->per_page, 100);
         }
 
         $query = ee()->db->query($sql);
@@ -1281,13 +1319,22 @@ class Search
                 preg_replace(
                     '/\s+/',
                     ' ',
-                    preg_replace('/<[\/?][p|br|div|h1|h2]*>/', ' ', $row['field_id_' . $row['search_excerpt']])
+                    preg_replace('/<[\/?][p|br|div|h1|h2|h3|h4|h5|h6]*>/', ' ', $row['field_id_' . $row['search_excerpt']])
                 )
             );
 
             $excerpt = trim($full_text);
             if (strpos($excerpt, "\r") !== false or strpos($excerpt, "\n") !== false) {
                 $excerpt = str_replace(array("\r\n", "\r", "\n"), " ", $excerpt);
+            }
+            // pipes are used in checkboxes and also in Grid, where those could be backslashed
+            // strip them all
+            if (strpos($excerpt, "|") !== false) {
+                $excerpt = str_replace(array("\|", "|"), " ", $excerpt);
+            }
+            // strip variables, we're not going to parse anything
+            if (strpos($excerpt, LD) !== false) {
+                $excerpt = preg_replace("/" . LD . "[^;\n]+?" . RD . "/", '', $excerpt);
             }
             $excerpt = ee()->functions->word_limiter($excerpt, 50);
 
@@ -1310,30 +1357,14 @@ class Search
         $path = reduce_double_slashes(ee()->functions->prep_query_string($url) . '/' . $row['url_title']);
         $idpath = reduce_double_slashes(ee()->functions->prep_query_string($url) . '/' . $row['entry_id']);
 
-        $tagdata = preg_replace(
-            "/" . LD . 'auto_path' . RD . "/",
-            $path,
-            $tagdata,
-            $this->tag_count('auto_path', $tagdata)
-        );
-        $tagdata = preg_replace(
-            "/" . LD . 'id_auto_path' . RD . "/",
-            $idpath,
-            $tagdata,
-            $this->tag_count('id_auto_path', $tagdata)
-        );
-        $tagdata = preg_replace(
-            "/" . LD . 'excerpt' . RD . "/",
-            $this->_escape_replacement_pattern($excerpt),
-            $tagdata,
-            $this->tag_count('excerpt', $tagdata)
-        );
-        $tagdata = preg_replace(
-            "/" . LD . 'full_text' . RD . "/",
-            $this->_escape_replacement_pattern($full_text),
-            $tagdata,
-            $this->tag_count('full_text', $tagdata)
-        );
+        $vars = [
+            'auto_path' => $path,
+            'id_auto_path' => $idpath,
+            'excerpt' => $excerpt,
+            'full_text' => $full_text
+        ];
+
+        $tagdata = ee()->TMPL->parse_variables_row($tagdata, $vars);
 
         $m_paths = $this->get_member_path_tags($tagdata);
 
@@ -1395,8 +1426,8 @@ class Search
 
     /**
      * For when preg_quote is too much, we just need to escape replacement patterns
-     * @param  string	String to escape
-     * @return string	Escaped string
+     * @param  string   String to escape
+     * @return string   Escaped string
      */
     private function _escape_replacement_pattern($string)
     {
@@ -1418,13 +1449,17 @@ class Search
             'meta' => $meta
         );
 
-        if (ee()->TMPL->fetch_param('name') !== false &&
-            preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('name'))) {
+        if (
+            ee()->TMPL->fetch_param('name') !== false &&
+            preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('name'))
+        ) {
             $data['name'] = ee()->TMPL->fetch_param('name');
         }
 
-        if (ee()->TMPL->fetch_param('id') !== false &&
-            preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('id'))) {
+        if (
+            ee()->TMPL->fetch_param('id') !== false &&
+            preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('id'))
+        ) {
             $data['id'] = ee()->TMPL->fetch_param('id');
             ee()->TMPL->log_item('Simple Search Form:  The \'id\' parameter has been deprecated.  Please use form_id');
         } else {
@@ -1435,7 +1470,7 @@ class Search
 
         $res = ee()->functions->form_declaration($data);
         ee()->TMPL->set_data($res);
-        
+
         $res .= stripslashes(ee()->TMPL->tagdata);
 
         $res .= "</form>";
@@ -1567,13 +1602,17 @@ class Search
             'meta' => $meta
         );
 
-        if (ee()->TMPL->fetch_param('name') !== false &&
-            preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('name'))) {
+        if (
+            ee()->TMPL->fetch_param('name') !== false &&
+            preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('name'))
+        ) {
             $data['name'] = ee()->TMPL->fetch_param('name');
         }
 
-        if (ee()->TMPL->fetch_param('id') !== false &&
-            preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('id'))) {
+        if (
+            ee()->TMPL->fetch_param('id') !== false &&
+            preg_match("#^[a-zA-Z0-9_\-]+$#i", ee()->TMPL->fetch_param('id'))
+        ) {
             $data['id'] = ee()->TMPL->fetch_param('id');
             ee()->TMPL->log_item('Advanced Search Form:  The \'id\' parameter has been deprecated.  Please use form_id');
         } elseif (ee()->TMPL->form_id != '') {

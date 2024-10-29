@@ -18,7 +18,7 @@ context('Category Groups', () => {
         cy.contains('Categories')
     })
 
-    it('should list the category groups', function() {
+    it('List category groups, ensure number of categories is correct', function() {
         page.groupNamesWithCatCount().then(function(groups) {
             let groupNames = [...page.$('group_names').map(function(index, el) {
                 return $(el).contents().filter(function(){ return this.nodeType == 3; }).text().trim();
@@ -28,7 +28,7 @@ context('Category Groups', () => {
         });
     })
 
-    it('should delete a category group', function() {
+    it('Can delete a category group', function() {
         page.groupNames().then(function(groups) {
             //mouseover does not work, so just force clicking the invisible button
             page.get('category_groups').eq(0).find('a[rel="modal-confirm-categories"]').click({force: true})

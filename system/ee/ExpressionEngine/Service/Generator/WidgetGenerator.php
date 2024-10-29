@@ -25,6 +25,7 @@ class WidgetGenerator
     protected $generatorPath;
     protected $addonPath;
     protected $stubPath;
+    protected $widgetsPath;
 
     public function __construct(Filesystem $filesystem, Str $str, array $data)
     {

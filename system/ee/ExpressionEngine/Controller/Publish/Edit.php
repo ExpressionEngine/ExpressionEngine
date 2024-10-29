@@ -72,7 +72,7 @@ class Edit extends AbstractPublishController
         $entry_listing = ee(
             'CP/EntryListing',
             ee()->input->get_post('filter_by_keyword'),
-            ee()->input->get_post('search_in') ?: 'titles_and_content',
+            ee()->input->get_post('search_in') ?: 'titles',
             false,
             null, //ee()->input->get_post('view') ?: '',//view is not used atm
             $extra_filters
@@ -94,10 +94,6 @@ class Edit extends AbstractPublishController
         }
         $columns = array_filter($columns);
 
-        if (! ee('Permission')->hasAny($this->permissions['others'])) {
-            $entries->filter('author_id', ee()->session->userdata('member_id'));
-        }
-
         $count = $entry_listing->getEntryCount();
 
         // if no entries check to see if we have any channels
@@ -105,10 +101,6 @@ class Edit extends AbstractPublishController
             // cast to bool
             $vars['channels_exist'] = (bool) ee('Model')->get('Channel')->filter('site_id', ee()->config->item('site_id'))->count();
         }
-
-        $vars['filters'] = $filters->renderEntryFilters($base_url);
-        $vars['filters_search'] = $filters->renderSearch($base_url);
-        $vars['search_value'] = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
 
         $base_url->addQueryStringVariables(
             array_filter(
@@ -170,8 +162,11 @@ class Edit extends AbstractPublishController
             }
         }
         $sort_field = $columns[$sort_col]->getEntryManagerColumnSortField();
-        $entries->order($sort_field, $table->sort_dir)
-            ->limit($filter_values['perpage'])
+        $entries->order($sort_field, $table->sort_dir);
+        if ($sort_col != 'entry_id') {
+            $entries->order('entry_id', $table->sort_dir);
+        }
+        $entries->limit($filter_values['perpage'])
             ->offset($offset);
         $entries = $entries->all();
 
@@ -246,6 +241,9 @@ class Edit extends AbstractPublishController
             );
         }
 
+        $vars['filters'] = $filters->renderEntryFilters($base_url);
+        $vars['filters_search'] = $filters->renderSearch($base_url);
+        $vars['search_value'] = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
         $vars['pagination'] = ee('CP/Pagination', $count)
             ->perPage($filter_values['perpage'])
             ->currentPage($page)
@@ -378,12 +376,14 @@ class Edit extends AbstractPublishController
                 ee()->cp->switch_site($entry->site_id, $base_url);
             } else {
                 //but we only auto-switch if we're saving
-                show_error(lang('no_entries_matching_that_criteria'));
+                show_error(lang('no_entries_on_this_site'));
             }
         }
 
-        if (! ee('Permission')->can('edit_other_entries_channel_id_' . $entry->channel_id)
-            && $entry->author_id != ee()->session->userdata('member_id')) {
+        if (
+            ($entry->author_id != ee()->session->userdata('member_id') && ! ee('Permission')->can('edit_other_entries_channel_id_' . $entry->channel_id)) ||
+            ($entry->author_id == ee()->session->userdata('member_id') && ! ee('Permission')->can('edit_self_entries_channel_id_' . $entry->channel_id))
+        ) {
             show_error(lang('unauthorized_access'), 403);
         }
 

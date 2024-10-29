@@ -36,7 +36,7 @@ class EE_Relationship_data_parser
      */
     public function entry($id)
     {
-        return $this->_entries[$id];
+        return isset($this->_entries[$id]) ? $this->_entries[$id] : null;
     }
 
     /**
@@ -185,8 +185,14 @@ class EE_Relationship_data_parser
 
             $categories = $this->_format_cat_array($categories);
 
+            $entry_data = $this->entry($entry_id);
+            if (is_null($entry_data)) {
+                // relationship record exists, but entry does not
+                return $this->clear_node_tagdata($node, $tagdata);
+            }
+
             $data = array(
-                'entries' => array($entry_id => $this->entry($entry_id)),
+                'entries' => array($entry_id => $entry_data),
                 'categories' => $categories
             );
         } else {
@@ -657,6 +663,10 @@ class EE_Relationship_data_parser
 
         foreach ($entry_ids as $rel_order => $entry_id) {
             $data = $this->entry($entry_id);
+            if (is_null($data)) {
+                unset($entry_ids[$rel_order]);
+                continue;
+            }
 
             foreach ($order_by as &$k) {
                 $k = ($k == 'date') ? 'entry_date' : $k;

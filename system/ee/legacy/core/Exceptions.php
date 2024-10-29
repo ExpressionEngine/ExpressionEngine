@@ -141,6 +141,11 @@ class EE_Exceptions
      */
     public function show_error($heading, $message, $template = 'error_general', $status_code = 500)
     {
+        if (REQ == 'CLI') {
+            $cli = new \ExpressionEngine\Cli\Cli();
+            $cli->fail($message);
+        }
+
         set_status_header($status_code);
 
         // Ajax Requests get a reasonable response
@@ -157,6 +162,11 @@ class EE_Exceptions
         // If we have the template class we can show their error template
         if (function_exists('ee') && isset(ee()->TMPL)) {
             ee()->output->fatal_error($message);
+        }
+
+        // if this is CP request and they are logged in, throw special kind of Exception
+        if (defined('REQ') && constant('REQ') == 'CP' && ee()->session->userdata('admin_sess') != 0) {
+            throw new \ExpressionEngine\Error\CPException($message, $status_code);
         }
 
         if (ob_get_level() > $this->ob_level + 1) {
@@ -235,6 +245,10 @@ class EE_Exceptions
         // Replace system path
         $filepath = str_replace($syspath, '', $filepath);
         $message = str_replace($syspath, '', $message);
+		
+        if (strpos($message, 'SQLSTATE') !== false) {
+			log_message('error', 'MySQL Error: ' . $message);
+        }
 
         $message = htmlentities($message, ENT_QUOTES, 'UTF-8', false);
 

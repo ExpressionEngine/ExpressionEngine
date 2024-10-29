@@ -19,7 +19,7 @@ context('Watermark Create/Edit', () => {
     page.get('wrap').contains('Create Watermark')
   })
 
-  it('should validate fields', () => {
+  it('validate watermark fields', () => {
     page.submit()
 
     cy.hasNoErrors()
@@ -108,7 +108,7 @@ context('Watermark Create/Edit', () => {
     cy.hasNoErrors()
   })
 
-  it('should save and load a text watermark', () => {
+  it('save and load a text watermark', () => {
     page.get('wm_name').clear().type('Test')
     page.get('wm_vrt_alignment').check('middle')
     page.get('wm_hor_alignment').check('right')
@@ -148,7 +148,7 @@ context('Watermark Create/Edit', () => {
     page.get('wm_shadow_color').invoke('val').then((val) => { expect(val).to.be.equal('#000000') })
   })
 
-  it('should save and load an image watermark', () => {
+  it('save and load an image watermark', () => {
     page.get('wm_name').clear().type('WM2')
     page.get('wm_type').check('image')
 
@@ -191,7 +191,7 @@ context('Watermark Create/Edit', () => {
     })
   })
 
-  it('should reject XSS', () => {
+  it('reject XSS in name', () => {
     page.get('wm_name').clear().type(page.messages.xss_vector)
     page.get('wm_name').blur()
     page.hasErrorsCount(1)

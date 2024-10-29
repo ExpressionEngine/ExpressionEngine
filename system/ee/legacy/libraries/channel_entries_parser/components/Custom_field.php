@@ -55,11 +55,13 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
         $cfields = $obj->channel()->cfields;
         $rfields = $obj->channel()->rfields;
         $gfields = $obj->channel()->gfields;
+        $msfields = $obj->channel()->msfields;
         $ffields = $obj->channel()->ffields;
 
         $rfields = isset($rfields[$site_id]) ? $rfields[$site_id] : [];
         $cfields = isset($cfields[$site_id]) ? $cfields[$site_id] : [];
         $gfields = isset($gfields[$site_id]) ? $gfields[$site_id] : [];
+        $msfields = isset($msfields[$site_id]) ? $msfields[$site_id] : [];
         $ffields = isset($ffields[$site_id]) ? $ffields[$site_id] : [];
 
         $cfields = array_diff_key($cfields, $rfields);
@@ -85,13 +87,26 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
                 return $tagdata;
             }
 
-            if ((isset($data['field_id_' . $field_id]) && $data['field_id_' . $field_id] !== '') or
+            // if the field is a note field type we need to get the note content and set it as the field data
+            if (
+                isset($ft_api->custom_fields)
+                && isset($ft_api->custom_fields[$field_id])
+                && $ft_api->custom_fields[$field_id] == 'notes'
+                && isset($ft_api->settings)
+                && isset($ft_api->settings[$field_id])
+                && isset($ft_api->settings[$field_id]['note_content'])
+            ) {
+                // set the note content as the field data
+                $data['field_id_' . $field_id] = $ft_api->settings[$field_id]['note_content'];
+            }
+
+
+            if (
+                (isset($data['field_id_' . $field_id]) && $data['field_id_' . $field_id] !== '') or
                 array_key_exists($field['field_name'], $gfields) or // is a Grid single
-                array_key_exists($field['field_name'], $ffields)) { // is a Fluid single
-                $modifier = $field['modifier'];
-
-                $parse_fnc = ($modifier) ? 'replace_' . $modifier : 'replace_tag';
-
+                array_key_exists($field['field_name'], $msfields) or // is a Member select single
+                array_key_exists($field['field_name'], $ffields) // is a Fluid single
+            ) {
                 $obj = $ft_api->setup_handler($field_id, true);
 
                 if ($obj) {
@@ -105,22 +120,63 @@ class EE_Channel_custom_field_parser implements EE_Channel_parser_component
                     ));
 
                     $data = $ft_api->apply('pre_process', array(
-                        $data['field_id_' . $field_id]
+                        $data['field_id_' . $field_id] ?? null
                     ));
 
-                    if (method_exists($obj, $parse_fnc)) {
-                        $entry = (string) $ft_api->apply($parse_fnc, array(
-                            $data,
-                            $field['params'],
-                            false
-                        ));
-                    } elseif (method_exists($obj, 'replace_tag_catchall')) {
-                        $entry = (string) $ft_api->apply('replace_tag_catchall', array(
-                            $data,
-                            $field['params'],
-                            false,
-                            $field['full_modifier']
-                        ));
+                    $checkNextModifier = method_exists($obj, 'getChainableModifiersThatRequireArray');
+                    if ($checkNextModifier) {
+                        $modifiersRequireArray = $obj->getChainableModifiersThatRequireArray($data);
+                    }
+
+                    if (isset($field['all_modifiers']) && !empty($field['all_modifiers'])) {
+                        $modifiers = array_keys($field['all_modifiers']);
+                        $modifiersCounter = 0;
+                        foreach ($field['all_modifiers'] as $modifier => $params) {
+                            unset($modifiers[$modifiersCounter]);
+                            $modifiersCounter++;
+                            $parse_fnc = ($modifier) ? 'replace_' . $modifier : 'replace_tag';
+
+                            // if there is next modifier, make sure to return array
+                            $content_param = ($checkNextModifier && isset($modifiers[$modifiersCounter]) && in_array($modifiers[$modifiersCounter], $modifiersRequireArray)) ? null : false;
+                            if (method_exists($obj, $parse_fnc) || ee('Variables/Modifiers')->has($modifier)) {
+                                $entry = $ft_api->apply($parse_fnc, array(
+                                    $data,
+                                    $params,
+                                    $content_param
+                                ));
+                            } elseif (method_exists($obj, 'replace_tag_catchall')) {
+                                $entry = $ft_api->apply('replace_tag_catchall', array(
+                                    $data,
+                                    $params,
+                                    $content_param,
+                                    is_null($content_param) ? $modifier : $field['full_modifier']
+                                ));
+                            }
+                            if (!is_null($content_param)) {
+                                $entry = (string) $entry;
+                            }
+                            // set the data to parsed variable for next cycle
+                            $data = $entry;
+                        }
+                    } else {
+                        $modifier = $field['modifier'];
+
+                        $parse_fnc = ($modifier) ? 'replace_' . $modifier : 'replace_tag';
+
+                        if (method_exists($obj, $parse_fnc) || ee('Variables/Modifiers')->has($modifier)) {
+                            $entry = (string) $ft_api->apply($parse_fnc, array(
+                                $data,
+                                $field['params'],
+                                false
+                            ));
+                        } elseif (method_exists($obj, 'replace_tag_catchall')) {
+                            $entry = (string) $ft_api->apply('replace_tag_catchall', array(
+                                $data,
+                                $field['params'],
+                                false,
+                                $field['full_modifier']
+                            ));
+                        }
                     }
 
                     ee()->load->remove_package_path($_ft_path);

@@ -91,7 +91,7 @@ class Username extends Filter
             if ($value) {
                 if (! is_numeric($value)) {
                     $this->display_value = $value;
-                    $member = $this->builder->filter('username', 'LIKE', '%' . $value . '%')->first();
+                    $member = $this->builder->filter('username', 'LIKE', '%' . ee()->db->escape_like_str($value) . '%')->first();
                     if ($member) {
                         $this->selected_value = $member->member_id;
                     } else {

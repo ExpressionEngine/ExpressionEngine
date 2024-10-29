@@ -4,7 +4,7 @@ import AddonManager from '../../elements/pages/addons/AddonManager';
 
 const addon_manager = new AddonManager;
 
-context('Search', () => {
+context('Search add-on', () => {
 
   before(function(){
     cy.task('db:seed')
@@ -13,7 +13,7 @@ context('Search', () => {
     cy.authVisit('admin.php?/cp/design')
   })
 
-  it('search and get results', function(){
+  it('Search with simple form and get results', function(){
     cy.authVisit('index.php/search/simple_form');
     cy.get('#keywords').clear().type('ExpressionEngine')
     cy.get('.submit').first().click()
@@ -30,7 +30,7 @@ context('Search', () => {
     cy.logFrontendPerformance()
   })
 
-  it('search and get no results', function(){
+  it('Search with simple form and get no results', function(){
     cy.authVisit('index.php/search/simple_form');
     cy.get('#two-templates-for-results [name="keywords"]').clear().type('WordPress')
     cy.get('#two-templates-for-results').submit()
@@ -41,7 +41,7 @@ context('Search', () => {
     cy.get('#total-results__single-var--zero').invoke('text').should('eq', '0')
   })
 
-  it('search and get no results (on same page)', function(){
+  it('Search with simple form and get no results (on same page)', function(){
     cy.authVisit('index.php/search/simple_form');
     cy.get('#keywords').clear().type('WordPress')
     cy.get('.submit').first().click()
@@ -52,7 +52,7 @@ context('Search', () => {
     cy.logFrontendPerformance()
   })
 
-  it('searches everywhere', function(){
+  it('Search "everywhere"', function(){
     cy.authVisit('admin.php?/cp/design/manager/search');
     cy.get('a:contains(simple_form)').click()
     cy.get('.CodeMirror-code').type('{home}{pageup}{uparrow}{shift}{end}{del}', {release: false})
@@ -70,7 +70,7 @@ context('Search', () => {
   })
 
 
-  context('search using channel parameter', () => {
+  context('Search using channel parameter', () => {
     it('restrict to channel', function(){
         cy.authVisit('admin.php?/cp/design/manager/search');
         cy.get('a:contains(simple_form)').click()

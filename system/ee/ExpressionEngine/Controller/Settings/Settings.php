@@ -104,6 +104,12 @@ class Settings extends CP_Controller
                 ->addBasicList();
 
             $list->addItem(lang('member_settings'), ee('CP/URL')->make('settings/members'));
+            $link = ee('CP/URL')->make('settings/member-fields');
+            $item = $list->addItem(lang('custom_member_fields'), $link);
+            if ($link->matchesTheRequestedURI()) {
+                $item->isActive();
+            }
+            $list->addItem(lang('manage_bans'), ee('CP/URL')->make('settings/ban'));
             $list->addItem(lang('messages'), ee('CP/URL')->make('settings/messages'));
             $list->addItem(lang('avatars'), ee('CP/URL')->make('settings/avatars'));
         }
@@ -179,6 +185,12 @@ class Settings extends CP_Controller
                 $fields = array_merge($fields, $this->getFieldsForSettings($settings));
             }
         }
+
+        // Any values that are strictly a false boolean should be ignored as this
+        // is only possible as output from ee()->input->post() when a value wasn't sent
+        $fields = array_filter($fields, function ($value) {
+            return $value !== false;
+        });
 
         $config_update = ee()->config->update_site_prefs($fields);
 

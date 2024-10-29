@@ -4,7 +4,7 @@ import MemberCreate from '../../elements/pages/members/MemberCreate';
 
 const page = new MemberCreate
 
-context('Member Registration', () => {
+context('Member Registration in CP', () => {
 
   before(function(){
     cy.task('db:seed')
@@ -15,10 +15,6 @@ context('Member Registration', () => {
     page.load()
     cy.hasNoErrors()
   })
-
-  /*it('loads', () => {
-    page.all_there?.should('eq', true
-  }*/
 
   it('prevents duplicate gmail email addresses', () => {
     cy.eeConfig({ item: 'password_security_policy', value: 'none' })
@@ -38,6 +34,27 @@ context('Member Registration', () => {
     page.get('email').clear().type('t.e.s.t@gmail.com')
     page.get('email').blur()
     page.hasError(page.get('email'), 'This field must contain a unique email address.')
+
+  })
+
+  it('can only register with email that is 254 characters or less', () => {
+    Cypress.$('input[name=email]').prop('maxlength', 300);
+    page.get('username').clear().type('test_email_user')
+    page.get('email').clear().type(Cypress._.times(233, () => Cypress._.random(35).toString(36)).join('') + '@expressionengine.com')
+    page.get('password').clear().type('1Password').blur()
+    page.get('confirm_password').clear().type('1Password')
+
+    cy.get('[name=email]').parents('fieldset').should('have.class', 'fieldset-invalid').should('contain', 'This field must contain a valid email address.') // local part is too long
+    cy.get('.title-bar__extra-tools .button--primary').first().should('have.attr', 'disabled')
+
+    // each subdomain can be only 63 characters long in PHP
+    page.get('email').clear().type('expressionengine@' + Cypress._.times(63, () => Cypress._.random(35).toString(36)).join('') + '.' + Cypress._.times(63, () => Cypress._.random(35).toString(36)).join('') + '.' + Cypress._.times(63, () => Cypress._.random(35).toString(36)).join('') + '.' + Cypress._.times(63, () => Cypress._.random(35).toString(36)).join('') + '.com').blur()
+    cy.get('[name=email]').parents('fieldset').should('have.class', 'fieldset-invalid').should('contain', 'This field cannot exceed 254 characters in length') // combined length is too long
+    cy.get('.title-bar__extra-tools .button--primary').first().should('have.attr', 'disabled')
+
+    page.get('email').clear().type('expressionengine@' + Cypress._.times(63, () => Cypress._.random(35).toString(36)).join('') + '.' + Cypress._.times(63, () => Cypress._.random(35).toString(36)).join('') + '.' + Cypress._.times(63, () => Cypress._.random(35).toString(36)).join('') + '.com').blur()
+    cy.get('[name=email]').parents('fieldset').should('not.have.class', 'fieldset-invalid').should('not.contain', 'This field cannot exceed 254 characters in length.').should('not.contain', 'This field must contain a valid email address.')
+    cy.get('.title-bar__extra-tools .button--primary').first().should('not.have.attr', 'disabled')
 
   })
 

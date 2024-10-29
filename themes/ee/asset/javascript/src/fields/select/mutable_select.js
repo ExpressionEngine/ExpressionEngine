@@ -118,7 +118,7 @@ function () {
         // field upon reload. Checkboxes for server-rendered fields, hidden
         // inputs for the React fields.
 
-        $('input[type=checkbox][name="' + this.fieldName + '[]"]:checked, input[type=hidden][name="' + this.fieldName + '[]"]').each(function () {
+        $('input[type=checkbox][name="' + this.fieldName + '[]"]:checked, input[type=radio][name="' + this.fieldName + '"], input[type=hidden][name="' + this.fieldName + '[]"]').each(function () {
           selected.push($(this).val());
         });
         var postdata = {};

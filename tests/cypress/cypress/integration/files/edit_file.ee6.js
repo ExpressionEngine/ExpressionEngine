@@ -87,7 +87,7 @@ context('File Manager / Edit File', () => {
     })
   })
 
-  context.only('editing non-image', function() {
+  context('editing non-image', function() {
 
     before(function() {
       cy.auth();
@@ -95,13 +95,13 @@ context('File Manager / Edit File', () => {
       
       cy.get('button').contains('Upload').first().click()
       
-      const fileName = '../../support/file/text.txt'
+      const fileName = 'support/file/text.txt'
       cy.get('.file-upload-widget').then(function(widget) {
         $(widget).removeClass('hidden')
       })
       cy.get('.file-upload-widget .js-dropdown-toggle').click();
       cy.get('.file-upload-widget .dropdown__link').contains('Main Upload Directory').filter(':visible').first().click()
-      cy.get('.file-upload-widget .file-field__dropzone').attachFile(fileName, { subjectType: 'drag-n-drop' })
+      cy.get('.file-upload-widget .file-field__dropzone').selectFile(fileName, { action: 'drag-drop' })
       
       cy.hasNoErrors()
 

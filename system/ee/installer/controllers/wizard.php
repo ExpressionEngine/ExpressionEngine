@@ -13,7 +13,7 @@
  */
 class Wizard extends CI_Controller
 {
-    public $version = '7.2.17'; // The version being installed
+    public $version = '7.5.2'; // The version being installed
     public $installed_version = '';  // The version the user is currently running (assuming they are running EE)
     public $schema = null; // This will contain the schema object with our queries
     public $languages = array(); // Available languages the installer supports (set dynamically based on what is in the "languages" folder)
@@ -41,6 +41,12 @@ class Wizard extends CI_Controller
     public $year;
     public $month;
     public $day;
+
+    protected $requirements;
+    protected $db_connect_attempt;
+    protected $shouldBackupDatabase;
+    protected $shouldUpgradeAddons;
+    protected $next_ud_file = false;
 
     // These are the methods that are allowed to be called via $_GET['m']
     // for either a new installation or an update. Note that the function names
@@ -131,8 +137,6 @@ class Wizard extends CI_Controller
         // Enabled for cleaner view files and compatibility
         'rewrite_short_tags' => true
     );
-	
-	public $db_connect_attempt;
 
     /**
      * Constructor
@@ -494,11 +498,6 @@ class Wizard extends CI_Controller
             return false;
         }
 
-        // Assign the config and DB arrays to class variables so we don't have
-        // to reload them.
-        $this->_config = $config;
-        $this->_db = $db;
-
         // Set the flag
         $this->is_installed = true;
 
@@ -512,20 +511,24 @@ class Wizard extends CI_Controller
      */
     private function postflight()
     {
+        // clear all caches
         ee()->functions->clear_caching('all');
 
         // reset the flag for dismissed banner for members
         ee('db')->update('members', ['dismissed_banner' => 'n']);
 
+        // update entry stats
         foreach (ee('Model')->get('Channel')->all() as $channel) {
             $channel->updateEntryStats();
         }
 
+        // synchronize all channel layouts
         ee('Model')->get('ChannelLayout')
             ->with('Channel')
             ->all()
             ->synchronize();
 
+        // check if any fieldtypes are missing, or template tags broken
         $advisor = new \ExpressionEngine\Library\Advisor\Advisor();
 
         return $advisor->postUpdateChecks();
@@ -601,7 +604,8 @@ class Wizard extends CI_Controller
      */
     private function db_validation($error_number, Closure $callable)
     {
-        if (! ee()->input->post('db_hostname')
+        if (
+            ! ee()->input->post('db_hostname')
             || ! ee()->input->post('db_name')
             || ! ee()->input->post('db_username')
         ) {
@@ -610,7 +614,7 @@ class Wizard extends CI_Controller
             return false;
         }
 
-        if (! isset($this->db_connect_attempt)) {
+        if (! isset($this->db_connect_attempt) || is_null($this->db_connect_attempt)) {
             $this->db_connect_attempt = $this->db_connect(array(
                 'hostname' => ee()->input->post('db_hostname'),
                 'database' => ee()->input->post('db_name'),
@@ -779,7 +783,7 @@ class Wizard extends CI_Controller
             array(
                 'field' => 'email_address',
                 'label' => 'lang:email_address',
-                'rules' => 'required|email|max_length[' . USERNAME_MAX_LENGTH . ']'
+                'rules' => 'required|email|max_length[254]'
             ),
             array(
                 'field' => 'license_agreement',
@@ -860,6 +864,18 @@ class Wizard extends CI_Controller
         // Does the specified database schema type exist?
         if (! file_exists(APPPATH . 'schema/mysqli_schema.php')) {
             $errors[] = lang('unreadable_dbdriver');
+        }
+
+        // If we got no error, then we have been connected to DB
+        // now we can run server requirements checks
+        if (empty($errors)) {
+            require_once(APPPATH . 'updater/ExpressionEngine/Updater/Service/Updater/RequirementsChecker.php');
+            $this->requirements = new RequirementsChecker($db);
+            if (($result = $this->requirements->check()) !== true) {
+                $errors = array_map(function ($requirement) {
+                    return $requirement->getMessage();
+                }, $result);
+            }
         }
 
         // Were there errors?
@@ -1637,6 +1653,7 @@ class Wizard extends CI_Controller
             'allow_extensions' => 'y',
             'date_format' => '%n/%j/%Y',
             'time_format' => '12',
+            'week_start' => 'sunday',
             'include_seconds' => 'n',
             'server_offset' => '',
             'default_site_timezone' => date_default_timezone_get(),
@@ -1661,6 +1678,9 @@ class Wizard extends CI_Controller
             'allow_member_localization' => 'y',
             'req_mbr_activation' => 'email',
             'new_member_notification' => 'n',
+            'registration_auto_login' => 'y',
+            'activation_auto_login' => 'n',
+            'activation_redirect' => '',
             'mbr_notification_emails' => '',
             'require_terms_of_service' => 'y',
             'default_primary_role' => '5',
@@ -1985,7 +2005,8 @@ class Wizard extends CI_Controller
      */
     private function isSecure()
     {
-        if ((! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off')
+        if (
+            (! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off')
             || $_SERVER['SERVER_PORT'] == '443'
         ) {
             return true;
@@ -2040,7 +2061,7 @@ class Wizard extends CI_Controller
         $table_name = null;
         $offset = 0;
 
-        $date = ee()->localize->format_date('%Y-%m-%d_%Hh%im%T');
+        $date = ee()->localize->format_date('%Y-%m-%d_%Hh%im%ss%T');
         $file_path = PATH_CACHE . ee()->db->database . '_' . $date . '.sql';
 
         // Some tables might be resource-intensive, do what we can

@@ -14,13 +14,13 @@ context('File Manager / Usage Tab', () => {
     cy.hasNoErrors()
   })
 
-  it('check is usage tab is on', () => {
+  it('Check if usage tab is on', () => {
     cy.get('a').contains('staff_jane').filter(':visible').first().click()
     cy.get('button').contains('Usage').should('exist')
     cy.get('.tab-notification-generic').contains('0')
   })
 
-  it('add image to 3 entries, image usage tab has include 3 items', () => {
+  it('Add image to 3 entries, image usage tab has include 3 items', () => {
     cy.visit('admin.php?/cp/publish/edit')
     cy.get('a').contains('Getting to Know ExpressionEngine').filter(':visible').first().click()
     cy.get('.fields-upload-chosen').should('exist')
@@ -81,7 +81,7 @@ context('File Manager / Usage Tab', () => {
     cy.get('.f_entries-table tbody tr td a').contains('Welcome to the Example Site!')
   })
 
-  it('add image to category, usage tab have 4 items', () => {
+  it('Add image to category, usage tab have 4 items', () => {
     cy.visit('admin.php?/cp/categories/group/1')
     cy.get('.list-item__title').contains('News').first().click();
     cy.get('#fieldset-cat_image').find('div[data-file-field-react] button:contains("Choose Existing")').click()

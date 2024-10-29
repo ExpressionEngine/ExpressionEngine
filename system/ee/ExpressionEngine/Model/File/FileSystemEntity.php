@@ -222,7 +222,7 @@ class FileSystemEntity extends ContentModel
      *
      * @return string
      */
-    private function getBaseServerPath()
+    public function getBaseServerPath()
     {
         if (empty($this->_baseServerPath) && $this->UploadDestination->adapter == 'local') {
             $this->_baseServerPath = rtrim($this->UploadDestination->server_path, '\\/') . '/';
@@ -292,7 +292,7 @@ class FileSystemEntity extends ContentModel
         }
 
         // Do we want to allow variable replacement in adapters that aren't local?
-        $path = rtrim($this->getAbsolutePath(), '/') .'/';
+        $path = rtrim($this->getAbsolutePath(), '/') . '/';
         $adapter = $this->UploadDestination->getFilesystemAdapter();
 
         $filesystem = ee('File')->getPath($path, $adapter);
@@ -311,7 +311,7 @@ class FileSystemEntity extends ContentModel
      */
     public function getAbsoluteThumbnailPath()
     {
-        return $this->getBaseServerPath() . $this->getSubfoldersPath(). '_thumbs/' . $this->file_name;
+        return $this->getBaseServerPath() . $this->getSubfoldersPath() . '_thumbs/' . $this->file_name;
     }
 
     /**
@@ -331,7 +331,7 @@ class FileSystemEntity extends ContentModel
 
     public function getAbsoluteManipulationPath($manipulation = 'thumbs')
     {
-        return $this->getBaseServerPath() . $this->getSubfoldersPath(). '_' . $manipulation . '/' . $this->file_name;
+        return $this->getBaseServerPath() . $this->getSubfoldersPath() . '_' . $manipulation . '/' . $this->file_name;
     }
 
     public function getAbsoluteManipulationURL($manipulation = 'thumbs')
@@ -378,9 +378,23 @@ class FileSystemEntity extends ContentModel
         $manipulations = array_merge($manipulations, $this->UploadDestination->FileDimensions->pluck('short_name'));
 
         foreach ($manipulations as $manipulation) {
-            $manipulatedFilePath = $this->getBaseServerPath() . $this->getSubfoldersPath() . '_' . $manipulation . '/' . $this->file_name;
+            $directory = $this->getBaseServerPath() . $this->getSubfoldersPath() . '_' . $manipulation;
+            $manipulatedFilePath = "{$directory}/{$this->file_name}";
+
             if ($filesystem->exists($manipulatedFilePath)) {
                 $filesystem->delete($manipulatedFilePath);
+            }
+
+            // Manipulations that are generated on-the-fly have unique hashes after the prefix.
+            // The md5 hash that is appended is always 32 characters long so we will filter
+            // filename based on length to avoid removing other files that share a prefix
+            $dynamicFilePrefix = "{$filesystem->filename($this->file_name)}_{$manipulation}_";
+            $dynamicFilenameLength = strlen("{$dynamicFilePrefix}.{$filesystem->extension($this->file_name)}") + 32;
+
+            foreach($filesystem->filesMatchingPrefix("{$directory}/{$dynamicFilePrefix}") as $file) {
+                if(strlen("{$file['filename']}.{$file['extension']}") == $dynamicFilenameLength) {
+                    $filesystem->delete($file['path']);
+                }
             }
         }
     }
@@ -444,7 +458,7 @@ class FileSystemEntity extends ContentModel
         if (! is_null($this->_exists)) {
             return $this->_exists;
         }
-        
+
         if (!$this->UploadDestination->exists()) {
             return $this->_exists = false;
         }
@@ -507,11 +521,7 @@ class FileSystemEntity extends ContentModel
     public function setCategoriesFromPost($categories)
     {
         // Currently cannot get multiple category groups through relationships
-        $cat_groups = array();
-
-        if ($this->UploadDestination->cat_group) {
-            $cat_groups = explode('|', (string) $this->UploadDestination->cat_group);
-        }
+        $cat_groups = $this->UploadDestination->CategoryGroups->pluck('group_id');
 
         if (empty($categories)) {
             $this->Categories = null;
@@ -550,7 +560,7 @@ class FileSystemEntity extends ContentModel
      */
     public function getChildIds()
     {
-        if(!$this->isDirectory()) {
+        if (!$this->isDirectory()) {
             return [];
         }
 
@@ -562,9 +572,9 @@ class FileSystemEntity extends ContentModel
             ->result_array();
 
         // Group file ids by their directory_id
-        $grouped = array_reduce($files, function($carry, $item) {
+        $grouped = array_reduce($files, function ($carry, $item) {
             $key = $item['directory_id'];
-            if(!array_key_exists($key, $carry)) {
+            if (!array_key_exists($key, $carry)) {
                 $carry[$key] = [];
             }
 
@@ -574,17 +584,17 @@ class FileSystemEntity extends ContentModel
         }, []);
 
         // If we do not have a group for this file system entity we can exit
-        if(!array_key_exists($this->file_id, $grouped)) {
+        if (!array_key_exists($this->file_id, $grouped)) {
             return [];
         }
 
         $ids = [];
         $directories = [$this->file_id];
 
-        while(!empty($directories)) {
+        while (!empty($directories)) {
             $next = [];
-            foreach($directories as $directory) {
-                $next = array_merge($next, array_filter($grouped[$directory], function($id) use($grouped) {
+            foreach ($directories as $directory) {
+                $next = array_merge($next, array_filter($grouped[$directory], function ($id) use ($grouped) {
                     return array_key_exists($id, $grouped);
                 }));
 

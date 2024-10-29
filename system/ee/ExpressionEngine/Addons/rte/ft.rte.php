@@ -16,6 +16,8 @@ class Rte_ft extends EE_Fieldtype
 
     public $has_array_data = true;
 
+    public $can_be_cloned = true;
+
     public $entry_manager_compatible = true;
 
     public $size = 'large';
@@ -183,7 +185,7 @@ class Rte_ft extends EE_Fieldtype
                     ? true
                     : false;
 
-        if (strpos($id, '_new_') === false) {
+        if (strpos($id, '_new_field_0') === false && strpos($id, '_new_row_0') === false) {
             ee()->cp->add_to_foot('<script type="text/javascript">new Rte("' . $id . '", "' . $configHandle . '", ' . ($defer ? 'true' : 'false') . ');</script>');
         }
 
@@ -375,7 +377,7 @@ class Rte_ft extends EE_Fieldtype
         RteHelper::replaceFileTags($data);
 
         // convert site page tags to URLs
-        RteHelper::replacePageTags($data, $entrySiteId);
+        RteHelper::replacePageTags($data, $entrySiteId, true);
 
         // convert asset tags to URLs
         RteHelper::replaceExtraTags($data);
@@ -415,9 +417,13 @@ class Rte_ft extends EE_Fieldtype
      */
     public function replace_tag($data, $params = array(), $tagdata = false)
     {
+        if (ee()->extensions->active_hook('rte_before_replace')) {
+            $data = ee()->extensions->call('rte_before_replace', $this, $data);
+        }
+
         //strip "read more" separator
-        $data = preg_replace('/(<figure>)?<div class=\"readmore"><span[^<]+<\/span><\/div>(<\/figure>)?/', '', $data);
-        
+        $data = preg_replace('/(<figure>)?<div class=\"readmore"><span[^<]+<\/span><\/div>(<\/figure>)?/', '', (string) $data);
+
         // return images only?
         if (isset($params['images_only']) && $params['images_only'] == 'yes') {
             $data = $this->_parseImages($data, $params, $tagdata);
@@ -431,19 +437,6 @@ class Rte_ft extends EE_Fieldtype
                 $data = preg_replace('/<img(.*)>/Ums', '', $data);
             }
         }
-
-        if (ee()->extensions->active_hook('rte_before_replace')) {
-            $data = ee()->extensions->call('rte_before_replace', $this, $data);
-        }
-
-        // convert file tags to URLs
-        RteHelper::replaceFileTags($data);
-
-        // convert site page tags to URLs
-        RteHelper::replacePageTags($data);
-
-        // convert asset tags to URLs
-        RteHelper::replaceExtraTags($data);
 
         // added 01/15/2018 for additional transcribe support
         if (ee()->extensions->active_hook('rte_before_replace_end')) {
@@ -464,7 +457,7 @@ class Rte_ft extends EE_Fieldtype
      */
     public function replace_has_excerpt($data)
     {
-        return (strpos($data, '<div class="readmore') !== false) ? 'y' : '';
+        return (!empty($data) && strpos($data, '<div class="readmore') !== false) ? 'y' : '';
     }
 
     /**
@@ -477,7 +470,7 @@ class Rte_ft extends EE_Fieldtype
      */
     public function replace_excerpt($data, $params)
     {
-        if (($read_more_tag_pos = strpos($data, '<div class="readmore')) !== false) {
+        if (!empty($data) && ($read_more_tag_pos = strpos($data, '<div class="readmore')) !== false) {
             $data = substr($data, 0, $read_more_tag_pos);
         }
 

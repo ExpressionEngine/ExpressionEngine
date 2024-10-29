@@ -32,3 +32,7 @@ Open Cypress to run tests (GUI)
 Run Cypress tests (CLI)
 
 `cd tests/cypress && npm run cypress:run`
+
+## Get list of existing tests
+
+`npx print-tests cypress/integration/**/*.ee6.js > tests.txt`

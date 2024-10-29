@@ -26,6 +26,10 @@ class CommandGenerator
     protected $generatorPath;
     protected $addonPath;
     protected $stubPath;
+    protected $commandNamespace;
+    protected $fullClass;
+    protected $description;
+    protected $commandsPath;
 
     public function __construct(Filesystem $filesystem, Str $str, array $data)
     {

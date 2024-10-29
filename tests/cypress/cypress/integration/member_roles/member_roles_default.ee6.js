@@ -4,7 +4,7 @@ const page = new MemberGroups;
 const member = new MemberCreate;
 
 
-context('Test Member roles', () => {
+context('Member Roles / Default Permissions', () => {
 
 	before(function(){
 		cy.task('db:seed')

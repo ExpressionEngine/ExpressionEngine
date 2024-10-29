@@ -22,6 +22,9 @@ class ExtensionGenerator
     protected $generatorPath;
     protected $addonPath;
     protected $stubPath;
+    protected $ExtensionHookName;
+    protected $namespace;
+
 
     public function __construct(Filesystem $filesystem, Str $str, array $data)
     {

@@ -34,7 +34,7 @@ class Member_memberlist extends Member
         /**  Is user allowed to send email?
         /** ---------------------------------*/
         if (! ee('Permission')->can('email_from_profile')) {
-            return ee()->output->show_user_error('general', array(ee()->lang->line('mbr_not_allowed_to_use_email_console')));
+            return ee()->output->show_form_error(['general' => ee()->lang->line('mbr_not_allowed_to_use_email_console')]);
         }
 
         $query = ee()->db->query("SELECT screen_name, accept_user_email FROM exp_members WHERE member_id = '{$this->cur_id}'");
@@ -102,7 +102,7 @@ class Member_memberlist extends Member
         }
 
         if ($_POST['subject'] == '' or $_POST['message'] == '') {
-            return ee()->output->show_user_error('submission', array(ee()->lang->line('mbr_missing_fields')));
+            return ee()->output->show_form_error(['general' => ee()->lang->line('mbr_missing_fields')], 'submission');
         }
 
         /** ----------------------------------------
@@ -128,7 +128,7 @@ class Member_memberlist extends Member
         /** ---------------------------------
         /**  Does the recipient accept email?
         /** ---------------------------------*/
-        $query = ee()->db->query("SELECT email, screen_name, accept_user_email FROM exp_members WHERE member_id = '". ee()->db->escape_str($member_id) . "'");
+        $query = ee()->db->query("SELECT email, screen_name, accept_user_email FROM exp_members WHERE member_id = '" .  ee()->db->escape_str($member_id) . "'");
 
         if ($query->num_rows() == 0) {
             return false;
@@ -159,7 +159,7 @@ class Member_memberlist extends Member
         ee()->email->message($message);
 
         if (isset($_POST['self_copy'])) {
-            /*	If CC'ing the send, they get the email and the recipient is BCC'ed
+            /*  If CC'ing the send, they get the email and the recipient is BCC'ed
                 Because Rick says his filter blocks emails without a To: field
             */
 
@@ -233,7 +233,7 @@ class Member_memberlist extends Member
         /**  Can the user view profiles?
         /** ----------------------------------------*/
         if (! ee('Permission')->can('view_profiles')) {
-            return ee()->output->show_user_error('general', array(ee()->lang->line('mbr_not_allowed_to_view_profiles')), '', $return_error_link);
+            return ee()->output->show_form_error(['general' => ee()->lang->line('mbr_not_allowed_to_view_profiles')]);
         }
 
         /** ----------------------------------------
@@ -249,7 +249,7 @@ class Member_memberlist extends Member
             $template = ee()->TMPL->tagdata;
             // Find out where our memberlist page actually is (for doing search results).
             $result_page = ee()->functions->fetch_current_uri();
-        } else {
+        } elseif (ee('Config')->getFile()->getBoolean('legacy_member_templates')) {
             $template = $this->_load_element('memberlist');
         }
 
@@ -258,10 +258,12 @@ class Member_memberlist extends Member
 
         // Find out if we have sub-tag data for our `member_rows` tag. If not, use the legacy speciality template.
         if (strpos($template, '{/member_rows}') !== false) {
-            $member_rows_tag_length = strlen(LD . 'member_rows' . RD);
+
+            $member_rows_opening = ee('Variables/Parser')->getFullTag($template, 'member_rows');
+            $member_rows_tag_length = strlen(LD . $member_rows_opening);
 
             // Find the starting and ending position of our subtag and calculate the difference so we can grab it.
-            $member_rows_start = strpos($template, LD . 'member_rows' . RD) + $member_rows_tag_length;
+            $member_rows_start = strpos($template, LD . $member_rows_opening) + $member_rows_tag_length;
             $member_rows_end = strpos($template, LD . '/member_rows' . RD);
             $member_rows_diff = $member_rows_end - $member_rows_start;
 
@@ -338,7 +340,7 @@ class Member_memberlist extends Member
 
         /* ----------------------------------------
         /*  Check for Search URL
-        /*		- In an attempt to be clever, I decided to first check for
+        /*      - In an attempt to be clever, I decided to first check for
                 the Search ID and if found, use an explode to set it and
                 find a new $this->cur_id.  This solves the problem easily
                 and saves me from using substr() and strpos() far too many times
@@ -360,7 +362,9 @@ class Member_memberlist extends Member
             }
         }
 
-        $result_page = str_replace(trim($search_path, '/'), '', $result_page);
+        if (!empty($result_page)) {
+            $result_page = str_replace(trim($search_path, '/'), '', $result_page);
+        }
 
         /** ----------------------------------------
         /**  Parse the request URI
@@ -480,9 +484,14 @@ class Member_memberlist extends Member
 
         $template = $pagination->prepare($template);
 
-        if ($query->row('count') > $row_limit && $pagination->paginate === true) {
-            $pagination->build($query->row('count'), $row_limit);
-            $sql .= " LIMIT " . $pagination->offset . ", " . $row_limit;
+        if ($query->row('count') > $row_limit) {
+            if ($pagination->paginate === true) {
+                $pagination->build($query->row('count'), $row_limit);
+                $sql .= " LIMIT " . $pagination->offset . ", " . $row_limit;
+            } else {
+                // no pagination tag, but we still need to respect limit parameter
+                $sql .= " LIMIT " . $row_limit;
+            }
         }
 
         /** ----------------------------------------
@@ -874,8 +883,9 @@ class Member_memberlist extends Member
             $data['hidden_fields'] = array(
                 'ACT' => ee()->functions->fetch_action_id('Member', 'do_member_search'),
                 'RET' => ee()->TMPL->fetch_param('return') != '' ? ee()->TMPL->fetch_param('return') : str_replace($search_path, '', $result_page),
-                'no_result_page' => ee()->TMPL->fetch_param('no_result_page'));
-
+                'no_result_page' => ee()->TMPL->fetch_param('no_result_page')
+            );
+            $template = ee()->TMPL->parse_inline_errors(ee()->TMPL->tagdata);
             $template = ee()->functions->form_declaration($data) . $template . '</form>';
         } else {
             $template = str_replace(LD . "form_declaration" . RD, $form_open, $template);
@@ -887,17 +897,17 @@ class Member_memberlist extends Member
             $template = str_replace(LD . "form:form_declaration:do_member_search" . RD, $form_open_member_search, $template);
         }
 
-        if (! empty($member_rows_diff)) {
-            $member_rows_start = strpos($template, LD . 'member_rows' . RD);
-            $member_rows_end = strpos($template, LD . '/member_rows' . RD) + $member_rows_tag_length + 1;
-            $member_rows_diff = $member_rows_end - $member_rows_start;
-
-            $template = substr_replace($template, $str, $member_rows_start, $member_rows_diff);
+        if (isset($member_rows_diff) && ! empty($member_rows_diff)) {
+            $params = ee('Variables/Parser')->parseTagParameters($member_rows_opening);
+            if (isset($params['backspace']) && is_numeric($params['backspace'])) {
+                $str = substr($str, 0, - $params['backspace']);
+            }
+            $template = str_replace(LD . $member_rows_opening . $memberlist_rows . LD . '/member_rows' . RD, $str, $template);
         } else {
             $template = str_replace(LD . "member_rows" . RD, $str, $template);
         }
 
-        return	$template;
+        return $template;
     }
 
     /** ------------------------------------------
@@ -950,7 +960,7 @@ class Member_memberlist extends Member
         /**  Is the current user allowed to search?
         /** ----------------------------------------*/
         if (! ee('Permission')->can('search') and ! ee('Permission')->isSuperAdmin()) {
-            return ee()->output->show_user_error('general', array(ee()->lang->line('search_not_allowed')));
+            return ee()->output->show_form_error(['general' => ee()->lang->line('search_not_allowed')]);
         }
 
         /** ----------------------------------------
@@ -972,7 +982,7 @@ class Member_memberlist extends Member
             $text = str_replace("%x", ee()->session->userdata['search_flood_control'], ee()->lang->line('search_time_not_expired'));
 
             if ($query->num_rows() > 0) {
-                return ee()->output->show_user_error('general', array($text));
+                return ee()->output->show_form_error(['general' => array($text)]);
             }
         }
 
@@ -1074,6 +1084,10 @@ class Member_memberlist extends Member
                     ee()->functions->redirect($return_link);
                     exit;
                 }
+            }
+
+            if(ee()->functions->determine_error_return() !== false) {
+                return ee()->output->show_form_error(['no_results' => ee()->lang->line('search_no_result')]);
             }
 
             return ee()->output->show_user_error('off', array(ee()->lang->line('search_no_result')), ee()->lang->line('search_result_heading'));

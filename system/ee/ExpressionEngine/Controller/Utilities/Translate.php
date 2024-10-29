@@ -244,7 +244,12 @@ class Translate extends Utilities
             }
         }
 
-        ee()->view->set_message('issue', lang('cannot_access'));
+        ee('CP/Alert')->makeInline('shared-form')
+            ->asIssue()
+            ->withTitle(lang('cannot_access'))
+            ->addToBody(sprintf(lang('cannot_access_translation_desc'), $language))
+            ->now();
+
         return '';
     }
 

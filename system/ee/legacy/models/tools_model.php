@@ -22,6 +22,7 @@ class Tools_model extends CI_Model
      */
     public function get_search_replace_options()
     {
+        ee()->lang->load('design');
         $options = array();
 
         // site prefs
@@ -92,6 +93,10 @@ class Tools_model extends CI_Model
         }
 
         $options['template_groups'] = array('name' => $this->lang->line('template_groups'), 'choices' => $templates);
+
+        $options['template_partials'] = array('name' => $this->lang->line('template_partials'));
+        $options['template_variables'] = array('name' => $this->lang->line('template_variables'));
+        $options['template_system'] = array('name' => $this->lang->line('system_templates'));
 
         return $options;
     }

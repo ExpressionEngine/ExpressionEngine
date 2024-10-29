@@ -5,6 +5,9 @@ on:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:
       - '*.x'
+  push:
+    branches:
+      - 'feature/7.x/cypress-12'
 
 jobs:
   build:
@@ -15,7 +18,14 @@ jobs:
       version: ${{ steps.build_json.outputs.BUILD_VERSION }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Checkout RedactorX
+        uses: actions/checkout@v4
+        with:
+          repository: ExpressionEngine/RedactorX
+          token: ${{ secrets.ORG_ACCESS_TOKEN }}
+          path: __redactorx
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -26,7 +36,7 @@ jobs:
             ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
 
       - name: Setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '10'
 
@@ -48,21 +58,6 @@ jobs:
           content=`node -pe 'JSON.parse(process.argv[1]).tag' "$(cat build.json)"`
           echo "BUILD_VERSION=$content" >> $GITHUB_OUTPUT
 
-      - name: Run build process
-        working-directory: build-tools
-        env:
-          RELEASE_PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
-          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
-          APP_REPO_PATH: ${{ github.workspace }}
-        run: |
-          gulp app --local --nogit --head --skip-lint --jira-collector --skip-pro --version=${{ steps.build_json.outputs.BUILD_VERSION }}
-
-      - name: Archive Build files
-        uses: actions/upload-artifact@v3
-        with:
-          name: EE${{ steps.build_json.outputs.BUILD_VERSION }}
-          path: build-tools/builds
-
       - name: Set DP version
         run: echo "dp_ver=1" >> $GITHUB_ENV
 
@@ -79,6 +74,22 @@ jobs:
         run: |
           content=`echo "${{ steps.prev_tag.outputs.tag }}" | rev | cut -d "." -s -f 1 | rev`
           echo "dp_ver=$(( 1+$content ))" >> $GITHUB_ENV
+
+      - name: Run build process
+        working-directory: build-tools
+        env:
+          RELEASE_PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+          APP_REPO_PATH: ${{ github.workspace }}
+          REDACTORX_REPO_PATH: ${{ github.workspace }}/__redactorx
+        run: |
+          gulp app --local --nogit --head --skip-lint --jira-collector --skip-pro --version=${{ steps.build_json.outputs.BUILD_VERSION }}-dp.${{ env.dp_ver }}
+
+      - name: Archive Build files
+        uses: actions/upload-artifact@v4
+        with:
+          name: EE${{ steps.build_json.outputs.BUILD_VERSION }}
+          path: build-tools/builds
 
       - name: Get previous release tag
         id: prev_release_tag
@@ -134,12 +145,12 @@ jobs:
       steps:
 
             - name: Checkout repo
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
               with:
                 repository: ExpressionEngine/ExpressionEngine
                 path: __repo
 
-            - name: Download EE 6
+            - name: Download EE 7.0
               run: |
                   wget -q https://github.com/ExpressionEngine/ExpressionEngine/releases/download/7.0.0/ExpressionEngine7.0.0.zip
                   unzip -q ExpressionEngine7.0.0.zip
@@ -165,7 +176,6 @@ jobs:
               run: |
                 rm -f system/user/config/config.php
                 cp -f tests/cypress/support/config/config.php system/user/config/config.php
-                rpl -v '${{ needs.build.outputs.version }}' '7.0.0' system/user/config/config.php
                 rpl -v '${{ needs.build.outputs.version }}' '7.0.0' build-tools/build.json
 
             - name: Remove installer
@@ -199,22 +209,28 @@ jobs:
             - name: Start PHP Server
               run: php -S localhost:8888 &
 
-            - name: Run Cypress Tests
-              uses: cypress-io/github-action@v5
+            - name: Run 1-click Updater Tests
+              uses: cypress-io/github-action@v6
               with:
                 browser: chrome
                 working-directory: tests/cypress
-                config-file: updater.cypress.json
+                config: specPattern=cypress/integration/updater/**.ee6.js
+                record: true
+                group: PHP${{ matrix.php }}
+              env:
+                CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+                CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Archive screenshots
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               if: failure()
               with:
                 name: cypress-tests-updater
                 path: tests/cypress/cypress/screenshots/
 
             - name: Archive server errors
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               if: failure()
               with:
                 name: updater.error.log

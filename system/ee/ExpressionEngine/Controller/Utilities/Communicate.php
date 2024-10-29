@@ -753,13 +753,13 @@ class Communicate extends Utilities
         $search = ee()->input->get_post('filter_by_keyword');
         if (! empty($search)) {
             $emails = $emails->filterGroup()
-                ->filter('subject', 'LIKE', '%' . $search . '%')
-                ->orFilter('message', 'LIKE', '%' . $search . '%')
-                ->orFilter('from_name', 'LIKE', '%' . $search . '%')
-                ->orFilter('from_email', 'LIKE', '%' . $search . '%')
-                ->orFilter('recipient', 'LIKE', '%' . $search . '%')
-                ->orFilter('cc', 'LIKE', '%' . $search . '%')
-                ->orFilter('bcc', 'LIKE', '%' . $search . '%')
+                ->filter('subject', 'LIKE', '%' . ee()->db->escape_like_str($search) . '%')
+                ->orFilter('message', 'LIKE', '%' . ee()->db->escape_like_str($search) . '%')
+                ->orFilter('from_name', 'LIKE', '%' . ee()->db->escape_like_str($search) . '%')
+                ->orFilter('from_email', 'LIKE', '%' . ee()->db->escape_like_str($search) . '%')
+                ->orFilter('recipient', 'LIKE', '%' . ee()->db->escape_like_str($search) . '%')
+                ->orFilter('cc', 'LIKE', '%' . ee()->db->escape_like_str($search) . '%')
+                ->orFilter('bcc', 'LIKE', '%' . ee()->db->escape_like_str($search) . '%')
                 ->endFilterGroup();
         }
 

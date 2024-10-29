@@ -22,7 +22,7 @@ context('Entry Manager', () => {
     cy.eeConfig({ item: 'show_profiler', value: 'n' })
   })
 
-  it('displays properly when max_entries hit', () => {
+  it('Does not allow creating entry if channel limit is reached', () => {
     cy.createChannel({max_entries: 1}).then((channel_json) => {
       const channel = JSON.parse(channel_json)
 
@@ -37,7 +37,7 @@ context('Entry Manager', () => {
 
   })
 
-  it('offers a create option for channels with max_entries not yet reached', () => {
+  it('Offers a create option for channels with max_entries not yet reached', () => {
     cy.createChannel({max_entries: 3}).then((channel_json) => {
 
       const channel = JSON.parse(channel_json)
@@ -52,7 +52,7 @@ context('Entry Manager', () => {
     cy.logCPPerformance()
   })
 
-  it('create menu does not include channels when max_entries is hit', () => {
+  it('Create menu does not include channels when max_entries is hit', () => {
     cy.createChannel({max_entries: 3}).then((channel_json) => {
       const channel = JSON.parse(channel_json)
 
@@ -70,7 +70,7 @@ context('Entry Manager', () => {
     cy.logCPPerformance()
   })
 
-  it('edit menu goes straight to publish for max_entries 1 = 1', () => {
+  it('Edit menu goes straight to publish for max_entries 1 = 1', () => {
     cy.createChannel({max_entries: 1}).then((channel_json) => {
       const channel = JSON.parse(channel_json)
 
@@ -88,7 +88,7 @@ context('Entry Manager', () => {
     cy.logCPPerformance()
   })
 
-  it('creates entries', () => {
+  it('Create entries', () => {
 
     const command = `cd support/fixtures && php deleteEntries.php`;
     cy.exec(command)
@@ -112,7 +112,7 @@ context('Entry Manager', () => {
     cy.logCPPerformance()
   })
 
-  it('loads a page with 100 entries', () => {
+  it('Load a page with 100 entries', () => {
 
     const command = `cd support/fixtures && php deleteEntries.php`;
     cy.exec(command)
@@ -130,7 +130,7 @@ context('Entry Manager', () => {
     cy.logCPPerformance()
   })
 
-  it('deletes a single entry', () => {
+  it('Deletes a single entry', () => {
 
     const command = `cd support/fixtures && php deleteEntries.php`;
     cy.exec(command)
@@ -154,7 +154,7 @@ context('Entry Manager', () => {
     cy.logCPPerformance()
   })
 
-  it('deletes all entries', () => {
+  it('Deletes all entries', () => {
 
     const command = `cd support/fixtures && php deleteEntries.php`;
     cy.exec(command)
@@ -180,7 +180,7 @@ context('Entry Manager', () => {
     cy.logCPPerformance()
   })
 
-  it('deletes 100 entries', () => {
+  it('Deletes 100 entries', () => {
 
     const command = `cd support/fixtures && php deleteEntries.php`;
     cy.exec(command)
