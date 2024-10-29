@@ -79,6 +79,7 @@ class Channel
       */
     public function __construct()
     {
+        ee()->load->add_package_path(PATH_ADDONS . 'channel');
         ee()->load->library('pagination');
         $this->pagination = ee()->pagination->create();
 

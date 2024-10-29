@@ -29,7 +29,7 @@ abstract class AbstractFieldTemplateGenerator implements FieldTemplateGeneratorI
      *
      * @var array
      */
-    public $settings;
+    public $settings = [];
 
     /**
      * Construct the class for given field or Grid column
