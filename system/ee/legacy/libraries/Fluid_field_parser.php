@@ -334,6 +334,7 @@ class Fluid_field_parser
         $fluid_field_data = $this->data->filter(function ($fluid_field) use ($entry_id, $fluid_field_id) {
             return ($fluid_field->entry_id == $entry_id && $fluid_field->fluid_field_id == $fluid_field_id);
         })
+
         // Sort by ChannelField->field_order
         ->sortBy(function ($item) {
             return $item->ChannelField->field_order;
@@ -480,7 +481,6 @@ class Fluid_field_parser
                 $fieldCount = 0;
                 foreach ($group['fields'] as $fluid_field) {
                     $field_name = $fluid_field->ChannelField->field_name;
-
                     // Flip this field's conditional to TRUE so all the other fields will be
                     // removed from the tagdata
                     $cond[$fluid_field_name . ':' . $field_name] = true;
@@ -498,12 +498,42 @@ class Fluid_field_parser
                         $fluid_field_name . ':count_in_group' => $fieldCount + 1,
                         $fluid_field_name . ':index_in_group' => $fieldCount,
                         $fluid_field_name . ':current_field_name' => $field_name,
-                        $fluid_field_name . ':next_field_name' => (($i + 1) < $total_fields) ? $fluid_field_data[$i + 1]->ChannelField->field_name : null,
-                        $fluid_field_name . ':prev_field_name' => ($i > 0) ? $fluid_field_data[$i - 1]->ChannelField->field_name : null,
-                        $fluid_field_name . ':current_fieldtype' => $fluid_field_data[$i]->ChannelField->field_type,
-                        $fluid_field_name . ':next_fieldtype' => (($i + 1) < $total_fields) ? $fluid_field_data[$i + 1]->ChannelField->field_type : null,
-                        $fluid_field_name . ':prev_fieldtype' => ($i > 0) ? $fluid_field_data[$i - 1]->ChannelField->field_type : null,
+                        $fluid_field_name . ':current_fieldtype' => $fluid_field->ChannelField->field_type
                     ];
+
+                    // we have to do this since there are now fields in field groups and not in field groups
+                    // If a field is not in a group it gets added to the $groups above as a single array element
+
+                    // is this the last field in the current field group
+                    // if so we need to get first field in next group
+                    if($fieldCount + 1 == $fieldCountInGroup) {
+                        // out of fields in this group grab first from the next group.
+                        $meta[$fluid_field_name . ':next_fieldtype'] = (($i + 1) < $total_fields) ? $groups[$g + 1]['fields'][0]->ChannelField->field_type : null;
+                        $meta[$fluid_field_name . ':next_field_name'] = (($i + 1) < $total_fields) ? $groups[$g + 1]['fields'][0]->ChannelField->field_name : null;
+                    } else {
+                        // theres another field in this group we'll use that
+                        $meta[$fluid_field_name . ':next_fieldtype'] = (($i + 1) < $total_fields) ? $group['fields'][$fieldCount + 1]->ChannelField->field_type : null;
+                        $meta[$fluid_field_name . ':next_field_name'] = (($i + 1) < $total_fields) ? $group['fields'][$fieldCount + 1]->ChannelField->field_name : null;
+                    }
+
+                    // if there was a field in the group befor this, use that
+                    if(array_key_exists($fieldCount -1, $group['fields'])) {
+                        $meta[$fluid_field_name . ':prev_field_name'] = ($i > 0) ? $group['fields'][$fieldCount - 1]->ChannelField->field_name : null;
+                        $meta[$fluid_field_name . ':prev_fieldtype'] = ($i > 0) ? $group['fields'][$fieldCount - 1]->ChannelField->field_type : null;
+                    } else {
+
+                         // if we don't have an index before this in the groups array values are null
+                        if(!array_key_exists($g - 1, $groups)) {
+                            $meta[$fluid_field_name . ':prev_field_name'] = null;
+                            $meta[$fluid_field_name . ':prev_fieldtype'] = null;
+                        } else {
+                            // we need to try going back one array element to last group last item
+                            $lastGroupIndex = array_key_last($groups[$g - 1]['fields']);
+
+                            $meta[$fluid_field_name . ':prev_field_name'] = ($i > 0) ? $groups[$g - 1]['fields'][$lastGroupIndex]->ChannelField->field_name : null;
+                            $meta[$fluid_field_name . ':prev_fieldtype'] = ($i > 0) ? $groups[$g - 1]['fields'][$lastGroupIndex]->ChannelField->field_type : null;
+                        }
+                    }
 
                     // a couple aliases to cover some additionally intuitive names
                     $meta[$fluid_field_name . ':this_field_name'] = $meta[$fluid_field_name . ':current_field_name'];
