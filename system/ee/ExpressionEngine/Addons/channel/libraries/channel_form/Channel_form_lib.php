@@ -497,9 +497,16 @@ class Channel_form_lib
                         $checkbox_fields[] = $key;
                         $this->parse_variables[$key] = ($this->entry($name) == 'y') ? 'checked="checked"' : '';
                     } elseif (property_exists($this->entry, $name) or $this->entry->hasCustomField($name)) {
-                        $this->parse_variables[$key] = $this->encode_ee_tags(
-                            form_prep($this->entry($name), $name)
-                        );
+                        // override with POST, if there was validation error
+                        if (isset($_POST[$name])) {
+                            $this->parse_variables[$key] = $this->encode_ee_tags(
+                                form_prep(ee()->input->post($name, true), $name)
+                            );
+                        } else {
+                            $this->parse_variables[$key] = $this->encode_ee_tags(
+                                form_prep($this->entry($name), $name)
+                            );
+                        }
                     }
                 }
             }

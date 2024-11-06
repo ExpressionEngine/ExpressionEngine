@@ -379,7 +379,7 @@ abstract class AbstractDesign extends CP_Controller
                     $sites[$template->site_id] . '/' .
                     $template->TemplateGroup->group_name . '.group/' .
                     $template->template_name . $template->getFileExtension();
-            $zip->addFromString($filename, $template->template_data);
+            $zip->addFromString($filename, (string) $template->template_data);
         });
 
         // and now partials
@@ -387,7 +387,7 @@ abstract class AbstractDesign extends CP_Controller
         $partials->each(function ($partial) use ($zip, $sites) {
             $folder = ($partial->site_id) ? $sites[$partial->site_id] . '/_partials/' : '_global_partials/';
             $filename = $folder . $partial->snippet_name . '.html';
-            $zip->addFromString($filename, $partial->snippet_contents);
+            $zip->addFromString($filename, (string) $partial->snippet_contents);
         });
 
         // and now venerable variables
@@ -395,7 +395,7 @@ abstract class AbstractDesign extends CP_Controller
         $variables->each(function ($variable) use ($zip, $sites) {
             $folder = ($variable->site_id) ? $sites[$variable->site_id] . '/_variables/' : '_global_variables/';
             $filename = $folder . $variable->variable_name . '.html';
-            $zip->addFromString($filename, $variable->variable_data);
+            $zip->addFromString($filename, (string) $variable->variable_data);
         });
 
         $zip->close();

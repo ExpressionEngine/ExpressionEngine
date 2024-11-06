@@ -200,7 +200,7 @@ class Access
                 'delete_channel_fields',
                 'create_members',
                 'edit_members',
-                'delete_members',
+                'delete_members'
             );
     }
 

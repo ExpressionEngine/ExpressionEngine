@@ -234,6 +234,17 @@ class EE_Upload
             }
         }
 
+        // Check to see if strip_image_metadata is enabled
+        if (ee()->config->item('strip_image_metadata') == 'y' && $this->is_image()) {
+            ee()->load->library('image_lib');
+            ee()->image_lib->clear();
+            ee()->image_lib->initialize([
+                'source_image' => $this->file_temp,
+                'image_library' => 'imagemagick',
+            ]);
+            ee()->image_lib->strip_metadata();
+        }
+
         // Are the image dimensions within the allowed size?
         // Note: This can fail if the server has an open_basedir restriction.
         if (! $this->is_allowed_dimensions()) {
