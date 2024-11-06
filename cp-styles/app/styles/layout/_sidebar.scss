@@ -253,8 +253,8 @@
   letter-spacing: 1px;
   font-size: 85%;
   color: color(sidebar-text);
-  opacity: 0.6;
-  font-weight: 500;
+  // opacity: 0.6;
+  font-weight: 600;
   padding: 0 20px;
   display: block;
 }
@@ -608,4 +608,14 @@
 .navigation-submenu::-webkit-scrollbar { /* WebKit */
   width: 0;
   height: 0;
+}
+
+// after creating a new contrast theme line 614 should be uncomment, 615 - delete
+// [data-theme="contrast"] .navigation-submenu {
+.navigation-submenu {
+  .dropdown__item {
+    &:hover {
+      background-color: var(--ee-sidebar-bg-active);
+    }
+  }
 }
