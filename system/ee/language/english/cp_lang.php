@@ -970,6 +970,11 @@ $lang = array(
 
     'settings_for' => 'Settings for',
 
+    'neutral_legend' => 'Provide Information below',
+
+    'select_item_label' => 'Select the item you need',
+
+    'publish_form_label' => 'Publish form',
 );
 
 // EOF
