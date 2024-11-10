@@ -46330,6 +46330,12 @@ tr.missing .ee-debugger td:not(.reorder-col):first-child:before,
   padding: 12px 14px 12px 10px;
 }
 
+.layout-item__title {
+  display: inline-block;
+  max-width: 100%;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
 .layout-item__title span {
   margin-left: 5px;
 }
@@ -46343,12 +46349,15 @@ tr.missing .ee-debugger td:not(.reorder-col):first-child:before,
   position: relative;
   border-top: 1px solid var(--ee-border);
 }
-.layout-item__options label {
+.layout-item__options label,
+.layout-item__options .label {
   margin-right: 10px;
   margin-bottom: 1px;
   font-weight: normal;
+  display: inline-block;
 }
-.layout-item__options label input[type=checkbox] {
+.layout-item__options label input[type=checkbox],
+.layout-item__options .label input[type=checkbox] {
   margin-right: 5px;
   top: 3px;
 }
@@ -46367,6 +46376,13 @@ tr.missing .ee-debugger td:not(.reorder-col):first-child:before,
   left: -15px;
   top: 50%;
   transform: translateY(-50%);
+}
+
+.tab-label {
+  display: inline-block;
+  color: var(--ee-text-normal);
+  margin-bottom: 10px !important;
+  font-weight: 500;
 }
 
 .code-example {
@@ -53938,7 +53954,8 @@ ul.field-reorder-drop,
   border-color: #F59792;
   color: #E0251C;
 }
-label.field-option-required {
+label.field-option-required,
+.field-option-required.label {
   color: #FF6600;
 }
 .has-format-options {

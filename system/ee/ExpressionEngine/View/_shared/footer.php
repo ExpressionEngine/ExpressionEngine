@@ -80,6 +80,7 @@
                         <?=form_open(ee('CP/URL')->make('updater/authenticate'), ['name' => 'one_click_major_update_confirm'])?>
                             <input type="hidden" name="username" value="<?=form_prep(ee()->session->userdata('username'))?>">
                             <fieldset>
+                                <legend class="sr-only"><?=lang('upgrade_password')?></legend>
                                 <label for="upgrade-confirm-password"><?=lang('one_click_major_update_instructions')?></label>
                                 <div class="field-control">
                                     <input type="password" name="password" value="" id="upgrade-confirm-password">

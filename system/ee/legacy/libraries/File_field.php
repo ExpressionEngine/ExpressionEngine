@@ -223,7 +223,7 @@ class File_field
         $fp_edit = clone $fp_link;
         $fp_edit
             ->setHtml('<i class="fal fa-pen"></i><span class="hidden">' . lang('edit') . '</span>')
-            ->setAttribute('title', lang('edit'))
+            ->setAttribute('title', lang('edit_element'))
             ->setAttribute('class', 'file-field-filepicker button button--default');
 
         $file = $this->getFileModelForFieldData($data);

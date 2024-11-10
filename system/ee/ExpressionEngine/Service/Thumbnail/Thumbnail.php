@@ -64,7 +64,7 @@ class Thumbnail
                 $this->setMissing();
                 return;
             } elseif ($file->isDirectory()) {
-                $this->tag = '<i class="fal fa-folder fa-3x"></i>';
+                $this->tag = '<i class="fal fa-folder fa-3x"></i><span class="sr-only">' . lang('folder_icon') . '</span>';
             } elseif ($file->isEditableImage() || $file->isSVG()) {
                 $this->url = $file->getAbsoluteThumbnailURL() . "?v={$file->modified_date}";
                 $this->path = $file->getAbsoluteThumbnailPath();

@@ -517,12 +517,12 @@ abstract class AbstractDesign extends CP_Controller
                 ),
                 'edit' => array(
                     'href' => $edit_url,
-                    'title' => lang('edit')
+                    'title' => lang('edit'),
                 ),
                 'settings' => array(
                     'href' => $edit_url . '#tab=t-2',
                     'class' => 'm-link',
-                    'title' => lang('settings'),
+                    'title' => lang('settings_for'),
                     'data-template-id' => $template->template_id,
                 )
             );

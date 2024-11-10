@@ -13,7 +13,7 @@
 				?>
 				<li>
 					<a href="<?=ee('CP/URL')->make('members/profile/settings&id=' . $member->member_id);?>" class="d-flex align-items-center normal-link">
-						<img src="<?=$avatar_url?>" class="avatar-icon add-mrg-right" alt="">
+						<img src="<?=$avatar_url?>" class="avatar-icon add-mrg-right" alt="<?=lang('user_avatar_alt')?>">
 						<div class="flex-grow"><?= $member->screen_name; ?> <span class="meta-info float-right"><?=$last_visit?></span></div>
 					</a>
 				</li>

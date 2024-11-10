@@ -21,7 +21,7 @@
 		<?=$form?>
 
 		<div class="field-instruct">
-			<label><?=lang('tabs')?></label>
+			<p class="tab-label"><?=lang('tabs')?></p>
 		</div>
 
 		<div class="tab-bar tab-bar--editable layout">
@@ -56,10 +56,10 @@
 							<div class="layout-item">
 								<div class="layout-item__handle ui-sortable-handle"></div>
 								<div class="layout-item__content">
-									<label class="layout-item__title"><span class="faded float-right"><?=$field->getTypeName()?></span><?=$field->getLabel()?> <span class="faded"><?=(($tab->id != 'categories') ? '(' . $field->getShortName() . ')' : '') ?></span></label>
+									<p class="layout-item__title"><span class="faded float-right"><?=$field->getTypeName()?></span><?=$field->getLabel()?> <span class="faded"><?=(($tab->id != 'categories') ? '(' . $field->getShortName() . ')' : '') ?></span></p>
 									<div class="layout-item__options">
 										<?php if ($field->isRequired()): ?>
-										<label class="field-option-required"><?=ucwords(lang('required_field'))?></label>
+										<p class="label field-option-required"><?=ucwords(lang('required_field'))?></p>
 										<?php else: ?>
 										<label class="field-option-hide"><input class="checkbox checkbox--small" type="checkbox"<?php if (! $field->isVisible()): ?> checked="checked"<?php endif ?>><?=lang('hide')?></label>
 										<?php endif; ?>
@@ -69,7 +69,7 @@
 										<div class="layout-item__field-width">
 										<div class="field-control field-option-width">
 											<i class="fal fa-arrows-h"></i>
-											<select class="select-popup button--xsmall">
+											<select class="select-popup button--xsmall" aria-label="<?=lang('select_width_label')?>">
 											<option value="100" <?php echo ($field->getWidth() == 100) ? 'selected="selected"' : ''; ?>>100%</option>
 											<option value="75" <?php echo ($field->getWidth() == 75) ? 'selected="selected"' : ''; ?>>75%</option>
 											<option value="66.66" <?php echo ($field->getWidth() == 66.66) ? 'selected="selected"' : ''; ?>>66%</option>
@@ -105,28 +105,29 @@
 <div class="modal-wrap modal-add-new-tab hidden">
 	<div class="modal modal--no-padding dialog">
 
-          <div class="dialog__header">
-            <h2 class="dialog__title"><?=lang('add_tab')?> <span class="req-title"><?=lang('required_fields')?></h2>
-            <div class="dialog__close js-modal-close"><i class="fal fa-times"></i></div>
-          </div>
-          <div class="dialog__body">
-					<form class="settings">
-						<fieldset class="required">
-              <div class="field-instruct">
-                <label><?=lang('tab_name')?></label>
-								<em><?=lang('tab_name_desc')?></em>
-              </div>
-							<div class="field-control">
-								<input type="text" name="tab_name" data-illegal="<?=lang('illegal_tab_name')?>" data-required="<?=lang('tab_name_required')?>" data-duplicate="<?=lang('duplicate_tab_name')?>">
-							</div>
-						</fieldset>
-          </div>
-          <div class="dialog__actions dialog__actions--with-bg">
-						<div class="dialog__buttons">
-							<button class="button button--primary"><?=lang('add_tab')?></button>
-						</div>
-          </div>
-					</form>
+		<div class="dialog__header">
+			<h2 class="dialog__title"><?=lang('add_tab')?> <span class="req-title"><?=lang('required_fields')?></h2>
+			<div class="dialog__close js-modal-close"><i class="fal fa-times"></i></div>
+		</div>
+		<div class="dialog__body">
+			<form class="settings">
+				<fieldset class="required">
+					<legend class="sr-only"><?=lang('add_tab_legend')?></legend>
+					<div class="field-instruct">
+						<label for="new_tab_name"><?=lang('tab_name')?></label>
+						<em><?=lang('tab_name_desc')?></em>
+					</div>
+					<div class="field-control">
+						<input type="text" name="tab_name" data-illegal="<?=lang('illegal_tab_name')?>" data-required="<?=lang('tab_name_required')?>" data-duplicate="<?=lang('duplicate_tab_name')?>" id="new_tab_name">
+					</div>
+				</fieldset>
+				</div>
+				<div class="dialog__actions dialog__actions--with-bg">
+					<div class="dialog__buttons">
+						<button class="button button--primary"><?=lang('add_tab')?></button>
+					</div>
+				</div>
+			</form>
 	</div>
 </div>
 <?php ee('CP/Modal')->endModal(); ?>
@@ -144,12 +145,13 @@
 			<p class="current-tab-id hidden" data-current_id data-old_name></p>
 			<form class="settings">
 				<fieldset>
+					<legend class="sr-only"><?=lang('rename_tab_legend')?></legend>
 					<div class="field-instruct">
-						<label><?=lang('tab_new_name')?></label>
+						<label for="tab_new_name"><?=lang('tab_new_name')?></label>
 						<em><?=lang('tab_name_desc')?></em>
 					</div>
 					<div class="field-control">
-						<input type="text" name="tab_name" data-illegal="<?=lang('illegal_tab_name')?>" data-duplicate="<?=lang('duplicate_tab_name')?>">
+						<input type="text" name="tab_name" data-illegal="<?=lang('illegal_tab_name')?>" data-duplicate="<?=lang('duplicate_tab_name')?>" id="tab_new_name">
 					</div>
 				</fieldset>
 			</form>

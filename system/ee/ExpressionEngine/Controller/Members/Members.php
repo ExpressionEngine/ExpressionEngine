@@ -98,7 +98,7 @@ class Members extends CP_Controller
             $vars['toolbar_items']['fields'] = [
                 'href' => ee('CP/URL')->make('settings/member-fields'),
                 'class' => 'button--secondary fal fa-pen-field',
-                'title' => lang('custom_member_fields')
+                'title' => lang('custom_member_fields'),
             ];
         }
         if (ee('Permission')->can('access_sys_prefs')) {

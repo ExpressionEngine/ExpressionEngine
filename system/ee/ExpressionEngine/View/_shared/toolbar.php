@@ -61,7 +61,7 @@
                         $attr .= ' ' . $key . '="' . $val . '"';
                     }
                     if (isset($attributes['title'])) {
-                        $content .= '<span class="hidden">' . $attributes['title'] . '</span>';
+                        $content .= '<span class="hidden">' . $attributes['title'] . lang('action_for_element') . '</span>';
                     }
                     ?>
                     <a class="<?=$class?> button button--default" <?=$attr?>><?=$content?></a>

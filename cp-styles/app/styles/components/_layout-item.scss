@@ -48,6 +48,10 @@
 .layout-item__title {
 	// font-weight: bold;
 	// font-size: 1.1em;
+	display: inline-block;
+	max-width: 100%;
+	margin-bottom: 5px;
+	font-weight: 500;
 
   span {
     margin-left: 5px;
@@ -65,10 +69,12 @@
   position: relative;
 	border-top: 1px solid color(border);
 
-	label {
+	label,
+	.label {
 		margin-right: $s-s;
     margin-bottom: 1px;
     font-weight: normal;
+    display: inline-block;
 
 		input[type="checkbox"] {
 			margin-right: 5px;
@@ -94,4 +100,11 @@
       transform: translateY(-50%);
     }
   }
+}
+
+.tab-label {
+	display: inline-block;
+	color: var(--ee-text-normal);
+	margin-bottom: 10px !important;
+	font-weight: 500;
 }

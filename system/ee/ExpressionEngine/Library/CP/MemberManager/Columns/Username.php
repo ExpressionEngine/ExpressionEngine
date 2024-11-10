@@ -43,7 +43,7 @@ class Username extends EntryManager\Columns\Title
         }
 
         $avatar_url = ($member->avatar_filename) ? ee()->config->slash_item('avatar_url') . $member->avatar_filename : (URL_THEMES . 'asset/img/default-avatar.png');
-        $avatar = "<img src=\"$avatar_url\" alt=\"" . $member->username . "\" class=\"avatar-icon add-mrg-right\">";
+        $avatar = "<img src=\"$avatar_url\" alt=\"" . $member->username . " " . lang('user_avatar_alt') . "\" class=\"avatar-icon add-mrg-right\">";
 
         $out = "<div class=\"d-flex align-items-center\">";
         if ($canEdit) {

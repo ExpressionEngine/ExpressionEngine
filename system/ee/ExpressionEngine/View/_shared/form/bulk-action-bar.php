@@ -1,8 +1,10 @@
 <fieldset class="bulk-action-bar hidden">
-	<select name="bulk_action" class="select-popup button--small">
-		<?php foreach ($options as $option): ?>
-		<option
-			<?php
+    <legend class="sr-only"><?=lang('bulk_action_legend');?></legend>
+    <label for="action-select"><?=lang('bulk_action_label');?></label>
+    <select name="bulk_action" class="select-popup button--small" id="action-select">
+        <?php foreach ($options as $option): ?>
+        <option
+        <?php
             if (isset($option['value'])) {
                 echo ' value="' . $option['value'] . '"';
             }
@@ -10,8 +12,8 @@
                 echo $option['attrs'];
             }
             ?>
-		><?=$option['text']?></option>
-		<?php endforeach; ?>
-	</select>
-		<button name="bulk_action_submit" value="submit" class="button button--primary button--small"<?php if (isset($modal) && $modal) : ?> data-conditional-modal="confirm-trigger" <?php endif; ?> type="submit"<?php if (isset($ajax_url)) : ?> data-confirm-ajax="<?=$ajax_url?>"<?php endif; ?>><?=lang('submit')?></button>
+        ><?=$option['text']?></option>
+        <?php endforeach; ?>
+    </select>
+    <button name="bulk_action_submit" value="submit" class="button button--primary button--small"<?php if (isset($modal) && $modal) : ?> data-conditional-modal="confirm-trigger" <?php endif; ?> type="submit"<?php if (isset($ajax_url)) : ?> data-confirm-ajax="<?=$ajax_url?>"<?php endif; ?>><?=lang('submit')?></button>
 </fieldset>

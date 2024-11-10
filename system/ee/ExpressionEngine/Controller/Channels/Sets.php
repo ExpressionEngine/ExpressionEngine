@@ -38,7 +38,7 @@ class Sets extends AbstractChannelsController
                         'fields' => array(
                             'set_file' => array(
                                 'type' => 'file',
-                                'required' => true
+                                'required' => true,
                             )
                         )
                     ),

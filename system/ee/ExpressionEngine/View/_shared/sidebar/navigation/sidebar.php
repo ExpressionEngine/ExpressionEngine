@@ -20,7 +20,7 @@
                             }
                         ?>
 
-                        <a href="" data-dropdown-use-root="true" data-dropdown-pos="top-start" data-toggle-dropdown="app-about-dropdown" class="ee-sidebar__item ee-sidebar__version js-dropdown-toggle js-about <?=$version_class?>" title="ExpressionEngine">
+                        <a href="" data-dropdown-use-root="true" data-dropdown-pos="top-start" data-toggle-dropdown="app-about-dropdown" class="ee-sidebar__item ee-sidebar__version js-dropdown-toggle js-about <?=$version_class?>" title="<?=lang('go_to')?> ExpressionEngine">
                             <svg class="ee-logomark" width="50px" height="35px" viewBox="0 0 50 35" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                                 <defs>
                                     <polygon id="path-1" points="0 0.06905 25.8202 0.06905 25.8202 31.6178513 0 31.6178513"></polygon>

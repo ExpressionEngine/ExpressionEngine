@@ -21,7 +21,7 @@
             $attr .= ' ' . $key . '="' . $val . '"';
         }
         if (isset($attributes['title'])) {
-            $content .= '<span class="hidden">' . $attributes['title'] . '</span>';
+            $content .= '<span class="hidden">' . lang('go_to') . $attributes['title'] . '</span>';
         }
         ?>
         <a class="btn button button--primary <?=$class?>" <?=$attr?>><?=$content?></a>

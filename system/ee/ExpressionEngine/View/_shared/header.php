@@ -120,8 +120,8 @@ $current_page = ee()->uri->segment(2);
 
           <div class="field-control field-control_input--jump with-icon-start with-input-shortcut">
             <i class="fal fa-bullseye fa-fw icon-start jump-focus"></i>
-            <label for="jumpEntry1" class="hidden"><?=lang('jump_menu_input')?></label>
-            <input type="text" id="jumpEntry1" class="input--jump input--rounded jump-to" placeholder="<?=lang('jump_menu_input')?>" autocomplete="off">
+            <label for="jumpEntry1" class="hidden" id="jumpEntry1_label"><?=lang('jump_menu_input')?></label>
+            <input type="text" id="jumpEntry1" class="input--jump input--rounded jump-to" placeholder="<?=lang('jump_menu_input')?>" autocomplete="off" aria-labelledby="jumpEntry1_label">
             <span class="input-shortcut jump-focus">⌘J</span>
           </div>
 

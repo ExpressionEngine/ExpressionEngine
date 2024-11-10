@@ -59,6 +59,7 @@
                                         <?php if (isset($row['selection']['data'])):?>
                                             <?php foreach ($row['selection']['data'] as $key => $value): ?>
                                                 data-<?=$key?>="<?=form_prep($value)?>"
+                                                aria-label="<?=lang('select') . ' ' . form_prep($value)?>"
                                             <?php endforeach; ?>
                                         <?php endif; ?>
                                         <?php if (isset($row['selection']['disabled']) && $row['selection']['disabled'] !== false):?>

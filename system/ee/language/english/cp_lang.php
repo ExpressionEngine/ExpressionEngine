@@ -866,15 +866,17 @@ $lang = array(
 
     'color_picker_file' => 'Color picker file',
 
-    'colorpicker_input' => 'Colorpicker input',
+    'colorpicker_input' => 'Select a color',
 
     'close_modal' => 'Close modal window',
 
-    'close_banner' => 'Close banner icon',
+    'close_banner' => 'Close banner',
 
     'image_alt' => 'Image for',
 
     'file_icon' => 'File icon',
+
+    'go_to' => 'Go to the ',
 
     'pdf_file_icon' => 'PDF file icon',
 
@@ -890,47 +892,84 @@ $lang = array(
 
     'video_icon' => 'Video file icon',
 
-    'text_icon' => 'Text file iconn',
+    'text_icon' => 'Text file icon',
 
-    'clear_filter' => 'Clear filter button',
+    'folder_icon' => 'Folder icon',
+
+    'clear_filter' => 'Clear filter',
 
     'search_for' => 'Search for',
 
-    'save_btn' => 'Button that opens options for saving the page',
+    'save_btn' => 'Open options to save this page',
 
-    'condition_rule_operator' => 'Select to choice of condition',
+    'condition_rule_operator' => 'Select a condition',
 
-    'conditional_rule_value' => 'Conditional rule value input',
+    'conditional_rule_value' => 'Enter a value',
 
-    'remove_set' => 'Remove set button',
+    'remove_set' => 'Remove set',
 
     'toggle_buton' => 'toggle button',
 
-    'reorder_row' => 'Reorder row button',
+    'reorder_row' => 'Reorder row',
 
-    'remove_row' => 'Remove row button',
+    'remove_row' => 'Remove row',
 
     'thumbnail_column' => 'Thumbnail Column',
 
     'toolbar_column' => 'Toolbar Column',
 
-    'textarea_label' => 'Textarea for email body',
+    'textarea_label' => 'Email textarea',
 
     'textarea_query' => 'Query textarea',
 
     'search_input' => 'Search input',
 
-    'edit_element' => 'Edit element button',
+    'edit_element' => 'Edit this item',
 
-    'remove_btn' => 'Remove button',
+    'remove_element' => 'Remove this item',
 
-    'password_icon' => 'Show or hide password icon',
+    'remove_btn' => 'Remove',
 
-    'hidden_input' => 'Hidden input for file upload',
+    'password_icon' => 'Show or hide password',
+
+    'hidden_input' => 'Hidden file upload input',
 
     'button' => 'button',
 
-    'checkbox' => 'checkbox'
+    'checkbox' => 'checkbox',
+
+    'enter_username' => 'Enter Your Username or email',
+
+    'enter_email' => 'Enter Your email',
+
+    'enter_password' => 'Enter Your Password',
+
+    'keep_login' => 'Should system remember me',
+
+    'submit_login_form' => 'Submit login form',
+
+    'submit_request' => 'Submit form',
+
+    'upgrade_password' => 'Enter your password for 1 click upgrade',
+
+    'bulk_action_legend' => 'Choose an Action',
+
+    'bulk_action_label' => 'Actions',
+
+    'items_perpage_label' => "Items per page",
+
+    'filter_label' => 'filter',
+
+    'add_tab_legend' => 'Add New Tab',
+
+    'rename_tab_legend' => 'Rename Tab',
+
+    'select_width_label' => 'Choose width for this field',
+
+    'action_for_element' => ' this element',
+
+    'settings_for' => 'Settings for',
+
 );
 
 // EOF
