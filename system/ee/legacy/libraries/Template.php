@@ -930,7 +930,7 @@ class EE_Template
      * @param   array   $layout    {layout tag match information from ``_find_layout``
      * @return  string  Layout with embeded template string
      */
-    protected function process_layout_template($template, array $layout = null)
+    protected function process_layout_template($template, ?array $layout = null)
     {
         if (!isset($layout)) {
             return $template;
