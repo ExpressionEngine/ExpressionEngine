@@ -135,7 +135,7 @@ context('Shared Upload Directories', () => {
         expect(val).to.contain('<img src="{file:' + lake_id + ':url}"')
       })
 
-      cy.get('.file-field-filepicker[title=Edit]').click()
+      cy.get('.file-field-filepicker[title*=Edit]').click()
       cy.wait('@ajax')
       cy.get('.modal-file').should('be.visible')
       cy.wait(1000)//give JS some extra time

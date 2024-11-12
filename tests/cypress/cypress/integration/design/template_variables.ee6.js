@@ -31,7 +31,7 @@ context('Template Variables', () => {
     })
 
     it('Find templates that use a variable', function() {
-        page.get('variables').eq(6).find('a[title="find"]').click()
+        page.get('variables').eq(6).find('a[title*="find"]').click()
 
         cy.hasNoErrors()
 
@@ -41,7 +41,7 @@ context('Template Variables', () => {
     })
 
     it('Navigate to variable edit form', function() {
-        page.get('variables').eq(6).find('a[title="Edit"]').click()
+        page.get('variables').eq(6).find('a[title*="Edit"]').click()
 
         cy.hasNoErrors()
     })

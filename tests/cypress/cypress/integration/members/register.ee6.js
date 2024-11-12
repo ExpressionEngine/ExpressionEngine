@@ -309,7 +309,7 @@ context('Member Registration on Front-end', () => {
             cy.authVisit('admin.php?/cp/members');
             cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4) .st-pending').should('exist')
 
-            cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4) a[title=Approve]').click()
+            cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4) a[title*=Approve]').click()
             cy.contains("Member Approved");
 
             cy.authVisit('admin.php?/cp/members');
@@ -336,7 +336,7 @@ context('Member Registration on Front-end', () => {
             cy.authVisit('admin.php?/cp/members');
             cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4) .st-pending').should('exist')
 
-            cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4) a[title=Approve]').click()
+            cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4) a[title*=Approve]').click()
             cy.contains("Member Approved");
 
             cy.authVisit('admin.php?/cp/members');
@@ -381,7 +381,7 @@ context('Member Registration on Front-end', () => {
             cy.authVisit('admin.php?/cp/members');
             cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4) .st-pending').should('exist')
 
-            cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4) a[title=Approve]').click()
+            cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4) a[title*=Approve]').click()
             cy.contains("Member Approved");
 
             cy.authVisit('admin.php?/cp/members');
@@ -444,7 +444,7 @@ context('Member Registration on Front-end', () => {
             cy.authVisit('admin.php?/cp/members');
             cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4) .st-pending').should('exist')
 
-            cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4) a[title=Approve]').click()
+            cy.get("a:contains('user" + userCount + "')").parents('tr').find('td:nth-child(4) a[title*=Approve]').click()
             cy.contains("Member Approved");
 
             cy.authVisit('admin.php?/cp/members');
@@ -457,7 +457,7 @@ context('Member Registration on Front-end', () => {
             cy.authVisit('admin.php?/cp/members');
             cy.get("a:contains('pending1')").parents('tr').find('td:nth-child(4) .st-pending').should('exist')
 
-            cy.get("a:contains('pending1')").parents('tr').find('td:nth-child(4) a[title=Approve]').click()
+            cy.get("a:contains('pending1')").parents('tr').find('td:nth-child(4) a[title*=Approve]').click()
             cy.contains("Member Approved");
 
             cy.authVisit('admin.php?/cp/members');
@@ -475,7 +475,7 @@ context('Member Registration on Front-end', () => {
             cy.visit('admin.php?/cp/members');
             cy.get("a:contains('pending2')").parents('tr').find('td:nth-child(4) .st-pending').should('exist')
 
-            cy.get("a:contains('pending2')").parents('tr').find('td:nth-child(4) a[title=Approve]').click()
+            cy.get("a:contains('pending2')").parents('tr').find('td:nth-child(4) a[title*=Approve]').click()
             cy.contains("Unable to activate");
 
             cy.authVisit('admin.php?/cp/members');
@@ -489,7 +489,7 @@ context('Member Registration on Front-end', () => {
             cy.visit('admin.php?/cp/members');
             cy.get("a:contains('pending2')").parents('tr').find('td:nth-child(4) .st-pending').should('exist')
 
-            cy.get("a:contains('pending2')").parents('tr').find('td:nth-child(4) a[title=Approve]').click()
+            cy.get("a:contains('pending2')").parents('tr').find('td:nth-child(4) a[title*=Approve]').click()
             cy.contains("Member Approved");
 
             cy.authVisit('admin.php?/cp/members');

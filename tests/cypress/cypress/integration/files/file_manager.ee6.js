@@ -308,7 +308,7 @@ context('File Manager', () => {
 
         //page.get('manage_actions').eq(0).find('li.edit a').click()
         cy.get('tr[file_id="1"] .toolbar-wrap .js-dropdown-toggle').click()
-        cy.get('a[title="Edit"]').filter(':visible').first().click()
+        cy.get('a[title*="Edit"]').filter(':visible').first().click()
         
         cy.hasNoErrors()
 
@@ -319,7 +319,7 @@ context('File Manager', () => {
         beforeEach_all_files();
         //page.get('manage_actions').eq(0).find('li.crop a').click()
         cy.get('tr[file_id="1"] .toolbar-wrap .js-dropdown-toggle').click()
-        cy.get('a[title="Edit"]').filter(':visible').first().click()
+        cy.get('a[title*="Edit"]').filter(':visible').first().click()
         cy.get('button[data-action="crop"]').click()
 
         cy.hasNoErrors()

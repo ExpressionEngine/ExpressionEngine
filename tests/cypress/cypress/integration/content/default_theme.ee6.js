@@ -253,7 +253,7 @@ context('Install with default theme', () => {
 
       cy.get('.grid-field__table tr').should('be.visible')
       cy.screenshot({capture: 'fullPage'});
-      cy.get('.grid-field__table tr:visible .file-field-filepicker[title=Edit]').click()
+      cy.get('.grid-field__table tr:visible .file-field-filepicker[title*=Edit]').click()
       cy.wait('@ajax')
       cy.get('.modal-file').should('be.visible')
       cy.wait(1000)//give JS some extra time
@@ -340,7 +340,7 @@ context('Install with default theme', () => {
       })
 
       cy.get('.grid-field__table tr').should('be.visible')
-      cy.get('.grid-field__table tr:visible .file-field-filepicker[title=Edit]').click()
+      cy.get('.grid-field__table tr:visible .file-field-filepicker[title*=Edit]').click()
       cy.wait('@ajax')
       cy.get('.modal-file').should('be.visible')
       cy.wait(1000)//give JS some extra time

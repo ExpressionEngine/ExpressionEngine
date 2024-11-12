@@ -163,7 +163,7 @@ context('SQL manager', () => {
 
 		//page.get('manage_links').eq(0).click()AJ
 
-		cy.get('a[title="View"]').first().click()
+		cy.get('a[title*="View"]').first().click()
 
 		cy.hasNoErrors()
 		cy.get('.breadcrumb').contains('SQL Manager')

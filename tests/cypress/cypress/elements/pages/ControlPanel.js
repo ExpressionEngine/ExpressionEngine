@@ -8,12 +8,12 @@ class ControlPanel {
             "main_menu": "div.ee-sidebar__items",
             "global_menu": "div.ee-sidebar .ee-sidebar__title",
 
-            'dev_menu': '.ee-sidebar__item[title="Tools"]',
+            'dev_menu': '.ee-sidebar__item[title*="Tools"]',
             'members_btn': '.ee-sidebar__item:contains("Members")',
 
             "submit_buttons": '.form-btns .button',
             "fieldset_errors": '.fieldset-invalid:visible',
-            "settings_btn": '.ee-sidebar__item[title="Settings"]',
+            "settings_btn": '.ee-sidebar__item[title*="Settings"]',
             "error_messages": 'em.ee-form-error-message',
 
             // Main Section
@@ -60,7 +60,7 @@ class ControlPanel {
             "tab_bar": 'div.tab-wrap',
             "tabs": 'div.tab-wrap .tab-bar__tab',
 
-            "developer_menu": 'a[title="Developer Tools"]',
+            "developer_menu": 'a[title*="Developer Tools"]',
 
             "dropdown": ".dropdown:visible"
         }

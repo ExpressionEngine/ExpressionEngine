@@ -27,7 +27,7 @@ context('Member Roles / Members Permissions', () => {
 		cy.get('#fieldset-member_actions .checkbox-label:nth-child(4) > input').click();
 		cy.get('#fieldset-member_actions .checkbox-label:nth-child(5) > input').click();
 		cy.get('#fieldset-member_actions .checkbox-label:nth-child(6) > input').click(); //lets role do everthing to members
-		cy.get('button').contains('save').eq(0).click()
+		cy.get('button').contains('save').eq(0).click({force: true})
 
 		cy.logout()
 	})

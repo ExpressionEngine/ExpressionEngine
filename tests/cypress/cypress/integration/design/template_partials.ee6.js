@@ -31,7 +31,7 @@ context('Template Partials', () => {
     })
 
     it('Find templates that use a partial', function() {
-        page.get('partials').eq(6).find('a[title="find"]').click()
+        page.get('partials').eq(6).find('a[title*="find"]').click()
 
         cy.hasNoErrors()
 
@@ -42,7 +42,7 @@ context('Template Partials', () => {
 
     it('Navigate to partials edit form', function() {
         
-        page.get('partials').eq(6).find('a[title="Edit"]').click()
+        page.get('partials').eq(6).find('a[title*="Edit"]').click()
         cy.hasNoErrors()
     })
 

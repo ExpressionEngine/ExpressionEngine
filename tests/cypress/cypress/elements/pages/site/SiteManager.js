@@ -23,7 +23,7 @@ class SiteManager extends ControlPanel {
 
   load() {
     this.open_dev_menu()
-    cy.get('.ee-sidebar__item[title="Sites"]').click()
+    cy.get('.ee-sidebar__item[title*="Sites"]').click()
   }
 }
 export default SiteManager;
