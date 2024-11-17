@@ -165,7 +165,7 @@ html.color-theme-in-transition *:after {
   --ee-layout-item-border: #e5e5f2;
   --ee-fluid-item-border: #e5e5f2;
   --ee-slider-value-bg: #eaebfd;
-  --ee-ee-update: #5D63F1;
+  --ee-ee-update: #000;
   --ee-ee-update-bg: #eaebfd;
   --ee-ee-update-dev: #FFB40B;
   --ee-ee-update-dev-bg: #FFFFFF;
@@ -663,7 +663,7 @@ body[data-theme=dark] .inverted-theme {
   --ee-layout-item-border: #e5e5f2;
   --ee-fluid-item-border: #e5e5f2;
   --ee-slider-value-bg: #eaebfd;
-  --ee-ee-update: #5D63F1;
+  --ee-ee-update: #000;
   --ee-ee-update-bg: #eaebfd;
   --ee-ee-update-dev: #FFB40B;
   --ee-ee-update-dev-bg: #FFFFFF;

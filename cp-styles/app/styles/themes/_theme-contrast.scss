@@ -238,7 +238,7 @@ $contrast-theme: (
   slider-value-bg: lighten($brand-primary, 30%),
 
   // EE Update Indicators
-  ee-update: $brand-primary,
+  ee-update: #000,
   ee-update-bg: lighten($brand-primary, 30%),
   ee-update-dev: $brand-warning,
   ee-update-dev-bg: $gray-blank,
