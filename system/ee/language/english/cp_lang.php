@@ -872,7 +872,7 @@ $lang = array(
 
     'close_banner' => 'Close banner',
 
-    'image_alt' => 'Image for',
+    'image_alt' => 'Image for ',
 
     'file_icon' => 'File icon',
 
@@ -968,13 +968,19 @@ $lang = array(
 
     'action_for_element' => ' this element',
 
-    'settings_for' => 'Settings for',
+    'settings_for' => 'Settings for ',
+
+    'addon_for' => 'Addon to ',
 
     'neutral_legend' => 'Provide Information below',
 
     'select_item_label' => 'Select the item you need',
 
     'publish_form_label' => 'Publish form',
+
+    'label_for_icon' => ' icon',
+
+    'missing_file' => 'missing file icon',
 );
 
 // EOF

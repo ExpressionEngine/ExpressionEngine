@@ -68,7 +68,7 @@ class Thumbnail
             } elseif ($file->isEditableImage() || $file->isSVG()) {
                 $this->url = $file->getAbsoluteThumbnailURL() . "?v={$file->modified_date}";
                 $this->path = $file->getAbsoluteThumbnailPath();
-                $this->tag = '<img src="' . $this->url . '" alt="' . $file->title . '" title="' . $file->title .'" class="thumbnail_img" />';
+                $this->tag = '<img src="' . $this->url . '" alt="' . lang('image_alt') . $file->title . '" class="thumbnail_img" />';
             } else {
                 switch ($file->file_type) {
                     case 'doc':
@@ -134,7 +134,7 @@ class Thumbnail
         $this->missing = true;
         $this->url = PATH_CP_GBL_IMG . 'missing.jpg';
         $this->path = PATH_THEMES . 'asset/img/missing.jpg';
-        $this->tag = '<i class="fal fa-exclamation-triangle fa-3x"></i>';
+        $this->tag = '<i class="fal fa-exclamation-triangle fa-3x"></i><span class="sr-only">' . lang('missing_file') . '</span>';
     }
 
     /**

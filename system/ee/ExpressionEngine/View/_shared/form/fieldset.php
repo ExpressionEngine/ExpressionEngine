@@ -78,14 +78,42 @@ if (isset($setting['fields']) && !empty($setting['fields'])) {
     $fieldset_id = ' id="fieldset-' . implode('-', array_keys($setting['fields'])) . '"';
 }
 
+$label_attr = '';
+$fieldset_arialabelled = '';
+foreach ($setting['fields'] as $field_key => $field_value) {
+    if (isset($field_value['type'])) {
+        switch ($field['type']):
+            case 'text':
+            case 'number':
+            case 'file':
+            case 'password':
+            case 'textarea':
+                $label_attr = ' for="label_' . $setting['title'] . '"';
+                break;
+            case 'radio_block':
+            case 'radio':
+            case 'inline_radio':
+            case 'checkbox':
+            case 'dropdown':
+            case 'yes_no':
+            case 'toggle':
+            case 'multiselect':
+            case 'slider':
+                $label_attr = ' id="label_' . $setting['title'] . '"';
+                // $fieldset_arialabelled = 'aria-labelledby="label_' . $setting['title'] . '"';
+                break;
+        endswitch;
+    }
+}
+
 // Grids have to be in a div for an overflow bug in Firefox
 $element = ($grid) ? 'div' : 'fieldset'; 
 $legend = ($grid) ? '' : '<legend class="sr-only">' . lang('neutral_legend') . '</legend>'?>
-<<?=$element?> <?=$fieldset_id?> class="<?=$fieldset_classes?>" <?php if ($setting_group): ?> data-group="<?=$setting_group?>"<?php endif ?><?php if (isset($setting['attrs'])): foreach ($setting['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; endif; ?>>
+<<?=$element?> <?=$fieldset_id?> <?=$fieldset_arialabelled?> class="<?=$fieldset_classes?>" <?php if ($setting_group): ?> data-group="<?=$setting_group?>"<?php endif ?><?php if (isset($setting['attrs'])): foreach ($setting['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; endif; ?>>
     <?=$legend?>
 	<div class="field-instruct <?=($grid) ? form_error_class(array_keys($setting['fields'])) : '' ?>">
 		<?php if (isset($setting['title'])): ?>
-		<label for="smth"><?=lang($setting['title'])?></label>
+		<label <?=$label_attr?>><?=lang($setting['title'])?></label>
 		<?php endif; ?>
 		<?php if (isset($setting['desc']) && !empty($setting['desc'])): ?>
 		<em><?=lang($setting['desc'])?></em>
@@ -110,7 +138,8 @@ $legend = ($grid) ? '' : '<legend class="sr-only">' . lang('neutral_legend') . '
                         'field_name' => $field_name,
                         'field' => $field,
                         'setting' => $setting,
-                        'grid' => $grid
+                        'grid' => $grid,
+                        'aria_labelledby' => isset($setting['title']) ? 'label_' . $setting['title'] : '',
                     );
 
                     // If there are multiple fields with the same name, such as

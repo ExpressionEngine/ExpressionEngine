@@ -112,10 +112,11 @@
             <div class="fieldset-faux <?=$field_class?>"  data-field_id="<?=$field->getId()?>" <?php if (!isset($pro_class)) : ?> style="width:<?php echo $field->getWidth()?>%" <?php endif; ?>>
             <?php else: ?>
             <fieldset class="<?=$field_class?>" data-field_id="<?=$field->getId()?>" <?php if (!isset($pro_class)) : ?> style="width:<?php echo $field->getWidth()?>%" <?php endif; ?>>
+                <legend class="sr-only"><?=lang('neutral_legend')?></legend>
             <?php endif; ?>
                 <div class="field-instruct">
                     <?php if (! $field->titleIsHidden()):?>
-                        <label><?php if (!isset($pro_class)) : ?><span class="ico sub-arrow js-toggle-field"></span><?php endif; ?><?=$field->getLabel()?></label>
+                        <label id="label_id_<?=$field->getId()?>"><?php if (!isset($pro_class)) : ?><span class="ico sub-arrow js-toggle-field"></span><?php endif; ?><?=$field->getLabel()?></label>
                         <?=$field->getNameBadge()?>
                         <?php
                         $fieldInstructions = $field->getInstructions();

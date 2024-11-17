@@ -28,6 +28,7 @@
         </table>
     <?php else: ?>
         <table cellspacing="0" <?php if ($class): ?>class="<?=$class?>"<?php endif ?> <?php foreach ($table_attrs as $key => $value):?> <?=$key?>='<?=$value?>'<?php endforeach; ?>>
+            <caption class="sr-only"><?=lang('neutral_legend')?></caption>
             <?php
             if (isset($table_attrs['id'])) {
                 $table_id = $table_attrs['id'];
