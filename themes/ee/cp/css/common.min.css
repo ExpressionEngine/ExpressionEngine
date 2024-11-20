@@ -47202,6 +47202,10 @@ a.ck.ck-button.ck-on {
   color: var(--ck-color-text) !important;
 }
 
+.ck.ck-editor__main > .ck-editor__editable li .ck-list-bogus-paragraph {
+  display: inline-block;
+}
+
 /* Redactor stuff */
 .redactor-box .redactor-toolbar {
   z-index: 2;
@@ -47693,6 +47697,7 @@ a.ck.ck-button.ck-on {
   background-color: var(--ee-bg-dropdown) !important;
   color: var(--ee-text-primary);
   box-shadow: 0 1px 4px 0 var(--ee-shadow-dropdown) !important;
+  z-index: 1000 !important;
 }
 .rx-popup .rx-popup-header {
   color: var(--ee-text-primary);

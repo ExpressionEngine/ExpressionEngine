@@ -1249,7 +1249,8 @@ $(document).ready(function(){
 					contentType = 'default';
 				}
 
-				var url = EE.cp.exampleTemplateUrls[contentType] + '/' + id;
+				var url = EE.cp.exampleTemplateUrls[contentType];
+				url = url.replace('{id}', id);
 
 				// if this is a fluid field, lets replace vars in the URL
 				if(contentType == 'fluid_field' || contentType == 'fluid_fieldgroup') {
