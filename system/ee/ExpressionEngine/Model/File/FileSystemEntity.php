@@ -35,7 +35,7 @@ class FileSystemEntity extends ContentModel
         'beforeSave'
     );
     protected static $_binary_comparisons = array(
-        'file_name'
+        //'file_name'
     );
 
     protected static $_hook_id = 'file';
