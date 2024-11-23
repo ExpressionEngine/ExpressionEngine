@@ -380,6 +380,8 @@ $lang = array(
 
     'type_filter' => 'type',
 
+    'channel_filter' => 'channel',
+
     'site' => 'Site',
 
     'site_filter' => 'site',

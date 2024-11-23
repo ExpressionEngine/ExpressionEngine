@@ -397,7 +397,7 @@ else: ?>
                             $column_badge = isset($columns[$key]['badge']) ? $columns[$key]['badge'] : '';
 
                             $column_label = "<div class=\"grid-field__column-label\"  role=\"rowheader\">
-                                <div class=\"grid-field__column-label__instraction\">
+                                <div class=\"grid-field__column-label__instruction\">
                                     <label>";
                             if (isset($columns[$key]['required']) && $columns[$key]['required']) {
                                 $column_label .= "

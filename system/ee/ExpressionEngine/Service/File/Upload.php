@@ -390,6 +390,31 @@ class Upload
             )
         );
 
+        // Ensure the file extension of the original name matches the file's current name
+        $original_ext_pos = strrpos($original_name, '.');
+        $file_ext_pos = strrpos($file->file_name, '.');
+
+        if ($original_ext_pos === false || $file_ext_pos === false || substr($original_name, $original_ext_pos) != substr($file->file_name, $file_ext_pos)) {
+            ee('CP/Alert')->makeInline('shared-form')
+                ->asIssue()
+                ->withTitle(lang('file_conflict'))
+                ->addToBody(lang('invalid_filename'))
+                ->now();
+
+            return $result;
+        }
+
+        // Ensure the file extension of the original name matches the file's current name
+        if (substr($original_name, $original_ext_pos) != substr($file->file_name, $file_ext_pos)) {
+            ee('CP/Alert')->makeInline('shared-form')
+                ->asIssue()
+                ->withTitle(lang('file_conflict'))
+                ->addToBody(lang('invalid_filename'))
+                ->now();
+
+            return $result;
+        }
+
         if ($upload_options == 'rename') {
             $new_name = ee()->input->post('rename_custom');
 

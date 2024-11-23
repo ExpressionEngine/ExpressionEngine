@@ -31,7 +31,8 @@ class Updater
                 'addLogsViewsTable',
                 'updateSpecialtyTemplates',
                 'modifyDateColumns',
-                'modifyDateFieldColumns'
+                'modifyDateFieldColumns',
+                'modifyVersionLengthInNewsViews',
             ]
         );
 
@@ -219,7 +220,7 @@ class Updater
         foreach ($templatesQuery->result_array() as $row) {
             if (isset($EE2Hashes[$row['template_name']])) {
                 $hash = md5($row['template_data']);
-                if ($hash === $EE2Hashes[$row['template_name']]) {
+                if ($hash != $EE2Hashes[$row['template_name']]) {
                     continue;
                 }
                 if (function_exists($row['template_name'])) {
@@ -237,6 +238,12 @@ class Updater
     private function modifyDateColumns()
     {
         $dateColumns = [
+            "search" => [
+                "search_date" => "bigint(10) unsigned NOT NULL",
+            ],
+            "search_log" => [
+                "search_date" => "bigint(10) unsigned NOT NULL",
+            ],
             "stats" => [
                 "last_entry_date" => "bigint(10) unsigned default '0' NOT NULL",
                 "last_forum_post_date" => "bigint(10) unsigned default '0' NOT NULL",
@@ -342,6 +349,13 @@ class Updater
             foreach ($fieldsQuery->result_array() as $row) {
                 $table = ($row['legacy_field_data'] == 'y') ? 'channel_data' : 'channel_data_field_' . $row['field_id'];
                 $column = 'field_id_' . $row['field_id'];
+
+                // Test for non-integer values and convert to DEFAULT 0 if found
+                $hasNonInteger = ee()->db->query("SELECT * FROM " . ee()->db->dbprefix($table) . " WHERE `" . $column . "` NOT REGEXP '^-?[0-9]+$' LIMIT 1");
+                if($hasNonInteger->num_rows() != 0) {
+                    ee()->db->query("UPDATE " . ee()->db->dbprefix($table) . " SET `" . $column . "` = 0 WHERE " . $column . " NOT REGEXP '^-?[0-9]+$'");
+                }
+
                 ee()->db->query("ALTER TABLE " . ee()->db->dbprefix($table) . " CHANGE COLUMN `" . $column . "` `" . $column . "` bigint(10) DEFAULT 0");
             }
         }
@@ -357,6 +371,11 @@ class Updater
                 ee()->db->query("ALTER TABLE " . ee()->db->dbprefix($table) . " CHANGE COLUMN `" . $column . "` `" . $column . "` bigint(10) DEFAULT 0");
             }
         }
+    }
+
+    private function modifyVersionLengthInNewsViews()
+    {
+        ee()->db->query("ALTER TABLE " . ee()->db->dbprefix('member_news_views') . " CHANGE COLUMN `version` `version` varchar(20) NULL");
     }
 }
 

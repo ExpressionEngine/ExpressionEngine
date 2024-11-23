@@ -232,14 +232,34 @@ class MenuManager extends Settings
                 $set->save();
 
                 if (defined('CLONING_MODE') && CLONING_MODE === true && $kids->count() == 0) {
-                    $originalKids = ee('Model')->get('MenuItem')->filter('set_id', $originalSetId)->all();
-                    $kids = [];
-                    foreach ($originalKids as $kid) {
-                        $kid->setId(null);
-                        $kid->set_id = $set->getId();
-                        $kid->markAsDirty();
-                        $kids[] = $kid;
-                    }
+                    $kids = ee('Model')->get('MenuItem')->with('Children')
+                        ->filter('set_id', $originalSetId)->all()
+                        ->map(function($kid) use($set) {
+                            $kid->setId(null);
+                            $kid->set_id = $set->getId();
+                            $kid->markAsDirty();
+
+                            // If the menu item has children we also need to copy those and
+                            // associate them with their freshly copied parents, a joyful reunion
+                            if(!empty($childIds = $kid->Children->getIds())) {
+                                $kid->getAssociation('Children')->reload();
+                                $kid->on('afterInsert', function() use($kid, $childIds) {
+                                    $children = ee('Model')->get('MenuItem')
+                                        ->filter('item_id', 'IN', $childIds)->all()
+                                        ->map(function($child) use($kid) {
+                                            $child->setId(null);
+                                            $child->parent_id = $kid->getId();
+                                            $child->markAsDirty();
+
+                                            return $child;
+                                        });
+
+                                    (new Collection($children))->save();
+                                });
+                            }
+                            return $kid;
+                        });
+
                     $kids = new Collection($kids);
                 }
 

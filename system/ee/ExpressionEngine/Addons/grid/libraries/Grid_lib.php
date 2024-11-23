@@ -82,7 +82,7 @@ class Grid_lib
             );
 
             if (ee()->session->userdata('member_id') !== 0 && ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->show_field_names == 'y' && !empty($this->field_short_name)) {
-                $column_headings[$i]['badge'] = ee('View')->make('publish/partials/field_name_badge')->render(['name' => (empty($this->fluid_field_data_id) ? $this->field_short_name : 'content') . ':' . $column['col_name']]);
+                $column_headings[$i]['badge'] = ee('View')->make('publish/partials/name_badge_copy')->render(['name' => (empty($this->fluid_field_data_id) ? $this->field_short_name : 'content') . ':' . $column['col_name']]);
             }
 
             $attrs = array(

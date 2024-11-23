@@ -100,7 +100,12 @@ class Member_register extends Member
                     // Parse input fields
                     $field = $member_fields[$row['m_field_id']]->getField();
                     $field->setName('m_field_id_' . $row['m_field_id']);
+                    $fieldShortname = $field->getShortName();
                     $field = $field->getForm();
+
+                    $temp = ee()->functions->prep_conditionals($temp, [
+                        'has_error' => !empty($field) && !empty(ee()->session->flashdata('errors')['error:'. $fieldShortname] ?? '')
+                    ]);
 
                     if (! empty($tagdata)) {
                         $field_vars = [
@@ -110,7 +115,8 @@ class Member_register extends Member
                             'lang:profile_field_description' => $row['m_field_description'],
                             'required' => get_bool_from_string($row['m_field_required']),
                             'field' => $field,
-                            'form:custom_profile_field' => $field
+                            'form:custom_profile_field' => $field,
+                            'error' => ee()->session->flashdata('errors')['error:'. $fieldShortname] ?? '',
                         ];
                         $str .= ee()->TMPL->parse_variables_row($temp, $field_vars);
                         continue;
@@ -172,6 +178,8 @@ class Member_register extends Member
             }
         }
 
+        $reg_form = ee()->TMPL->parse_inline_errors($reg_form);
+
         // if we had errors and are redirecting back, populate them
         $field_values = ee()->session->flashdata('field_values');
 
@@ -197,7 +205,7 @@ class Member_register extends Member
 
         $config_fields = ee()->config->prep_view_vars('localization_cfg');
 
-        // Parse languge lines
+        // Parse language lines
         $reg_form = $this->_var_swap(
             $reg_form,
             array(
@@ -211,18 +219,9 @@ class Member_register extends Member
             )
         );
 
-        $inline_errors = 'no';
-
-        if (ee()->TMPL->fetch_param('error_handling') == 'inline') {
-            // determine_error_return function looks for yes.
-            $inline_errors = 'yes';
-
-            // parse the errors
-            $error_tags = ee()->session->flashdata('error_tags');
-
-            if (!empty($error_tags)) {
-                $reg_form = ee()->TMPL->parse_variables($reg_form, array($error_tags));
-            }
+        // Convert to standard inline_errors parameter
+        if(ee()->TMPL->fetch_param('error_handling') == 'inline') {
+            ee()->TMPL->tagparams['inline_errors'] = 'yes';
         }
 
         // Generate Form declaration
@@ -232,7 +231,7 @@ class Member_register extends Member
             'FROM' => ($this->in_forum == true) ? 'forum' : '',
             'P' => ee()->functions->get_protected_form_params([
                 'primary_role' => ee()->TMPL->fetch_param('primary_role'),
-                'inline_errors' => $inline_errors,
+                'inline_errors' => ee()->TMPL->fetch_param('inline_errors'),
             ]),
         );
 
@@ -336,65 +335,15 @@ class Member_register extends Member
             ->where('m_field_reg', 'y')
             ->get('member_fields');
 
-        $cust_errors = array();
-        $custom_data = array();
-
-        if ($query->num_rows() > 0) {
-            $member_field_ids = array();
-            foreach ($query->result_array() as $row) {
-                $member_field_ids[] = $row['m_field_id'];
+        // Setup Custom Member Field Data
+        $fields = ee('Model')->get('MemberField')->filter('m_field_reg', 'y')->all()->indexBy('m_field_id');
+        $custom_data = array_reduce($fields, function($carry, $field) {
+            $field_name = 'm_field_id_' . $field->m_field_id;
+            if(isset($_POST[$field_name]) && $_POST[$field_name] != '') {
+                $carry[$field_name] = ee('Security/XSS')->clean(ee('Request')->post($field_name));
             }
-
-            $member_fields = ee('Model')->get('MemberField', $member_field_ids)
-                ->all()
-                ->indexBy('m_field_id');
-
-            foreach ($query->result_array() as $row) {
-                $field_name = 'm_field_id_' . $row['m_field_id'];
-
-                // Assume we're going to save this data, unless it's empty to begin with
-                $valid = isset($_POST[$field_name]) && $_POST[$field_name] != '';
-
-                // Basic validations
-                if ($row['m_field_type'] == 'select' && $valid) {
-                    $field_model = $member_fields[$row['m_field_id']];
-                    $field_settings = $field_model->getField()->getItem('field_settings');
-
-                    // Get field options
-                    if (isset($field_settings['value_label_pairs']) && ! empty($field_settings['value_label_pairs'])) {
-                        $options = array_keys($field_settings['value_label_pairs']);
-                    } else {
-                        $options = explode("\n", $row['m_field_list_items']);
-                    }
-
-                    // Ensure their selection is actually a valid choice
-                    if (! in_array(ee('Request')->post($field_name), $options)) {
-                        $valid = false;
-                        $cust_errors['error:' . $field_name] = lang('mbr_field_invalid') . '&nbsp;' . $row['m_field_label'];
-                    }
-                }
-
-                if ($valid) {
-                    $custom_data[$field_name] = ee('Security/XSS')->clean(ee('Request')->post($field_name));
-                }
-            }
-        }
-
-        if (isset($_POST['email_confirm']) && $_POST['email'] != $_POST['email_confirm']) {
-            $cust_errors['error:email'] = lang('mbr_emails_not_match');
-        }
-
-        if (ee('Captcha')->shouldRequireCaptcha()) {
-            if (! isset($_POST['captcha']) or $_POST['captcha'] == '') {
-                $cust_errors['error:captcha'] = ee()->config->item('use_recaptcha') == 'y' ? ee()->lang->line('recaptcha_required') : ee()->lang->line('captcha_required');
-            }
-        }
-
-        if (ee()->config->item('require_terms_of_service') == 'y') {
-            if (! isset($_POST['accept_terms'])) {
-                $cust_errors['error:accept_terms'] = lang('mbr_terms_of_service_required');
-            }
-        }
+            return $carry;
+        }, []);
 
         // -------------------------------------------
         // 'member_member_register_errors' hook.
@@ -433,15 +382,15 @@ class Member_register extends Member
             if (!empty($pendingRole)) {
                 $roleId = $pendingRole->role_id;
             } else {
-                ee()->output->show_user_error('submission', lang('mbr_cannot_register_role_not_exists'));
+                ee()->output->show_form_error(['general' => lang('mbr_cannot_register_role_not_exists')]);
             }
         }
         $role = ee('Model')->get('Role', $roleId)->fields('role_id', 'is_locked')->first();
         if (empty($role)) {
-            ee()->output->show_user_error('submission', lang('mbr_cannot_register_role_not_exists'));
+            ee()->output->show_form_error(['general' => lang('mbr_cannot_register_role_not_exists')]);
         }
         if ($role->is_locked == 'y') {
-            ee()->output->show_user_error('submission', lang('mbr_cannot_register_role_is_locked'));
+            ee()->output->show_form_error(['general' => lang('mbr_cannot_register_role_is_locked')]);
         }
 
         if (
@@ -484,78 +433,75 @@ class Member_register extends Member
         $member = ee('Model')->make('Member', $data);
         $result = $member->validate();
 
-        // Validate password
+        // Additional Validation not handled by Member Model
         $validator = ee('Validation')->make();
         $validator->setRule('password', 'validPassword');
         $validator->setRule('password_confirm', 'matches[password]');
-        $passwordValidation = $validator->validate($_POST);
+        $validator->setRule('email_confirm', 'matches[email]');
 
-        // Add password confirmation failure to main result object
-        if ($passwordValidation->isNotValid()) {
-            foreach ($passwordValidation->getAllErrors() as $errors) {
-                foreach ($errors as $key => $error) {
-                    if ($key == 'matches') {
-                        $error = lang('missmatched_passwords');
-                    }
-                    $cust_errors['error:password'] = $error;
+        // Validate Captcha
+        if (ee('Captcha')->shouldRequireCaptcha()) {
+            $validator->defineRule('requireTermsOfService', function ($key, $value, $params, $rule) {
+                if(empty($value)) {
+                    $rule->stop();
+                    return ee()->config->item('use_recaptcha') == 'y' ? 'recaptcha_required' : 'captcha_required';
                 }
+                return true;
+            });
+            $validator->setRule('captcha', 'requireTermsOfService');
+        }
+
+        // Validate Terms of Service
+        if(ee()->config->item('require_terms_of_service') == 'y') {
+            $validator->defineRule('requireTermsOfService', function ($key, $value, $params, $rule) {
+                if(empty($value)) {
+                    $rule->stop();
+                    return 'mbr_terms_of_service_required';
+                }
+                return true;
+            });
+            $validator->setRule('accept_terms', 'requireTermsOfService');
+        }
+
+        // Custom Member field validation
+        foreach($fields as $field) {
+            $field_name = 'm_field_id_' . $field->m_field_id;
+            if(array_key_exists($field_name, $custom_data)) {
+                $validator->defineRule("validate_$field_name", function ($key, $value, $params, $rule) use($field, $custom_data, $field_name) {
+                    return $field->getField()->validate($custom_data[$field_name]);
+                });
+                $validator->setRule($field_name, "validate_$field_name");
             }
         }
 
-        $field_labels = array();
+        $validatorResult = $validator->validate($_POST);
 
-        foreach ($member->getDisplay()->getFields() as $field) {
-            $field_labels[$field->getName()] = $field->getLabel();
+        // Extra validation is sometimes required outside of the Member model validation
+        // Add any failures from this validation to the Member model result object
+        if ($validatorResult->failed()) {
+            $rules = $validatorResult->getFailed();
+            foreach ($rules as $field => $rule) {
+                $result->addFailed($field, $rule[0]);
+            }
         }
-
-        $field_errors = array();
-        $error_tags = array();
 
         if ($result->failed()) {
-            $e = $result->getAllErrors();
-            $errors = array_map('current', $e);
+            $aliases = array_reduce($member->getDisplay()->getFields(), function($carry, $field) {
+                return array_merge($carry, [
+                    $field->getName() => [
+                        'field' => $field->getShortName(),
+                        'label' => $field->getLabel()
+                    ]
+                ]);
+            }, []);
 
-            foreach ($errors as $field => $error) {
-                // build out auto error page data
-                $label = lang($field);
-
-                if (isset($field_labels[$field])) {
-                    $label = $field_labels[$field];
-                }
-
-                $field_errors[] = "<b>{$label}: </b>{$error}";
-
-                // add data for inline errors
-                $error_tags['error:' . $field] = $error;
-            }
-        }
-
-
-        // if we don't have a link we'll give them errors for core ee error screen
-        if (empty($return_error_link)) {
-            $errors = array_merge($field_errors, $cust_errors, $this->errors);
-        }
-
-        // do we have a link?  If so we're giving them the inline errors
-        if (!empty($return_error_link)) {
-            $errors = array_merge($error_tags, $cust_errors);
-
-            // populate flash data for custom error tags
-            ee()->session->set_flashdata('error_tags', $errors);
-        }
-
-        // Display error if there are any
-        if (count($errors) > 0) {
-            ee()->session->set_flashdata('errors', $errors);
-
-            // Save the POSTed variables to refill the form, except for sensitive or dynamically created ones.
             $field_values = array_filter($_POST, function ($key) {
                 return ! (in_array($key, array('ACT', 'RET', 'FROM', 'P', 'site_id', 'password', 'password_confirm')));
             }, ARRAY_FILTER_USE_KEY);
 
             ee()->session->set_flashdata('field_values', $field_values);
 
-            return ee()->output->show_user_error('submission', $errors, '', $return_error_link);
+            return ee()->output->show_form_error_aliases($result, $aliases);
         }
 
         $member->hashAndUpdatePassword($member->password);

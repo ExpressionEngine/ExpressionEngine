@@ -26,6 +26,7 @@ class Fluid_field_parser
     protected $possible_fields = [];
     protected $fluid_fields = [];
     protected $_prefix;
+    protected $replacements = [];
 
     public function __construct()
     {
@@ -373,6 +374,8 @@ class Fluid_field_parser
         // The field blocks inside a Fluid field are essentially `{if fluid:field}...{/if}`
         // so we'll rewrite them and use the Conditional parser to get what we want each pass
         $cond_tagdata = $this->rewriteFluidTagsAsConditionals($tagdata, array_keys($cond));
+        // Protect {fields}...{/fields} which needs separate conditional evaluation
+        $cond_tagdata = $this->replaceInnerFieldsPairs($cond_tagdata);
 
         $output = '';
 
@@ -394,6 +397,9 @@ class Fluid_field_parser
             $group_cond = array_intersect_key($cond, $group_cond_keys);
             $has_group = $group['is_field_group'] && !empty(array_filter($group_cond));
             $group_tagdata = ee()->functions->prep_conditionals($cond_tagdata, $group_cond);
+            // Restore {fields}
+            $group_tagdata = $this->restoreInnerFieldsPairs($group_tagdata);
+
             $group_prefix = $group['short_name'];
             $group_tags = [];
             $group_output = '';
@@ -405,6 +411,8 @@ class Fluid_field_parser
             $group_meta = [
                 $fluid_field_name . ':first_group' => (int) ($g == 0),
                 $fluid_field_name . ':last_group' => (int) (($g + 1) == $total_groups),
+                $fluid_field_name . ':count_group' => $g + 1,
+                $fluid_field_name . ':index_group' => $g,
                 $fluid_field_name . ':current_group_name' => $group['name'],
                 $fluid_field_name . ':current_group_short_name' => $group['short_name'],
                 $fluid_field_name . ':next_group_name' => (($g + 1) < $total_groups) ? $groups[$g + 1]['name'] : '',
@@ -412,6 +420,9 @@ class Fluid_field_parser
                 $fluid_field_name . ':prev_group_name' => ($g > 0) ? $groups[$g - 1]['name'] : '',
                 $fluid_field_name . ':prev_group_short_name' => ($g > 0) ? $groups[$g - 1]['short_name'] : ''
             ];
+
+            // aliases to cover some additionally intuitive names
+            $group_meta[$fluid_field_name . ':this_group_name'] = $group_meta[$fluid_field_name . ':current_group_name'];
 
             if ($has_group) {
                 $chunks = [];
@@ -453,7 +464,7 @@ class Fluid_field_parser
                 $fieldCountInGroup = count($group['fields']);
 
                 // Process Fixed Order parameter {fields fixed_order="field_1|field_2"}
-                $fixed_order = explode('|', $chunk['params']['fixed_order'] ?? '');
+                $fixed_order = (empty($chunk['params']['fixed_order'] ?? '')) ? null : explode('|', $chunk['params']['fixed_order']);
 
                 if(!empty($fixed_order)) {
                     $fields = [];
@@ -478,25 +489,30 @@ class Fluid_field_parser
                     // Flip this field's conditional to TRUE so all the other fields will be
                     // removed from the tagdata
                     $cond[$fluid_field_name . ':' . $field_name] = true;
-                    $my_tagdata = ee()->functions->prep_conditionals($chunk['content'], array_diff_key($cond, $group_cond));
+                    $my_tagdata = ee()->functions->prep_conditionals($chunk['content'], $cond);
                     $conditionalUsed = strlen($my_tagdata) !== strlen($chunk['content']);
                     $cond[$fluid_field_name . ':' . $field_name] = false; // Reset for the next pass
 
+                    $firstInGroup = ($fieldCount == 0);
+                    $lastInGroup = (($fieldCount + 1) == $fieldCountInGroup);
+                    $prevField = ($firstInGroup) ? ($g > 0 && isset($groups[$g - 1]) ? $groups[$g - 1]['fields'][count($groups[$g - 1]['fields']) - 1] : null) : $group['fields'][$fieldCount - 1];
+                    $nextField = ($lastInGroup) ? ($g < $total_groups && isset($groups[$g + 1]) ? $groups[$g + 1]['fields'][0] : null) : $group['fields'][$fieldCount + 1];
+
                     $meta = [
-                        $fluid_field_name . ':first' => (int) ($i == 0),
-                        $fluid_field_name . ':last' => (int) (($i + 1) == $total_fields),
+                        $fluid_field_name . ':first' => (int) ($g == 0 && $firstInGroup),
+                        $fluid_field_name . ':last' => (int) (($g + 1) == $total_groups && $lastInGroup),
                         $fluid_field_name . ':count' => $i + 1,
                         $fluid_field_name . ':index' => $i,
-                        $fluid_field_name . ':first_in_group' => (int) ($fieldCount == 0),
-                        $fluid_field_name . ':last_in_group' => (int) (($fieldCount + 1) == $fieldCountInGroup),
+                        $fluid_field_name . ':first_in_group' => (int) $firstInGroup,
+                        $fluid_field_name . ':last_in_group' => (int) $lastInGroup,
                         $fluid_field_name . ':count_in_group' => $fieldCount + 1,
                         $fluid_field_name . ':index_in_group' => $fieldCount,
                         $fluid_field_name . ':current_field_name' => $field_name,
-                        $fluid_field_name . ':next_field_name' => (($i + 1) < $total_fields) ? $fluid_field_data[$i + 1]->ChannelField->field_name : null,
-                        $fluid_field_name . ':prev_field_name' => ($i > 0) ? $fluid_field_data[$i - 1]->ChannelField->field_name : null,
-                        $fluid_field_name . ':current_fieldtype' => $fluid_field_data[$i]->ChannelField->field_type,
-                        $fluid_field_name . ':next_fieldtype' => (($i + 1) < $total_fields) ? $fluid_field_data[$i + 1]->ChannelField->field_type : null,
-                        $fluid_field_name . ':prev_fieldtype' => ($i > 0) ? $fluid_field_data[$i - 1]->ChannelField->field_type : null,
+                        $fluid_field_name . ':next_field_name' => ($nextField) ? $nextField->ChannelField->field_name : null,
+                        $fluid_field_name . ':prev_field_name' => ($prevField) ? $prevField->ChannelField->field_name : null,
+                        $fluid_field_name . ':current_fieldtype' => $groups[$g]['fields'][$fieldCount]->ChannelField->field_type,
+                        $fluid_field_name . ':next_fieldtype' => ($nextField) ? $nextField->ChannelField->field_type : null,
+                        $fluid_field_name . ':prev_fieldtype' => ($prevField) ? $prevField->ChannelField->field_type : null,
                     ];
 
                     // a couple aliases to cover some additionally intuitive names
@@ -536,6 +552,7 @@ class Fluid_field_parser
 
             // If we didn't have any chunks and our output is empty pass group_tagdata along
             if(empty($chunks) && empty($group_output)) {
+                $i += count($group['fields']);
                 $group_output = $group_tagdata;
             }
 
@@ -576,6 +593,44 @@ class Fluid_field_parser
         foreach ($field_names as $field) {
             $tagdata = str_replace(LD . $field . RD, LD . 'if ' . $field . RD, $tagdata);
             $tagdata = str_replace(LD . '/' . $field . RD, LD . '/if' . RD, $tagdata);
+        }
+
+        return $tagdata;
+    }
+
+    /**
+     * A helper function to replace {fields}...{/fields} content with a placeholder
+     * so that conditional evaluation does not effect the contents of a field group
+     *
+     * @param string $tagdata
+     * @return string
+     */
+    private function replaceInnerFieldsPairs($tagdata)
+    {
+        $pairs = ee()->api_channel_fields->get_pair_field($tagdata, 'fields');
+        $this->replacements = [];
+
+        foreach($pairs as $key => $tag)
+        {
+            $this->replacements[$key] = $tag[3];
+            $tagdata = str_replace($tag[3], "{!-- ff:fields:$key --}", $tagdata);
+        }
+
+        return $tagdata;
+    }
+
+    /**
+     * A helper function to restore {!-- ff:fields --} placeholders with the original tagdata
+     * so that conditional evaluation does not effect the contents of a field group
+     *
+     * @param string $tagdata
+     * @return string
+     */
+    private function restoreInnerFieldsPairs($tagdata)
+    {
+        foreach ($this->replacements as $key => $tag) {
+            $tagdata = str_replace("{!-- ff:fields:$key --}", $tag, $tagdata);
+            // $tagdata = str_replace(LD . '/' . $field . RD, LD . '/if' . RD, $tagdata);
         }
 
         return $tagdata;

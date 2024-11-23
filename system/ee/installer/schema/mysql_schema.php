@@ -646,7 +646,7 @@ class EE_Schema
 
         $Q[] = "CREATE TABLE exp_member_news_views (
 			news_id int(10) unsigned NOT NULL auto_increment,
-			version varchar(10) NULL,
+			version varchar(20) NULL,
 			member_id int(10) unsigned NOT NULL DEFAULT '0',
 			PRIMARY KEY `news_id` (`news_id`),
 			KEY `member_id` (`member_id`)

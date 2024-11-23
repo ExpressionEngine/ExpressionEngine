@@ -1608,7 +1608,9 @@ class Member
 
         $res = ee()->functions->form_declaration($data);
 
-        $res .= stripslashes(ee()->TMPL->tagdata);
+        $template = ee()->TMPL->parse_inline_errors(ee()->TMPL->tagdata);
+
+        $res .= stripslashes($template);
 
         $res .= "</form>";
 
@@ -1724,6 +1726,7 @@ class Member
             'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->TMPL->fetch_param('return') : '-1',
             'P' => ee()->functions->get_protected_form_params(array(
                 'result_page' => $result_page,
+                'inline_errors' => ee()->TMPL->fetch_param('inline_errors'),
             ))
         );
 
@@ -1745,7 +1748,8 @@ class Member
 
         $res = ee()->functions->form_declaration($data);
 
-        $res .= stripslashes(ee()->TMPL->tagdata);
+        $template = ee()->TMPL->parse_inline_errors(ee()->TMPL->tagdata);
+        $res .= stripslashes($template);
 
         $res .= "</form>";
 
@@ -2546,6 +2550,7 @@ class Member
                     'entry_site_id' => null,
                     'channel_url' => null,
                     'comment_url' => null,
+                    'title' => '',
                 ],
                 $default_fields
             )]
@@ -2575,9 +2580,10 @@ class Member
         }
 
         $vars = [];
+
         // Role groups that are assigned directly to member
         foreach ($member->RoleGroups as $roleGroup) {
-            if ($roleGroup->group_id === 0 && $roleGroup->name === null) {
+            if ($roleGroup->group_id === 0 && empty($roleGroup->name)) {
                 continue;
             }
 
@@ -2590,7 +2596,7 @@ class Member
         // Role groups that are assigned via Roles
         foreach ($member->Roles as $role) {
             foreach ($role->RoleGroups as $roleGroup) {
-                if ($roleGroup->group_id === 0 && $roleGroup->name === null) {
+                if ($roleGroup->group_id === 0 && empty($roleGroup->name)) {
                     continue;
                 }
 
@@ -2667,7 +2673,6 @@ class Member
 
         $member = ee('Model')
             ->get('Member', $member_id)
-            ->with('PrimaryRole', 'Roles', 'RoleGroups')
             ->first();
 
         if (!$member) {

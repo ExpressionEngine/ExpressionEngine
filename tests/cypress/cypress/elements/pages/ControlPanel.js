@@ -92,7 +92,7 @@ class ControlPanel {
     }
 
     authLoad() {
-        cy.authVisit(this.url.replace(/\{(.+?)\}/g, ''), {failOnStatusCode: false})
+        cy.authVisit(this.url.replace(/\{(.+?)\}/g, ''))
     }
 
     get(selector) {
