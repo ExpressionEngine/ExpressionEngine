@@ -863,6 +863,12 @@ abstract class EE_Fieldtype
             }
         }
 
+        return $field_options;
+    }
+
+    protected function _get_historic_field_options($data, $show_empty = '')
+    {
+        $field_options = $this->_get_field_options($data, $show_empty);
         // if there are saved options that are not available anymore
         // show them at the beginning of field options
         if (!empty($data)) {

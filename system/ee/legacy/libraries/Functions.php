@@ -26,7 +26,7 @@ class EE_Functions
     public $catfields = array();
     protected $cat_array = array();
     protected $temp_array = array();
-    public static $protected_data = array();
+    public static $protected_data;
 
     /**
      * Fetch base site index
@@ -219,6 +219,10 @@ class EE_Functions
      */
     public function prep_query_string($str)
     {
+        if (is_null($str)) {
+            $str = '';
+        }
+
         if (stristr($str, '.php') && substr($str, -7) == '/index/') {
             $str = substr($str, 0, -6);
         }
@@ -396,12 +400,18 @@ class EE_Functions
      */
     public function determine_error_return()
     {
+        if(is_null(self::$protected_data)) {
+            $this->handle_protected();
+        }
+
         // Find out if we have the `return_error` param in our protected data.
         if (! empty(self::$protected_data['return_error'])) {
             return self::$protected_data['return_error'];
         } elseif (! empty(self::$protected_data['inline_errors']) && self::$protected_data['inline_errors'] === 'yes') {
             // If they specified inline errors, return to the page the form submitted from.
-            return ee()->functions->form_backtrack(1);
+            // When the request is handled by an action then "this" page may not be in the tracker
+            $offset = (REQ === 'ACTION' && (ee()->session->tracker[0] ?? '') !== 'index') ? 0 : 1;
+            return ee()->functions->form_backtrack($offset);
         }
 
         // There was no return page or inline specified so the error will go to the standard output.
@@ -560,6 +570,13 @@ class EE_Functions
             }
             if (empty($data['class'])) {
                 $data['form_class'] = ee()->TMPL->form_class;
+            }
+
+            // Automatically include default protected params as hidden fields
+            if (ee()->TMPL->fetch_param('inline_errors') == 'yes' || !empty(ee()->TMPL->fetch_param('return_error'))) {
+                if (empty($data['hidden_fields']['P'] ?? '')) {
+                    $data['hidden_fields']['P'] = $this->get_protected_form_params();
+                }
             }
         }
 
@@ -1188,7 +1205,7 @@ class EE_Functions
         if (!defined('CSRF_TOKEN')) {
             ee()->security->have_valid_xid();
         }
-        
+
         // Add security hash. Need to replace the legacy XID one as well.
         $str = str_replace('{csrf_token}', CSRF_TOKEN, $str);
         $str = str_replace('{XID_HASH}', CSRF_TOKEN, $str);

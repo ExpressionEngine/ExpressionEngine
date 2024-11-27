@@ -1,0 +1,1 @@
+{if <?=$field_name?>}On/Yes{if:else}Off/No{/if}

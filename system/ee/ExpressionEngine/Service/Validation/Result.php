@@ -110,6 +110,8 @@ class Result
 
     /**
      * Get error strings for a given field
+     *
+     * @return array
      */
     public function getErrors($field, View $view = null)
     {
@@ -136,6 +138,17 @@ class Result
         }
 
         return $out;
+    }
+
+    /**
+     * Get the first error for all failed fields
+     *
+     * @param View|null $view
+     * @return array
+     */
+    public function getFirstErrors(View $view = null)
+    {
+        return array_map('current', $this->getAllErrors());
     }
 
     /**

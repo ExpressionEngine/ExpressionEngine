@@ -29,6 +29,8 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
 
     public $size = 'small';
 
+    public $stub = 'multiselect';
+
     // used in display_field() below to set
     // some defaults for third party usage
     public $settings_vars = array(
@@ -65,7 +67,7 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
         $selected = empty($selected) ? array() : (array) $selected;
 
         // in case another fieldtype was here
-        $field_options = $this->_get_field_options($data);
+        $field_options = (REQ == 'CP') ? $this->_get_historic_field_options($data) : $this->_get_field_options($data);
         $field_options = $this->_flatten($field_options);
 
         if ($selected) {
@@ -128,7 +130,7 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
         }
 
         $values = decode_multi_field($data);
-        $field_options = $this->_get_field_options($data);
+        $field_options = $this->_get_historic_field_options($data);
 
         if (REQ == 'CP') {
             return ee('View')->make('ee:_shared/form/fields/select')->render([
