@@ -58,9 +58,9 @@ class FieldDisplay
         return $this->field->getName();
     }
 
-    public function getNameBadge($field_name_prefix = '')
+    public function getNameBadge(array $options = [])
     {
-        return $this->field->getNameBadge($field_name_prefix);
+        return $this->field->getNameBadge($options);
     }
 
     public function getShortName()

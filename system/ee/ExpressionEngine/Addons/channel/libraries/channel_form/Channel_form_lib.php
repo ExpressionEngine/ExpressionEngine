@@ -497,9 +497,16 @@ class Channel_form_lib
                         $checkbox_fields[] = $key;
                         $this->parse_variables[$key] = ($this->entry($name) == 'y') ? 'checked="checked"' : '';
                     } elseif (property_exists($this->entry, $name) or $this->entry->hasCustomField($name)) {
-                        $this->parse_variables[$key] = $this->encode_ee_tags(
-                            form_prep($this->entry($name), $name)
-                        );
+                        // override with POST, if there was validation error
+                        if (isset($_POST[$name])) {
+                            $this->parse_variables[$key] = $this->encode_ee_tags(
+                                form_prep(ee()->input->post($name, true), $name)
+                            );
+                        } else {
+                            $this->parse_variables[$key] = $this->encode_ee_tags(
+                                form_prep($this->entry($name), $name)
+                            );
+                        }
                     }
                 }
             }
@@ -709,6 +716,17 @@ class Channel_form_lib
         $return .= ee()->TMPL->tagdata;
         $return .= "</form>";
 
+        // If we have a non-native template engine we must populate the custom field
+        // inputs now because they may add javascript that needs to be built
+        if(!empty(ee()->TMPL->template_engine)) {
+            foreach($custom_field_variables as $field => $fieldVariables) {
+                $custom_field_variables[$field] = [
+                    'settings' => $fieldVariables,
+                    'input' => $this->display_field($field),
+                ];
+            }
+        }
+
         $this->_build_javascript();
 
         $this->switch_site($current_site_id);
@@ -740,6 +758,12 @@ class Channel_form_lib
                 return;
             }
         }
+
+        ee()->TMPL->set_data([
+            'open' => $return,
+            'fields' => $custom_field_variables,
+            'errors' => array_merge($this->errors, $this->field_errors),
+        ]);
 
         return $return;
     }

@@ -798,6 +798,10 @@ class Member_settings extends Member
 
                     $fieldForm = $field->getForm();
 
+                    $temp = ee()->functions->prep_conditionals($temp, [
+                        'has_error' => !empty(ee()->session->flashdata('errors')['error:'. $field->getShortName()] ?? '')
+                    ]);
+
                     $temp = str_replace(
                         [
                             '{lang:profile_field}',
@@ -813,6 +817,7 @@ class Member_settings extends Member
                             '{maxlength}',
                             '{field_required}',
                             '{field_type}',
+                            '{error}'
                         ],
                         [
                             $required . $field->getLabel(),
@@ -827,7 +832,8 @@ class Member_settings extends Member
                             $field->get('field_text_direction'),
                             $field->get('field_maxl'),
                             $field->isRequired(),
-                            $field->getType()
+                            $field->getType(),
+                            ee()->session->flashdata('errors')['error:'. $field->getShortName()] ?? '',
                         ],
                         $temp
                     );
@@ -875,13 +881,19 @@ class Member_settings extends Member
             $template = str_replace(LD . "custom_profile_fields" . RD, $r, $template);
         }
 
-        if (strpos($template, LD . 'field:') !== false) {
+        if (strpos($template, LD . 'field:') !== false || strpos($template, LD . 'error:') !== false) {
             foreach ($member->getDisplay()->getFields() as $field) {
                 if (ee('Permission')->isSuperAdmin() || $field->get('field_public') == 'y') {
                     $template = str_replace(LD . 'field:' . $field->get('field_name') . RD, $field->getForm(), $template);
+                }else{
+                    // Remove any inline errors for fields that are not visible
+                    $template = str_replace(LD . 'error:' . $field->get('field_name') . RD, '', $template);
                 }
             }
         }
+
+        // Parse inline errors
+        $template = ee()->TMPL->parse_inline_errors($template);
 
         //if we run EE template parser, do some things differently
         if (! empty($tagdata)) {
@@ -1112,7 +1124,16 @@ class Member_settings extends Member
         }
 
         if ($result->failed()) {
-            return ee()->output->show_user_error('general', $result->renderErrors());
+            $aliases = array_reduce($member->getDisplay()->getFields(), function($carry, $field) {
+                return array_merge($carry, [
+                    $field->getName() => [
+                        'field' => $field->getShortName(),
+                        'label' => $field->getLabel()
+                    ]
+                ]);
+            }, []);
+
+            return ee()->output->show_form_error_aliases($result, $aliases);
         }
 
         // if the password was set, need to hash it before saving and kill all other sessions

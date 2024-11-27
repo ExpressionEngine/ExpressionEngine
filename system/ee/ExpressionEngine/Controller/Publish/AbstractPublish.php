@@ -457,6 +457,8 @@ abstract class AbstractPublish extends CP_Controller
                 'view_count_four' => 0,
                 'entry_date' => ee()->localize->now,
             ]);
+            // Unset versions relationship so that entry revisions are not moved to the cloned entry
+            $entry->Versions = null;
         }
         $entry->save();
 

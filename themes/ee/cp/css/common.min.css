@@ -23083,6 +23083,14 @@ dialog {
   margin-bottom: 20px;
 }
 
+.lv-banner__inner {
+  margin-bottom: 0;
+}
+.lv-banner__inner .lv-banner__addons-list span a {
+  color: var(--ee-text-primary);
+  font-weight: 500;
+}
+
 .button-group,
 .button-group-vertical {
   position: relative;
@@ -28162,6 +28170,22 @@ input[type=button].btn-block {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+.title-bar__title .label-app-badge {
+  font-size: 0.9rem;
+  margin-left: 0;
+}
+.title-bar__title .label-app-badge i {
+  font-size: inherit;
+}
+.title-bar__title .label-app-badge i.fa-circle-check {
+  display: none;
+}
+.title-bar__title .label-app-badge.success i.fa-copy {
+  display: none;
+}
+.title-bar__title .label-app-badge.success i.fa-circle-check {
+  display: block;
+}
 
 .title-bar__extra-tools {
   display: flex;
@@ -31925,6 +31949,18 @@ fieldset .field-control #eye {
   top: 0px;
   margin-left: 0;
 }
+.grid-field tbody td.required:after {
+  display: none;
+}
+.grid-field tbody td.required:before {
+  content: "*";
+  color: var(--ee-brand-danger);
+  font-size: 1em;
+  position: relative;
+  top: 0;
+  line-height: 0.7;
+  display: inline-block;
+}
 
 .grid-field__table th {
   font-size: 0.9em;
@@ -32186,6 +32222,12 @@ fieldset .field-control #eye {
 .grid-field.vertical-layout .grid-field__table > tbody tr.grid__item--collapsed td.grid-field__item-fieldset .grid-field__item-tool {
   transform: rotate(180deg);
 }
+.grid-field.vertical-layout .grid-field__table > tbody td.required:before {
+  top: 45px;
+}
+.grid-field.vertical-layout .grid-field__table > tbody td.required .grid-field__column-label {
+  margin-bottom: 15px;
+}
 .grid-field.vertical-layout .grid-field__item-fieldset {
   padding: 10px 15px 5px 15px;
   border-bottom: 1px solid var(--ee-border) !important;
@@ -32438,6 +32480,14 @@ fieldset .field-control #eye {
 .live-preview__form-content .grid-field .grid-field__table > tbody tr.grid__item--collapsed td.grid-field__item-fieldset .grid-field__item-tool,
 .grid-field.overwidth .grid-field__table > tbody tr.grid__item--collapsed td.grid-field__item-fieldset .grid-field__item-tool {
   transform: rotate(180deg);
+}
+.live-preview__form-content .grid-field .grid-field__table > tbody td.required:before,
+.grid-field.overwidth .grid-field__table > tbody td.required:before {
+  top: 45px;
+}
+.live-preview__form-content .grid-field .grid-field__table > tbody td.required .grid-field__column-label,
+.grid-field.overwidth .grid-field__table > tbody td.required .grid-field__column-label {
+  margin-bottom: 15px !important;
 }
 
 .grid-field.overwidth {
@@ -47152,6 +47202,10 @@ a.ck.ck-button.ck-on {
   color: var(--ck-color-text) !important;
 }
 
+.ck.ck-editor__main > .ck-editor__editable li .ck-list-bogus-paragraph {
+  display: inline-block;
+}
+
 /* Redactor stuff */
 .redactor-box .redactor-toolbar {
   z-index: 2;
@@ -47643,6 +47697,7 @@ a.ck.ck-button.ck-on {
   background-color: var(--ee-bg-dropdown) !important;
   color: var(--ee-text-primary);
   box-shadow: 0 1px 4px 0 var(--ee-shadow-dropdown) !important;
+  z-index: 1000 !important;
 }
 .rx-popup .rx-popup-header {
   color: var(--ee-text-primary);
@@ -48555,6 +48610,9 @@ table .field-no-results {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+.label-app-badge.not-clickable {
+  cursor: auto;
 }
 .label-app-badge i {
   margin-left: 5px;
@@ -52212,6 +52270,7 @@ ul.field-reorder-drop,
   color: var(--ee-ee-update) !important;
   background: var(--ee-ee-update-bg);
   border-radius: 0;
+  margin-bottom: 0;
 }
 .ee-sidebar__items .ee-sidebar__version.ee-sidebar__version--update #ee-logomark {
   fill: var(--ee-ee-update) !important;
