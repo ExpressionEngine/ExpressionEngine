@@ -158,54 +158,59 @@ class Dropdown extends React.Component {
     }
 
     return (
-      <div className={"select button-segment" + (tooMany ? ' select--resizable' : '') + (this.state.open ? ' select--open' : '')}>
-        <div className={"select__button js-dropdown-toggle"} onClick={this.toggleOpen} tabIndex="0">
-          <label className={'select__button-label' + (this.state.selected ? ' act' : '')}>
-            {selected && 
-              <span>{(selected.sectionLabel && !this.props.ignoreSectionLabel) ? selected.sectionLabel + ' / ' : ''}
-                <span dangerouslySetInnerHTML={{__html: selected.label}}></span>
-                {this.props.name == 'condition-rule-field' && <span className="short-name">{`{${selected.value}}`}</span>}
+      <>
+        {this.props.ariaLabel && 
+          <output class="sr-only" id={this.props.ariaLabel}></output>
+        }
+        <div className={"select button-segment" + (tooMany ? ' select--resizable' : '') + (this.state.open ? ' select--open' : '')}>
+          <div className={"select__button js-dropdown-toggle"} onClick={this.toggleOpen} tabIndex="0">
+            <label className={'select__button-label' + (this.state.selected ? ' act' : '')}>
+              {selected && 
+                <span>{(selected.sectionLabel && !this.props.ignoreSectionLabel) ? selected.sectionLabel + ' / ' : ''}
+                  <span dangerouslySetInnerHTML={{__html: selected.label}}></span>
+                  {this.props.name == 'condition-rule-field' && <span className="short-name">{`{${selected.value}}`}</span>}
+                </span>
+              }
+              { ! selected && <i>{this.props.emptyText}</i>}
+              <input type="hidden"
+                ref={(input) => { this.input = input }}
+                name={this.props.name}
+                value={this.state.selected ? this.state.selected.value : ''}
+                data-group-toggle={this.props.groupToggle ? JSON.stringify(this.props.groupToggle) : '[]'}
+                disabled={this.props.disabledInput ? 'disabled' : null}
+              />
+            </label>
+
+            {selected && this.props.name.includes('[condition_field_id]') && 
+              <span className="tooltiptext">
+                {`${selected.label.replace(/<.*/g, "")} ${selected.label.match(/(?:\{).+?(?:\})/g)}`}
               </span>
             }
-            { ! selected && <i>{this.props.emptyText}</i>}
-            <input type="hidden"
-              ref={(input) => { this.input = input }}
-              name={this.props.name}
-              value={this.state.selected ? this.state.selected.value : ''}
-              data-group-toggle={this.props.groupToggle ? JSON.stringify(this.props.groupToggle) : '[]'}
-              disabled={this.props.disabledInput ? 'disabled' : null}
-            />
-          </label>
+          </div>
 
-          {selected && this.props.name.includes('[condition_field_id]') && 
-            <span className="tooltiptext">
-              {`${selected.label.replace(/<.*/g, "")} ${selected.label.match(/(?:\{).+?(?:\})/g)}`}
-            </span>
-          }
-        </div>
+          <div className="select__dropdown dropdown">
+            {this.props.initialCount > this.props.tooMany &&
+              <div className="select__dropdown-search">
+              <FieldTools>
+                <FilterBar>
+                  <FilterSearch onSearch={(e) => this.handleSearch(e.target.value)} />
+                </FilterBar>
+              </FieldTools>
+              </div>
+            }
+            <div className="select__dropdown-items">
+              {this.props.items.length == 0 &&
+                <NoResults text={this.props.noResults} />
+              }
+              {this.state.loading &&
+                <Loading text={EE.lang.loading} />
+              }
 
-        <div className="select__dropdown dropdown">
-          {this.props.initialCount > this.props.tooMany &&
-            <div className="select__dropdown-search">
-            <FieldTools>
-              <FilterBar>
-                <FilterSearch onSearch={(e) => this.handleSearch(e.target.value)} />
-              </FilterBar>
-            </FieldTools>
+              {this.selectRecursion(this.props.items)}
             </div>
-          }
-          <div className="select__dropdown-items">
-            {this.props.items.length == 0 &&
-              <NoResults text={this.props.noResults} />
-            }
-            {this.state.loading &&
-              <Loading text={EE.lang.loading} />
-            }
-
-            {this.selectRecursion(this.props.items)}
           </div>
         </div>
-      </div>
+      </>
     )
   }
 }

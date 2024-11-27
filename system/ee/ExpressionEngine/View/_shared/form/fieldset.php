@@ -88,19 +88,21 @@ foreach ($setting['fields'] as $field_key => $field_value) {
             case 'file':
             case 'password':
             case 'textarea':
-                $label_attr = ' for="label_' . $setting['title'] . '"';
-                break;
+            case 'checkbox':
+            case 'multiselect':
             case 'radio_block':
             case 'radio':
             case 'inline_radio':
-            case 'checkbox':
-            case 'dropdown':
+                $label_attr = ' for="label_' . $setting['title'] . '"';
             case 'yes_no':
             case 'toggle':
-            case 'multiselect':
+                $label_attr = ' for="label_' . $field_key . '"';
+                break;
+            case 'dropdown':
+                $label_attr = ' for="label_' . implode('-', array_keys($setting['fields'])) . '"';
+                break;
             case 'slider':
                 $label_attr = ' id="label_' . $setting['title'] . '"';
-                // $fieldset_arialabelled = 'aria-labelledby="label_' . $setting['title'] . '"';
                 break;
         endswitch;
     }
@@ -133,13 +135,12 @@ $legend = ($grid) ? '' : '<legend class="sr-only">' . lang('neutral_legend') . '
                 foreach ($setting['fields'] as $field_name => $field) {
                     $field_name = isset($field['name'])
                         ? $field['name'] : $field_name;
-
                     $vars = array(
                         'field_name' => $field_name,
                         'field' => $field,
                         'setting' => $setting,
                         'grid' => $grid,
-                        'aria_labelledby' => isset($setting['title']) ? 'label_' . $setting['title'] : '',
+                        // 'aria_labelledby' => isset($setting['title']) ? 'label_' . $setting['title'] : '',
                     );
 
                     // If there are multiple fields with the same name, such as

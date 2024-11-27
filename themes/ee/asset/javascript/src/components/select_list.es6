@@ -435,7 +435,7 @@ class SelectList extends React.Component {
           </div>
           </div>
         }
-        <FieldInputs nested={props.nested} tooMany={props.tooMany} splitForTwo={props.splitForTwo} list={props.items} selectedItems={props.selected} handle={this.handleSelect}>
+        <FieldInputs nested={props.nested} tooMany={props.tooMany} splitForTwo={props.splitForTwo} list={props.items} selectedItems={props.selected} handle={this.handleSelect} ariaLabel={props.ariaLabel}>
           { ! props.loading && props.items.length == 0 &&
             <NoResults text={props.noResults} />
           }
@@ -532,9 +532,14 @@ function FieldInputs (props) {
 
   if (props.nested) {
     return (
-      <ul className={'field-inputs lots-of-checkboxes__items field-nested' + divClass}>
-        {props.children}
-      </ul>
+      <>
+        {props.ariaLabel && 
+          <output class="sr-only" id={props.ariaLabel}>{EE.lang.associated_label_info}</output>
+        }
+        <ul className={'field-inputs lots-of-checkboxes__items field-nested' + divClass}>
+          {props.children}
+        </ul>
+      </>
     )
   }
 

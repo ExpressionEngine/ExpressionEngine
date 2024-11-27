@@ -165,7 +165,10 @@ var Dropdown = /*#__PURE__*/function (_React$Component) {
         selected = this.state.selected;
       }
 
-      return React.createElement("div", {
+      return React.createElement(React.Fragment, null, this.props.ariaLabel && React.createElement("output", {
+        "class": "sr-only",
+        id: this.props.ariaLabel
+      }), React.createElement("div", {
         className: "select button-segment" + (tooMany ? ' select--resizable' : '') + (this.state.open ? ' select--open' : '')
       }, React.createElement("div", {
         className: "select__button js-dropdown-toggle",
@@ -204,7 +207,7 @@ var Dropdown = /*#__PURE__*/function (_React$Component) {
         text: this.props.noResults
       }), this.state.loading && React.createElement(Loading, {
         text: EE.lang.loading
-      }), this.selectRecursion(this.props.items))));
+      }), this.selectRecursion(this.props.items)))));
     }
   }], [{
     key: "renderFields",

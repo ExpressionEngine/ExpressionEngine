@@ -459,7 +459,8 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
         splitForTwo: props.splitForTwo,
         list: props.items,
         selectedItems: props.selected,
-        handle: this.handleSelect
+        handle: this.handleSelect,
+        ariaLabel: props.ariaLabel
       }, !props.loading && props.items.length == 0 && React.createElement(NoResults, {
         text: props.noResults
       }), props.loading && React.createElement(Loading, {
@@ -630,9 +631,12 @@ function FieldInputs(props) {
   }
 
   if (props.nested) {
-    return React.createElement("ul", {
+    return React.createElement(React.Fragment, null, props.ariaLabel && React.createElement("output", {
+      "class": "sr-only",
+      id: props.ariaLabel
+    }, EE.lang.associated_label_info), React.createElement("ul", {
       className: 'field-inputs lots-of-checkboxes__items field-nested' + divClass
-    }, props.children);
+    }, props.children));
   }
 
   return React.createElement("div", {

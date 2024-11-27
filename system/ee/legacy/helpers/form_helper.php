@@ -317,7 +317,7 @@ if (! function_exists('form_hidden')) {
 if (! function_exists('form_input')) {
     function form_input($data = '', $value = '', $extra = '')
     {
-        $defaults = array('type' => 'text', 'name' => ((! is_array($data)) ? $data : ''), 'value' => $value);
+        $defaults = array('type' => 'text', 'name' => ((! is_array($data)) ? $data : ''), 'value' => $value, 'aria-label' => lang('input_text_aria_label'), 'id' => 'label_id_' . $data['name']);
 
         return "<input " . _parse_form_attributes($data, $defaults) . $extra . " />";
     }
@@ -329,7 +329,7 @@ if (! function_exists('form_input')) {
 if (! function_exists('form_number')) {
     function form_number($data = '', $value = '', $extra = '')
     {
-        $defaults = array('type' => 'number', 'name' => ((! is_array($data)) ? $data : ''), 'value' => $value);
+        $defaults = array('type' => 'number', 'name' => ((! is_array($data)) ? $data : ''), 'value' => $value, 'aria-label' => lang('input_text_aria_label'));
 
         $datalist = '';
         if (is_array($data) && isset($data['datalist']) && !empty($data['datalist'])) {
@@ -356,7 +356,7 @@ if (! function_exists('form_number')) {
 if (! function_exists('form_range')) {
     function form_range($data = '', $value = '', $extra = '')
     {
-        $defaults = array('type' => 'range', 'name' => ((! is_array($data)) ? $data : ''), 'value' => $value);
+        $defaults = array('type' => 'range', 'name' => ((! is_array($data)) ? $data : ''), 'value' => $value, 'aria-label' => lang('input_text_aria_label'));
 
         $datalist = '';
         if (is_array($data) && isset($data['datalist']) && !empty($data['datalist'])) {
@@ -437,7 +437,7 @@ if (! function_exists('form_upload')) {
 if (! function_exists('form_textarea')) {
     function form_textarea($data = '', $value = '', $extra = '')
     {
-        $defaults = array('name' => ((! is_array($data)) ? $data : ''), 'cols' => '90', 'rows' => '12');
+        $defaults = array('name' => ((! is_array($data)) ? $data : ''), 'cols' => '90', 'rows' => '12', 'aria-label' => lang('input_text_aria_label'));
 
         if (! is_array($data) or ! isset($data['value'])) {
             $val = $value;

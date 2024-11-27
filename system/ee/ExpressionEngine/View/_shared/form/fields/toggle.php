@@ -5,9 +5,10 @@ if (isset($yes_no) && $yes_no) {
 $class = isset($class) ? $class : '';
 $on_off = (get_bool_from_string($value)) ? 'on' : 'off';
 $true_false = (get_bool_from_string($value)) ? 'true' : 'false';
+$aria_label = isset($aria_label) ? $aria_label : '';
 ?>
 <button type="button" class="toggle-btn <?=$on_off?> <?=(isset($yes_no) && $yes_no) ? 'yes_no' : ''?> <?=($disabled) ? 'disabled' : ''?> <?=$class?>" data-toggle-for="<?=$field_name?>" data-state="<?=$on_off?>" role="switch" aria-checked="<?=$true_false?>" alt="<?=$on_off?>">
 	<span class="sr-only"><?=$field_name?> <?=lang('toggle_buton')?></span>
-	<input type="hidden" name="<?=$field_name?>" value="<?=form_prep($value, $field_name)?>"<?php if (isset($group_toggle)): ?> data-group-toggle='<?=json_encode($group_toggle)?>'<?php endif ?>>
+	<input id="<?=$aria_label?>"type="hidden" name="<?=$field_name?>" value="<?=form_prep($value, $field_name)?>"<?php if (isset($group_toggle)): ?> data-group-toggle='<?=json_encode($group_toggle)?>'<?php endif ?>>
 	<span class="slider"></span>
 </button>

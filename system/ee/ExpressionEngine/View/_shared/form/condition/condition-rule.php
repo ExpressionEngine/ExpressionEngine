@@ -104,7 +104,7 @@
     <div class="delete_rule">
         <button type="button" rel="remove_row" class="button button--small button--default">
         
-            <span class="danger-link" title="<?=lang('remove_row')?>">
+            <span class="danger-link" title="<?=lang('remove_row') . lang('button')?>">
                 <i class="fal fa-trash-alt">
                     <span class="hidden"><?=lang('remove_row')?></span>
                 </i>

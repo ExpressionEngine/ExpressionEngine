@@ -484,7 +484,7 @@ else: ?>
                                 </button>
                                 <?php endif ?>
                                 <button type="button" rel="remove_row" class="button button--small button--default">
-                                    <span class="grid-field__column-tool danger-link" title="<?=lang('remove_row')?>"><i class="fal fa-fw fa-trash-alt"><span class="hidden"><?=lang('remove_row')?></span></i></span>
+                                    <span class="grid-field__column-tool danger-link" title="<?=lang('remove_row') . lang('button')?>"><i class="fal fa-fw fa-trash-alt"><span class="hidden"><?=lang('remove_row')?></span></i></span>
                                 </button>
                             </div>
                         </td>

@@ -201,6 +201,11 @@ EE.cp.fieldToggleDisable = function(context, fieldName) {
 // In an effort not to need to prefix those input names, we'll handle
 // it automatically with this function.
 function toggleInputs(container, group_name, enable) {
+	if (!enable) {
+		container.attr('aria-hidden', 'true');
+	} else {
+		container.removeAttr('aria-hidden');
+	}
 	container.find(':radio').each(function() {
 
 //		var input = $(this),

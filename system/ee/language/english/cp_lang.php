@@ -934,7 +934,7 @@ $lang = array(
 
     'hidden_input' => 'Hidden file upload input',
 
-    'button' => 'button',
+    'button' => ' button',
 
     'checkbox' => 'checkbox',
 
@@ -981,6 +981,12 @@ $lang = array(
     'label_for_icon' => ' icon',
 
     'missing_file' => 'missing file icon',
+
+    'select_img' => 'Select ',
+
+    'input_text_aria_label' => 'Provide details for this field',
+
+    'associated_label_info' => 'This element is solely intended for screen readers to ensure the label is correctly associated with the element.',
 );
 
 // EOF

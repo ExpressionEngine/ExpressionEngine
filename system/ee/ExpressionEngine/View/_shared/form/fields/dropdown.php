@@ -3,6 +3,7 @@ $too_many = isset($too_many) ? $too_many : 8;
 $empty_text = isset($empty_text) ? $empty_text : lang('choose_wisely');
 $field_disabled = isset($field_disabled) ? $field_disabled : false;
 $class = isset($class) ? $class : '';
+$aria_label = isset($aria_label) ? $aria_label : '';
 
 $react = '';
 $sub_class = 'fields-select-drop';
@@ -27,12 +28,12 @@ if ($field_disabled) {
         'isRequired' => isset($is_required) ? isset($is_required) : false,
         'fileManager' => isset($fileManager) ? $fileManager : false,
         'ignoreSectionLabel' => isset($ignoreSectionLabel) ? $ignoreSectionLabel : false,
-        'disabledInput' => false
+        'disabledInput' => false,
+        'ariaLabel' => isset($aria_label) ? $aria_label : false,
     ];
     
     $react = 'data-dropdown-react="' . base64_encode(json_encode($component)) . '" data-input-value="' . $field_name . '"';
 }
-
 ?>
 <div <?=$react?> class="<?=$class?>">
 	<div class="<?=$sub_class?>">

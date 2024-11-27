@@ -64,7 +64,7 @@ case 'text':
         <div class="<?=$class?>" <?=isset($field['group']) ? ' data-group="' . $field['group'] . '"' : ''?>>
     <?php endif ?>
 
-            <input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?> id="<?=$aria_labelledby?>">
+            <input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?> id="label_<?=$field_name?>">
 
     <?php if (!empty($class)): ?>
         </div>
@@ -84,20 +84,20 @@ case 'number':
         <div class="<?=$class?>" <?=isset($field['group']) ? ' data-group="' . $field['group'] . '"' : ''?>>
     <?php endif ?>
 
-            <input type="number" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?> id="<?=$aria_labelledby?>">
+            <input type="number" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?> id="label_<?=$field_name?>">
 
     <?php if (!empty($class)): ?>
         </div>
     <?php endif ?>
 <?php break;
 case 'file': ?>
-    <input type="file" name="<?=$field_name?>"<?=$attrs?> class="<?=$class?>" id="<?=$aria_labelledby?>">
+    <input type="file" name="<?=$field_name?>"<?=$attrs?> class="<?=$class?>" id="label_<?=$field_name?>">
 <?php break;
 case 'password': ?>
-    <input type="password" name="<?=$field_name?>" value="<?=$value?>" autocomplete="<?=($field_name=='verify_password' || $field_name=='password_confirm' ? 'current' : 'new')?>-password"<?=$attrs?> class="<?=$class?>" id="<?=$aria_labelledby?>">
+    <input type="password" name="<?=$field_name?>" value="<?=$value?>" autocomplete="<?=($field_name=='verify_password' || $field_name=='password_confirm' ? 'current' : 'new')?>-password"<?=$attrs?> class="<?=$class?>" id="label_<?=$field_name?>">
 <?php break;
 case 'hidden': ?>
-    <input type="hidden" name="<?=$field_name?>" value="<?=$value?>" id="<?=$aria_labelledby?>">
+    <input type="hidden" name="<?=$field_name?>" value="<?=$value?>" id="label_<?=$field_name?>">
 <?php break;
 
 case 'radio_block':
@@ -132,7 +132,7 @@ if ($field['type'] == 'checkbox' && ! $value) {
         'jsonify' => isset($field['jsonify']) ? $field['jsonify'] : false,
         'class' => $class,
         'toggle_all' => isset($field['toggle_all']) ? $field['toggle_all'] : null,
-        'aria_labelledby' => $aria_labelledby,
+        'aria_label' => 'label_' . $field_name,
     ]); ?>
 <?php break;
 
@@ -153,6 +153,7 @@ case 'dropdown': ?>
         'group_toggle' => isset($field['group_toggle']) ? $field['group_toggle'] : null,
         'empty_text' => isset($field['empty_text']) ? lang($field['empty_text']) : lang('choose_wisely'),
         'class' => $class,
+        'aria_label' => 'label_' . $field_name,
     ]); ?>
 <?php break;
 
@@ -164,6 +165,7 @@ case 'toggle': ?>
         'disabled' => (isset($field['disabled']) && $field['disabled'] == true),
         'group_toggle' => isset($field['group_toggle']) ? $field['group_toggle'] : null,
         'class' => $class,
+        'aria_label' => 'label_' . $field_name,
     ]); ?>
 <?php break;
 
@@ -171,7 +173,7 @@ case 'textarea':
     if ($class): ?>
         <div class="<?=$class?>" <?=isset($field['group']) ? ' data-group="' . $field['group'] . '"' : ''?>>
     <?php endif ?>
-            <textarea id="<?=$aria_labelledby?>" name="<?=$field_name?>" <?=(isset($field['cols']) ? "cols=\"{$field['cols']}\"" : "")?> <?=(isset($field['rows']) ? "rows=\"{$field['rows']}\"" : "")?> <?=$attrs?>><?=(isset($field['kill_pipes']) && $field['kill_pipes'] === true) ? str_replace('|', NL, $value) : $value?></textarea>
+            <textarea id="label_<?=$field_name?>" name="<?=$field_name?>" <?=(isset($field['cols']) ? "cols=\"{$field['cols']}\"" : "")?> <?=(isset($field['rows']) ? "rows=\"{$field['rows']}\"" : "")?> <?=$attrs?>><?=(isset($field['kill_pipes']) && $field['kill_pipes'] === true) ? str_replace('|', NL, $value) : $value?></textarea>
     <?php if ($margin_top or $margin_left): ?>
         </div>
     <?php endif ?>
@@ -199,7 +201,7 @@ case 'image': ?>
             <?php endif; ?>
             <li class="remove"><a class="remove button button--default button--xsmall" href="" title="remove"></a></li>
         </ul>
-        <input type="hidden" name="<?=$field_name?>" value="<?=$value?>" id="<?$aria_labelledby?>">
+        <input type="hidden" name="<?=$field_name?>" value="<?=$value?>" id="label_<?=$field_name?>">
     </figure>
 <?php break;
 
@@ -212,6 +214,7 @@ case 'slider':
         'value' => $value,
         'suffix' => isset($field['suffix']) ? $field['suffix'] : '',
         'prefix' => isset($field['prefix']) ? $field['prefix'] : '',
+        'aria_label' => 'label_' . $field_name,
     ]); 
 break;
 

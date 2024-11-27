@@ -1,6 +1,7 @@
 <?php
 $too_many = isset($too_many) ? $too_many : 8;
 $class = isset($class) ? $class : '';
+$aria_label = isset($aria_label) ? $aria_label : '';
 
 if (count($choices) == 0) {
     if (isset($no_results)): ?>
@@ -58,7 +59,9 @@ if ($count <= $too_many
     ?>
 	<div class="fields-select <?=$class?>" data-input-value="<?=$field_name?>">
 		<?php if ($multi) : ?>
-		<input type="hidden" name="<?=$field_name?>" />
+		<input type="hidden" name="<?=$field_name?>" id="<?=$aria_label?>"/>
+        <?php else: ?>
+        <output id="<?=$aria_label?>" class="sr-only"><?=lang('associated_label_info')?></output>
 		<?php endif; ?>
 		<?php if (! isset($scalar) && $multi) {
         $field_name .= '[]';
@@ -149,7 +152,8 @@ else:
         'reorderAjaxUrl' => isset($reorder_ajax_url) ? $reorder_ajax_url : null,
         'noResults' => isset($no_results['text']) ? lang($no_results['text']) : null,
         'splitForTwo' => isset($split_for_two) ? $split_for_two : null,
-        'toggles' => isset($toggles) ? $toggles : []
+        'toggles' => isset($toggles) ? $toggles : [],
+        'ariaLabel' => isset($aria_label) ? $aria_label : false,
     ];
     ?>
 	<div data-select-react="<?=base64_encode(json_encode($component))?>" data-input-value="<?=$field_name?>" class="<?=$class?>">

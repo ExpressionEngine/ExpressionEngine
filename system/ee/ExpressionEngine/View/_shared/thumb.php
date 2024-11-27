@@ -84,6 +84,7 @@ if (count($data)) {
                     <!-- toolbar is only for table view -->
                 <?php elseif ($column['type'] == Table::COL_CHECKBOX): ?>
                     <label for="<?=$table_id . '-' . $row_id?>">
+                        <span class="sr-only"><?=lang('select_img') . lang('action_for_element')?></span>
                         <input
                             id="<?=$table_id . '-' . $row_id?>"
                             class="input--no-mrg<?php if (isset($column['hidden']) && $column['hidden']):?> hidden<?php endif; ?>"

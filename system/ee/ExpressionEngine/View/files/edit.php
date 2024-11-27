@@ -22,7 +22,7 @@ if (! isset($alerts_name)) {
         <div class="panel-heading">
             <div class="form-btns form-btns-top">
                 <div class="title-bar title-bar--large">
-                    <h3 class="title-bar__title" title="<?=$file->title?>">
+                    <h3 class="title-bar__title">
                         <?=$file->title?>
 
                     </h3>
@@ -31,7 +31,7 @@ if (! isset($alerts_name)) {
                       <a class="button button--secondary js-copy-url-button" href="<?=$file->getAbsoluteURL()?>" rel="external"  title="<?=lang('copy_link')?>">
                           <i class="fal fa-link"></i>
                       </a>
-                        <a class="btn button button--secondary" href="<?=$download_url?>" title="<?=lang('download')?>"><?=lang('download')?></a>
+                        <a class="btn button button--secondary" href="<?=$download_url?>" title="<?=lang('download')?><?=lang('action_for_element')?>"><?=lang('download')?></a>
                         <?php $this->embed('ee:_shared/form/buttons'); ?>
                     </div>
                 </div>
@@ -55,7 +55,7 @@ if (! isset($alerts_name)) {
             <?php if (!$modal_form) : ?>
             <div class="file-preview-modal__preview">
                 <?php if ($is_image) : ?>
-                    <a href="<?=$file->getAbsoluteURL() . "?v={$file->modified_date}"?>" target="_blank"><img src="<?=$file->getAbsoluteURL() . "?v={$file->modified_date}"?>" alt=""></a>
+                    <a href="<?=$file->getAbsoluteURL() . "?v={$file->modified_date}"?>" target="_blank"><img src="<?=$file->getAbsoluteURL() . "?v={$file->modified_date}"?>" alt="<?=$file->description?>"></a>
                 <?php else : ?>
                     <div class="file-preview-modal__preview-file-name"><?=str_replace('fa-3x', 'fa-10x', ee('Thumbnail')->get($file)->tag)?></div>
                 <?php endif; ?>

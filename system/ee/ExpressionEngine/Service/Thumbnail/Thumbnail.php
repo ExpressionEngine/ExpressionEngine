@@ -68,7 +68,7 @@ class Thumbnail
             } elseif ($file->isEditableImage() || $file->isSVG()) {
                 $this->url = $file->getAbsoluteThumbnailURL() . "?v={$file->modified_date}";
                 $this->path = $file->getAbsoluteThumbnailPath();
-                $this->tag = '<img src="' . $this->url . '" alt="' . lang('image_alt') . $file->title . '" class="thumbnail_img" />';
+                $this->tag = '<img src="' . $this->url . '" alt="' . $file->description . '" class="thumbnail_img" />';
             } else {
                 switch ($file->file_type) {
                     case 'doc':

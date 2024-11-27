@@ -116,7 +116,7 @@
             <?php endif; ?>
                 <div class="field-instruct">
                     <?php if (! $field->titleIsHidden()):?>
-                        <label id="label_id_<?=$field->getId()?>"><?php if (!isset($pro_class)) : ?><span class="ico sub-arrow js-toggle-field"></span><?php endif; ?><?=$field->getLabel()?></label>
+                        <label for="label_id_<?=$field->getId()?>"><?php if (!isset($pro_class)) : ?><span class="ico sub-arrow js-toggle-field"></span><?php endif; ?><?=$field->getLabel()?></label>
                         <?=$field->getNameBadge()?>
                         <?php
                         $fieldInstructions = $field->getInstructions();
