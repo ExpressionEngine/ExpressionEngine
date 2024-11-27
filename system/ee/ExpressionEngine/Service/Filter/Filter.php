@@ -93,14 +93,25 @@ abstract class Filter
         if (isset($this->selected_value)) {
             return $this->selected_value;
         }
-
+    
         $value = $this->derivedValue();
-
+    
         if (! $this->has_custom_value) {
             $value = $this->isValid() ? $value : null;
         }
-
-        return is_null($value) ? null : htmlentities($value, ENT_NOQUOTES, 'UTF-8');
+    
+        // Check if $value is an array, and handle it appropriately
+        if (is_null($value)) {
+            return null;
+        }
+    
+        // If it's an array, you could handle it in various ways (e.g., convert it to a string)
+        if (is_array($value)) {
+            // Convert array to a string (e.g., comma-separated values)
+            $value = implode(', ', $value);
+        }
+    
+        return htmlentities($value, ENT_NOQUOTES, 'UTF-8');
     }
 
     /**
