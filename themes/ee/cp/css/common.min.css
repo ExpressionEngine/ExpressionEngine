@@ -24269,6 +24269,11 @@ dialog {
   background: var(--ee-accent-light);
 }
 
+.button-group .not-click {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
 /*
 .button-group {
 	display: flex;
