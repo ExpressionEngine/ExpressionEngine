@@ -665,6 +665,12 @@ if (!function_exists('array_key_first')) {
     }
 }
 
+if( !function_exists('array_key_last') ) {
+    function array_key_last(array $array) {
+        if( !empty($array) ) return key(array_slice($array, -1, 1, true));
+    }
+}
+
 /**
  * Polyfill for missing tmpfile()
  * https://www.php.net/manual/en/function.tmpfile.php
