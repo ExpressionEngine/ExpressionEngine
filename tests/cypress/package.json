@@ -22,7 +22,7 @@
         "cypress-log-to-output": "^1",
         "cypress-maildev": "^1",
         "cypress-otp": "^1",
-        "cypress-real-events": "^1",
+        "cypress-real-events": "^1.13.0",
         "cypress-xpath": "^1",
         "del": "^6",
         "fs-extra": "^11",
