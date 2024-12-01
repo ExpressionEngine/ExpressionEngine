@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3504c7084d9ed633976ab51b1c325f74",
+    "content-hash": "cbbcced7af7756a8ac3d1b01b553d756",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -319,6 +319,91 @@
                 "source": "https://github.com/ExpressionEngine/flysystem-cached-adapter/tree/master"
             },
             "time": "2024-11-30T10:52:38+00:00"
+        },
+        {
+            "name": "expressionengine/otphp",
+            "version": "11.4.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ExpressionEngine/otphp.git",
+                "reference": "bb60f3fde10fee9e655f6bcaaba7b2fe2d917731"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ExpressionEngine/otphp/zipball/bb60f3fde10fee9e655f6bcaaba7b2fe2d917731",
+                "reference": "bb60f3fde10fee9e655f6bcaaba7b2fe2d917731",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "paragonie/constant_time_encoding": "^2.0 || ^3.0",
+                "psr/clock": "^1.0",
+                "symfony/deprecation-contracts": "^3.2"
+            },
+            "require-dev": {
+                "ekino/phpstan-banned-code": "^1.0",
+                "infection/infection": "^0.26|^0.27|^0.28|^0.29",
+                "php-parallel-lint/php-parallel-lint": "^1.3",
+                "phpstan/phpstan": "^1.0",
+                "phpstan/phpstan-deprecation-rules": "^1.0",
+                "phpstan/phpstan-phpunit": "^1.0",
+                "phpstan/phpstan-strict-rules": "^1.0",
+                "phpunit/phpunit": "^9.5.26|^10.0|^11.0",
+                "qossmic/deptrac-shim": "^1.0",
+                "rector/rector": "^1.0",
+                "symfony/phpunit-bridge": "^6.1|^7.0",
+                "symplify/easy-coding-standard": "^12.0"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "OTPHP\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "OTPHP\\Test\\": "tests/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Florent Morselli",
+                    "homepage": "https://github.com/Spomky"
+                },
+                {
+                    "name": "All contributors",
+                    "homepage": "https://github.com/Spomky-Labs/otphp/contributors"
+                }
+            ],
+            "description": "A PHP library for generating one time passwords according to RFC 4226 (HOTP Algorithm) and the RFC 6238 (TOTP Algorithm) and compatible with Google Authenticator",
+            "homepage": "https://github.com/Spomky-Labs/otphp",
+            "keywords": [
+                "FreeOTP",
+                "Google Authenticator",
+                "RFC 4226",
+                "RFC 6238",
+                "hotp",
+                "otp",
+                "totp"
+            ],
+            "support": {
+                "source": "https://github.com/ExpressionEngine/otphp/tree/11.4.x"
+            },
+            "funding": [
+                {
+                    "type": "github",
+                    "url": "https://github.com/Spomky"
+                },
+                {
+                    "type": "patreon",
+                    "url": "https://www.patreon.com/FlorentMorselli"
+                }
+            ],
+            "time": "2024-12-01T15:36:17+00:00"
         },
         {
             "name": "graham-campbell/result-type",
@@ -814,88 +899,6 @@
             "time": "2024-10-27T17:38:32+00:00"
         },
         {
-            "name": "spomky-labs/otphp",
-            "version": "11.3.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Spomky-Labs/otphp.git",
-                "reference": "2d8ccb5fc992b9cc65ef321fa4f00fefdb3f4b33"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Spomky-Labs/otphp/zipball/2d8ccb5fc992b9cc65ef321fa4f00fefdb3f4b33",
-                "reference": "2d8ccb5fc992b9cc65ef321fa4f00fefdb3f4b33",
-                "shasum": ""
-            },
-            "require": {
-                "ext-mbstring": "*",
-                "paragonie/constant_time_encoding": "^2.0 || ^3.0",
-                "php": ">=8.1",
-                "psr/clock": "^1.0",
-                "symfony/deprecation-contracts": "^3.2"
-            },
-            "require-dev": {
-                "ekino/phpstan-banned-code": "^1.0",
-                "infection/infection": "^0.26|^0.27|^0.28|^0.29",
-                "php-parallel-lint/php-parallel-lint": "^1.3",
-                "phpstan/phpstan": "^1.0",
-                "phpstan/phpstan-deprecation-rules": "^1.0",
-                "phpstan/phpstan-phpunit": "^1.0",
-                "phpstan/phpstan-strict-rules": "^1.0",
-                "phpunit/phpunit": "^9.5.26|^10.0|^11.0",
-                "qossmic/deptrac-shim": "^1.0",
-                "rector/rector": "^1.0",
-                "symfony/phpunit-bridge": "^6.1|^7.0",
-                "symplify/easy-coding-standard": "^12.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "OTPHP\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Florent Morselli",
-                    "homepage": "https://github.com/Spomky"
-                },
-                {
-                    "name": "All contributors",
-                    "homepage": "https://github.com/Spomky-Labs/otphp/contributors"
-                }
-            ],
-            "description": "A PHP library for generating one time passwords according to RFC 4226 (HOTP Algorithm) and the RFC 6238 (TOTP Algorithm) and compatible with Google Authenticator",
-            "homepage": "https://github.com/Spomky-Labs/otphp",
-            "keywords": [
-                "FreeOTP",
-                "RFC 4226",
-                "RFC 6238",
-                "google authenticator",
-                "hotp",
-                "otp",
-                "totp"
-            ],
-            "support": {
-                "issues": "https://github.com/Spomky-Labs/otphp/issues",
-                "source": "https://github.com/Spomky-Labs/otphp/tree/11.3.0"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/Spomky",
-                    "type": "github"
-                },
-                {
-                    "url": "https://www.patreon.com/FlorentMorselli",
-                    "type": "patreon"
-                }
-            ],
-            "time": "2024-06-12T11:22:32+00:00"
-        },
-        {
             "name": "symfony/deprecation-contracts",
             "version": "v3.5.1",
             "source": {
@@ -1291,7 +1294,8 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "expressionengine/flysystem": 20,
-        "expressionengine/flysystem-cached-adapter": 20
+        "expressionengine/flysystem-cached-adapter": 20,
+        "expressionengine/otphp": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

@@ -26,7 +26,7 @@
         "expressionengine/flysystem-cached-adapter": "dev-master",
         "mlocati/ip-lib": "^1.18",
         "bacon/bacon-qr-code": "^3.0",
-        "spomky-labs/otphp": "^11.0"
+        "expressionengine/otphp": "11.4.x-dev"
     },
     "repositories": [
         {
@@ -36,6 +36,10 @@
         {
             "type": "vcs",
             "url": "https://github.com/ExpressionEngine/flysystem-cached-adapter"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/ExpressionEngine/otphp"
         }
     ],
     "config": {
