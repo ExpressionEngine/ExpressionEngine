@@ -80,33 +80,33 @@ if (isset($setting['fields']) && !empty($setting['fields'])) {
 
 $label_attr = '';
 $fieldset_arialabelled = '';
-foreach ($setting['fields'] as $field_key => $field_value) {
-    if (isset($field_value['type'])) {
-        switch ($field['type']):
-            case 'text':
-            case 'number':
-            case 'file':
-            case 'password':
-            case 'textarea':
-            case 'checkbox':
-            case 'multiselect':
-            case 'radio_block':
-            case 'radio':
-            case 'inline_radio':
-                $label_attr = ' for="label_' . $setting['title'] . '"';
-            case 'yes_no':
-            case 'toggle':
-                $label_attr = ' for="label_' . $field_key . '"';
-                break;
-            case 'dropdown':
-                $label_attr = ' for="label_' . implode('-', array_keys($setting['fields'])) . '"';
-                break;
-            case 'slider':
-                $label_attr = ' id="label_' . $setting['title'] . '"';
-                break;
-        endswitch;
-    }
-}
+// foreach ($setting['fields'] as $field_key => $field_value) {
+//     if (isset($field_value['type'])) {
+//         // switch ($field['type']):
+//         //     case 'text':
+//         //     case 'number':
+//         //     case 'file':
+//         //     case 'password':
+//         //     case 'textarea':
+//         //     case 'checkbox':
+//         //     case 'multiselect':
+//         //     case 'radio_block':
+//         //     case 'radio':
+//         //     case 'inline_radio':
+//         //         $label_attr = ' for="label_' . $setting['title'] . '"';
+//         //     case 'yes_no':
+//         //     case 'toggle':
+//         //         $label_attr = ' for="label_' . $field_key . '"';
+//         //         break;
+//         //     case 'dropdown':
+//         //         $label_attr = ' for="label_' . implode('-', array_keys($setting['fields'])) . '"';
+//         //         break;
+//         //     case 'slider':
+//         //         $label_attr = ' id="label_' . $setting['title'] . '"';
+//         //         break;
+//         // endswitch;
+//     }
+// }
 
 // Grids have to be in a div for an overflow bug in Firefox
 $element = ($grid) ? 'div' : 'fieldset'; 

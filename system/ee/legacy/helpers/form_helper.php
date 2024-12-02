@@ -317,7 +317,7 @@ if (! function_exists('form_hidden')) {
 if (! function_exists('form_input')) {
     function form_input($data = '', $value = '', $extra = '')
     {
-        $defaults = array('type' => 'text', 'name' => ((! is_array($data)) ? $data : ''), 'value' => $value, 'aria-label' => lang('input_text_aria_label'), 'id' => 'label_id_' . $data['name']);
+        $defaults = array('type' => 'text', 'name' => ((! is_array($data)) ? $data : ''), 'value' => $value, 'aria-label' => lang('input_text_aria_label'));
 
         return "<input " . _parse_form_attributes($data, $defaults) . $extra . " />";
     }
