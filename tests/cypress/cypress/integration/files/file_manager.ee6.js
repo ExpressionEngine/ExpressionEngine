@@ -820,7 +820,7 @@ context('File Manager', () => {
 
                 cy.get('.file-grid__wrapper .file-grid__file .file-metadata__wrapper').then(function($td) {
                     let files_switched = _.map($td, function(el) {
-                        return $(el).find('span').first().text();
+                        return $(el).find('span:not(.sr-only)').first().text();
                     })
                     expect(files_switched).to.deep.equal(sorted_files)
                 })
@@ -857,7 +857,7 @@ context('File Manager', () => {
                     cy.wait(1000)//give JS time to render
                     cy.get('.file-grid__wrapper .file-grid__file .file-metadata__wrapper').then(function($td) {
                         let files_by_title = _.map($td, function(el) {
-                            return $(el).find('span').first().text();
+                            return $(el).find('span:not(.sr-only)').first().text();
                         })
                         expect(files_by_title).to.not.deep.equal(files_by_date)
                         expect(files_by_title).to.not.deep.equal(files_by_date_reversed)
@@ -869,7 +869,7 @@ context('File Manager', () => {
                         cy.wait(1000)//give JS time to render
                         cy.get('.file-grid__wrapper .file-grid__file .file-metadata__wrapper').then(function($td) {
                             let files_by_title_reversed = _.map($td, function(el) {
-                                return $(el).find('span').first().text();
+                                return $(el).find('span:not(.sr-only)').first().text();
                             })
                             expect(files_by_title_reversed).to.deep.equal(files_by_title.reverse())
                         })

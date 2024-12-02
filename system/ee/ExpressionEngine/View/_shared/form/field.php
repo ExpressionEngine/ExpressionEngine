@@ -180,7 +180,7 @@ case 'textarea':
 <?php break;
     // no break
 case 'multiselect': ?>
-    <div class="fields-select fields-multiselect <?=$class?>" aria-labelledby="<?=$aria_labelledby?>">
+    <div class="fields-select fields-multiselect <?=$class?>" aria-labelledby="">
         <div class="field-inputs">
             <?php foreach ($field['choices'] as $field_name => $options): ?>
                 <label>
