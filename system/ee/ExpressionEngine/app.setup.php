@@ -55,6 +55,7 @@ use ExpressionEngine\Service\TemplateGenerator;
 use ExpressionEngine\Service\View;
 use ExpressionEngine\Addons\Spam\Service\Spam;
 use ExpressionEngine\Addons\FilePicker\Service\FilePicker;
+use ExpressionEngine\Service\Generator\TemplateGeneratorGenerator;
 use ExpressionEngine\Service\Generator\ActionGenerator;
 use ExpressionEngine\Service\Generator\AddonGenerator;
 use ExpressionEngine\Service\Generator\CommandGenerator;
@@ -441,6 +442,13 @@ $setup = [
             $str = $ee->make('Str');
 
             return new TemplateTagGenerator($filesystem, $str, $data);
+        },
+
+        'TemplateGeneratorGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
+
+            return new TemplateGeneratorGenerator($filesystem, $str, $data);
         },
 
         'WidgetGenerator' => function ($ee, $data) {
