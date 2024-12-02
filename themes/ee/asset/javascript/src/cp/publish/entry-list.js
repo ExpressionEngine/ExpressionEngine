@@ -144,7 +144,7 @@ $(document).ready(function () {
 	});
 
 
-	// set coolie to remember last user choose about 
+	// set cookie to remember last user choose about 
 	// should there be a search only by titles or not
 	function setCookie(name, value, days) {
 		var date = new Date();
