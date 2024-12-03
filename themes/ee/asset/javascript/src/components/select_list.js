@@ -631,12 +631,12 @@ function FieldInputs(props) {
   }
 
   if (props.nested) {
-    return React.createElement(React.Fragment, null, props.ariaLabel && React.createElement("output", {
+    return React.createElement(React.Fragment, null, React.createElement("ul", {
+      className: 'field-inputs lots-of-checkboxes__items field-nested' + divClass
+    }, props.children), props.ariaLabel && React.createElement("output", {
       "class": "sr-only",
       id: props.ariaLabel
-    }, EE.lang.associated_label_info), React.createElement("ul", {
-      className: 'field-inputs lots-of-checkboxes__items field-nested' + divClass
-    }, props.children));
+    }, EE.lang.associated_label_info));
   }
 
   return React.createElement("div", {

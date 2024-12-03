@@ -533,12 +533,13 @@ function FieldInputs (props) {
   if (props.nested) {
     return (
       <>
-        {props.ariaLabel && 
-          <output class="sr-only" id={props.ariaLabel}>{EE.lang.associated_label_info}</output>
-        }
         <ul className={'field-inputs lots-of-checkboxes__items field-nested' + divClass}>
           {props.children}
         </ul>
+
+        {props.ariaLabel && 
+          <output class="sr-only" id={props.ariaLabel}>{EE.lang.associated_label_info}</output>
+        }
       </>
     )
   }
