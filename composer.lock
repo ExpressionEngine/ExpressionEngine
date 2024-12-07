@@ -4,62 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cbbcced7af7756a8ac3d1b01b553d756",
+    "content-hash": "6bc4fb11a20ec9f8c36f8ea41dae0ada",
     "packages": [
-        {
-            "name": "bacon/bacon-qr-code",
-            "version": "v3.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Bacon/BaconQrCode.git",
-                "reference": "f9cc1f52b5a463062251d666761178dbdb6b544f"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Bacon/BaconQrCode/zipball/f9cc1f52b5a463062251d666761178dbdb6b544f",
-                "reference": "f9cc1f52b5a463062251d666761178dbdb6b544f",
-                "shasum": ""
-            },
-            "require": {
-                "dasprid/enum": "^1.0.3",
-                "ext-iconv": "*",
-                "php": "^8.1"
-            },
-            "require-dev": {
-                "phly/keep-a-changelog": "^2.12",
-                "phpunit/phpunit": "^10.5.11 || 11.0.4",
-                "spatie/phpunit-snapshot-assertions": "^5.1.5",
-                "squizlabs/php_codesniffer": "^3.9"
-            },
-            "suggest": {
-                "ext-imagick": "to generate QR code images"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "BaconQrCode\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-2-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Ben Scholzen 'DASPRiD'",
-                    "email": "mail@dasprids.de",
-                    "homepage": "https://dasprids.de/",
-                    "role": "Developer"
-                }
-            ],
-            "description": "BaconQrCode is a QR code generator for PHP.",
-            "homepage": "https://github.com/Bacon/BaconQrCode",
-            "support": {
-                "issues": "https://github.com/Bacon/BaconQrCode/issues",
-                "source": "https://github.com/Bacon/BaconQrCode/tree/v3.0.1"
-            },
-            "time": "2024-10-01T13:55:55+00:00"
-        },
         {
             "name": "bamarni/composer-bin-plugin",
             "version": "1.8.2",
@@ -166,6 +112,70 @@
                 "source": "https://github.com/DASPRiD/Enum/tree/1.0.6"
             },
             "time": "2024-08-09T14:30:48+00:00"
+        },
+        {
+            "name": "expressionengine/bacon-qr-code",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ExpressionEngine/BaconQrCode.git",
+                "reference": "a073d05efe97cd77d904a30c8c2b99ea9b7dcfd9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ExpressionEngine/BaconQrCode/zipball/a073d05efe97cd77d904a30c8c2b99ea9b7dcfd9",
+                "reference": "a073d05efe97cd77d904a30c8c2b99ea9b7dcfd9",
+                "shasum": ""
+            },
+            "require": {
+                "dasprid/enum": "^1.0.3",
+                "ext-iconv": "*",
+                "php": "^8.1"
+            },
+            "require-dev": {
+                "phly/keep-a-changelog": "^2.12",
+                "phpunit/phpunit": "^10.5.11 || 11.0.4",
+                "spatie/phpunit-snapshot-assertions": "^5.1.5",
+                "squizlabs/php_codesniffer": "^3.9"
+            },
+            "suggest": {
+                "ext-imagick": "to generate QR code images"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "BaconQrCode\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "BaconQrCodeTest\\": "test/"
+                }
+            },
+            "archive": {
+                "exclude": [
+                    "/test",
+                    "/phpunit.xml.dist"
+                ]
+            },
+            "license": [
+                "BSD-2-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Ben Scholzen 'DASPRiD'",
+                    "email": "mail@dasprids.de",
+                    "homepage": "https://dasprids.de/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "BaconQrCode is a QR code generator for PHP.",
+            "homepage": "https://github.com/Bacon/BaconQrCode",
+            "support": {
+                "source": "https://github.com/ExpressionEngine/BaconQrCode/tree/main"
+            },
+            "time": "2024-12-07T14:12:39+00:00"
         },
         {
             "name": "expressionengine/flysystem",
@@ -326,17 +336,17 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ExpressionEngine/otphp.git",
-                "reference": "bb60f3fde10fee9e655f6bcaaba7b2fe2d917731"
+                "reference": "fa12f47774fe4d94fa57d025ca3f3bfe12eff208"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ExpressionEngine/otphp/zipball/bb60f3fde10fee9e655f6bcaaba7b2fe2d917731",
-                "reference": "bb60f3fde10fee9e655f6bcaaba7b2fe2d917731",
+                "url": "https://api.github.com/repos/ExpressionEngine/otphp/zipball/fa12f47774fe4d94fa57d025ca3f3bfe12eff208",
+                "reference": "fa12f47774fe4d94fa57d025ca3f3bfe12eff208",
                 "shasum": ""
             },
             "require": {
                 "ext-mbstring": "*",
-                "paragonie/constant_time_encoding": "^2.0 || ^3.0",
+                "paragonie/constant_time_encoding": "^2.0",
                 "psr/clock": "^1.0",
                 "symfony/deprecation-contracts": "^3.2"
             },
@@ -403,7 +413,7 @@
                     "url": "https://www.patreon.com/FlorentMorselli"
                 }
             ],
-            "time": "2024-12-01T15:36:17+00:00"
+            "time": "2024-12-07T14:13:01+00:00"
         },
         {
             "name": "graham-campbell/result-type",
@@ -596,24 +606,24 @@
         },
         {
             "name": "paragonie/constant_time_encoding",
-            "version": "v3.0.0",
+            "version": "v2.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paragonie/constant_time_encoding.git",
-                "reference": "df1e7fde177501eee2037dd159cf04f5f301a512"
+                "reference": "52a0d99e69f56b9ec27ace92ba56897fe6993105"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paragonie/constant_time_encoding/zipball/df1e7fde177501eee2037dd159cf04f5f301a512",
-                "reference": "df1e7fde177501eee2037dd159cf04f5f301a512",
+                "url": "https://api.github.com/repos/paragonie/constant_time_encoding/zipball/52a0d99e69f56b9ec27ace92ba56897fe6993105",
+                "reference": "52a0d99e69f56b9ec27ace92ba56897fe6993105",
                 "shasum": ""
             },
             "require": {
-                "php": "^8"
+                "php": "^7|^8"
             },
             "require-dev": {
-                "phpunit/phpunit": "^9",
-                "vimeo/psalm": "^4|^5"
+                "phpunit/phpunit": "^6|^7|^8|^9",
+                "vimeo/psalm": "^1|^2|^3|^4"
             },
             "type": "library",
             "autoload": {
@@ -659,7 +669,7 @@
                 "issues": "https://github.com/paragonie/constant_time_encoding/issues",
                 "source": "https://github.com/paragonie/constant_time_encoding"
             },
-            "time": "2024-05-08T12:36:18+00:00"
+            "time": "2024-05-08T12:18:48+00:00"
         },
         {
             "name": "phpoption/phpoption",
@@ -1295,6 +1305,7 @@
     "stability-flags": {
         "expressionengine/flysystem": 20,
         "expressionengine/flysystem-cached-adapter": 20,
+        "expressionengine/bacon-qr-code": 20,
         "expressionengine/otphp": 20
     },
     "prefer-stable": false,
