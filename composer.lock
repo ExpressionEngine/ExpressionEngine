@@ -119,12 +119,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ExpressionEngine/BaconQrCode.git",
-                "reference": "a073d05efe97cd77d904a30c8c2b99ea9b7dcfd9"
+                "reference": "867da3c20ce04ab6abe2d00f9bb505df5507e89a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ExpressionEngine/BaconQrCode/zipball/a073d05efe97cd77d904a30c8c2b99ea9b7dcfd9",
-                "reference": "a073d05efe97cd77d904a30c8c2b99ea9b7dcfd9",
+                "url": "https://api.github.com/repos/ExpressionEngine/BaconQrCode/zipball/867da3c20ce04ab6abe2d00f9bb505df5507e89a",
+                "reference": "867da3c20ce04ab6abe2d00f9bb505df5507e89a",
                 "shasum": ""
             },
             "require": {
@@ -175,7 +175,7 @@
             "support": {
                 "source": "https://github.com/ExpressionEngine/BaconQrCode/tree/main"
             },
-            "time": "2024-12-07T14:12:39+00:00"
+            "time": "2024-12-08T07:06:43+00:00"
         },
         {
             "name": "expressionengine/flysystem",
@@ -336,12 +336,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ExpressionEngine/otphp.git",
-                "reference": "fa12f47774fe4d94fa57d025ca3f3bfe12eff208"
+                "reference": "befe85a53a5358f54ebeb3e81155b618238ecbe1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ExpressionEngine/otphp/zipball/fa12f47774fe4d94fa57d025ca3f3bfe12eff208",
-                "reference": "fa12f47774fe4d94fa57d025ca3f3bfe12eff208",
+                "url": "https://api.github.com/repos/ExpressionEngine/otphp/zipball/befe85a53a5358f54ebeb3e81155b618238ecbe1",
+                "reference": "befe85a53a5358f54ebeb3e81155b618238ecbe1",
                 "shasum": ""
             },
             "require": {
@@ -413,7 +413,7 @@
                     "url": "https://www.patreon.com/FlorentMorselli"
                 }
             ],
-            "time": "2024-12-07T14:13:01+00:00"
+            "time": "2024-12-08T07:06:06+00:00"
         },
         {
             "name": "graham-campbell/result-type",
