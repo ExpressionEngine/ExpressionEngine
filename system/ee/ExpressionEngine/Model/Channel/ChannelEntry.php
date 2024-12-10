@@ -224,11 +224,6 @@ class ChannelEntry extends ContentModel
         $this->setProperty('day', ee()->localize->format_date('%d', $entry_timestamp));
     }
 
-    public function get__title()
-    {
-        return ee('Security/XSS')->clean($this->getRawProperty('title'));
-    }
-
     public function set__expiration_date($expiration_date)
     {
         $this->setRawProperty('expiration_date', $this->stringToTimestamp($expiration_date));

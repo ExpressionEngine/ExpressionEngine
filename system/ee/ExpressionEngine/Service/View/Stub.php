@@ -225,7 +225,7 @@ class Stub extends View
                 ];
                 // Check with and without the .php extension
                 foreach($files as $file) {
-                    if ((strpos($file, '..') == false) && file_exists($file)) {
+                    if ((strpos($file, '..') == false) && file_exists($file) && !is_dir($file)) {
                         // check for template engine agreement modify this stub's engine if the file differs
                         $engine = $this->getEngineFromPath($file);
                         if($this->templateEngine != $engine) {

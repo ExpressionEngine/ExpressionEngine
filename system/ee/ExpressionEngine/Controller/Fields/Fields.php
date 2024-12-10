@@ -193,7 +193,7 @@ class Fields extends AbstractFieldsController
 
             $data[] = [
                 'id' => $field->getId(),
-                'label' => \htmlentities((string) $field->field_label, ENT_QUOTES, 'UTF-8'),
+                'label' => \htmlspecialchars((string) $field->field_label),
                 'faded' => strtolower($fieldtype),
                 'href' => $edit_url,
                 'extra' => [
@@ -211,7 +211,7 @@ class Fields extends AbstractFieldsController
                     'name' => 'selection[]',
                     'value' => $field->getId(),
                     'data' => [
-                        'confirm' => lang('field') . ': <b>' . \htmlentities((string) $field->field_label, ENT_QUOTES, 'UTF-8') . '</b>'
+                        'confirm' => lang('field') . ': <b>' . \htmlspecialchars((string) $field->field_label) . '</b>'
                     ]
                 ] : null
             ];
