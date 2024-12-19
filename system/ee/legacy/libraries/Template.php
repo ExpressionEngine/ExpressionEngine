@@ -691,10 +691,11 @@ class EE_Template
      * @param  array $layout_vars Layout variables to parser, 'variable_name' => 'content'
      * @return string The parsed template/string
      */
-    private function parseLayoutVariables($str, $layout_vars)
+    public function parseLayoutVariables($str, $layout_vars)
     {
         $this->log_item("Layout Variables:", $layout_vars);
         $this->layout_conditionals = [];
+        $layout_conditionals = [];
 
         // get all the declared layout variables (excluding layout:contents)
         if (preg_match_all('/' . LD . 'layout:(?!\bset|contents\b)([^!]+?)(' . RD . '|\s|:)/', $str, $matches)) {
