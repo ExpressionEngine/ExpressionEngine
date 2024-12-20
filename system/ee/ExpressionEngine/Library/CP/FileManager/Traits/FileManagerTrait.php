@@ -349,22 +349,10 @@ trait FileManagerTrait
             ->all();
 
         $data = array();
-        $missing_files = false;
-
-        $destinationsToEagerLoad = [];
 
         foreach ($files as $file) {
             if (! $file->memberHasAccess($member)) {
                 continue;
-            }
-
-            // We only need to eager load contents for destinations that are displaying
-            // files in this current page of the listing
-            if (! in_array($file->upload_location_id, $destinationsToEagerLoad)) {
-                if ($file->UploadDestination->getProperty('adapter') != 'local' && $file->UploadDestination->exists()) {
-                    $file->UploadDestination->eagerLoadContents();
-                }
-                $destinationsToEagerLoad[$file->upload_location_id] = $file->upload_location_id;
             }
 
             $attrs = [
@@ -375,11 +363,6 @@ trait FileManagerTrait
 
             if ($file->isDirectory()) {
                 $attrs['file_upload_id'] = $file->upload_location_id . '.' . $file->file_id;
-            }
-
-            if (! $file->exists()) {
-                $attrs['class'] = 'missing';
-                $missing_files = true;
             }
 
             if ($preselectedFileId && $file->file_id == $preselectedFileId) {
@@ -423,14 +406,14 @@ trait FileManagerTrait
             );
         }
 
-        if ($missing_files) {
-            ee('CP/Alert')->makeInline('missing-files')
-                ->asWarning()
-                ->cannotClose()
-                ->withTitle(lang('files_not_found'))
-                ->addToBody(lang('files_not_found_desc'))
-                ->now();
-        }
+        // Add the missing files alert in a hidden state so that JS can show it if a file is missing
+        ee('CP/Alert')->makeInline('missing-files')
+            ->asWarning()
+            ->cannotClose()
+            ->withTitle(lang('files_not_found'))
+            ->addToBody(lang('files_not_found_desc'))
+            ->hide()
+            ->now();
 
         $table->setData($data);
 

@@ -60,15 +60,12 @@ class Thumbnail
         $this->setDefault();
 
         if ($file) {
-            if (! $file->exists()) {
-                $this->setMissing();
-                return;
-            } elseif ($file->isDirectory()) {
+            if ($file->isDirectory()) {
                 $this->tag = '<i class="fal fa-folder fa-3x"></i>';
             } elseif ($file->isEditableImage() || $file->isSVG()) {
                 $this->url = $file->getAbsoluteThumbnailURL() . "?v={$file->modified_date}";
                 $this->path = $file->getAbsoluteThumbnailPath();
-                $this->tag = '<img src="' . $this->url . '" alt="' . $file->title . '" title="' . $file->title .'" class="thumbnail_img" />';
+                $this->tag = '<img src="' . $this->url . '" fallback-src="'. $file->getAbsoluteUrl().'" alt="' . $file->title . '" title="' . $file->title .'" class="thumbnail_img" onerror="window.addEventListener(\'load\', window.EE.cp.fallbackImage(this))" />';
             } else {
                 switch ($file->file_type) {
                     case 'doc':
@@ -100,7 +97,11 @@ class Thumbnail
                 }
             }
 
-            $this->filesystem = $file->UploadDestination->getFilesystem();
+            try {
+                $this->filesystem = $file->UploadDestination->getFilesystem();
+            }catch(\Exception $e) {
+                $this->setMissing();
+            }
         }
     }
 

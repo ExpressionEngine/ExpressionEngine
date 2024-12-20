@@ -419,6 +419,32 @@ class Files extends AbstractFilesController
         ee()->cp->render('files/delete_confirm', $vars);
     }
 
+    // Ajax endpoint for creating and retrieving a File's thumbnail if applicable
+    public function createMissingThumbnail($file)
+    {
+        $file = ee('Model')->get('FileSystemEntity', (int) $file)->first();
+
+        if(empty($file) || !$file->exists()) {
+            return ee('Response')->setStatus(404);
+        }
+
+        if(!$file->isFile() || !$file->isImage()) {
+            return ee('Response')->setStatus(422);
+        }
+
+        $thumb = ee('Thumbnail')->get($file);
+
+        if (! $thumb->exists()) {
+            $thumb = ee('Thumbnail')->make($file);
+        }
+
+        return ee()->output->send_ajax_response([
+            'url' => $thumb->url,
+            'path' => $thumb->path,
+            'tag' => $thumb->tag
+        ]);
+    }
+
     private function overwriteOrRename($file, $original_name)
     {
         $vars = array(

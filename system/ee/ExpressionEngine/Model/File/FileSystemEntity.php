@@ -354,10 +354,6 @@ class FileSystemEntity extends ContentModel
 
         $filesystem = $this->UploadDestination->getFilesystem();
 
-        if (! $filesystem->exists($this->getAbsoluteManipulationPath($manipulation))) {
-            return $this->getAbsoluteURL();
-        }
-
         return $filesystem->getUrl($this->getSubfoldersPath() . '_' . $manipulation . '/'  . $this->file_name);
     }
 

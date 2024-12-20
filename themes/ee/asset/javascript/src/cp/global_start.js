@@ -473,7 +473,7 @@ EE.cp.refreshSessionData = function(event, base) {
 
 	if (session_data) {
 		session_data = session_data[0];
-		var base_url = /^([^&]+)/.exec(EE.BASE); 
+		var base_url = /^([^&]+)/.exec(EE.BASE);
 		json_str = base_url[0] + '/login/refresh_csrf_token' + session_data;
 	}
 
@@ -563,6 +563,57 @@ EE.insert_placeholders = function () {
 		.trigger('blur');
 	});
 };
+
+// Replace images with fallback-src if available
+EE.cp.fallbackImage = function(element)
+{
+    let $el = $(element);
+
+    // If the element has a fallback-src and it is not the same as the current src we will swap
+    if($el.attr('fallback-src') && $el.attr('fallback-src') !== $el.attr('src')) {
+
+        let replaceSrc = function($el) {
+            $el.addClass('img-fallback');
+            $el.attr('src', $el.attr('fallback-src'));
+            $el.parent('.imgpreview').attr('data-url', $el.attr('fallback-src'));
+        };
+
+        // If this is a thumbnail try to regenerate missing thumbnail
+        if($el.hasClass('thumbnail_img')) {
+            let fileId = $el.closest('tr[title="'+$el.attr('title')+'"]').attr('file_id');
+            $.ajax({
+                url: EE.BASE + "/files/createMissingThumbnail/" + fileId,
+                success: function(data) {
+                    if(data.url !== $el.attr('src')) {
+                        $el.attr('src', data.url);
+                        $el.parent('.imgpreview').attr('data-url', data.url);
+                    }else{
+                        replaceSrc($el);
+                    }
+                },
+                error: function() {
+                    replaceSrc($el);
+                },
+                dataType: 'json'
+            });
+        }else{
+            replaceSrc($el);
+        }
+    }else{
+        $el.parent('.imgpreview').attr('data-url', EE.PATH_CP_GBL_IMG + 'missing.jpg');
+
+        // Update parent tr display
+        let $tr = $el.closest('tr[title="'+$el.attr('title')+'"]');
+        if($tr.length == 1) {
+            $tr.addClass('missing');
+            $tr.find('.file-not-found.hidden').removeClass('hidden');
+        }
+
+        // Display the missing-files alert banner if it is present
+        $('.app-notice-missing-files.hidden').removeClass('hidden');
+        $el.replaceWith('<i class="fal fa-exclamation-triangle fa-3x"></i>');
+    }
+}
 
 /**
  * Handle idle / inaction between windows
@@ -720,7 +771,7 @@ EE.cp.broadcastEvents = (function() {
 
 				if (session_data) {
 					session_data = session_data[0];
-					var base_url = /^([^&]+)/.exec(EE.BASE); 
+					var base_url = /^([^&]+)/.exec(EE.BASE);
 					json_str = base_url[0] + '/login/lock_cp' + session_data;
 				}
 
