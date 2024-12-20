@@ -586,6 +586,47 @@ class File extends AbstractFilesController
         ee()->load->helper('download');
         force_download($file->file_name, $file->UploadDestination->getFilesystem()->read($file->getAbsolutePath()));
     }
+
+    public function exists($id)
+    {
+        $file = ee('Model')->get('File', $id)
+            ->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
+            ->first();
+
+        if(empty($file) || !$file->exists()) {
+            return ee('Response')->setStatus(404);
+        }
+
+        return ee('Response')->setStatus(200);
+    }
+
+    // Ajax endpoint for creating and retrieving a File's thumbnail if applicable
+    public function createMissingThumbnail($id)
+    {
+        $file = ee('Model')->get('File', (int) $id)
+            ->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
+            ->first();
+
+        if(empty($file) || !$file->exists()) {
+            return ee('Response')->setStatus(404);
+        }
+
+        if(!$file->isFile() || !$file->isImage()) {
+            return ee('Response')->setStatus(422);
+        }
+
+        $thumb = ee('Thumbnail')->get($file);
+
+        if (! $thumb->exists()) {
+            $thumb = ee('Thumbnail')->make($file);
+        }
+
+        return ee()->output->send_ajax_response([
+            'url' => $thumb->url,
+            'path' => $thumb->path,
+            'tag' => $thumb->tag
+        ]);
+    }
 }
 
 // EOF

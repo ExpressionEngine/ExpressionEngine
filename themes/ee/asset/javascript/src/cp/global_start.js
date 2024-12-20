@@ -582,7 +582,7 @@ EE.cp.fallbackImage = function(element)
         if($el.hasClass('thumbnail_img')) {
             let fileId = $el.closest('tr[title="'+$el.attr('title')+'"]').attr('file_id');
             $.ajax({
-                url: EE.BASE + "/files/createMissingThumbnail/" + fileId,
+                url: EE.BASE + "/files/file/createMissingThumbnail/" + fileId,
                 success: function(data) {
                     if(data.url !== $el.attr('src')) {
                         $el.attr('src', data.url);
@@ -601,16 +601,6 @@ EE.cp.fallbackImage = function(element)
         }
     }else{
         $el.parent('.imgpreview').attr('data-url', EE.PATH_CP_GBL_IMG + 'missing.jpg');
-
-        // Update parent tr display
-        let $tr = $el.closest('tr[title="'+$el.attr('title')+'"]');
-        if($tr.length == 1) {
-            $tr.addClass('missing');
-            $tr.find('.file-not-found.hidden').removeClass('hidden');
-        }
-
-        // Display the missing-files alert banner if it is present
-        $('.app-notice-missing-files.hidden').removeClass('hidden');
         $el.replaceWith('<i class="fal fa-exclamation-triangle fa-3x"></i>');
     }
 }
