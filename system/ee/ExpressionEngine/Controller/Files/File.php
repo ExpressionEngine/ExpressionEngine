@@ -587,6 +587,7 @@ class File extends AbstractFilesController
         force_download($file->file_name, $file->UploadDestination->getFilesystem()->read($file->getAbsolutePath()));
     }
 
+    // Check if a given file exists in the filesystem
     public function exists($id)
     {
         $file = ee('Model')->get('File', $id)

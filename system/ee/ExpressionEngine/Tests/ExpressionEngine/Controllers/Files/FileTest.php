@@ -249,6 +249,22 @@ class FileTest extends TestCase
         ee()->config->resetConfig();
     }
 
+    public function testRoutableMethods()
+    {
+        $controller_methods = [];
+
+        foreach (get_class_methods('ExpressionEngine\Controller\Files\File') as $method) {
+            $method = strtolower($method);
+            if (strncmp($method, '_', 1) != 0) {
+                $controller_methods[] = $method;
+            }
+        }
+
+        sort($controller_methods);
+
+        $this->assertEquals(['createmissingthumbnail', 'download', 'exists', 'getuploadlocationsanddirectoriesdropdownchoices', 'view'], $controller_methods);
+    }
+
     /**
      * Ensure image metadata is considered usable only when dimensions are readable.
      *
