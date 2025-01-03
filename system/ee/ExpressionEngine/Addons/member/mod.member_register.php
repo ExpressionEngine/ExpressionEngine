@@ -85,7 +85,9 @@ class Member_register extends Member
                 ->all()
                 ->indexBy('m_field_id');
 
-            if (!empty($field_chunk)) {
+            $fields = [];
+
+            if (!empty($field_chunk) || !is_null(ee()->TMPL->template_engine)) {
                 foreach ($query->result_array() as $row) {
                     $field = '';
                     $temp = $field_chunk;
@@ -118,7 +120,10 @@ class Member_register extends Member
                             'form:custom_profile_field' => $field,
                             'error' => ee()->session->flashdata('errors')['error:'. $fieldShortname] ?? '',
                         ];
+
+                        $fields[$fieldShortname] = $field_vars;
                         $str .= ee()->TMPL->parse_variables_row($temp, $field_vars);
+
                         continue;
                     }
 
@@ -249,19 +254,26 @@ class Member_register extends Member
         ee()->channel_form_lib->datepicker = get_bool_from_string(ee()->TMPL->fetch_param('datepicker', 'y'));
         ee()->channel_form_lib->compile_js();
 
-        $out = ee()->functions->form_declaration($data) . $reg_form . "\n" . "</form>";
+        $open = ee()->functions->form_declaration($data);
+        $close = '</form>';
 
         //make head appear by default
-        if (strpos($out, LD . 'form_assets' . RD) !== false) {
-            $out = ee()->TMPL->swap_var_single('form_assets', ee()->channel_form_lib->head, $out);
+        if (strpos($reg_form, LD . 'form_assets' . RD) !== false) {
+            $reg_form = ee()->TMPL->swap_var_single('form_assets', ee()->channel_form_lib->head, $reg_form);
         } elseif (get_bool_from_string(ee()->TMPL->fetch_param('include_assets'), 'n')) {
             // Head should only be there if the param is there
-            $out .= ee()->channel_form_lib->head;
+            $close .= ee()->channel_form_lib->head;
         }
         ee()->load->remove_package_path(PATH_ADDONS . 'channel');
 
+        ee()->TMPL->set_data([
+            'open' => $open,
+            'fields' => $fields,
+            'close' => $close,
+        ]);
+
         // Return the final rendered form
-        return $out;
+        return $open . $reg_form . "\n" . $close;
     }
 
     /**

@@ -759,11 +759,11 @@ class Channel_form_lib
             }
         }
 
-        ee()->TMPL->set_data([
+        ee()->TMPL->set_data(array_merge($this->entry->toArray(), [
             'open' => $return,
             'fields' => $custom_field_variables,
             'errors' => array_merge($this->errors, $this->field_errors),
-        ]);
+        ]));
 
         return $return;
     }

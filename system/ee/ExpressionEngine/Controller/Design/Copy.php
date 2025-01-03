@@ -18,6 +18,15 @@ use ExpressionEngine\Model\Channel\ChannelField;
 */
 class Copy extends AbstractDesignController
 {
+    public function __construct()
+    {
+        parent::__construct();
+
+        ee()->load->library('api');
+        ee()->legacy_api->instantiate('template_structure');
+    }
+
+
     public function fields(int $id)
     {
         $field = ee('Model')->get('ChannelField', $id)->first();
@@ -130,7 +139,10 @@ class Copy extends AbstractDesignController
         // Get the field variables
         $vars['fluidFields'][$field->field_name] = $fluidTempGen->getFieldVars($field);
 
-        return ee('View/Stub')->make('fluid_field:field')->setTemplateType('copy')->render($vars);
+        return ee('View/Stub')->make('fluid_field:field')
+            ->setTemplateEngine(ee()->api_template_structure->get_default_template_engine())
+            ->setTemplateType('copy')
+            ->render($vars);
     }
 
     private function fluidFieldGroup(ChannelField $fluidField, int $field_group_id)
@@ -158,7 +170,10 @@ class Copy extends AbstractDesignController
             $vars['fluidFieldGroups'][$fieldGroup->short_name][$field->field_name] = $fluidTempGen->getFieldVars($field);
         }
 
-        return  ee('View/Stub')->make('fluid_field:field')->setTemplateType('copy')->render($vars);
+        return ee('View/Stub')->make('fluid_field:field')
+            ->setTemplateEngine(ee()->api_template_structure->get_default_template_engine())
+            ->setTemplateType('copy')
+            ->render($vars);
     }
 }
 
