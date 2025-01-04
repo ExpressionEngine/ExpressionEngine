@@ -2848,6 +2848,29 @@ class Channel
 
             $show_empty = ee()->TMPL->fetch_param('show_empty');
 
+            $allowedOrderBy = array(
+                'cat_id' => 'c.cat_id',
+                'category_id' => 'c.cat_id',
+                'cat_name' => 'c.cat_name',
+                'category_name' => 'c.cat_name',
+                'cat_url_title' => 'c.cat_url_title',
+                'category_url_title' => 'c.cat_url_title',
+                'cat_description' => 'c.cat_description',
+                'category_description' => 'c.cat_description'
+            );
+            foreach ($this->catfields as $catfield) {
+                $allowedOrderBy[$catfield['field_name']] = 'field_id_' . $catfield['field_id'];
+            }
+
+            $orderby = (string) ee()->TMPL->fetch_param('orderby');
+            $sort = ee()->TMPL->fetch_param('sort', 'ASC');
+            if (!in_array(strtoupper($sort), ['ASC', 'DESC'])) {
+                $sort = 'ASC';
+            }
+            if (!empty($orderby) && isset($allowedOrderBy[$orderby])) {
+                $orderby = ', ' . $allowedOrderBy[$orderby] . ' ' . $sort;
+            }
+
             if ($show_empty == 'no') {
                 // First we'll grab all category ID numbers
 
@@ -2938,7 +2961,7 @@ class Channel
 
                 $sql = substr($sql, 0, -1) . ')';
 
-                $sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order, c.cat_id";
+                $sql .= " ORDER BY c.group_id ASC, c.parent_id ASC" . $orderby . ", c.cat_order ASC, c.cat_id ASC";
 
                 $query = ee()->db->query($sql);
 
@@ -2955,7 +2978,7 @@ class Channel
                     $sql .= " AND c.parent_id = 0";
                 }
 
-                $sql .= " ORDER BY c.group_id, c.parent_id, c.cat_order, c.cat_id";
+                $sql .= " ORDER BY c.group_id ASC, c.parent_id ASC" . $orderby . ", c.cat_order ASC, c.cat_id ASC";
 
                 $query = ee()->db->query($sql);
 
@@ -4074,11 +4097,15 @@ class Channel
         ee()->legacy_api->instantiate('channel_fields');
 
         // Get field names present in the template, sans modifiers
+        $fieldsInTemplate = array_flip(ee()->TMPL->var_single);
+        if (!empty(ee()->TMPL->fetch_param('orderby'))) {
+            $fieldsInTemplate[] = ee()->TMPL->fetch_param('orderby');
+        }
         $clean_field_names = array_map(function ($field) {
             $field = ee('Variables/Parser')->parseVariableProperties($field);
 
             return $field['field_name'];
-        }, array_flip(ee()->TMPL->var_single));
+        }, $fieldsInTemplate);
 
         // Get field IDs for the category fields we need to fetch
         $field_ids = array();
