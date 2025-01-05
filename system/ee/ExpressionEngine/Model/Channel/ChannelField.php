@@ -112,6 +112,7 @@ class ChannelField extends FieldModel
         'field_order' => 'integer',
         'legacy_field_data' => 'enum[y,n]',
         'enable_frontedit' => 'enum[y,n]',
+        'enable_cloning' => 'enum[y,n]',
     );
 
     protected static $_events = array(
@@ -144,6 +145,7 @@ class ChannelField extends FieldModel
     protected $field_settings;
     protected $legacy_field_data;
     protected $enable_frontedit = 'y';
+    protected $enable_cloning = 'y';
 
     public function getStructure()
     {

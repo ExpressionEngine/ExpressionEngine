@@ -824,6 +824,16 @@ class Fields extends AbstractFieldsController
                     )
                 ),
                 array(
+                    'title' => 'enable_cloning',
+                    'desc' => 'enable_cloning_field_desc',
+                    'fields' => array(
+                        'enable_cloning' => array(
+                            'type' => 'yes_no',
+                            'value' => $field->enable_cloning
+                        )
+                    )
+                ),
+                array(
                     'title' => 'make_conditional',
                     'desc' => 'make_conditional_desc',
                     'fields' => array(

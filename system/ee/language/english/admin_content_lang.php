@@ -350,6 +350,10 @@ $lang = array(
 
     'multiselect_options_desc' => '<em><i>Each item in the textarea will be included in a multi select in the publish form.</i>',
 
+    'enable_cloning' => 'Enable Cloning?',
+
+    'enable_cloning_field_desc' => 'When enabled, the contents of this field can be cloned when cloning entries.',
+
     'make_conditional' => 'Make conditional?',
 
     'make_conditional_desc' => 'Only display this field when conditions of other field(s) are met',
