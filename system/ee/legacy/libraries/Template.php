@@ -4266,7 +4266,7 @@ class EE_Template
             $dt = $relative_date->render($depth);
         } elseif (isset($parameters['format'])) {
             $localize = isset($parameters['timezone']) ? $parameters['timezone'] : $localize;
-            $dt = ee()->localize->format_date($parameters['format'], $timestamp, $localize);
+            $dt = ee()->localize->format_date($parameters['format'], $timestamp, $localize, $parameters['lang'] ?? null);
             if ($dt === false) {
                 $this->log_item("Invalid Timestamp: " . $timestamp);
                 $dt = $timestamp;

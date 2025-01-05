@@ -85,7 +85,7 @@ class Localize
      * @param   bool    Return date localized or not
      * @return  string  Formatted date
      */
-    public function format_date($format, $timestamp = null, $localize = true)
+    public function format_date($format, $timestamp = null, $localize = true, $lang = null)
     {
         if (! ($dt = $this->_datetime($timestamp, $localize))) {
             return false;
@@ -99,7 +99,7 @@ class Localize
 
         // Loop through matched date vars and replace them in the $format string
         foreach ($matches[1] as $var) {
-            $format = str_replace($var, $this->_date_string_for_variable($var, $dt), $format);
+            $format = str_replace($var, $this->_date_string_for_variable($var, $dt, $lang), $format);
         }
 
         return $format;
@@ -113,7 +113,7 @@ class Localize
      * @param   datetime    DateTime object on which to call format()
      * @return  string      Value of variable in DateTime object, translated
      */
-    private function _date_string_for_variable($var, $dt)
+    private function _date_string_for_variable($var, $dt, $lang = null)
     {
         // These letters following a percent sign we will convert to their
         // matching PHP date variable value
@@ -134,6 +134,11 @@ class Localize
         $translate = ! (isset(ee()->TMPL)
             && is_object(ee()->TMPL)
             && ee()->TMPL->template_type == 'feed');
+        $otherLang = [];
+        if (!empty($lang) && $lang != ee()->lang->getIdiom()) {
+            $translate = true;
+            $otherLang = ee()->lang->load('core', $lang, true);
+        }
 
         // Remove percent sign for easy comparing and passing to DateTime::format
         $date_var = str_replace('%', '', $var);
@@ -146,16 +151,16 @@ class Localize
                 // the correct translation is returned
                 case 'F':
                     if ($dt->format('F') == 'May' && $translate) {
-                        return lang('May_l');
+                        return $otherLang['May_l'] ?? lang('May_l');
                     }
 
                     break;
                     // Concatenate the RFC 2822 format with translations
                 case 'r':
                     if ($translate) {
-                        $rfc = lang($dt->format('D'));      // Thu
+                        $rfc = $otherLang['D'] ?? lang($dt->format('D'));      // Thu
                         $rfc .= $dt->format(', d ');                        // , 21
-                        $rfc .= lang($dt->format('M')); // Dec
+                        $rfc .= $otherLang['M'] ?? lang($dt->format('M')); // Dec
                         $rfc .= $dt->format(' Y H:i:s O');                  // 2000 16:01:07 +0200
 
                         return $rfc;
@@ -173,7 +178,8 @@ class Localize
             // If it's translatable, return the value for the lang key,
             // otherwise send it straight to DateTime::format
             if ($translate && in_array($date_var, $translatable_date_vars)) {
-                return lang($dt->format($date_var));
+                $str = $dt->format($date_var);
+                return $otherLang[$str] ?? lang($str);
             } else {
                 return $dt->format($date_var);
             }
