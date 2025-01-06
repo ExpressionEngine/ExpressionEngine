@@ -198,9 +198,20 @@ class Layout
             return false;
         }
 
-        $layouts = ee('Model')->get('ChannelLayout')
-            ->filter('site_id', ee()->config->item('site_id'))
-            ->all();
+        if (! is_array($channel_id)) {
+            $channel_id = array($channel_id);
+        }
+
+        if(count($channel_id) > 0) {
+            $layouts = ee('Model')->get('ChannelLayout')
+                ->filter('site_id', ee()->config->item('site_id'))
+                ->filter('channel_id', 'IN', $channel_id)
+                ->all();
+        } else {
+            $layouts = ee('Model')->get('ChannelLayout')
+                ->filter('site_id', ee()->config->item('site_id'))
+                ->all();
+        }
 
         if (! $layouts) {
             return false;

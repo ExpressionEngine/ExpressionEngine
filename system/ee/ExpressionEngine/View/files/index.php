@@ -86,7 +86,7 @@ if (! AJAX_REQUEST) {
                         'text' => lang('copy_link'),
                         // 'attrs' => ' data-action="copy-link"'
                     ];
-                    if (ee('Permission')->can('edit_files') && ee()->uri->segment(3) == 'directory') {
+                    if (ee('Permission')->can('edit_files')) {
                         $options[] = [
                             'value' => "move",
                             'text' => lang('move'),
@@ -140,6 +140,8 @@ if (! AJAX_REQUEST) {
                     $moveChoices[$key] = $vars;
                 }
                 $selected = $dir_id . '.' . (int) ee('Request')->get('directory_id');
+            } else {
+                $moveChoices = $uploadLocationsAndDirectoriesDropdownChoices;
             }
             $modal_vars = array(
                 'name' => 'modal-confirm-move-file',

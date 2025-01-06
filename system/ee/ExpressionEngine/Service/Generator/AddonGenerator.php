@@ -45,7 +45,9 @@ class AddonGenerator
         $this->str = $str;
 
         $this->name = $data['name'];
-        $this->slug = $this->str->snakecase($data['name']);
+        $this->slug = str_replace(' ', '_', $data['name']);
+        $this->slug = str_replace('-', '_', $this->slug);
+        $this->slug = strtolower($this->slug);
         $this->slug_uc = ucfirst($this->slug);
 
         // Setup the generator data

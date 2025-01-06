@@ -248,7 +248,7 @@ class file_grid_ft extends Grid_ft
     // for File Grid, we need to validate grid_min_rows
     public function validate($data)
     {
-        if (!ee('Request')->isAjax() && !empty($this->settings['grid_min_rows']) && (empty($data) || count($data) < $this->settings['grid_min_rows'])) {
+        if (!ee('Request')->isAjax() && !empty($this->settings['grid_min_rows']) && (empty($data) || !isset($data['rows']) || count($data['rows']) < $this->settings['grid_min_rows'])) {
             return sprintf(lang('grid_min_rows_required'), $this->settings['grid_min_rows']);
         }
 

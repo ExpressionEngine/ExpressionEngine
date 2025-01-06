@@ -14,7 +14,6 @@ use ZipArchive;
 use ExpressionEngine\Controller\Files\AbstractFiles as AbstractFilesController;
 use ExpressionEngine\Service\Validation\Result as ValidationResult;
 use ExpressionEngine\Library\CP\Table;
-
 use ExpressionEngine\Library\Data\Collection;
 use ExpressionEngine\Model\File\UploadDestination;
 use ExpressionEngine\Service\File\ViewType;
@@ -138,7 +137,7 @@ class Files extends AbstractFilesController
             // Generate the contents of the new folder modal
             $newFolderModal = ee('View')->make('files/modals/folder')->render([
                 'name' => 'modal-new-folder',
-                'form_url'=> ee('CP/URL')->make('files/createSubdirectory')->compile(),
+                'form_url' => ee('CP/URL')->make('files/createSubdirectory')->compile(),
                 'choices' => $headerVars['uploadLocationsAndDirectoriesDropdownChoices'],
                 'selected' => $id . '.' . (int) ee('Request')->get('directory_id'),
             ]);
@@ -204,6 +203,7 @@ class Files extends AbstractFilesController
         $subdir->file_name = $subdir_name;
         $subdir->upload_location_id = $upload_destination_id;
         $subdir->directory_id = $subdirectory_id;
+        $subdir->site_id = $uploadDirectory->site_id;
 
         //validate before saving on filesystem
         $validation = $subdir->validate();
@@ -371,7 +371,7 @@ class Files extends AbstractFilesController
 
         if ($files->count() == 1) {
             foreach ($files as $file) {
-                $edit_url = ee('CP/URL')->make('files/file/view/' . $file->file_id.'#tab=t-usage');
+                $edit_url = ee('CP/URL')->make('files/file/view/' . $file->file_id . '#tab=t-usage');
             }
         }
 
@@ -643,7 +643,6 @@ class Files extends AbstractFilesController
         $names = array();
         $errors = array();
         foreach ($files as $file) {
-
             //are they not in target place already?
             if ($file->upload_location_id == $upload_destination_id && $file->directory_id == $subdirectory_id) {
                 $errors[$file->file_name] = lang('error_moving_already_there');
@@ -671,19 +670,19 @@ class Files extends AbstractFilesController
             $targetFilesystem = ($file->UploadDestination->id == $targetUploadLocation->id) ? null : $targetUploadLocation->getFilesystem();
             $success = $file->UploadDestination->getFilesystem()->move(
                 $file->getAbsolutePath(),
-                rtrim($targetPath,'\\/') . '/' . $file->file_name,
+                rtrim($targetPath, '\\/') . '/' . $file->file_name,
                 $targetFilesystem
             );
 
             if ($success) {
                 // Update files within a directory if it is changing upload locations
-                if($file->isDirectory() && !is_null($targetFilesystem) && $childIds = $file->getChildIds()) {
+                if ($file->isDirectory() && !is_null($targetFilesystem) && $childIds = $file->getChildIds()) {
                     ee()->db->where_in('file_id', $childIds);
                     ee()->db->update('files', ['upload_location_id' => $targetUploadLocation->id]);
                 }
 
                 // Cleanup any generated files in previous location before updating the location
-                if(!$file->isDirectory()) {
+                if (!$file->isDirectory()) {
                     $file->deleteGeneratedFiles();
                 }
 

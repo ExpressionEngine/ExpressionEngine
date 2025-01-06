@@ -21,8 +21,7 @@ context('Bulk Edit', () => {
     entry_manager.load()
     // Sort by title to normalize sorting since date sort might be inconsistent
     // across environments since entries have the same entry date
-    cy.server()
-    cy.route("GET", "**/cp/publish/edit**").as("sort");
+    cy.intercept("GET", "**/cp/publish/edit**").as("sort");
     entry_manager.get('sort_links').eq(1).click()
     cy.wait('@sort')
     cy.hasNoErrors()
@@ -66,8 +65,6 @@ context('Bulk Edit', () => {
   })
 
   it('should not make categories or comment settings available if entries do not share them', () => {
-    cy.server()
-
     entry_manager.check_entry('About the Label')
     entry_manager.check_entry('Band Title')
     entry_manager.check_entry('Getting to Know ExpressionEngine')
@@ -85,7 +82,7 @@ context('Bulk Edit', () => {
       expect(field_options).to.deep.equal(['Entry Status', 'Expiration date', 'Author'])
     })
 
-    cy.route("GET", "**/cp/publish/bulk-edit**").as("ajax");
+    cy.intercept("GET", "**/cp/publish/bulk-edit**").as("ajax");
     bulk_edit.get('selected_entries').eq(0).find('a').click()
     cy.wait('@ajax')
     //bulk_edit.get('add_field').click()
@@ -100,8 +97,6 @@ context('Bulk Edit', () => {
   })
 
   it('Filter and manage the selected entries on bulk edit', () => {
-    cy.server()
-
     entry_manager.check_entry('About the Label')
     entry_manager.check_entry('Band Title')
     entry_manager.check_entry('Howard')
@@ -109,7 +104,6 @@ context('Bulk Edit', () => {
 
     entry_manager.get('bulk_action').select('Bulk Edit')
     entry_manager.get('action_submit_button').click()
-    
 
     bulk_edit.get('filter_heading').invoke('text').then((text) => { expect(text).to.be.equal('4 Selected Entries') })
     bulk_edit.get('selected_entries_note').contains('Showing 4 of 4')
@@ -120,7 +114,7 @@ context('Bulk Edit', () => {
     bulk_edit.get('selected_entries_note').contains('Showing 1 of 4')
     bulk_edit.get('selected_entries').should('have.length', 1)
 
-    cy.route("GET", "**/cp/publish/bulk-edit**").as("ajax");
+    cy.intercept("GET", "**/cp/publish/bulk-edit**").as("ajax");
     bulk_edit.get('selected_entries').eq(0).find('a').click()
     cy.wait('@ajax')
     bulk_edit.get('filter_heading').invoke('text').then((text) => { expect(text).to.be.equal('3 Selected Entries') })
@@ -203,6 +197,8 @@ context('Bulk Edit', () => {
     cy.wait(100)
     bulk_edit.get('fluid_fields').eq(0).find('div[data-dropdown-react] .select__dropdown-items span:contains("Closed")').click({force:true})
 
+    cy.hasNoErrors()
+
     //bulk_edit.get('save_all_button').click()
     cy.get('button').contains('Save All & Close').first().click()
 
@@ -214,16 +210,12 @@ context('Bulk Edit', () => {
   })
 
   it('should change all the things on the selected entries', () => {
-    cy.server()
-
     entry_manager.check_entry('Band Title')
     entry_manager.check_entry('Getting to Know ExpressionEngine')
     entry_manager.check_entry('Welcome to the Example Site!')
 
     entry_manager.get('bulk_action').select('Bulk Edit')
     entry_manager.get('action_submit_button').click()
-
-    
 
     //bulk_edit.get('add_field').click()
     bulk_edit.get('field_options').should('exist')
@@ -262,8 +254,10 @@ context('Bulk Edit', () => {
     bulk_edit.get('field_options').parent().find('a:contains("Categories")').click()
     bulk_edit.get('fluid_fields').eq(5).find('input[value="2"]').click()
 
+    cy.hasNoErrors()
+
     // Make sure fields retain values after removing an entry!
-    cy.route("GET", "**/cp/publish/bulk-edit**").as("ajax");
+    cy.intercept("GET", "**/cp/publish/bulk-edit**").as("ajax");
     bulk_edit.get('selected_entries').eq(0).find('a').click()
     //cy.wait('@ajax')
     cy.wait(5000) // ajax does not work here for some reason - possibly Cypress bug

@@ -126,7 +126,7 @@ class Templates extends Jumps
             $keywords = explode(' ', $searchString);
 
             foreach ($keywords as $keyword) {
-                $groups->filter('group_name', 'LIKE', '%' . $keyword . '%');
+                $groups->filter('group_name', 'LIKE', '%' . ee()->db->escape_like_str($keyword) . '%');
             }
         }
 
@@ -142,7 +142,7 @@ class Templates extends Jumps
             $keywords = explode(' ', $searchString);
 
             foreach ($keywords as $keyword) {
-                $templates->filter('template_name', 'LIKE', '%' . $keyword . '%');
+                $templates->filter('template_name', 'LIKE', '%' . ee()->db->escape_like_str($keyword) . '%');
             }
         }
 

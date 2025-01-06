@@ -23,8 +23,8 @@ context('Query add-on', () => {
   })
 
   context('Select with exp:query tag', function(){
-    before(function() {
-      cy.visit('index.php/query/index')
+    beforeEach(function() {
+      cy.authVisit('index.php/query/index')
     })
 
     it('File path are not parsed by default', function(){
@@ -35,6 +35,7 @@ context('Query add-on', () => {
     })
     it('{base} variables are parsed', function(){
       var baseUrl = Cypress.config().baseUrl.endsWith('/') ? Cypress.config().baseUrl.slice(0, -1) : Cypress.config().baseUrl
+      cy.log(baseUrl)
       cy.get('.query-results--parsed-bases__3 .query-results--parsed-bases__url').first().invoke('text').should('contain', baseUrl + "/images/avatars/")
       cy.get('.query-results--parsed-bases__3').first().should('have.class', 'odd')
     })

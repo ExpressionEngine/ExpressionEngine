@@ -33,6 +33,8 @@ class Http_header
             'content_location' => 'Content-Location',
             'content_md5' => 'Content-MD5',
             'content_range' => 'Content-Range',
+            'content_security_policy' => 'Content-Security-Policy',
+            'content_security_policy_report_only' => 'Content-Security-Policy-Report-Only',
             'content_type' => 'Content-Type',
             'etag' => 'ETag',
             'expires' => 'Expires',
@@ -130,6 +132,28 @@ class Http_header
         }
 
         return true;
+    }
+
+    /**
+     * Set Content-Security-Policy for response
+     * @param string $value The value for the Content-Security-Policy header
+     * @return bool FALSE
+     */
+    private function set_content_security_policy($value)
+    {
+        ee('Response')->setHeader('Content-Security-Policy', $value);
+        return false;
+    }
+
+    /**
+     * Set Content-Security-Policy-Report-Only for response
+     * @param string $value The value for the Content-Security-Policy-Report-Only header
+     * @return bool FALSE
+     */
+    private function set_content_security_policy_report_only($value)
+    {
+        ee('Response')->setHeader('Content-Security-Policy-Report-Only', $value);
+        return false;
     }
 
     /**

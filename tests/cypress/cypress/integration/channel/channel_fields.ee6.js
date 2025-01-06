@@ -18,6 +18,7 @@ context('Channel Fields', () => {
 
     describe('Creating & editing fields', function() {
         it('Creates new text field', function() {
+            cy.visit('admin.php?/cp/fields/create/1')
             form.createField({
                 type: 'Text Input',
                 label: 'Shipping Method'
@@ -34,6 +35,7 @@ context('Channel Fields', () => {
         })
 
         it('Cannot use reserved words in field_name', function() {
+            cy.visit('admin.php?/cp/fields/create/1')
             form.createField({
                 type: 'Date',
                 label: 'Date'

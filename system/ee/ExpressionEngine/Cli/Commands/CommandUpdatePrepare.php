@@ -12,7 +12,6 @@ namespace ExpressionEngine\Cli\Commands;
 
 use ExpressionEngine\Cli\Cli;
 use ExpressionEngine\Cli\Commands\Upgrade\UpgradeMap;
-use ExpressionEngine\Library\Filesystem\Filesystem;
 
 class CommandUpdatePrepare extends Cli
 {
@@ -312,7 +311,7 @@ class CommandUpdatePrepare extends Cli
 
     private function copyNewEEFiles()
     {
-        $filesystem->copy(
+        ee('Filesystem')->copy(
             SYSPATH,
             $this->upgradeConfig['new_system_path']
         );

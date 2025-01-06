@@ -78,7 +78,7 @@ class Comments extends AbstractPublishController
         $search_value = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
         if (! empty($search_value)) {
             $base_url->setQueryStringVariable('filter_by_keyword', $search_value);
-            $comments->filter('comment', 'LIKE', '%' . $search_value . '%');
+            $comments->filter('comment', 'LIKE', '%' . ee()->db->escape_like_str($search_value) . '%');
         }
 
         if (ee('Request')->get('comment_id')) {
@@ -224,7 +224,7 @@ class Comments extends AbstractPublishController
         $search_value = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
         if (! empty($search_value)) {
             $base_url->setQueryStringVariable('filter_by_keyword', $search_value);
-            $comments->filter('comment', 'LIKE', '%' . $search_value . '%');
+            $comments->filter('comment', 'LIKE', '%' . ee()->db->escape_like_str($search_value) . '%');
         }
 
         $filters = ee('CP/Filter')

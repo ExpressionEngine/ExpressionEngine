@@ -28,6 +28,7 @@ class EE_Validate
     public $errors = array();
     public $enable_log = false;
     public $log_msg = array();
+    private $cur_password;
 
     /**
      * Construct

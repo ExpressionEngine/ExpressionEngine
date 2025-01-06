@@ -350,16 +350,24 @@ class BooleanExpression
 
             // strings
             case '.':
+                $left = (string) $left;
+                $right = (string) $right;
                 return $left . $right;
             case '^=':
-                return strpos($left, (string) $right) === 0;
-            case '*=':
-                return strpos($left, (string) $right) !== false;
-            case '$=':
+                $left = (string) $left;
                 $right = (string) $right;
-
+                return strpos($left, $right) === 0;
+            case '*=':
+                $left = (string) $left;
+                $right = (string) $right;
+                return strpos($left, $right) !== false;
+            case '$=':
+                $left = (string) $left;
+                $right = (string) $right;
                 return substr($left, -strlen($right)) == $right;
             case '~':
+                $left = (string) $left;
+                $right = (string) $right;
                 if (($value = @preg_match($right, $left)) === false) {
                     throw new BooleanExpressionException('Invalid Regular Expression: ' . $right);
                 }
@@ -367,7 +375,7 @@ class BooleanExpression
                 return ($value > 0);
         }
 
-        throw new BooleanExpressionException('Invalid Binary Operator: ' . $token);
+        throw new BooleanExpressionException('Invalid Binary Operator: ' . $op_token->value());
     }
 
     /**

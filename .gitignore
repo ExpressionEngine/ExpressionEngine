@@ -48,6 +48,7 @@ system/user/templates/*
 
 themes/user/*
 themes/ee/asset/javascript/compressed/
+themes/ee/asset/javascript/src/fields/rte/redactorx
 
 
 # Tests ========================================================================

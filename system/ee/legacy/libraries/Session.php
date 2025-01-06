@@ -293,6 +293,7 @@ class EE_Session
             return false;
         }
 
+        $match = (string) $match;
         foreach (explode('|', $ban) as $val) {
             if ($val == '*') {
                 continue;
@@ -945,7 +946,8 @@ class EE_Session
 
             if (! isset($tracker['0'])) {
                 $tracker[] = $uri;
-            } else {
+            // Do not track requests inside the themes folder
+            } else if(strpos($uri, 'themes/') !== 0) {
                 if (count($tracker) == 5) {
                     array_pop($tracker);
                 }
@@ -970,7 +972,7 @@ class EE_Session
         if (ee()->config->item('enable_tracking_cookie') === 'n') {
             return true;
         }
-        
+
         if (is_null($tracker)) {
             $tracker = $this->tracker;
         }
@@ -1264,6 +1266,9 @@ class EE_Session
             'email' => ee('Cookie')->getSignedCookie('my_email', true),
             'url' => ee('Cookie')->getSignedCookie('my_url', true),
             'location' => ee('Cookie')->getSignedCookie('my_location', true),
+            'avatar_filename' => '',
+            'avatar_width' => '',
+            'avatar_height' => '',
             'language' => '',
             'timezone' => ee()->config->item('default_site_timezone'),
             'date_format' => ee()->config->item('date_format') ? ee()->config->item('date_format') : '%n/%j/%Y',

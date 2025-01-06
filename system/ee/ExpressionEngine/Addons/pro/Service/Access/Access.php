@@ -166,7 +166,7 @@ class Access
 
                 case 'expired':
                     static::$hasValidLicense = false;
-                    $this->logLicenseError('pro_license_error_expired', $showAlert);
+                    $this->logLicenseError('pro_license_error_expired');
 
                     break;
 
@@ -178,6 +178,102 @@ class Access
         }
 
         return static::$hasValidLicense;
+    }
+
+    /**
+     * Determine whether the current member has the ability to manage licenses
+     *
+     * @return boolean
+     */
+    public function canManageLicenses()
+    {
+        return ee('Permission')->isSuperAdmin()
+            || ee('Permission')->hasAny(
+                'admin_channels',
+                'admin_addons',
+                'admin_roles',
+                'create_channels',
+                'edit_channels',
+                'delete_channels',
+                'create_channel_fields',
+                'edit_channel_fields',
+                'delete_channel_fields',
+                'create_members',
+                'edit_members',
+                'delete_members'
+            );
+    }
+
+    /**
+     * Get a list of license notices for a given status or set of statuses
+     *
+     * @param string|array $status
+     * @return array
+     */
+    public function getLicenseNotices($status = null, $includePro = false)
+    {
+        if(time() - (int) ee('Cookie')->getSignedCookie('license_notice_seen') <= $this->getLicenseBannerDuration()) {
+            return [];
+        }
+
+        $cacheKey = 'addon_license_statuses';
+        $addonStatuses = ee()->session->cache(__CLASS__, $cacheKey);
+
+        // If we have a cache miss compile the addon status information
+        if($addonStatuses === false) {
+            $addonStatuses = array_reduce(ee('Addon')->all(), function($carry, $addon) {
+                if($addon->isInstalled()) {
+                    $prefix = $addon->getProvider()->getPrefix();
+                    $carry[$prefix] = [
+                        'prefix' => $prefix,
+                        'title' => $addon->getName(),
+                        'status' => $addon->checkCachedLicenseResponse()
+                    ];
+                }
+
+                return $carry;
+            }, []);
+
+            ee()->session->set_cache(__CLASS__, $cacheKey, $addonStatuses);
+        }
+
+        // Filter by a single status or an array of statuses
+        if(!empty($status)) {
+            $status = (is_array($status)) ? $status : [$status];
+            $addonStatuses = array_filter($addonStatuses, function($addon) use($status) {
+                return in_array($addon['status'], $status);
+            });
+        }
+
+        if(!$includePro) {
+            unset($addonStatuses['pro']);
+        }
+
+        return $addonStatuses;
+    }
+
+    public function getLicenseBannerDuration()
+    {
+        return $this->canManageLicenses() ? min(ee()->config->item('cp_session_length') ?: 3600, 14400) : 604800;
+    }
+
+    public function expireAcknowledgement()
+    {
+        if($this->canManageLicenses() || time() > (int) ee('Cookie')->getSignedCookie('license_notice_seen') +  $this->getLicenseBannerDuration()) {
+            ee()->input->delete_cookie('license_notice_seen');
+        }
+    }
+
+    /**
+     * Determine whether or not there is a license notice for ExpressionEngine Pro with the given status
+     *
+     * @param string|array $status
+     * @return boolean
+     */
+    public function hasProNotice($status)
+    {
+        $addons = $this->getLicenseNotices($status, true);
+        return isset($addons['pro']);
     }
 
     public function requiresValidLicense()
@@ -259,7 +355,9 @@ class Access
             $showAlert = false;
         }
 
-        ee()->logger->developer($message, true, 60 * 60 * 24 * 7);
+        // No longer writing these messages to the developer log but showing alerts when applicable
+        // ee()->logger->developer($message, true, 60 * 60 * 24 * 7);
+
         if (REQ == 'CP' && $showAlert) {
             // The user has seen the banner, so we're marking it in the session
             ee('Session')->setProBannerSeen();

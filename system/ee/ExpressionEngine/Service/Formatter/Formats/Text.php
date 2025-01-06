@@ -52,17 +52,21 @@ class Text extends Formatter
 
         $this->content = '';
         foreach ($chars as $index => $char) {
-            $decoded = mb_convert_encoding($char, 'ISO-8859-1', 'UTF-8');
-
-            if ($decoded != '?') {
-                $char = $decoded;
+            if ($this->multibyte) {
+                $ord = mb_ord($char);
+            } else {
+                if (function_exists('mb_convert_encoding')) {
+                    $decoded = mb_convert_encoding($char, 'ISO-8859-1', 'UTF-8');
+                    if ($decoded != '?') {
+                        $char = $decoded;
+                    }
+                }
+                $ord = ord($char);
             }
-
-            $ord = ord($char);
 
             if (isset($accent_map[$ord])) {
                 $this->content .= $accent_map[$ord];
-            } else {
+            } elseif ($ord !== false) { //make sure char is valid character
                 $this->content .= $char;
             }
         }
@@ -614,6 +618,9 @@ class Text extends Formatter
             '#\s+|/+|\|+#i' => $options['separator'],
             // only allow low ascii letters, numbers, dash, dot, underscore, and emoji
             '#[^a-z0-9\-\._' . ee('Emoji')->emojiRegex . ']#iu' => '',
+            // number sign and asterisk could be part of emoji sequence, but we need to strip them off
+            // https://github.com/mathiasbynens/emoji-regex/issues/33
+            '#[\#\*]#i' => $options['separator'],
             // no dot-then-separator (in case multiple sentences were passed)
             '#\.' . $options['separator'] . '#i' => $options['separator'],
             // reduce multiple instances of the separator to a single

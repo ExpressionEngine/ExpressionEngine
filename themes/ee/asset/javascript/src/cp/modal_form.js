@@ -67,6 +67,12 @@ EE.cp.ModalForm = {
 			})
 
 			this.modal.append(iframe)
+		} else if (typeof options.postData !== 'undefined') {
+			$.post(options.url, options.postData, function(result) {
+				that.modalContentsContainer.html(result)
+				that._bindForm(options)
+				options.load(that.modalContentsContainer)
+			})
 		} else {
 			this.modalContentsContainer.load(options.url, function() {
 				that._bindForm(options)
@@ -115,14 +121,14 @@ EE.cp.ModalForm = {
 
 		$('form', this.modal).on('submit', function() {
 
-			$.post(this.action, $(this).serialize(), function(result) {
+			$.post($(this).attr('action'), $(this).serialize(), function(result) {
 				// Probably a validation error
 				if ($.type(result) === 'string') {
 					that.modalContentsContainer.html(result)
 					that._bindForm(options)
 					options.load(that.modalContentsContainer)
 					return
-				} else {
+				} else if (options.success) {
 					options.success(result)
 				}
 
@@ -147,7 +153,7 @@ EE.cp.ModalForm = {
 	 * Creates the form submit handler for a form loaded into an iframe
 	 */
 	_bindIframeForm: function(iframe, options) {
-		$(iframe).contents().find('[data-publish] > form').on('submit', function() {
+		$(iframe).contents().find(':not(.modal) form').on('submit', function() {
 			var params = $(this).serialize() + '&modal_form=y';
 
 			$.post(this.action, params, function(result) {

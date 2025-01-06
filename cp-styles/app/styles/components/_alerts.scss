@@ -287,3 +287,18 @@ $alert-padding-x: 20px;
     margin-bottom: 20px;
   }
 }
+
+// LV banner
+
+.lv-banner__inner {
+  margin-bottom: 0;
+
+	.lv-banner__addons-list {
+		span {
+			a {
+	color: var(--ee-text-primary);
+	font-weight: 500;
+			}
+		}
+	}
+}

@@ -8,7 +8,6 @@ class Updater {
     backup_files() {
         // Make a copy of everything
         preserveFolders.forEach(function(folder) {
-            console.log({ folder });
             fse.copySync(`${basePath}${folder}`, `${backupPath}${folder}`, { 
                 overwrite: true 
             });

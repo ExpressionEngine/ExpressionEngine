@@ -211,14 +211,15 @@ if (typeof PRO == 'undefined') {
         });
 
         $list.sortable({
-            items: '.pro-var-group',
-            handle: '.reorder',
+            items: '.sidebar__link',
             axis: 'y',
             update: function () {
                 var order = [];
 
                 $list.find('[data-id]').each(function () {
-                    order.push($(this).data('id'));
+                    if(jQuery.inArray($(this).data('id'), order) === -1) {
+                        order.push($(this).data('id'));
+                    }
                 });
 
                 $.ajax({

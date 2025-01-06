@@ -100,7 +100,7 @@ if (! function_exists('pro_strpos_all')) {
     {
         $all = array();
 
-        if (preg_match_all('#' . preg_quote($needle, '#') . '#', $haystack, $matches)) {
+        if ($haystack != null && preg_match_all('#' . preg_quote($needle, '#') . '#', $haystack, $matches)) {
             $total = count($matches[0]);
             $offset = 0;
 

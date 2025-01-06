@@ -16,27 +16,32 @@
                 <input type="hidden" name="order[]" value="<?=$row['id']?>" />
                 <?php endif; ?>
                 <div class="list-item__secondary"<?php if (isset($row['reorderable']) && $row['reorderable']) : ?> style="left: 51px;"<?php endif; ?>>
-                    #<?=$row['id']?> <?php if (! empty($row['extra'])):?> <span class="faded">/</span> <span class="click-select-text"><?=ee('Format')->make('Text', $row['extra'])->convertToEntities()?><?php endif ?></span>
+                    #<?=$row['id']?>
+                    <?php if (! empty($row['extra'])):?>
+                        <span class="faded">/</span> <span class="click-select-text">
+
+                        <!-- If it's not an array, print it out -->
+                        <?php if (!is_array($row['extra'])): ?>
+                            <?=ee('Format')->make('Text', $row['extra'])->convertToEntities()?>
+                        <?php else: ?>
+                            <!-- This is an array, check for formatting options -->
+                            <?php if (isset($row['extra']['encode']) && $row['extra']['encode'] === false): ?>
+                                <?=ee('Format')->make('Text', $row['extra']['content'])?>
+                            <?php else: ?>
+                                <?=ee('Format')->make('Text', $row['extra']['content'])->convertToEntities()?>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    <?php endif; ?></span>
                 </div>
                 <a href="<?=$row['href']?>" class="list-item__content">
                     <div class="list-item__title">
-                        <?=ee('Format')->make('Text', $row['label'])->convertToEntities()?>
+                        <?=(isset($row['htmlLabel']) && $row['htmlLabel']) ? $row['label'] : ee('Format')->make('Text', $row['label'])->convertToEntities()?>
                         <?php if (isset($row['faded'])): ?>
                             <span class="faded"<?php echo isset($row['faded-href']) ? ' data-href="' . $row['faded-href'] . '"' : ''; ?>><?=$row['faded']?></span>
                         <?php endif ?>
                     </div>
                     <div class="list-item__secondary">&#160;</div>
                 </a>
-
-                <?php if (isset($row['status'])): ?>
-                    <div class="status-wrap">
-                        <?php
-                            $class = $row['status'] ? 'locked' : 'unlocked';
-                            $status = $row['status'] ? lang('locked') : lang('unlocked');
-                        ?>
-                        <span class="status-tag st-<?=$class?>"><?=$status?></span>
-                    </div>
-                <?php endif; ?>
 
                 <?php if (isset($row['toolbar_items'])) : ?>
                 <div class="list-item__content-right">

@@ -639,7 +639,7 @@ context('File Manager', () => {
             cy.get('.file-upload-widget').then(function(widget) {
                 $(widget).removeClass('hidden')
             })
-            cy.get('div[data-input-value="files_field"] .file-field__dropzone').attachFile('../../support/file/ubuntu-22.04-live-server-amd64-iso.torrent', { subjectType: 'drag-n-drop' })
+            cy.get('div[data-input-value="files_field"] .file-field__dropzone').selectFile('support/file/ubuntu-22.04-live-server-amd64-iso.torrent', { action: 'drag-drop' })
             cy.wait('@upload')
             cy.wait('@table')
             cy.get('.ee-main__content form .table-responsive table tr:contains(torrent)').its('length').should('eq', 1)
@@ -648,7 +648,7 @@ context('File Manager', () => {
             cy.get('.file-upload-widget').then(function(widget) {
                 $(widget).removeClass('hidden')
             })
-            cy.get('div[data-input-value="files_field"] .file-field__dropzone').attachFile('../../support/file/archive.zip', { subjectType: 'drag-n-drop' })
+            cy.get('div[data-input-value="files_field"] .file-field__dropzone').selectFile('support/file/archive.zip', { action: 'drag-drop' })
             cy.wait('@upload')
             cy.wait('@table')
             cy.get('.ee-main__content form .table-responsive table tr:contains(archive.zip)').its('length').should('eq', 1)
@@ -657,7 +657,7 @@ context('File Manager', () => {
             cy.get('.file-upload-widget').then(function(widget) {
                 $(widget).removeClass('hidden')
             })
-            cy.get('div[data-input-value="files_field"] .file-field__dropzone').attachFile('../../support/file/data.csv', { subjectType: 'drag-n-drop' })
+            cy.get('div[data-input-value="files_field"] .file-field__dropzone').selectFile('support/file/data.csv', { action: 'drag-drop' })
             cy.wait('@upload')
             cy.wait('@table')
             cy.get('.ee-main__content form .table-responsive table tr:contains(data.csv)').its('length').should('eq', 1)
@@ -666,7 +666,7 @@ context('File Manager', () => {
             cy.get('.file-upload-widget').then(function(widget) {
                 $(widget).removeClass('hidden')
             })
-            cy.get('div[data-input-value="files_field"] .file-field__dropzone').attachFile('../../support/file/ee-sample-video.mp4', { subjectType: 'drag-n-drop' })
+            cy.get('div[data-input-value="files_field"] .file-field__dropzone').selectFile('support/file/ee-sample-video.mp4', { action: 'drag-drop' })
             cy.wait('@upload')
             cy.wait('@table')
             cy.get('.ee-main__content form .table-responsive table tr:contains(ee-sample-video.mp4)').its('length').should('eq', 1)
@@ -675,7 +675,7 @@ context('File Manager', () => {
             cy.get('.file-upload-widget').then(function(widget) {
                 $(widget).removeClass('hidden')
             })
-            cy.get('div[data-input-value="files_field"] .file-field__dropzone').attachFile('../../support/file/mixkit-arcade-retro-game-over-213.wav', { subjectType: 'drag-n-drop' })
+            cy.get('div[data-input-value="files_field"] .file-field__dropzone').selectFile('support/file/mixkit-arcade-retro-game-over-213.wav', { action: 'drag-drop' })
             cy.wait('@upload')
             cy.wait('@table')
             cy.get('.ee-main__content form .table-responsive table tr:contains(mixkit-arcade-retro-game-over-213.wav)').its('length').should('eq', 1)

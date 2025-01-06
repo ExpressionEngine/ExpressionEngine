@@ -92,6 +92,8 @@
                 if (action === 'expand') {
                     list.expandItem(item);
                 }
+
+                return false;
             });
 
             var onStartEvent = function(e)

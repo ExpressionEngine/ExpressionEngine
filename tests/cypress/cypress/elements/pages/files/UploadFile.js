@@ -30,7 +30,7 @@ class UploadFile extends FileManagerSection {
         })
         cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
         cy.intercept('/admin.php?/cp/files/directory/*').as('table')
-        this.get('file_input').find('.file-field__dropzone').attachFile(file, { subjectType: 'drag-n-drop' })
+        this.get('file_input').find('.file-field__dropzone').selectFile(file, { action: 'drag-drop' })
         cy.wait('@upload')
     }
 
