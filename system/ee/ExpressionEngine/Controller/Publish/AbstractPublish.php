@@ -392,6 +392,18 @@ abstract class AbstractPublish extends CP_Controller
             if ($_POST['title'] == $entry->title) {
                 $_POST['title'] = lang('copy_of') . ' ' . $_POST['title'];
             }
+            $fieldsThatCannnotBeCloned = ee('Model')->get('ChannelField')->filter('enable_cloning', 'n')->all()->pluck('field_id');
+            foreach ($fieldsThatCannnotBeCloned as $fieldId) {
+                if (isset($_POST['field_id_' . $fieldId])) {
+                    unset($_POST['field_id_' . $fieldId]);
+                }
+                if (isset($_POST['field_ft_' . $fieldId])) {
+                    unset($_POST['field_ft_' . $fieldId]);
+                }
+                if (isset($_POST['field_dt_' . $fieldId])) {
+                    unset($_POST['field_dt_' . $fieldId]);
+                }
+            }
             $action = 'create';
             $entry->set($_POST);
             $entry->markAsDirty();
