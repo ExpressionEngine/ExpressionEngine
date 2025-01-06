@@ -40,6 +40,8 @@ $lang = array(
 
     'slate_theme' => 'Slate Theme',
 
+    'contrast_theme' => 'Contrast Theme',
+
     'dark' => 'Dark',
 
     'light' => 'Light',
