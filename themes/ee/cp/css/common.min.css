@@ -52297,7 +52297,8 @@ ul.field-reorder-drop,
   letter-spacing: 1px;
   font-size: 85%;
   color: var(--ee-sidebar-text);
-  font-weight: 600;
+  opacity: 0.6;
+  font-weight: 500;
   padding: 0 20px;
   display: block;
 }
@@ -52636,8 +52637,12 @@ ul.field-reorder-drop,
   height: 0;
 }
 
-.navigation-submenu .dropdown__item:hover {
+body[data-theme=contrast] .navigation-submenu .dropdown__item:hover {
   background-color: var(--ee-sidebar-bg-active);
+}
+body[data-theme=contrast] .ee-sidebar__section-label {
+  opacity: 1;
+  font-weight: 600;
 }
 
 .four-o-four {

@@ -253,8 +253,8 @@
   letter-spacing: 1px;
   font-size: 85%;
   color: color(sidebar-text);
-  // opacity: 0.6;
-  font-weight: 600;
+  opacity: 0.6;
+  font-weight: 500;
   padding: 0 20px;
   display: block;
 }
@@ -610,12 +610,17 @@
   height: 0;
 }
 
-// after creating a new contrast theme line 614 should be uncomment, 615 - delete
-// [data-theme="contrast"] .navigation-submenu {
-.navigation-submenu {
-  .dropdown__item {
-    &:hover {
-      background-color: var(--ee-sidebar-bg-active);
+body[data-theme="contrast"] {
+  .navigation-submenu {
+    .dropdown__item {
+      &:hover {
+        background-color: var(--ee-sidebar-bg-active);
+      }
     }
+  }
+
+  .ee-sidebar__section-label {
+    opacity: 1;
+    font-weight: 600;
   }
 }
