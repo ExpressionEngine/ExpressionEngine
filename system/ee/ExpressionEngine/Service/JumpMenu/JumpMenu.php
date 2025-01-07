@@ -1609,6 +1609,13 @@ class JumpMenu extends AbstractJumpMenu
                         'command' => 'xss_clean_uploads xss_clean_uploads_desc',
                         'command_title' => 'xss_clean_uploads'
                     ),
+                    'fieldset-strip_image_metadata' => array(
+                        'trail' => [
+                            'form_security_settings'
+                        ],
+                        'command' => 'strip_image_metadata strip_image_metadata_desc',
+                        'command_title' => 'strip_image_metadata'
+                    ),
                     'fieldset-enable_rank_denial' => array(
                         'trail' => [
                             'form_security_settings'

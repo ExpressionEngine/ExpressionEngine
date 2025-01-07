@@ -11,6 +11,7 @@
 use ExpressionEngine\Addons\FilePicker\FilePicker;
 use ExpressionEngine\Library\CP\EntryManager\ColumnInterface;
 use ExpressionEngine\Library\CP\Table;
+use ExpressionEngine\Library\Filesystem\FilesystemException;
 
 /**
  * File Fieldtype
@@ -525,7 +526,7 @@ JSC;
         }
 
         if (!$data['model_object']->isImage()) {
-            return ee()->TMPL->no_results();
+            return false;
         }
 
         ee()->load->library('image_lib');
@@ -550,7 +551,14 @@ JSC;
         if (!$data['filesystem']->exists($destination_path)) {
             // We need to get a temporary local copy of the file in case it's stored
             // on another filesystem.
-            $source = $data['filesystem']->copyToTempFile($data['source_image']);
+            try {
+                $source = $data['filesystem']->copyToTempFile($data['source_image']);
+            } catch (FilesystemException $e) {
+                // if the file does not exist (e.g. we run a local copy without all files)
+                // just return the original URL
+                log_message('debug', $e->getMessage());
+                return $data['model_object']->getAbsoluteURL();
+            }
             $new = $data['filesystem']->createTempFile();
 
             $imageLibConfig = array(
