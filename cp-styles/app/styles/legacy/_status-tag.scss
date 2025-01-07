@@ -21,18 +21,6 @@
   text-transform: none;
 	border-radius: $border-radius-full;
   white-space: nowrap;
-
-	// &::before {
-	// 	content: "";
-	// 	display: inline-block;
-	// 	position: relative;
-	// 	top: -1px;
-	// 	// vertical-align: middle;
-	// 	height: 7px;
-	// 	width: 7px;
-	// 	border-radius: 50%;
-	// 	margin-right: $s-xs
-	// }
 }
 
 .status-tag--big {
@@ -70,33 +58,6 @@
 		background: #ee0707;
 	}
 }
-
-/*
-body[data-theme="dark"] {
-	.st-open,
-	.st-enable,
-	.st-status,
-	.st-unlocked,
-
-	.status-tag--open {
-		background: rgba(231, 250, 240, 0.925);
-		color: #00b533;
-	}
-
-	.st-spam,
-	.st-error,
-	.st-closed,
-	.st-banned,
-	.st-locked,
-	.st-disable,
-
-	.status-tag--closed {
-		background: rgba(254, 237, 240, 0.925);
-		color: #ee0707;
-	}
-}
-*/
-
 
 // LEGACY 6.0
 .st-spam,
@@ -138,13 +99,6 @@ body[data-theme="dark"] {
 	color: color(accent);
 }
 
-// // firefox anomalies
-// @-moz-document url-prefix(){
-// 	.status-tag{
-// 		padding: 5px 5px 3px;
-// 	}
-// }
-
 // Status tag styling in select dropdowns
 .select__dropdown,
 .select__button {
@@ -154,45 +108,38 @@ body[data-theme="dark"] {
     font-weight: inherit;
     text-transform: inherit;
     letter-spacing: inherit;
-    border: inherit;
     background-color: inherit !important;
-    padding: inherit;
-    color: inherit !important;
     background: inherit;
     display: inherit;
     border-radius: inherit;
-    // padding-left: 20px;
-
-    // Add colored beacon indicator
-    /*
-    &::before {
-      content: "";
-      width: 13px;
-      height: 13px;
-      display: block;
-      position: absolute;
-      left: 20px;
-      top: calc(50% - 7px);
-      border-radius: $border-radius-full;
-    }
-
-    &.st-open::before,
-    &.st-enable::before,
-    &.st-status::before,
-    &.st-unlocked::before,
-    &.status-tag--open::before {
-    	background-color: color(success);
-    }
-
-    &.st-spam::before,
-    &.st-error::before,
-    &.st-closed::before,
-    &.st-banned::before,
-    &.st-locked::before,
-    &.st-disable::before,
-    &.status-tag--closed::before {
-      background-color: color(danger);
-    }
-    */
   }
+}
+
+[data-input-value="status"] {
+	.select__button {
+		.status-tag {
+			border: inherit;
+			padding: inherit;
+		}
+	}
+
+	.select__dropdown {
+		.select__dropdown-item {
+			padding: 0;
+			min-height: 0;
+			margin-bottom: 5px;
+			border-radius: 1000px;
+
+			& > span {
+				width: 100%;
+			}
+		}
+
+		.status-tag {
+			min-height: 38px;
+			padding: 7px 15px;
+			width: 100%;
+			border-radius: 1000px;
+		}
+	}
 }

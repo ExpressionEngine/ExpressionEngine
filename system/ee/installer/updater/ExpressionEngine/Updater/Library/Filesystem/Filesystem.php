@@ -543,6 +543,10 @@ class Filesystem
      */
     public function getFreeDiskSpace($path = '/')
     {
+        if (!function_exists('disk_free_space')) {
+            return false;
+        }
+
         return @disk_free_space($path);
     }
 

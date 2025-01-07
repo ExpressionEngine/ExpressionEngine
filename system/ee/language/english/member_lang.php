@@ -276,7 +276,7 @@ $lang = array(
 
     'mbr_may_now_log_in' => 'You may now log in and begin using it.',
 
-    'mbr_member_group' => 'Member Group:',
+    'mbr_member_group' => 'Primary Role:',
 
     'mbr_member_local_time' => 'Member Local Time',
 
@@ -624,6 +624,12 @@ We reserve the right to remove, edit, or move any messages for any reason.',
     'mbr_reset_password' => 'Please enter a new password',
 
     'mbr_successfully_changed_password' => 'You have successfully changed your password. Please login using your new password.',
+
+    /* Template Generator */
+
+    'include_navigation' => 'Include Navigation',
+
+    'include_navigation_desc' => 'Add links to navigate between generated templates',
 
 );
 

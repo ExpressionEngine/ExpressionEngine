@@ -44,7 +44,7 @@ class JumpsGenerator
         // Make sure the addon exists
         if (! ee('Addon')->get($this->addon)) {
             throw new \Exception(lang('cli_error_the_specified_addon_does_not_exist'), 1);
-        } 
+        }
 
         // Get stub path
         $this->stubPath = $this->generatorPath . '/stubs/';

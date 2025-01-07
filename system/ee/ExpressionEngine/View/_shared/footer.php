@@ -80,7 +80,7 @@
                         <?=form_open(ee('CP/URL')->make('updater/authenticate'), ['name' => 'one_click_major_update_confirm'])?>
                             <input type="hidden" name="username" value="<?=form_prep(ee()->session->userdata('username'))?>">
                             <fieldset>
-                                <label><?=lang('one_click_major_update_instructions')?></label>
+                                <label for="upgrade-confirm-password"><?=lang('one_click_major_update_instructions')?></label>
                                 <div class="field-control">
                                     <input type="password" name="password" value="" id="upgrade-confirm-password">
                                 </div>
@@ -140,10 +140,12 @@
         } ?>" style="display:none;">
             <div class="jump-menu">
                 <div class="jump-menu__input-DISABLED hidden" id="jumpMenu1-DISABLED">
+                    <label for="jumpEntry1-DISABLED" class="sr-only"><?=lang('jump_menu_input')?></label>
                     <input type="text" id="jumpEntry1-DISABLED" class="jump-to" placeholder="<?=lang('jump_menu_input')?>">
                 </div>
                 <div class="jump-menu__input" id="jumpMenu2" style="display:none;">
                     <span id="jumpEntry1Selection" class="action-tag"></span>
+                    <label for="jumpEntry2" class="sr-only"><?=lang('search_for')?></label>
                     <input type="text" id="jumpEntry2" class="jump-to" placeholder="Search For..">
                 </div>
                 <div class="jump-menu__items" id="jumpMenuResults1"></div>

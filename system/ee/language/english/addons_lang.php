@@ -104,39 +104,12 @@ $lang = array(
     'uninstalled' => 'Uninstalled',
 
     /* 2.x */
-    'addons_extensions' => 'Extensions',
-
-    'addons_fieldtypes' => 'Fieldtypes',
-
-    'addons_modules' => 'Modules',
-
-    'addons_plugins' => 'Plugins',
-
-    'and_more' => 'and %x more...',
-
-    'available_to_member_groups' => 'Available to Member Groups',
-
-    'component' => 'Component',
 
     'configuration' => 'Configuration',
 
-    'current_status' => 'Current Status',
-
-    'delete_fieldtype' => 'Remove Fieldtype',
-
-    'delete_fieldtype_confirm' => 'Are you sure you want to remove this fieldtype?',
-
     'description' => 'Description',
 
-    'ext_disabled_short' => 'disabled',
-
-    'ext_enabled_short' => 'enabled',
-
     'extension' => 'Extension',
-
-    'extension_disabled' => 'Extension Disabled',
-
-    'extension_enabled' => 'Extension Enabled',
 
     'extensions' => 'Extensions',
 
@@ -159,8 +132,6 @@ $lang = array(
     'fieldtype_name' => 'Fieldtype Name',
 
     'global_settings_saved' => 'Settings Saved',
-
-    'member_group_assignment' => 'Assigned Member Groups',
 
     'module' => 'Module',
 

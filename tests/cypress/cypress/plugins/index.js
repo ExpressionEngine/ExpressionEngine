@@ -14,7 +14,7 @@
 module.exports = (on, config) => {
     // `on` is used to hook into various events Cypress emits
     // `config` is the resolved Cypress config
-    const Database = require('./database.js');
+    const Database = require('cypress/plugins/database.js');
     const db = new Database({
         host: config.env.DB_HOST,
         port: config.env.DB_PORT,
@@ -31,13 +31,13 @@ module.exports = (on, config) => {
         username: config.env.DB_USER
     }
 
-    const Filesystem = require('./filesystem.js');
+    const Filesystem = require('cypress/plugins/filesystem.js');
     const fs = new Filesystem;
 
-    const Installer = require('./installer.js');
+    const Installer = require('cypress/plugins/installer.js');
     const installer = new Installer;
 
-    const Updater = require('./updater.js');
+    const Updater = require('cypress/plugins/updater.js');
     const updater = new Updater;
 
     const baseUrl = config.env.CYPRESS_BASE_URL || null;

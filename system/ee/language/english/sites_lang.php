@@ -52,7 +52,7 @@ $lang = array(
 
     'site_online' => 'Website online?',
 
-    'site_online_desc' => 'When disabled, only Super Admins and member groups with permissions will be able to browse this website.',
+    'site_online_desc' => 'When disabled, only Super Admins and members with roles that have proper permissions will be able to browse this website.',
 
     'site_updated' => 'Site Updated',
 

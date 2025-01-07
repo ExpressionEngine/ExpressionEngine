@@ -39,6 +39,7 @@ class Template extends AbstractDesignController
         $group = ee('Model')->get('TemplateGroup')
             ->filter('group_name', $group_name)
             ->filter('site_id', ee()->config->item('site_id'))
+            ->order('group_id', 'asc')
             ->first();
 
         if (! $group) {
@@ -184,7 +185,7 @@ class Template extends AbstractDesignController
                     'template_engine' => array(
                         'type' => 'radio',
                         'choices' => $engines,
-                        'value' => $template->template_engine
+                        'value' => $template->template_engine ?: (ee()->api_template_structure->get_default_template_engine())
                     )
                 )
             )));
@@ -528,7 +529,7 @@ class Template extends AbstractDesignController
         $templates = ee('Model')->get('Template')
             ->with('TemplateGroup')
             ->filter('site_id', ee()->config->item('site_id'))
-            ->filter('template_data', 'LIKE', '%' . $search_terms . '%');
+            ->filter('template_data', 'LIKE', '%' . ee()->db->escape_like_str($search_terms) . '%');
 
         $base_url = ee('CP/URL')->make('design/template/search');
         $base_url->setQueryStringVariable('search', $search_terms);

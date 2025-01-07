@@ -24,6 +24,9 @@ class PipeDelimited extends SerializedType
      */
     public static function unserialize($db_data)
     {
+        if (is_null($db_data)) {
+            return array();
+        }
         return array_filter(explode('|', $db_data));
     }
 

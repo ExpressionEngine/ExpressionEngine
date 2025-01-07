@@ -72,7 +72,7 @@ class Edit extends AbstractPublishController
         $entry_listing = ee(
             'CP/EntryListing',
             ee()->input->get_post('filter_by_keyword'),
-            ee()->input->get_post('search_in') ?: 'titles_and_content',
+            ee()->input->get_post('search_in') ?: 'titles',
             false,
             null, //ee()->input->get_post('view') ?: '',//view is not used atm
             $extra_filters
@@ -101,10 +101,6 @@ class Edit extends AbstractPublishController
             // cast to bool
             $vars['channels_exist'] = (bool) ee('Model')->get('Channel')->filter('site_id', ee()->config->item('site_id'))->count();
         }
-
-        $vars['filters'] = $filters->renderEntryFilters($base_url);
-        $vars['filters_search'] = $filters->renderSearch($base_url);
-        $vars['search_value'] = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
 
         $base_url->addQueryStringVariables(
             array_filter(
@@ -166,8 +162,11 @@ class Edit extends AbstractPublishController
             }
         }
         $sort_field = $columns[$sort_col]->getEntryManagerColumnSortField();
-        $entries->order($sort_field, $table->sort_dir)
-            ->limit($filter_values['perpage'])
+        $entries->order($sort_field, $table->sort_dir);
+        if ($sort_col != 'entry_id') {
+            $entries->order('entry_id', $table->sort_dir);
+        }
+        $entries->limit($filter_values['perpage'])
             ->offset($offset);
         $entries = $entries->all();
 
@@ -224,7 +223,7 @@ class Edit extends AbstractPublishController
 
         $vars['head'] = array(
             'title' => lang('entry_manager'),
-            'action_button' => (count($choices) || ee('Permission')->can('create_entries_channel_id_' . $channel_id)) && $show_new_button ? [
+            'action_button' => (count($choices) || ($channel_id && ee('Permission')->can('create_entries_channel_id_' . $channel_id))) && $show_new_button ? [
                 'text' => $channel_id ? sprintf(lang('btn_create_new_entry_in_channel'), $channel->channel_title) : lang('new'),
                 'href' => ee('CP/URL', 'publish/create/' . $channel_id)->compile(),
                 'filter_placeholder' => lang('filter_channels'),
@@ -242,6 +241,9 @@ class Edit extends AbstractPublishController
             );
         }
 
+        $vars['filters'] = $filters->renderEntryFilters($base_url);
+        $vars['filters_search'] = $filters->renderSearch($base_url);
+        $vars['search_value'] = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
         $vars['pagination'] = ee('CP/Pagination', $count)
             ->perPage($filter_values['perpage'])
             ->currentPage($page)
@@ -378,8 +380,10 @@ class Edit extends AbstractPublishController
             }
         }
 
-        if (! ee('Permission')->can('edit_other_entries_channel_id_' . $entry->channel_id)
-            && $entry->author_id != ee()->session->userdata('member_id')) {
+        if (
+            ($entry->author_id != ee()->session->userdata('member_id') && ! ee('Permission')->can('edit_other_entries_channel_id_' . $entry->channel_id)) ||
+            ($entry->author_id == ee()->session->userdata('member_id') && ! ee('Permission')->can('edit_self_entries_channel_id_' . $entry->channel_id))
+        ) {
             show_error(lang('unauthorized_access'), 403);
         }
 
@@ -484,21 +488,25 @@ class Edit extends AbstractPublishController
             }
         }
 
-        $channel_layout = ee('Model')->get('ChannelLayout')
-            ->filter('site_id', ee()->config->item('site_id'))
-            ->filter('channel_id', $entry->channel_id)
-            ->with('PrimaryRoles')
-            ->filter('PrimaryRoles.role_id', ee()->session->userdata('role_id'))
-            ->first();
-
-        if (empty($channel_layout)) {
+        if (isset($vars['pro_class'])) {
+            $channel_layout = null;
+        } else {
             $channel_layout = ee('Model')->get('ChannelLayout')
                 ->filter('site_id', ee()->config->item('site_id'))
                 ->filter('channel_id', $entry->channel_id)
                 ->with('PrimaryRoles')
-                ->filter('PrimaryRoles.role_id', 'IN', ee()->session->getMember()->getAllRoles()->pluck('role_id'))
-                ->all()
+                ->filter('PrimaryRoles.role_id', ee()->session->userdata('role_id'))
                 ->first();
+
+            if (empty($channel_layout)) {
+                $channel_layout = ee('Model')->get('ChannelLayout')
+                    ->filter('site_id', ee()->config->item('site_id'))
+                    ->filter('channel_id', $entry->channel_id)
+                    ->with('PrimaryRoles')
+                    ->filter('PrimaryRoles.role_id', 'IN', ee()->session->getMember()->getAllRoles()->pluck('role_id'))
+                    ->all()
+                    ->first();
+            }
         }
 
         $vars['layout'] = $entry->getDisplay($channel_layout);

@@ -22,6 +22,7 @@ class ProletGenerator
     protected $generatorPath;
     protected $addonPath;
     protected $stubPath;
+    protected $generateIcon;
 
     public function __construct(Filesystem $filesystem, Str $str, array $data)
     {

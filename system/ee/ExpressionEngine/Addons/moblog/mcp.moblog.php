@@ -591,7 +591,7 @@ EOT;
 
         if (count($allowed_channels) > 0) {
             $channels = ee('Model')->get('Channel')
-                ->with('Statuses')
+                ->with('Statuses', 'CategoryGroups')
                 ->order('channel_title');
 
             if (! ee('Permission')->can('edit_other_entries')) {

@@ -25,7 +25,7 @@
                     <label for="new_name"><?= lang('new_name') ?></label>
                 </div>
                 <div class="field-control">
-                    <input type="text" name="new_name" value="" autocomplete="off">
+                    <input id="new_name" type="text" name="new_name" value="" autocomplete="off">
                 </div>
             </fieldset>
         </div>

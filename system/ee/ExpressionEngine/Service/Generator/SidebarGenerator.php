@@ -22,6 +22,7 @@ class SidebarGenerator
     protected $generatorPath;
     protected $addonPath;
     protected $stubPath;
+    protected $namespace;
 
     public function __construct(Filesystem $filesystem, Str $str, array $data)
     {

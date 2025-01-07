@@ -380,3 +380,14 @@
 	  }
 	}
 }
+
+@media only screen and (max-width: $tablet-width) {
+	.filter-bar__item.publisher-save-as {
+          position: static;
+        }
+
+        .filter-bar__item.publisher-save-as > button {
+		  margin-top: 2em;
+          position: relative;
+        }
+  }

@@ -1,8 +1,8 @@
 {layout="cypress/layout"}
-{exp:member:registration_form return="mbr" primary_role="{segment_3}"}
+{exp:member:registration_form return="mbr" primary_role="{segment_3}" include_assets="yes"}
 
         <p>* Required fields</p>
-    <fieldset>
+
         <h4>Login details</h4>
 
         <p>
@@ -26,6 +26,16 @@
             <input type="password" name="password_confirm" id="password_confirm" value="{if password_confirm}{password_confirm}{/if}"/>
         </p>
 
+        {custom_fields}
+        <fieldset>
+            <label>{lang:profile_field}</label><br>
+            <small>{lang:profile_field_description}</small><br>
+
+            {form:custom_profile_field}
+
+        </fieldset>
+        {/custom_fields}
+
         <p>
             <label for="terms_of_service">Terms of service:</label><br />
             <div>All messages posted at this site express the views of the author, and do not necessarily reflect the views of the owners and administrators
@@ -44,7 +54,7 @@
             <input type="text" id="captcha" name="captcha" value="" size="20" maxlength="20" style="width:140px;"/>
         </p>
         {/if}
-    </fieldset>
+
 
     <input type="submit" value="Register" id="submit" class="btn btn-primary" />
 {/exp:member:registration_form}

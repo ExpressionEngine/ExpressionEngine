@@ -1,0 +1,1 @@
+<span class="label">{<?=$field_name?>:label}</span>: <span class="value">{<?=$field_name?>}</span> / <span class="value">{<?=$field_name?>:value}</span>

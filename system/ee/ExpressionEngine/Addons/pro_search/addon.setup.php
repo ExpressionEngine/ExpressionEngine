@@ -10,5 +10,8 @@ return array(
     'author'         => 'ExpressionEngine',
     'author_url'     => 'https://expressionengine.com/',
     'docs_url'       => 'https://docs.expressionengine.com/latest/add-ons/overview.html',
-    'settings_exist' => true
+    'settings_exist' => true,
+    'templateGenerators' => array(
+        'Search'
+    )
 );

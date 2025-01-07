@@ -39,7 +39,7 @@ class Dropdown extends React.Component {
       // value to be set other than the one in the initial config
       if ($(this).data('initialValue')) {
         props.selected = $(this).data('initialValue')
-      } 
+      }
 
       if (window.selectedFolder) {
         props.selected = window.selectedFolder;
@@ -69,6 +69,16 @@ class Dropdown extends React.Component {
 
     if (this.props.conditionalRule == 'operator') {
       EE.cp.check_operator_value(selected, this.input);
+    }
+
+    if (this.props.conditionalRule == 'rx-redactor-dropdown') {
+      var $rx_react_parent = $(this.input).parents('.rx-form-div').parent();
+      var $rx_url_input = $($rx_react_parent).next('input.rx-form-input');
+      $rx_url_input.val(selected.value);
+    }
+
+    if ($("[data-publish] > form").length) {
+      $("[data-publish] > form").trigger("entry:startAutosave");
     }
   }
 
@@ -126,7 +136,7 @@ class Dropdown extends React.Component {
         <div className="select__dropdown-item-parent">
           <DropdownItem key={item.value ? item.value : item.section}
             item={item}
-            selected={this.state.selected && item.value == this.state.selected.value}
+            selected={this.state.selected && item.value === this.state.selected.value}
             onClick={(e) => this.selectionChanged(item)}
             name ={this.props.name} />
           {item.children && item.children.length ? this.selectRecursion(item.children) : null}

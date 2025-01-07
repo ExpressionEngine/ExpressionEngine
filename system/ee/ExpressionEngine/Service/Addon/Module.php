@@ -25,7 +25,7 @@ class Module extends Controller
      */
     protected function isActRequest($method)
     {
-        return (bool) ee()->input->get_post('ACT');
+        return (REQ == 'ACTION') && (ee('LivePreview')->hasEntryData() === false);
     }
 
     /**

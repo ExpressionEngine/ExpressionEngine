@@ -56,6 +56,7 @@ context('Channel Create/Edit', () => {
 
         // Invalid channel short name
         page.get('channel_name').clear().type('test test').blur()
+        cy.wait(1000)
         page.hasError(page.get('channel_name'), this.channel_name_error)
         //page.hasErrors()
         cy.get('button[value="save"]').filter('[type=submit]').first().should('be.disabled')
@@ -64,15 +65,16 @@ context('Channel Create/Edit', () => {
         page.hasNoError(page.get('channel_title'))
         //page.hasNoErrors()
 
-
         // Duplicate channel short name
         page.get('channel_name').clear().type('news').blur()
+        cy.wait(1000)
         page.hasError(page.get('channel_name'), page.messages.validation.unique)
         //page.hasErrors()
         cy.get('button[value="save"]').filter('[type=submit]').first().should('be.disabled')
 
         // Duplicate channel title
         page.get('channel_title').clear().type('News').blur()
+        cy.wait(1000)
         page.hasError(page.get('channel_title'), page.messages.validation.unique)
         //page.hasErrors()
         cy.get('button[value="save"]').filter('[type=submit]').first().should('be.disabled')

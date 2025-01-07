@@ -116,17 +116,36 @@ class Roles extends AbstractRolesController
             $vars['filters'] = $filters->render(ee('CP/URL')->make('members/roles'));
         }
 
+        $cpRoles = ee('Permission')->rolesThatHave('can_access_cp');
         foreach ($roles as $role) {
             $edit_url = (ee('Permission')->hasAny('can_edit_roles')) ? ee('CP/URL')->make('members/roles/edit/' . $role->getId()) : '';
+            $labelVars = [
+                'label' => $role->name,
+                'class' => str_replace(' ', '_', strtolower($role->name)),
+                'styles' => [
+                    'background-color' => 'var(--ee-bg-blank)',
+                    'border-color' => '#' . $role->highlight,
+                    'color' => '#' . $role->highlight,
+                ]
+            ];
+            $label = ee('View')->make('_shared/status-tag')->render($labelVars);
+            $badges = '<i class="fal fa-lock' . ($role->is_locked ? '' : '-open') . '" title=""></i> ' . lang(($role->is_locked ? '' : 'un') . 'locked');
+            if (in_array($role->role_id, $cpRoles)) {
+                $badges .= ' / <i class="fal fa-shield" style="color: var(--ee-security-caution)" title=""></i> ' . lang('cp_access');
+            }
             $data[] = [
                 'id' => $role->getId(),
-                'label' => $role->name,
-                'status' => $role->is_locked,
-                'faded' => '(' . $role->total_members . ')',
-                'faded-href' => ee('CP/URL')->make('members', ['role_filter' => $role->getId()]),
+                'label' => $label,
+                'extra' => $badges,
                 'href' => $edit_url,
                 'selected' => ($role_id && $role->getId() == $role_id),
-                'toolbar_items' => null,
+                'toolbar_items' => [
+                    'members' => [
+                        'href' => ee('CP/URL')->make('members', ['role_filter' => $role->getId()]),
+                        'title' => lang('members'),
+                        'content' => '<i class="fal fa-users"></i> ' . $role->total_members . ' ' . lang('members')
+                    ]
+                ],
                 'selection' => ee('Permission')->can('delete_roles') ? [
                     'name' => 'selection[]',
                     'value' => $role->getId(),
@@ -446,6 +465,7 @@ class Roles extends AbstractRolesController
         $role->name = ee('Security/XSS')->clean($_POST['name']);
         $role->short_name = ee('Security/XSS')->clean($_POST['short_name']);
         $role->description = ee('Security/XSS')->clean(ee('Request')->post('description'));
+        $role->highlight = ee('Security/XSS')->clean(ee('Request')->post('highlight'));
 
         // Settings
         $settings = ee('Model')->make('RoleSetting')->getValues();
@@ -591,21 +611,27 @@ class Roles extends AbstractRolesController
                 }
             }
         } else {
-            // Clear the slate and remove all the permissions this form has set
-            ee('Model')->get('Permission')
+            $existingRolePermissions = ee('Model')->get('Permission')
                 ->filter('permission', 'IN', $this->getPermissionKeys())
                 ->filter('site_id', $site_id)
                 ->filter('role_id', $role->getId())
-                ->delete();
-
+                ->all();
+            $existingRolePermissionNames = $existingRolePermissions->pluck('permission');
+            // remove the permissions that are no longer allowed
+            foreach ($existingRolePermissions as $permission) {
+                $permIndex = array_search($permission->permission, $allowed_perms);
+                if ($permIndex === false || empty($allowed_perms[$permIndex])) {
+                    $role->Permissions->getAssociation()->remove($permission);
+                }
+            }
             // Add back in all the allowances
             foreach ($allowed_perms as $perm) {
-                if (!empty($perm)) {
-                    ee('Model')->make('Permission', [
-                        'role_id' => $role->getId(),
+                if (!empty($perm) && !in_array($perm, $existingRolePermissionNames)) {
+                    $p = ee('Model')->make('Permission', [
                         'site_id' => $site_id,
                         'permission' => $perm
-                    ])->save();
+                    ]);
+                    $role->Permissions->getAssociation()->add($p);
                 }
             }
         }
@@ -616,7 +642,11 @@ class Roles extends AbstractRolesController
     private function getTabs(Role $role, $errors)
     {
         ee()->cp->add_js_script(array(
-            'file' => array('cp/form_group'),
+            'file' => array(
+                'cp/form_group',
+                'library/simplecolor',
+                'components/colorpicker'
+            ),
         ));
 
         $tabs = [
@@ -677,6 +707,17 @@ class Roles extends AbstractRolesController
                         'value' => $role->description
                     ]
                 ]
+            ],
+            [
+                'title' => 'role_highlight_color',
+                'desc' => 'role_highlight_color_desc',
+                'fields' => array(
+                    'highlight' => array(
+                        'type' => 'text',
+                        'attrs' => 'class="color-picker"',
+                        'value' => $role->highlight ?: 'FA5252'
+                    )
+                )
             ]
         ];
 
@@ -752,6 +793,19 @@ class Roles extends AbstractRolesController
                         ]
                     ]
                 ]
+            ]);
+
+            $section = array_merge($section, [
+                [
+                    'title' => 'show_field_names',
+                    'desc' => 'show_field_names_desc',
+                    'fields' => [
+                        'show_field_names' => [
+                            'type' => 'yes_no',
+                            'value' => $role->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->show_field_names,
+                        ]
+                    ]
+                ],
             ]);
         }
 
@@ -1136,6 +1190,16 @@ class Roles extends AbstractRolesController
                             'auto_select_parents' => true,
                             'choices' => $channel_access['choices'],
                             'value' => $channel_access['values'],
+                        ]
+                    ]
+                ],
+                [
+                    'title' => 'show_field_names',
+                    'desc' => 'show_field_names_desc',
+                    'fields' => [
+                        'show_field_names' => [
+                            'type' => 'yes_no',
+                            'value' => $role->isNew() ? 'n' : $role->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->show_field_names,
                         ]
                     ]
                 ],
@@ -1745,6 +1809,7 @@ class Roles extends AbstractRolesController
                     'can_edit_members' => lang('edit_members'),
                     'can_delete_members' => lang('can_delete_members'),
                     'can_ban_users' => lang('can_ban_users'),
+                    'can_edit_member_fields' => lang('edit_member_fields'),
                     'can_email_from_profile' => lang('can_email_from_profile'),
                     'can_edit_html_buttons' => lang('can_edit_html_buttons')
                 ],

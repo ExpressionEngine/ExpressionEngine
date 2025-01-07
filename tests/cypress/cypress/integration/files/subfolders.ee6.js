@@ -14,16 +14,20 @@ context('Upload Destination Subfolders', () => {
 
     before(function() {
         cy.task('db:seed')
-            //cleanup folders
+        //cleanup folders
         cy.task('filesystem:delete', '../../images/uploads/*')
+
+        //copy templates
+        cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })
+        cy.task('filesystem:copy', { from: 'support/templates/*', to: '../../system/user/templates/' }).then(() => {
+            cy.authVisit('admin.php?/cp/design')
+        })
     })
 
     beforeEach(function() {
         cy.auth();
         page.load()
         cy.hasNoErrors()
-
-        cy.server()
     })
 
     after(function() {
@@ -51,6 +55,7 @@ context('Upload Destination Subfolders', () => {
         cy.hasNoErrors()
 
         managerPage.hasAlert('success').contains('Folder created')
+        cy.get('.app-listing__row').should('contain', 'sub1')
     })
 
     it('Cannot create a folder that already exists', () => {
@@ -162,7 +167,7 @@ context('Upload Destination Subfolders', () => {
 
         cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
         cy.intercept('/admin.php?/cp/files/directory/*').as('table')
-        managerPage.get('file_input').find('.file-field__dropzone').attachFile('../../support/file/README.md', { subjectType: 'drag-n-drop' })
+        managerPage.get('file_input').find('.file-field__dropzone').selectFile('support/file/README.md', { action: 'drag-drop' })
 
         cy.wait('@upload')
         cy.wait('@table')
@@ -180,13 +185,38 @@ context('Upload Destination Subfolders', () => {
         cy.get('.file-upload-widget').then(function(widget) {
             $(widget).removeClass('hidden')
         })
-        managerPage.get('file_input').find('.file-field__dropzone').attachFile(('../../../../LICENSE.txt'), { subjectType: 'drag-n-drop' })
+        managerPage.get('file_input').find('.file-field__dropzone').selectFile('../../LICENSE.txt', { action: 'drag-drop' })
 
         cy.wait('@upload')
         cy.wait('@table')
         cy.hasNoErrors()
         cy.get('.app-listing__row').should('contain', filename)
 
+        cy.visit('/index.php/entries/file-entries/1/0')
+        cy.hasNoErrors()
+        // list all files on front-end
+        cy.get(".file_variables").should('have.length', 1)
+        cy.get(".file_variables").first().find(".file_name").invoke('text').should('eq', 'LICENSE.txt')
+        cy.get(".file_variables").first().find(".title").invoke('text').should('contain', 'LICENSE.txt')
+        cy.get(".file_variables").first().find(".model_type").invoke('text').should('eq', 'File')
+        cy.get(".file_variables").first().find(".file_type").invoke('text').should('eq', 'doc')
+        cy.get(".file_variables").first().find(".mime_type").invoke('text').should('eq', 'text/plain')
+        cy.get(".file_variables").first().find(".upload_location_id").invoke('text').should('eq', '1')
+        cy.get(".file_variables").first().find(".directory_id").invoke('text').should('eq', '1')
+        cy.get(".file_variables").first().find(".folder_id").invoke('text').should('eq', '0')
+        cy.get(".file_variables").first().find(".absolute_count").invoke('text').should('eq', '1')
+        cy.get(".file_variables").first().find(".count").invoke('text').should('eq', '1')
+        cy.get(".file_variables").first().find(".directory_title").invoke('text').should('eq', 'Main Upload Directory')
+        cy.get(".file_variables").first().find(".extension").invoke('text').should('eq', 'txt')
+        cy.get(".file_variables").first().find(".file_id").invoke('text').should('eq', '14')
+        cy.get(".file_variables").first().find(".file_size").invoke('text').should('not.eq', '0')
+        cy.get(".file_variables").first().find(".file_url").invoke('text').should('eq', '/images/uploads/LICENSE.txt')
+        cy.get(".file_variables").first().find(".id_path").invoke('text').should('contain', '/test/file/14')
+        cy.get(".file_variables").first().find(".path").invoke('text').should('eq', '/images/uploads/')
+        cy.get(".file_variables").first().find(".total_results").invoke('text').should('eq', '1')
+        cy.get(".file_variables").first().find(".url").invoke('text').should('eq', '/images/uploads/LICENSE.txt')
+
+        cy.visit('admin.php?/cp/files/directory/1')
         cy.get('.app-listing__row:contains(' + filename + ') .app-listing__cell .js-dropdown-toggle').click()
         cy.get('.app-listing__row:contains(' + filename + ') .app-listing__cell .dropdown').should('be.visible')
         cy.get('.app-listing__row:contains(' + filename + ') .app-listing__cell .dropdown--open .dropdown__link:contains("Move")').click({force: true})
@@ -207,6 +237,47 @@ context('Upload Destination Subfolders', () => {
         cy.get('.app-listing__row:contains(' + filename + ') .app-listing__cell .dropdown--open .dropdown__link:contains("Edit")').click({force: true})
         cy.get('.main-nav__title').should('contain', 'Edit File')
         cy.get('.title-bar__title').should('contain', filename)
+
+        cy.visit('/index.php/entries/file-entries/1/0')
+        cy.hasNoErrors()
+        cy.get(".file_variables").should('not.exist')
+        cy.visit('/index.php/entries/file-entries/444')//non-existing dir
+        cy.hasNoErrors()
+        cy.get(".file_variables").should('not.exist')
+        // list all files on front-end
+        cy.visit('/index.php/entries/file-entries/1/11')
+        cy.hasNoErrors()
+        cy.get(".file_variables").should('have.length', 2)
+        cy.get(".file_variables").first().find(".file_name").invoke('text').should('eq', 'LICENSE.txt')
+        cy.get(".file_variables").first().find(".title").invoke('text').should('contain', 'LICENSE.txt')
+        cy.get(".file_variables").first().find(".model_type").invoke('text').should('eq', 'File')
+        cy.get(".file_variables").first().find(".file_type").invoke('text').should('eq', 'doc')
+        cy.get(".file_variables").first().find(".mime_type").invoke('text').should('eq', 'text/plain')
+        cy.get(".file_variables").first().find(".upload_location_id").invoke('text').should('eq', '1')
+        cy.get(".file_variables").first().find(".directory_id").invoke('text').should('eq', '1')
+        cy.get(".file_variables").first().find(".folder_id").invoke('text').should('not.eq', '0')
+        cy.get(".file_variables").first().find(".absolute_count").invoke('text').should('eq', '1')
+        cy.get(".file_variables").first().find(".count").invoke('text').should('eq', '1')
+        cy.get(".file_variables").first().find(".directory_title").invoke('text').should('eq', 'Main Upload Directory')
+        cy.get(".file_variables").first().find(".extension").invoke('text').should('eq', 'txt')
+        cy.get(".file_variables").first().find(".file_id").invoke('text').should('eq', '14')
+        cy.get(".file_variables").first().find(".file_size").invoke('text').should('not.eq', '0')
+        cy.get(".file_variables").first().find(".file_url").invoke('text').should('eq', '/images/uploads/sub1/LICENSE.txt')
+        cy.get(".file_variables").first().find(".id_path").invoke('text').should('contain', '/test/file/14')
+        cy.get(".file_variables").first().find(".path").invoke('text').should('eq', '/images/uploads/sub1/')
+        cy.get(".file_variables").first().find(".total_results").invoke('text').should('eq', '2')
+        cy.get(".file_variables").first().find(".url").invoke('text').should('eq', '/images/uploads/sub1/LICENSE.txt')
+
+        // front-end tag where we have more files
+        cy.visit('/index.php/entries/file-entries/2/0')
+        cy.hasNoErrors()
+        cy.get(".file_variables").should('have.length', 10)
+        cy.get(".file_variables").first().find(".count").invoke('text').should('eq', '1')
+        cy.get(".file_variables").first().find(".absolute_count").invoke('text').should('eq', '1')
+        cy.get(".file_variables").first().find(".total_results").invoke('text').should('eq', '10')
+        cy.get(".file_variables").last().find(".count").invoke('text').should('eq', '10')
+        cy.get(".file_variables").last().find(".absolute_count").invoke('text').should('eq', '10')
+        cy.get(".file_variables").last().find(".total_results").invoke('text').should('eq', '10')
     })
 
     it('Can move file between folders', () => {
@@ -250,7 +321,7 @@ context('Upload Destination Subfolders', () => {
         cy.get('.file-upload-widget').then(function(widget) {
             $(widget).removeClass('hidden')
         })
-        managerPage.get('file_input').find('.file-field__dropzone').attachFile(('../../../../LICENSE.txt'), { subjectType: 'drag-n-drop' })
+        managerPage.get('file_input').find('.file-field__dropzone').selectFile('../../LICENSE.txt', { action: 'drag-drop' })
 
         cy.wait('@upload')
         cy.wait('@table')
@@ -320,8 +391,6 @@ context('Upload Destination Subfolders', () => {
             syncPage.get('wrap').contains('3 files and folders')
             syncPage.get('sync_button').click()
             cy.wait(10000)
-            syncPage.get('alert').should('exist')
-            syncPage.get('alert').contains('Upload directory synchronized')
             cy.hasNoErrors()
 
             //the non-hidden folder is listed

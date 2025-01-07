@@ -3,6 +3,7 @@
 return array(
     'author' => 'ExpressionEngine',
     'author_url' => 'https://expressionengine.com/',
+    'docs_url' => 'https://docs.expressionengine.com/latest/fieldtypes/text.html',
     'name' => 'Text Input',
     'description' => '',
     'version' => '1.0.0',
@@ -11,7 +12,10 @@ return array(
     'built_in' => true,
     'fieldtypes' => array(
         'text' => array(
-            'compatibility' => 'text'
+            'compatibility' => 'text',
+            'use' => array(
+                'MemberField'
+            )
         )
     )
 );

@@ -49,6 +49,29 @@
     white-space: nowrap;
     text-overflow: ellipsis;
   }
+
+  .label-app-badge {
+    font-size: 0.9rem;
+    margin-left: 0;
+
+    i {
+      font-size: inherit;
+
+      &.fa-circle-check {
+        display: none;
+      }
+    }
+
+    &.success {
+      i.fa-copy {
+        display: none;
+      }
+
+      i.fa-circle-check {
+        display: block;
+      }
+    }
+  }
 }
 
 .title-bar__extra-tools {

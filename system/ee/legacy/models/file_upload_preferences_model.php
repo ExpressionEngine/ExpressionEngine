@@ -114,7 +114,7 @@ class File_upload_preferences_model extends CI_Model
         $site_id = $upload_destination['site_id'];
         $overrides = array();
 
-        if ($site_id != ee()->config->item('site_id')) {
+        if ($site_id != 0 && $site_id != ee()->config->item('site_id')) {
             $overrides = ee()->config->get_cached_site_prefs($site_id);
         }
 

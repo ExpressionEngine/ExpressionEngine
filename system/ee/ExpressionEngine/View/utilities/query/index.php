@@ -30,7 +30,7 @@
 				<label><?=lang('query')?></label>
 			</div>
 			<div class="field-control">
-				<textarea class="js-sql-query-textarea" name="thequery" cols="" rows="10"><?=set_value('thequery')?></textarea>
+				<textarea class="js-sql-query-textarea" name="thequery" cols="" rows="10" aria-label="<?=lang('textarea_query')?>"><?=set_value('thequery')?></textarea>
 				<?=form_error('thequery')?>
 
 				<div class="field-instruct">

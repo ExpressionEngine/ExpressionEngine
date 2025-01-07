@@ -384,3 +384,9 @@ tr {
   cursor: pointer;
   background-color: color(bg-0);
 }
+
+.table-responsive {
+	.filter-bar__item {
+		position: static;
+	}
+}

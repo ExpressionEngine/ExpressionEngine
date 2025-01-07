@@ -8,7 +8,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build && mv ./src/js/build/js/index.*.js ../themes/ee/pro/js/fronteditor.min.js",
     "test:unit": "vue-cli-service test:unit",
-    "sass": "node-sass './src/scss/fronteditor.scss' './themes/ee/pro/css/fronteditor.min.css' --output-style compressed",
+    "sass": "node-sass './src/scss/fronteditor.scss' '../themes/ee/pro/css/fronteditor.min.css' --output-style compressed",
     "sass-watch": "node-sass --watch './src/scss/fronteditor.scss' '../themes/ee/pro/css/fronteditor.min.css' --output-style compressed",
     "lint": "vue-cli-service lint",
     "test": "vue-cli-service test:unit"

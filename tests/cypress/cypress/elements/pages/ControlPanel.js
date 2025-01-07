@@ -91,6 +91,10 @@ class ControlPanel {
         cy.visit(this.url.replace(/\{(.+?)\}/g, ''), {failOnStatusCode: false})
     }
 
+    authLoad() {
+        cy.authVisit(this.url.replace(/\{(.+?)\}/g, ''))
+    }
+
     get(selector) {
         // Cypress.log({
         //     name: 'PAGE GET',
@@ -149,7 +153,7 @@ class ControlPanel {
         element.closest('fieldset').find('.field-control em.ee-form-error-message').should('exist')
 
         if (message) {
-            element.closest('fieldset').find('.field-control').contains(message)
+            element.closest('fieldset').find('.field-control').should('contain', message)
         }
     }
 

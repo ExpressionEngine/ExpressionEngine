@@ -73,7 +73,7 @@
 
     <div class="condition-rule-operator-wrap" data-new-rule-row-id="<?=$ruleRowId?>">
         <?php if ($hiddenTemplate || empty($operatorFieldDefault)) : ?>
-            <select name="" id="" class="empty-select" disabled="disabled"></select>
+            <select name="" id="" class="empty-select" disabled="disabled" aria-label="<?=lang('condition_rule_operator')?>"></select>
 
             <div data-input-value="condition-rule-operator" class="condition-rule-operator" style="display: none;">
                 <div class="fields-select-drop">
@@ -92,12 +92,12 @@
     <div class="condition-rule-value-wrap" data-new-rule-row-id="<?=$ruleRowId?>">
         <?php
             if ($hiddenTemplate || $error) :
-                echo '<input type="text" disabled="disabled">';
+                echo '<input type="text" disabled="disabled" aria-label="' . lang('conditional_rule_value') . '">';
             elseif (!$hiddenTemplate && ($valueType['type'] == 'select')) :
                 $this->embed('_shared/form/fields/dropdown', $valueFieldDefault);
             elseif (!$hiddenTemplate && !($valueType['type'] == null)) :
         ?>
-            <input type="text" value="<?=$value?>" name="condition[<?=$setId?>][<?=$rowId?>][value]">
+            <input type="text" value="<?=$value?>" name="condition[<?=$setId?>][<?=$rowId?>][value]" aria-label="<?=lang('conditional_rule_value')?>">>
         <?php endif; ?>
     </div>
 

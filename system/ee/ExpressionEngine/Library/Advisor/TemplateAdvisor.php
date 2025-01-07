@@ -100,6 +100,45 @@ class TemplateAdvisor
 
         return $tags;
     }
+
+    public function getDuplicateTemplateGroupsCount()
+    {
+        $duplicatesCheckQuery = ee()->db
+            ->select('group_name')
+            ->from('template_groups')
+            ->where('site_id', ee()->config->item('site_id'))
+            ->group_by('group_name, site_id')
+            ->having('COUNT(group_name) > 1')
+            ->get();
+        return $duplicatesCheckQuery->num_rows();
+    }
+
+    public function getDuplicateTemplateGroups()
+    {
+        $duplicatesCheckQuery = ee()->db
+            ->select('group_name')
+            ->from('template_groups')
+            ->where('site_id', ee()->config->item('site_id'))
+            ->group_by('group_name, site_id')
+            ->having('COUNT(group_name) > 1')
+            ->get();
+        if ($duplicatesCheckQuery->num_rows() > 0) {
+            $duplicateGroupNames = array_map(function ($row) {
+                return $row['group_name'];
+            }, $duplicatesCheckQuery->result_array());
+            // get the duplicate groups
+            $duplicatesQuery = ee()->db
+                ->select('group_name, group_id')
+                ->from('template_groups')
+                ->where('site_id', ee()->config->item('site_id'))
+                ->where_in('group_name', $duplicateGroupNames)
+                ->order_by('group_name', 'asc')
+                ->order_by('group_id', 'asc')
+                ->get();
+            return $duplicatesQuery->result_array();
+        }
+        return array();
+    }
 }
 
 // EOF

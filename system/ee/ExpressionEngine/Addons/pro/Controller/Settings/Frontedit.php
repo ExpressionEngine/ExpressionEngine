@@ -53,7 +53,7 @@ class Frontedit extends Settings\Pro
                     ->defer();
             }
 
-            ee()->functions->redirect(ee('CP/URL')->make('settings/pro/general'));
+            ee()->functions->redirect($this->base_url);
         }
 
         $settings = [];

@@ -506,7 +506,7 @@ if (! function_exists('form_dropdown')) {
 
         $multiple = (count($selected) > 1 && strpos($extra, 'multiple') === false) ? ' multiple="multiple"' : '';
 
-        $form = '<select tabindex="0" name="' . $name . '"' . $extra . $multiple . ">\n";
+        $form = '<select aria-label="' . $name . '" tabindex="0" name="' . $name . '"' . $extra . $multiple . ">\n";
 
         foreach ($options as $key => $val) {
             $key = (string) $key;

@@ -13,7 +13,7 @@ context('CP Log', () => {
       //cy.auth()
       cy.visit('admin.php?/cp/members')
       cy.get("tr[class='app-listing__row']:contains('johndoe1')").find('td').eq(0).then(($span) =>{
-        JoeId = $span.text().substring(2)
+        JoeId = $span.text().substring(2).replace('#', '').toString()
       })
     })
 
@@ -59,7 +59,7 @@ context('CP Log', () => {
 
   it('can remove all logs', () =>{
       for (var i = 0; i < 2; i++) {
-        cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId.toString() + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
+        cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
       }
       cy.wait(5000);
 
@@ -76,7 +76,7 @@ context('CP Log', () => {
 
         cy.task('db:query', "TRUNCATE `exp_cp_log`").then(() => {
         for (var i = 0; i < 15; i++) {
-          cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId.toString() + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
+          cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
         }
         cy.wait(10000);
 
@@ -93,7 +93,7 @@ context('CP Log', () => {
     it('search log by username',() => {
       cy.task('db:query', "TRUNCATE `exp_cp_log`").then(() => {
       for (var i = 0; i < 15; i++) {
-        cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId.toString() + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
+        cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
       }
       cy.wait(10000);
 
@@ -108,11 +108,11 @@ context('CP Log', () => {
     it('filter log by date' , () => {
       cy.task('db:query', "TRUNCATE `exp_cp_log`").then(() => {
       for (var i = 0; i < 3; i++) {
-        cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId.toString() + ",'johndoe1',1,UNIX_TIMESTAMP(),'Today')")
+        cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId + ",'johndoe1',1,UNIX_TIMESTAMP(),'Today')")
       }
 
       for (var i = 0; i < 3; i++) {
-        cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId.toString() + ",'johndoe1',1,1286668800,'Older one')")
+        cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId + ",'johndoe1',1,1286668800,'Older one')")
       }
       cy.wait(10000);
 
@@ -131,7 +131,7 @@ context('CP Log', () => {
 
       var i = 0;
         for (i = 0; i < 55; i++) {
-          cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId.toString() + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
+          cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
         }
         cy.wait(10000);
 
@@ -152,7 +152,7 @@ context('CP Log', () => {
 
       var i = 0;
         for (i = 0; i < 55; i++) {
-          cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId.toString() + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
+          cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
         }
         cy.wait(10000);
 
@@ -173,7 +173,7 @@ context('CP Log', () => {
 
         var i = 0;
         for (i = 0; i < 15; i++) {
-          cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId.toString() + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
+          cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
         }
         cy.wait(10000);
 
@@ -203,7 +203,7 @@ context('CP Log', () => {
 
         var i = 0;
         for (i = 0; i < 15; i++) {
-          cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId.toString() + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
+          cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
         }
         cy.wait(10000);
 
@@ -243,7 +243,7 @@ context('CP Log', () => {
 
        var i = 0;
         for (i = 0; i < 26; i++) {
-          cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId.toString() + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
+          cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
         }
 
         cy.wait(10000);
@@ -266,7 +266,7 @@ context('CP Log', () => {
 
       var i = 0;
         for (i = 0; i < 26; i++) {
-          cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId.toString() + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
+          cy.task('db:query', "INSERT INTO `exp_cp_log`(`site_id`, `member_id`, `username`, `ip_address`, `act_date`, `action`) VALUES (1," + JoeId + ",'johndoe1',1,UNIX_TIMESTAMP(),'Test')")
         }
         cy.wait(10000);
         cy.visit('/admin.php?/cp/logs/cp')
