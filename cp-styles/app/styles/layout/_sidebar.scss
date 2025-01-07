@@ -609,18 +609,3 @@
   width: 0;
   height: 0;
 }
-
-body[data-theme="contrast"] {
-  .navigation-submenu {
-    .dropdown__item {
-      &:hover {
-        background-color: var(--ee-sidebar-bg-active);
-      }
-    }
-  }
-
-  .ee-sidebar__section-label {
-    opacity: 1;
-    font-weight: 600;
-  }
-}
