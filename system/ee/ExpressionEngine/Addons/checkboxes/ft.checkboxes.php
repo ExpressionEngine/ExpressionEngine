@@ -149,7 +149,8 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
                 'reorder_ajax_url' => $this->get_setting('reorder_ajax_url', null),
                 'auto_select_parents' => $this->get_setting('auto_select_parents', false),
                 'no_results' => $this->get_setting('no_results', ['text' => sprintf(lang('no_found'), lang('choices'))]),
-                'split_for_two' => $this->get_setting('split_for_two', null)
+                'split_for_two' => $this->get_setting('split_for_two', null),
+                'id' => 'label_for_field_' . $this->field_id,
             ]);
         }
 

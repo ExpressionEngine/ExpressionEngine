@@ -87,7 +87,8 @@ class Multi_select_ft extends OptionFieldtype
                 'choices' => $field_options,
                 'value' => $values,
                 'multi' => true,
-                'disabled' => $this->get_setting('field_disabled')
+                'disabled' => $this->get_setting('field_disabled'),
+                'id' => 'label_for_field_' . $this->field_id,
             ]);
         }
 

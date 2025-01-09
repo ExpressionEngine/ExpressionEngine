@@ -154,7 +154,8 @@ class Toggle_ft extends EE_Fieldtype
             'field_name' => $this->field_name,
             'value' => $data,
             'disabled' => $this->get_setting('field_disabled'),
-            'yes_no' => $this->get_setting('yes_no', false)
+            'yes_no' => $this->get_setting('yes_no', false),
+            'id' => 'label_for_field_' . $this->field_id,
         ));
 
         $field_options = array(

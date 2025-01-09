@@ -136,6 +136,7 @@ class Radio_ft extends OptionFieldtype
                 'manage_label' => $this->get_setting('manage_toggle_label', lang('manage')),
                 'reorder_ajax_url' => $this->get_setting('reorder_ajax_url', null),
                 'auto_select_parents' => false,
+                'id' => 'label_for_field_' . $this->field_id,
             ]);
         }
 

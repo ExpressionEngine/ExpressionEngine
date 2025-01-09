@@ -471,12 +471,12 @@ class SelectList extends React.Component {
         }
         {/* Maintain a blank input to easily know when field is empty */}
         { ! props.jsonify && props.selectable && props.selected.length == 0 &&
-          <input type="hidden" name={props.multi ? props.name + '[]' : props.name} value=''
+          <input id={props.id} type="hidden" name={props.multi ? props.name + '[]' : props.name} value=''
             ref={(input) => { this.input = input }} />
         }
         { ! props.jsonify && props.selectable &&
           props.selected.map(item =>
-            <input type="hidden" key={item.value} name={props.multi ? props.name + '[]' : props.name} value={item.value}
+            <input id={props.id} type="hidden" key={item.value} name={props.multi ? props.name + '[]' : props.name} value={item.value}
               ref={(input) => { this.input = input }} />
           )
         }
@@ -484,13 +484,13 @@ class SelectList extends React.Component {
         {/* CHANGE THIS CODE BASED ON TOOGLE PROPS*/}
         { this.state.toggles.length != 0 &&
           this.state.toggles.map(toggle =>
-            <input type="hidden" key={toggle.name + '[' + toggle.value + ']'} name={props.multi ? toggle.name + '[]' : toggle.name} value={toggle.value} ref={(input) => { this.input = input }} />
+            <input id={props.id} type="hidden" key={toggle.name + '[' + toggle.value + ']'} name={props.multi ? toggle.name + '[]' : toggle.name} value={toggle.value} ref={(input) => { this.input = input }} />
           )
         }
 
         {/* JSONified fields are using joined input */}
         { props.jsonify && props.selectable &&
-          <input type="hidden"  name={props.name} value={JSON.stringify(values)}
+          <input id={props.id} type="hidden"  name={props.name} value={JSON.stringify(values)}
             ref={(input) => { this.input = input }} />
         }
       </div>
