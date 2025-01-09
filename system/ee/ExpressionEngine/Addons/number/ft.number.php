@@ -42,6 +42,7 @@ class Number_ft extends Text_ft
         $field = array(
             'name' => $this->field_name,
             'value' => $this->_format_number($data),
+            'id' => 'label_for_field_' . $this->field_id,
         );
 
         if ($this->settings['field_min_value'] != '') {

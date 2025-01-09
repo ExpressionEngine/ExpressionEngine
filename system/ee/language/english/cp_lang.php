@@ -987,6 +987,12 @@ $lang = array(
     'input_text_aria_label' => 'Provide details for this field',
 
     'associated_label_info' => 'This element is solely intended for screen readers to ensure the label is correctly associated with the element.',
+
+    'range_min_input' => 'Minimum value control',
+
+    'range_max_input' => 'Maximum value control',
+
+    'range_single_input' => 'Value control',
 );
 
 // EOF

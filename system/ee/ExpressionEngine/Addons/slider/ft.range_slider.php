@@ -55,7 +55,8 @@ class Range_slider_ft extends Slider_ft
             'max' => (isset($this->settings['field_max_value']) && is_numeric($this->settings['field_max_value'])) ? $this->settings['field_max_value'] : 100,
             'step' => (isset($this->settings['field_step']) && is_numeric($this->settings['field_step'])) ? $this->settings['field_step'] : 1,
             'suffix' => isset($this->settings['field_suffix']) ? $this->settings['field_suffix'] : '',
-            'prefix' => isset($this->settings['field_prefix']) ? $this->settings['field_prefix'] : ''
+            'prefix' => isset($this->settings['field_prefix']) ? $this->settings['field_prefix'] : '',
+            'id' => 'label_for_field_' . $this->field_id,
         );
 
         ee()->load->helper('custom_field');
