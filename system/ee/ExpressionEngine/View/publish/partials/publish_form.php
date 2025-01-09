@@ -116,7 +116,7 @@
             <?php endif; ?>
                 <div class="field-instruct">
                     <?php if (! $field->titleIsHidden()):?>
-                        <label for="label_id_<?=$field->getId()?>"><?php if (!isset($pro_class)) : ?><span class="ico sub-arrow js-toggle-field"></span><?php endif; ?><?=$field->getLabel()?></label>
+                        <label for="label_for_field_<?=$field->getId()?>"><?php if (!isset($pro_class)) : ?><span class="ico sub-arrow js-toggle-field"></span><?php endif; ?><?=$field->getLabel()?></label>
                         <?=$field->getNameBadge()?>
                         <?php
                         $fieldInstructions = $field->getInstructions();
@@ -126,6 +126,7 @@
                     <?php endif;?>
                 </div>
                 <div class="field-control">
+                    <?php //var_dump('FIELD_ID', $field->getId()); ?>
                     <?php if ($field->get('field_id') == 'revisions'): ?>
                         <div class="panel panel__with-border">
                             <?=$revisions?>

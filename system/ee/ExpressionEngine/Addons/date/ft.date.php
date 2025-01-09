@@ -200,6 +200,7 @@ class Date_ft extends EE_Fieldtype
             'date_format' => ee()->localize->get_date_format(false, $include_time),
             'disabled' => $this->get_setting('field_disabled'),
             'include_time' => $include_time,
+            'id' => 'label_for_field_' . $this->field_id,
         ));
     }
 

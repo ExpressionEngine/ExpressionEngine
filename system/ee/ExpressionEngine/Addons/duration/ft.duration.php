@@ -109,6 +109,7 @@ class Duration_Ft extends EE_Fieldtype
                 lang('duration_ft_' . $this->settings['units']),
                 $this->getColonNotationFormat()
             ),
+            'id' => 'label_for_field_' . $this->field_id,
         );
 
         if ($this->get_setting('field_disabled')) {

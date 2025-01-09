@@ -25,7 +25,8 @@ $params = [
     'rel' => 'date-picker',
     'data-date-format' => $date_format,
     'autocomplete' => 'off',
-    'data-include_time' => $include_time
+    'data-include_time' => $include_time,
+    'id' => $id
 ];
 
 if ($value) {

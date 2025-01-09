@@ -66,7 +66,8 @@ class Email_address_Ft extends EE_Fieldtype
         $field = array(
             'name' => $this->field_name,
             'value' => $data,
-            'placeholder' => 'username@example.com'
+            'placeholder' => 'username@example.com',
+            'id' => 'label_for_field_' . $this->field_id,
         );
 
         if ($this->get_setting('field_disabled')) {

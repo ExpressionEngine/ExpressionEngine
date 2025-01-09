@@ -109,6 +109,7 @@ class Text_ft extends EE_Fieldtype
     {
         $type = $this->get_setting('field_content_type', $this->default_field_content_type);
         $field = array(
+            'id' => 'label_for_field_' . $this->field_id,
             'name' => $this->field_name,
             'value' => $this->_format_number($data, $type),
             'dir' => $this->settings['field_text_direction'],

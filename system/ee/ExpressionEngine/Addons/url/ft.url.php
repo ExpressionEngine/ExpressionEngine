@@ -120,7 +120,8 @@ class Url_Ft extends EE_Fieldtype
         $field = array(
             'name' => $this->field_name,
             'value' => $data,
-            'placeholder' => $default_scheme
+            'placeholder' => $default_scheme,
+            'id' => 'label_for_field_' . $this->field_id,
         );
 
         if ($this->get_setting('field_disabled')) {

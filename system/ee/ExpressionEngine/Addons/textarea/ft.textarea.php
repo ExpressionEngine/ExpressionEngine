@@ -159,7 +159,8 @@ class Textarea_ft extends EE_Fieldtype
                 'toolbar' => $toolbar,
                 'format_options' => $format_options,
                 'smileys_enabled' => $smileys_enabled,
-                'smileys' => $smileys
+                'smileys' => $smileys,
+                'id' => 'label_for_field_' . $this->field_id,
             );
 
             if ((isset($this->settings['field_show_file_selector'])
@@ -199,7 +200,7 @@ class Textarea_ft extends EE_Fieldtype
             'name' => $this->name(),
             'value' => $data,
             'rows' => $this->settings['field_ta_rows'],
-            'dir' => $this->settings['field_text_direction']
+            'dir' => $this->settings['field_text_direction'],
         );
 
         if (isset($this->settings['field_show_formatting_btns']) &&

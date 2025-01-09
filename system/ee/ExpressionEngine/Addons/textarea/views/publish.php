@@ -5,6 +5,7 @@ $attributes = array(
     'rows' => $settings['field_ta_rows'],
     'dir' => $settings['field_text_direction'],
     'class' => $class,
+    'id' => $id,
 );
 
 if (isset($settings['field_show_fmt']) && $settings['field_show_fmt'] == 'y') {
