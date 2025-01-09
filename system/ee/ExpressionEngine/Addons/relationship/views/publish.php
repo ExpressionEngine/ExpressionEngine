@@ -6,6 +6,7 @@ if (empty($choices)) {
 if (!isset($display_status)) {
     $display_status = false;
 }
+
 $component = [
     'items' => $choices,
     'selected' => $selected,
@@ -25,6 +26,7 @@ $component = [
     'display_status' => $display_status,
     'rel_min' => $rel_min,
     'rel_max' => $rel_max,
+    'id' => isset($id) ? $id : null,
 ];
 
 if (isset($publishCreateUrl)) {
@@ -102,6 +104,7 @@ if ($deferred) {
 ?>
 <div data-relationship-react="<?=base64_encode(json_encode($component))?>" data-input-value="<?=$field_name?>" <?php echo ($deferred ? 'class="react-deferred-loading"' : '') ?>>
     <div class="fields-select">
+        <output id="<?=$id?>" class="sr-only"><?=lang('associated_label_info')?></output>
         <div class="field-inputs">
             <?php echo $placeholder ?>
         </div>

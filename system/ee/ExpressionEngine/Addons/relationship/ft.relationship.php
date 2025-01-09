@@ -398,6 +398,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             'relationship.lang.channel' => lang('channel'),
             'relationship.lang.remove' => lang('remove'),
             'relationship.lang.edit' => lang('edit_entry'),
+            'relationship.lang.accessibility' => lang('associated_label_info'),
         ]);
 
         ee()->cp->add_js_script([
@@ -532,8 +533,8 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
                 'id' => $channel->getId()
             ];
         }
-
         return ee('View')->make('relationship:publish')->render([
+            'id' => 'label_for_field_' . $this->field_id,
             'deferred' => isset($this->settings['deferred_loading']) ? $this->settings['deferred_loading'] : false,
             'field_name' => $field_name,
             'choices' => $choices,

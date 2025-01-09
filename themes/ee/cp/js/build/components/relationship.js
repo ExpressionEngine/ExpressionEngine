@@ -388,7 +388,10 @@ var Relationship = /*#__PURE__*/function (_React$Component) {
         ref: function ref(el) {
           return _this5.field = el;
         }
-      }, this.state.selected.length > 0 && React.createElement("ul", {
+      }, React.createElement(React.Fragment, null, React.createElement("output", {
+        id: props.id,
+        className: "sr-only"
+      }, this.lang.accessibility), this.state.selected.length > 0 && React.createElement("ul", {
         className: "list-group list-group--connected mb-s",
         ref: function ref(el) {
           return _this5.listGroup = el;
@@ -531,7 +534,7 @@ var Relationship = /*#__PURE__*/function (_React$Component) {
         }, item.instructions));
       }), dropdownItems.length == 0 && React.createElement("div", {
         "class": "dropdown__header text-center"
-      }, this.props.no_results)))));
+      }, this.props.no_results))))));
     }
   }], [{
     key: "renderFields",

@@ -331,104 +331,107 @@ class Relationship extends React.Component {
 
         return (
             <div ref={el => this.field = el}>
-                {this.state.selected.length > 0 &&
-                <ul className="list-group list-group--connected mb-s" ref={el => this.listGroup = el}>
-                    {
-                        this.state.selected.map((item) => {
-                            return (
-                                <li className="list-item">
-									{this.state.selected.length > 1 &&
-									<div class="list-item__handle"><i class="fal fa-bars"></i></div>
-									}
-                                    <div className="list-item__content">
-                                        <div class="list-item__title">{item.label} {this.state.selected.length > 10 && <small className="meta-info ml-s float-right"> {item.instructions}</small>}</div>
-                                        {this.state.selected.length <= 10 &&
-                                        <div class="list-item__secondary">{props.display_entry_id && <span> #{item.value} / </span>}{item.instructions}{props.display_status && <span className="status-indicator" style={{borderColor: '#'+ EE.statuses[item.status], color: '#'+ EE.statuses[item.status]}}>{item.status}</span>}</div>
-                                        }
-                                    </div>
-                                    <div class="list-item__content-right">
-                                        <div className="button-group">
-                                            {this.props.can_edit_items && item.can_edit && item.editable &&
-                                            <button type="button" title={this.lang.edit} className="button button--small button--default" onClick={() => this.openPublishEditForm(item.value)}><i class="fal fa-pencil-alt"></i></button>
-                                            }
-
-                                            <button type="button" title={this.lang.remove} onClick={() => this.deselect(item.value)} className="button button--small button--default"><i class="fal fa-fw fa-trash-alt"></i></button>
-                                        </div>
-                                    </div>
-                                </li>
-                            )
-                        })
-                    }
-                </ul>
-                }
-
-                {/* Keep an empty input when no items are selected */}
-                {this.state.selected.length == 0 &&
-                    <input type="hidden" name={props.multi ? props.name + '[]' : props.name} value=""/>
-                }
-
-                {this.state.selected.map((item) => {
-                        return (<input type="hidden" name={props.multi ? props.name + '[]' : props.name} value={item.value}/>)
-                    })
-                }
-
-                <div style={{display: showAddButton ? 'block' : 'none' }}>
-                <button type="button" className="js-dropdown-toggle button button--default"><i class="fal fa-plus icon-left"></i> {props.button_label ? props.button_label : this.lang.relateEntry}</button>
-                    <div className="dropdown js-dropdown-auto-focus-input">
-                        <div className="dropdown__search d-flex">
-                            <div className="filter-bar flex-grow">
-                                <div className="filter-bar__item flex-grow">
-                                    <div className="search-input">
-                                        <input type="text" class="search-input__input input--small" onChange={(handleSearchItem) => this.filterChange('search', handleSearchItem.target.value)} placeholder={this.lang.search} />
-                                    </div>
-                                </div>
-                                {props.channels.length > 1 &&
-                                <div className="filter-bar__item">
-                                    <DropDownButton
-                                        keepSelectedState={true}
-                                        title={this.lang.channel}
-                                        items={channelFilterItems}
-                                        onSelect={(value) => this.filterChange('channel_id', value)}
-                                        buttonClass="filter-bar__button"
-                                    />
-                                </div>
-                                }
-                                {this.props.can_add_items &&
-                                <div className="filter-bar__item">
-                                    {!this.showCreateDropdown &&
-                                    <button type="button" className="button button--primary button--small" onClick={() => this.openPublishFormForChannel(this.props.channels[0])}>{ this.props.new_entry }</button>
-                                    }
-                                    {this.showCreateDropdown &&
-                                    <div>
-                                    <button type="button" className="js-dropdown-toggle button button--primary button--small" data-dropdown-pos="bottom-end">{ this.props.new_entry } <i class="fal fa-chevron-down icon-right"></i></button>
-                                    <div className="dropdown">
-                                        {props.channelsForNewEntries.map((channel) => {
-                                            return (
-                                                <a href className="dropdown__link" onClick={() => this.openPublishFormForChannel(channel)}>{channel.title}</a>
-                                            )
-                                        })}
-                                    </div>
-                                    </div>
-                                    }
-                                </div>
-                                }
-                            </div>
-                        </div>
-
-                        <div className="dropdown__scroll dropdown__scroll--small">
+                <>
+                    <output id={props.id} className="sr-only">{this.lang.accessibility}</output>
+                    {this.state.selected.length > 0 &&
+                    <ul className="list-group list-group--connected mb-s" ref={el => this.listGroup = el}>
                         {
-                            dropdownItems.map((item) => {
+                            this.state.selected.map((item) => {
                                 return (
-                                    <a href="" onClick={(e) => { e.preventDefault(); this.selectItem(item)}} className="dropdown__link">{item.label}{props.display_entry_id && <span class="dropdown__link-entryId"> (#{item.value})</span>}{props.display_status && <span className="dropdown__link-status-indicator" style={{borderColor: '#'+ EE.statuses[item.status], color: '#'+ EE.statuses[item.status]}}>{item.status}</span>} <span className="dropdown__link-right">{item.instructions}</span></a>
+                                    <li className="list-item">
+    									{this.state.selected.length > 1 &&
+    									<div class="list-item__handle"><i class="fal fa-bars"></i></div>
+    									}
+                                        <div className="list-item__content">
+                                            <div class="list-item__title">{item.label} {this.state.selected.length > 10 && <small className="meta-info ml-s float-right"> {item.instructions}</small>}</div>
+                                            {this.state.selected.length <= 10 &&
+                                            <div class="list-item__secondary">{props.display_entry_id && <span> #{item.value} / </span>}{item.instructions}{props.display_status && <span className="status-indicator" style={{borderColor: '#'+ EE.statuses[item.status], color: '#'+ EE.statuses[item.status]}}>{item.status}</span>}</div>
+                                            }
+                                        </div>
+                                        <div class="list-item__content-right">
+                                            <div className="button-group">
+                                                {this.props.can_edit_items && item.can_edit && item.editable &&
+                                                <button type="button" title={this.lang.edit} className="button button--small button--default" onClick={() => this.openPublishEditForm(item.value)}><i class="fal fa-pencil-alt"></i></button>
+                                                }
+
+                                                <button type="button" title={this.lang.remove} onClick={() => this.deselect(item.value)} className="button button--small button--default"><i class="fal fa-fw fa-trash-alt"></i></button>
+                                            </div>
+                                        </div>
+                                    </li>
                                 )
                             })
                         }
-                        {dropdownItems.length == 0 &&
-                            <div class="dropdown__header text-center">{ this.props.no_results }</div>
-                        }
+                    </ul>
+                    }
+
+                    {/* Keep an empty input when no items are selected */}
+                    {this.state.selected.length == 0 &&
+                        <input type="hidden" name={props.multi ? props.name + '[]' : props.name} value=""/>
+                    }
+
+                    {this.state.selected.map((item) => {
+                            return (<input type="hidden" name={props.multi ? props.name + '[]' : props.name} value={item.value}/>)
+                        })
+                    }
+
+                    <div style={{display: showAddButton ? 'block' : 'none' }}>
+                    <button type="button" className="js-dropdown-toggle button button--default"><i class="fal fa-plus icon-left"></i> {props.button_label ? props.button_label : this.lang.relateEntry}</button>
+                        <div className="dropdown js-dropdown-auto-focus-input">
+                            <div className="dropdown__search d-flex">
+                                <div className="filter-bar flex-grow">
+                                    <div className="filter-bar__item flex-grow">
+                                        <div className="search-input">
+                                            <input type="text" class="search-input__input input--small" onChange={(handleSearchItem) => this.filterChange('search', handleSearchItem.target.value)} placeholder={this.lang.search} />
+                                        </div>
+                                    </div>
+                                    {props.channels.length > 1 &&
+                                    <div className="filter-bar__item">
+                                        <DropDownButton
+                                            keepSelectedState={true}
+                                            title={this.lang.channel}
+                                            items={channelFilterItems}
+                                            onSelect={(value) => this.filterChange('channel_id', value)}
+                                            buttonClass="filter-bar__button"
+                                        />
+                                    </div>
+                                    }
+                                    {this.props.can_add_items &&
+                                    <div className="filter-bar__item">
+                                        {!this.showCreateDropdown &&
+                                        <button type="button" className="button button--primary button--small" onClick={() => this.openPublishFormForChannel(this.props.channels[0])}>{ this.props.new_entry }</button>
+                                        }
+                                        {this.showCreateDropdown &&
+                                        <div>
+                                        <button type="button" className="js-dropdown-toggle button button--primary button--small" data-dropdown-pos="bottom-end">{ this.props.new_entry } <i class="fal fa-chevron-down icon-right"></i></button>
+                                        <div className="dropdown">
+                                            {props.channelsForNewEntries.map((channel) => {
+                                                return (
+                                                    <a href className="dropdown__link" onClick={() => this.openPublishFormForChannel(channel)}>{channel.title}</a>
+                                                )
+                                            })}
+                                        </div>
+                                        </div>
+                                        }
+                                    </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <div className="dropdown__scroll dropdown__scroll--small">
+                            {
+                                dropdownItems.map((item) => {
+                                    return (
+                                        <a href="" onClick={(e) => { e.preventDefault(); this.selectItem(item)}} className="dropdown__link">{item.label}{props.display_entry_id && <span class="dropdown__link-entryId"> (#{item.value})</span>}{props.display_status && <span className="dropdown__link-status-indicator" style={{borderColor: '#'+ EE.statuses[item.status], color: '#'+ EE.statuses[item.status]}}>{item.status}</span>} <span className="dropdown__link-right">{item.instructions}</span></a>
+                                    )
+                                })
+                            }
+                            {dropdownItems.length == 0 &&
+                                <div class="dropdown__header text-center">{ this.props.no_results }</div>
+                            }
+                            </div>
                         </div>
                     </div>
-                </div>
+                </>
             </div>
         );
     }

@@ -284,9 +284,11 @@ class Member_ft extends Relationship_ft implements ColumnInterface
                 'channel' => lang('role'),
                 'remove' => lang('remove'),
                 'edit' => lang('edit_member'),
-                'new_entry' => lang('new_member')
+                'new_entry' => lang('new_member'),
+                'accessibility' => lang('associated_label_info'),
             ],
             'canCreateNew' => ee('Permission')->can('create_members'),
+            'id' => 'label_for_field_' . $this->field_id,
         ]);
     }
 
