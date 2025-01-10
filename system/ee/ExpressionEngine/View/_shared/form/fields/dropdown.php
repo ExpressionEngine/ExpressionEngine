@@ -3,7 +3,8 @@ $too_many = isset($too_many) ? $too_many : 8;
 $empty_text = isset($empty_text) ? $empty_text : lang('choose_wisely');
 $field_disabled = isset($field_disabled) ? $field_disabled : false;
 $class = isset($class) ? $class : '';
-$aria_label = isset($aria_label) ? $aria_label : '';
+$id = isset($id) ? $id : '';
+$accessability_text = lang('associated_label_info');
 
 $react = '';
 $sub_class = 'fields-select-drop';
@@ -29,7 +30,8 @@ if ($field_disabled) {
         'fileManager' => isset($fileManager) ? $fileManager : false,
         'ignoreSectionLabel' => isset($ignoreSectionLabel) ? $ignoreSectionLabel : false,
         'disabledInput' => false,
-        'ariaLabel' => isset($aria_label) ? $aria_label : false,
+        'id' => $id,
+        'accessabilityText' => $accessability_text,
     ];
     
     $react = 'data-dropdown-react="' . base64_encode(json_encode($component)) . '" data-input-value="' . $field_name . '"';
@@ -38,6 +40,7 @@ if ($field_disabled) {
 <div <?=$react?> class="<?=$class?>">
 	<div class="<?=$sub_class?>">
 		<div class="select">
+			<output id="<?=$id?>" class="sr-only"><?=lang('associated_label_info')?></output>
 			<div class="select__button">
 				<label class="select__button-label">
 				<?=$display_text?>

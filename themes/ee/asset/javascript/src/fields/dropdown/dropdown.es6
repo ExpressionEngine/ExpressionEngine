@@ -159,8 +159,8 @@ class Dropdown extends React.Component {
 
     return (
       <>
-        {this.props.ariaLabel && 
-          <output class="sr-only" id={this.props.ariaLabel}></output>
+        {this.props.id && 
+          <output class="sr-only" id={this.props.id}>{this.props.accessabilityText}</output>
         }
         <div className={"select button-segment" + (tooMany ? ' select--resizable' : '') + (this.state.open ? ' select--open' : '')}>
           <div className={"select__button js-dropdown-toggle"} onClick={this.toggleOpen} tabIndex="0">

@@ -83,7 +83,8 @@ class Select_ft extends OptionFieldtype
                 'value' => $data,
                 'empty_text' => lang('choose_wisely'),
                 'field_disabled' => $this->get_setting('field_disabled'),
-                'ignoreSectionLabel' => $this->get_setting('ignore_section_label')
+                'ignoreSectionLabel' => $this->get_setting('ignore_section_label'),
+                'id' => 'label_for_field_' . $this->field_id,
             ]);
         }
 

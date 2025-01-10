@@ -112,6 +112,8 @@ class Colorpicker_ft extends EE_Fieldtype
 
         ee()->javascript->set_global([
             'lang.colorpicker_input' => lang('colorpicker_input'),
+            'lang.accessabilityText' => lang('associated_label_info')
+
         ]);
 
         return $this->createColorPicker([
@@ -121,6 +123,7 @@ class Colorpicker_ft extends EE_Fieldtype
             'initialColor' => $data,
             'swatches' => $this->getSwatches(),
             'defaultColor' => $this->get_setting('colorpicker_default_color'),
+            'accessabilityId' => 'label_for_field_' . $this->field_id,
             // 'disabled'      => $this->get_setting('field_disabled')
         ]);
     }

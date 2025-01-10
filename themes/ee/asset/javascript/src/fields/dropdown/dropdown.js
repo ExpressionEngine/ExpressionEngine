@@ -165,10 +165,10 @@ var Dropdown = /*#__PURE__*/function (_React$Component) {
         selected = this.state.selected;
       }
 
-      return React.createElement(React.Fragment, null, this.props.ariaLabel && React.createElement("output", {
+      return React.createElement(React.Fragment, null, this.props.id && React.createElement("output", {
         "class": "sr-only",
-        id: this.props.ariaLabel
-      }), React.createElement("div", {
+        id: this.props.id
+      }, this.props.accessabilityText), React.createElement("div", {
         className: "select button-segment" + (tooMany ? ' select--resizable' : '') + (this.state.open ? ' select--open' : '')
       }, React.createElement("div", {
         className: "select__button js-dropdown-toggle",

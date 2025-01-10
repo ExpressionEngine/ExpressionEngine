@@ -304,6 +304,9 @@ class ColorPicker extends React.Component<ColorPickerProps, ColorPickerState> {
         return (
             <div className="colorpicker">
                 <div className="colorpicker__inner_wrapper">
+                    {this.props.accessabilityId &&
+                     <output class="sr-only" id={this.props.accessabilityId}>{EE.lang.accessabilityText}</output>
+                    }
                     <input className="colorpicker__input js-dropdown-toggle" type="text" id={this.props.inputId} name={this.props.inputName} value={this.state.inputValue} onChange={this.onInputChange} onFocus={this.showColorPanel} onBlur={this.hideColorPanel} autoComplete="off" aria-label={EE.lang.colorpicker_input}/>
                     <span className="colorpicker__input-color" style={{borderColor: currentColor.shade(-15).rgbaStr}}><span style={{background: currentColor.rgbaStr}}></span></span>
                 </div>
