@@ -381,7 +381,7 @@ class Relationship extends React.Component {
                                 <div className="filter-bar flex-grow">
                                     <div className="filter-bar__item flex-grow">
                                         <div className="search-input">
-                                            <input type="text" class="search-input__input input--small" onChange={(handleSearchItem) => this.filterChange('search', handleSearchItem.target.value)} placeholder={this.lang.search} />
+                                            <input type="text" class="search-input__input input--small" onChange={(handleSearchItem) => this.filterChange('search', handleSearchItem.target.value)} placeholder={this.lang.search} aria-label={`${this.lang.search} ${props.button_label ? props.button_label : this.lang.relateEntry}`}/>
                                         </div>
                                     </div>
                                     {props.channels.length > 1 &&

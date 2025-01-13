@@ -471,11 +471,12 @@ var Relationship = /*#__PURE__*/function (_React$Component) {
         className: "search-input"
       }, React.createElement("input", {
         type: "text",
-        "class": "search-input__input input--small",
+        "class": "search-input__input input--small 123",
         onChange: function onChange(handleSearchItem) {
           return _this5.filterChange('search', handleSearchItem.target.value);
         },
-        placeholder: this.lang.search
+        placeholder: this.lang.search,
+        "aria-label": "".concat(this.lang.search, " ").concat(props.button_label ? props.button_label : this.lang.relateEntry)
       }))), props.channels.length > 1 && React.createElement("div", {
         className: "filter-bar__item"
       }, React.createElement(DropDownButton, {
