@@ -242,7 +242,7 @@ else: ?>
                 endif;
             }; ?>"
         id="<?=$grid_field_name?>">
-
+    <output id="<?=$accessabilityId?>" class="sr-only"><?=lang('associated_label_info')?></output>
     <div class="table-responsive">
     <table class="grid-field__table"<?php foreach ($table_attrs as $key => $value):?> <?=$key?>='<?=$value?>'<?php endforeach; ?>>
     <?php if (empty($columns) && empty($data)): ?>
@@ -259,7 +259,7 @@ else: ?>
                 $reorder = $reorder && ! empty($data);
                 $colspan = ($reorder_header || $reorder) ? count($columns) + 1 : count($columns);
                 if (isset($vertical_layout)): ?>
-                    <th class="hidden"></th>
+                    <th class="hidden" aria-hidden="true" aria-label="<?=lang('decorative_item')?>"></th>
                 <?php endif;
 
                 foreach ($columns as $settings):
@@ -364,7 +364,9 @@ else: ?>
                                     <i class="fal fa-caret-square-up fa-fw"></i>
                                 </a>
 
-                                <button type="button" data-dropdown-offset="0px, -30px" data-dropdown-pos="bottom-end" class="grid-field__item-tool js-dropdown-toggle"><i class="fal fa-fw fa-cog"></i></button>
+                                <button type="button" data-dropdown-offset="0px, -30px" data-dropdown-pos="bottom-end" class="grid-field__item-tool js-dropdown-toggle" aria-label="<?=lang('grid_tools')?>">
+                                    <i class="fal fa-fw fa-cog"></i>
+                                </button>
 
                                 <div class="dropdown">
                                     <a href class="dropdown__link js-hide-all-grid-field-items"><?=lang('collapse_all')?></a>
@@ -379,6 +381,7 @@ else: ?>
                                     <?php if ($reorder): ?>
                                     <button type="button" class="js-grid-reorder-handle">
                                         <i class="icon--reorder reorder"></i>
+                                        <span class="sr-only"><?=lang('reorder_row')?></span>
                                     </button>
                                     <?php endif ?>
                                 </label>
@@ -479,7 +482,7 @@ else: ?>
                         <td class="grid-field__column--tools">
                             <div class="grid-field__column-tools">
                                 <?php if ($reorder): ?>
-                                <button type="button" class="button button--small button--default cursor-move js-grid-reorder-handle">
+                                <button type="button" class="button button--small button--default cursor-move js-grid-reorder-handle" aria-label="<?=lang('reorder_row') . lang('button')?>">
                                     <span class="grid-field__column-tool"><i class="fal fa-fw fa-arrows-alt"></i></span>
                                 </button>
                                 <?php endif ?>

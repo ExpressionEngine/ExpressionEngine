@@ -993,6 +993,10 @@ $lang = array(
     'range_max_input' => 'Maximum value control',
 
     'range_single_input' => 'Value control',
+
+    'grid_tools' => 'Open tools menu',
+
+    'decorative_item' => 'Decorative table functionality',
 );
 
 // EOF

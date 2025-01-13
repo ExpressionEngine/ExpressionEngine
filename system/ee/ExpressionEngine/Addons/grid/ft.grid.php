@@ -187,6 +187,7 @@ class Grid_ft extends EE_Fieldtype
             'vertical_layout' => isset($this->settings['vertical_layout'])
                 ? ($this->settings['vertical_layout'] == 'horizontal_layout' ? 'horizontal' : $this->settings['vertical_layout'])
                 : 'n',
+            'accessabilityId' => 'label_for_field_' . $this->field_id,
         ));
         $grid->loadAssets();
         $grid->setNoResultsText(
