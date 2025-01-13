@@ -242,7 +242,9 @@ else: ?>
                 endif;
             }; ?>"
         id="<?=$grid_field_name?>">
-    <output id="<?=$accessabilityId?>" class="sr-only"><?=lang('associated_label_info')?></output>
+    <?php if (isset($accessabilityId)): ?>
+        <output id="<?=$accessabilityId?>" class="sr-only"><?=lang('associated_label_info')?></output>
+    <?php endif ?>
     <div class="table-responsive">
     <table class="grid-field__table"<?php foreach ($table_attrs as $key => $value):?> <?=$key?>='<?=$value?>'<?php endforeach; ?>>
     <?php if (empty($columns) && empty($data)): ?>
