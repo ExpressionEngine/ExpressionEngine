@@ -716,8 +716,7 @@ class DragAndDropUpload extends React.Component {
               e.preventDefault()
               this.uploadNew(this.state.directory)
             }}>{EE.lang.file_dnd_upload_new}</a>
-            <label htmlFor="f_open-filepicker_id" className="sr-only">{EE.lang.hidden_input}</label>
-            <input id="f_open-filepicker_id" type="file" className="f_open-filepicker" style={{display: 'none'}} multiple="multiple"/>
+            <input aria-label={EE.lang.hidden_input} type="file" className="f_open-filepicker" style={{display: 'none'}} multiple="multiple"/>
             </div>
           </React.Fragment>
           )

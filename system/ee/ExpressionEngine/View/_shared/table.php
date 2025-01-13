@@ -379,9 +379,9 @@ else: ?>
                             </div>
 
                             <div class="field-instruct">
-                                <label>
+                                <label <?php if ($reorder): ?>id="label-reorder-handle"<?php endif ?>>
                                     <?php if ($reorder): ?>
-                                    <button type="button" class="js-grid-reorder-handle">
+                                    <button type="button" class="js-grid-reorder-handle" aria-labelledby="label-reorder-handle">
                                         <i class="icon--reorder reorder"></i>
                                         <span class="sr-only"><?=lang('reorder_row')?></span>
                                     </button>

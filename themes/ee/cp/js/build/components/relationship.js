@@ -471,7 +471,7 @@ var Relationship = /*#__PURE__*/function (_React$Component) {
         className: "search-input"
       }, React.createElement("input", {
         type: "text",
-        "class": "search-input__input input--small 123",
+        "class": "search-input__input input--small",
         onChange: function onChange(handleSearchItem) {
           return _this5.filterChange('search', handleSearchItem.target.value);
         },
