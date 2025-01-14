@@ -74,48 +74,20 @@ if (is_array($setting_group)) {
 }
 
 $fieldset_id = '';
+$accessability_id = '';
 if (isset($setting['fields']) && !empty($setting['fields'])) {
     $fieldset_id = ' id="fieldset-' . implode('-', array_keys($setting['fields'])) . '"';
+    $accessability_id = implode('-', array_keys($setting['fields']));
 }
-
-$label_attr = '';
-$fieldset_arialabelled = '';
-// foreach ($setting['fields'] as $field_key => $field_value) {
-//     if (isset($field_value['type'])) {
-//         // switch ($field['type']):
-//         //     case 'text':
-//         //     case 'number':
-//         //     case 'file':
-//         //     case 'password':
-//         //     case 'textarea':
-//         //     case 'checkbox':
-//         //     case 'multiselect':
-//         //     case 'radio_block':
-//         //     case 'radio':
-//         //     case 'inline_radio':
-//         //         $label_attr = ' for="label_' . $setting['title'] . '"';
-//         //     case 'yes_no':
-//         //     case 'toggle':
-//         //         $label_attr = ' for="label_' . $field_key . '"';
-//         //         break;
-//         //     case 'dropdown':
-//         //         $label_attr = ' for="label_' . implode('-', array_keys($setting['fields'])) . '"';
-//         //         break;
-//         //     case 'slider':
-//         //         $label_attr = ' id="label_' . $setting['title'] . '"';
-//         //         break;
-//         // endswitch;
-//     }
-// }
 
 // Grids have to be in a div for an overflow bug in Firefox
 $element = ($grid) ? 'div' : 'fieldset'; 
 $legend = ($grid) ? '' : '<legend class="sr-only">' . lang('neutral_legend') . '</legend>'?>
-<<?=$element?> <?=$fieldset_id?> <?=$fieldset_arialabelled?> class="<?=$fieldset_classes?>" <?php if ($setting_group): ?> data-group="<?=$setting_group?>"<?php endif ?><?php if (isset($setting['attrs'])): foreach ($setting['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; endif; ?>>
+<<?=$element?> <?=$fieldset_id?> class="<?=$fieldset_classes?>" <?php if ($setting_group): ?> data-group="<?=$setting_group?>"<?php endif ?><?php if (isset($setting['attrs'])): foreach ($setting['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; endif; ?>>
     <?=$legend?>
 	<div class="field-instruct <?=($grid) ? form_error_class(array_keys($setting['fields'])) : '' ?>">
 		<?php if (isset($setting['title'])): ?>
-		<label <?=$label_attr?>><?=lang($setting['title'])?></label>
+		<label for="label_for_field_<?=$accessability_id?>"><?=lang($setting['title'])?></label>
 		<?php endif; ?>
 		<?php if (isset($setting['desc']) && !empty($setting['desc'])): ?>
 		<em><?=lang($setting['desc'])?></em>
@@ -140,7 +112,7 @@ $legend = ($grid) ? '' : '<legend class="sr-only">' . lang('neutral_legend') . '
                         'field' => $field,
                         'setting' => $setting,
                         'grid' => $grid,
-                        // 'aria_labelledby' => isset($setting['title']) ? 'label_' . $setting['title'] : '',
+                        'accessability_id' => $accessability_id,
                     );
 
                     // If there are multiple fields with the same name, such as

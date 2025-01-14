@@ -6,6 +6,8 @@ $class = (isset($field['class'])) ? $field['class'] : '';
 $class .= ($margin_top) ? ' add-mrg-top' : '';
 $class .= ($margin_left) ? ' add-mrg-left' : '';
 
+$accessability_id = isset($accessability_id) ? 'label_for_field_' . $accessability_id : '';
+
 // Check for a field name override
 if (isset($field['name'])) {
     $field_name = $field['name'];
@@ -64,7 +66,7 @@ case 'text':
         <div class="<?=$class?>" <?=isset($field['group']) ? ' data-group="' . $field['group'] . '"' : ''?>>
     <?php endif ?>
 
-            <input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?> id="label_<?=$field_name?>">
+            <input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?> id="<?=$accessability_id?>">
 
     <?php if (!empty($class)): ?>
         </div>
@@ -84,20 +86,20 @@ case 'number':
         <div class="<?=$class?>" <?=isset($field['group']) ? ' data-group="' . $field['group'] . '"' : ''?>>
     <?php endif ?>
 
-            <input type="number" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?> id="label_<?=$field_name?>">
+            <input type="number" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?> id="<?=$accessability_id?>">
 
     <?php if (!empty($class)): ?>
         </div>
     <?php endif ?>
 <?php break;
 case 'file': ?>
-    <input type="file" name="<?=$field_name?>"<?=$attrs?> class="<?=$class?>" id="label_<?=$field_name?>">
+    <input type="file" name="<?=$field_name?>"<?=$attrs?> class="<?=$class?>" id="<?=$accessability_id?>">
 <?php break;
 case 'password': ?>
-    <input type="password" name="<?=$field_name?>" value="<?=$value?>" autocomplete="<?=($field_name=='verify_password' || $field_name=='password_confirm' ? 'current' : 'new')?>-password"<?=$attrs?> class="<?=$class?>" id="label_<?=$field_name?>">
+    <input type="password" name="<?=$field_name?>" value="<?=$value?>" autocomplete="<?=($field_name=='verify_password' || $field_name=='password_confirm' ? 'current' : 'new')?>-password"<?=$attrs?> class="<?=$class?>" id="<?=$accessability_id?>">
 <?php break;
 case 'hidden': ?>
-    <input type="hidden" name="<?=$field_name?>" value="<?=$value?>" id="label_<?=$field_name?>">
+    <input type="hidden" name="<?=$field_name?>" value="<?=$value?>" id="<?=$accessability_id?>">
 <?php break;
 
 case 'radio_block':
@@ -132,7 +134,7 @@ if ($field['type'] == 'checkbox' && ! $value) {
         'jsonify' => isset($field['jsonify']) ? $field['jsonify'] : false,
         'class' => $class,
         'toggle_all' => isset($field['toggle_all']) ? $field['toggle_all'] : null,
-        'aria_label' => 'label_' . $field_name,
+        'id' => $accessability_id,
     ]); ?>
 <?php break;
 
@@ -153,7 +155,7 @@ case 'dropdown': ?>
         'group_toggle' => isset($field['group_toggle']) ? $field['group_toggle'] : null,
         'empty_text' => isset($field['empty_text']) ? lang($field['empty_text']) : lang('choose_wisely'),
         'class' => $class,
-        'aria_label' => 'label_' . $field_name,
+        'id' => $accessability_id,
     ]); ?>
 <?php break;
 
@@ -165,7 +167,7 @@ case 'toggle': ?>
         'disabled' => (isset($field['disabled']) && $field['disabled'] == true),
         'group_toggle' => isset($field['group_toggle']) ? $field['group_toggle'] : null,
         'class' => $class,
-        'aria_label' => 'label_' . $field_name,
+        'id' => $accessability_id,
     ]); ?>
 <?php break;
 
@@ -173,14 +175,14 @@ case 'textarea':
     if ($class): ?>
         <div class="<?=$class?>" <?=isset($field['group']) ? ' data-group="' . $field['group'] . '"' : ''?>>
     <?php endif ?>
-            <textarea id="label_<?=$field_name?>" name="<?=$field_name?>" <?=(isset($field['cols']) ? "cols=\"{$field['cols']}\"" : "")?> <?=(isset($field['rows']) ? "rows=\"{$field['rows']}\"" : "")?> <?=$attrs?>><?=(isset($field['kill_pipes']) && $field['kill_pipes'] === true) ? str_replace('|', NL, $value) : $value?></textarea>
+            <textarea name="<?=$field_name?>" <?=(isset($field['cols']) ? "cols=\"{$field['cols']}\"" : "")?> <?=(isset($field['rows']) ? "rows=\"{$field['rows']}\"" : "")?> <?=$attrs?> id="<?=$accessability_id?>"><?=(isset($field['kill_pipes']) && $field['kill_pipes'] === true) ? str_replace('|', NL, $value) : $value?></textarea>
     <?php if ($margin_top or $margin_left): ?>
         </div>
     <?php endif ?>
 <?php break;
     // no break
 case 'multiselect': ?>
-    <div class="fields-select fields-multiselect <?=$class?>" aria-labelledby="">
+    <div class="fields-select fields-multiselect <?=$class?>">
         <div class="field-inputs">
             <?php foreach ($field['choices'] as $field_name => $options): ?>
                 <label>
@@ -201,7 +203,7 @@ case 'image': ?>
             <?php endif; ?>
             <li class="remove"><a class="remove button button--default button--xsmall" href="" title="remove"></a></li>
         </ul>
-        <input type="hidden" name="<?=$field_name?>" value="<?=$value?>" id="label_<?=$field_name?>">
+        <input type="hidden" name="<?=$field_name?>" value="<?=$value?>">
     </figure>
 <?php break;
 
@@ -214,7 +216,6 @@ case 'slider':
         'value' => $value,
         'suffix' => isset($field['suffix']) ? $field['suffix'] : '',
         'prefix' => isset($field['prefix']) ? $field['prefix'] : '',
-        'aria_label' => 'label_' . $field_name,
     ]); 
 break;
 
