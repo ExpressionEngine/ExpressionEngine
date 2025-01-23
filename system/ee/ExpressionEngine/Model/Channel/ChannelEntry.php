@@ -257,18 +257,34 @@ class ChannelEntry extends ContentModel
 
         //validate categories, if necessary
         $cat_groups = $this->Channel->CategoryGroups->pluck('group_id');
-        $categoryGroupsRequired = ee('Model')
+        $categoryGroups = ee('Model')
                 ->get('CategoryGroupSettings')
                 ->filter('channel_id', $this->Channel->getId())
-                ->filter('group_id', 'IN', $cat_groups)
-                ->filter('cat_required', 'y')
-                ->all()
-                ->pluck('group_id');
+                ->filter('group_id', 'IN', $cat_groups);
+        $categoryGroupsRequired = [];
+        $categoryGroupsSingleSelection = [];
+        foreach ($categoryGroups->all() as $categoryGroup) {
+            if ($categoryGroup->cat_required === true) {
+                $categoryGroupsRequired[] = $categoryGroup->group_id;
+            }
+            if ($categoryGroup->cat_allow_multiple === false) {
+                $categoryGroupsSingleSelection[] = $categoryGroup->group_id;
+            }
+        }
         if (!empty($categoryGroupsRequired)) {
             $requiredRule = new Rule\Required();
             foreach ($categoryGroupsRequired as $groupId) {
                 if (empty($this->getProperty('cat_group_id_' . $groupId))) {
                     $result->addFailed('categories[cat_group_id_' . $groupId . ']', $requiredRule);
+                }
+            }
+        }
+        if (!empty($categoryGroupsSingleSelection)) {
+            $singleSelectionRule = new Rule\SingleSelection();
+            foreach ($categoryGroupsSingleSelection as $groupId) {
+                $catsInGroup = explode('|', $this->getProperty('cat_group_id_' . $groupId));
+                if (count($catsInGroup) > 1) {
+                    $result->addFailed('categories[cat_group_id_' . $groupId . ']', $singleSelectionRule);
                 }
             }
         }
@@ -1281,18 +1297,15 @@ class ChannelEntry extends ContentModel
                     }
                     // can multiple categories from this group be selected? (default yes)
                     if (isset($cat_allow_multiple[$cat_group->getId()]) && $cat_allow_multiple[$cat_group->getId()] === false) {
-                        if ($this->Categories->filter('group_id', $cat_group->getId())->count() > 1) {
+                        if (!$this->isNew() && $this->Categories->filter('group_id', $cat_group->getId())->count() > 1) {
                             $metadata['alertText'] = lang('cat_selection_is_multiple_categories_assigned');
                         } elseif (ee()->config->item('auto_assign_cat_parents') == 'y') {
                             // we have to know if there are children in this group
                             $categoryChildrenCount = ee('Model')->get('Category')->filter('group_id', $cat_group->getId())->filter('parent_id', '!=', 0)->count();
-                            if ($categoryChildrenCount == 0) {
-                                $metadata['field_type'] = 'radio';
-                            } else {
+
+                            if ($categoryChildrenCount != 0) {
                                 $metadata['alertText'] = lang('cat_selection_is_multiple_auto_select_parent');
                             }
-                        } else {
-                            $metadata['field_type'] = 'radio';
                         }
                     }
 

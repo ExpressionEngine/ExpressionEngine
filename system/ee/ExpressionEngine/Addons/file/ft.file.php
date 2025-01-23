@@ -532,6 +532,7 @@ JSC;
         ee()->load->library('image_lib');
         $filename = ee()->image_lib->explode_name($data['fs_filename']);
         if ($function == 'webp') {
+            $filename['name'] = $filename['name'] . '_' . $filename['ext'];
             $filename['ext'] = '.webp';
         }
         $new_image = $filename['name'] . '_' . $function . '_' . md5(serialize($params)) . $filename['ext'];
