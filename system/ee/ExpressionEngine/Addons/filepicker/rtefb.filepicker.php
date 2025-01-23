@@ -31,6 +31,7 @@ class Filepicker_rtefb extends AbstractRteFilebrowser
         $fpUrl = ee('CP/FilePicker')->make($uploadDir)->getUrl();
         $fpUrl->addQueryStringVariables(array(
             'hasUpload' => true,
+            'pickDimensions' => true,
         ));
         ee()->javascript->set_global([
             'Rte.fpUrl' => $fpUrl->compile(),

@@ -150,7 +150,7 @@ class Text_ft extends EE_Fieldtype
             if ($this->get_setting('field_show_file_selector')) {
                 $fp = new FilePicker();
                 $fp->inject(ee()->view);
-                $vars['fp_url'] = ee('CP/URL')->make($fp->controller, array('field_upload_locations' => 'all', 'hasUpload' => true));
+                $vars['fp_url'] = ee('CP/URL')->make($fp->controller, array('field_upload_locations' => 'all', 'hasUpload' => true, 'pickDimensions' => true));
 
                 ee()->cp->add_js_script(array(
                     'file' => array(

@@ -771,7 +771,7 @@ class ChannelEntry extends ContentModel
                 return;
             }
             //if the file data is in new format, add the counter immediately
-            if (strpos($item, '{file:') !== false && preg_match('/{file\:(\d+)\:url}/', $item, $matches)) {
+            if (strpos($item, '{file:') !== false && preg_match('/{file\:(\d+)\:/', $item, $matches)) {
                 $file_id = $matches[1];
                 if (! isset($usage[$file_id])) {
                     $usage[$file_id] = 1;
@@ -794,9 +794,9 @@ class ChannelEntry extends ContentModel
             if (!empty($filedirReplacements)) {
                 foreach ($filedirReplacements as $file_id => $replacements) {
                     if (! isset($usage[$file_id])) {
-                        $usage[$file_id] = 1;
+                        $usage[$file_id] = count($replacements);
                     } else {
-                        $usage[$file_id]++;
+                        $usage[$file_id] += count($replacements);
                     }
                 }
             }

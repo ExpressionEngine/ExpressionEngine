@@ -26,7 +26,11 @@
 			if (EE.fileManagerCompatibilityMode) {
 				file_string = '{filedir_' + data.upload_location_id + '}' + data.file_name;
 			} else {
-				file_string = '{file:' + data.file_id + ':url}';
+				if (data.manipulation) {
+					file_string = '{file:' + data.file_id + ':' + data.manipulation + '}';
+				} else {
+					file_string = '{file:' + data.file_id + ':url}';
+				}
 			}
 
 			// Output as image tag if image

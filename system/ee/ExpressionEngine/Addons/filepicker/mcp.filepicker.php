@@ -70,7 +70,7 @@ class Filepicker_mcp
         // check if we have a request for a specific file id
         $file = ee()->input->get('file');
         if (! empty($file)) {
-            return $this->fileInfo($file);
+            return $this->fileInfo($file, ee()->input->get('manipulation'));
         }
 
         if ($this->access === false) {
@@ -227,11 +227,12 @@ class Filepicker_mcp
     /**
      * Return an AJAX response for a particular file ID
      *
-     * @param mixed $id
+     * @param int $id
+     * @param string $manipulation
      * @access private
      * @return void
      */
-    private function fileInfo($id)
+    private function fileInfo($id, $manipulation = null)
     {
         $file = ee('Model')->get('File', $id)
             ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
@@ -248,8 +249,15 @@ class Filepicker_mcp
         }
 
         $result = $file->getValues();
+        $result['manipulation'] = 'url';
 
-        $result['path'] = $file->getAbsoluteURL();
+        if (!empty($manipulation)) {
+            $result['path'] = $file->getAbsoluteManipulationURL($manipulation);
+            $result['manipulation'] = $manipulation;
+            unset($result['file_hw_original']);
+        } else {
+            $result['path'] = $file->getAbsoluteURL();
+        }
         $result['thumb_path'] = ee('Thumbnail')->get($file)->url;
         $result['isImage'] = $file->isImage();
         $result['isSVG'] = $file->isSVG();
