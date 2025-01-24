@@ -31966,6 +31966,12 @@ fieldset .field-control #eye {
     max-width: 100% !important;
   }
 }
+.grid-field__table tr td.grid-field__column--tools {
+  margin-right: 15px;
+  max-width: 80px;
+  width: 80px;
+  min-width: 0;
+}
 @media (max-width: 767px) {
   .grid-field__table tr td.grid-multi-relate {
     position: relative;
@@ -31999,7 +32005,6 @@ fieldset .field-control #eye {
 .grid-field__table td:last-child, .grid-field__table th:last-child {
   padding-right: 15px;
   border-right: none;
-  min-width: 80px;
 }
 .grid-field__table .file-field__dropzone {
   margin-top: 0px;
@@ -32295,6 +32300,9 @@ fieldset .field-control #eye {
     border-bottom: none;
     padding: 10px 15px 10px 15px;
   }
+  .grid-field:not(.horizontal-layout) .grid-field__table > tbody > tr > td.grid-field__column--tools {
+    display: none !important;
+  }
   .grid-field:not(.horizontal-layout) .grid-field__table > tbody tr.grid__item--collapsed {
     padding-bottom: 0 !important;
   }
@@ -32340,6 +32348,10 @@ fieldset .field-control #eye {
   }
   .grid-field.horizontal-layout tbody td.grid-field__column--tools {
     min-width: 80px !important;
+  }
+
+  .grid-field:not(.entry-grid) .grid-field__table > tbody > tr > td.grid-field__column--tools {
+    display: block !important;
   }
 }
 .live-preview__form-content .grid-field .grid-field__table,

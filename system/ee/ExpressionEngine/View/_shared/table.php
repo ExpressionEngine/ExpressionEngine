@@ -257,6 +257,11 @@ else: ?>
                 // Don't do reordering logic if the table is empty
                 $reorder = $reorder && ! empty($data);
                 $colspan = ($reorder_header || $reorder) ? count($columns) + 1 : count($columns);
+
+                if (!empty($data) && isset($vertical_layout)): ?>
+                    <th class="grid-field__column-remove"></th>
+                <?php endif;
+
                 if (isset($vertical_layout)): ?>
                     <th class="hidden"></th>
                 <?php endif;
@@ -320,9 +325,9 @@ else: ?>
                     <?php endif ?>
                 <?php endforeach ?>
 
-                <?php if (!empty($data)): ?>
+                <?php if (!empty($data) && !isset($vertical_layout)): ?>
                     <th class="grid-field__column-remove"></th>
-                <?php endif ?>
+                <?php endif; ?>
         </thead>
     <?php endif ?>
 
@@ -355,6 +360,21 @@ else: ?>
                     }
                 ?>
                     <tr class="<?=$row_class?>" <?php foreach ($row['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
+                        <?php if (isset($vertical_layout)): ?>
+                            <td class="grid-field__column--tools">
+                                <div class="grid-field__column-tools">
+                                    <?php if ($reorder): ?>
+                                    <button type="button" class="button button--small button--default cursor-move js-grid-reorder-handle">
+                                        <span class="grid-field__column-tool"><i class="fal fa-fw fa-arrows-alt"></i></span>
+                                    </button>
+                                    <?php endif ?>
+                                    <button type="button" rel="remove_row" class="button button--small button--default">
+                                        <span class="grid-field__column-tool danger-link" title="<?=lang('remove_row')?>"><i class="fal fa-fw fa-trash-alt"><span class="hidden"><?=lang('remove_row')?></span></i></span>
+                                    </button>
+                                </div>
+                            </td>
+                        <?php endif; ?>
+
                         <?php if (REQ == 'CP' && isset($vertical_layout) && ($vertical_layout !== 'horizontal')):?>
                         <td class="grid-field__item-fieldset" style="display: none;">
                             <div class="grid-field__item-tools grid-field__item-tools--item-open">
@@ -475,18 +495,20 @@ else: ?>
                             <?php endif ?>
                         <?php endforeach ?>
 
-                        <td class="grid-field__column--tools">
-                            <div class="grid-field__column-tools">
-                                <?php if ($reorder): ?>
-                                <button type="button" class="button button--small button--default cursor-move js-grid-reorder-handle">
-                                    <span class="grid-field__column-tool"><i class="fal fa-fw fa-arrows-alt"></i></span>
-                                </button>
-                                <?php endif ?>
-                                <button type="button" rel="remove_row" class="button button--small button--default">
-                                    <span class="grid-field__column-tool danger-link" title="<?=lang('remove_row')?>"><i class="fal fa-fw fa-trash-alt"><span class="hidden"><?=lang('remove_row')?></span></i></span>
-                                </button>
-                            </div>
-                        </td>
+                        <?php if (!isset($vertical_layout)): ?>
+                            <td class="grid-field__column--tools">
+                                <div class="grid-field__column-tools">
+                                    <?php if ($reorder): ?>
+                                    <button type="button" class="button button--small button--default cursor-move js-grid-reorder-handle">
+                                        <span class="grid-field__column-tool"><i class="fal fa-fw fa-arrows-alt"></i></span>
+                                    </button>
+                                    <?php endif ?>
+                                    <button type="button" rel="remove_row" class="button button--small button--default">
+                                        <span class="grid-field__column-tool danger-link" title="<?=lang('remove_row')?>"><i class="fal fa-fw fa-trash-alt"><span class="hidden"><?=lang('remove_row')?></span></i></span>
+                                    </button>
+                                </div>
+                            </td>
+                        <?php endif; ?>
                     </tr>
                 <?php endforeach ?>
             <?php endforeach ?>

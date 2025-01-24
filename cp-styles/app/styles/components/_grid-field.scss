@@ -62,7 +62,10 @@
   		}
 
   		&.grid-field__column--tools {
-
+				margin-right: 15px;
+				max-width: 80px;
+				width: 80px;
+				min-width: 0;
   		}
 
   		&.grid-multi-relate {
@@ -107,7 +110,7 @@
   td:last-child, th:last-child {
     padding-right: 15px;
     border-right: none;
-    min-width: 80px;
+    // min-width: 80px;
   }
 
 
@@ -431,7 +434,6 @@
 	}
 }
 
-
 // Collapse the grid field on mobile
 @include m-tablet-down {
 
@@ -486,6 +488,10 @@
 				display: block !important;
 				border-bottom: none;
 				padding: $sq-inset-s;
+
+				&.grid-field__column--tools {
+					display: none !important;
+				}
 			}
 
 			tr.grid__item--collapsed {
@@ -540,6 +546,10 @@
 				}
 			}
 		}
+	}
+
+	.grid-field:not(.entry-grid) .grid-field__table > tbody > tr > td.grid-field__column--tools {
+		display: block !important;
 	}
 }
 
