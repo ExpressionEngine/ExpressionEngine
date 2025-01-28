@@ -519,25 +519,25 @@ context('Publish Entry', () => {
         cy.visit('admin.php?/cp/publish/edit/entry/1')
         cy.get('.grid-field tbody [rel=add_row]').should('be.visible');
         cy.get('.grid-field [rel=add_row]:visible').click();
-        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(0).find('input').type('row 1');
-        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(1).find('.button:contains("dos")').click()
-        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(1).find('.button:contains("tres")').click()
-        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(1).find('.button:contains("dos")').should('have.class', 'active')
-        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(1).find('.button:contains("tres")').should('have.class', 'active')
-        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("quatro")').click()
-        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("cinco")').click()
-        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("quatro")').should('not.have.class', 'active')
-        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("cinco")').should('have.class', 'active')
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(1).find('input').type('row 1');
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("dos")').click()
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("tres")').click()
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("dos")').should('have.class', 'active')
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(2).find('.button:contains("tres")').should('have.class', 'active')
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(3).find('.button:contains("quatro")').click()
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(3).find('.button:contains("cinco")').click()
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(3).find('.button:contains("quatro")').should('not.have.class', 'active')
+        cy.get('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(3).find('.button:contains("cinco")').should('have.class', 'active')
 
         cy.get('body').type('{ctrl}', {release: false}).type('s')
         cy.get('p').contains('has been updated')
-        cy.get('.grid-field tbody tr:visible td:visible').eq(0).find('input').invoke('attr', 'value').then((val) => {
+        cy.get('.grid-field tbody tr:visible td:visible').eq(1).find('input').invoke('attr', 'value').then((val) => {
           expect(val).to.eq('row 1');
         })
-        cy.get('.grid-field tbody tr:visible td:visible').eq(1).find('.button:contains("dos")').should('have.class', 'active')
-        cy.get('.grid-field tbody tr:visible td:visible').eq(1).find('.button:contains("tres")').should('have.class', 'active')
-        cy.get('.grid-field tbody tr:visible td:visible').eq(2).find('.button:contains("quatro")').should('not.have.class', 'active')
-        cy.get('.grid-field tbody tr:visible td:visible').eq(2).find('.button:contains("cinco")').should('have.class', 'active')
+        cy.get('.grid-field tbody tr:visible td:visible').eq(2).find('.button:contains("dos")').should('have.class', 'active')
+        cy.get('.grid-field tbody tr:visible td:visible').eq(2).find('.button:contains("tres")').should('have.class', 'active')
+        cy.get('.grid-field tbody tr:visible td:visible').eq(3).find('.button:contains("quatro")').should('not.have.class', 'active')
+        cy.get('.grid-field tbody tr:visible td:visible').eq(3).find('.button:contains("cinco")').should('have.class', 'active')
 
         cy.visit('index.php/entries/grid')
         cy.hasNoErrors()
@@ -666,7 +666,7 @@ context('Publish Entry', () => {
         cy.log('check Grid')
         cy.get('label:contains("with Date")').parents('.fieldset-faux').find('.grid-field tbody [rel=add_row]').should('be.visible');
         cy.get('label:contains("with Date")').parents('.fieldset-faux').find('.grid-field [rel=add_row]:visible').click();
-        cy.get('label:contains("with Date")').parents('.fieldset-faux').find('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(0).find('input').focus();
+        cy.get('label:contains("with Date")').parents('.fieldset-faux').find('.grid-field td:visible[data-new-row-id="new_row_1"]').eq(1).find('input').focus();
         cy.get('.date-picker-wrap').should('be.visible');
         cy.get('.date-picker-wrap #date-picker-time-block input[type=time]').type('15:11')
         cy.get('.date-picker-wrap td:visible a:contains(26)').trigger('click');
@@ -699,11 +699,11 @@ context('Publish Entry', () => {
         })
 
         cy.log('check Grid')
-        cy.get('label:contains("with Date")').parents('.fieldset-faux').find('.grid-field td:visible').eq(0).find('input[type=text]').focus();
+        cy.get('label:contains("with Date")').parents('.fieldset-faux').find('.grid-field td:visible').eq(1).find('input[type=text]').focus();
         cy.get('.date-picker-wrap').should('be.visible');
         cy.get('.date-picker-wrap td:contains(26)').should('have.class', 'act');
-        cy.get('label:contains("with Date")').parents('.fieldset-faux').find('.grid-field td:visible').eq(0).find('input[type=text]').invoke('val').should('contain' ,'/26/').should('contain', ' 3:11 PM')
-        cy.get('label:contains("with Date")').parents('.fieldset-faux').find('.grid-field td:visible').eq(0).find('input[type=text]').invoke('val').then((value) => {
+        cy.get('label:contains("with Date")').parents('.fieldset-faux').find('.grid-field td:visible').eq(1).find('input[type=text]').invoke('val').should('contain' ,'/26/').should('contain', ' 3:11 PM')
+        cy.get('label:contains("with Date")').parents('.fieldset-faux').find('.grid-field td:visible').eq(1).find('input[type=text]').invoke('val').then((value) => {
           expect(value).to.contain(':11')
         })
 
