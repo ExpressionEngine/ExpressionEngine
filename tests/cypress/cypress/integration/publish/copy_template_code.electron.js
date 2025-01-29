@@ -78,12 +78,12 @@ context('Copy template code from channel entries, fields, channels, and field gr
         {stupid_grid:text_two}\
       {/stupid_grid}", true)
 
-      cy.get('[data-field_id=19] .grid-field__table tr th:nth-child(2) .app-badge').should('exist').should('contain', '{stupid_grid:text_one}')
-      cy.get('[data-field_id=19] .grid-field__table tr th:nth-child(2) .app-badge').trigger('click')
+      cy.get('[data-field_id=19] .grid-field__table tr th:nth-child(3) .app-badge').should('exist').should('contain', '{stupid_grid:text_one}')
+      cy.get('[data-field_id=19] .grid-field__table tr th:nth-child(3) .app-badge').trigger('click')
       cy.assertValueCopiedToClipboard('{stupid_grid:text_one}')
 
-      cy.get('[data-field_id=19] .grid-field__table tr th:nth-child(3) .app-badge').should('exist').should('contain', '{stupid_grid:text_two}')
-      cy.get('[data-field_id=19] .grid-field__table tr th:nth-child(3) .app-badge').trigger('click')
+      cy.get('[data-field_id=19] .grid-field__table tr th:nth-child(4) .app-badge').should('exist').should('contain', '{stupid_grid:text_two}')
+      cy.get('[data-field_id=19] .grid-field__table tr th:nth-child(4) .app-badge').trigger('click')
       cy.assertValueCopiedToClipboard('{stupid_grid:text_two}')
 
       // Fluid
@@ -193,12 +193,12 @@ context('Copy template code from channel entries, fields, channels, and field gr
           {/corpse:stupid_grid}\
       {/corpse}", true);
 
-      cy.get('fieldset[data-field_id=10] [data-field-name=stupid_grid]:visible .grid-field__table tr th:nth-child(2) .app-badge').should('exist').should('contain', '{stupid_grid:text_one}')
-      cy.get('fieldset[data-field_id=10] [data-field-name=stupid_grid]:visible .grid-field__table tr th:nth-child(2) .app-badge').trigger('click')
+      cy.get('fieldset[data-field_id=10] [data-field-name=stupid_grid]:visible .grid-field__table tr th:nth-child(3) .app-badge').should('exist').should('contain', '{stupid_grid:text_one}')
+      cy.get('fieldset[data-field_id=10] [data-field-name=stupid_grid]:visible .grid-field__table tr th:nth-child(3) .app-badge').trigger('click')
       cy.assertValueCopiedToClipboard('{stupid_grid:text_one}')
 
-      cy.get('fieldset[data-field_id=10] [data-field-name=stupid_grid]:visible .grid-field__table tr th:nth-child(3) .app-badge').should('exist').should('contain', '{stupid_grid:text_two}')
-      cy.get('fieldset[data-field_id=10] [data-field-name=stupid_grid]:visible .grid-field__table tr th:nth-child(3) .app-badge').trigger('click')
+      cy.get('fieldset[data-field_id=10] [data-field-name=stupid_grid]:visible .grid-field__table tr th:nth-child(4) .app-badge').should('exist').should('contain', '{stupid_grid:text_two}')
+      cy.get('fieldset[data-field_id=10] [data-field-name=stupid_grid]:visible .grid-field__table tr th:nth-child(4) .app-badge').trigger('click')
       cy.assertValueCopiedToClipboard('{stupid_grid:text_two}')
     })
 
