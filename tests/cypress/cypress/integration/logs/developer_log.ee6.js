@@ -49,13 +49,13 @@ context('Developer Log', () => {
 		cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`, `hash`) VALUES (1, 'n', 'Hello from 1969', '');")
 		cy.reload()
     //the 3rd log entry is the Pro license alert
-		page.get('list').find('div[class="list-item"]').should('have.length',3)
+		page.get('list').find('div[class="list-item"]').should('have.length',2)
 		page.get('empty').should('not.exist')
 
 		page.get('date').filter(':visible').first().click()
 		cy.get('a').contains('24 Hours').click()
 		cy.wait(400)
-		page.get('list').find('div[class="list-item"]').should('have.length',2)
+		page.get('list').find('div[class="list-item"]').should('have.length',1)
 	})
 
 
@@ -122,7 +122,7 @@ context('Developer Log', () => {
         page.get('date').filter(':visible').first().click()
 		cy.get('a').contains('24 Hours').click()
 		cy.wait(400)
-		page.get('list').find('div[class="list-item"]').should('have.length',16)
+		page.get('list').find('div[class="list-item"]').should('have.length',15)
     })
 
     it('can combine search with filters',() => {
@@ -164,7 +164,7 @@ context('Developer Log', () => {
     it('can paginate with filters',() => {
 
 
-         var i = 0;
+        var i = 0;
         for (i = 0; i < 30; i++) {
           cy.task('db:query', "INSERT INTO `exp_developer_log` (`timestamp`, `viewed`, `description`, `hash`) VALUES (UNIX_TIMESTAMP(), 'n', 'Hello from today', '');")
         }
@@ -181,7 +181,7 @@ context('Developer Log', () => {
 		cy.wait(400)
 		page.get('list').find('div[class="list-item"]').should('have.length',25)
 		cy.get('a[class="pagination__link"]').contains('2').click()
-		page.get('list').find('div[class="list-item"]').should('have.length',6)
+		page.get('list').find('div[class="list-item"]').should('have.length',5)
 
 		page.get('delete_all').click()
         page.get('confirm').filter(':visible').first().click()

@@ -671,7 +671,7 @@ class EE_Relationship_data_parser
             foreach ($order_by as &$k) {
                 $k = ($k == 'date') ? 'entry_date' : $k;
 
-                $columns[$k][] = strtolower($data[$k]);
+                $columns[$k][] = strtolower((string) $data[$k]);
             }
 
             $columns['rel_order'][] = $rel_order;

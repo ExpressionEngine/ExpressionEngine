@@ -1,0 +1,1 @@
+Selected range is {<?=$field_name?>:prefix}{<?=$field_name?>:from}{<?=$field_name?>:suffix} &mdash; {<?=$field_name?>:prefix}{<?=$field_name?>:to}{<?=$field_name?>:suffix}

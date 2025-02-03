@@ -8,7 +8,7 @@ context('Watermark Create/Edit', () => {
   before(function() {
     cy.task('db:seed')
   })
-  
+
   beforeEach(function() {
     cy.auth();
     page.load()
@@ -132,15 +132,15 @@ context('Watermark Create/Edit', () => {
     cy.hasNoErrors()
 
     page.get('wm_name').invoke('val').then((val) => { expect(val).to.be.equal('Test') })
-    page.get('wm_type').filter('[value=text]').should('be.checked')
-    page.get('wm_vrt_alignment').filter('[value=middle]').should('be.checked')
-    page.get('wm_hor_alignment').filter('[value=right]').should('be.checked')
+    page.get('wm_type').filter('[value="text"]').should('be.checked')
+    page.get('wm_vrt_alignment').filter('[value="middle"]').should('be.checked')
+    page.get('wm_hor_alignment').filter('[value="right"]').should('be.checked')
     page.get('wm_padding').invoke('val').then((val) => { expect(val).to.be.equal('10') })
     page.get('wm_hor_offset').invoke('val').then((val) => { expect(val).to.be.equal('20') })
     page.get('wm_vrt_offset').invoke('val').then((val) => { expect(val).to.be.equal('30') })
     page.get('wm_use_font').should('have.class', "on")
     page.get('wm_text').invoke('val').then((val) => { expect(val).to.be.equal('Test text') })
-    page.get('wm_font').filter('[value=texb.ttf]').should('be.checked')
+    page.get('wm_font').filter('[value="texb.ttf"]').should('be.checked')
     page.get('wm_font_size').invoke('val').then((val) => { expect(val).to.be.equal('18') })
     page.get('wm_font_color').invoke('val').then((val) => { expect(val).to.be.equal('#CCCCCC') })
     page.get('wm_use_drop_shadow').should('have.class', "on")

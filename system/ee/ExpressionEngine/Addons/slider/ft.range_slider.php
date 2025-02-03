@@ -30,6 +30,8 @@ class Range_slider_ft extends Slider_ft
 
     public $entry_manager_compatible = true;
 
+    public $stub = 'range_slider';
+
     /**
      * A list of operators that this fieldtype supports
      *
@@ -88,7 +90,7 @@ class Range_slider_ft extends Slider_ft
         return form_range(array_merge($field, ['value' => $field['from']])) . BR . form_range(array_merge($field, ['value' => $field['to']]));
     }
 
-    
+
     public function save($data)
     {
         if (is_array($data)) {
