@@ -44,7 +44,7 @@ context('Member Roles / File Permissions ', () => {
 		cy.get('#fieldset-file_upload_directories .checkbox-label:nth-child(2) > input').click();
 		cy.get('#fieldset-file_upload_directories .checkbox-label:nth-child(1) > input').click();
 
-	   cy.get('button').contains('save').eq(0).click({force: true})
+	   cy.get('button').contains('Save').click()
 	})
 
 	it('can login now and can view files but nothing else', () => {

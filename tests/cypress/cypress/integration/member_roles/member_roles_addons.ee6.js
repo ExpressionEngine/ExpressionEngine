@@ -43,8 +43,7 @@ context('Member Roles / Add-ons Permissions', () => {
 		cy.get('#fieldset-addons_access .checkbox-label:nth-child(2) > input').click();
 		cy.get('#fieldset-addons_access .checkbox-label:nth-child(3) > input').click();
 		cy.get('#fieldset-addons_access .checkbox-label:nth-child(4) > input').click();
-
-		cy.get('button').contains('save').eq(0).click({force: true})
+		cy.get('button').contains('Save').click()
 	})
 
 	it('Can see the Addons now but nothing else',() => {
