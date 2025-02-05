@@ -37,7 +37,7 @@ class File extends FileSystemEntity
 
     public function get__title()
     {
-        return \htmlentities((string)$this->getRawProperty('title'), ENT_QUOTES, 'UTF-8');
+        return \htmlspecialchars((string)$this->getRawProperty('title'));
     }
 
     public function get__file_hw_original()

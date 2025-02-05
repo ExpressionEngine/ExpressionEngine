@@ -110,7 +110,8 @@ Grid.MiniField = function(field, settings) {
 $.fn.miniGrid = function(params) {
 	return this.each(function() {
 		if ( ! $(this).data('gridInitialized')) {
-			return new Grid.MiniField(this, params);
+			new Grid.MiniField(this, params);
+			return false;
 		}
 	});
 }

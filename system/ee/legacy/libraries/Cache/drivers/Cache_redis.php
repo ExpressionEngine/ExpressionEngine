@@ -16,7 +16,7 @@ class EE_Cache_redis extends CI_Driver
     /**
      * Redis connection
      *
-     * @var	Redis
+     * @var Redis
      */
     protected $_redis;
 
@@ -24,10 +24,10 @@ class EE_Cache_redis extends CI_Driver
      * Look for a value in the cache. If it exists, return the data
      * if not, return FALSE
      *
-     * @param	string	$key 	Key name
-     * @param	const	$scope	Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE
-     *		 for local or global scoping of the cache item
-     * @return	mixed	value matching $id or FALSE on failure
+     * @param string    $key  Key name
+     * @param const     $scope Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE
+     *                  for local or global scoping of the cache item
+     * @return mixed    value matching $id or FALSE on failure
      */
     public function get($key, $scope = Cache::LOCAL_SCOPE)
     {
@@ -39,12 +39,12 @@ class EE_Cache_redis extends CI_Driver
     /**
      * Save value to cache
      *
-     * @param	string	$key		Key name
-     * @param	mixed	$data		Data to store
-     * @param	int		$ttl = 60	Cache TTL (in seconds)
-     * @param	const	$scope		Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE
-     *		 for local or global scoping of the cache item
-     * @return	bool	TRUE on success, FALSE on failure
+     * @param string    $key    Key name
+     * @param mixed     $data   Data to store
+     * @param int       $ttl = 60   Cache TTL (in seconds)
+     * @param const     $scope  Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE
+     *                          for local or global scoping of the cache item
+     * @return bool     TRUE on success, FALSE on failure
      */
     public function save($key, $value, $ttl = null, $scope = Cache::LOCAL_SCOPE)
     {
@@ -60,10 +60,10 @@ class EE_Cache_redis extends CI_Driver
     /**
      * Delete from cache
      *
-     * @param	string	$key	Key name
-     * @param	const	$scope	Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE
-     *		 for local or global scoping of the cache item
-     * @return	bool	TRUE on success, FALSE on failure
+     * @param string    $key    Key name
+     * @param const     $scope  Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE
+     *                           for local or global scoping of the cache item
+     * @return bool     TRUE on success, FALSE on failure
      */
     public function delete($key, $scope = Cache::LOCAL_SCOPE)
     {
@@ -71,11 +71,11 @@ class EE_Cache_redis extends CI_Driver
         if (strrpos($key, Cache::NAMESPACE_SEPARATOR, strlen($key) - 1) !== false) {
             if (method_exists($this->_redis, 'del'))  {
                 return ($this->_redis->del(
-                    $this->_redis->keys($this->unique_key($key, $scope).'*')
+                    $this->_redis->keys($this->unique_key($key, $scope) . '*')
                 ) === 1);
             } else if (method_exists($this->_redis, 'delete')) {
                 return ($this->_redis->delete(
-                    $this->_redis->keys($this->unique_key($key, $scope).'*')
+                    $this->_redis->keys($this->unique_key($key, $scope) . '*')
                 ) === 1);
             }
         }
@@ -91,22 +91,28 @@ class EE_Cache_redis extends CI_Driver
     /**
      * Clean cache for the current scope
      *
-     * @param	const	$scope	Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE
-     *		 for local or global scoping of the cache item
-     * @return	bool	TRUE on success, FALSE on failureå
+     * @param const $scope  Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE
+     *                       for local or global scoping of the cache item
+     * @return bool TRUE on success, FALSE on failureå
      */
     public function clean($scope = Cache::LOCAL_SCOPE)
     {
-        return ($this->_redis->delete(
-            $this->_redis->keys($this->unique_key('', $scope) . '*')
-        ) === 1);
+        if (method_exists($this->_redis, 'del')) {
+            return ($this->_redis->del(
+                $this->_redis->keys($this->unique_key('', $scope) . '*')
+            ) === 1);
+        } elseif (method_exists($this->_redis, 'delete')) {
+            return ($this->_redis->delete(
+                $this->_redis->keys($this->unique_key('', $scope) . '*')
+            ) === 1);
+        }
     }
 
     /**
      * Cache Info
      *
-     * @return	mixed	array containing cache info on success OR FALSE on failure
-     * @see		Redis::info()
+     * @return  mixed   array containing cache info on success OR FALSE on failure
+     * @see Redis::info()
      */
     public function cache_info()
     {
@@ -116,10 +122,10 @@ class EE_Cache_redis extends CI_Driver
     /**
      * Get Cache Metadata
      *
-     * @param	string	$id		Key to get cache metadata on
-     * @param	const	$scope	Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE
-     *		 for local or global scoping of the cache item
-     * @return	mixed	Cache item metadata
+     * @param string    $id Key to get cache metadata on
+     * @param const     $scope  Cache::LOCAL_SCOPE or Cache::GLOBAL_SCOPE
+     *                   for local or global scoping of the cache item
+     * @return mixed   Cache item metadata
      */
     public function get_metadata($key, $scope = Cache::LOCAL_SCOPE)
     {
@@ -147,7 +153,7 @@ class EE_Cache_redis extends CI_Driver
     /**
      * Check if Redis driver is supported
      *
-     * @return	bool
+     * @return  bool
      */
     public function is_supported()
     {
@@ -170,8 +176,8 @@ class EE_Cache_redis extends CI_Driver
      * Loads Redis config file if present. Will halt execution
      * if a Redis connection can't be established.
      *
-     * @return	bool
-     * @see		Redis::connect()
+     * @return  bool
+     * @see     Redis::connect()
      */
     protected function _setup_redis()
     {
@@ -216,8 +222,8 @@ class EE_Cache_redis extends CI_Driver
         }
 
         // If a database is specified, attempt to use it
-        if($config['database'] > 0) {
-            if(!$this->_redis->select($config['database'])) {
+        if ($config['database'] > 0) {
+            if (!$this->_redis->select($config['database'])) {
                 log_message('debug', "Redis failed to select database: {$config['database']}");
             }
         }
@@ -230,7 +236,7 @@ class EE_Cache_redis extends CI_Driver
      *
      * Closes the connection to Redis if present.
      *
-     * @return	void
+     * @return  void
      */
     public function __destruct()
     {
