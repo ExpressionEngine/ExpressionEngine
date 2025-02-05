@@ -640,6 +640,25 @@ $lang = array(
 
     'channel_roles_desc' => 'Members in these roles can perform each selected action in this channel.',
 
+    /* Template Generator */
+
+    'select_channels_to_generate' => 'Select the channels that you want to use in templates',
+
+    'invalid_channel' => 'No valid channel selected',
+
+    'select_fields_to_generate' => 'Select the fields that you want to use in templates',
+
+    'invalid_field' => 'No valid field selected',
+
+    'channel_fields_template_generator' => 'Channel Fields',
+
+    'channel_channels_template_generator' => 'Channels',
+
+    'channel_field_groups_template_generator' => 'Channel Field Groups',
+
+    'show_comments' => 'Show Comments',
+
+    'show_comments_desc' => 'Add comments with generated fields including links to documentation'
 );
 
 // EOF

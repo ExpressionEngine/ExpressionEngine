@@ -19,5 +19,8 @@
             'structure' => array(
                 'name' => 'Structure'
             )
+        ),
+        'templateGenerators' => array(
+            'Navigation'
         )
     );

@@ -221,11 +221,11 @@ On the off chance that your contribution adds new source files, use the language
 
 ### Contributor License Agreement
 
-Please note, all code contributors must sign a <a href="https://www.clahub.com/agreements/ExpressionEngine/ExpressionEngine">Contributor License Agreement</a> to ensure all code is legally contributed and able to be redistributed under the project's open-source license.
+Please note, all code contributors must sign a <a href="https://cla-assistant.io/ExpressionEngine/ExpressionEngine">Contributor License Agreement</a> to ensure all code is legally contributed and able to be redistributed under the project's open-source license.
 
 ## Helping Guide ExpressionEngine's Future
 
-Everyone is welcome to add ideas and feedback to help shape ExpressionEngine's future. The ExpressionEngine [Feature Request forum](https://expressionengine.com/forums/topics/136/feature-requests) and [Slack](https://expressionengine.com/community#slack) are both good spots for spitballing new ideas with other users.
+Everyone is welcome to add ideas and feedback to help shape ExpressionEngine's future. The ExpressionEngine [Feature Request forum](https://expressionengine.com/forums/topics/136/feature-requests) and [Slack](https://expressionengine.com/blog/join-us-in-slack) are both good spots for spitballing new ideas with other users.
 
 When an idea is well understood, along with pros and cons, it should be added as a [Feature Request Issue](https://github.com/ExpressionEngine/ExpressionEngine/issues/new?template=2-feature-request.md) directly on the repository. Features Issues that have been discussed and given positive feedback from the ExpressionEngine Maintainers can be a good spot to get inspired to contribute code.
 
