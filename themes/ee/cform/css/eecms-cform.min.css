@@ -2480,7 +2480,7 @@ iframe.Rte:hover {
 .ee-cform .grid-field__footer .button-group {
     display: flex;
     flex-wrap: wrap;
-    position: relative; 
+    position: relative;
 }
 
 .ee-cform .grid-field__footer .button-group > .button {

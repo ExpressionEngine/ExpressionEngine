@@ -13,6 +13,7 @@ namespace ExpressionEngine\Core;
 use ExpressionEngine\Legacy\App as LegacyApp;
 use ExpressionEngine\Service\Dependency\InjectionContainer;
 use ExpressionEngine\Error\FileNotFound;
+use ExpressionEngine\Error\CPException;
 use ExpressionEngine\Cli\Cli;
 
 /**
@@ -266,6 +267,9 @@ abstract class Core
             }
 
             $result = call_user_func_array(array($controller, $method), $params);
+        } catch (CPException $ex) {
+            $controller = new \ExpressionEngine\Controller\Error\CPException();
+            $result = call_user_func_array(array($controller, 'index'), ['message' => $ex->getMessage(), 'code' => $ex->getCode()]);
         } catch (FileNotFound $ex) {
             $error_routing = $this->getErrorRouting();
 

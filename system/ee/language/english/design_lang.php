@@ -963,6 +963,44 @@ $lang = array(
 
     'view_message' => 'Private Message - View Message',
 
+    /* Template Generator */
+
+    'template_generator' => 'Template Generator',
+
+    'generate' => 'Generate',
+
+    'generate_templates_started' => 'Generating templates...',
+
+    'channel_entries_template_generator' => 'Channel Entries',
+
+    'channel_form_template_generator' => 'Channel Form',
+
+    'member_management_template_generator' => 'Member Management',
+
+    'list_all_entries' => 'List of all entries',
+
+    'entry_details_page' => 'Entry details page',
+
+    'select_template_engine' => 'Select template engine',
+
+    'theme' => 'Theme',
+
+    'select_theme' => 'Select Theme',
+
+    'select_templates_to_generate' => 'Select the templates that you want to generate',
+
+    'invalid_theme' => 'No valid theme selected',
+
+    'invalid_template_engine' => 'Template engine is not supported',
+
+    'theme_does_not_support_template_engine' => 'Selected theme does not support %s template engine',
+
+    'generate_templates_created_successfully' => 'Templates were generated successfully!',
+
+    'generate_templates_no_templates' => 'No templates were found',
+
+    'generate_templates_error' => 'Unable to generate templates',
+
 );
 
 // EOF
