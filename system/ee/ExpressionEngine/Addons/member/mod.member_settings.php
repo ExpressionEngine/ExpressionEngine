@@ -780,8 +780,12 @@ class Member_settings extends Member
         // we need to reset this, because might have already been populated by channel:entries tag
         ee()->api_channel_fields->custom_fields = array();
 
-        if (strpos($template, '{/custom_profile_fields}') !== false) {
+        $hasFileField = false;
+
+        if (strpos($template, '{/custom_profile_fields}') !== false || !is_null(ee()->TMPL->template_engine)) {
             if ($query->num_rows() > 0) {
+                $fields = [];
+
                 foreach ($member->getDisplay()->getFields() as $field) {
                     if (! ee('Permission')->isSuperAdmin() && $field->get('field_public') != 'y') {
                         continue;
@@ -798,43 +802,35 @@ class Member_settings extends Member
 
                     $fieldForm = $field->getForm();
 
+                    $hasFileField = (in_array($field->getType(), ['file', 'file_grid'])) ? true : $hasFileField;
+
                     $temp = ee()->functions->prep_conditionals($temp, [
                         'has_error' => !empty(ee()->session->flashdata('errors')['error:'. $field->getShortName()] ?? '')
                     ]);
 
+                    $variables = [
+                        'lang:profile_field' => $required . $field->getLabel(),
+                        'lang:profile_field_description' => $field->get('field_description'),
+                        'form:custom_profile_field' => $fieldForm,
+                        'field_name' => $field->getName(),
+                        'field_label' => $field->getLabel(),
+                        'field_id' => $field->getId(),
+                        'field_instructions' => $field->get('field_description'),
+                        'display_field' => $fieldForm,
+                        'field_data' => $result_row[$field->getName()],
+                        'text_direction' => $field->get('field_text_direction'),
+                        'maxlength' => $field->get('field_maxl'),
+                        'field_required' => $field->isRequired(),
+                        'field_type' => $field->getType(),
+                        'error' => ee()->session->flashdata('errors')['error:'. $field->getShortName()] ?? '',
+                    ];
+
+                    // Replace the field variables in the template
                     $temp = str_replace(
-                        [
-                            '{lang:profile_field}',
-                            '{lang:profile_field_description}',
-                            '{form:custom_profile_field}',
-                            '{field_name}',
-                            '{field_label}',
-                            '{field_id}',
-                            '{field_instructions}',
-                            '{display_field}',
-                            '{field_data}',
-                            '{text_direction}',
-                            '{maxlength}',
-                            '{field_required}',
-                            '{field_type}',
-                            '{error}'
-                        ],
-                        [
-                            $required . $field->getLabel(),
-                            $field->get('field_description'),
-                            $fieldForm,
-                            $field->getName(),
-                            $field->getLabel(),
-                            $field->getId(),
-                            $field->get('field_description'),
-                            $fieldForm,
-                            $result_row[$field->getName()],
-                            $field->get('field_text_direction'),
-                            $field->get('field_maxl'),
-                            $field->isRequired(),
-                            $field->getType(),
-                            ee()->session->flashdata('errors')['error:'. $field->getShortName()] ?? '',
-                        ],
+                        array_map(function($variable) {
+                            return '{'.$variable.'}';
+                        }, array_keys($variables)),
+                        array_values($variables),
                         $temp
                     );
 
@@ -846,6 +842,8 @@ class Member_settings extends Member
                     }
 
                     $r .= $temp;
+
+                    $fields[$field->getName()] = $variables;
                 }
             }
         }
@@ -917,19 +915,29 @@ class Member_settings extends Member
             );
 
             // check the template for file fields
-            if (strpos($template, '_hidden_file') !== false) {
+            if (strpos($template, '_hidden_file') !== false || (!is_null(ee()->TMPL->template_engine) && $hasFileField)) {
                 $data['enctype'] = 'multi';
             }
 
-            $return = ee()->functions->form_declaration($data) . $template . '</form>';
+            $open = ee()->functions->form_declaration($data);
+            $close = '</form>';
             //make head appear by default
-            if (strpos($return, LD . 'form_assets' . RD) !== false) {
-                $return = ee()->TMPL->swap_var_single('form_assets', ee()->channel_form_lib->head, $return);
+            if (strpos($template, LD . 'form_assets' . RD) !== false) {
+                $template = ee()->TMPL->swap_var_single('form_assets', ee()->channel_form_lib->head, $template);
             } elseif (get_bool_from_string(ee()->TMPL->fetch_param('include_assets'), 'n')) {
                 // Head should only be there if the param is there
-                $return .= ee()->channel_form_lib->head;
+                $close .= ee()->channel_form_lib->head;
             }
+            $return = $open . $template . $close;
             ee()->load->remove_package_path(PATH_ADDONS . 'channel');
+
+            ee()->TMPL->set_data([
+                'open' => $open,
+                'fields' => $fields,
+                'close' => $close,
+                'username' => $result_row['username'] ?? '',
+                'email' => $result_row['email'] ?? '',
+            ]);
 
             return $return;
         }

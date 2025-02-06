@@ -479,6 +479,10 @@ abstract class AbstractDesign extends CP_Controller
                 $template_name = '<a href="' . $edit_url->compile() . '">' . $template_name . '</a>';
             }
 
+            if ($template->cache == 'y') {
+                $template_name = '<i class="fal fa-database fa-sm icon-left" title="' . lang('enable_caching') . '"></i>' . $template_name;
+            }
+
             if (ee('Config')->getFile()->getBoolean('allow_php') && $template->allow_php == 'y') {
                 $template_name = '<i class="fab fa-php fa-lg icon-left" title="' . lang('enable_php') . '"></i>' . $template_name;
             }

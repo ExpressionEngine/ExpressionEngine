@@ -69,7 +69,7 @@ class Channels extends AbstractChannelsController
 
             $data[] = [
                 'id' => $channel->getId(),
-                'label' => \htmlentities((string)$channel->channel_title, ENT_QUOTES, 'UTF-8'),
+                'label' => \htmlspecialchars((string) $channel->channel_title),
                 'href' => $edit_url,
                 'extra' => [
                     'encode' => false,
@@ -88,7 +88,7 @@ class Channels extends AbstractChannelsController
                     ],
                     'layout-set' => [
                         'href' => ee('CP/URL', 'channels/layouts/' . $channel->getId()),
-                        'title' => \htmlentities((string)$channel->channel_title, ENT_QUOTES, 'UTF-8') . ' ' . lang('layouts'),
+                        'title' => \htmlspecialchars((string) $channel->channel_title) . ' ' . lang('layouts'),
                         'content' => ' ' . lang('layouts')
                     ]
                 ],
@@ -377,7 +377,7 @@ class Channels extends AbstractChannelsController
         ee()->cp->add_js_script('file', array('library/simplecolor', 'components/colorpicker'));
 
         ee()->view->header = array(
-            'title' => is_null($channel_id) ? lang('channels') : ee('Security/XSS')->clean(htmlspecialchars($channel->channel_title)),
+            'title' => is_null($channel_id) ? lang('channels') : ee('Security/XSS')->clean(htmlspecialchars((string) $channel->channel_title)),
             'toolbar_items' => array(
                 'settings' => array(
                     'href' => ee('CP/URL')->make('settings/content-design'),

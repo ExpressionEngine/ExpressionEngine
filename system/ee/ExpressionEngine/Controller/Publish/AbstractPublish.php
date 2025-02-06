@@ -397,8 +397,12 @@ abstract class AbstractPublish extends CP_Controller
             $entry->markAsDirty();
         } else {
             if ($entry->isNew() && $entry->Channel->enforce_auto_url_title) {
-                $_POST['url_title'] = ee('Format')->make('Text',  $entry->Channel->url_title_prefix . ee()->input->post('title', true))->urlSlug()->compile();
+                $_POST['url_title'] = ee('Format')->make('Text', $entry->Channel->url_title_prefix . ee()->input->post('title', true))->urlSlug()->compile();
                 $word_separator = ee()->config->item('word_separator') != "dash" ? '_' : '-';
+                // when title contains no ascii characters, url_title might get empty, so we'll need a workaround
+                if (empty($_POST['url_title'])) {
+                    $_POST['url_title'] = $entry->Channel->url_title_prefix . $entry->Channel->channel_name . $word_separator . uniqid();
+                }
                 while (true !== $entry->validateUniqueUrlTitle('url_title', $_POST['url_title'], ['channel_id'], null)) {
                     $_POST['url_title'] = $_POST['url_title'] . $word_separator . uniqid();
                 }
