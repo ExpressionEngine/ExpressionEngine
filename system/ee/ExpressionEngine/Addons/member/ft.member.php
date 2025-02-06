@@ -31,7 +31,7 @@ class Member_ft extends Relationship_ft implements ColumnInterface
 
     public $default_settings = [
         'roles' => '--',
-        'limit' => '',
+        'limit' => 100,
         'order_field' => 'screen_name',
         'order_dir' => 'asc',
         'allow_multiple' => 'y',
@@ -71,7 +71,7 @@ class Member_ft extends Relationship_ft implements ColumnInterface
         $order = array();
 
         if (is_array($data) && isset($data['data']) && ! empty($data['data'])) { // autosave
-            foreach ($data['data'] as $k => $id) {
+            foreach (array_filter($data['data']) as $k => $id) {
                 $order[$id] = $k + 1;
             }
         } elseif (is_int($data)) {
@@ -309,35 +309,40 @@ class Member_ft extends Relationship_ft implements ColumnInterface
      */
     public function pre_process($data)
     {
-        if (! ee('LivePreview')->hasEntryData()) {
-            $data = [];
-            $wheres = array(
-                'parent_id' => $this->row['entry_id'],
-                'field_id' => $this->field_id,
-                'grid_col_id' => 0,
-                'grid_field_id' => 0,
-                'grid_row_id' => 0,
-                'fluid_field_data_id' => (isset($this->settings['fluid_field_data_id'])) ? $this->settings['fluid_field_data_id'] : 0
-            );
-
-            if (isset($this->settings['grid_row_id'])) {
-                $wheres['grid_col_id'] = $this->settings['col_id'];
-                $wheres['grid_field_id'] = $this->settings['grid_field_id'];
-                $wheres['grid_row_id'] = $this->settings['grid_row_id'];
-            }
-
-            ee()->db
-                ->select('child_id, order')
-                ->from($this->_table)
-                ->where($wheres)
-                ->order_by('order', 'asc');
-
-            $related = ee()->db->get()->result_array();
-
-            foreach ($related as $row) {
-                $data[$row['child_id']] = $row['order'];
-            }
+        // Determine if this is a LivePreview request
+        // We need to flip the data from Live Preview so we have member_id => order
+        if(ee('LivePreview')->forEntryId($this->row['entry_id'])) {
+            return array_flip($data['data'] ?? []);
         }
+
+        $data = [];
+        $wheres = array(
+            'parent_id' => $this->row['entry_id'],
+            'field_id' => $this->field_id,
+            'grid_col_id' => 0,
+            'grid_field_id' => 0,
+            'grid_row_id' => 0,
+            'fluid_field_data_id' => (isset($this->settings['fluid_field_data_id'])) ? $this->settings['fluid_field_data_id'] : 0
+        );
+
+        if (isset($this->settings['grid_row_id'])) {
+            $wheres['grid_col_id'] = $this->settings['col_id'];
+            $wheres['grid_field_id'] = $this->settings['grid_field_id'];
+            $wheres['grid_row_id'] = $this->settings['grid_row_id'];
+        }
+
+        ee()->db
+            ->select('child_id, order')
+            ->from($this->_table)
+            ->where($wheres)
+            ->order_by('order', 'asc');
+
+        $related = ee()->db->get()->result_array();
+
+        foreach ($related as $row) {
+            $data[$row['child_id']] = $row['order'];
+        }
+
         return $data;
     }
 
@@ -430,7 +435,7 @@ class Member_ft extends Relationship_ft implements ColumnInterface
      */
     public function replace_total_rows($data, $params = '', $tagdata = '')
     {
-        return count($data);
+        return (is_array($data) || $data instanceof \Countable) ? count($data) : 0;
     }
 
     /**

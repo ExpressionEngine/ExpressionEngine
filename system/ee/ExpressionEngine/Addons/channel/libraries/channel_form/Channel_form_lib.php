@@ -497,9 +497,16 @@ class Channel_form_lib
                         $checkbox_fields[] = $key;
                         $this->parse_variables[$key] = ($this->entry($name) == 'y') ? 'checked="checked"' : '';
                     } elseif (property_exists($this->entry, $name) or $this->entry->hasCustomField($name)) {
-                        $this->parse_variables[$key] = $this->encode_ee_tags(
-                            form_prep($this->entry($name), $name)
-                        );
+                        // override with POST, if there was validation error
+                        if (isset($_POST[$name])) {
+                            $this->parse_variables[$key] = $this->encode_ee_tags(
+                                form_prep(ee()->input->post($name, true), $name)
+                            );
+                        } else {
+                            $this->parse_variables[$key] = $this->encode_ee_tags(
+                                form_prep($this->entry($name), $name)
+                            );
+                        }
                     }
                 }
             }
@@ -709,6 +716,17 @@ class Channel_form_lib
         $return .= ee()->TMPL->tagdata;
         $return .= "</form>";
 
+        // If we have a non-native template engine we must populate the custom field
+        // inputs now because they may add javascript that needs to be built
+        if(!empty(ee()->TMPL->template_engine)) {
+            foreach($custom_field_variables as $field => $fieldVariables) {
+                $custom_field_variables[$field] = [
+                    'settings' => $fieldVariables,
+                    'input' => $this->display_field($field),
+                ];
+            }
+        }
+
         $this->_build_javascript();
 
         $this->switch_site($current_site_id);
@@ -740,6 +758,12 @@ class Channel_form_lib
                 return;
             }
         }
+
+        ee()->TMPL->set_data(array_merge($this->entry->toArray(), [
+            'open' => $return,
+            'fields' => $custom_field_variables,
+            'errors' => array_merge($this->errors, $this->field_errors),
+        ]));
 
         return $return;
     }
@@ -784,43 +808,47 @@ class Channel_form_lib
     public function compile_js($addt_js = [], $markItUp = [])
     {
         if ($this->datepicker) {
+            ee()->lang->loadfile('calendar');
+            $week_start = ee()->session->userdata('week_start', (ee()->config->item('week_start') ?: 'sunday'));
+            $addt_js['date']['week_start'] = $week_start;
             $addt_js['date']['date_format'] = ee()->localize->get_date_format();
+            $addt_js['lang']['date']['today'] = lang('cal_today');
             $addt_js['lang']['date']['months']['full'] = array(
-                lang('january'),
-                lang('february'),
-                lang('march'),
-                lang('april'),
-                lang('may'),
-                lang('june'),
-                lang('july'),
-                lang('august'),
-                lang('september'),
-                lang('october'),
-                lang('november'),
-                lang('december')
+                lang('cal_january'),
+                lang('cal_february'),
+                lang('cal_march'),
+                lang('cal_april'),
+                lang('cal_may'),
+                lang('cal_june'),
+                lang('cal_july'),
+                lang('cal_august'),
+                lang('cal_september'),
+                lang('cal_october'),
+                lang('cal_november'),
+                lang('cal_december')
             );
             $addt_js['lang']['date']['months']['abbreviated'] = array(
-                lang('jan'),
-                lang('feb'),
-                lang('mar'),
-                lang('apr'),
-                lang('may'),
-                lang('june'),
-                lang('july'),
-                lang('aug'),
-                lang('sept'),
-                lang('oct'),
-                lang('nov'),
-                lang('dec')
+                lang('cal_jan'),
+                lang('cal_feb'),
+                lang('cal_mar'),
+                lang('cal_apr'),
+                lang('cal_may'),
+                lang('cal_june'),
+                lang('cal_july'),
+                lang('cal_aug'),
+                lang('cal_sept'),
+                lang('cal_oct'),
+                lang('cal_nov'),
+                lang('cal_dec')
             );
             $addt_js['lang']['date']['days'] = array(
-                lang('su'),
-                lang('mo'),
-                lang('tu'),
-                lang('we'),
-                lang('th'),
-                lang('fr'),
-                lang('sa'),
+                lang('cal_su'),
+                lang('cal_mo'),
+                lang('cal_tu'),
+                lang('cal_we'),
+                lang('cal_th'),
+                lang('cal_fr'),
+                lang('cal_sa'),
             );
         }
 

@@ -57,6 +57,7 @@ class EE_Upload
     {
         if (count($props) > 0) {
             $this->initialize($props);
+            return true;
         }
 
         ee()->load->helper('xss');
@@ -234,6 +235,17 @@ class EE_Upload
             }
         }
 
+        // Check to see if strip_image_metadata is enabled
+        if (ee()->config->item('strip_image_metadata') == 'y' && $this->is_image()) {
+            ee()->load->library('image_lib');
+            ee()->image_lib->clear();
+            ee()->image_lib->initialize([
+                'source_image' => $this->file_temp,
+                'image_library' => 'imagemagick',
+            ]);
+            ee()->image_lib->strip_metadata();
+        }
+
         // Are the image dimensions within the allowed size?
         // Note: This can fail if the server has an open_basedir restriction.
         if (! $this->is_allowed_dimensions()) {
@@ -253,7 +265,7 @@ class EE_Upload
                 if (!empty($orientation)) {
                     $file_data = $orientation;
                 }
-                
+
                 $auto_resize = ee()->filemanager->max_hw_check($this->file_temp, $file_data);
 
                 if ($auto_resize === false) {
@@ -774,6 +786,11 @@ class EE_Upload
         $checkAsImage = true;
         if (strpos($this->file_type, 'image/svg') === 0) {
             $checkAsImage = false;
+
+            // if it's an SVG, we need to check for XSS in the SVG itself
+            if ($data !== ee('Security/XSS')->clean($data)) {
+                return false;
+            }
         }
 
         return ee('Security/XSS')->clean($data, $checkAsImage);
@@ -793,9 +810,19 @@ class EE_Upload
             return false;
         }
 
-        // We can't simply check for `<?` because that's valid XML and is
-        // allowed in files.
-        return (stripos($data, '<?php') === false);
+        // Check for various PHP opening tags and their variations
+        $php_opening_tags = [
+            '<?php',
+            '<?/*',
+        ];
+
+        foreach ($php_opening_tags as $tag) {
+            if (stripos($data, $tag) !== false) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

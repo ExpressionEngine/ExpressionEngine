@@ -536,6 +536,9 @@ class Pro_search_filter_keywords extends Pro_search_filter
     {
         foreach ($this->_urls as &$url) {
             $url = ee()->functions->prep_query_string($url);
+            if (is_null($url)) {
+                $url = '';
+            }
             $url = rtrim($url, '/') . '/';
             $url = str_replace('{base_url}', ee()->config->item('base_url'), $url);
         }

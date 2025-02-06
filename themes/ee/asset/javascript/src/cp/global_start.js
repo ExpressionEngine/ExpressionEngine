@@ -468,7 +468,16 @@ EE.cp.refreshSessionData = function(event, base) {
 
 	// running the request will return the x-csrf-header, which will trigger
 	// our prefilter. We still need to replace the base though.
-	$.getJSON(EE.BASE + '/login/refresh_csrf_token', function(result) {
+	var session_data = /&(.+)$/.exec(EE.BASE);
+	var json_str = EE.BASE + '/login/refresh_csrf_token';
+
+	if (session_data) {
+		session_data = session_data[0];
+		var base_url = /^([^&]+)/.exec(EE.BASE); 
+		json_str = base_url[0] + '/login/refresh_csrf_token' + session_data;
+	}
+
+	$.getJSON(json_str, function(result) {
 		EE.cp.setBasePath(result.base);
 	});
 
@@ -706,7 +715,16 @@ EE.cp.broadcastEvents = (function() {
 			if (this.modalThresholdReached()) {
 				Events.modal();
 				$(window).trigger('broadcast.idleState', 'modal');
-				$.get(EE.BASE + '/login/lock_cp'); // lock them out of the cp in the background to prevent tampering
+				var session_data = /&(.+)$/.exec(EE.BASE);
+				var json_str = EE.BASE + '/login/lock_cp';
+
+				if (session_data) {
+					session_data = session_data[0];
+					var base_url = /^([^&]+)/.exec(EE.BASE); 
+					json_str = base_url[0] + '/login/lock_cp' + session_data;
+				}
+
+				$.get(json_str); // lock them out of the cp in the background to prevent tampering
 			}
 			else if (this.hasFocus && this.pingReceived === false) {
 				$(window).trigger('broadcast.idleState', 'active');

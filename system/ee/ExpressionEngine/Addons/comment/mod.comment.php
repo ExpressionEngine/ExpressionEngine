@@ -510,7 +510,7 @@ class Comment
                 $comment
             );
         }
-        
+
         // We could do this in one fell, performant swoop with:
         //
         // $tagdata = ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $vars);
@@ -1001,6 +1001,9 @@ class Comment
             }
         }
 
+        // Parse inline errors
+        $tagdata = ee()->TMPL->parse_inline_errors($tagdata);
+
         // -------------------------------------------
         // 'comment_form_hidden_fields' hook.
         //  - Add/Remove Hidden Fields for Comment Form
@@ -1096,7 +1099,7 @@ class Comment
 
                 $str = str_replace("%x", $query->row('comment_max_chars'), $str);
 
-                return ee()->output->show_user_error('submission', $str);
+                return ee()->output->show_form_error(['comment' => $str], 'submission');
             }
         }
 
@@ -1323,16 +1326,14 @@ class Comment
 
         //  No comment- let's end it here
         if (trim($_POST['comment']) == '') {
-            $error = ee()->lang->line('cmt_missing_comment');
-
-            return ee()->output->show_user_error('submission', $error);
+            return ee()->output->show_form_error(['comment' => ee()->lang->line('cmt_missing_comment')], 'submission');
         }
 
         /** ----------------------------------------
         /**  Is the user banned?
         /** ----------------------------------------*/
         if (ee()->session->userdata['is_banned'] == true) {
-            return ee()->output->show_user_error('general', array(ee()->lang->line('not_authorized')));
+            return ee()->output->show_form_error(['general' => ee()->lang->line('not_authorized')]);
         }
 
         /** ----------------------------------------
@@ -1340,7 +1341,7 @@ class Comment
         /** ----------------------------------------*/
         if (ee()->config->item('require_ip_for_posting') == 'y') {
             if (ee()->input->ip_address() == '0.0.0.0' or ee()->session->userdata['user_agent'] == "") {
-                return ee()->output->show_user_error('general', array(ee()->lang->line('not_authorized')));
+                return ee()->output->show_form_error(['general' => ee()->lang->line('not_authorized')]);
             }
         }
 
@@ -1353,16 +1354,14 @@ class Comment
         /**  Can the user post comments?
         /** ----------------------------------------*/
         if (! ee('Permission')->can('post_comments')) {
-            $error[] = ee()->lang->line('cmt_no_authorized_for_comments');
-
-            return ee()->output->show_user_error('general', $error);
+            return ee()->output->show_form_error(['general' => ee()->lang->line('cmt_no_authorized_for_comments')]);
         }
 
         /** ----------------------------------------
         /**  Blocked/Allowed List Check
         /** ----------------------------------------*/
         if (ee()->blockedlist->blocked == 'y' && ee()->blockedlist->allowed == 'n') {
-            return ee()->output->show_user_error('general', array(ee()->lang->line('not_authorized')));
+            return ee()->output->show_form_error(['general' => ee()->lang->line('not_authorized')]);
         }
 
         /** ----------------------------------------
@@ -1457,7 +1456,7 @@ class Comment
         /**  Are comments allowed?
         /** ----------------------------------------*/
         if ($query->row('allow_comments') == 'n' or $query->row('comment_system_enabled') == 'n') {
-            return ee()->output->show_user_error('submission', ee()->lang->line('cmt_comments_not_allowed'));
+            return ee()->output->show_form_error(['general' => ee()->lang->line('cmt_comments_not_allowed')], 'submission');
         }
 
         /** ----------------------------------------
@@ -1470,7 +1469,7 @@ class Comment
                 if (ee()->config->item('comment_moderation_override') == 'y') {
                     $force_moderation = 'y';
                 } else {
-                    return ee()->output->show_user_error('submission', ee()->lang->line('cmt_commenting_has_expired'));
+                    return ee()->output->show_form_error(['general' => ee()->lang->line('cmt_commenting_has_expired')], 'submission');
                 }
             }
         }
@@ -1488,7 +1487,9 @@ class Comment
                 $result = ee()->db->count_all_results('comments');
 
                 if ($result > 0) {
-                    return ee()->output->show_user_error('submission', str_replace("%s", $query->row('comment_timelock'), ee()->lang->line('cmt_comments_timelock')));
+                    return ee()->output->show_form_error([
+                        'general' => str_replace("%s", $query->row('comment_timelock'), ee()->lang->line('cmt_comments_timelock'))
+                    ], 'submission');
                 }
             }
         }
@@ -1502,7 +1503,7 @@ class Comment
                 $result = ee()->db->count_all_results('comments');
 
                 if ($result > 0) {
-                    return ee()->output->show_user_error('submission', ee()->lang->line('cmt_duplicate_comment_warning'));
+                    return ee()->output->show_form_error(['general' => ee()->lang->line('cmt_duplicate_comment_warning')], 'submission');
                 }
             }
         }
@@ -1564,27 +1565,27 @@ class Comment
             // Not logged in
 
             if (ee()->session->userdata('member_id') == 0) {
-                return ee()->output->show_user_error('submission', ee()->lang->line('cmt_must_be_member'));
+                return ee()->output->show_form_error(['general' => ee()->lang->line('cmt_must_be_member')], 'submission');
             }
 
             // Membership is pending
 
             if (ee()->session->getMember()->isPending()) {
-                return ee()->output->show_user_error('general', ee()->lang->line('cmt_account_not_active'));
+                return ee()->output->show_form_error(['general' => ee()->lang->line('cmt_account_not_active')]);
             }
         } else {
             /** ----------------------------------------
             /**  Missing name?
             /** ----------------------------------------*/
             if (trim($_POST['name']) == '') {
-                $error[] = ee()->lang->line('cmt_missing_name');
+                $error['name'] = ee()->lang->line('cmt_missing_name');
             }
 
             /** -------------------------------------
             /**  Is name banned?
             /** -------------------------------------*/
             if (ee()->session->ban_check('screen_name', $_POST['name'])) {
-                $error[] = ee()->lang->line('cmt_name_not_allowed');
+                $error['name'] = ee()->lang->line('cmt_name_not_allowed');
             }
 
             // Let's make sure they aren't putting in funky html to bork our screens
@@ -1597,9 +1598,9 @@ class Comment
                 ee()->load->helper('email');
 
                 if ($_POST['email'] == '') {
-                    $error[] = ee()->lang->line('cmt_missing_email');
+                    $error['email'] = ee()->lang->line('cmt_missing_email');
                 } elseif (! valid_email($_POST['email'])) {
-                    $error[] = ee()->lang->line('cmt_invalid_email');
+                    $error['email'] = ee()->lang->line('cmt_invalid_email');
                 }
             }
         }
@@ -1609,7 +1610,7 @@ class Comment
         /** -------------------------------------*/
         if ($_POST['email'] != '') {
             if (ee()->session->ban_check('email', $_POST['email'])) {
-                $error[] = ee()->lang->line('cmt_banned_email');
+                $error['email'] = ee()->lang->line('cmt_banned_email');
             }
         }
 
@@ -1622,7 +1623,7 @@ class Comment
 
                 $str = str_replace("%x", $query->row('comment_max_chars'), $str);
 
-                $error[] = $str;
+                $error['comment'] = $str;
             }
         }
 
@@ -1630,7 +1631,7 @@ class Comment
         /**  Do we have errors to display?
         /** ----------------------------------------*/
         if (count($error) > 0) {
-            return ee()->output->show_user_error('submission', $error);
+            return ee()->output->show_form_error($error, 'submission');
         }
 
         /** ----------------------------------------
@@ -1639,7 +1640,7 @@ class Comment
         if (ee('Captcha')->shouldRequireCaptcha()) {
             if (! isset($_POST['captcha']) or $_POST['captcha'] == '') {
                 $captcha_error = ee()->config->item('use_recaptcha') == 'y' ? ee()->lang->line('recaptcha_required') : ee()->lang->line('captcha_required');
-                return ee()->output->show_user_error('submission', $captcha_error);
+                return ee()->output->show_form_error(['captcha' => $captcha_error], 'submission');
             } else {
                 $captcha_error = ee()->config->item('use_recaptcha') == 'y' ? ee()->lang->line('recaptcha_required') : ee()->lang->line('captcha_incorrect');
                 ee()->db->where('word', $_POST['captcha']);
@@ -1649,7 +1650,7 @@ class Comment
                 $result = ee()->db->count_all_results('captcha');
 
                 if ($result == 0) {
-                    return ee()->output->show_user_error('submission', $captcha_error);
+                    return ee()->output->show_form_error(['captcha' => $captcha_error], 'submission');
                 }
 
                 // @TODO: AR
@@ -1914,14 +1915,14 @@ class Comment
         // Membership is required unless hash is set
         if (ee()->session->userdata('member_id') == 0) {
             if ($type == 'subscribe') {
-                return ee()->output->show_user_error('submission', ee()->lang->line('cmt_must_be_logged_in'));
+                return ee()->output->show_form_error(['general' => ee()->lang->line('cmt_must_be_logged_in')], 'submission');
             } elseif ($type == 'unsubscribe' && ! $hash) {
-                return ee()->output->show_user_error('submission', ee()->lang->line('cmt_must_be_logged_in'));
+                return ee()->output->show_form_error(['general' => ee()->lang->line('cmt_must_be_logged_in')], 'submission');
             }
         }
 
         if (! $id) {
-            return ee()->output->show_user_error('submission', 'invalid_subscription');
+            return ee()->output->show_form_error(['general' => 'invalid_subscription'], 'submission');
         }
 
         // Does entry exist?
@@ -1929,7 +1930,7 @@ class Comment
         $query = ee()->db->get_where('channel_titles', array('entry_id' => $id));
 
         if ($query->num_rows() != 1) {
-            return ee()->output->show_user_error('submission', 'invalid_subscription');
+            return ee()->output->show_form_error(['general' => 'invalid_subscription'], 'submission');
         }
 
         $row = $query->row();
@@ -1942,11 +1943,11 @@ class Comment
         $subscribed = ee()->subscription->is_subscribed(false);
 
         if ($type == 'subscribe' && $subscribed == true) {
-            return ee()->output->show_user_error('submission', ee()->lang->line('already_subscribed'));
+            return ee()->output->show_form_error(['type' => ee()->lang->line('already_subscribed')], 'submission');
         }
 
         if ($type == 'unsubscribe' && $subscribed == false) {
-            return ee()->output->show_user_error('submission', ee()->lang->line('not_currently_subscribed'));
+            return ee()->output->show_form_error(['type' => ee()->lang->line('not_currently_subscribed')], 'submission');
         }
 
         // They check out- let them through

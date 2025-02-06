@@ -47,6 +47,19 @@
         }
         $alerts[] = $alert;
 
+        foreach ($entries_missing_data as $type => $data) {
+            $alert = ee('CP/Alert')->makeInline();
+            if (count($data) > 0) {
+                $alert->withTitle(sprintf(lang('debug_tools_entries_missing_data_count'), count($data), lang($type)))
+                    ->addToBody('<a href="' . ee('CP/URL')->make('utilities/debug-tools/debug-entries') . '">' . lang('debug_tools_channel_entries') . '</a>')
+                    ->asImportant();
+            } else {
+                $alert->withTitle(sprintf(lang('debug_tools_no_entries_missing_data_desc'), lang($type)))
+                    ->asSuccess();
+            }
+            $alerts[] = $alert;
+        }
+
         foreach ($alerts as $alert) {
             $alert->cannotClose();
             echo $alert->render();
