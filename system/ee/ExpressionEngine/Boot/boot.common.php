@@ -669,7 +669,7 @@ if (!function_exists('array_key_first')) {
  * Polyfill for missing tmpfile()
  * https://www.php.net/manual/en/function.tmpfile.php
  */
-if (!function_exists('tmpfile')) {
+if (!function_exists('tmpfile') && version_compare(PHP_VERSION, '8', '>=')) {
     function tmpfile()
     {
         return \ExpressionEngine\Library\Filesystem\TempFileFactory::fallback();
