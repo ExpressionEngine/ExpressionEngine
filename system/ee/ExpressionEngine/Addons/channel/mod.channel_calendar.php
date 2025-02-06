@@ -339,7 +339,7 @@ class Channel_calendar extends Channel
             $this->fetch_custom_channel_fields();
         }
 
-        $this->build_sql_query('/' . $year . '/' . $month . '/');
+        $this->build_sql_query('/' . $year . '/' . str_pad($month, 2, 0, STR_PAD_LEFT) . '/');
 
         if ($this->sql != '') {
             $query = ee()->db->query($this->sql);

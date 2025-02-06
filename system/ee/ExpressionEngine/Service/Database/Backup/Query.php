@@ -449,6 +449,7 @@ class Query
             strpos($type, 'text') !== false or
             strpos($type, 'date') !== false or
             strpos($type, 'time') !== false or
+            strpos($type, 'set') !== false or
             strpos($type, 'enum') !== false) {
             return self::STRING_TYPE;
         } elseif (strpos($type, 'int') !== false or

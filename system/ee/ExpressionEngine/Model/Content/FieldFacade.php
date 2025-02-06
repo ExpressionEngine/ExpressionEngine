@@ -68,17 +68,35 @@ class FieldFacade
         return $this->getItem('field_name') ?: $this->getName();
     }
 
-    public function getNameBadge($field_name_prefix = '')
+    public function getNameBadge(array $options = [])
     {
+        $field_name_prefix = (isset($options['prefix'])) ? $options['prefix'] : '';
+
         if (ee()->session->userdata('member_id') == 0) {
             return '';
         }
         if (ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->show_field_names == 'y') {
             $field_name = $this->getShortName();
+            $field_id = $this->getId();
+
             if (strpos($field_name, 'categories[cat_group_id_') === 0) {
                 $field_name = "categories show_group=\"" . rtrim(substr($field_name, 24), ']') . "\"";
             }
-            return ee('View')->make('publish/partials/field_name_badge')->render(['name' => $field_name_prefix . $field_name]);
+
+            $content_type = (isset($options['content_type'])) ? $options['content_type'] : $this->getContentType();
+
+            $vars = [
+                'name' => $field_name_prefix . $field_name,
+                'id' => $field_id,
+                'content_type' => $content_type,
+            ];
+
+            // add other option values to the vars array
+            foreach ($options as $key => $value) {
+                $vars[$key] = $value;
+            }
+
+            return ee('View')->make('publish/partials/name_badge_copy')->render($vars);
         }
         return '';
     }
@@ -288,6 +306,10 @@ class FieldFacade
         $data = $this->initField();
 
         $field_value = $data['field_data'];
+        // Check for an "old" value flashed during inline_error handling
+        if(ee()->has('session') && !empty(ee()->session->flashdata('old'))) {
+            $field_value = ee()->session->flashdata('old')["old:{$data['field_name']}"] ?? $field_value;
+        }
 
         return $this->api->apply('display_publish_field', array($field_value));
     }

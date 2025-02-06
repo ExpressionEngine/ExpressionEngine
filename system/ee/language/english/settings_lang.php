@@ -414,7 +414,7 @@ $lang = array(
 
     'strict_urls' => 'Enable strict <abbr title="Uniform Resource Location">URL</abbr>s?',
 
-    'strict_urls_desc' => 'When enabled, ExpressioneEngine will apply stricter rules to <abbr title="Uniform Resource Location">URL</abbr> handling.',
+    'strict_urls_desc' => 'When enabled, ExpressionEngine will apply stricter rules to <abbr title="Uniform Resource Location">URL</abbr> handling.',
 
     'template_manager' => 'Template Manager',
 
@@ -523,6 +523,18 @@ $lang = array(
 
     'req_mbr_activation_opt_none' => 'No activation required',
 
+    'registration_auto_login' => 'Auto-login upon registration?',
+
+    'registration_auto_login_desc' => 'Automatically log a member in after account registration.',
+
+    'activation_auto_login' => 'Auto-login upon activation?',
+
+    'activation_auto_login_desc' => 'Automatically log a member in after account activation.',
+
+    'activation_redirect' => 'Activation redirect URL',
+
+    'activation_redirect_desc' => 'Template path or route to redirect members to after clicking activation link in email message. When omitted, system message will be shown instead',
+
     'require_terms_of_service' => 'Require terms of service?',
 
     'require_terms_of_service_desc' => 'When enabled, users must agree to terms of service during registration.',
@@ -566,7 +578,7 @@ $lang = array(
 
     'menu_set_created' => 'Menu Set Created',
 
-    'menu_set_created_desc' => 'The menu set <b>%s</b> has been updated.',
+    'menu_set_created_desc' => 'The menu set <b>%s</b> has been created.',
 
     'menu_set_updated' => 'Menu Set Updated',
 
@@ -749,6 +761,10 @@ $lang = array(
     'deny_duplicate_data' => 'Deny duplicate data?',
 
     'deny_duplicate_data_desc' => 'When enabled, forms will disregard any submission that is an exact duplicate of existing data.',
+
+    'strip_image_metadata' => 'Strip image metadata?',
+
+    'strip_image_metadata_desc' => 'Note: This setting will remove all metadata from uploaded images, including GPS data. This requires the <a href="%s" rel="external">Imagick PHP extension</a>. Imagick is currently %s.',
 
     'enable_rank_denial' => 'Enable Rank Denial to submitted links?',
 

@@ -6,25 +6,25 @@
     <!-- Change number of blurb columns via inline grid style below IF less than 3 blurbs: -->
     <div class="upgrade-success-banner__blurb-wrapper" style="grid-template-columns: repeat(4, 1fr);">
 
-        <a href="https://expressionengine.com/blog/expressionengine-7.4" class="upgrade-success-banner__blurb" target="_blank">
+        <a href="https://expressionengine.com/blog/expressionengine-7.5" class="upgrade-success-banner__blurb" target="_blank">
             <i class="fal fa-newspaper fa-fw"></i>
-            <h6>ExpressionEngine 7.4.0</h6>
-            <p>7.4 is a BIG update, packed with significant changes to members, the rich text editor, managing file metadata, channel forms, and categories! <span class="upgrade-success-banner__blurb-learn">Read the blog post&hellip;</span></p>
+            <h6>ExpressionEngine 7.5.0</h6>
+            <p>7.5 is a major step forward in helping developers be successful faster. Removing the guess work, simplifying template code, and much more! <span class="upgrade-success-banner__blurb-learn">Read the blog post&hellip;</span></p>
         </a>
-        <a href="https://expressionengine.com/blog/7.4-preview-big-additions-to-member-management" class="upgrade-success-banner__blurb" target="_blank">
-            <i class="fal fa-rectangles-mixed fa-fw"></i>
-            <h6>Big Additions to Member Management</h6>
-            <p>A new channel fieldtype for members, member custom fields now include almost all native fieldtypes, control panel updates to manage members, and <span class="upgrade-success-banner__blurb-learn">much more!&hellip;</span></p>
+        <a href="https://expressionengine.com/blog/7.5-code-generators" class="upgrade-success-banner__blurb" target="_blank">
+            <i class="fal fa-wand-magic-sparkles fa-fw"></i>
+            <h6>Code Generators</h6>
+            <p>Making development easier and more fun.  Build your dreams in ExpressionEngine <span class="upgrade-success-banner__blurb-learn">faster than ever before&hellip;</span></p>
         </a>
-        <a href="https://expressionengine.com/blog/7.4.0-preview-redactor-x-in-the-rich-text-editor-rte" class="upgrade-success-banner__blurb" target="_blank">
-            <i class="fal fa-key-skeleton-left-right fa-fw"></i>
-            <h6>Redactor X</h6>
-            <p>A new, easier-to-customize, more powerful WYSIWYG editor for ExpressionEngine is now included in 7.4!</p>
+        <a href="https://expressionengine.com/blog/ee75-inline-form-validation-errors-everywhere" class="upgrade-success-banner__blurb" target="_blank">
+            <i class="fal fa-check-double fa-fw"></i>
+            <h6>Form Validation</h6>
+            <p>In 7.5 form validation has been standardized and expanded across even more tags.  You also have more flexibility to handle errors inline with your forms!</p>
         </a>
-        <a href="https://expressionengine.com/blog/7.4.0-preview-cool-things" class="upgrade-success-banner__blurb" target="_blank">
-            <i class="fal fa-rectangle-terminal fa-fw"></i>
-            <h6>Cool Things You Need</h6>
-            <p>7.4 also includes a pile of new quality-of-life additions. We took the time to <span class="upgrade-success-banner__blurb-learn">highlight a few of them&hellip;</span></p>
+        <a href="https://expressionengine.com/blog/expressionengine-7.5-all-the-cool-little-additions" class="upgrade-success-banner__blurb" target="_blank">
+            <i class="fal fa-sunglasses fa-fw"></i>
+            <h6>Cool Little Additions</h6>
+            <p>Dramatically simplified templates for field groups in Fluid, new channel:fields tags <span class="upgrade-success-banner__blurb-learn">and a bunch more!</span></p>
         </a>
     </div>
     <a href="<?=ee('CP/URL')->make('homepage/dismiss-banner')->compile();?>" class="banner-dismiss"><span class="sr-only"><?=lang('close_banner')?></span></a>

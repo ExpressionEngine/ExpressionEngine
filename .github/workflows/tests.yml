@@ -248,17 +248,30 @@ jobs:
             #     echo "::set-output name=SPECS::$(node tests/cypress-split.js 4 ${{ matrix.containers }})"
             #   id: specs
 
-            - name: Install Chrome
+            # This will get a Stable Chrome version that is 2 releases back from latest, and install it
+            # It gets the version from the Official Chromium Dash API
+            # Get a couple releases back ensures we do not run into the issue where not all runners have the latest version
+            - name: Get Chrome Version
+              id: get-chrome-version
+              run: |
+                latest_version=$(curl -s 'https://chromiumdash.appspot.com/fetch_releases?channel=Stable&platform=Linux&num=1&offset=0' | jq -r '.[0].version')
+                major_version=$(echo $latest_version | cut -d '.' -f 1)
+                previous_major_version=$((major_version - 1))
+                echo "Previous major version of Chrome: $previous_major_version"
+                echo "chrome_version=$previous_major_version" >> $GITHUB_OUTPUT
+
+            - name: Install Specific Chrome Version
               uses: browser-actions/setup-chrome@latest
+              id: setup-chrome
               with:
-                chrome-version: latest
+                chrome-version: ${{ steps.get-chrome-version.outputs.chrome_version }}
 
             - name: Run Cypress Tests
               if: matrix.php != '5.6'
               uses: cypress-io/github-action@v6
               with:
                 # spec: ${{ steps.specs.outputs.SPECS }}
-                browser: chrome
+                browser: ${{ steps.setup-chrome.outputs.chrome-path }}
                 working-directory: tests/cypress
                 record: true
                 parallel: true
@@ -272,7 +285,7 @@ jobs:
               if: matrix.php == '5.6'
               uses: cypress-io/github-action@v6
               with:
-                browser: chrome
+                browser: ${{ steps.setup-chrome.outputs.chrome-path }}
                 working-directory: tests/cypress
                 config: specPattern=cypress/integration/!(updater|pro)/**.ee6.js
                 record: true

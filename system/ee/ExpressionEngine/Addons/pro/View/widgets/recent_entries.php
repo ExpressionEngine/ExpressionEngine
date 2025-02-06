@@ -19,7 +19,7 @@ if ($can_create_channels || count($menu['channels']['edit'])): ?>
 					foreach($entries as $entry): ?>
 					<li>
 						<a class="normal-link" href="<?=ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id);?>">
-							<?= $entry->title; ?>
+							<?= htmlspecialchars($entry->title) ?>
 							<span class="meta-info float-right ml-s"><?= ee()->localize->format_date(ee()->session->userdata('date_format', ee()->config->item('date_format')), $entry->entry_date)?></span>
 						</a>
 					</li>

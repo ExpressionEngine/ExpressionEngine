@@ -357,10 +357,13 @@ class EE_Lang
         $langStrings = [];
         foreach ($paths as $path) {
             if (file_exists($path) && include $path) {
-                if (isset($lang) && is_array($lang)) {
+                // Language files should be arrays of translations but can also be a single string
+                if (isset($lang) && (is_array($lang) || is_string($lang))) {
                     $success = true;
-                    $langStrings = array_merge($langStrings, $lang);
+                    $langStrings = (is_array($lang)) ? array_merge($langStrings, $lang) : $lang;
+
                     unset($lang);
+
                     if (in_array($path, $alt_files)) {
                         $scope = 'addon';
                     }
