@@ -386,6 +386,44 @@ class Smartforge
 
         return false;
     }
+
+    /**
+     * List Keys
+     *
+     * Get all keys from the given database table.
+     *
+     * @access  public
+     * @param   string  $table  Table name
+     * @return  array
+     */
+    public function get_keys($table = '')
+    {
+        $keys = [];
+
+        // Check to make sure table exists
+        if (! ee()->db->table_exists($table)) {
+            ee()->logger->updater(__METHOD__ . " failed. Table '" . ee()->db->dbprefix . "$table' does not exist.", true);
+            return $keys;
+        }
+
+        // Get indexes
+        $query = ee()->db->query("SHOW INDEX FROM " . ee()->db->dbprefix . "$table");
+
+        if($query->num_rows() == 0) {
+            ee()->logger->updater(__METHOD__ . " failed. Unable to get indexes from '" . ee()->db->dbprefix . "$table'.", true);
+            return $keys;
+        }
+
+        foreach ($query->result_array() as $row) {
+            $key = [];
+            foreach ($row as $column => $value) {
+                $key[strtolower($column)] = $value;
+            }
+            $keys[] = $key;
+        }
+
+        return $keys;
+    }
 }
 
 // END SmartForge class
