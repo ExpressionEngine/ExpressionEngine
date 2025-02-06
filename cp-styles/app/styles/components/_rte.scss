@@ -519,6 +519,10 @@ a.ck.ck-button.ck-on {
   color: var(--ck-color-text) !important;
 }
 
+.ck.ck-editor__main>.ck-editor__editable li .ck-list-bogus-paragraph {
+    display: inline-block;
+}
+
 /* Redactor stuff */
 
 .redactor-box .redactor-toolbar {
@@ -746,6 +750,10 @@ a.ck.ck-button.ck-on {
     z-index: 2000 !important;
 }
 
+.ck.ck-label {
+    z-index: 2001 !important;
+}
+
 .ck.ck-balloon-panel[class*=arrow_n]:before {
     border-color: transparent transparent var(--ee-list-item-border) !important;
 }
@@ -843,6 +851,70 @@ a.ck.ck-button.ck-on {
     background: transparent !important;
 }
 
+.ck.ck-find-and-replace-form__actions .ck-button-find {
+    color: var(--ee-button-secondary-color) !important;
+    background-color: var(--ee-button-secondary-bg);
+    border-color: var(--ee-button-secondary-border);
+    font-weight: normal;
+    cursor: pointer;
+}
+
+.ck.ck-find-and-replace-form__actions .ck-button-find span {
+   color: var(--ee-button-secondary-color) !important;
+}
+
+.ck.ck-find-and-replace-form__actions .ck-button-find:hover {
+    color: var(--ee-button-secondary-color) !important;
+    background-color: var(--ee-button-secondary-hover-bg) !important;
+    border-color: var(--ee-button-secondary-hover-border) !important;
+}
+
+.ck.ck-dialog {
+  background: var(--ee-button-default-bg) !important;
+  color: var(--ee-button-default-color) !important;
+  border-color: var(--ee-list-item-border) !important;
+}
+
+.ck.ck-dialog h2 {
+  color: var(--ee-button-default-color) !important;
+}
+
+.ck.ck-find-and-replace-form__actions {
+  margin-top: 10px !important;
+}
+
+.ck.ck-labeled-field-view .ck-labeled-field-view__status.ck-labeled-field-view__status_error {
+    color: var(--ee-error) !important;
+}
+
+// STYLES FOR CKEDITOR LABEL
+.ck.ck-labeled-field-view .ck-labeled-field-view__status.ck-labeled-field-view__status_error {
+    color: var(--ee-error) !important;
+}
+
+.ck.ck-balloon-panel.ck-powered-by-balloon .ck-powered-by:hover {
+  filter: grayscale(1);
+}
+
+.ck.ck-balloon-panel.ck-powered-by-balloon .ck.ck-powered-by a {
+  padding: 1px;
+}
+
+.ck.ck-balloon-panel.ck-powered-by-balloon .ck.ck-powered-by .ck-powered-by__label {
+  color: var(--ee-text-secondary);
+  opacity: 0.5;
+  font-size: 6px;
+}
+
+.ck.ck-balloon-panel.ck-powered-by-balloon .ck.ck-powered-by .ck-icon {
+  color: var(--ee-text-secondary);
+  opacity: 0.3;
+}
+
+.ck.ck-widget__resizer {
+    background: transparent !important;
+}
+
 // REDACTORX STYLES
 .rx-toolbar,
 .rx-topbar {
@@ -913,6 +985,7 @@ a.ck.ck-button.ck-on {
     background-color: var(--ee-bg-dropdown) !important;
     color: var(--ee-text-primary);
     box-shadow: 0 1px 4px 0 var(--ee-shadow-dropdown) !important;
+    z-index: 1000 !important;
 
     .rx-popup-header {
         color: var(--ee-text-primary);

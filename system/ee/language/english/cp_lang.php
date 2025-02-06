@@ -380,6 +380,8 @@ $lang = array(
 
     'type_filter' => 'type',
 
+    'channel_filter' => 'channel',
+
     'site' => 'Site',
 
     'site_filter' => 'site',
@@ -509,6 +511,24 @@ $lang = array(
     '404_does_not_exist' => '404: Item does not exist',
 
     '404_does_not_exist_desc' => 'Sorry, we could not find the item you are trying to access in the system.',
+
+    'http_code_400' => 'Bad Request',
+
+    'http_code_401' => 'Unauthorized',
+
+    'http_code_403' => 'Forbidden',
+
+    'http_code_404' => 'Not Found',
+
+    'http_code_405' => 'Method Not Allowed',
+
+    'http_code_500' => 'Internal Server Error',
+
+    'http_code_501' => 'Not Implemented',
+
+    'http_code_502' => 'Bad Gateway',
+
+    'http_code_503' => 'Service Unavailable',
 
     /* Common */
     'alphadash_desc' => 'No spaces. Underscores and dashes are allowed.',

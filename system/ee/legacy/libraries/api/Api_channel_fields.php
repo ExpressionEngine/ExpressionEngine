@@ -222,7 +222,7 @@ class Api_channel_fields extends Api
     */
     public function fetch_custom_member_fields()
     {
-        ee()->db->select('m_field_id, m_field_name, m_field_fmt, m_legacy_field_data, m_field_type');
+        ee()->db->select('m_field_id, m_field_name, m_field_fmt, m_legacy_field_data, m_field_type, m_field_settings');
         $query = ee()->db->get('member_fields');
 
         $mfields = array();
@@ -233,6 +233,15 @@ class Api_channel_fields extends Api
 
             $mfields[$row['m_field_name']] = array($row['m_field_id'], $row['m_field_fmt'], $row['m_legacy_field_data']);
             $this->custom_member_fields['m_' . $row['m_field_id']] = $row['m_field_type'];
+
+            if (isset($row['m_field_settings']) && $row['m_field_settings'] != '') {
+                $settings = json_decode($row['m_field_settings'], true);
+                $settings['field_type'] = $row['m_field_type'];
+                $settings['field_fmt'] = $row['m_field_fmt'];
+                $settings['field_name'] = $row['m_field_name'];
+
+                $this->set_settings('member_field_' . $row['m_field_id'], $settings);
+            }
 
             $field_handler = $this->field_types[$row['m_field_type']];
             $field_handler = is_object($field_handler) ? get_class($field_handler) : $field_handler;
@@ -321,7 +330,7 @@ class Api_channel_fields extends Api
      */
     public function setup_handler($field_type, $return_obj = false)
     {
-        $field_id = false;
+        $field_id = $settingsKey = false;
         $frontend = false;
 
         // Quite frequently all you have convenient access to
@@ -331,13 +340,16 @@ class Api_channel_fields extends Api
         if (isset($this->custom_fields[$field_type])) {
             $frontend = true;
             $field_id = $field_type;
+            $settingsKey = $field_id;
             $field_type = $this->custom_fields[$field_type];
         } elseif (isset($this->settings[$field_type])) {
             $field_id = $field_type;
+            $settingsKey = $field_id;
             $field_type = $this->settings[$field_id]['field_type'];
         } elseif (strpos($field_type, 'm_') === 0 && isset($this->custom_member_fields[$field_type])) {
             //custom member fields
             $field_id = substr($field_type, 2);
+            $settingsKey = 'member_field_' . $field_id;
             $field_type = $this->custom_member_fields[$field_type];
         }
 
@@ -361,7 +373,7 @@ class Api_channel_fields extends Api
 
         $field_name = false;
 
-        $settings = $this->get_settings($field_id);
+        $settings = $this->get_settings($settingsKey);
 
         if (isset($settings['field_name'])) {
             $field_name = $settings['field_name'];

@@ -633,6 +633,9 @@ class EE_Config
             'allow_member_registration',
             'allow_member_localization',
             'req_mbr_activation',
+            'registration_auto_login',
+            'activation_auto_login',
+            'activation_redirect',
             'new_member_notification',
             'mbr_notification_emails',
             'require_terms_of_service',
@@ -1423,6 +1426,7 @@ class EE_Config
                     '%n/%j/%Y' => 'mm/dd/yyyy',
                     '%j/%n/%Y' => 'dd/mm/yyyy',
                     '%j-%n-%Y' => 'dd-mm-yyyy',
+                    '%d.%m.%Y' => 'dd.mm.yyyy',
                     '%Y-%m-%d' => 'yyyy-mm-dd'
                 )),
                 'time_format' => array('r', array('24' => '24_hour', '12' => '12_hour')),

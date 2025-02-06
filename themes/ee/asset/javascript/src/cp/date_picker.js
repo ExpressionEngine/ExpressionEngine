@@ -135,11 +135,17 @@ EE.cp.datePicker = {
 			var selected = null,
 			    year     = null,
 				month    = null;
+				hour     = null;
+				min      = null;
+				sec      = null;
 
 			this.element = element;
 			this.calendars = [];
 
 			var that = this;
+
+			var include_seconds = EE.date.include_seconds;
+
 
 			if ($('.date-picker-wrap').length == 0) {
 				var parent = $('body');
@@ -149,13 +155,18 @@ EE.cp.datePicker = {
 					parent = $(this.element).closest('form');
 				}
 
-				var include_seconds = EE.date.include_seconds
 				var timeBlock;
 
+				var currentTime = new Date();
+					hour = currentTime.getHours();
+					min = currentTime.getMinutes();
+					sec = currentTime.getSeconds();
+
+
 				if (include_seconds == 'y') {
-					timeBlock = '<input type="time" value="12:00:00" step="1">';
+					timeBlock = '<input type="time" value="'+this.addZero(hour)+":"+this.addZero(min)+":"+this.addZero(sec)+'" step="1">';
 				} else {
-					timeBlock = '<input type="time" value="12:00">';
+					timeBlock = '<input type="time" value="'+this.addZero(hour)+":"+this.addZero(min)+'">';
 				}
 				var _picker = $('<div class="date-picker-wrap"><div class="date-picker-clip"><div class="date-picker-clip-inner"></div></div><div class="date-picker-footer"><button class="button date-picker-today-button">' + EE.lang.date.today + '</button><div id="date-picker-time-block">' + timeBlock + '</div></div></div>');
 
@@ -447,6 +458,9 @@ EE.cp.datePicker = {
 				d = new Date();
 				year  = d.getFullYear();
 				month = d.getMonth();
+				hour = d.getHours();
+				min = d.getMinutes();
+				sec = d.getSeconds();
 
 				if ($(this.element).data('include_time') != undefined) {
 					if ($(this.element).data('include_time')) {
@@ -459,9 +473,9 @@ EE.cp.datePicker = {
 				}
 
 				if (include_seconds == 'y') {
-					$('.date-picker-wrap .date-picker-footer input[type="time"]').val('12:00:00');
+					$('.date-picker-wrap .date-picker-footer input[type="time"]').val(this.addZero(hour)+':'+this.addZero(min)+':'+this.addZero(sec));
 				} else {
-					$('.date-picker-wrap .date-picker-footer input[type="time"]').val('12:00')
+					$('.date-picker-wrap .date-picker-footer input[type="time"]').val(this.addZero(hour)+':'+this.addZero(min))
 				}
 			}
 
@@ -683,7 +697,7 @@ EE.cp.datePicker = {
 			return
 		}
 
-		elements.on('focus', function() {
+		elements.off('focus.datepicker').on('focus.datepicker', function() {
 			// find the position of the input clicked
 			var pos = $(this).offset();
 			EE.cp.datePicker.Calendar.init(this);

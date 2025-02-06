@@ -377,7 +377,7 @@ $lang = array(
     /* Date */
 
     'date_localization' => 'Date Localization',
-    'date_localization_desc' => 'Choose how the field data should be localized. <a href="' . DOC_URL . 'fieldtypes/date.html">More info</a>',
+    'date_localization_desc' => 'Choose how the field data should be localized. <a href="' . DOC_URL . 'fieldtypes/date.html" target="_blank">More info</a>',
     'always_localized' => 'Always localized',
     'always_fixed' => 'Always fixed',
     'ask_each_time' => 'Ask each time',
