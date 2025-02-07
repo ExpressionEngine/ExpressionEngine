@@ -115,6 +115,7 @@ if ($field['type'] == 'checkbox' && ! $value) {
         'scalar' => isset($field['scalar']) ? $field['scalar'] : null,
         'multi' => ($field['type'] == 'checkbox'),
         'nested' => isset($field['nested']) ? $field['nested'] : false,
+        'nestableReorder' => isset($nestable_reorder) ? $nestable_reorder : false,
         'selectable' => isset($field['selectable']) ? $field['selectable'] : true,
         'reorderable' => isset($field['reorderable']) ? $field['reorderable'] : false,
         'removable' => isset($field['removable']) ? $field['removable'] : false,

@@ -58,6 +58,8 @@ $lang = array(
 
     'required' => 'This field is required.',
 
+    'multiple_selection_not_allowed' => 'Only one selection is allowed',
+
     'starts_with' => 'This field should start with <code>%s</code>.',
 
     'not_starts_with' => 'This field should not start with <code>%s</code>.',
@@ -65,6 +67,8 @@ $lang = array(
     'unique' => 'This field must be unique.',
 
     'unique_among_channel_fields' => 'This field must be unique and can not match a channel field short name.',
+
+    'unique_among_member_fields' => 'This field must be unique and can not match a member field short name.',
 
     'unique_among_field_groups' => 'This field must be unique and can not match a field group short name.',
 

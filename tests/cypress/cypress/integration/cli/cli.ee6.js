@@ -101,6 +101,17 @@ context('CLI', () => {
 
     })
 
+    it('reindex content', function() {
+        cy.exec('php ../../system/ee/eecli.php sync:reindex').then((result) => {
+            expect(result.code).to.eq(0)
+            expect(result.stderr).to.be.empty
+            expect(result.stdout).to.not.contain('on line')
+            expect(result.stdout).to.not.contain('caught:')
+            expect(result.stdout).to.contain('Content reindexing started.')
+            expect(result.stdout).to.contain('Content reindexing complete. 10 entries were reindexed.')
+        })
+    })
+
     describe('create add-on', function() {
 
         it('create add-on', function() {

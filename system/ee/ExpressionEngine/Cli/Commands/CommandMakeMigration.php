@@ -69,7 +69,7 @@ class CommandMakeMigration extends Cli
 
     /**
      * Migration
-     * @var string
+     * @var object
      */
     public $migration;
 

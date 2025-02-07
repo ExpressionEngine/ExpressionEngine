@@ -90,6 +90,7 @@ class Utilities extends CP_Controller
             $debug_tools->addItem(lang('debug_tools_debug_duplicate_template_groups'), ee('CP/URL')->make('utilities/debug-tools/duplicate-template-groups'));
             $debug_tools->addItem(lang('debug_tools_debug_tags'), ee('CP/URL')->make('utilities/debug-tools/debug-tags'));
             $debug_tools->addItem(lang('debug_tools_fieldtypes'), ee('CP/URL')->make('utilities/debug-tools/debug-fieldtypes'));
+            $debug_tools->addItem(lang('debug_tools_channel_entries'), ee('CP/URL')->make('utilities/debug-tools/debug-entries'));
         }
 
         if (ee('Permission')->hasAny('can_access_import', 'can_access_members')) {

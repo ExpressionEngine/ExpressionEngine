@@ -23,6 +23,7 @@ class FieldtypeAdvisor
         foreach ($missing_fts as $ft) {
             $data[$ft] = $used_fts[$ft];
         }
+        sort($data);
 
         return $data;
     }
@@ -60,6 +61,7 @@ class FieldtypeAdvisor
         foreach ($unused_fts as $ft) {
             $data[] = $installed_fts[$ft];
         }
+        sort($data);
 
         return $data;
     }

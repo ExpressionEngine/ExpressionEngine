@@ -26,7 +26,7 @@ context('Fields of different types', () => {
 
 		cy.auth()
 
-		/*cy.window().then((win) => { 
+		/*cy.window().then((win) => {
 			win.parent.document.getElementsByClassName('reporter-wrap')[0].style.width = '70%';
 		});*/
 
@@ -311,19 +311,19 @@ context('Fields of different types', () => {
 		// Edit the entry and add the text stuff
 		cy.visit('admin.php?/cp/publish/edit')
 		cy.get('div').contains('AA Test Entry').eq(0).click()
-		cy.get('.ck-content').type('This is paragraph{enter}')
+		cy.get('.ck-content').ckType('This is paragraph{enter}')
 
 		// Type something in BOLD
 		cy.get('button.ck-button').contains('Bold').click()
-		cy.get('.ck-content').type('This is bold!')
+		cy.get('.ck-content').ckType('This is bold!')
 		cy.get('button.ck-button').contains('Bold').click()
-		cy.get('.ck-content').type('{enter}')
+		cy.get('.ck-content').ckType('{enter}')
 
 		// Type something in italics
 		cy.get('button.ck-button').contains('Italic').click()
-		cy.get('.ck-content').type('This is italic!')
+		cy.get('.ck-content').ckType('This is italic!')
 		cy.get('button.ck-button').contains('Italic').click()
-		cy.get('.ck-content').type('{enter}')
+		cy.get('.ck-content').ckType('{enter}')
 
 		// cy.get('select').select('heading 1')
 		// cy.get('.ck-content').type('This is heading 1{enter}')
@@ -476,13 +476,13 @@ context('Fields of different types', () => {
 			cy.get('[name=field_max_value]:visible').invoke('val').should('eq', '10')
 			cy.get('[name=field_step]:visible').invoke('val').should('eq', '2')
 			cy.get('[name=datalist_items]:visible').invoke('val').should('eq', "0\n5")
-			
+
 		})
 
 		it('Number input in entry' , () => {
 			cy.visit('admin.php?/cp/publish/edit')
 			cy.get('div').contains('AA Test Entry').eq(0).click()
-	
+
 			cy.get('input[type=number]').clear().type('183')
 			cy.get('body').type('{ctrl}', {release: false}).type('s')
 			cy.get('[type="number"]').then(($input) => {
@@ -499,23 +499,23 @@ context('Fields of different types', () => {
 			cy.get('input[type=number]').clear().type('0.6').blur()
 			cy.wait('@validation')
 			page.hasError(cy.get('[type=number]'), page.messages.validation.integer)
-			
+
 			cy.get('input[type=number]').clear().type('-4').blur()
 			cy.wait('@validation')
 			cy.get('body').type('{ctrl}', {release: false}).type('s')
-	
+
 			cy.visit('admin.php?/cp/design')
 			cy.get('a').contains('aaNumber').eq(0).click()
 			cy.get('a').contains('index').click()
 			cy.get('.CodeMirror-scroll').type('{exp:channel:entries channel="AATestChannel"}{aa_number_test}{/exp:channel:entries}',{ parseSpecialCharSequences: false })
 			cy.get('body').type('{ctrl}', {release: false}).type('s')
 
-			
-	
+
+
 			cy.visit('index.php/aaNumber')
 			cy.get('body').contains('-4')
-	
-	
+
+
 		})
 	})
 
@@ -525,7 +525,7 @@ context('Fields of different types', () => {
 		cy.get('a').contains('index').click()
 		cy.get('.CodeMirror-scroll').type('{exp:channel:entries channel="AATestChannel"}<h2> {title} </h2>{aa_selectable_buttons_test}{item:value}<br>{/aa_selectable_buttons_test}{/exp:channel:entries}',{ parseSpecialCharSequences: false })
 		cy.get('body').type('{ctrl}', {release: false}).type('s')
-		
+
 		cy.visit('admin.php?/cp/fields')
 		cy.get('div').contains('AA Selectable Buttons Test').click()
 		cy.get('div.checkbox-label__text').contains('Value/Label Pairs').click()
@@ -577,7 +577,7 @@ context('Fields of different types', () => {
 		cy.get('body').type('{ctrl}', {release: false}).type('s')
 		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("three")').should('have.class', 'active')
 		cy.get('.field-instruct:contains("AA Selectable Buttons Test")').parent().find('.button:contains("five")').should('have.class', 'active')
-		
+
 		cy.visit('index.php/aaSelectableButtons')
 		cy.get('body').should('contain', 'tres')
 		cy.get('body').should('contain', 'cinco')
@@ -647,17 +647,17 @@ context('Fields of different types', () => {
 			cy.get('[name=field_step]:visible').clear().type('5');
 			cy.get('[name=field_prefix]:visible').clear().type('$')
 			cy.get('body').type('{ctrl}', {release: false}).type('s')
-			
+
 			cy.visit('admin.php?/cp/publish/edit')
 			cy.get('div').contains('AA Test Entry').eq(0).click()
 			cy.get('.range-slider').not('.flat').find('input[type=range]').eq(0).as('range').invoke('val', 25).trigger('change')
 			cy.get('body').type('{ctrl}', {release: false}).type('s')
-	
+
 			cy.get('.range-slider').not('.flat').find('input[type=range]').eq(0).as('range').invoke('val').should('eq', '25')
 			cy.get('@range').invoke('val', 23).trigger('change')
 			cy.get('@range').invoke('val').should('eq', '25')
 			cy.get('button').contains('Save').eq(0).click()
-	
+
 			cy.visit('admin.php?/cp/design')
 			cy.get('a').contains('aaValueSlider').eq(0).click()
 			cy.get('a').contains('index').click()
@@ -667,7 +667,7 @@ context('Fields of different types', () => {
 			cy.visit('index.php/aaValueSlider')
 			cy.get('body').should('contain', '$25')
 		})
-	
+
 		it('Range Slider field' , () => {
 			cy.visit('admin.php?/cp/fields')
 			cy.get('div').contains('AA Range Slider').click()
@@ -676,19 +676,19 @@ context('Fields of different types', () => {
 			cy.get('[name=field_step]:visible').clear().type('5');
 			cy.get('[name=field_suffix]:visible').clear().type('%')
 			cy.get('body').type('{ctrl}', {release: false}).type('s')
-			
+
 			cy.visit('admin.php?/cp/publish/edit')
 			cy.get('div').contains('AA Test Entry').eq(0).click()
 			cy.get('.range-slider.flat').find('input[type=range]').eq(0).as('range1').invoke('val', 25).trigger('change', {force: true})
 			cy.get('.range-slider.flat').find('input[type=range]').eq(1).as('range2').invoke('val', 35).trigger('change', {force: true})
 			cy.get('body').type('{ctrl}', {release: false}).type('s')
-	
+
 			cy.get('.range-slider.flat').find('input[type=range]').eq(0).as('range1').invoke('val').should('eq', '25')
 			cy.get('.range-slider.flat').find('input[type=range]').eq(1).as('range2').invoke('val').should('eq', '35')
 			cy.get('@range1').invoke('val', 23).trigger('change', {force: true})
 			cy.get('@range1').invoke('val').should('eq', '25')
 			cy.get('button').contains('Save').eq(0).click()
-	
+
 			cy.visit('admin.php?/cp/design')
 			cy.get('a').contains('aaRangeSlider').eq(0).click()
 			cy.get('a').contains('index').click()
@@ -698,7 +698,7 @@ context('Fields of different types', () => {
 			cy.visit('index.php/aaRangeSlider')
 			cy.get('body').should('contain', '25% — 35%')
 		})
-	
+
 		it('Switch between slider types', () => {
 			cy.visit('admin.php?/cp/fields')
 			cy.get('div').contains('AA Value Slider').click()
@@ -712,15 +712,15 @@ context('Fields of different types', () => {
 			cy.get('[name=field_step]:visible').invoke('val').should('eq', '5');
 			cy.get('[name=field_prefix]:visible').invoke('val').should('eq', '$')
 			cy.get('body').type('{ctrl}', {release: false}).type('s')
-	
+
 			cy.visit('admin.php?/cp/publish/edit')
 			cy.get('div').contains('AA Test Entry').eq(0).click()
 			cy.get('.range-slider').eq(0).find('input[type=range]').eq(0).as('range1').invoke('val').should('eq', '25')
 			cy.get('.range-slider').eq(0).find('input[type=range]').eq(1).as('range2').invoke('val').should('eq', '50')
-	
+
 			cy.visit('index.php/aaValueSlider')
 			cy.get('body').should('contain', '$25 — 50')
-	
+
 			//------------------------------------
 			cy.visit('admin.php?/cp/fields')
 			cy.get('div').contains('AA Range Slider').click()
@@ -732,12 +732,12 @@ context('Fields of different types', () => {
 			cy.get('[name=field_step]:visible').invoke('val').should('eq', '5');
 			cy.get('[name=field_suffix]:visible').invoke('val').should('eq', '%')
 			cy.get('body').type('{ctrl}', {release: false}).type('s')
-	
+
 			cy.visit('admin.php?/cp/publish/edit')
 			cy.get('div').contains('AA Test Entry').eq(0).click()
 			cy.get('.range-slider').eq(1).find('input[type=range]').eq(0).as('range1').invoke('val').should('eq', '25')
 			cy.get('.range-slider').eq(1).find('input[type=range]').eq(1).should('not.exist')
-	
+
 			cy.visit('index.php/aaRangeSlider')
 			cy.get('body').should('contain', '25%')
 		})

@@ -149,8 +149,8 @@ $(document).ready(function () {
 		var writeable = $('textarea, input, div.redactor-styles, div.ck-content').not(':password,:checkbox,:radio,:submit,:button,:hidden'),
 			changeable = $('select, :checkbox, :radio, :file');
 
-		writeable.on('keypress change', function(){publishForm.trigger("entry:startAutosave")});
-		changeable.on('change', function(){publishForm.trigger("entry:startAutosave")});
+		$('body').on('keypress change', writeable, function(){publishForm.trigger("entry:startAutosave")});
+		$('body').on('change', changeable, function(){publishForm.trigger("entry:startAutosave")});
 	}
 
 

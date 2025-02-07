@@ -14,6 +14,7 @@ use ExpressionEngine\Cli\CliFactory;
 use ExpressionEngine\Cli\Help;
 use ExpressionEngine\Cli\Status;
 use ExpressionEngine\Cli\Context\OptionFactory;
+use ExpressionEngine\Cli\Exception;
 use ExpressionEngine\Library\Filesystem\Filesystem;
 
 class Cli
@@ -113,6 +114,9 @@ class Cli
         'config:config' => Commands\CommandConfigConfig::class,
         'config:env' => Commands\CommandConfigEnv::class,
 
+        // Generate
+        'generate:templates' => Commands\CommandGenerateTemplates::class,
+
         // List
         'list' => Commands\CommandListCommands::class,
 
@@ -142,6 +146,8 @@ class Cli
         // Sync
         'sync:conditional-fields' => Commands\CommandSyncConditionalFieldLogic::class,
         'sync:file-usage' => Commands\CommandSyncFileUsage::class,
+        'sync:reindex' => Commands\CommandSyncReindex::class,
+        'sync:upload-directory' => Commands\CommandSyncUploadDirectory::class,
 
         // Update
         'update' => Commands\CommandUpdate::class,
@@ -191,7 +197,7 @@ class Cli
             $this->fail('cli_error_cli_disabled');
         }
 
-        if (! isset($this->argv[1])) {
+        if (!isset($this->argv[1])) {
             $this->fail('cli_error_no_command_given');
         }
 
@@ -210,17 +216,29 @@ class Cli
      */
     public function process()
     {
+        // -------------------------------------------
+        // 'cli_boot' hook.
+        //  - Runs on every CLI request
+        //  - Intercept CLI call and make it do extra stuff
+        //
+        if (ee()->extensions->active_hook('cli_boot') === true) {
+            ee()->extensions->call('cli_boot', $this);
+            if (ee()->extensions->end_script === true) {
+                $this->complete('');
+            }
+        }
+
         $this->availableCommands = $this->availableCommands();
 
         // Check if command exists
         // If not, return
-        if (! $this->commandExists()) {
+        if (!$this->commandExists()) {
             return $this->fail('cli_error_command_not_found');
         }
 
         $commandClass = $this->getCommand($this->commandCalled);
 
-        if (! class_exists($commandClass)) {
+        if (!class_exists($commandClass)) {
             return $this->fail('cli_error_command_not_found');
         }
 
@@ -230,8 +248,26 @@ class Cli
         $command->loadOptions();
 
         if ($command->option('-h', false)) {
-            return $command->help();
+            // special case for generate:templates generator:name --help
+            if ($command->signature == 'generate:templates' && count($this->arguments) > 1 && in_array($this->arguments[1], ['--help', '-h'])) {
+                // template generator, when having generator specified, will handle displaying help later
+            } else {
+                return $command->help();
+            }
         }
+
+        // -------------------------------------------
+        // 'cli_before_handle' hook.
+        //  - Runs on every CLI request
+        //  - Intercept CLI call and make it do extra stuff
+        //
+        if (ee()->extensions->active_hook('cli_before_handle') === true) {
+            $command = ee()->extensions->call('cli_before_handle', $this, $command, $commandClass);
+            if (ee()->extensions->end_script === true) {
+                $this->complete('');
+            }
+        }
+        // -------------------------------------------
 
         // Run command
         $message = $command->handle();
@@ -254,7 +290,7 @@ class Cli
             ->setOptions($this->commandOptions);
 
         // Echo out just the simple options for the command
-        if($this->option('--options')) {
+        if ($this->option('--options')) {
             $this->write($help->getHelpOptionsSimple());
             exit();
         }
@@ -272,7 +308,7 @@ class Cli
     public function fail($messages = null)
     {
         if ($messages) {
-            if (! is_array($messages)) {
+            if (!is_array($messages)) {
                 $messages = [$messages];
             }
 
@@ -337,7 +373,7 @@ class Cli
     public function table(array $headers, array $data)
     {
         // We need headers in order to print a table
-        if(empty($headers)) {
+        if (empty($headers)) {
             return;
         }
 
@@ -362,7 +398,7 @@ class Cli
             $format .= '%-' . $width . 's | ';
 
             // if last row by key
-            if($k === array_key_last($widths)) {
+            if ($k === array_key_last($widths)) {
                 $format = rtrim($format, '| ');
             }
         }
@@ -374,14 +410,14 @@ class Cli
         $dash_str = '';
         foreach ($widths as $k => $width) {
             $length = $width + 2;
-            if($k === array_key_first($widths)) {
+            if ($k === array_key_first($widths)) {
                 $length -= 1;
             }
 
             $dash_str .= str_repeat('-', $length) . '|';
 
             // if last row by key
-            if($k === array_key_last($widths)) {
+            if ($k === array_key_last($widths)) {
                 $dash_str = rtrim($dash_str, '|');
             }
         }
@@ -410,6 +446,34 @@ class Cli
         $this->output->out(lang($question) . ' ' . $defaultChoice);
 
         $result = (string) $this->input->in();
+
+        return $result ? addslashes($result) : $default;
+    }
+
+    public function askFromList($question, $options, $default = '')
+    {
+        $this->output->outln(lang($question));
+
+        $optionNumber = 1;
+        // numbered list of options
+        foreach ($options as $key => $option) {
+            $this->output->outln(" {$optionNumber}. {$key} : {$option}");
+            $optionNumber++;
+        }
+
+        $this->output->outln('');
+        $this->output->out('Selection: ');
+
+        $result = (string) $this->input->in();
+
+        // If the result is a number, we can use it to get the key
+        if (is_numeric($result)) {
+            $keys = array_keys($options);
+            // if the result is one of the keys, return the key
+            if (isset($keys[$result - 1])) {
+                $result = $keys[$result - 1];
+            }
+        }
 
         return $result ? addslashes($result) : $default;
     }
@@ -481,7 +545,7 @@ class Cli
         }
 
         // If not bool, lets convert string to bool
-        if (! is_bool($answer)) {
+        if (!is_bool($answer)) {
             $answer = get_bool_from_string($answer);
         }
 
@@ -592,12 +656,18 @@ class Cli
         if ($this->options->hasErrors()) {
             $errors = $this->options->getErrors();
 
-            foreach ($errors as $error) {
+            foreach ($errors as $i => $error) {
+                if ($this->signature == 'generate:templates' && $error instanceof Exception\OptionNotDefined) {
+                    // a very specific exception that we make for command that's dynamically loading options
+                    unset($errors[$i]);
+                    continue;
+                }
                 // print error messages to stderr using a Stdio object
                 $this->error($error->getMessage());
             }
-
-            $this->fail();
+            if (count($errors) > 0) {
+                $this->fail();
+            }
         };
     }
 
@@ -677,7 +747,7 @@ class Cli
         $askText = $askText . " \n - " . implode("\n - ", $addonList) . "\n: ";
 
         // If the default is "first", then return the first element in the array
-        if ($default === 'first' && ! empty($addonList)) {
+        if ($default === 'first' && !empty($addonList)) {
             // Get the first array element
             $default = reset($addonList);
         }
@@ -725,7 +795,7 @@ class Cli
 
                     break;
                 case 'uninstalled':
-                    if (! $info->isInstalled()) {
+                    if (!$info->isInstalled()) {
                         $list[$name] = $addon;
                     }
 

@@ -6,25 +6,25 @@
     <!-- Change number of blurb columns via inline grid style below IF less than 3 blurbs: -->
     <div class="upgrade-success-banner__blurb-wrapper" style="grid-template-columns: repeat(4, 1fr);">
 
-        <a href="https://expressionengine.com/blog/expressionengine-7.3" class="upgrade-success-banner__blurb" target="_blank">
+        <a href="https://expressionengine.com/blog/expressionengine-7.5" class="upgrade-success-banner__blurb" target="_blank">
             <i class="fal fa-newspaper fa-fw"></i>
-            <h6>ExpressionEngine 7.3.0</h6>
-            <p>Packed with features targeted to speed up and improve your content management process. <span class="upgrade-success-banner__blurb-learn">Read the blog post&hellip;</span></p>
+            <h6>ExpressionEngine 7.5.0</h6>
+            <p>7.5 is a major step forward in helping developers be successful faster. Removing the guess work, simplifying template code, and much more! <span class="upgrade-success-banner__blurb-learn">Read the blog post&hellip;</span></p>
         </a>
-        <a href="https://docs.expressionengine.com/latest/fieldtypes/fluid.html" class="upgrade-success-banner__blurb" target="_blank">
-            <i class="fal fa-rectangles-mixed fa-fw"></i>
-            <h6>Field Groups in Fluid</h6>
-            <p>Assign field groups to a fluid field, to easily tie the content admin experience to components in your templates and on your site!</p>
+        <a href="https://expressionengine.com/blog/7.5-code-generators" class="upgrade-success-banner__blurb" target="_blank">
+            <i class="fal fa-wand-magic-sparkles fa-fw"></i>
+            <h6>Code Generators</h6>
+            <p>Making development easier and more fun.  Build your dreams in ExpressionEngine <span class="upgrade-success-banner__blurb-learn">faster than ever before&hellip;</span></p>
         </a>
-        <a href="https://docs.expressionengine.com/latest/templates/variable-modifiers.html" class="upgrade-success-banner__blurb" target="_blank">
-            <i class="fal fa-key-skeleton-left-right fa-fw"></i>
-            <h6>Chained Variable Modifiers</h6>
-            <p><code>{image:resize:rotate:webp}</code> is that simple, and right in your template! Apply multiple modifiers to fields, variables, and content with a single template tag.</p>
+        <a href="https://expressionengine.com/blog/ee75-inline-form-validation-errors-everywhere" class="upgrade-success-banner__blurb" target="_blank">
+            <i class="fal fa-check-double fa-fw"></i>
+            <h6>Form Validation</h6>
+            <p>In 7.5 form validation has been standardized and expanded across even more tags.  You also have more flexibility to handle errors inline with your forms!</p>
         </a>
-        <a href="https://docs.expressionengine.com/latest/cli/intro.html" class="upgrade-success-banner__blurb" target="_blank">
-            <i class="fal fa-rectangle-terminal fa-fw"></i>
-            <h6>New CLI commands</h6>
-            <p>Manage add-ons, back up the database, change settings, and streamline deployments through the improved Command Line Interface.</p>
+        <a href="https://expressionengine.com/blog/expressionengine-7.5-all-the-cool-little-additions" class="upgrade-success-banner__blurb" target="_blank">
+            <i class="fal fa-sunglasses fa-fw"></i>
+            <h6>Cool Little Additions</h6>
+            <p>Dramatically simplified templates for field groups in Fluid, new channel:fields tags <span class="upgrade-success-banner__blurb-learn">and a bunch more!</span></p>
         </a>
     </div>
     <a href="<?=ee('CP/URL')->make('homepage/dismiss-banner')->compile();?>" class="banner-dismiss"><span class="sr-only"><?=lang('close_banner')?></span></a>

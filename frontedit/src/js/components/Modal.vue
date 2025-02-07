@@ -239,8 +239,7 @@
 				// Set listener for dirty modals
 				window.addEventListener('message', function(callbackevent) {
 					if(callbackevent.data && callbackevent.data.type) {
-
-						if(callbackevent.data.type == 'ee-pro-iframe-init') {
+						if(callbackevent.data.type == 'ee-pro-iframe-init' && self.$refs[iFrameId] != null) {
 							self.$refs[iFrameId].contentWindow.postMessage({type: 'ee-pro-set-iframe-id', id: self.modal.id})
 						}
 

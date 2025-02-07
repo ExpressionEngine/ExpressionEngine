@@ -128,7 +128,7 @@ abstract class AbstractPublish extends CP_Controller
             'fileManager.fileDirectory.createUrl' => ee('CP/URL')->make('files/uploads/create')->compile(),
         ));
 
-        ee('Category')->addCategoryJS();
+        ee('Category')->addCategoryJS($channel_id);
 
         // -------------------------------------------
         //  Publish Page Title Focus - makes the title field gain focus when the page is loaded
@@ -397,8 +397,12 @@ abstract class AbstractPublish extends CP_Controller
             $entry->markAsDirty();
         } else {
             if ($entry->isNew() && $entry->Channel->enforce_auto_url_title) {
-                $_POST['url_title'] = ee('Format')->make('Text',  $entry->Channel->url_title_prefix . ee()->input->post('title', true))->urlSlug()->compile();
+                $_POST['url_title'] = ee('Format')->make('Text', $entry->Channel->url_title_prefix . ee()->input->post('title', true))->urlSlug()->compile();
                 $word_separator = ee()->config->item('word_separator') != "dash" ? '_' : '-';
+                // when title contains no ascii characters, url_title might get empty, so we'll need a workaround
+                if (empty($_POST['url_title'])) {
+                    $_POST['url_title'] = $entry->Channel->url_title_prefix . $entry->Channel->channel_name . $word_separator . uniqid();
+                }
                 while (true !== $entry->validateUniqueUrlTitle('url_title', $_POST['url_title'], ['channel_id'], null)) {
                     $_POST['url_title'] = $_POST['url_title'] . $word_separator . uniqid();
                 }
@@ -427,6 +431,13 @@ abstract class AbstractPublish extends CP_Controller
                 ->withTitle(lang($action . '_entry_error'))
                 ->addToBody(lang($action . '_entry_error_desc'))
                 ->now();
+            // IP Address is not a field, but we need to display the error if it fails
+            if ($result->hasErrors('ip_address')) {
+                ee('CP/Alert')->makeInline('ip_address-error')
+                    ->asIssue()
+                    ->addToBody('ip_address: ' . implode(BR, $result->getErrors('ip_address')))
+                    ->now();
+            }
         }
 
         return $result;
@@ -450,6 +461,8 @@ abstract class AbstractPublish extends CP_Controller
                 'view_count_four' => 0,
                 'entry_date' => ee()->localize->now,
             ]);
+            // Unset versions relationship so that entry revisions are not moved to the cloned entry
+            $entry->Versions = null;
         }
         $entry->save();
 

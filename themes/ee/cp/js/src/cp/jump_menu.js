@@ -72,11 +72,12 @@ EE.cp.JumpMenu = {
 
 		// jumpContainer.document.querySelector('#jumpEntry1').addEventListener("focus", function() { EE.cp.JumpMenu._showResults(1); });
 		jumpContainer.document.querySelector('#jumpEntry1').addEventListener("focus", function() {
+			var top = jQuery(this).offset().top + jQuery(this).outerHeight() + 5;
 			EE.cp.JumpMenu.currentFocus = 1;
 			jumpContainer.document.querySelector('#jumpMenu2').style.display = 'none';
 			jumpContainer.document.querySelector('#jumpEntry2').value = '';
 			jumpContainer.document.querySelector('#jumpMenuResults2').style.display = 'none';
-			EE.cp.JumpMenu._showJumpMenu(1);
+			EE.cp.JumpMenu._showJumpMenu(1, top);
 		});
 
 		jumpContainer.document.querySelector('#jumpEntry2').addEventListener("focus", function() {
@@ -113,8 +114,8 @@ EE.cp.JumpMenu = {
 		});
 	},
 
-	_showJumpMenu: function(loadResults = '') {
-		jumpContainer.$('#jump-menu').css({ position:'absolute', 'z-index':150, top:'59px', right:'82px' }).show();
+	_showJumpMenu: function(loadResults = '', top = 59) {
+		jumpContainer.$('#jump-menu').css({ position:'absolute', 'z-index':150, top: top+'px', right:'82px' }).show();
 		jumpContainer.document.querySelector('.input--jump').focus();
 
 		if ($('#jump-menu').hasClass('on-welcome')) {

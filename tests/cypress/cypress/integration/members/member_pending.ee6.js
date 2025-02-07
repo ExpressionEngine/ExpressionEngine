@@ -45,7 +45,7 @@ context('Pending Member List', () => {
   })
 
    it('displays an itemzied modal when attempting to decline 1 member', () => {
-    page.get('usernames').first().invoke('text').then((member_name) => {
+    cy.get('.ee-main__content form .table-responsive table tr td:nth-child(2) div > div > span').first().invoke('text').then((member_name) => {
 
       page.get('members').first().find('input[type="checkbox"]').check()
       page.get('bulk_action').should('be.visible')

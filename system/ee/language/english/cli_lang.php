@@ -423,6 +423,20 @@ $lang = array(
     'command_sync_file_usage'                 => 'Updating file usage.',
     'command_sync_file_usage_done'            => 'File usage updated successfully.',
 
+    // Lang entries for command sync:reindex
+    'command_reindex_description'                               => 'Content Reindex',
+    'command_reindex_summary'                                   => 'The searchable content might become stale if you have recently changed properties of some fields. Reindexing will re-populate the data used by complex fields in search and Entry Manager.',
+    'command_reindex_option_site_id'                            => 'Site ID. Skip this parameter to reindex content on all sites',
+    // Lang entries for command sync:upload-directory
+    'command_sync_upload_directory_description'     => 'Synchronize upload directory',
+    'command_sync_upload_directory_summary'         => '',
+    'command_sync_upload_directory_started'         => 'Synchronizing',
+    'command_sync_upload_directory_option_id'       => 'Upload Directory ID',
+    'command_sync_upload_directory_ask_id'          => 'Enter Upload Directory ID',
+    'command_sync_upload_directory_option_regenerate_manipulations' => 'Image manipulations to regenerate. Comma separated list of manipulation IDs. \'all\' to regenerate all manipulations, empty value to skip.',
+    'command_sync_upload_directory_ask_regenerate_manipulations' => 'Enter comma-separated IDs of manipulations to regenerate. Enter \'all\' to regenerate all manipulations, empty to skip.',
+    'cli_error_sync_upload_directory_base_path_is_empty' => '{base_path} is being used in Upload Directory path, but it is empty.',
+
     // Lang entries for command update:prepare
     'command_update_prepare_description'                        => 'Prepare a site to be upgraded using these files',
     'command_update_prepare_summary'                            => 'This command copies all files necessary for upgrading into a different ExpressionEngine site and restructures it',
@@ -489,6 +503,21 @@ $lang = array(
     'command_sync_conditional_fields_sync_complete'     => "Sync complete: %d entries\t%s\t%s",
     'command_sync_conditional_fields_cleared_all_hidden_fields' => "Cleared all hidden fields",
     'command_sync_conditional_fields_database_info'             => "Database: %d queries in %f seconds",
+
+    // generate:templates
+    'command_generate_templates_summary' => 'Creates templates based on the existing data structure',
+    'command_generate_templates_description' => 'Using pre-defined stubs provided by ExpressionEngine or the add-ons, the template generator will generate ready-to-use templates for your site.',
+    'command_generate_templates_list_generators' => 'List available template generators',
+    'command_generate_templates_list_themes' => 'List available themes',
+    'command_generate_templates_show_template_content' => 'Show template content without saving',
+    'command_generate_templates_listing_generators' => 'Available template generators:',
+    'command_generate_templates_listing_themes' => 'Available themes:',
+    'command_generate_templates_ask_generator' => 'What is the generator that you want to use?',
+    'command_generate_templates_invalid_generator' => 'An invalid generator was supplied.',
+    'separate_choices_commas' => 'Separate multiple options with commas',
+    'command_generate_templates_building_templates' => 'Building templates...',
+
+
 );
 
 // EOF

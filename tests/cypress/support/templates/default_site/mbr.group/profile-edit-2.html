@@ -1,0 +1,52 @@
+{layout="cypress/layout"}
+{exp:member:edit_profile include_assets="yes" datepicker="yes"}
+
+        <p>* Required fields</p>
+
+        <h4>Profile</h4>
+
+        <p>
+            <label for="username">Username*:</label><br />
+            <input type="text" name="username" id="username" value="{username}"/><br />
+        </p>
+
+        <p>
+            <label for="email">Email:</label><br />
+            <input type="text" name="email" id="email" value="{email}"/><br />
+        </p>
+
+        <p>
+            <label for="password">Password:</label><br />
+            <input type="password" name="password" id="password" value=""/>
+        </p>
+
+        <p>
+            <label for="password_confirm">Confirm password*:</label><br />
+            <input type="password" name="password_confirm" id="password_confirm" value=""/>
+        </p>
+
+        <p>
+            <label for="current_password">Current password*:</label><br />
+                <em>You <b>must</b> enter your current password to change your password, username or email.</em>
+             <input type="password" name="current_password" id="current_password" value=""/>
+        </p>
+
+
+        <fieldset>
+            <label>My Date</label><br>
+
+            {field:my_date}
+
+        </fieldset>
+
+        <fieldset>
+            <label>My RTE</label><br>
+
+            {field:my_rte}
+
+        </fieldset>
+
+
+
+    <input type="submit" value="Save profile" id="submit" class="btn btn-primary" />
+{/exp:member:edit_profile}
