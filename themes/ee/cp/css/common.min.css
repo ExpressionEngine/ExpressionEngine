@@ -52495,14 +52495,13 @@ ul.field-reorder-drop,
   height: 0;
 }
 
-body[data-theme=slate] .ee-sidebar__items .ee-sidebar__version.ee-sidebar__version--update-vital, body[data-theme=slate] .ee-sidebar__items .ee-sidebar__version.ee-sidebar__version--update-vital i {
+body[data-theme=slate] .ee-sidebar__items .ee-sidebar__version.ee-sidebar__version--update-vital, body[data-theme=slate] .ee-sidebar__items .ee-sidebar__version.ee-sidebar__version--update-vital i,
+body[data-theme=light] .ee-sidebar__items .ee-sidebar__version.ee-sidebar__version--update-vital,
+body[data-theme=light] .ee-sidebar__items .ee-sidebar__version.ee-sidebar__version--update-vital i {
   color: var(--ee-bg-blank) !important;
   background: var(--ee-ee-update-vital);
   border-radius: 0;
   margin: 0;
-}
-body[data-theme=slate] .ee-sidebar__items .ee-sidebar__version.ee-sidebar__version--update-vital .ee-logomark {
-  fill: var(--ee-ee-update-vital) !important;
 }
 
 .four-o-four {

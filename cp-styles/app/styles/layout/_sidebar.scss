@@ -612,7 +612,8 @@
 }
 
 
-body[data-theme="slate"] {
+body[data-theme="slate"], 
+body[data-theme="light"] {
   .ee-sidebar__items {
     .ee-sidebar__version {
       &.ee-sidebar__version--update-vital,
@@ -621,10 +622,6 @@ body[data-theme="slate"] {
         background: color(ee-update-vital);
         border-radius: 0;
         margin: 0;
-      }
-
-      &.ee-sidebar__version--update-vital .ee-logomark {
-        fill: color(ee-bg-blank) !important;
       }
     }
   }
