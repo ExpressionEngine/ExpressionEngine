@@ -131,16 +131,23 @@ class Fluid_field_ft extends EE_Fieldtype
                     $f->setName($field_name);
                     $f = $this->setupFieldInstance($f, $datum, !is_null($fluid_field_data_id) ? $fluid_field_data_id : $key);
 
+                    // Is Field Required And Empty?
+                    if ($f->isRequired() && empty($f->getData())) {
+                        $this->errors->addFailed('field_id_'. $field_id, ' This field is required');
+                    }
+
                     $validator = ee('Validation')->make();
                     $validator->defineRule('validateField', function ($key, $value, $parameters, $rule) use ($f) {
                         return $f->validate($value);
                     });
 
-                    $validator->setRules(array(
+                    $validator->setRules([
                         $f->getName() => 'validateField'
-                    ));
+                    ]);
 
-                    $result = $validator->validate(array($f->getName() => $f->getData()));
+                    $result = $validator->validate([
+                        $f->getName() => $f->getData(),
+                    ]);
 
                     if ($result->isNotValid()) {
                         foreach ($result->getFailed() as $field_name => $rules) {
@@ -182,8 +189,8 @@ class Fluid_field_ft extends EE_Fieldtype
         }
 
         $compiled_data_for_search = [];
-
         $total_fields = count($data['fields']);
+
         foreach ($data['fields'] as $key => $value) {
             if ($key == 'new_field_0') {
                 continue;
