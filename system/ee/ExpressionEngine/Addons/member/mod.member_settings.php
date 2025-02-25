@@ -781,11 +781,9 @@ class Member_settings extends Member
         ee()->api_channel_fields->custom_fields = array();
 
         $hasFileField = false;
-
+        $fields = [];
         if (strpos($template, '{/custom_profile_fields}') !== false || !is_null(ee()->TMPL->template_engine)) {
             if ($query->num_rows() > 0) {
-                $fields = [];
-
                 foreach ($member->getDisplay()->getFields() as $field) {
                     if (! ee('Permission')->isSuperAdmin() && $field->get('field_public') != 'y') {
                         continue;
