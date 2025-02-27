@@ -407,6 +407,12 @@ $lang = array(
     'command_update_error_updater_failed_missing_version'       => 'Updater failed because of missing version. Please update the UpgradeMap. Version: ',
     'command_update_missing_avatar_path_message'                => 'Your update process will fail without a set avatar path.',
     'command_update_enter_full_avatar_path'                     => 'Enter full avatar path',
+    'command_update_database_versions'                          => 'Your database version will be updated from %s to %s.',
+    'command_update_database_version_exceeds_app_version'       => 'Cannot upgrade database to version %s past installed version %s.',
+    'command_update_database_version_mismatch_warning'          => "The version you are choosing to upgrade from [%s] does not match your database version [%s].\nThis may cause problems with your installation.",
+    'command_update_database_up_to_date'                        => 'Your database is up to date with your install.',
+    'command_update_invalid_version_number'                     => 'is not a valid version number',
+
     // update options
     'command_update_option_rollback'                            => 'Rollback last update',
     'command_update_option_verbose'                             => 'Verbose output',
@@ -416,6 +422,8 @@ $lang = array(
     'command_update_option_force_addon_upgrades'                => 'Automatically runs all add-on updaters at end of update (advanced)',
     'command_update_option_y'                                   => 'Skip all confirmations. Don\'t do this.',
     'command_update_option_skip_cleanup'                        => 'Skip cleanup steps after update',
+    'command_update_option_to_version'                          => '',
+    'command_update_option_from_version'                        => '',
 
     // Lang entries for command sync:file-usage
     'command_sync_file_usage_description'     => 'Syncs the file usage for all files',

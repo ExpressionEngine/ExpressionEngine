@@ -26,6 +26,11 @@ class Runner
 
     protected $logger;
 
+    protected $versions = [
+        'to' => null,
+        'from' => null,
+    ];
+
     public function __construct()
     {
         $this->setSteps([
@@ -138,6 +143,13 @@ class Runner
         if ($db_updater->hasUpdatesToRun()) {
             ee()->load->library('smartforge');
 
+            // Setup the app_db_version database config if it doesn't already exist
+            if (empty(ee()->db->where('key', 'app_db_version')->get('config')->num_rows())) {
+                ee()->db->insert('config', ['key' => 'app_db_version', 'value' => $this->versions['from']]);
+            } else {
+                ee()->db->update('config', ['value' => $this->versions['from']], ['key' => 'app_db_version']);
+            }
+
             $step = $step ?: $db_updater->getFirstStep();
 
             $log_message = 'Running database update step: ' . $step;
@@ -162,9 +174,34 @@ class Runner
         // reset the flag for dismissed banner for members
         ee('db')->update('members', ['dismissed_banner' => 'n']);
 
-        ee('Filesystem')->deleteDir(SYSPATH . 'ee/installer');
-
         $this->setNextStep('selfDestruct');
+    }
+
+    public function fromVersion($version)
+    {
+        $this->versions['from'] = $version;
+
+        return $this;
+    }
+
+    public function toVersion($version)
+    {
+        $this->versions['to'] = $version;
+
+        return $this;
+    }
+
+    public function onlyUpdateDatabase()
+    {
+        $this->makeUpdaterService()->setupInstallerFiles();
+
+        $this->setSteps([
+            'checkForDbUpdates',
+            'backupDatabase',
+            'updateDatabase',
+        ]);
+
+        return $this;
     }
 
     /**
@@ -202,6 +239,9 @@ class Runner
 
         ee('Database/Restore')->restoreLineByLine($db_path);
 
+        // Restore config.app_db_version
+        ee()->db->update('config', ['value' => $this->versions['from']], ['key' => 'app_db_version']);
+
         $this->setNextStep('selfDestruct[rollback]');
     }
 
@@ -211,6 +251,8 @@ class Runner
      */
     public function selfDestruct($rollback = null)
     {
+        ee('Filesystem')->deleteDir(SYSPATH . 'ee/installer');
+
         $config = ee('Config')->getFile();
         $prevSystemOnlineStateUnknown = is_null($config->get('is_system_on_before_updater'));
         $removeFromConfig = [];
@@ -364,8 +406,9 @@ class Runner
     protected function makeDatabaseUpdaterService()
     {
         return new Service\Updater\DatabaseUpdater(
-            ee()->config->item('app_version'),
-            new Filesystem()
+            $this->versions['from'] ?: ee()->config->item('app_version'),
+            new Filesystem(),
+            $this->versions['to']
         );
     }
 
