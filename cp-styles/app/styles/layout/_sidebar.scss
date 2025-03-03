@@ -338,6 +338,8 @@
   -webkit-transition: color 0.15s ease-in-out;
   -moz-transition: color 0.15s ease-in-out;
   -o-transition: color 0.15s ease-in-out;
+  border-radius: 0;
+  margin-bottom: 0;
 
   &:hover {
     background-color: color(sidebar-version-bg-hover);

@@ -52230,6 +52230,8 @@ ul.field-reorder-drop,
   -webkit-transition: color 0.15s ease-in-out;
   -moz-transition: color 0.15s ease-in-out;
   -o-transition: color 0.15s ease-in-out;
+  border-radius: 0;
+  margin-bottom: 0;
 }
 .ee-sidebar__items .ee-sidebar__version:hover {
   background-color: var(--ee-sidebar-version-bg-hover);
