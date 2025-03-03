@@ -56,7 +56,7 @@ context('Member Roles / Utilities Permissions', () => {
        cy.get('.box').contains('File Converter')
        cy.get('.box').contains('Member Import')
 
-       cy.get('.box').contains('Back Up Database')
+       cy.get('.box').contains('Backups')
        cy.get('.box').contains('SQL Manager')
        cy.get('.box').contains('Query Form')
 
@@ -99,7 +99,7 @@ context('Member Roles / Utilities Permissions', () => {
         cy.get('.box').contains('File Converter')
         cy.get('.box').contains('Member Import')
 
-        cy.get('.box').contains('Back Up Database')
+        cy.get('.box').contains('Backups')
         cy.get('.box').contains('SQL Manager')
         cy.get('.box').contains('Query Form')
 
@@ -142,7 +142,7 @@ context('Member Roles / Utilities Permissions', () => {
         cy.get('.box').contains('File Converter')
         cy.get('.box').contains('Member Import')
 
-        cy.get('.box').contains('Back Up Database')
+        cy.get('.box').contains('Backups')
         cy.get('.box').contains('SQL Manager')
         cy.get('.box').contains('Query Form')
 
@@ -186,7 +186,7 @@ context('Member Roles / Utilities Permissions', () => {
 
         cy.get('.box').contains('PHP Info')
 
-        cy.get('.box').contains('Back Up Database')
+        cy.get('.box').contains('Backups')
         cy.get('.box').contains('SQL Manager')
         cy.get('.box').contains('Query Form')
 
@@ -243,7 +243,7 @@ context('Member Roles / Utilities Permissions', () => {
         cy.get('.box').should('not.contain','CP Translations')
         cy.get('.box').should('not.contain','File Converter')
         cy.get('.box').should('not.contain','Member Import')
-        cy.get('.box').should('not.contain','Back Up Database')
+        cy.get('.box').should('not.contain','Backups')
         cy.get('.box').should('not.contain','SQL Manager')
         cy.get('.box').should('not.contain','Query Form')
 
