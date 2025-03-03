@@ -610,3 +610,19 @@
   width: 0;
   height: 0;
 }
+
+
+body[data-theme="slate"], 
+body[data-theme="light"] {
+  .ee-sidebar__items {
+    .ee-sidebar__version {
+      &.ee-sidebar__version--update-vital,
+      &.ee-sidebar__version--update-vital i {
+        color: var(--ee-bg-blank) !important;
+        background: color(ee-update-vital);
+        border-radius: 0;
+        margin: 0;
+      }
+    }
+  }
+}
