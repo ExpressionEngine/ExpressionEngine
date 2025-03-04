@@ -22403,6 +22403,12 @@ span.ico.reorder {
   font-weight: 400;
 }
 
+button.filter-bar__button .faded {
+  overflow: hidden;
+  max-width: 60%;
+  vertical-align: top;
+}
+
 .tbl-wrap,
 .table-responsive {
   display: block;
@@ -28460,7 +28466,6 @@ input[type=button].btn-block {
   width: 100%;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
   position: relative;
 }
 .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item .button.has-sub, .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item .has-sub.pagination__link, .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item .no-results a.has-sub, .no-results .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item a.has-sub,
@@ -28471,9 +28476,14 @@ input[type=button].btn-block {
 .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item .button.has-sub::after, .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item .has-sub.pagination__link::after, .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item .no-results a.has-sub::after, .no-results .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item a.has-sub::after,
 .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item .field-no-results a.has-sub::after,
 .field-no-results .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item a.has-sub::after, .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item .has-sub.select-popup::after, .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item select.has-sub::after, .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item .has-sub.select__button::after, .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item .has-sub.license-status-badge::after, .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item .markItUpHeader ul a.has-sub::after, .markItUpHeader ul .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item a.has-sub::after, .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item .has-sub.filter-bar__button::after {
-  right: 15px;
-  top: 14px;
+  right: 0;
+  top: 0;
   position: absolute;
+  width: 30px;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item .dropdown, .filter-search-bar .filter-search-bar__filter-row .filter-search-bar__item .select__dropdown {
   width: 100%;
@@ -28915,6 +28925,10 @@ input[type=button].btn-block {
 }
 .dropdown__link.with-divider, .with-divider.select__dropdown-item, .with-divider.button__within-dropdown {
   border-top: 1px solid var(--ee-border);
+}
+.dropdown__link.active-link, .active-link.select__dropdown-item, .active-link.button__within-dropdown {
+  background-color: var(--ee-bg-dropdown-hover);
+  color: var(--ee-text-primary);
 }
 .dropdown__link a, .select__dropdown-item a, .button__within-dropdown a {
   color: var(--ee-text-primary);
@@ -52230,6 +52244,8 @@ ul.field-reorder-drop,
   -webkit-transition: color 0.15s ease-in-out;
   -moz-transition: color 0.15s ease-in-out;
   -o-transition: color 0.15s ease-in-out;
+  border-radius: 0;
+  margin-bottom: 0;
 }
 .ee-sidebar__items .ee-sidebar__version:hover {
   background-color: var(--ee-sidebar-version-bg-hover);
@@ -52493,6 +52509,15 @@ ul.field-reorder-drop,
   /* WebKit */
   width: 0;
   height: 0;
+}
+
+body[data-theme=slate] .ee-sidebar__items .ee-sidebar__version.ee-sidebar__version--update-vital, body[data-theme=slate] .ee-sidebar__items .ee-sidebar__version.ee-sidebar__version--update-vital i,
+body[data-theme=light] .ee-sidebar__items .ee-sidebar__version.ee-sidebar__version--update-vital,
+body[data-theme=light] .ee-sidebar__items .ee-sidebar__version.ee-sidebar__version--update-vital i {
+  color: var(--ee-bg-blank) !important;
+  background: var(--ee-ee-update-vital);
+  border-radius: 0;
+  margin: 0;
 }
 
 .four-o-four {

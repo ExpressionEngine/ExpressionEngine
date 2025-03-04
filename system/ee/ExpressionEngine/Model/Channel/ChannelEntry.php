@@ -701,6 +701,10 @@ class ChannelEntry extends ContentModel
             $versions = $this->Versions->sortBy('version_date')->asArray();
             $versions = array_slice($versions, 0, $diff);
 
+            if (ee()->extensions->active_hook('before_channel_entry_version_delete') === true) {
+                $versions = ee()->extensions->call('before_channel_entry_version_delete', $this, $versions);
+            }
+
             foreach ($versions as $version) {
                 $version->delete();
             }
