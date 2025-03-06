@@ -93,8 +93,8 @@ class Channels extends AbstractTemplateGenerator
                     // get the field variables
                     $field = ee('TemplateGenerator')->getFieldVariables($fieldInfo);
 
-                    // if field is null, continue to the next field
-                    if (is_null($field)) {
+                    // if field is empty, continue to the next field
+                    if (empty($field)) {
                         continue;
                     }
 

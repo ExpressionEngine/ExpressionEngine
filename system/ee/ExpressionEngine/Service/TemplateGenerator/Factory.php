@@ -160,7 +160,7 @@ class Factory
 
         // fieldtype is not installed, skip it
         if (!$fieldtypeGenerator) {
-            return null;
+            return [];
         }
 
         // by default, we'll use generic field stub
@@ -202,8 +202,8 @@ class Factory
             // get the field variables
             $field = ee('TemplateGenerator')->getFieldVariables($fieldInfo);
 
-            // if field is null, continue to the next field
-            if (is_null($field)) {
+            // if field is empty, continue to the next field
+            if (empty($field)) {
                 continue;
             }
 

@@ -88,8 +88,8 @@ class Fields extends AbstractTemplateGenerator
             // get the field variables
             $fieldVariables = ee('TemplateGenerator')->getFieldVariables($field);
 
-            // if field is null, continue to the next field
-            if (is_null($fieldVariables)) {
+            // if field is empty, continue to the next field
+            if (empty($fieldVariables)) {
                 continue;
             }
 
