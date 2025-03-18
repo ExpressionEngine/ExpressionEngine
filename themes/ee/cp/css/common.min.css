@@ -32031,6 +32031,21 @@ fieldset .field-control #eye {
 .grid-field__table input[type=email], .grid-field__table input[type=number], .grid-field__table input[type=password], .grid-field__table input[type=text], .grid-field__table input[type=url], .grid-field__table textarea {
   min-width: 150px;
 }
+.grid-field__table .row-counter-column {
+  width: 0.01% !important;
+  padding: 7px !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  font-size: 0.9em;
+  background: var(--ee-bg-0);
+  color: var(--ee-text-secondary);
+  font-weight: 500;
+}
+@media (max-width: 767px) {
+  .grid-field__table .row-counter-column {
+    width: 100% !important;
+  }
+}
 
 .grid-relate .dropdown__link, .grid-relate .select__dropdown-item, .grid-relate .button__within-dropdown, .grid-multi-relate .dropdown__link, .grid-multi-relate .select__dropdown-item, .grid-multi-relate .button__within-dropdown {
   display: block;
@@ -32234,6 +32249,9 @@ fieldset .field-control #eye {
 .grid-field.vertical-layout .grid-field__table > tbody td.required .grid-field__column-label {
   margin-bottom: 15px;
 }
+.grid-field.vertical-layout .grid-field__table .row-counter-column {
+  width: 100% !important;
+}
 .grid-field.vertical-layout .grid-field__item-fieldset {
   padding: 10px 15px 5px 15px;
   border-bottom: 1px solid var(--ee-border) !important;
@@ -32321,6 +32339,9 @@ fieldset .field-control #eye {
   .grid-field:not(.horizontal-layout) .grid-field__table > tbody tr.grid__item--collapsed td.grid-field__item-fieldset .grid-field__item-tool {
     transform: rotate(180deg);
   }
+  .grid-field:not(.horizontal-layout) .grid-field__table .row-counter-column {
+    width: 100% !important;
+  }
 
   .grid-field:not(.horizontal-layout) .grid-field__column--tools {
     text-align: left;
@@ -32354,6 +32375,11 @@ fieldset .field-control #eye {
   }
   .grid-field.horizontal-layout tbody td.grid-field__column--tools {
     min-width: 80px !important;
+  }
+  .grid-field.horizontal-layout .row-counter-column {
+    width: 0.01% !important;
+    max-width: none !important;
+    min-width: 0 !important;
   }
 }
 .live-preview__form-content .grid-field .grid-field__table,
@@ -32495,6 +32521,10 @@ fieldset .field-control #eye {
 .grid-field.overwidth .grid-field__table > tbody td.required .grid-field__column-label {
   margin-bottom: 15px !important;
 }
+.live-preview__form-content .grid-field .grid-field__table .row-counter-column,
+.grid-field.overwidth .grid-field__table .row-counter-column {
+  width: 100% !important;
+}
 
 .grid-field.overwidth {
   padding: 10px;
@@ -32514,6 +32544,9 @@ fieldset .field-control #eye {
 }
 .grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td.grid-field__item-fieldset .grid-field__item-tools {
   width: auto !important;
+}
+.grid-field.overwidth .grid-field__table .row-counter-column {
+  width: 100% !important;
 }
 
 .select {
