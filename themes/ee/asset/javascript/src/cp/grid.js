@@ -201,6 +201,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 				row.removeAttr("style");
 
 				that._fireEvent('afterSort', row);
+				that._updateRowCounter();
 				$(document).trigger('entry:preview');
 			},
 			handle: '.js-grid-reorder-handle',
