@@ -51,13 +51,10 @@ class Manage extends EntryManager\Columns\Column
                 'href' => ee('CP/URL')->make('members/approve/' . $member->getId()),
                 'title' => lang('approve'),
             );
-            if (ee()->config->item('req_mbr_activation') !== 'email' && ee('Permission')->can('edit_members')) {
+            if (ee()->config->item('req_mbr_activation') === 'email' && ee('Permission')->can('edit_members')) {
                 $toolbar['resend'] = array(
-                    'href' => '#',
+                    'href' => ee('CP/URL')->make('members/resend/' . $member->getId()),
                     'title' => lang('resend'),
-                    'rel' => 'modal-confirm-rename-file',
-                    'class' => 'm-link',
-                    'data-file-id' => $member->getId(),
                 );
             }
             if (ee('Permission')->has('can_delete_members')) {

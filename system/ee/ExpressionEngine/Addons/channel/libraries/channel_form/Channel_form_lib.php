@@ -497,9 +497,16 @@ class Channel_form_lib
                         $checkbox_fields[] = $key;
                         $this->parse_variables[$key] = ($this->entry($name) == 'y') ? 'checked="checked"' : '';
                     } elseif (property_exists($this->entry, $name) or $this->entry->hasCustomField($name)) {
-                        $this->parse_variables[$key] = $this->encode_ee_tags(
-                            form_prep($this->entry($name), $name)
-                        );
+                        // override with POST, if there was validation error
+                        if (isset($_POST[$name])) {
+                            $this->parse_variables[$key] = $this->encode_ee_tags(
+                                form_prep(ee()->input->post($name, true), $name)
+                            );
+                        } else {
+                            $this->parse_variables[$key] = $this->encode_ee_tags(
+                                form_prep($this->entry($name), $name)
+                            );
+                        }
                     }
                 }
             }
@@ -752,11 +759,11 @@ class Channel_form_lib
             }
         }
 
-        ee()->TMPL->set_data([
+        ee()->TMPL->set_data(array_merge($this->entry->toArray(), [
             'open' => $return,
             'fields' => $custom_field_variables,
             'errors' => array_merge($this->errors, $this->field_errors),
-        ]);
+        ]));
 
         return $return;
     }

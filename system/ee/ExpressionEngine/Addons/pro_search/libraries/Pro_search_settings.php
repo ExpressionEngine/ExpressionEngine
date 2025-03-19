@@ -107,7 +107,7 @@ class Pro_search_settings
      */
     public function set($settings)
     {
-        $this->_settings = array_merge($this->_default_settings, $settings);
+        $this->_settings = array_merge($this->get(), $settings);
     }
 
     /**

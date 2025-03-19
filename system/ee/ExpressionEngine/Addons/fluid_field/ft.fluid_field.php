@@ -958,6 +958,10 @@ class Fluid_field_ft extends EE_Fieldtype
                 ee('Model')->get('fluid_field:FluidField')
                     ->filter('fluid_field_id', $this->field_id)
                     ->filter('field_id', 'IN', $removed_fields)
+                    ->filterGroup()
+                        ->filter('field_group_id', 0)
+                        ->orFilter('field_group_id', 'IS', NULL)
+                    ->endFilterGroup()
                     ->all()
                     ->delete();
 

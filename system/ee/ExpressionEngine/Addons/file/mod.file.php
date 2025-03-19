@@ -21,6 +21,8 @@ class File
     public $valid_thumbs = array();
     public $query;
     public $return_data = '';
+    public $temp_array = array();
+    public $cat_array= array();	
 
     /**
       * Constructor

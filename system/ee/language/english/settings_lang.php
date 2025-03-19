@@ -762,6 +762,10 @@ $lang = array(
 
     'deny_duplicate_data_desc' => 'When enabled, forms will disregard any submission that is an exact duplicate of existing data.',
 
+    'strip_image_metadata' => 'Strip image metadata?',
+
+    'strip_image_metadata_desc' => 'Note: This setting will remove all metadata from uploaded images, including GPS data. This requires the <a href="%s" rel="external">Imagick PHP extension</a>. Imagick is currently %s.',
+
     'enable_rank_denial' => 'Enable Rank Denial to submitted links?',
 
     'enable_rank_denial_desc' => 'When enabled, all outgoing links are sent to a redirect page. This prevents spammers from <a href="%s" rel="external">gaining page rank</a>.',

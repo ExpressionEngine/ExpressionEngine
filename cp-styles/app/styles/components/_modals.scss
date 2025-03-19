@@ -23,7 +23,6 @@
 	top: 40px;
 	z-index: 101;
 	display: none;
-	// bottom: 40px;
 }
 
 .modal-wrap--small {
@@ -34,14 +33,11 @@
 	background-color: color(bg-0);
 	margin-bottom: 40px;
 	padding: $sq-inset-m;
-	// overflow: hidden;
 	position: relative;
 	border-radius: $border-radius-large;
 	@include shadow-modal;
 
-	.title-bar {
-		// padding-right: 20px;
-	}
+	.title-bar {}
 
   .col { position: relative;}
 }
@@ -181,9 +177,4 @@
 .modal-confirm-move-file,
 .modal-confirm-rename-file {
   position: fixed;
-
-  @include m-custom-down(999px) {
-    width: calc(90% - 200px);
-    transform: translateX(100px);
-  }
 }
