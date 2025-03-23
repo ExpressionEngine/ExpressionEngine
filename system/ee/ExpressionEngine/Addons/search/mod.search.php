@@ -392,7 +392,7 @@ class Search
                                     $channelSearchableFields[$field->getId()] = $field;
                                 }
                             }
-                            $custom_fields = array_merge($custom_fields, $channelSearchableFields);
+                            $custom_fields = array_replace($custom_fields, $channelSearchableFields);
                         }
                     }
                     if (count($custom_fields) > 50) {
