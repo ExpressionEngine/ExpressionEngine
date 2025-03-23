@@ -254,7 +254,7 @@ class Search
             'keywords' => ($original_keywords != '') ? $original_keywords : $mbr,
             'ip_address' => ee()->input->ip_address(),
             'total_results' => $this->num_rows,
-            'per_page' => (isset($_POST['RES']) and is_numeric($_POST['RES']) and $_POST['RES'] < 999) ? $_POST['RES'] : 50,
+            'per_page' => (isset($_POST['RES']) and is_numeric($_POST['RES']) and $_POST['RES'] < 255) ? $_POST['RES'] : 50,
             'query' => serialize($query_parts),
             'custom_fields' => addslashes(serialize($this->fields)),
             'result_page' => $this->_meta['result_page'],
