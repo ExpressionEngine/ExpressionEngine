@@ -322,6 +322,9 @@ class EE_Template
             return;
         }
 
+        // Replace {include} tags with the template content before any parsing
+        $str = $this->process_included_templates($str);
+
         // Parse 'Site' variables
         $this->log_item("Parsing Site Variables");
 
@@ -1058,6 +1061,55 @@ class EE_Template
         $template = $this->process_sub_templates($template);
 
         return $template;
+    }
+
+    /**
+     * Process any templates included with the {include=} tag
+     *
+     * @param string $parent_template
+     * @return string
+     */
+    public function process_included_templates($parent_template)
+    {
+        // Match all {include=group/template} tags
+        $matches = array();
+
+        if (strpos($parent_template, LD . 'include') === false || !preg_match_all("/(" . LD . "include\s*=)(.*?)" . RD . "/s", $parent_template, $matches)) {
+            return $parent_template;
+        }
+
+        $this->log_item(" - Processing Included Templates - ");
+
+        foreach($matches[2] as $index => $path) {
+            $fetch_data = $this->_get_fetch_data($path);
+
+            if (!isset($fetch_data)) {
+                continue;
+            }
+
+            list($template_group, $template_name, $site_id) = $fetch_data;
+
+            // We can't just use $this->fetch_template() because it sets instance
+            // variables instead of returning the template, could be refactored
+            $include = ee('Model')->get('Template')
+                ->filter('template_name', $template_name)
+                ->filter('site_id', $site_id)
+                ->with('TemplateGroup')->filter('TemplateGroup.group_name', $template_group)
+                ->first(true); // Retrieve a cached copy if possible
+
+            if (empty($include)) {
+                // Maybe the template hasn't been loaded into the database yet
+                $templateId = $this->_create_from_file($template_group, $template_name, true);
+                if(empty($templateId)) {
+                    continue;
+                }
+                $include = ee('Model')->get('Template', $templateId)->first();
+            }
+
+            $parent_template = str_replace($matches[0][$index], $include->template_data, $parent_template);
+        }
+
+        return $parent_template;
     }
 
     /**
