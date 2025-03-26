@@ -775,12 +775,13 @@ class ChannelEntry extends ContentModel
                 return;
             }
             //if the file data is in new format, add the counter immediately
-            if (strpos($item, '{file:') !== false && preg_match('/{file\:(\d+)\:url}/', $item, $matches)) {
-                $file_id = $matches[1];
-                if (! isset($usage[$file_id])) {
-                    $usage[$file_id] = 1;
-                } else {
-                    $usage[$file_id]++;
+            if (strpos($item, '{file:') !== false && preg_match_all('/{file\:(\d+)\:url}/', $item, $matches)) {
+                foreach ($matches[1] as $file_id) {
+                    if (! isset($usage[$file_id])) {
+                        $usage[$file_id] = 1;
+                    } else {
+                        $usage[$file_id]++;
+                    }
                 }
             }
             $dirUrlsMatches = [];
