@@ -11,6 +11,6 @@
 /**
  * Fake the schema class
  */
-require_once(SYSPATH . 'schema/mysql_schema.php');
+require_once(SYSPATH . 'ee/installer/schema/mysql_schema.php');
 
 // EOF
