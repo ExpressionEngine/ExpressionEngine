@@ -54,6 +54,21 @@ $(document).ready(function () {
 		});
 	}
 
+	if (EE.publish.which == 'edit') {
+		publishForm.find("input[name=url_title]").parent().css('position', 'relative');
+		publishForm.find("input[name=url_title]").after('<i class="fa-light fa-rotate-right js-update-url-title"></i>');
+
+		if (publishForm.find("input[name=structure__uri]").length) {
+			publishForm.find("input[name=structure__uri]").parent().css('position', 'relative');
+			publishForm.find("input[name=structure__uri]").after('<i class="fa-light fa-rotate-right js-update-url-title"></i>');
+		}
+
+		$('body').on('click', '.js-update-url-title', function(){
+			var inputField = $(this).parent().find("input");
+			publishForm.find('input[name=title]').ee_url_title(inputField);
+		});
+	}
+
 	// Emoji
 	if (EE.publish.smileys === true) {
 		$('body').on('click', '.format-options .toolbar .emoji a', function(e) {
