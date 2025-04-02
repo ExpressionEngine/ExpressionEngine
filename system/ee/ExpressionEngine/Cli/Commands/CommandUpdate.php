@@ -375,6 +375,9 @@ class CommandUpdate extends Cli
         $currentVersionKey = array_search($next_version, $upgradeMap);
         $end_version = $this->updateVersion;
 
+        // Allow this command to write to the config file
+        ee()->cache->save('cli/update-config-settings', true);
+
         // This will loop through all versions of EE
         do {
             $currentVersionKey--;
@@ -410,11 +413,10 @@ class CommandUpdate extends Cli
                 $this->fail($errorText);
             }
 
-            ee()->config->set_item('app_version', $upgradeMap[$currentVersionKey]);
-            ee()->config
-                ->_update_config([
-                    'app_version' => $upgradeMap[$currentVersionKey]
-                ]);
+            // Update config using proper EE config API
+            $config = ee('Config')->getFile();
+            $config->set('app_version', $upgradeMap[$currentVersionKey], true);
+
         } while (version_compare($next_version, $end_version, '<'));
 
         if (!$this->option('--skip-cleanup', false)) {
@@ -426,7 +428,15 @@ class CommandUpdate extends Cli
     protected function upgradeFromDownloadedVersion()
     {
         try {
+            // Allow this command to write to the config file
+            ee()->cache->save('cli/update-config-settings', true);
+
             ee('Updater/Runner')->run();
+
+            // Update the config version after successful upgrade using proper EE config API
+            $config = ee('Config')->getFile();
+            $config->set('app_version', $this->updateVersion, true);
+
         } catch (\Exception $e) {
             $this->fail("{$e->getCode()}: {$e->getMessage()}\n\n\n{$e->getTraceAsString()}");
         }
@@ -444,9 +454,12 @@ class CommandUpdate extends Cli
                         ? $guess
                         : $this->ask('command_update_enter_full_avatar_path');
 
-                ee()->config->_update_config([
-                    'avatar_path' => $result,
-                ]);
+                // Allow this command to write to the config file
+                ee()->cache->save('cli/update-config-settings', true);
+
+                // Update config using proper EE config API
+                $config = ee('Config')->getFile();
+                $config->set('avatar_path', $result, true);
             }
         }
     }
@@ -460,10 +473,12 @@ class CommandUpdate extends Cli
         }
 
         if (isset($versionNamingMap[$version])) {
-            ee()->config
-                ->_update_config([
-                    'app_version' => $versionNamingMap[$version]
-                ]);
+            // Allow this command to write to the config file
+            ee()->cache->save('cli/update-config-settings', true);
+
+            // Update config using proper EE config API
+            $config = ee('Config')->getFile();
+            $config->set('app_version', $versionNamingMap[$version], true);
         }
 
         // reset the flag for dismissed banner for members
