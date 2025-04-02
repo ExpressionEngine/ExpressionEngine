@@ -317,7 +317,7 @@ class CommandUpdate extends Cli
         $this->info('command_update_getting_info_from_ee_com');
         ee()->load->library('el_pings');
         $version_file = ee()->el_pings->get_version_info(true);
-        $this->updateType == 'curl';
+        $this->updateType = 'curl';
         $this->updateVersion = $version_file['latest_version'];
     }
 
