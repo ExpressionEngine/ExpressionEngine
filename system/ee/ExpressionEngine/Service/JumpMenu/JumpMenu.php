@@ -85,7 +85,7 @@ class JumpMenu extends AbstractJumpMenu
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'utilities/cache',
-                'permission' => 'can_access_data'
+                'permission' => 'can_clear_cache'
             ),
             //addons
             'viewAddons' => array(
@@ -1909,7 +1909,7 @@ class JumpMenu extends AbstractJumpMenu
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'utilities/reindex',
-                'permission' => 'can_access_data'
+                'permission' => 'can_sync_and_reindex'
             ),
             'systemUtilitiesFileUsage' => array(
                 'icon' => 'fa-hammer',
@@ -1917,7 +1917,7 @@ class JumpMenu extends AbstractJumpMenu
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'utilities/file-usage',
-                'permission' => 'can_access_data'
+                'permission' => 'can_sync_and_reindex'
             ),
             'systemUtilitiesStatistics' => array(
                 'icon' => 'fa-hammer',
@@ -1925,7 +1925,7 @@ class JumpMenu extends AbstractJumpMenu
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'utilities/stats',
-                'permission' => 'can_access_data'
+                'permission' => 'can_sync_and_reindex'
             ),
             'systemUtilitiesSearchAndReplace' => array(
                 'icon' => 'fa-hammer',
@@ -1933,7 +1933,7 @@ class JumpMenu extends AbstractJumpMenu
                 'dynamic' => false,
                 'addon' => false,
                 'target' => 'utilities/sandr',
-                'permission' => 'can_access_data'
+                'permission' => 'can_sandr'
             ),
 
             //misc

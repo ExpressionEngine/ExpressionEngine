@@ -525,6 +525,12 @@ $lang = array(
 
     'can_access_data' => 'Data Operations',
 
+    'can_clear_cache' => 'Clear caches',
+
+    'can_sync_and_reindex' => 'Sync and reindex',
+
+    'can_sandr' => 'Search and replace',
+
     'can_access_design' => 'Access template manager',
 
     'can_access_design_desc' => 'When enabled, users assigned to this group may access the template manager.',
@@ -1295,6 +1301,12 @@ $lang = array(
     'access_overview_can_access_sql_manager' => 'Access SQL management',
 
     'access_overview_can_access_data' => 'Access data operations',
+
+    'access_overview_can_clear_cache' => 'Access Cache Manager',
+
+    'access_overview_can_sync_and_reindex' => 'Access synchronize and reindex utilities',
+
+    'access_overview_can_sandr' => 'Access Data Search and Replace',
 
     'access_overview_can_access_logs' => 'Access system logs',
 

@@ -1851,7 +1851,12 @@ class Roles extends AbstractRolesController
                     ],
                     'can_access_data' => [
                         'label' => lang('can_access_data'),
-                        'instructions' => lang('utility')
+                        'instructions' => lang('utility'),
+                        'children' => [
+                            'can_clear_cache' => lang('can_clear_cache'),
+                            'can_sync_and_reindex' => lang('can_sync_and_reindex'),
+                            'can_sandr' => lang('can_sandr'),
+                        ]
                     ]
                 ],
             ],

@@ -153,7 +153,9 @@ class NavigationSidebar extends AbstractSidebar
                     'can_access_translate' => ee('CP/URL')->make('utilities/translate'),
                     'can_access_import' => ee('CP/URL')->make('utilities/member-import'),
                     'can_access_sql_manager' => ee('CP/URL')->make('utilities/sql'),
-                    'can_access_data' => ee('CP/URL')->make('utilities/cache')
+                    'can_clear_cache' => ee('CP/URL')->make('utilities/cache'),
+                    'can_sync_and_reindex' => ee('CP/URL')->make('utilities/reindex'),
+                    'can_sandr' => ee('CP/URL')->make('utilities/sandr')
                 );
 
                 foreach ($utility_options as $allow => $link) {
