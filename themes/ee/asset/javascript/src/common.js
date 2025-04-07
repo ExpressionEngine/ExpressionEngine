@@ -507,6 +507,10 @@ $(document).ready(function(){
 			switchToTab($(this), 'tb-act', 'act', 'ul a');
 		});
 
+		$('body').on('click', 'label[data-track-hash]', function(){
+			console.log($(this).attr('data-track-hash'));
+		})
+
 		//switch to tab
 		function switchToTab(_this, active_group_class = 'js-active-tab-group', active_class='active', tab_selector = '.js-tab-button') {
 
