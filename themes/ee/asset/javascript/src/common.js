@@ -486,12 +486,30 @@ $(document).ready(function(){
 			if (_tab.length) {
 				switchToTab(_tab.first());
 			}
+
+			if (typeof(hash_params.label)!='undefined') {
+				var _label = $('label[data-track-hash="'+hash_params.label+'"]');
+				if (_label.length) {
+					let currentHash = window.location.hash.replace('#', '');
+					let newHash = currentHash ? currentHash + '&label='+hash_params.label : 'label='+hash_params.label;
+					history.pushState(null, null, window.location.pathname + window.location.search + '#'+newHash);
+					window.scrollTo({top: document.querySelector('label[data-track-hash="'+hash_params.label+'"]').offsetTop, behavior: 'smooth' });
+				}
+			}
 		}
 
 		//scroll to element
 		if (typeof(hash_params.id)!='undefined') {
 			if ($('#'+hash_params.id).length) {
 				window.scrollTo({top: document.getElementById(hash_params.id).offsetTop, behavior: 'smooth' });
+			}
+		}
+		
+		//scroll to label
+		if (typeof(hash_params.label)!='undefined') {
+			var _label = $('label[data-track-hash="'+hash_params.label+'"]');
+			if (_label.length) {
+				window.scrollTo({top: document.querySelector('label[data-track-hash="'+hash_params.label+'"]').offsetTop, behavior: 'smooth' });
 			}
 		}
 
@@ -508,8 +526,15 @@ $(document).ready(function(){
 		});
 
 		$('body').on('click', 'label[data-track-hash]', function(){
-			console.log($(this).attr('data-track-hash'));
-		})
+			var _hash = $(this).attr('data-track-hash');
+			var _label = $(this);
+			let currentHash = window.location.hash.replace('#', '');
+
+			let params = new URLSearchParams(currentHash);
+			console.log('params', params);
+
+			window.location.hash = params.toString();
+		});
 
 		//switch to tab
 		function switchToTab(_this, active_group_class = 'js-active-tab-group', active_class='active', tab_selector = '.js-tab-button') {
@@ -530,6 +555,10 @@ $(document).ready(function(){
 			// Open the new tab
 			_this.addClass(active_class);
 			$('.'+active_group_class+' .tab.'+tabClassIs).addClass('tab-open');
+
+			if(EE.show_anchor == 'y') {
+				history.pushState(null, null, window.location.pathname + window.location.search + '#tab='+tabClassIs);
+			}
 
 			//set the hidden input if needed
 			if (typeof(_this.data('action')) !== 'undefined') {

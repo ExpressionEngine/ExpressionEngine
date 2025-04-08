@@ -192,6 +192,7 @@ class Cp
             'cp.acknowledgeLicenseNoticeURL' => ee('CP/URL', 'homepage/acknowledge-license-notice')->compile(),
             'cp.collapseSecondaryNavURL' => ee('CP/URL', 'homepage/toggle-secondary-sidebar-nav')->compile(),
             'fileManagerCompatibilityMode' => bool_config_item('file_manager_compatibility_mode'),
+            'show_anchor' => ee()->config->item('show_anchor_links'),
         ));
 
         if (ee()->session->flashdata('update:completed')) {
