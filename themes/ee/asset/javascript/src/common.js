@@ -531,7 +531,8 @@ $(document).ready(function(){
 			let currentHash = window.location.hash.replace('#', '');
 
 			let params = new URLSearchParams(currentHash);
-			console.log('params', params);
+
+			params.set('label', _hash);
 
 			window.location.hash = params.toString();
 		});
