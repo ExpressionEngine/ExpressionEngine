@@ -233,6 +233,8 @@ $lang = array(
 
     'taken_channel_name' => 'This channel name is already taken.',
 
+    'collapsed_fields' => 'Collapse Fields by Default.',
+
     /* Channel Settings */
     'allow_all_html' => 'Allow all HTML',
 

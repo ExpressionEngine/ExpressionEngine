@@ -588,7 +588,7 @@ class Fluid_field_ft extends EE_Fieldtype
                         'reorderable' => true,
                         'show_field_type' => false,
                         'field_filters' => $filter_options,
-                        'field_name_prefix' => $field_name_prefix
+                        'field_name_prefix' => $field_name_prefix,
                     ];
 
                     if ($is_group) {
@@ -887,6 +887,17 @@ class Fluid_field_ft extends EE_Fieldtype
             )
         );
 
+        $settings[] = array(
+            'title' => 'collapsed_fields',
+            'desc'  => '',
+            'fields' => array(
+               'fluid_collapsed_fields' => array(
+                    'type' => 'yes_no',
+                    'value' => isset($data['fluid_collapsed_fields']) ? $data['fluid_collapsed_fields'] : 'n'
+                )
+            )
+        );
+
         if (! $this->isNew()) {
             ee()->javascript->set_global(array(
                 'fields.fluid_field.fields' => $data['field_channel_fields'],
@@ -913,6 +924,7 @@ class Fluid_field_ft extends EE_Fieldtype
         $defaults = array(
             'field_channel_fields' => array(),
             'field_channel_field_groups' => array(),
+            'fluid_collapsed_fields' => $data['fluid_collapsed_fields']
         );
 
         $all = array_merge($defaults, $data);
