@@ -1,10 +1,8 @@
-<div class="fluid__item <?php if ($reorderable): ?>fluid__item--reorderable<?php endif ?>" data-field-name="<?=$field_name?>" data-field-type="<?=$field->getType()?>">
+<div class="fluid__item <?php if ($reorderable): ?>fluid__item--reorderable<?php endif ?> <?php if ($collapsed_fields == 'y'): ?>fluid__item--collapsed<?php endif; ?>" data-field-name="<?=$field_name?>" data-field-type="<?=$field->getType()?>">
     <div class="fluid__item-content">
         <div class="fluid__item-fieldset ">
 
-            <?php $this->embed('fluid_field:item-tools');
-            //var_dump($collapsed_fields); how to use the new passed variable
-            ?>
+            <?php $this->embed('fluid_field:item-tools'); ?>
 
             <div class="field-instruct">
                 <label>
