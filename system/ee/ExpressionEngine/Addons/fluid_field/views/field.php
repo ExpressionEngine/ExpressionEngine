@@ -2,7 +2,9 @@
     <div class="fluid__item-content">
         <div class="fluid__item-fieldset ">
 
-            <?php $this->embed('fluid_field:item-tools');?>
+            <?php $this->embed('fluid_field:item-tools');
+            //var_dump($collapsed_fields); how to use the new passed variable
+            ?>
 
             <div class="field-instruct">
                 <label>
@@ -16,6 +18,7 @@
 
         <div class="fluid__item-field no-drag <?=($field->getType() == 'grid' || $field->getType() == 'file_grid') ? 'fieldset-faux' : ''?>">
         <?php
+
             $field_name = $field->getName();
             $form = $field->getForm();
 
