@@ -107,6 +107,22 @@ class Member extends ContentModel
             'model' => 'ChannelEntryVersion',
             'to_key' => 'author_id'
         ),
+        'MemberFiles' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'File',
+            'pivot' => array(
+                'table' => 'file_usage',
+            ),
+            'weak' => true
+        ),
+        'MemberFileFolders' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'Directory',
+            'pivot' => array(
+                'table' => 'file_usage',
+            ),
+            'weak' => true
+        ),
         'EmailConsoleCaches' => array(
             'type' => 'hasMany',
             'model' => 'EmailConsoleCache'
@@ -247,7 +263,11 @@ class Member extends ContentModel
         'beforeInsert',
         'afterInsert',
         'beforeValidate',
-        'afterSave'
+        'beforeSave',
+        'afterSave',
+        'afterAssociationsSave',
+        'beforeAssociationsBulkDelete',
+        'afterAssociationsBulkDelete'
     );
 
     // Properties
@@ -437,10 +457,30 @@ class Member extends ContentModel
         }
     }
 
+    public function onBeforeSave()
+    {
+        $this->updateFilesUsage();
+    }
+
     public function onAfterSave()
     {
         parent::onAfterSave();
         ee()->cache->file->delete('jumpmenu/' . md5($this->member_id));
+    }
+
+    public function onAfterAssociationsSave()
+    {
+        self::updateFilesTotalRecords($this->_filesNeedTotalRecordsRecount);
+    }
+
+    public static function onBeforeAssociationsBulkDelete($entry_ids = [])
+    {
+        self::prepareTotalFilesBeforeDelete($entry_ids);
+    }
+
+    public static function onAfterAssociationsBulkDelete($entry_ids = [])
+    {
+        self::updateTotalFilesAfterDelete($entry_ids);
     }
 
     public function onAfterDelete()

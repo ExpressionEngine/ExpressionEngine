@@ -15,6 +15,7 @@ use ExpressionEngine\Service\Model\VariableColumnModel;
 use ExpressionEngine\Model\Content\Display\DefaultLayout;
 use ExpressionEngine\Model\Content\Display\FieldDisplay;
 use ExpressionEngine\Model\Content\Display\LayoutInterface;
+use ExpressionEngine\Library\CP\FileManager\Traits\FileUsageTrait;
 
 /**
  * create: new ChannelEntry()->getForm();
@@ -24,6 +25,8 @@ use ExpressionEngine\Model\Content\Display\LayoutInterface;
  */
 abstract class ContentModel extends VariableColumnModel
 {
+    use FileUsageTrait;
+
     protected static $_events = array(
         'afterSave',
         'afterInsert',
@@ -34,6 +37,9 @@ abstract class ContentModel extends VariableColumnModel
     protected $_field_facades;
     protected $_field_was_saved = array();
     protected $_custom_fields_loaded = false;
+
+    protected $_filesNeedTotalRecordsRecount = [];
+    protected static $_filesNeedTotalRecordsRecountStatic = [];
 
     /**
      * A link back to the owning Structure object.
@@ -526,6 +532,90 @@ abstract class ContentModel extends VariableColumnModel
         parent::markAsDirty($name);
 
         return $this;
+    }
+
+    protected function updateFilesUsage()
+    {
+        if (bool_config_item('file_manager_compatibility_mode')) {
+            return false;
+        }
+
+        $data = $_POST ?: $this->getValues();
+
+        ee()->load->model('file_upload_preferences_model');
+        $file_dirs = ee()->file_upload_preferences_model->get_paths();
+
+        $usage = [];
+        array_walk_recursive($data, function ($item) use (&$usage, $file_dirs) {
+            if (! is_string($item)) {
+                return;
+            }
+            //if the file data is in new format, add the counter immediately
+            if (strpos($item, '{file:') !== false && preg_match_all('/{file\:(\d+)\:url}/', $item, $matches)) {
+                foreach ($matches[1] as $file_id) {
+                    if (! isset($usage[$file_id])) {
+                        $usage[$file_id] = 1;
+                    } else {
+                        $usage[$file_id]++;
+                    }
+                }
+            }
+            $dirUrlsMatches = [];
+            foreach ($file_dirs as $dir_id => $dir_url) {
+                if (strpos($item, $dir_url) !== false) {
+                    $dirUrlsMatches['{filedir_' . $dir_id . '}'] = $dir_url;
+                }
+            }
+            //things like RTE submit real image path, so we need to get that converted to contain {filedir_} tags
+            if (! empty($dirUrlsMatches)) {
+                $item = str_replace($dirUrlsMatches, array_keys($dirUrlsMatches), $item);
+            }
+
+            $filedirReplacements = static::getFileUsageReplacements($item);
+            if (!empty($filedirReplacements)) {
+                foreach ($filedirReplacements as $file_id => $replacements) {
+                    if (! isset($usage[$file_id])) {
+                        $usage[$file_id] = 1;
+                    } else {
+                        $usage[$file_id]++;
+                    }
+                }
+            }
+        });
+
+        //just before we set relationship, grab existing records to find out what files need recount
+        if (! $this->isNew()) {
+            $existingEntryFiles = ee('db')->select('file_id')->from('file_usage')->where($this->getPrimaryKey(), $this->getId())->get();
+            foreach ($existingEntryFiles->result_array() as $row) {
+                $this->_filesNeedTotalRecordsRecount[] = $row['file_id'];
+            }
+        }
+        $this->_filesNeedTotalRecordsRecount = array_unique(array_merge($this->_filesNeedTotalRecordsRecount, array_keys($usage)));
+
+        $entryFiles = ee('Model')->get('File', array_keys($usage))->all();
+        $associationName = substr(($this->getName() == 'ee:ChannelEntry' ? 'ee:Entry' : $this->getName())  . 'Files', 3); // strip the 'ee:' prefix
+        $this->getAssociation($associationName)->set($entryFiles);
+    }
+
+    protected static function prepareTotalFilesBeforeDelete($entry_ids = [])
+    {
+        if (!empty($entry_ids)) {
+            $existingFilesQuery = ee('db')->select('file_id')->from('file_usage')->where_in(self::getMetaData('primary_key'), $entry_ids)->get();
+            $existingFiles = [];
+            foreach ($existingFilesQuery->result_array() as $row) {
+                $existingFiles[] = $row['file_id'];
+            }
+            self::$_filesNeedTotalRecordsRecountStatic[implode('_', $entry_ids)] = $existingFiles;
+        }
+    }
+
+    protected static function updateTotalFilesAfterDelete($entry_ids = [])
+    {
+        $key = implode('_', $entry_ids);
+        if (!empty(self::$_filesNeedTotalRecordsRecountStatic) && isset(self::$_filesNeedTotalRecordsRecountStatic[$key]) && !empty(self::$_filesNeedTotalRecordsRecountStatic[$key])) {
+            self::updateFilesTotalRecords(self::$_filesNeedTotalRecordsRecountStatic[$key]);
+            unset(self::$_filesNeedTotalRecordsRecountStatic[$key]);
+        }
     }
 
     /**
