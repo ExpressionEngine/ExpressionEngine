@@ -1,4 +1,4 @@
-<div class="fluid__item <?php if ($reorderable): ?>fluid__item--reorderable<?php endif ?> <?php if ($collapsed_fields == 'y'): ?>fluid__item--collapsed<?php endif; ?>" data-field-name="<?=$field_name?>" data-field-type="<?=$field->getType()?>">
+<div class="fluid__item <?php if ($reorderable): ?>fluid__item--reorderable<?php endif ?> <?php if (isset($collapsed_fields) && $collapsed_fields == 'y'): ?>fluid__item--collapsed<?php endif; ?>" data-field-name="<?=$field_name?>" data-field-type="<?=$field->getType()?>">
     <div class="fluid__item-content">
         <div class="fluid__item-fieldset ">
 
