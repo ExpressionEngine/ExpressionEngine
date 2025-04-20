@@ -14,7 +14,7 @@ context('Login Page', () => {
         cy.hasNoErrors();
     })
 
-    
+
     context('show modal when cp session is idle', () => {
         beforeEach(function() {
             // Log in
@@ -33,7 +33,7 @@ context('Login Page', () => {
                 // win.$.get(win.EE.BASE + '&C=login&M=lock_cp');
                 cy.request('GET', '/admin.php?S=0&D=cp&C=login&M=lock_cp').then(() => {
                     cy.get('.modal-timeout').should('be.visible');
-                    
+
                     // Now make sure we can find the modal, but it is visible
                     cy.contains('Log into EE6').should('be.visible');
                 })
@@ -84,13 +84,13 @@ context('Login Page', () => {
             cy.wait(5000);
             // Click the Overview link in the sidebar, which will go to a new page
             cy.get(".ee-sidebar a:contains('Overview')").invoke('attr', 'href').then((href) => {
-                expect(href).to.be.equal('admin.php?/cp/homepage')
+                expect(href.endsWith('admin.php?/cp/homepage')).to.be.true
                 cy.visit(href)
 
                 // Make sure user is still logged in
                 cy.get('h2').contains("Members");
             })
-            
+
         })
     })
 
@@ -187,7 +187,7 @@ context('Login Page', () => {
             cy.get('h2').contains("Members");
 
         })
-        
+
         it('logs in after logout', function() {
             // Log in
             cy.login({ email: 'admin', password: 'password' });

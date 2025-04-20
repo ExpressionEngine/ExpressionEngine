@@ -160,7 +160,7 @@ context('File Manager', () => {
     it('Reverse sort by title/name', () => {
         beforeEach_all_files();
         // beforeEach_perpage_50();
-        
+
         cy.intercept('/admin.php?/cp/files*').as('fileRequest')
         page.get('title_name_header').find('a.column-sort').click()
         cy.wait('@fileRequest')
@@ -176,7 +176,7 @@ context('File Manager', () => {
             cy.wait('@fileRequest')
             cy.hasNoErrors()
             page.get('title_name_header').find('a.column-sort').should('have.class', 'column-sort--desc');
-            
+
             page.get('title_name_header').should('have.class', 'column-sort-header--active')
             page.get('title_names').then(function($td) {
                 let files_reversed = _.map($td, function(el) {
@@ -309,7 +309,7 @@ context('File Manager', () => {
         //page.get('manage_actions').eq(0).find('li.edit a').click()
         cy.get('tr[file_id="1"] .toolbar-wrap .js-dropdown-toggle').click()
         cy.get('a[title="Edit"]').filter(':visible').first().click()
-        
+
         cy.hasNoErrors()
 
 
@@ -406,7 +406,7 @@ context('File Manager', () => {
     it('Add new uplaod directory', () => {
         beforeEach_all_files();
         //page.get('new_directory_button').click()
-        cy.get('a[href="admin.php?/cp/files/uploads/create"]').first().click()
+        cy.get('a[href $= "admin.php?/cp/files/uploads/create"]').first().click()
         cy.hasNoErrors()
 
         cy.url().should('match', /files\/uploads\/create/)
@@ -800,7 +800,7 @@ context('File Manager', () => {
 
     context('Manage files in thumb view', () => {
         before(function() {
-            
+
         })
 
         it('sorting order stays the same', function() {
@@ -874,13 +874,13 @@ context('File Manager', () => {
                             expect(files_by_title_reversed).to.deep.equal(files_by_title.reverse())
                         })
                     })
-                    
+
                 })
             })
 
         })
      })
 
-       
+
 
 })

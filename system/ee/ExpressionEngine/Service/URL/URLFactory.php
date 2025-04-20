@@ -85,7 +85,9 @@ class URLFactory
             $session_id = $this->session_id;
         }
 
-        $cp_url = ($cp_url) ?: $this->default_cp_url;
+        if (empty($cp_url)) {
+            $cp_url = ($this->cp_url) ?: $this->default_cp_url;
+        }
 
         return new URL($path, $session_id, $qs, $cp_url, $this->uri_string, $this->encrypt_delegate);
     }

@@ -87,7 +87,7 @@ context('Entry Manager', () => {
 			cy.visit('admin.php?/cp/members/profile/settings')
 			cy.dismissLicenseAlert()
 			cy.get('.main-nav__account-icon > img').click()
-			cy.get('[href="admin.php?/cp/login/logout"]').click()
+			cy.get('[href $= "admin.php?/cp/login/logout"]').click()
 
 			cy.visit('admin.php?/cp/login');
 			cy.get('#username').type('user2')
