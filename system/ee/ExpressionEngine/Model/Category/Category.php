@@ -111,9 +111,6 @@ class Category extends ContentModel
         'afterAssociationsBulkDelete'
     );
 
-    protected $_filesNeedTotalRecordsRecount = [];
-    protected static $_filesNeedTotalRecordsRecountStatic = [];
-
     // Properties
     protected $cat_id;
     protected $site_id;
@@ -179,60 +176,12 @@ class Category extends ContentModel
 
     public static function onBeforeAssociationsBulkDelete($entry_ids = [])
     {
-        if (!empty($entry_ids)) {
-            $key = implode('_', $entry_ids);
-            $existingCategoryFilesQuery = ee('db')->select('file_id')->from('file_usage')->where_in('cat_id', $entry_ids)->get();
-            $existingCategoryFiles = [];
-            foreach ($existingCategoryFilesQuery->result_array() as $row) {
-                $existingCategoryFiles[] = $row['file_id'];
-            }
-            self::$_filesNeedTotalRecordsRecountStatic = [$key => $existingCategoryFiles];
-        }
+        self::prepareTotalFilesBeforeDelete($entry_ids);
     }
 
     public static function onAfterAssociationsBulkDelete($entry_ids = [])
     {
-        $key = implode('_', $entry_ids);
-        if (!empty(self::$_filesNeedTotalRecordsRecountStatic) && isset(self::$_filesNeedTotalRecordsRecountStatic[$key]) && !empty(self::$_filesNeedTotalRecordsRecountStatic[$key])) {
-            self::updateFilesTotalRecords(self::$_filesNeedTotalRecordsRecountStatic[$key]);
-            unset(self::$_filesNeedTotalRecordsRecountStatic[$key]);
-        }
-    }
-
-    private function updateFilesUsage()
-    {
-        if (bool_config_item('file_manager_compatibility_mode')) {
-            return false;
-        }
-
-        $data = $_POST ?: $this->getValues();
-
-        $usage = [];
-        array_walk_recursive($data, function ($item) use (&$usage) {
-            if (! is_string($item) || strpos($item, '{file:') === false ) {
-                return;
-            }
-            if (preg_match('/{file\:(\d+)\:url}/', $item, $matches)) {
-                $file_id = $matches[1];
-                if (! isset($usage[$file_id])) {
-                    $usage[$file_id] = 1;
-                } else {
-                    $usage[$file_id]++;
-                }
-            }
-        });
-
-        //just before we set relationship, grab existing records to find out what files need recount
-        if (! $this->isNew()) {
-            $existingCategoryFiles = ee('db')->select('file_id')->from('file_usage')->where('cat_id', $this->getId())->get();
-            foreach ($existingCategoryFiles->result_array() as $row) {
-                $this->_filesNeedTotalRecordsRecount[] = $row['file_id'];
-            }
-        }
-        $this->_filesNeedTotalRecordsRecount = array_unique(array_merge($this->_filesNeedTotalRecordsRecount, array_keys($usage)));
-        
-        $entryFiles = ee('Model')->get('File', array_keys($usage))->all();
-        $this->getAssociation('CategoryFiles')->set($entryFiles);
+        self::updateTotalFilesAfterDelete($entry_ids);
     }
 
     /**

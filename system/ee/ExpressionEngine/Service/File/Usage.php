@@ -78,6 +78,12 @@ class Usage
                 $gridFields[] = $field;
             }
         }
+        foreach (ee('Model')->get('MemberField')->all() as $field) {
+            $this->fieldsAndTables[] = [
+                $field->getDataStorageTable() => ['m_field_id_' . $field->getId()]
+            ];
+            //grid is not supported in member fields yet
+        }
         $this->fieldsAndTables[] = [
             'categories' => ['cat_image']
         ];
@@ -131,7 +137,12 @@ class Usage
                 if (empty($table) || empty($fields)) {
                     continue;
                 }
-                $idField = ($table == 'categories') ? 'cat_id' : 'entry_id';
+                $idField = 'entry_id';
+                if ($table == 'categories') {
+                    $idField = 'cat_id';
+                } elseif (strpos($table, 'member_data') === 0) {
+                    $idField = 'member_id';
+                }
                 $fieldsList = $idField . ', ' . implode(', ', $fields);
                 if (strpos($table, 'channel_grid_field') === 0) {
                     $fieldsList .= ', row_id';

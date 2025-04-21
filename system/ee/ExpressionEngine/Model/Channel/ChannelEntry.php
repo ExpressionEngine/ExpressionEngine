@@ -16,7 +16,6 @@ use ExpressionEngine\Model\Content\ContentModel;
 use ExpressionEngine\Model\Content\Display\FieldDisplay;
 use ExpressionEngine\Model\Content\Display\LayoutInterface;
 use ExpressionEngine\Service\Validation\Result as ValidationResult;
-use ExpressionEngine\Library\CP\FileManager\Traits\FileUsageTrait;
 use ExpressionEngine\Service\Validation\Rule;
 
 /**
@@ -31,8 +30,6 @@ use ExpressionEngine\Service\Validation\Rule;
  */
 class ChannelEntry extends ContentModel
 {
-    use FileUsageTrait;
-
     protected static $_primary_key = 'entry_id';
     protected static $_table_name = 'channel_titles';
     protected static $_gateway_names = array('ChannelTitleGateway', 'ChannelDataGateway');
@@ -181,8 +178,6 @@ class ChannelEntry extends ContentModel
     );
 
     protected $_default_fields;
-    protected $_filesNeedTotalRecordsRecount = [];
-    protected static $_filesNeedTotalRecordsRecountStatic = [];
 
     // Properties
     protected $entry_id;
@@ -527,24 +522,12 @@ class ChannelEntry extends ContentModel
 
     public static function onBeforeAssociationsBulkDelete($entry_ids = [])
     {
-        if (!empty($entry_ids)) {
-            $key = implode('_', $entry_ids);
-            $existingEntryFilesQuery = ee('db')->select('file_id')->from('file_usage')->where_in('entry_id', $entry_ids)->get();
-            $existingEntryFiles = [];
-            foreach ($existingEntryFilesQuery->result_array() as $row) {
-                $existingEntryFiles[] = $row['file_id'];
-            }
-            self::$_filesNeedTotalRecordsRecountStatic = [$key => $existingEntryFiles];
-        }
+        self::prepareTotalFilesBeforeDelete($entry_ids);
     }
 
     public static function onAfterAssociationsBulkDelete($entry_ids = [])
     {
-        $key = implode('_', $entry_ids);
-        if (!empty(self::$_filesNeedTotalRecordsRecountStatic) && isset(self::$_filesNeedTotalRecordsRecountStatic[$key]) && !empty(self::$_filesNeedTotalRecordsRecountStatic[$key])) {
-            self::updateFilesTotalRecords(self::$_filesNeedTotalRecordsRecountStatic[$key]);
-            unset(self::$_filesNeedTotalRecordsRecountStatic[$key]);
-        }
+        self::updateTotalFilesAfterDelete($entry_ids);
     }
 
     public function onAfterInsert()
@@ -756,68 +739,6 @@ class ChannelEntry extends ContentModel
         $stats->save();
 
         $this->Channel->updateEntryStats();
-    }
-
-    private function updateFilesUsage()
-    {
-        if (bool_config_item('file_manager_compatibility_mode')) {
-            return false;
-        }
-
-        $data = $_POST ?: $this->getValues();
-
-        ee()->load->model('file_upload_preferences_model');
-        $file_dirs = ee()->file_upload_preferences_model->get_paths();
-
-        $usage = [];
-        array_walk_recursive($data, function ($item) use (&$usage, $file_dirs) {
-            if (! is_string($item)) {
-                return;
-            }
-            //if the file data is in new format, add the counter immediately
-            if (strpos($item, '{file:') !== false && preg_match_all('/{file\:(\d+)\:url}/', $item, $matches)) {
-                foreach ($matches[1] as $file_id) {
-                    if (! isset($usage[$file_id])) {
-                        $usage[$file_id] = 1;
-                    } else {
-                        $usage[$file_id]++;
-                    }
-                }
-            }
-            $dirUrlsMatches = [];
-            foreach ($file_dirs as $dir_id => $dir_url) {
-                if (strpos($item, $dir_url) !== false) {
-                    $dirUrlsMatches['{filedir_' . $dir_id . '}'] = $dir_url;
-                }
-            }
-            //things like RTE submit real image path, so we need to get that converted to contain {filedir_} tags
-            if (! empty($dirUrlsMatches)) {
-                $item = str_replace($dirUrlsMatches, array_keys($dirUrlsMatches), $item);
-            }
-
-            $filedirReplacements = static::getFileUsageReplacements($item);
-            if (!empty($filedirReplacements)) {
-                foreach ($filedirReplacements as $file_id => $replacements) {
-                    if (! isset($usage[$file_id])) {
-                        $usage[$file_id] = 1;
-                    } else {
-                        $usage[$file_id]++;
-                    }
-                }
-            }
-        });
-
-        //just before we set relationship, grab existing records to find out what files need recount
-        if (! $this->isNew()) {
-            $existingEntryFiles = ee('db')->select('file_id')->from('file_usage')->where('entry_id', $this->getId())->get();
-            foreach ($existingEntryFiles->result_array() as $row) {
-                $this->_filesNeedTotalRecordsRecount[] = $row['file_id'];
-            }
-        }
-        $this->_filesNeedTotalRecordsRecount = array_unique(array_merge($this->_filesNeedTotalRecordsRecount, array_keys($usage)));
-
-        $entryFiles = ee('Model')->get('File', array_keys($usage))->all();
-        $this->getAssociation('EntryFiles')->set($entryFiles);
     }
 
     /**

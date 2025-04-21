@@ -1514,10 +1514,12 @@ class EE_Schema
 			`file_id` int(10) unsigned NOT NULL,
 			`entry_id` int(10) unsigned NOT NULL DEFAULT '0',
 			`cat_id` int(10) unsigned NOT NULL DEFAULT '0',
+            `member_id` int(10) unsigned NOT NULL DEFAULT '0',
             PRIMARY KEY (`file_usage_id`),
 			KEY `file_id` (`file_id`),
 			KEY `entry_id` (`entry_id`),
-			KEY `cat_id` (`cat_id`)
+			KEY `cat_id` (`cat_id`),
+            KEY `member_id` (`member_id`)
 		)";
 
         $Q[] = "CREATE TABLE `exp_file_watermarks` (

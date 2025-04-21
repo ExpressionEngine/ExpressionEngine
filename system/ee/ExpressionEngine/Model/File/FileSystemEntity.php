@@ -82,6 +82,13 @@ class FileSystemEntity extends ContentModel
                 'table' => 'file_usage',
             )
         ),
+        'FileMembers' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'Member',
+            'pivot' => array(
+                'table' => 'file_usage',
+            )
+        ),
     );
 
     /*protected static $_field_data = array(
