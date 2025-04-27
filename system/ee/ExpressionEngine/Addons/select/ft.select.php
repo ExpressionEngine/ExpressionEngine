@@ -69,6 +69,10 @@ class Select_ft extends OptionFieldtype
 
     public function display_field($data)
     {
+        if (is_null($this->content_id) && isset($this->settings['field_default_value']) && $this->settings['field_default_value'] != '') {
+            $data = $this->settings['field_default_value'];
+        }
+
         $extra = 'dir="' . $this->get_setting('field_text_direction', 'ltr') . '"';
 
         if ($this->get_setting('field_disabled')) {
@@ -109,6 +113,17 @@ class Select_ft extends OptionFieldtype
             $data,
             'select_options',
             lang('options_field_desc') . lang('select_options_desc')
+        );
+
+        $settings[] = array(
+            'title' => 'default_value',
+            'desc' => 'default_value_desc',
+            'fields' => array(
+                'field_default_value' => array(
+                    'type' => 'text',
+                    'value' => (! isset($data['field_default_value'])) ? '' : (string) $data['field_default_value']
+                )
+            )
         );
 
         return array('field_options_select' => array(

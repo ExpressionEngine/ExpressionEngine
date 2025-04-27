@@ -127,6 +127,10 @@ class Text_ft extends EE_Fieldtype
             $field['placeholder'] = $this->settings['field_placeholder'];
         }
 
+        if (is_null($this->content_id) && isset($this->settings['field_default_value']) && $this->settings['field_default_value'] != '') {
+            $field['value'] = $this->_format_number($this->settings['field_default_value'], $type);
+        }
+
         // maxlength attribute should only appear if its value is > 0
         if ($this->settings['field_maxl']) {
             $field['maxlength'] = $this->settings['field_maxl'];
@@ -287,6 +291,17 @@ class Text_ft extends EE_Fieldtype
             }
         }
 
+        $settings[] = array(
+            'title' => 'default_value',
+            'desc' => 'default_value_desc',
+            'fields' => array(
+                'field_default_value' => array(
+                    'type' => 'text',
+                    'value' => (! isset($data['field_default_value'])) ? '' : (string) $data['field_default_value']
+                )
+            )
+        );
+
         if ($this->content_type() == 'grid') {
             return array('field_options' => $settings);
         }
@@ -324,7 +339,8 @@ class Text_ft extends EE_Fieldtype
             'field_maxl' => 256,
             'field_content_type' => '',
             'field_show_smileys' => 'n',
-            'field_show_file_selector' => 'n'
+            'field_show_file_selector' => 'n',
+            'field_default_value' => ''
         );
 
         $all = array_merge($defaults, $data);

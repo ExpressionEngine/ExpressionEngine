@@ -61,6 +61,10 @@ class Selectable_buttons_ft extends Multi_select_ft
     {
         ee()->load->helper('custom_field');
 
+        if (is_null($this->content_id) && isset($this->settings['field_default_value']) && $this->settings['field_default_value'] != '') {
+            $data = $this->settings['field_default_value'];
+        }
+
         $values = decode_multi_field($data);
 
         ee()->javascript->output("
@@ -136,7 +140,8 @@ class Selectable_buttons_ft extends Multi_select_ft
             'selectable_buttons',
             $data,
             'selectable_buttons_options',
-            lang('options_field_desc') . lang('selectable_buttons_options_desc')
+            lang('options_field_desc') . lang('selectable_buttons_options_desc'),
+            true
         );
 
         array_unshift($settings, array(
@@ -170,7 +175,8 @@ class Selectable_buttons_ft extends Multi_select_ft
             'selectable_buttons',
             $data,
             'selectable_buttons_options',
-            'grid_selectable_buttons_options_desc'
+            'grid_selectable_buttons_options_desc',
+            true
         );
         array_unshift($gridSettingsForm['field_options'], array(
             'title' => 'ft_allow_multi',

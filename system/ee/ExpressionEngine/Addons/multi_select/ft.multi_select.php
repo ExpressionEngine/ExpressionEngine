@@ -76,6 +76,10 @@ class Multi_select_ft extends OptionFieldtype
     {
         ee()->load->helper('custom_field');
 
+        if (is_null($this->content_id) && isset($this->settings['field_default_value']) && $this->settings['field_default_value'] != '') {
+            $data = $this->settings['field_default_value'];
+        }
+
         $values = decode_multi_field($data);
         $field_options = $this->_get_historic_field_options($data);
 
@@ -204,7 +208,8 @@ class Multi_select_ft extends OptionFieldtype
             'multi_select',
             $data,
             'multiselect_options',
-            lang('options_field_desc') . lang('multiselect_options_desc')
+            lang('options_field_desc') . lang('multiselect_options_desc'),
+            true
         );
 
         return array('field_options_multi_select' => array(
@@ -220,7 +225,8 @@ class Multi_select_ft extends OptionFieldtype
             'multi_select',
             $data,
             'multiselect_options',
-            'grid_multiselect_options_desc'
+            'grid_multiselect_options_desc',
+            true
         );
     }
 

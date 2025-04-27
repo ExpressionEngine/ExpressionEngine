@@ -34,7 +34,8 @@ class Radio_ft extends OptionFieldtype
         'field_pre_populate' => 'n',
         'field_list_items' => array(),
         'field_pre_field_id' => '',
-        'field_pre_channel_id' => ''
+        'field_pre_channel_id' => '',
+        'field_default_value' => ''
     );
 
     /**
@@ -97,6 +98,10 @@ class Radio_ft extends OptionFieldtype
      */
     private function _display_field($data, $container = 'fieldset')
     {
+        if (is_null($this->content_id) && isset($this->settings['field_default_value']) && $this->settings['field_default_value'] != '') {
+            $data = $this->settings['field_default_value'];
+        }
+
         $this->settings = array_merge($this->settings_vars, $this->settings);
 
         $text_direction = (isset($this->settings['field_text_direction']))
@@ -171,6 +176,17 @@ class Radio_ft extends OptionFieldtype
             $data,
             'radio_options',
             lang('options_field_desc') . lang('radio_options_desc')
+        );
+
+        $settings[] = array(
+            'title' => 'default_value',
+            'desc' => 'default_value_desc',
+            'fields' => array(
+                'field_default_value' => array(
+                    'type' => 'text',
+                    'value' => (! isset($data['field_default_value'])) ? '' : (string) $data['field_default_value']
+                )
+            )
         );
 
         return array('field_options_radio' => array(

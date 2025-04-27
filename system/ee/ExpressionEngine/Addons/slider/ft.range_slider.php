@@ -58,6 +58,10 @@ class Range_slider_ft extends Slider_ft
             'prefix' => isset($this->settings['field_prefix']) ? $this->settings['field_prefix'] : ''
         );
 
+        if (is_null($this->content_id) && isset($this->settings['field_default_value']) && !empty($this->settings['field_default_value'])) {
+            $data = $this->settings['field_default_value'];
+        }
+
         ee()->load->helper('custom_field');
         $data = decode_multi_field($data);
         $field['from'] = (isset($data[0])) ? $data[0] : $field['min'];
