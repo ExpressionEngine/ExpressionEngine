@@ -363,6 +363,7 @@ abstract class OptionFieldtype extends EE_Fieldtype
             }
             unset($data['value_label_pairs']['rows']);
         }
+
         if (isset($data['field_default_value']['rows'])) {
             foreach ($data['field_default_value']['rows'] as $key => $row) {
                 $data['field_default_value'][] = $row['value'];
@@ -377,7 +378,9 @@ abstract class OptionFieldtype extends EE_Fieldtype
 
         ee()->javascript->output("
 			var miniGridInit = function(context) {
-				$('.fields-keyvalue', context).miniGrid({grid_min_rows:0,grid_max_rows:''});
+				$('.fields-keyvalue', context).each(function() {
+                    $(this).miniGrid({grid_min_rows:0,grid_max_rows:''})
+                });
 			}
 			Grid.bind('" . $field_type . "', 'displaySettings', function(column) {
 				miniGridInit(column);
