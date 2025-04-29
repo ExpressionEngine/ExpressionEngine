@@ -47884,6 +47884,7 @@ a.ck.ck-button.ck-on {
   font-size: 16px;
   margin-top: 0;
   margin-bottom: 1em;
+  color: var(--ee-text-normal);
 }
 .field-control .redactor-styles a,
 .field-control .rx-content a,
