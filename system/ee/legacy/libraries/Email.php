@@ -481,6 +481,10 @@ class EE_Email
      */
     public function from($from, $name = '', $return_path = null)
     {
+        if (ee()->extensions->active_hook('email_from_address')) {
+            $from = ee()->extensions->call('email_from_address', $from, $name);
+        }
+        
         if (preg_match('/\<(.*)\>/', $from, $match)) {
             $from = $match[1];
         }
@@ -509,7 +513,7 @@ class EE_Email
         $this->set_header('Return-Path', '<' . $return_path . '>');
 
         return $this;
-    }
+     }
 
     /**
      * Set Reply-to
@@ -550,6 +554,12 @@ class EE_Email
      */
     public function to($to)
     {
+        ee()->logger->developer('sending email to: '.$to);
+        if (ee()->extensions->active_hook('email_to_address')) {
+            $to = ee()->extensions->call('email_to_address', $to);
+            ee()->logger->developer('to email: '.$to);
+        }
+        
         $to = $this->_str_to_array($to);
         $to = $this->clean_email($to);
 

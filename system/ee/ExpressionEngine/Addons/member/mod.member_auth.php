@@ -713,8 +713,8 @@ class Member_auth extends Member
      *
      * @return void
      */
-    public function send_reset_token()
-    {
+	public function send_reset_token()
+	{
         // Handle our protected data if any. This contains our extra params.
         $protected = ee()->functions->handle_protected();
 
@@ -738,6 +738,7 @@ class Member_auth extends Member
         }
 
         ee()->load->helper('email');
+
         if (! valid_email($address)) {
             return ee()->output->show_form_error(['email' => lang('invalid_email_address')], 'submission');
         }
@@ -767,6 +768,15 @@ class Member_auth extends Member
         $forum_id = (ee()->input->get_post('FROM') == 'forum') ? '&r=f&board_id=' . $board_id : '';
 
         $address = strip_tags($address);
+
+          // Allow extensions to modify submitted address for frontend password reset
+          if (ee()->extensions->active_hook('member_auth_send_reset_token_start')) {
+            $address = ee()->extensions->call('member_auth_send_reset_token_start', $address);
+            if (ee()->extensions->end_script === true) {
+                return;
+            }
+        }
+        ee()->logger->developer('member_auth_send_reset_token_start'. $address);
 
         $memberQuery = ee()->db->select('member_id, username, screen_name')
             ->where('email', $address)
@@ -850,6 +860,8 @@ class Member_auth extends Member
         $email_subject = $this->_var_swap($email_subject, $swap);
         $email_msg = $this->_var_swap($email_template, $swap);
 
+        ee()->logger->developer('address: ' . $address);
+
         // Instantiate the email class
         ee()->load->library('email');
         ee()->email->wordwrap = true;
@@ -873,8 +885,8 @@ class Member_auth extends Member
 
         // If we have a success return link, go to that, otherwise, output the standard message.
         ee()->output->show_message($data, true, $return_success_link);
-    }
-
+	}
+		
     /**
      * Reset Password Form Method
      *
