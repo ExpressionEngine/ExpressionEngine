@@ -152,6 +152,9 @@ class Roles extends Profile
             exit;
         } elseif (ee()->form_validation->run() !== false) {
             $this->member->role_id = (int) ee('Request')->post('role_id');
+            if (empty($this->member->role_id) && $this->member->member_id == ee()->session->userdata('member_id') && ee('Permission')->isSuperAdmin()) {
+                $this->member->role_id = 1; // ensure superadmins keep their role when editing self (field disabled)
+            }
 
             if (ee('Permission')->isSuperAdmin()) {
                 $groups = ee('Request')->post('role_groups');
@@ -160,7 +163,7 @@ class Roles extends Profile
 
             $roles = array_filter(ee('Request')->post('roles'));
             if (empty($roles)) {
-                $roles = [(int) ee('Request')->post('role_id')];
+                $roles = [$this->member->role_id];
             }
             $this->member->Roles = ($roles) ? ee('Model')->get('Role', $roles)->all() : null;
 
