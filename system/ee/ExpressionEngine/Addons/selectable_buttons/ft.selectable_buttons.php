@@ -61,7 +61,10 @@ class Selectable_buttons_ft extends Multi_select_ft
     {
         ee()->load->helper('custom_field');
 
-        if (is_null($this->content_id) && isset($this->settings['field_default_value']) && $this->settings['field_default_value'] != '') {
+        if (
+            (empty($this->content_id) || (isset($this->settings['grid_field_id']) && !isset($this->settings['grid_row_id'])))
+            && isset($this->settings['field_default_value']) && $this->settings['field_default_value'] != ''
+        ) {
             $data = $this->settings['field_default_value'];
         }
 

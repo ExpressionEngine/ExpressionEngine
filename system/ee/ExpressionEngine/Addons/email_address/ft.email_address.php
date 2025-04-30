@@ -63,6 +63,13 @@ class Email_address_Ft extends EE_Fieldtype
      */
     public function display_field($data)
     {
+        if (
+            (empty($this->content_id) || (isset($this->settings['grid_field_id']) && !isset($this->settings['grid_row_id'])))
+            && isset($this->settings['field_default_value']) && $this->settings['field_default_value'] != ''
+        ) {
+            $data = $this->settings['field_default_value'];
+        }
+
         $field = array(
             'name' => $this->field_name,
             'value' => $data,
@@ -71,10 +78,6 @@ class Email_address_Ft extends EE_Fieldtype
 
         if ($this->get_setting('field_disabled')) {
             $field['disabled'] = 'disabled';
-        }
-
-        if (is_null($this->content_id) && isset($this->settings['field_default_value']) && $this->settings['field_default_value'] != '') {
-            $field['value'] = $this->settings['field_default_value'];
         }
 
         return form_input($field);

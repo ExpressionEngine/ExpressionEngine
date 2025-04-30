@@ -364,6 +364,10 @@ abstract class OptionFieldtype extends EE_Fieldtype
             unset($data['value_label_pairs']['rows']);
         }
 
+        if (isset($data['field_default_value']) && !is_array($data['field_default_value'])) {
+            $data['field_default_value'] = explode('|', $data['field_default_value']);
+        }
+
         if (isset($data['field_default_value']['rows'])) {
             foreach ($data['field_default_value']['rows'] as $key => $row) {
                 $data['field_default_value'][] = $row['value'];

@@ -107,6 +107,13 @@ class Text_ft extends EE_Fieldtype
 
     public function display_field($data)
     {
+        if (
+            (empty($this->content_id) || (isset($this->settings['grid_field_id']) && !isset($this->settings['grid_row_id'])))
+            && isset($this->settings['field_default_value']) && $this->settings['field_default_value'] != ''
+        ) {
+            $data = $this->settings['field_default_value'];
+        }
+
         $type = $this->get_setting('field_content_type', $this->default_field_content_type);
         $field = array(
             'name' => $this->field_name,
@@ -125,10 +132,6 @@ class Text_ft extends EE_Fieldtype
 
         if (isset($this->settings['field_placeholder'])) {
             $field['placeholder'] = $this->settings['field_placeholder'];
-        }
-
-        if (is_null($this->content_id) && isset($this->settings['field_default_value']) && $this->settings['field_default_value'] != '') {
-            $field['value'] = $this->_format_number($this->settings['field_default_value'], $type);
         }
 
         // maxlength attribute should only appear if its value is > 0

@@ -52,6 +52,13 @@ class Slider_ft extends Text_ft
             }
         }
 
+        if (
+            (empty($this->content_id) || (isset($this->settings['grid_field_id']) && !isset($this->settings['grid_row_id'])))
+            && isset($this->settings['field_default_value']) && $this->settings['field_default_value'] != ''
+        ) {
+            $data = $this->settings['field_default_value'];
+        }
+
         $field = array(
             'name' => $this->field_name,
             'value' => is_numeric($data) ? $data : $this->settings['field_min_value'],
@@ -61,10 +68,6 @@ class Slider_ft extends Text_ft
             'suffix' => isset($this->settings['field_suffix']) ? $this->settings['field_suffix'] : '',
             'prefix' => isset($this->settings['field_prefix']) ? $this->settings['field_prefix'] : ''
         );
-
-        if (is_null($this->content_id) && isset($this->settings['field_default_value']) && is_numeric($this->settings['field_default_value'])) {
-            $field['value'] = $this->settings['field_default_value'];
-        }
 
         if ($field['value'] < $field['min']) {
             $field['value'] = $field['min'];

@@ -31,8 +31,7 @@ class Colorpicker_ft extends EE_Fieldtype
         // How the swatches should be crated
         //   v = By values with a grid
         //   m = Manually with a textarea
-        'populate_swatches' => 'v',
-        'field_default_value' => ''
+        'populate_swatches' => 'v'
     ];
 
     public function __construct()
@@ -94,10 +93,6 @@ class Colorpicker_ft extends EE_Fieldtype
      */
     public function display_field($data)
     {
-        if (is_null($this->content_id) && isset($this->settings['field_default_value']) && $this->settings['field_default_value'] != '') {
-            $data = $this->settings['field_default_value'];
-        }
-
         if (REQ != 'CP') {
             $swatches = $this->getSwatches();
 

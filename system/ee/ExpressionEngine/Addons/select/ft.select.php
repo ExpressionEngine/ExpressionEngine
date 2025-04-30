@@ -69,7 +69,10 @@ class Select_ft extends OptionFieldtype
 
     public function display_field($data)
     {
-        if (is_null($this->content_id) && isset($this->settings['field_default_value']) && $this->settings['field_default_value'] != '') {
+        if (
+            (empty($this->content_id) || (isset($this->settings['grid_field_id']) && !isset($this->settings['grid_row_id'])))
+            && isset($this->settings['field_default_value']) && $this->settings['field_default_value'] != ''
+        ) {
             $data = $this->settings['field_default_value'];
         }
 
