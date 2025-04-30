@@ -479,7 +479,7 @@ trait FileManagerTrait
         if (! empty($uploadLocation)) {
             $typesQuery->where('upload_location_id', $uploadLocation->getId());
         } else {
-            $typesQuery->where('file_type != "directory"');
+            $typesQuery->where('file_type !=', 'directory');
         }
         $types = $typesQuery->get();
 
