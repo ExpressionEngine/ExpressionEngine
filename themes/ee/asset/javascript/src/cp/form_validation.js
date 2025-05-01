@@ -194,6 +194,7 @@ EE.cp.formValidation = {
 			{
 				// Add "work" class to make the buttons pulsate
 				$button.addClass('work');
+				$button.addClass('not-click');
 
 				// If the submit was trigger by a button click, disable it to prevent futher clicks
 				$button.each(function(index, el) {
