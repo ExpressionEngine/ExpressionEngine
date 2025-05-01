@@ -227,6 +227,12 @@ class EntryListing
             $this->filters->add($this->author_filter);
         }
 
+        $this->filters->add('Checkboxes', 'include', lang('include_entries_long'), [
+            'live' => lang('include_live'),
+            'expired' => lang('include_expired'),
+            'future' => lang('include_future'),
+        ], lang('include_entries_short'));
+
         if (in_array('Columns', $this->extra_filters)) {
             $this->filters->add('Columns', $this->createColumnFilter($channel), $channel, $this->view_id);
         }
@@ -378,6 +384,31 @@ class EntryListing
                 $entries->filter('entry_date', '<', $filter_values['filter_by_date'][1]);
             } else {
                 $entries->filter('entry_date', '>=', $this->now - $filter_values['filter_by_date']);
+            }
+        }
+
+        if (isset($filter_values['include'])) {
+            if (!in_array('expired', $filter_values['include'])) {
+                $entries
+                    ->filterGroup()
+                    ->filter('expiration_date', 0)
+                    ->orFilter('expiration_date', '>', ee()->localize->now)
+                    ->endFilterGroup();
+            }
+
+            if (!in_array('future', $filter_values['include'])) {
+                $entries->filter('entry_date', '<=', ee()->localize->now);
+            }
+
+            if (!in_array('live', $filter_values['include'])) {
+                $entries
+                    ->filterGroup()
+                        ->filterGroup()
+                        ->filter('expiration_date', '!=', 0)
+                        ->filter('expiration_date', '<=', ee()->localize->now)
+                        ->endFilterGroup()
+                    ->orFilter('entry_date', '>', ee()->localize->now)
+                    ->endFilterGroup();
             }
         }
 
