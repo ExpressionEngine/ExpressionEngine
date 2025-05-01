@@ -815,7 +815,7 @@ class Member_auth extends Member
 
             // Make sure it's an actual URL.
             if (substr($reset_url, 0, 4) !== 'http') {
-                $reset_url = ee()->functions->fetch_site_index(0, 0) . '/' . $reset_url;
+                $reset_url = reduce_double_slashes(ee()->functions->fetch_site_index(0, 0) . '/' . $reset_url);
             }
         } else {
             $reset_url = reduce_double_slashes(ee()->functions->fetch_site_index(0, 0) . '/' . ee()->config->item('profile_trigger') . '/reset_password');
