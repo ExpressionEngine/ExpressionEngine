@@ -834,9 +834,9 @@ class Pro_search
         //  - Do something just after the search is executed
         // -------------------------------------
 
-        if (ee()->extensions->active_hook('pro_search_post_search') === true) {
+        if (ee()->extensions->active_hook('low_search_post_search') === true) {
             $params = $this->params->get();
-            $params = ee()->extensions->call('pro_search_post_search', $params);
+            $params = ee()->extensions->call('low_search_post_search', $params);
             if (ee()->extensions->end_script === true) {
                 return ee()->TMPL->tagdata;
             }
