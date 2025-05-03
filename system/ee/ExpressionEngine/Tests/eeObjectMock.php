@@ -36,7 +36,10 @@ class eeSingletonMock
     public $session;
     public $logger;
     public $dbforge;
+    public $db;
     public $input;
+    public $lang;
+    public $legacy_api;
 
     protected $mock;
     protected static $mocks = [];
@@ -49,6 +52,10 @@ class eeSingletonMock
         $this->logger = new eeSingletonLoggerMock();
         $this->dbforge = new eeSingletonDBForgeMock();
         $this->input = new eeSingletonInputMock();
+        $this->db = new eeDbArMock();
+        $this->lang = new eeLangMock();
+        require_once APPPATH . 'libraries/Api.php';
+        $this->legacy_api = new \Api();
         $this->mock = $mock;
     }
 
@@ -68,6 +75,9 @@ class eeSingletonMock
         if (array_key_exists($this->mock, self::$mocks) && !is_null(self::$mocks[$this->mock]->$name)) {
             return self::$mocks[$this->mock]->$name;
         }
+        if (array_key_exists($name, self::$mocks) && !is_null(self::$mocks[$name])) {
+            return self::$mocks[$name];
+        }
     }
 
     public function __call($name, $args)
@@ -86,6 +96,11 @@ class eeSingletonLoadMock
     }
 
     public function library()
+    {
+        return;
+    }
+
+    public function model()
     {
         return;
     }
@@ -160,6 +175,60 @@ class eeSingletonDBForgeMock
 class eeSingletonInputMock
 {
     public function get_post($item)
+    {
+    }
+}
+
+class eeLangMock
+{
+    public function load($item)
+    {
+    }
+    public function loadfile($name)
+    {
+    }
+}
+
+class eeDbArMock
+{
+    public function select()
+    {
+        return $this;
+    }
+    public function from()
+    {
+        return $this;
+    }
+    public function order()
+    {
+        return $this;
+    }
+    public function limit()
+    {
+        return $this;
+    }
+    public function get()
+    {
+        return new eeDbResultMock();
+    }
+}
+
+class eeDbResultMock
+{
+    public $resultArray;
+    public function __construct($resultArray = [])
+    {
+        $this->resultArray = $resultArray;
+    }
+    public function result()
+    {
+        $result = [];
+        foreach ($this->resultArray as $row) {
+            $result[] = (object) $row;
+        }
+        return $result;
+    }
+    public function num_rows()
     {
     }
 }

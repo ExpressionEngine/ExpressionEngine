@@ -473,4 +473,13 @@ $(document).ready(function () {
 			}
 		});
 	}
+
+	if ( $('.member_manager-wrapper tbody').length) {
+		// deselect row when clicking on toolbar
+		$('body').on('click', '.member_manager-wrapper tbody tr td.app-listing__cell .button-toolbar', function(e) {
+			if ($(this).parents('tr').hasClass('selected')) {
+				$(this).parents('tr').children('td:last-child').children('input[type=checkbox]').click();
+			}
+		});
+	}
 });

@@ -428,32 +428,55 @@ class Pro_search_mcp
         // --------------------------------------
         // Permissions - get member groups
         // --------------------------------------
-        $groups = ee('Model')->get('Role')
+        $roles = ee('Model')->get('Role')
+            ->with('AssignedModules')
             ->filter('role_id', 'IN', ee('Permission')->rolesThatHave('can_access_cp'))
             ->filter('role_id', 'NOT IN', range(1, 4))
             ->order('name', 'ASC')
-            ->all()->getDictionary('role_id', 'name');
-
-        // Add permissions to form if there are groups
-        if (! empty($groups)) {
-            $perms = ee()->pro_search_settings->permissions();
-
-            // A row for each group
-            foreach ($groups as $id => $name) {
-                $row = array('title' => $name);
-
-                // A different checkbox for each permission type
-                foreach ($perms as $perm) {
-                    $row['fields'][$perm] = array(
-                        'type'    => 'checkbox',
-                        'choices' => array($id => html_entity_decode(lang($perm))),
-                        'value'   => ee()->pro_search_settings->get($perm)
-                    );
-                }
-
-                $sections['permissions'][] = $row;
+            ->all();
+        $groups = array();
+        foreach ($roles as $role) {
+            if (in_array('Pro_search', $role->AssignedModules->pluck('module_name'))) {
+                $groups[$role->role_id] = $role->name;
             }
         }
+
+        // Add permissions to form if there are groups
+        $perms = ee()->pro_search_settings->permissions();
+
+        // A row for each group
+        $choices = array();
+        $values = array();
+        foreach ($groups as $id => $name) {
+            $children = array();
+            foreach ($perms as $perm) {
+                $children[$perm . ':' . $id] = html_entity_decode(lang($perm));
+                if (in_array($id, (array) ee()->pro_search_settings->get($perm))) {
+                    $values[] = $perm . ':' . $id;
+                }
+            }
+            $choices['role_id_' . $id] = [
+                'label' => $name,
+                'children' => $children
+            ];
+        }
+
+        $sections['permissions'][] = array(
+            'title' => 'permission_roles',
+            'desc' => 'permission_roles_desc',
+            'fields' => array(
+                'permissions' => array(
+                    'type'    => 'checkbox',
+                    'nested' => true,
+                    'auto_select_parents' => true,
+                    'choices' => $choices,
+                    'value'   => $values,
+                    'no_results' => [
+                        'text' => sprintf(lang('no_found'), lang('roles'))
+                    ]
+                )
+            )
+        );
 
         // --------------------------------------
         // Set breadcrumb
@@ -499,6 +522,14 @@ class Pro_search_mcp
             if (($settings[$key] = ee()->input->post($key)) === false) {
                 $settings[$key] = $val;
             }
+        }
+
+        foreach (ee()->input->post('permissions') as $perm) {
+            if (strpos($perm, ':') === false) {
+                continue;
+            }
+            $perm = explode(':', $perm);
+            $settings[$perm[0]][] = $perm[1];
         }
 
         // -------------------------------------
@@ -821,6 +852,7 @@ class Pro_search_mcp
 
         $channels = ee('Model')
             ->get('Channel')
+            ->with('CategoryGroups')
             ->filter('site_id', $this->site_id)
             ->order('channel_title', 'ASC')
             ->all();
@@ -988,12 +1020,14 @@ class Pro_search_mcp
             );
 
             // Category Field weights
-            if ($channel->cat_group) {
+            if ($channel->CategoryGroups) {
                 // So we get the right lang labels
                 ee()->lang->loadfile('admin_content');
 
                 // Loop through each category group of this channel
-                foreach (explode('|', $channel->cat_group) as $group_id) {
+                foreach ($channel->CategoryGroups as $group) {
+
+                    $group_id = $group->getId();
                     // Skip references to non-existent category groups
                     if (! in_array($group_id, $catgroups->getDictionary('group_id', 'group_id'))) {
                         continue;
@@ -2153,6 +2187,7 @@ class Pro_search_mcp
 
         $query = ee('Model')
             ->get('Channel')
+            ->with('CategoryGroups')
             ->filter('site_id', $this->site_id)
             ->filter('channel_id', 'IN', $channel_ids)
             ->all();
@@ -2165,9 +2200,7 @@ class Pro_search_mcp
                     'fields'          => array('title' => lang('title'))
                 );
 
-                if ($row->cat_group) {
-                    $cat_groups = array_merge($cat_groups, explode('|', $row->cat_group));
-                }
+                $cat_groups = array_merge($cat_groups, $row->CategoryGroups->pluck('group_id'));
             }
 
             // Channel fields for this channel
@@ -2471,7 +2504,7 @@ class Pro_search_mcp
 
                 // Replace Grid/Matrix columns?
                 if (
-                    ($is_grid = $this->_field_is_type($field_id, 'grid')) ||
+                    ($is_grid = ($this->_field_is_type($field_id, 'grid') || $this->_field_is_type($field_id, 'file_grid'))) ||
                     ($is_matrix = $this->_field_is_type($field_id, 'matrix'))
                 ) {
                     $col_table = $is_grid ? 'grid_columns' : 'matrix_cols';
@@ -3123,6 +3156,9 @@ class Pro_search_mcp
             $params = pro_search_decode($params, false);
             $row = array_merge($row, $params);
 
+            // remove =, +, -, @ from the start of keywords
+            $row['keywords'] = preg_replace('/^[\=\+\-\@]+/', '', $row['keywords']);
+
             $log_row = array();
 
             foreach ($keys as $k => $v) {
@@ -3301,21 +3337,22 @@ class Pro_search_mcp
                 }
 
                 // Then get channel and their cat groups
-                $query = ee()->db->select('channel_id, cat_group')
-                    ->from('channels')
-                    ->where('site_id', $this->site_id)
-                    ->get();
+                $channels = ee('Model')
+                    ->get('Channel')
+                    ->with('CategoryGroups')
+                    ->filter('site_id', $this->site_id)
+                    ->all();
 
                 // And associate channel with cat ids
-                foreach ($query->result() as $row) {
-                    foreach (array_filter(explode('|', $row->cat_group)) as $group_id) {
+                foreach ($channels as $channel) {
+                    foreach ($channel->CategoryGroups as $group) {
                         if (! isset($categories[$row->channel_id])) {
                             $categories[$row->channel_id] = array();
                         }
 
                         $categories[$row->channel_id] = array_merge(
                             $categories[$row->channel_id],
-                            $cats_by_group[$group_id]
+                            $cats_by_group[$group->group_id]
                         );
                     }
                 }
@@ -3343,6 +3380,7 @@ class Pro_search_mcp
             $query = ee()->db->select('field_id, field_type')
                 ->from('channel_fields')
                 ->where('site_id', $this->site_id)
+                ->or_where('site_id', 0)
                 ->get();
 
             $fields = pro_flatten_results($query->result_array(), 'field_type', 'field_id');

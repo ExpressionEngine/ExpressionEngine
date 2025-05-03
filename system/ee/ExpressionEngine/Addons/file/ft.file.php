@@ -11,6 +11,7 @@
 use ExpressionEngine\Addons\FilePicker\FilePicker;
 use ExpressionEngine\Library\CP\EntryManager\ColumnInterface;
 use ExpressionEngine\Library\CP\Table;
+use ExpressionEngine\Library\Filesystem\FilesystemException;
 
 /**
  * File Fieldtype
@@ -154,7 +155,16 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
         $show_existing = (isset($this->settings['show_existing'])) ? $this->settings['show_existing'] : 'n';
         $filebrowser = (REQ == 'CP');
 
+        ee()->javascript->set_global([
+            'file.publishCreateUrl' => ee('CP/URL')->make('files/file/view/###', ['modal_form' => 'y'])->compile(),
+        ]);
+
         if (REQ == 'CP') {
+            ee()->cp->add_js_script(array(
+                'file' => array(
+                    'cp/publish/entry-list',
+                ),
+            ));
             return ee()->file_field->dragAndDropField($this->field_name, $data, $allowed_file_dirs, $content_type);
         }
 
@@ -516,12 +526,13 @@ JSC;
         }
 
         if (!$data['model_object']->isImage()) {
-            return ee()->TMPL->no_results();
+            return false;
         }
 
         ee()->load->library('image_lib');
         $filename = ee()->image_lib->explode_name($data['fs_filename']);
         if ($function == 'webp') {
+            $filename['name'] = $filename['name'] . '_' . $filename['ext'];
             $filename['ext'] = '.webp';
         }
         $new_image = $filename['name'] . '_' . $function . '_' . md5(serialize($params)) . $filename['ext'];
@@ -541,7 +552,14 @@ JSC;
         if (!$data['filesystem']->exists($destination_path)) {
             // We need to get a temporary local copy of the file in case it's stored
             // on another filesystem.
-            $source = $data['filesystem']->copyToTempFile($data['source_image']);
+            try {
+                $source = $data['filesystem']->copyToTempFile($data['source_image']);
+            } catch (FilesystemException $e) {
+                // if the file does not exist (e.g. we run a local copy without all files)
+                // just return the original URL
+                log_message('debug', $e->getMessage());
+                return $data['model_object']->getAbsoluteURL();
+            }
             $new = $data['filesystem']->createTempFile();
 
             $imageLibConfig = array(
@@ -574,6 +592,17 @@ JSC;
                 if ($imageLibConfig['master_dim'] == 'auto' && !isset($params['width'])) {
                     $imageLibConfig['master_dim'] = 'height';
                     $imageLibConfig['width'] = 100;
+                }
+            }
+
+            // if position parameter is provided, use it to calculate x and y
+            if ($function == 'crop' && isset($params['position'])) {
+                $props = ee()->image_lib->get_image_properties($source['path'], true);
+                if (isset($params['width'])) {
+                    $imageLibConfig['x_axis'] += floor(($props['width'] - (int) $params['width']) / 2);
+                }
+                if (isset($params['height'])) {
+                    $imageLibConfig['y_axis'] += floor(($props['height'] - (int) $params['height']) / 2);
                 }
             }
 
@@ -784,7 +813,7 @@ JSC;
             if (is_null($tagdata)) {
                 // null means we're chaning modifier to pre-defined manipulation
                 // need to set some data and return array instead of string
-                if (array_key_exists('path:' . $modifier, $data)) {
+                if (is_array($data) && array_key_exists('path:' . $modifier, $data)) {
                     $data['fs_filename'] = $modifier . '_' . ($data['fs_filename'] ?? $data['model_object']->file_name);
                     $data['source_image'] = $data['path:' . $modifier];
                     $data['url'] = $full_path;
@@ -983,9 +1012,9 @@ JSC;
      * Help simplify the form building and enforces a strict layout. If
      * you think this table needs to look different, go bug James.
      *
-     * @param   left cell content
-     * @param   right cell content
-     * @param   vertical alignment of left column
+     * @param string  left cell content
+     * @param string  right cell content
+     * @param string  vertical alignment of left column
      *
      * @return  void - adds a row to the EE table class
      */

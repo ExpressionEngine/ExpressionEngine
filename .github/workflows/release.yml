@@ -14,7 +14,14 @@ jobs:
         id: tagName
       
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Checkout RedactorX
+        uses: actions/checkout@v4
+        with:
+          repository: ExpressionEngine/RedactorX
+          token: ${{ secrets.ORG_ACCESS_TOKEN }}
+          path: __redactorx
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -25,7 +32,7 @@ jobs:
             ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
 
       - name: Setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '10'
       
@@ -46,11 +53,12 @@ jobs:
           RELEASE_PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
           APP_REPO_PATH: ${{ github.workspace }}
+          REDACTORX_REPO_PATH: ${{ github.workspace }}/__redactorx
         run: |
           gulp app --local --head --skip-lint --skip-pro --version=${{ steps.tagName.outputs.tag }}
   
       - name: Archive Build files
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: EE${{ steps.tagName.outputs.tag }}
           path: build-tools/builds

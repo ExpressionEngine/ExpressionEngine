@@ -28,10 +28,14 @@ class ColumnFactory
         'channel' => Columns\ChannelName::class,
         'comments' => Columns\Comments::class,
         'categories' => Columns\Categories::class,
+        'view_count_one' => Columns\ViewCount::class,
+        'view_count_two' => Columns\ViewCount::class,
+        'view_count_three' => Columns\ViewCount::class,
+        'view_count_four' => Columns\ViewCount::class,
         'checkbox' => Columns\Checkbox::class
     ];
 
-    private static $instances = [];
+    protected static $instances = [];
 
     /**
      * Returns an instance of a column given its identifier. This factory uses
@@ -176,7 +180,7 @@ class ColumnFactory
      *
      * @return array[string]
      */
-    private static function getCompatibleFieldtypes()
+    protected static function getCompatibleFieldtypes()
     {
         static $fieldtypes = false;
         if ($fieldtypes === false) {

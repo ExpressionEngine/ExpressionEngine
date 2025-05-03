@@ -806,6 +806,41 @@ class Pagination_object
     }
 
     /**
+     * Get a list of pagination variables
+     *
+     * @return array
+     */
+    public function getVariables()
+    {
+        $variables = [
+                'first_url' => rtrim($this->basepath, '/'),
+                'base_url' => $this->basepath,
+                'prefix' => $this->prefix,
+                'total' => $this->total_items,
+                'per_page' => $this->per_page,
+                'from' => $this->offset * $this->per_page,
+                'to' => min($this->total_items, $this->offset + 1 * $this->per_page),
+                'current_page' => $this->offset + 1,
+                'num_links' => $this->_page_links_limit,
+                'links' => $this->_page_array,
+                'first_link' => lang('pag_first_link'),
+                'last_link' => lang('pag_last_link'),
+        ];
+
+        // Flatten named single page links
+        $links = ['next_page', 'previous_page', 'first_page', 'last_page'];
+
+        foreach($links as $link)
+        {
+            if($variables['links'][$link] ?? false) {
+                $variables['links'][$link] = $variables['links'][$link][0];
+            }
+        }
+
+        return $variables;
+    }
+
+    /**
      * Parse {if previous_page} and {if next_page}
      *
      * @param string $template_data The template data to parse for

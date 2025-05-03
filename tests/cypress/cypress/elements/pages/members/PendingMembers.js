@@ -10,8 +10,7 @@ class PendingMembers extends MemberManagerSection {
     }
 
   load() {
-    this.get('members_btn').click()
-    this.get('wrap').find('a:contains("Pending Activation")').click()
+    cy.visit('admin.php?/cp/members&role_filter=4')
   }
 }
 export default PendingMembers;

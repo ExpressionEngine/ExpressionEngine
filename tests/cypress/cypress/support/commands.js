@@ -12,6 +12,7 @@
 
 import 'cypress-maildev';
 import 'cypress-audit/commands';
+import 'cypress-real-events';
 
 //https://github.com/cypress-io/cypress/issues/249
 const COMMAND_DELAY = Cypress.env('COMMAND_DELAY') || 0;
@@ -284,6 +285,15 @@ Cypress.Commands.add("createMembers", ({ n }) => {
     ].join(' ')
 
     cy.exec(command)
+})
+
+// Alternative approach for overcoming CKEditor bug with Cypress .type() command
+// https://github.com/ckeditor/ckeditor5/issues/12802
+// https://github.com/cypress-io/cypress/issues/26155
+Cypress.Commands.add('ckType', {prevSubject: true}, (subject, content) => {
+    const editor = subject[0].ckeditorInstance;
+    editor.setData(content);
+    return subject;
 })
 
 // -- This is a child command --

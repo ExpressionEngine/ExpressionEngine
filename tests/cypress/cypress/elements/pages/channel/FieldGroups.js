@@ -6,6 +6,7 @@ class FieldGroups extends ControlPanel {
     constructor() {
         super()
         this.url = 'admin.php?/cp/fields';
+        this.fieldGroupUrl = 'admin.php?/cp/fields&group_id={group_id}';
 
         this.selectors = Object.assign(this.selectors, {
             //"create_new": '.sidebar a.button--action.left',

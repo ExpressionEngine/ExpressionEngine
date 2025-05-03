@@ -11,7 +11,7 @@
 namespace ExpressionEngine\Library\CP\EntryManager\Columns;
 
 use ExpressionEngine\Library\CP\EntryManager\Columns\Column;
-use ExpressionEngine\Model\Channel\ChannelField;
+use ExpressionEngine\Model\Content\FieldModel;
 use ExpressionEngine\Model\Content\FieldFacade;
 
 /**
@@ -21,7 +21,7 @@ class CustomField extends Column
 {
     private $field;
 
-    public function __construct($identifier, ChannelField $channel_field)
+    public function __construct($identifier, FieldModel $channel_field)
     {
         parent::__construct($identifier);
 

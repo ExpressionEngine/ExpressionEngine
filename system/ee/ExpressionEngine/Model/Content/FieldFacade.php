@@ -68,6 +68,39 @@ class FieldFacade
         return $this->getItem('field_name') ?: $this->getName();
     }
 
+    public function getNameBadge(array $options = [])
+    {
+        $field_name_prefix = (isset($options['prefix'])) ? $options['prefix'] : '';
+
+        if (ee()->session->userdata('member_id') == 0) {
+            return '';
+        }
+        if (ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->show_field_names == 'y') {
+            $field_name = $this->getShortName();
+            $field_id = $this->getId();
+
+            if (strpos($field_name, 'categories[cat_group_id_') === 0) {
+                $field_name = "categories show_group=\"" . rtrim(substr($field_name, 24), ']') . "\"";
+            }
+
+            $content_type = (isset($options['content_type'])) ? $options['content_type'] : $this->getContentType();
+
+            $vars = [
+                'name' => $field_name_prefix . $field_name,
+                'id' => $field_id,
+                'content_type' => $content_type,
+            ];
+
+            // add other option values to the vars array
+            foreach ($options as $key => $value) {
+                $vars[$key] = $value;
+            }
+
+            return ee('View')->make('publish/partials/name_badge_copy')->render($vars);
+        }
+        return '';
+    }
+
     public function setContentId($id)
     {
         $this->content_id = $id;
@@ -106,6 +139,11 @@ class FieldFacade
     public function getHidden()
     {
         return $this->hidden;
+    }
+
+    public function getAlertText()
+    {
+        return isset($this->metadata['alertText']) ? $this->metadata['alertText'] : null;
     }
 
 
@@ -268,6 +306,10 @@ class FieldFacade
         $data = $this->initField();
 
         $field_value = $data['field_data'];
+        // Check for an "old" value flashed during inline_error handling
+        if(ee()->has('session') && !empty(ee()->session->flashdata('old'))) {
+            $field_value = ee()->session->flashdata('old')["old:{$data['field_name']}"] ?? $field_value;
+        }
 
         return $this->api->apply('display_publish_field', array($field_value));
     }
@@ -419,13 +461,17 @@ class FieldFacade
             }
         } else {
             $parse_fnc = ($specificModifier) ? 'replace_' . $specificModifier : 'replace_tag';
-            if (method_exists($ft, $parse_fnc) || ee('Variables/Modifiers')->has($modifier)) {
+            if (method_exists($ft, $parse_fnc) || ee('Variables/Modifiers')->has($specificModifier)) {
                 $output = $this->api->apply($parse_fnc, array($data, $params, $tagdata));
             } elseif (method_exists($ft, 'replace_tag_catchall') and $specificModifier !== '') {
                 // Go to catchall and include modifier
                 $modifier = $full_modifier ?: $specificModifier;
                 $output = $this->api->apply('replace_tag_catchall', array($data, $params, $tagdata, $modifier));
             }
+        }
+
+        if (is_null($output)) {
+            $output = '';
         }
 
         return $output;
@@ -576,7 +622,8 @@ class FieldFacade
             'field_hidden' => $field_hidden,
             'field_dt' => $field_dt,
             'field_data' => $field_data,
-            'field_name' => $field_name
+            'field_name' => $field_name,
+            'field_short_name' => $this->getShortName()
         );
 
         $field_settings = empty($info['field_settings']) ? array() : $info['field_settings'];

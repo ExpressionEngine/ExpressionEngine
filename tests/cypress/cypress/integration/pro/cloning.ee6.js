@@ -12,7 +12,7 @@ context('Entry Cloning', () => {
     before(function() {
       cy.intercept('**/check').as('check')
       cy.intercept('**/license/handleAccessResponse').as('license')
-      
+
       cy.task('db:seed')
       cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })
       cy.task('db:load', '../../support/sql/more-fields.sql')
@@ -121,7 +121,7 @@ context('Entry Cloning', () => {
         cy.get('body').type('{ctrl}', {release: false}).type('s')
 
         var skew = 0;
-        
+
         cy.visit('admin.php?/cp/publish/edit/entry/2')
         cy.get('button:contains("Relate Entry")').first().click()
         cy.get('a.dropdown__link:contains("Getting to Know ExpressionEngine")').first().click();
@@ -130,7 +130,7 @@ context('Entry Cloning', () => {
         cy.get('[data-input-value=field_id_9] input[type=checkbox]').eq(0 + skew).check();
         cy.get('input[name=field_id_11]').clear().type('rspec-' + skew.toString() + '@example.com')
         cy.get('input[name=field_id_12]').clear().type('http://www.example.com/page/' + skew.toString())
-        cy.get('.ck-content').type('Lorem ipsum dolor sit amet' + skew);
+        cy.get('.ck-content').ckType('Lorem ipsum dolor sit amet' + skew);
         cy.get('[data-input-value=field_id_15] input[type=checkbox]').eq(0 + skew).check()
         cy.get('input[type=radio][name=field_id_16]').eq(1 + skew).check()
         cy.get('[data-input-value=field_id_18]').click()
@@ -140,11 +140,11 @@ context('Entry Cloning', () => {
         cy.get('#field_id_19 .grid-field__table tbody tr:visible input:visible').eq(1).clear().type('ipsum' + skew.toString())
         cy.get('[data-toggle-for="field_id_21"].toggle-btn').click()
 
-        
+
 
         cy.get('body').type('{ctrl}', {release: false}).type('s')
         cy.get('.app-notice---success').contains('Entry Updated');
-        
+
         cy.dismissLicenseAlert()
         cy.get('.saving-options').click()
         cy.get('[value=save_as_new_entry]').first().click()
@@ -158,7 +158,7 @@ context('Entry Cloning', () => {
         cy.get('[data-input-value=field_id_9] input[type=checkbox]').eq(0 + skew).should('be.checked');
         cy.get('input[name=field_id_11]').invoke('val').should('eq', 'rspec-' + skew.toString() + '@example.com')
         cy.get('input[name=field_id_12]').invoke('val').should('eq', 'http://www.example.com/page/' + skew.toString())
-        cy.get('.ck-content').contains('Lorem ipsum dolor sit amet' + skew);
+        cy.get('.ck-content').contains('ipsum dolor sit amet' + skew);
         cy.get('[data-input-value=field_id_15] input[type=checkbox]').eq(0 + skew).should('be.checked');
         cy.get('input[type=radio][name=field_id_16]').eq(1 + skew).should('be.checked');
         cy.get('input[type=hidden][name=field_id_18]').invoke('val').should('eq', 'Corndog')
@@ -175,7 +175,7 @@ context('Entry Cloning', () => {
     it('clones the entry and creates Pages record', () => {
         cy.visit(page.url);
         page.get('first_party_addons').find('.add-on-card:contains("Pages") a').click()
-        
+
         cy.visit('admin.php?/cp/publish/edit/entry/2')
         cy.get('.tab-bar__tab:contains("Pages")').click()
         cy.get('input[name=pages__pages_uri]').type('getting_to_know_expressionengine');

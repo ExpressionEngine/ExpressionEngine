@@ -70,6 +70,14 @@ $lang = array(
 
     'column_title' => 'Title',
 
+    'column_view_count_one' => 'View Count 1',
+
+    'column_view_count_two' => 'View Count 2',
+
+    'column_view_count_three' => 'View Count 3',
+
+    'column_view_count_four' => 'View Count 4',
+
     'comment_content' => 'Comment content',
 
     'comment_content_desc' => 'Content of this comment.',
@@ -241,6 +249,10 @@ $lang = array(
 
     'calendar' => 'Calendar',
 
+    'cat_selection_is_multiple_categories_assigned' => 'The selection should be limited to one category, but the entry already has multiple categories assigned.',
+
+    'cat_selection_is_multiple_auto_select_parent' => 'The selection should be limited to one category, but category group contains child categories and <code>Assign category parents</code> setting is on.',
+
     'close_preview' => 'Close Preview',
 
     'cancel_preview' => 'Cancel Preview',
@@ -354,6 +366,8 @@ $lang = array(
     'edit_comment' => 'Edit Comment',
 
     'edit_entry' => 'Edit Entry',
+
+    'edit_member' => 'Edit Member',
 
     'edit_selected' => 'Edit Selected',
 
@@ -848,6 +862,8 @@ $lang = array(
     'expand_all' => 'Expand All',
 
     'creating_new_in_rel' => 'Creating new entry in <b>#to_channel#</b> for a relationship with <b>#from_channel#</b>',
+
+    'creating_member_in_rel' => 'Creating new member for a relationship with <b>#from_channel#</b>',
 
     'hide' => 'Hide',
 

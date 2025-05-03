@@ -19,6 +19,7 @@ class MemberFieldDataGateway extends VariableColumnGateway
 {
     protected static $_table_name = 'member_data';
     protected static $_primary_key = 'member_id';
+    protected static $_gateway_model = 'MemberField'; // model that defines elements fetched by this gateway
 
     protected static $_related_gateways = array(
         'member_id' => array(
