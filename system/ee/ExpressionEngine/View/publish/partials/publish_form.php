@@ -7,6 +7,11 @@
         <div class="title-bar title-bar--large">
             <h3 class="title-bar__title">
                 <?=$head['title']?>
+                <?php if (isset($head['uri'])) : ?>
+                    <span class="app-badge button-group-normal">
+                        <span class="button button--default"><?=$head['uri']?></span>
+                    </span>
+                <?php endif; ?>
                 <?php if (isset($version)) {
                     $this->embed('ee:publish/partials/revision_badge', $version);
                 } ?>

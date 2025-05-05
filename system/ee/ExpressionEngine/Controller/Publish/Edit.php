@@ -488,6 +488,22 @@ class Edit extends AbstractPublishController
             }
         }
 
+        if (!$entry->isNew() && !$version_id && !$autosave_id && !$sequence_editing) {
+            foreach (['structure', 'pages'] as $module_name) {
+                $module = ee('Addon')->get($module_name);
+                if (!$module->isInstalled()) {
+                    continue;
+                }
+
+                include_once($module->getPath() . '/tab.' . $module_name . '.php');
+                $class_name = ucfirst($module_name) . '_tab';
+                $tab = new $class_name();
+
+                $vars['head']['uri'] = $tab->renderTableCell([], null, $entry);
+                break; // do it just once
+            }
+        }
+
         if (isset($vars['pro_class'])) {
             $channel_layout = null;
         } else {
