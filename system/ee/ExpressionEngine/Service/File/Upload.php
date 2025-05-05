@@ -359,6 +359,12 @@ class Upload
         );
     }
 
+    /**
+     * Resolve file name conflict on upload
+     *
+     * @param int $file_id ID of new uploaded file
+     * @return array
+     */
     public function resolveNameConflict($file_id)
     {
         $file = ee('Model')->get('File', $file_id)
@@ -524,6 +530,8 @@ class Upload
                         $file->getFilesystem()->forceCopy($src, $dest);
                     }
                 }
+
+                $original->file_hw_original = $file->file_hw_original;
 
                 $file->delete();
 

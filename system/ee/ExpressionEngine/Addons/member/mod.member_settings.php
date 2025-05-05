@@ -784,6 +784,16 @@ class Member_settings extends Member
         $fields = [];
         if (strpos($template, '{/custom_profile_fields}') !== false || !is_null(ee()->TMPL->template_engine)) {
             if ($query->num_rows() > 0) {
+                // Find out if we have an {options}{/options} tag pair within {custom_profile_fields}{/custom_profile_fields} tag pair
+                if (strpos($template, '{/options}') !== false) {
+                    $options_tag_length = strlen(LD . 'options' . RD);
+        
+                    // Find the starting and ending position of our options tags and calculate the difference so we can grab it.
+                    $options_start = strpos($template, LD . 'options' . RD) + $options_tag_length;
+                    $options_end = strpos($template, LD . '/options' . RD);
+                    $options_diff = $options_end - $options_start;
+                }
+                
                 foreach ($member->getDisplay()->getFields() as $field) {
                     if (! ee('Permission')->isSuperAdmin() && $field->get('field_public') != 'y') {
                         continue;
@@ -839,6 +849,26 @@ class Member_settings extends Member
                         $temp = str_replace('<td ', "<td valign='top' ", $temp);
                     }
 
+                    /** ----------------------------------------
+                    /**  Render option tags
+                    /** ----------------------------------------*/
+                    // only run if there are {options} tag pairs and that there is an available array of value/label pairs to populate from
+                    if (! empty($options_diff) && array_key_exists('value_label_pairs', $field->get('field_settings'))) {
+                        $options_start = strpos($temp, LD . 'options' . RD) + $options_tag_length;
+                        $options_end = strpos($temp, LD . '/options' . RD);
+                        $options_diff = $options_end - $options_start;
+                                                
+                        $options_tagdata = substr($temp, $options_start, $options_diff);
+                        $options_temp = '';
+                        
+                        foreach($field->get('field_settings')['value_label_pairs'] as $value => $name) {
+                            $options_selected = ($field->getData() == $value ? 'selected' : '');
+                            $options_temp .= str_replace('{selected}', $options_selected , str_replace('{option_name}', $name, str_replace('{option_value}', $value, $options_tagdata)));
+                        }
+
+                        $temp = substr_replace($temp, $options_temp, $options_start, $options_diff);
+                    }
+                    
                     $r .= $temp;
 
                     $fields[$field->getName()] = $variables;
