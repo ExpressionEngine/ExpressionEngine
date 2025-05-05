@@ -15,7 +15,7 @@ context('File Manager / Usage Tab', () => {
   })
 
   it('Check if usage tab is on', () => {
-    cy.get('a').contains('staff_jane').filter(':visible').first().click()
+    cy.get('a').contains('staff_randell').filter(':visible').first().click()
     cy.get('button').contains('Usage').should('exist')
     cy.get('.tab-notification-generic').contains('0')
   })
@@ -32,7 +32,7 @@ context('File Manager / Usage Tab', () => {
     cy.get('input[name="field_id_3"]').parent('.field-control').find('div[data-file-field-react] .dropdown--open a:contains("About")').click()
     cy.wait(1000)
     file_modal.get('files').should('be.visible')
-    file_modal.get('files').contains('staff_jane.png').click()
+    file_modal.get('files').contains('staff_randell.png').click()
     file_modal.get('files').should('not.be.visible')
     cy.get('.fields-upload-chosen').should('be.visible')
     cy.get('body').type('{ctrl}', {release: false}).type('s')
@@ -48,7 +48,7 @@ context('File Manager / Usage Tab', () => {
     cy.get('input[name="field_id_3"]').parent('.field-control').find('div[data-file-field-react] .dropdown--open a:contains("About")').click()
     cy.wait(1000)
     file_modal.get('files').should('be.visible')
-    file_modal.get('files').contains('staff_jane.png').click()
+    file_modal.get('files').contains('staff_randell.png').click()
     file_modal.get('files').should('not.be.visible')
     cy.get('.fields-upload-chosen').should('be.visible')
     cy.get('body').type('{ctrl}', {release: false}).type('s')
@@ -64,13 +64,13 @@ context('File Manager / Usage Tab', () => {
     cy.get('input[name="field_id_5"]').parent('.field-control').find('div[data-file-field-react] .dropdown--open a:contains("About")').click()
     cy.wait(1000)
     file_modal.get('files').should('be.visible')
-    file_modal.get('files').contains('staff_jane.png').click()
+    file_modal.get('files').contains('staff_randell.png').click()
     file_modal.get('files').should('not.be.visible')
     cy.get('.fields-upload-chosen').should('be.visible')
     cy.get('body').type('{ctrl}', {release: false}).type('s')
 
     cy.visit('admin.php?/cp/files')
-    cy.get('a').contains('staff_jane').filter(':visible').first().click()
+    cy.get('a').contains('staff_randell').filter(':visible').first().click()
     cy.get('button').contains('Usage').should('exist')
     cy.get('.tab-notification-generic').contains('3')
 
@@ -89,13 +89,13 @@ context('File Manager / Usage Tab', () => {
     cy.get('#fieldset-cat_image').find('div[data-file-field-react] .dropdown--open a:contains("About")').click()
     cy.wait(1000)
     file_modal.get('files').should('be.visible')
-    file_modal.get('files').contains('staff_jane.png').click()
+    file_modal.get('files').contains('staff_randell.png').click()
     file_modal.get('files').should('not.be.visible')
     cy.get('.fields-upload-chosen').should('be.visible')
     cy.get('body').type('{ctrl}', {release: false}).type('s')
 
     cy.visit('admin.php?/cp/files')
-    cy.get('a').contains('staff_jane').filter(':visible').first().click()
+    cy.get('a').contains('staff_randell').filter(':visible').first().click()
     cy.get('button').contains('Usage').should('exist')
     cy.get('.tab-notification-generic').contains('4')
 
