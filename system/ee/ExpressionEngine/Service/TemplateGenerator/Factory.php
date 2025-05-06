@@ -154,13 +154,13 @@ class Factory
         return ($instance instanceof AbstractFieldTemplateGenerator) ? $instance : null;
     }
 
-    public function getFieldVariables($fieldInfo, $channelContext = null): array
+    public function getFieldVariables($fieldInfo, $channelContext = null): ?array
     {
         $fieldtypeGenerator = $this->getFieldtype($fieldInfo->field_type);
 
         // fieldtype is not installed, skip it
         if (!$fieldtypeGenerator) {
-            return [];
+            return null;
         }
 
         // by default, we'll use generic field stub
@@ -202,8 +202,8 @@ class Factory
             // get the field variables
             $field = ee('TemplateGenerator')->getFieldVariables($fieldInfo);
 
-            // if field is empty, continue to the next field
-            if (empty($field)) {
+            // if field is null, continue to the next field
+            if (is_null($field)) {
                 continue;
             }
 
