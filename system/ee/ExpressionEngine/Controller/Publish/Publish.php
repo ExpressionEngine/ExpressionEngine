@@ -284,7 +284,7 @@ class Publish extends AbstractPublishController
             'class' => 'ajax-validate',
         );
 
-        $livePreviewReady = $this->createLivePreviewModal($entry);
+        $livePreviewReady = ee('LivePreview')->createLivePreviewModal($entry);
 
         $vars = array(
             'form_url' => ee('CP/URL')->getCurrentUrl(),

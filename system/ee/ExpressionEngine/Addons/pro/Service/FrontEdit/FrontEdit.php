@@ -53,6 +53,9 @@ class FrontEdit
         if (ee('LivePreview')->hasEntryData()) {
             return true;
         }
+        if (REQ == 'ACTION') {
+            return true;
+        }
         return false;
     }
 

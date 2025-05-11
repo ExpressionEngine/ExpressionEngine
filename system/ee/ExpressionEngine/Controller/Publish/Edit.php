@@ -251,6 +251,8 @@ class Edit extends AbstractPublishController
 
         ee()->javascript->set_global([
             'lang.remove_confirm' => lang('entry') . ': <b>### ' . lang('entries') . '</b>',
+            'lang.close_modal' => lang('close_modal'),
+            'lang.preview' => lang('preview'),
 
             'publishEdit.sequenceEditFormUrl' => ee('CP/URL')->make('publish/edit/entry/###')->compile(),
             'publishEdit.bulkEditFormUrl' => ee('CP/URL')->make('publish/bulk-edit')->compile(),
@@ -408,7 +410,7 @@ class Edit extends AbstractPublishController
             'class' => 'ajax-validate',
         );
 
-        $livePreviewReady = $this->createLivePreviewModal($entry);
+        $livePreviewReady = ee('LivePreview')->createLivePreviewModal($entry);
 
         $vars = array(
             'head' => [
