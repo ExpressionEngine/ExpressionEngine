@@ -245,9 +245,13 @@ class EE_Exceptions
         // Replace system path
         $filepath = str_replace($syspath, '', $filepath);
         $message = str_replace($syspath, '', $message);
-		
+
         if (strpos($message, 'SQLSTATE') !== false) {
-			log_message('error', 'MySQL Error: ' . $message);
+            log_message('error', 'MySQL Error: ' . $message);
+        }
+
+        if (preg_match('/getaddrinfo for (.*) failed/', $message, $matches)) {
+            $message = str_replace($matches[1], '<i>{configured hostname}</i>', $message);
         }
 
         $message = htmlentities($message, ENT_QUOTES, 'UTF-8', false);
@@ -281,6 +285,10 @@ class EE_Exceptions
             }
 
             $line = str_replace($partial_path, '', $line);
+
+            if (strpos($line, 'PDO->__construct') !== false) {
+                $line = str_replace(substr($line, strpos($line, 'PDO->__construct')), 'Database Connection', $line);
+            }
             $line = htmlentities($line, ENT_QUOTES, 'UTF-8');
         }
 
