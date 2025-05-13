@@ -131,7 +131,9 @@ class MetaDataReader
         foreach ($gateway_names as $i => $name) {
             $gateway_class = $prefix . '\\Gateway\\' . $name;
             $gateway = new $gateway_class();
-            $gateway_model = $gateway->getGatewayModel();
+            // the below is causing fields record to be not created, which makes problems for other queries
+            // have to skip until we fgure out how to this for Select queries only
+            /*$gateway_model = $gateway->getGatewayModel();
             if ($i > 0 && ! is_null($gateway_model) && $gateway_model != 'ChannelField') {
                 // if the gateway model is defined, check if it has any objects (e.g. custom fields)
                 // if none defined, no reason to query on this gateway
@@ -139,7 +141,7 @@ class MetaDataReader
                 if ($fieldsExist == 0) {
                     continue;
                 }
-            }
+            }*/
             $gateways[$name] = $gateway;
         }
 

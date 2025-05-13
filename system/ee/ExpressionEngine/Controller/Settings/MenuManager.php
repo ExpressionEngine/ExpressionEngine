@@ -14,6 +14,7 @@ use CP_Controller;
 use ExpressionEngine\Service\Model\Query\Builder;
 use ExpressionEngine\Library\CP\Table;
 use ExpressionEngine\Model\Menu\MenuSet;
+use ExpressionEngine\Service\Model\Collection;
 
 /**
  * Menu Manager Controller
@@ -138,7 +139,7 @@ class MenuManager extends Settings
     {
         ee()->view->cp_breadcrumbs = array(
             ee('CP/URL')->make('settings/menu-manager')->compile() => lang('menu_manager'),
-            '' => lang('create_new_menu_set')
+            '' => lang('create_menu_set')
         );
 
         return $this->form();
@@ -176,11 +177,11 @@ class MenuManager extends Settings
     {
         if (is_null($set_id)) {
             $alert_key = 'created';
-            ee()->view->cp_page_title = lang('create_new_menu_set');
+            ee()->view->cp_page_title = lang('create_menu_set');
             ee()->view->base_url = ee('CP/URL')->make('settings/menu-manager/create-set/');
             $set = ee('Model')->make('MenuSet');
         } else {
-            $set = ee('Model')->get('MenuSet')->filter('set_id', (int) $set_id)->first();
+            $set = ee('Model')->get('MenuSet')->with('RoleSettings')->filter('set_id', (int) $set_id)->all()->first();
 
             if (! $set) {
                 show_error(lang('unauthorized_access'), 403);
@@ -192,9 +193,20 @@ class MenuManager extends Settings
         }
 
         if (! empty($_POST)) {
+            $assigned = (array) ee('Request')->post('roles');
+
+            if (defined('CLONING_MODE') && CLONING_MODE === true) {
+                $alert_key = 'created';
+                $originalSetId = $set->getId();
+                $set->setId(null);
+                while (true !== $set->validateUnique('name', $_POST['name'])) {
+                    $_POST['name'] = lang('copy_of') . ' ' . $_POST['name'];
+                }
+                $assigned = array_diff($assigned, $set->RoleSettings->pluck('role_id'));
+                $set->markAsDirty();
+            }
             $set->set($_POST);
 
-            $assigned = (array) ee('Request')->post('roles');
             $set->RoleSettings = ee('Model')
                 ->get('RoleSetting')
                 ->filter('role_id', 'IN', array_intersect($assigned, ee('Permission')->rolesThatCan('access_cp')))
@@ -218,6 +230,39 @@ class MenuManager extends Settings
 
             if ($result->isValid()) {
                 $set->save();
+
+                if (defined('CLONING_MODE') && CLONING_MODE === true && $kids->count() == 0) {
+                    $kids = ee('Model')->get('MenuItem')->with('Children')
+                        ->filter('set_id', $originalSetId)->all()
+                        ->map(function($kid) use($set) {
+                            $kid->setId(null);
+                            $kid->set_id = $set->getId();
+                            $kid->markAsDirty();
+
+                            // If the menu item has children we also need to copy those and
+                            // associate them with their freshly copied parents, a joyful reunion
+                            if(!empty($childIds = $kid->Children->getIds())) {
+                                $kid->getAssociation('Children')->reload();
+                                $kid->on('afterInsert', function() use($kid, $childIds) {
+                                    $children = ee('Model')->get('MenuItem')
+                                        ->filter('item_id', 'IN', $childIds)->all()
+                                        ->map(function($child) use($kid) {
+                                            $child->setId(null);
+                                            $child->parent_id = $kid->getId();
+                                            $child->markAsDirty();
+
+                                            return $child;
+                                        });
+
+                                    (new Collection($children))->save();
+                                });
+                            }
+                            return $kid;
+                        });
+
+                    $kids = new Collection($kids);
+                }
+
                 $kids->save();
 
                 ee('CP/Alert')->makeInline('shared-form')
@@ -302,6 +347,16 @@ class MenuManager extends Settings
                 'working' => 'btn_saving'
             ]
         ];
+
+        if (! $set->isNew()) {
+            $vars['buttons'][] = [
+                'name' => 'submit',
+                'type' => 'submit',
+                'value' => 'save_as_new_entry',
+                'text' => sprintf(lang('clone_to_new'), lang('menu_set')),
+                'working' => 'btn_saving'
+            ];
+        }
 
         ee()->cp->render('settings/form', $vars);
     }

@@ -34,6 +34,12 @@ span.ico.reorder {
 	font-weight: 400;
 }
 
+button.filter-bar__button .faded{
+	overflow: hidden;
+	max-width: 60%;
+	vertical-align: top;
+}
+
 .tbl-wrap, // LEGACY 6.0
 .table-responsive {
 	display: block;
@@ -383,4 +389,10 @@ tr {
 .modal-file .file-list tbody tr:hover {
   cursor: pointer;
   background-color: color(bg-0);
+}
+
+.table-responsive {
+	.filter-bar__item {
+		position: static;
+	}
 }

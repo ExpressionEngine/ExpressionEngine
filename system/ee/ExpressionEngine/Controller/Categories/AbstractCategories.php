@@ -80,7 +80,7 @@ abstract class AbstractCategories extends CP_Controller
         $list = $header->addFolderList('categories')
             ->withNoResultsText(sprintf(lang('no_found'), lang('category_groups')));
 
-        if (ee('Permission')->can('delete_category_groups')) {
+        if (ee('Permission')->can('delete_categories')) {
             $list->withRemoveUrl(ee('CP/URL')->make('categories/groups/remove'))
                 ->withRemovalKey('content_id');
         }
@@ -100,13 +100,13 @@ abstract class AbstractCategories extends CP_Controller
                 ee('CP/URL')->make('categories/group/' . $group->getId())
             )->withIcon('tags');
 
-            if (ee('Permission')->can('edit_category_groups')) {
+            if (ee('Permission')->can('edit_categories')) {
                 $item->withEditUrl(
                     ee('CP/URL')->make('categories/groups/edit/' . $group->getId())
                 );
             }
 
-            if (ee('Permission')->can('delete_category_groups')) {
+            if (ee('Permission')->can('delete_categories')) {
                 $item->withRemoveConfirmation(
                     lang('category_group') . ': <b>' . $group_name . '</b>'
                 )->identifiedBy($group->getId());
@@ -121,9 +121,7 @@ abstract class AbstractCategories extends CP_Controller
             }
         }
 
-        if (ee('Permission')->can('create_category_groups')) {
-            $header->withButton(lang('new'), ee('CP/URL')->make('categories/groups/create'));
-        }
+        $header->withButton(lang('new'), ee('CP/URL')->make('categories/groups/create'));
     }
 }
 

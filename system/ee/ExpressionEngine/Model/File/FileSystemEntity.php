@@ -378,9 +378,23 @@ class FileSystemEntity extends ContentModel
         $manipulations = array_merge($manipulations, $this->UploadDestination->FileDimensions->pluck('short_name'));
 
         foreach ($manipulations as $manipulation) {
-            $manipulatedFilePath = $this->getBaseServerPath() . $this->getSubfoldersPath() . '_' . $manipulation . '/' . $this->file_name;
+            $directory = $this->getBaseServerPath() . $this->getSubfoldersPath() . '_' . $manipulation;
+            $manipulatedFilePath = "{$directory}/{$this->file_name}";
+
             if ($filesystem->exists($manipulatedFilePath)) {
                 $filesystem->delete($manipulatedFilePath);
+            }
+
+            // Manipulations that are generated on-the-fly have unique hashes after the prefix.
+            // The md5 hash that is appended is always 32 characters long so we will filter
+            // filename based on length to avoid removing other files that share a prefix
+            $dynamicFilePrefix = "{$filesystem->filename($this->file_name)}_{$manipulation}_";
+            $dynamicFilenameLength = strlen("{$dynamicFilePrefix}.{$filesystem->extension($this->file_name)}") + 32;
+
+            foreach($filesystem->filesMatchingPrefix("{$directory}/{$dynamicFilePrefix}") as $file) {
+                if(strlen("{$file['filename']}.{$file['extension']}") == $dynamicFilenameLength) {
+                    $filesystem->delete($file['path']);
+                }
             }
         }
     }

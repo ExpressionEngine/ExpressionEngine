@@ -278,6 +278,13 @@ class Validator
     {
         list($name, $params) = $this->parseRuleString($rule_definition);
 
+        if ($name == 'regex' && count($params) > 1) {
+            // regular expressions can go wild
+            // we need to make sure the whole expression is passed in as single parameter
+            // it was exploded with a comma, so implode back in
+            $params = [implode(',', $params)];
+        }
+
         if (isset($this->custom[$name])) {
             $object = clone $this->custom[$name];
         } else {

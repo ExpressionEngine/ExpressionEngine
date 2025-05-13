@@ -940,13 +940,11 @@ class Member
 
         $data['action'] = ee()->TMPL->fetch_param('action');
 
-        $res = ee()->functions->form_declaration($data);
+        $open = ee()->functions->form_declaration($data);
 
-        $res .= stripslashes(ee()->TMPL->tagdata);
+        ee()->TMPL->set_data(['open' => $open]);
 
-        $res .= "</form>";
-
-        return $res;
+        return $open . stripslashes(ee()->TMPL->tagdata) . "</form>";
     }
 
     /**
@@ -994,13 +992,11 @@ class Member
 
         $data['action'] = ee()->TMPL->fetch_param('action');
 
-        $res = ee()->functions->form_declaration($data);
+        $open = ee()->functions->form_declaration($data);
 
-        $res .= stripslashes(ee()->TMPL->tagdata);
+        ee()->TMPL->set_data(['open' => $open]);
 
-        $res .= "</form>";
-
-        return $res;
+        return $open . stripslashes(ee()->TMPL->tagdata) . "</form>";
     }
 
     public function send_username()
@@ -1046,13 +1042,11 @@ class Member
 
         $data['action'] = ee()->TMPL->fetch_param('action');
 
-        $res = ee()->functions->form_declaration($data);
+        $open = ee()->functions->form_declaration($data);
 
-        $res .= stripslashes(ee()->TMPL->tagdata);
+        ee()->TMPL->set_data(['open' => $open]);
 
-        $res .= "</form>";
-
-        return $res;
+        return $open . stripslashes(ee()->TMPL->tagdata) . "</form>";
     }
 
     /**
@@ -1606,13 +1600,13 @@ class Member
 
         $data['action'] = ee()->TMPL->fetch_param('action');
 
-        $res = ee()->functions->form_declaration($data);
+        $open = ee()->functions->form_declaration($data);
 
-        $res .= stripslashes(ee()->TMPL->tagdata);
+        $template = ee()->TMPL->parse_inline_errors(ee()->TMPL->tagdata);
 
-        $res .= "</form>";
+        ee()->TMPL->set_data(['open' => $open]);
 
-        return $res;
+        return $open . stripslashes($template) . "</form>";
     }
 
     /**
@@ -1724,6 +1718,7 @@ class Member
             'RET' => (ee()->TMPL->fetch_param('return') && ee()->TMPL->fetch_param('return') != "") ? ee()->TMPL->fetch_param('return') : '-1',
             'P' => ee()->functions->get_protected_form_params(array(
                 'result_page' => $result_page,
+                'inline_errors' => ee()->TMPL->fetch_param('inline_errors'),
             ))
         );
 
@@ -1743,13 +1738,13 @@ class Member
             $data['action'] = '/' . $data['action'];
         }
 
-        $res = ee()->functions->form_declaration($data);
+        $open = ee()->functions->form_declaration($data);
 
-        $res .= stripslashes(ee()->TMPL->tagdata);
+        $template = ee()->TMPL->parse_inline_errors(ee()->TMPL->tagdata);
 
-        $res .= "</form>";
+        ee()->TMPL->set_data(['open' => $open]);
 
-        return $res;
+        return $open . stripslashes($template) . "</form>";
     }
 
     /**
@@ -2546,10 +2541,13 @@ class Member
                     'entry_site_id' => null,
                     'channel_url' => null,
                     'comment_url' => null,
+                    'title' => '',
                 ],
                 $default_fields
             )]
         ];
+
+        ee()->TMPL->set_data(array_merge($default_fields, $dates, $data));
 
         ee()->TMPL->tagdata = $parser->parse($channel, $data);
 
@@ -2565,6 +2563,7 @@ class Member
 
         $member = ee('Model')
             ->get('Member', $member_id)
+            ->with(['Roles' => 'RoleGroups AS GroupsByRole'])
             ->with('RoleGroups')
             ->all()
             ->first();
@@ -2574,22 +2573,42 @@ class Member
         }
 
         $vars = [];
+
+        // Role groups that are assigned directly to member
         foreach ($member->RoleGroups as $roleGroup) {
-            if ($roleGroup->group_id === 0 && $roleGroup->name === null) {
+            if ($roleGroup->group_id === 0 && empty($roleGroup->name)) {
                 continue;
             }
 
-            $vars[] = [
+            $vars[$roleGroup->group_id] = [
                 'role_group_id' => $roleGroup->group_id,
                 'role_group_name' => $roleGroup->name,
             ];
         };
 
-        if (!empty($vars)) {
+        // Role groups that are assigned via Roles
+        foreach ($member->Roles as $role) {
+            foreach ($role->RoleGroups as $roleGroup) {
+                if ($roleGroup->group_id === 0 && empty($roleGroup->name)) {
+                    continue;
+                }
+
+                if (isset($vars[$roleGroup->group_id])) {
+                    continue;
+                }
+
+                $vars[$roleGroup->group_id] = [
+                    'role_group_id' => $roleGroup->group_id,
+                    'role_group_name' => $roleGroup->name,
+                ];
+            }
+        }
+
+        if (empty($vars)) {
             return ee()->TMPL->no_results();
         }
 
-        return ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $vars);
+        return ee()->TMPL->parse_variables(ee()->TMPL->tagdata, array_values($vars));
     }
 
     /**
@@ -2647,7 +2666,6 @@ class Member
 
         $member = ee('Model')
             ->get('Member', $member_id)
-            ->with('PrimaryRole', 'Roles', 'RoleGroups')
             ->first();
 
         if (!$member) {

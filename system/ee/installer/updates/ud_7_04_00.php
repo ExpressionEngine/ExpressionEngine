@@ -36,11 +36,13 @@ class Updater
                 'addCategoryGroupSettings',
                 'addMemberRelationshipTable',
                 'addMemberFieldtype',
-                'addCategoryGroupPermissions',
+                'ensureRoleChannelDefault',
                 'ensureBuiltinRoles',
                 'addShowFieldNamesSetting',
                 'increaseEmailLength',
                 'addMissingPrimaryKeys',
+                'fixCategoryFieldRecords',
+                'fixMemberFieldRecords',
             ]
         );
 
@@ -155,10 +157,12 @@ class Updater
             if (!empty($record->cat_group)) {
                 $cat_groups = explode('|', $record->cat_group);
                 foreach ($cat_groups as $cat_group) {
-                    ee('db')->insert('upload_prefs_category_groups', [
-                        'upload_location_id' => $record->id,
-                        'group_id' => $cat_group
-                    ]);
+                    if (!empty($cat_group)) {
+                        ee('db')->insert('upload_prefs_category_groups', [
+                            'upload_location_id' => $record->id,
+                            'group_id' => $cat_group
+                        ]);
+                    }
                 }
             }
         }
@@ -195,10 +199,12 @@ class Updater
             if (!empty($record->cat_group)) {
                 $cat_groups = explode('|', $record->cat_group);
                 foreach ($cat_groups as $cat_group) {
-                    ee('db')->insert('channel_category_groups', [
-                        'channel_id' => $record->channel_id,
-                        'group_id' => $cat_group
-                    ]);
+                    if (!empty($cat_group)) {
+                        ee('db')->insert('channel_category_groups', [
+                            'channel_id' => $record->channel_id,
+                            'group_id' => $cat_group
+                        ]);
+                    }
                 }
             }
         }
@@ -381,31 +387,11 @@ class Updater
         );
     }
 
-    // those that have edit_categories permissions get the new permission automatically
-    private function addCategoryGroupPermissions()
+    // Upgrades from pre-v3 may not have a default set for the cp_homepage_channel field
+    // in exp_role_settings, which may cause a MySQL error in ensureBuiltinRoles hence adding it here as well as 7.5.10
+    private function ensureRoleChannelDefault()
     {
-        $query = ee()->db->where('permission', 'can_edit_categories')->get('permissions');
-
-        foreach ($query->result_array() as $row) {
-            $data = array(
-                'site_id' => $row['site_id'],
-                'role_id' => $row['role_id'],
-                'permission' => 'can_create_category_groups'
-            );
-            ee()->db->insert('permissions', $data);
-            $data = array(
-                'site_id' => $row['site_id'],
-                'role_id' => $row['role_id'],
-                'permission' => 'can_edit_category_groups'
-            );
-            ee()->db->insert('permissions', $data);
-            $data = array(
-                'site_id' => $row['site_id'],
-                'role_id' => $row['role_id'],
-                'permission' => 'can_delete_category_groups'
-            );
-            ee()->db->insert('permissions', $data);
-        }
+        ee()->db->query("ALTER TABLE exp_role_settings ALTER COLUMN cp_homepage_channel SET DEFAULT 0");
     }
 
     // in some very old EE versions is was possible to delete built-in member groups
@@ -506,7 +492,7 @@ class Updater
             'file_usage'
         ];
 
-        foreach($tables as $table) {
+        foreach ($tables as $table) {
             $column = "{$table}_id";
 
             if (!ee()->db->field_exists($column, $table)) {
@@ -514,6 +500,26 @@ class Updater
                 ee()->db->query("ALTER TABLE $table ADD COLUMN `$column` INT(10) UNSIGNED PRIMARY KEY AUTO_INCREMENT FIRST");
             }
         }
+    }
+
+    private function fixCategoryFieldRecords()
+    {
+        ee()->db->query(
+            "INSERT INTO exp_category_field_data (cat_id, site_id, group_id) ".
+            "SELECT cat_id, site_id, group_id ".
+            "FROM exp_categories ".
+            "WHERE cat_id NOT IN (SELECT cat_id FROM exp_category_field_data)"
+        );
+    }
+
+    private function fixMemberFieldRecords()
+    {
+        ee()->db->query(
+            "INSERT INTO exp_member_data (member_id) ".
+            "SELECT member_id ".
+            "FROM exp_members ".
+            "WHERE member_id NOT IN (SELECT member_id FROM exp_member_data)"
+        );
     }
 }
 

@@ -121,6 +121,7 @@ class Template extends FileSyncedModel
     public function getPath()
     {
         $groupName = !is_null($this->getTemplateGroup()) ? $this->getTemplateGroup()->group_name : '';
+
         return $groupName . '/' . $this->template_name;
     }
 
@@ -291,7 +292,7 @@ class Template extends FileSyncedModel
     public function onBeforeInsert()
     {
         if (!isset($this->Roles) || is_null($this->Roles)) {
-            $this->Roles = $this->getModelFacade()->get('Role')->all();
+            $this->Roles = $this->getModelFacade()->get('Role')->fields('role_id')->all();
         }
     }
 

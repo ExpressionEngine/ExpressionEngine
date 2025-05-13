@@ -8,23 +8,21 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace ExpressionEngine\Controller\Members;
+namespace ExpressionEngine\Controller\Settings;
 
-use CP_Controller;
-use ExpressionEngine\Library\CP;
 use ExpressionEngine\Library\CP\Table;
 use ExpressionEngine\Service\Filter\FilterFactory;
-use ExpressionEngine\Controller\Members;
 
 /**
  * Member Fields Controller
  */
-class Fields extends Members\Members
+class MemberFields extends Settings
 {
     protected $perpage;
     protected $params;
     protected $page = 1;
     protected $offset = 0;
+    protected $base_url;
 
     /**
      * Constructor
@@ -39,7 +37,7 @@ class Fields extends Members\Members
 
         ee()->lang->loadfile('members');
         ee()->lang->loadfile('channel');
-        $this->base_url = ee('CP/URL')->make('members/fields');
+        $this->base_url = ee('CP/URL')->make('settings/member-fields');
     }
 
     /**
@@ -80,7 +78,7 @@ class Fields extends Members\Members
             'sort_dir' => $sort_dir,
             'limit' => $this->perpage,
             'reorder' => true,
-            'save' => ee('CP/URL')->make("members/fields/order")
+            'save' => ee('CP/URL')->make("settings/member-fields/order")
         ));
 
         $table->setColumns(
@@ -105,7 +103,7 @@ class Fields extends Members\Members
         $table->setNoResultsText(
             sprintf(lang('no_found'), lang('custom_member_fields')),
             'add_new',
-            ee('CP/URL')->make('members/fields/create')
+            ee('CP/URL')->make('settings/member-fields/create')
         );
 
         $data = array();
@@ -133,7 +131,7 @@ class Fields extends Members\Members
         $type_map = ee('Model')->make('MemberField')->getUsableFieldtypes('MemberField');
 
         foreach ($fields as $field) {
-            $edit_url = ee('CP/URL')->make('members/fields/edit/' . $field->m_field_id);
+            $edit_url = ee('CP/URL')->make('settings/member-fields/edit/' . $field->m_field_id);
             $toolbar = array('toolbar_items' => array(
                 'edit' => array(
                     'href' => $edit_url,
@@ -173,8 +171,8 @@ class Fields extends Members\Members
 
         $table->setData($fieldData);
         $data['table'] = $table->viewData($this->base_url);
-        $data['form_url'] = ee('CP/URL')->make('members/fields/delete');
-        $data['new'] = ee('CP/URL')->make('members/fields/create');
+        $data['form_url'] = ee('CP/URL')->make('settings/member-fields/delete');
+        $data['new'] = ee('CP/URL')->make('settings/member-fields/create');
         $base_url = $data['table']['base_url'];
 
         if (! empty($data['table']['data'])) {
@@ -195,7 +193,7 @@ class Fields extends Members\Members
             ->withTitle(lang('member_field_ajax_reorder_fail'))
             ->addToBody(lang('member_field_ajax_reorder_fail_desc'));
 
-        ee()->javascript->set_global('member_fields.reorder_url', ee('CP/URL')->make('members/fields/order/')->compile());
+        ee()->javascript->set_global('member_fields.reorder_url', ee('CP/URL')->make('settings/member-fields/order/')->compile());
         ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());
 
         ee()->view->base_url = $this->base_url;
@@ -203,7 +201,6 @@ class Fields extends Members\Members
         ee()->view->cp_page_title = lang('custom_profile_fields');
 
         ee()->view->cp_breadcrumbs = array(
-            ee('CP/URL')->make('members')->compile() => lang('members'),
             '' => lang('custom_member_fields')
         );
 
@@ -213,8 +210,7 @@ class Fields extends Members\Members
     public function create()
     {
         ee()->view->cp_breadcrumbs = array(
-            ee('CP/URL')->make('members')->compile() => lang('members'),
-            ee('CP/URL')->make('members/fields')->compile() => lang('custom_member_fields'),
+            ee('CP/URL')->make('settings/member-fields')->compile() => lang('custom_member_fields'),
             '' => lang('create_member_field')
         );
 
@@ -224,8 +220,7 @@ class Fields extends Members\Members
     public function edit($id)
     {
         ee()->view->cp_breadcrumbs = array(
-            ee('CP/URL')->make('members')->compile() => lang('members'),
-            ee('CP/URL')->make('members/fields')->compile() => lang('custom_member_fields'),
+            ee('CP/URL')->make('settings/member-fields')->compile() => lang('custom_member_fields'),
             '' => lang('edit_member_field')
         );
 
@@ -293,7 +288,7 @@ class Fields extends Members\Members
 
             ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('field'));
             ee()->view->cp_page_title = lang('edit_member_field');
-            ee()->view->base_url = ee('CP/URL')->make('members/fields/edit/' . $field_id);
+            ee()->view->base_url = ee('CP/URL')->make('settings/member-fields/edit/' . $field_id);
         } else {
             // Only auto-complete field short name for new fields
             ee()->cp->add_js_script('plugin', 'ee_url_title');
@@ -309,7 +304,7 @@ class Fields extends Members\Members
 
             ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('field'));
             ee()->view->cp_page_title = lang('create_member_field');
-            ee()->view->base_url = ee('CP/URL')->make('members/fields/create');
+            ee()->view->base_url = ee('CP/URL')->make('settings/member-fields/create');
         }
 
         if (! $field) {
@@ -473,11 +468,11 @@ class Fields extends Members\Members
                     ->defer();
 
                 if (ee('Request')->post('submit') == 'save_and_new') {
-                    $redirectUrl = ee('CP/URL')->make('/members/fields/create');
+                    $redirectUrl = ee('CP/URL')->make('/settings/member-fields/create');
                 } elseif (ee()->input->post('submit') == 'save_and_close') {
-                    $redirectUrl = ee('CP/URL')->make('/members/fields');
+                    $redirectUrl = ee('CP/URL')->make('/settings/member-fields');
                 } else {
-                    $redirectUrl = ee('CP/URL')->make('/members/fields/edit/' . $field->field_id);
+                    $redirectUrl = ee('CP/URL')->make('/settings/member-fields/edit/' . $field->field_id);
                 }
                 ee()->functions->redirect($redirectUrl);
             } else {
