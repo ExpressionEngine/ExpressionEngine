@@ -381,6 +381,11 @@ else: ?>
                                     </button>
                                     <?php endif ?>
                                 </label>
+                                <span class="app-badge label-app-badge">
+                                    <span class="txt-only">
+                                        <?=isset($row['columns'][0]['attrs']['data-saved-value']) ? $row['columns'][0]['attrs']['data-saved-value'] : ''?>
+                                    </span>
+                                </span>
                             </div>
                         </td>
                         <?php endif; ?>
