@@ -909,7 +909,7 @@ class UploadDestination extends StructureModel
         }
 
         // Remove front-end manipulations
-        $manipulations = ['resize', 'crop', 'rotate', 'webp'];
+        $manipulations = ['resize', 'crop', 'rotate', 'webp', 'avif'];
         $renamer = strrchr($basename, '_');
         $basename = ($renamer === false) ? $basename : substr($basename, 0, -strlen($renamer));
 
