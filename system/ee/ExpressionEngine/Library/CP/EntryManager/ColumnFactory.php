@@ -24,6 +24,7 @@ class ColumnFactory
         'sticky' => Columns\Sticky::class,
         'entry_date' => Columns\EntryDate::class,
         'edit_date' => Columns\EditDate::class,
+        'last_editor' => Columns\LastEditor::class,
         'expiration_date' => Columns\ExpirationDate::class,
         'channel' => Columns\ChannelName::class,
         'comments' => Columns\Comments::class,
