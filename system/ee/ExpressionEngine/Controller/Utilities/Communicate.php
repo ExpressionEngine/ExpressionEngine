@@ -907,7 +907,7 @@ class Communicate extends Utilities
         ));
 
         if (! ee()->upload->do_upload('attachment')) {
-            ee()->form_validation->set_message('_attachment_handler', lang('attachment_problem'));
+            ee()->form_validation->set_message('_attachment_handler', ee()->upload->display_errors());
 
             return false;
         }
