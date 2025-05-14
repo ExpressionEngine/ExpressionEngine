@@ -418,7 +418,7 @@ class EE_Core
         }
 
         // Is MFA required?
-        if (REQ == 'PAGE' && ee()->session->userdata('mfa_flag') != 'skip') {
+        if (REQ == 'PAGE' && ee()->config->item('enable_mfa') === 'y' && ee()->session->userdata('mfa_flag') != 'skip') {
             if (ee()->session->userdata('mfa_flag') == 'show') {
                 ee('pro:Mfa')->invokeMfaDialog();
             }
