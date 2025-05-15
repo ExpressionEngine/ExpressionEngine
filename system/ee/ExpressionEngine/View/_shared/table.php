@@ -381,7 +381,7 @@ else: ?>
                                     </button>
                                     <?php endif ?>
                                 </label>
-                                <span class="app-badge label-app-badge grid-row-description">
+                                <span class="grid-row-description">
                                     <span class="txt-only">
                                         <?=isset($row['columns'][0]['attrs']['data-saved-value']) ? substr($row['columns'][0]['attrs']['data-saved-value'], 0, 50) : ''?>
                                     </span>
