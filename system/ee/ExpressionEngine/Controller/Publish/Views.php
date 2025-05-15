@@ -42,7 +42,7 @@ class Views extends CP_Controller
         $view->channel_id = (int) ee()->input->get('channel_id');
         $view->columns = json_encode(ee()->input->post('columns'));
 
-        if ($view->save()) {
+        if ($view->validate() && $view->save()) {
             ee()->output->send_ajax_response('success');
         } else {
             ee()->output->send_ajax_response(array('error' => 'could_not_save_view'));
