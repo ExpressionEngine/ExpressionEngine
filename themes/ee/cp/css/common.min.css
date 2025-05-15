@@ -24275,6 +24275,11 @@ dialog {
   background: var(--ee-accent-light);
 }
 
+.button-group .not-click {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
 /*
 .button-group {
 	display: flex;
@@ -27546,6 +27551,13 @@ input[type=button].btn-block {
 .modal-file {
   max-width: 100%;
   width: 98%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: fixed;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
 }
 
 .modal-confirm-delete-file,
@@ -47884,6 +47896,7 @@ a.ck.ck-button.ck-on {
   font-size: 16px;
   margin-top: 0;
   margin-bottom: 1em;
+  color: var(--ee-text-normal);
 }
 .field-control .redactor-styles a,
 .field-control .rx-content a,

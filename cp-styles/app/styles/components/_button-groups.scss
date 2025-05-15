@@ -289,3 +289,8 @@
     }
   }
 }
+
+.button-group .not-click {
+  pointer-events: none;
+  opacity: 0.5;
+}
