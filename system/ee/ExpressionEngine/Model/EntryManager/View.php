@@ -11,8 +11,6 @@
 namespace ExpressionEngine\Model\EntryManager;
 
 use ExpressionEngine\Service\Model\Model;
-use ExpressionEngine\Library\CP\EntryManager\Columns\EntryId;
-use ExpressionEngine\Library\CP\EntryManager;
 
 /**
  *
@@ -42,8 +40,7 @@ class View extends Model
     ];
 
     protected static $_validation_rules = [
-        'member_id' => 'required',
-        'columns' => 'validateColumns'
+        'member_id' => 'required'
     ];
 
     protected $view_id;
@@ -59,13 +56,6 @@ class View extends Model
         }
 
         return $this->columns;
-    }
-
-    public function validateColumns($name, $value, $params, $object)
-    {
-        $columns = json_decode($this->columns);
-        print_r($columns);
-        exit;
     }
 }
 
