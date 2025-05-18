@@ -1013,6 +1013,7 @@ class Roles extends AbstractRolesController
 
         $allowed_channels = ee('Model')->get('Channel')
             ->filter('site_id', ee()->config->item('site_id'))
+            ->order('channel_title')
             ->all()
             ->getDictionary('channel_id', 'channel_title');
 
@@ -1029,6 +1030,7 @@ class Roles extends AbstractRolesController
 
         $addons = ee('Model')->get('Module')
             ->fields('module_id', 'module_name')
+            ->order('module_name', 'asc')
             ->all()
             ->filter(function ($addon) {
                 $provision = ee('Addon')->get(strtolower($addon->module_name));
@@ -1050,6 +1052,7 @@ class Roles extends AbstractRolesController
         $allowed_upload_destinations = ee('Model')->get('UploadDestination')
             ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
             ->filter('module_id', 0)
+            ->order('name', 'asc')
             ->all()
             ->getDictionary('id', 'name');
 
@@ -1176,33 +1179,33 @@ class Roles extends AbstractRolesController
                             ]
                         ]
                     ],
+                    [
+                        'title' => 'channel_access',
+                        'desc' => 'channel_access_desc',
+                        'group' => 'can_admin_channels',
+                        'caution' => true,
+                        'fields' => [
+                            'channel_access' => [
+                                'type' => 'checkbox',
+                                'nested' => true,
+                                'auto_select_parents' => true,
+                                'choices' => $channel_access['choices'],
+                                'value' => $channel_access['values'],
+                            ]
+                        ]
+                    ],
+                    [
+                        'title' => 'show_field_names',
+                        'desc' => 'show_field_names_desc',
+                        'group' => 'can_admin_channels',
+                        'fields' => [
+                            'show_field_names' => [
+                                'type' => 'yes_no',
+                                'value' => $role->isNew() ? 'n' : $role->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->show_field_names,
+                            ]
+                        ]
+                    ],
                 ]
-            ],
-            'channel_entries_management' => [
-                [
-                    'title' => 'channel_access',
-                    'desc' => 'channel_access_desc',
-                    'caution' => true,
-                    'fields' => [
-                        'channel_access' => [
-                            'type' => 'checkbox',
-                            'nested' => true,
-                            'auto_select_parents' => true,
-                            'choices' => $channel_access['choices'],
-                            'value' => $channel_access['values'],
-                        ]
-                    ]
-                ],
-                [
-                    'title' => 'show_field_names',
-                    'desc' => 'show_field_names_desc',
-                    'fields' => [
-                        'show_field_names' => [
-                            'type' => 'yes_no',
-                            'value' => $role->isNew() ? 'n' : $role->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->show_field_names,
-                        ]
-                    ]
-                ],
             ],
             'file_manager' => [
                 'group' => 'can_access_cp',
@@ -1362,6 +1365,7 @@ class Roles extends AbstractRolesController
                     [
                         'title' => 'template_group_access',
                         'desc' => 'template_group_access_desc',
+                        'group' => 'can_access_design',
                         'caution' => true,
                         'fields' => [
                             'template_group_access' => [
@@ -1499,7 +1503,7 @@ class Roles extends AbstractRolesController
         $template_groups = ee('Model')->get('TemplateGroup')
             ->fields('group_id', 'group_name')
             ->filter('site_id', ee()->config->item('site_id'))
-            ->order('group_name')
+            ->order('group_order', 'asc')
             ->all()
             ->getDictionary('group_id', 'group_name');
 
@@ -1609,7 +1613,7 @@ class Roles extends AbstractRolesController
         $template_groups = ee('Model')->get('TemplateGroup')
             ->fields('group_id', 'group_name')
             ->filter('site_id', ee()->config->item('site_id'))
-            ->order('group_name')
+            ->order('group_order', 'asc')
             ->all()
             ->getDictionary('group_id', 'group_name');
 
