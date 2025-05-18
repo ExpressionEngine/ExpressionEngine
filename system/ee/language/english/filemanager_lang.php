@@ -204,6 +204,10 @@ $lang = array(
 
     'check_upload_settings' => 'Check the <a href="%s">settings</a> for this upload directory.',
 
+    'focal_point' => 'Focal Point',
+
+    'focal_point_desc' => 'This is center point to be used when cropping image on front-end. From top left, 0 &mdash; 100 %',
+
     'constraints' => 'Constraints',
 
     'coordiantes_desc' => 'x (horizontal) and y (vertical) axis coordinates to start the crop from.',
