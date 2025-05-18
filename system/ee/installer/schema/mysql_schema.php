@@ -1472,6 +1472,8 @@ class EE_Schema
 			`modified_date` bigint(10) DEFAULT NULL,
 			`file_hw_original` varchar(20) NOT NULL DEFAULT '',
 			`total_records` int(10) unsigned DEFAULT '0',
+			`focal_x` TINYINT(1) unsigned DEFAULT '50',
+			`focal_y` TINYINT(1) unsigned DEFAULT '50',
 			PRIMARY KEY (`file_id`),
 			KEY `model_type` (`model_type`),
 			KEY `upload_location_id` (`upload_location_id`),

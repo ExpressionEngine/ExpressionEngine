@@ -108,6 +108,25 @@ class Upload
             )
         );
 
+        if ($file->isEditableImage()) {
+            $sections[0][] = array(
+                'title' => 'focal_point',
+                'desc' => 'focal_point_desc',
+                'fields' => [
+                    'focal_x' => [
+                        'type' => 'short-text',
+                        'label' => 'x-axis',
+                        'value' => $file->focal_x
+                    ],
+                    'focal_y' => [
+                        'type' => 'short-text',
+                        'label' => 'y-axis',
+                        'value' => $file->focal_y
+                    ]
+                ]
+            );
+        }
+
         // Remove the file field when we are editing
         if (! $file->isNew()) {
             unset($sections[0][0]);
@@ -553,7 +572,7 @@ class Upload
         $action = ($file->isNew()) ? 'upload_filedata' : 'edit_file_metadata';
 
         $file->set(array_intersect_key($_POST, array_flip([
-            'title', 'description', 'credit', 'location', 'categories',
+            'title', 'description', 'credit', 'location', 'categories', 'focal_x', 'focal_y',
             'crop_width', 'crop_height', 'crop_x', 'crop_y',
             'rotate', 'resize_width', 'resize_height'
         ])));

@@ -94,6 +94,8 @@ class FileSystemEntity extends ContentModel
         'description' => 'xss',
         'credit' => 'xss',
         'location' => 'xss',
+        'focal_x' => 'integer|greaterOrEqualThan[0]|lessOrEqualThan[100]',
+        'focal_y' => 'integer|greaterOrEqualThan[0]|lessOrEqualThan[100]',
     );
 
     protected $file_id;
@@ -115,6 +117,8 @@ class FileSystemEntity extends ContentModel
     protected $modified_date;
     protected $file_hw_original;
     protected $total_records;
+    protected $focal_x;
+    protected $focal_y;
 
     protected $_baseServerPath;
     protected $_subfolderPath;

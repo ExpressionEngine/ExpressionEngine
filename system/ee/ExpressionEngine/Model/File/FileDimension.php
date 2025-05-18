@@ -210,8 +210,11 @@ class FileDimension extends Model
 
             ee()->image_lib->initialize($config);
 
-            $config['x_axis'] = ((ee()->image_lib->width / 2) - ($width / 2));
-            $config['y_axis'] = ((ee()->image_lib->height / 2) - ($height / 2));
+            $focalX = $file->focal_x / 100;
+            $focalY = $file->focal_y / 100;
+
+            $config['x_axis'] = ((ee()->image_lib->width * $focalX) - ($width * $focalX));
+            $config['y_axis'] = ((ee()->image_lib->height * $focalY) - ($height * $focalY));
             $config['maintain_ratio'] = false;
             $config['width'] = $width;
             $config['height'] = $height;

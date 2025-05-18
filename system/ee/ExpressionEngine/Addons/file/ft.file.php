@@ -529,6 +529,11 @@ JSC;
             return false;
         }
 
+        // if the crop position is focal, get actual numbers so that image will be updated when those change
+        if ($function == 'crop' && isset($params['position']) && $params['position'] == 'focal') {
+            $params['position'] = ($data['model_object']->focal_x / 100) . '|' . ($data['model_object']->focal_y / 100);
+        }
+
         ee()->load->library('image_lib');
         $filename = ee()->image_lib->explode_name($data['fs_filename']);
         if ($function == 'webp') {
@@ -598,11 +603,48 @@ JSC;
             // if position parameter is provided, use it to calculate x and y
             if ($function == 'crop' && isset($params['position'])) {
                 $props = ee()->image_lib->get_image_properties($source['path'], true);
+                $positions = explode('|', $params['position']);
+                if (count($positions) == 1) {
+                    $positions[1] = $positions[0];
+                }
+                foreach ($positions as $key => $value) {
+                    if (is_numeric($value)) {
+                        $positions[$key] = (float) $value;
+                    } else {
+                        switch ($value) {
+                            case 'left':
+                                $positions[$key] = 0;
+                                break;
+                            case 'right':
+                                $positions[$key] = 1;
+                                break;
+                            case 'top':
+                                $positions[$key] = 0;
+                                break;
+                            case 'bottom':
+                                $positions[$key] = 1;
+                                break;
+                            case 'center':
+                            default:
+                                $positions[$key] = 0.5;
+                        }
+                    }
+                }
+                $focalX = $positions[0];
+                $focalY = $positions[1];
+
+                if (!isset($params['width']) && isset($params['height'])) {
+                    $params['width'] = $props['width'] * $params['height'] / $props['height'];
+                }
+                if (!isset($params['height']) && isset($params['width'])) {
+                    $params['height'] = $props['height'] * $params['width'] / $props['width'];
+                }
+
                 if (isset($params['width'])) {
-                    $imageLibConfig['x_axis'] += floor(($props['width'] - (int) $params['width']) / 2);
+                    $imageLibConfig['x_axis'] += floor($props['width'] * $focalX - (int) $params['width'] * $focalX);
                 }
                 if (isset($params['height'])) {
-                    $imageLibConfig['y_axis'] += floor(($props['height'] - (int) $params['height']) / 2);
+                    $imageLibConfig['y_axis'] += floor($props['height'] * $focalY - (int) $params['height'] * $focalY);
                 }
             }
 
