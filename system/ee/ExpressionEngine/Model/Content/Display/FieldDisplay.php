@@ -20,6 +20,7 @@ class FieldDisplay
     protected $visible = true;
     protected $conditional = false;
     protected $width = 100;
+    protected $required_condition = true;
 
     public function __construct($field)
     {
@@ -188,6 +189,19 @@ class FieldDisplay
         $this->field->setItem('in_modal_context', $in_modal);
 
         return $this;
+    }
+
+
+    public function setRequiredCondition($required_condition)
+    {
+        $this->required_condition = $required_condition;
+
+        return $this;
+    }
+
+    public function getRequiredCondition()
+    {
+        return (bool) $this->required_condition;
     }
 }
 

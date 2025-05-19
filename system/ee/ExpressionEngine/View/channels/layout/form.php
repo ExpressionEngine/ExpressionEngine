@@ -58,11 +58,15 @@
 								<div class="layout-item__content">
 									<label class="layout-item__title"><span class="faded float-right"><?=$field->getTypeName()?></span><?=$field->getLabel()?> <span class="faded"><?=(($tab->id != 'categories') ? '(' . $field->getShortName() . ')' : '') ?></span></label>
 									<div class="layout-item__options">
-										<?php if ($field->isRequired()): ?>
-										<label class="field-option-required"><?=ucwords(lang('required_field'))?></label>
+										<?php if ($field->getRequiredCondition()): ?>
+											<label class="field-option-required-custom-field"><input class="checkbox checkbox--small" type="checkbox"<?php if ($field->isRequired()):?> checked="checked"<?php endif ?>><?=lang('required_field')?></label>
+										<?php endif; ?>
+										<?php if ($field->isRequired() && !$field->getRequiredCondition()): ?>
+											<label class="field-option-required"><?=ucwords(lang('required_field'))?></label>
 										<?php else: ?>
 										<label class="field-option-hide"><input class="checkbox checkbox--small" type="checkbox"<?php if (! $field->isVisible()): ?> checked="checked"<?php endif ?>><?=lang('hide')?></label>
 										<?php endif; ?>
+
                                         <?php if (!$field->publishLayoutCollapseIsHidden()): ?>
 										<label class="field-option-collapse"><input class="checkbox checkbox--small" type="checkbox"<?php if ($field->isCollapsed()):?> checked="checked"<?php endif ?>><?=lang('collapse')?></label>
                                         <?php endif; ?>

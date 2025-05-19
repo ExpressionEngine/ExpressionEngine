@@ -110,6 +110,12 @@ class ChannelLayout extends Model implements LayoutInterface
                     $field->setWidth(100);
                 }
 
+                if (isset($field_info['required_condition'])) {
+                    $field->setRequiredCondition($field_info['required_condition']);
+                } else {
+                    $field->setRequiredCondition(false);
+                }
+
                 // Fields can be configured to start collapsed or expaned, but
                 // a layout should always override it.
                 if (isset($field_info['collapsed'])) {
