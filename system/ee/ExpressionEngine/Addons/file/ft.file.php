@@ -1136,6 +1136,36 @@ JSC;
         $modifiers = ['resize', 'crop', 'rotate', 'webp', 'resize_crop', 'length', 'raw_content', 'attr_safe', 'limit', 'form_prep', 'rot13', 'encrypt', 'url_slug', 'censor', 'json', 'replace', 'url_encode', 'url_decode'];
         return $modifiers;
     }
+
+    /**
+     * Prepare data for Pro Search
+     *
+     * @param array $data Field value
+     * @return string File name and title
+     */
+    public function third_party_search_index($data)
+    {
+        if (!is_string($data)) {
+            return '';
+        }
+        if (preg_match('/^{file\:(\d+)\:url}/', $data, $matches)) {
+            // If the file field is in the "{file:XX:url}" format
+            $file = ee('Model')->get('File', $matches[1])->first(true);
+            if (!is_null($file)) {
+                if ($file->file_name != $file->title) {
+                    return $file->file_name . ' ' . $file->title;
+                }
+                return $file->file_name;
+            } else {
+                return '';
+            }
+        } elseif (preg_match('/^{filedir_(\d+)}/', $data, $matches)) {
+            // If the file field is in the "{filedir_n}image.jpg" format
+            $file_name = str_replace($matches[0], '', $data);
+            return $file_name;
+        }
+        return $data;
+    }
 }
 
 // END File_ft class
