@@ -861,6 +861,8 @@ $lang = array(
 
     'expand_all' => 'Expand All',
 
+    'layout_required_field' => 'Required',
+
     'creating_new_in_rel' => 'Creating new entry in <b>#to_channel#</b> for a relationship with <b>#from_channel#</b>',
 
     'creating_member_in_rel' => 'Creating new member for a relationship with <b>#from_channel#</b>',

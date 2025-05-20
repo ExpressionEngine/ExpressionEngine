@@ -131,6 +131,16 @@ class ChannelLayout extends Model implements LayoutInterface
                     $field->hide();
                 }
 
+                // Fields can be configured to start required or not, but
+                // a layout should always override it.
+                if (isset($field_info['required'])) {
+                    if ($field_info['required']) {
+                        $field->required();
+                    } else {
+                        $field->notRequired();
+                    }
+                }
+
                 $tab->addField($field);
 
                 unset($fields[$field_id]);

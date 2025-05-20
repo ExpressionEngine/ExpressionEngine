@@ -59,7 +59,7 @@
 									<label class="layout-item__title"><span class="faded float-right"><?=$field->getTypeName()?></span><?=$field->getLabel()?> <span class="faded"><?=(($tab->id != 'categories') ? '(' . $field->getShortName() . ')' : '') ?></span></label>
 									<div class="layout-item__options">
 										<?php if ($field->getRequiredCondition()): ?>
-											<label class="field-option-required-custom-field"><input class="checkbox checkbox--small" type="checkbox"<?php if ($field->isRequired()):?> checked="checked"<?php endif ?>><?=lang('required_field')?></label>
+											<label class="field-option-required-custom-field"><input class="checkbox checkbox--small" type="checkbox"<?php if ($field->isRequired()) :?> checked="checked"<?php endif ?>><?=lang('layout_required_field')?></label>
 										<?php endif; ?>
 										<?php if ($field->isRequired() && !$field->getRequiredCondition()): ?>
 											<label class="field-option-required"><?=ucwords(lang('required_field'))?></label>

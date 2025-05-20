@@ -383,6 +383,16 @@ $(document).ready(function () {
 		EE.publish_layout[tab].fields[field].collapsed = ! EE.publish_layout[tab].fields[field].collapsed;
 	});
 
+	// Saving the required state
+	$('[data-publish] form').on('click', '.field-option-required-custom-field input', function(e) {
+		var tab = getTabIndex();
+		var field = getFieldIndex(this);
+
+		EE.publish_layout[tab].fields[field].required = ! EE.publish_layout[tab].fields[field].required;
+	});
+
+
+
 	$('[data-publish] form').on('submit', function(e) {
 		$('input[name="field_layout"]').val(JSON.stringify(EE.publish_layout));
 	});

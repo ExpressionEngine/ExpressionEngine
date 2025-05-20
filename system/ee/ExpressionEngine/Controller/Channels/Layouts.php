@@ -192,7 +192,7 @@ class Layouts extends AbstractChannelsController
                     'visible' => true,
                     'collapsed' => false,
                     'width' => 100,
-                    'required_condition' => true
+                    'required_condition' => true,
                 );
             }
 
