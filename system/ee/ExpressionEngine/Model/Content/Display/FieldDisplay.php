@@ -27,7 +27,6 @@ class FieldDisplay
         $this->field = $field;
         $this->collapsed = (bool) $field->getItem('field_is_hidden');
         $this->conditional = $field->getItem('field_is_conditional');
-        $this->required = (bool) $field->getItem('field_required');
     }
 
     public function get($key)
