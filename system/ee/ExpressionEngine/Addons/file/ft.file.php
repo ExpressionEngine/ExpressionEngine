@@ -535,7 +535,7 @@ JSC;
             $filename['name'] = $filename['name'] . '_' . $filename['ext'];
             $filename['ext'] = '.webp';
         }
-        $new_image = $filename['name'] . '_' . $function . '_' . md5(serialize($params)) . $filename['ext'];
+        $new_image = substr($filename['name'], 0, 150) . '_' . $function . '_' . md5(serialize($params)) . $filename['ext'];
         $data['fs_filename'] = $filename['name'] . '_' . $function . $filename['ext'];
 
         $new_image_dir = rtrim($data['model_object']->getBaseServerPath() . $data['model_object']->getSubfoldersPath(), '/') . '/_' . $function . DIRECTORY_SEPARATOR;
