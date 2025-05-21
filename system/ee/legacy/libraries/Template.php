@@ -4541,7 +4541,10 @@ class EE_Template
 
         if (!isset(ee()->session)) {
             //early parsing, e.g. called from code and not web request
-            return [];
+            return [
+                'logged_out' => true,
+                'logged_in' => false,
+            ];
         }
 
         if (empty($vars)) {
@@ -4567,8 +4570,8 @@ class EE_Template
         }
 
         // Logged in and logged out variables
-        $data['logged_in'] = (ee()->session->userdata['member_id'] != 0);
-        $data['logged_out'] = (ee()->session->userdata['member_id'] == 0);
+        $vars['logged_in'] = (ee()->session->userdata['member_id'] != 0);
+        $vars['logged_out'] = (ee()->session->userdata['member_id'] == 0);
 
         return $vars;
     }
