@@ -335,7 +335,7 @@ JSC;
             $full_path = ee()->file_field->parse_string($data['url']);
 
             if (isset($params['wrap'])) {
-                return $this->_wrap_it($data, $params['wrap'], $full_path);
+                return $this->_wrap_it($data, $params['wrap'], $full_path, $params);
             }
 
             return $full_path;
@@ -346,7 +346,7 @@ JSC;
             $full_path = $data['path'] . $data['filename'] . '.' . $data['extension'];
 
             if (isset($params['wrap'])) {
-                return $this->_wrap_it($data, $params['wrap'], $full_path);
+                return $this->_wrap_it($data, $params['wrap'], $full_path, $params);
             }
 
             return $full_path;
@@ -659,7 +659,7 @@ JSC;
         } elseif ($tagdata === false) {
             // single tag or call from resize_crop
             if (isset($params['wrap'])) {
-                return $this->_wrap_it($data, $params['wrap'], $destination_url);
+                return $this->_wrap_it($data, $params['wrap'], $destination_url, $params);
             }
 
             return ($return_as_path ? $destination_path : $destination_url);
@@ -762,7 +762,7 @@ JSC;
     {
         $url = parent::replace_replace($data['url'], $params, $tagdata);
         if (isset($params['wrap'])) {
-            return $this->_wrap_it($data, $params['wrap'], $url);
+            return $this->_wrap_it($data, $params['wrap'], $url, $params);
         }
         return $url;
     }
@@ -826,7 +826,7 @@ JSC;
             }
 
             if (isset($params['wrap'])) {
-                return $this->_wrap_it($data, $params['wrap'], $full_path);
+                return $this->_wrap_it($data, $params['wrap'], $full_path, $params);
             }
 
             return $full_path;
@@ -838,20 +838,65 @@ JSC;
      *
      * @access  private
      */
-    public function _wrap_it($data, $type, $full_path)
+    public function _wrap_it($data, $type, $full_path, $params = array())
     {
-        if ($type == 'link') {
-            ee()->load->helper('url_helper');
-
-            return $data['file_pre_format']
-                . anchor($full_path, $data['filename'], $data['file_properties'])
-                . $data['file_post_format'];
-        } elseif ($type == 'image') {
-            $properties = (! empty($data['image_properties'])) ? ' ' . $data['image_properties'] : '';
-
-            return $data['image_pre_format']
-                . '<img src="' . $full_path . '"' . $properties . ' alt="' . $data['filename'] . '" />'
-                . $data['image_post_format'];
+        $passthroughParams = array('class', 'id', 'style', 'title');
+        $title = !empty($data['title']) ? ee('Format')->make('Text', $data['title'])->attributeSafe()->compile() : $data['filename'];
+        switch ($type) {
+            case 'link':
+                ee()->load->helper('url_helper');
+                return $data['file_pre_format']
+                    . anchor($full_path, $data['filename'], $data['file_properties'])
+                    . $data['file_post_format'];
+            case 'image':
+                if (!isset($params['alt'])) {
+                    $params['alt'] = $title;
+                }
+                $passthroughParams = array_merge($passthroughParams, array('alt', 'width', 'height'));
+                $params = array_intersect_key($params, array_flip($passthroughParams));
+                $properties = (! empty($data['image_properties'])) ? ' ' . $data['image_properties'] : '';
+                foreach ($params as $param => $value) {
+                    $value = str_replace(array('height', 'width'), array($data['height'], $data['width']), $value);
+                    $properties .= ' ' . $param . '="' . ee('Format')->make('Text', $value)->attributeSafe()->compile() . '"';
+                }
+                return $data['image_pre_format']
+                    . '<img src="' . $full_path . '"' . $properties . ' />'
+                    . $data['image_post_format'];
+            case 'svg':
+                if (isset($data['model_object']) && !is_null($data['model_object'])) {
+                    if (!$data['model_object']->isSVG()) {
+                        // if the file is not an SVG, fall back to image tag
+                        return _wrap_it($data, 'image', $full_path, $params);
+                    }
+                    $passthroughParams = array_merge($passthroughParams, array('width', 'height'));
+                    $params = array_intersect_key($params, array_flip($passthroughParams));
+                    try {
+                        $content = $data['model_object']->UploadDestination->getFilesystem()->read($data['model_object']->getAbsolutePath());
+                    } catch (FilesystemException $e) {
+                        log_message('debug', $e->getMessage());
+                        return '';
+                    }
+                    if (strpos($content, '<?xml') === 0) {
+                        // remove the XML declaration if it exists
+                        $content = preg_replace('/<\?xml.*?\?>/s', '', $content);
+                    }
+                    if (isset($params['width']) && isset($params['height'])) {
+                        $content = preg_replace('/(<svg.*? width=")(.*?)"/', '${1}' . $params['width'] . '"', $content);
+                        $content = preg_replace('/(<svg.*? height=")(.*?)"/', '${1}' . $params['height'] . '"', $content);
+                        unset($params['width'], $params['height']);
+                    }
+                    if (!empty($params)) {
+                        $attributes = array();
+                        foreach ($params as $param => $value) {
+                            $attributes[] = $param . '="' . ee('Format')->make('Text', $value)->attributeSafe()->compile() . '"';
+                        }
+                        $content = preg_replace('/<svg /', '<svg ' . implode(' ', $attributes) . ' ', $content);
+                    }
+                    return $content;
+                }
+                return $full_path;
+            default:
+                return $full_path;
         }
 
         return $full_path;
