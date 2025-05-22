@@ -10,6 +10,7 @@
 (function($) {
 
 $(document).ready(function() {
+	window.prevFocus = false;
 	EE.cp.formValidation.init();
 });
 
@@ -42,8 +43,10 @@ EE.cp.formValidation = {
 			that = this;
 
 		// These are the text input selectors we listen to for activity
-		this._textInputSelectors = 'input[type=text], input[type=number], input[type=password], textarea, div.redactor-styles, div.ck-content, div.condition-rule-field-wrap';
+		this._textInputSelectors = 'input[type=text], input[type=number], input[type=password], textarea:not(.wygwam-textarea), div.redactor-styles, div.ck-content, div.condition-rule-field-wrap';
 		this._buttonSelector = '.form-btns .button';
+
+		this._wygwamTextarea = 'textarea.wygwam-textarea';
 
 		form.each(function(index, el) {
 			that._bindButtonStateChange($(el));
@@ -79,25 +82,47 @@ EE.cp.formValidation = {
 
 		// Don't fire AJAX when submit button pressed
 		$(container).on('mousedown', this._buttonSelector, function() {
-			that.pause()
+			that.pause();
+			window.prevFocus = false;
+		})
+
+		$(this._wygwamTextarea, container)
+			.not('*[data-ajax-validate=no]')
+			.blur(function() {
+				var textArea = $(this);
+
+			if (document.activeElement.classList.contains('cke_wysiwyg_frame')) {
+				window.prevFocus = textArea;
+			}
+		});
+
+		$('body').on('click', function() {
+			if (window.prevFocus) {
+				var element = $(window.prevFocus);
+				that._sendAjaxRequest(element);
+
+				window.prevFocus = false;
+			}
 		})
 
 		$(this._textInputSelectors, container)
 			.not('*[data-ajax-validate=no]')
 			.blur(function() {
 
-			// Unbind keydown validation when the invalid field loses focus
-			$(this).data('validating', false);
-			var element = $(this);
+				// Unbind keydown validation when the invalid field loses focus
+				$(this).data('validating', false);
+				var element = $(this);
+				window.prevFocus = false;
 
-			setTimeout(function() {
-				that._sendAjaxRequest(element);
-			}, 0);
+				setTimeout(function() {
+					that._sendAjaxRequest(element);
+				}, 0);
 		});
 
 		$(container).on('change', 'input[type=checkbox], input[type=radio], input[type=hidden], input[type=range], select', function() {
 
 			var element = $(this);
+			window.prevFocus = false;
 
 			if (element.data('ajaxValidate') == 'no') return
 
@@ -194,6 +219,7 @@ EE.cp.formValidation = {
 			{
 				// Add "work" class to make the buttons pulsate
 				$button.addClass('work');
+				$button.addClass('not-click');
 
 				// If the submit was trigger by a button click, disable it to prevent futher clicks
 				$button.each(function(index, el) {
@@ -542,7 +568,11 @@ EE.cp.formValidation = {
 			// Wait half a second, then clear the timer and send the AJAX request
 			timer = setTimeout(function() {
 				clearTimeout(timer);
-				that._sendAjaxRequest(field);
+				if (field.is('textarea')) {
+					return false;
+				} else {
+					that._sendAjaxRequest(field);
+				}
 			}, 500);
 		});
 	}
