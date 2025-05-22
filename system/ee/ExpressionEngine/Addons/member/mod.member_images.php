@@ -151,7 +151,7 @@ class Member_images extends Member
             ->where('member_id', (int) ee()->session->userdata('member_id'))
             ->get('members');
 
-        if ($query->row('avatar_filename') == '') {
+        if (empty($query->row('avatar_filename'))) {
             $template = $this->_deny_if('avatar', $template);
             $template = $this->_allow_if('no_avatar', $template);
 
@@ -225,7 +225,17 @@ class Member_images extends Member
                 'RET' => (ee()->TMPL->fetch_param('return', '') != "") ? ee()->functions->create_url(ee()->TMPL->fetch_param('return')) : ee()->functions->fetch_current_uri(),
                 'ACT' => ee()->functions->fetch_action_id('Member', 'upload_avatar'));
 
-            return ee()->functions->form_declaration($data) . $template . '</form>';
+            $open = ee()->functions->form_declaration($data);
+
+            ee()->TMPL->set_data([
+                'open' => $open,
+                'avatar_url' => $cur_avatar_url,
+                'avatar_filename' => $avatar_filename,
+                'avatar_width' => $avatar_width,
+                'avatar_height' => $avatar_height,
+            ]);
+
+            return $open . $template . '</form>';
         }
 
         // Finalize the template

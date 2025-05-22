@@ -625,6 +625,12 @@ We reserve the right to remove, edit, or move any messages for any reason.',
 
     'mbr_successfully_changed_password' => 'You have successfully changed your password. Please login using your new password.',
 
+    /* Template Generator */
+
+    'include_navigation' => 'Include Navigation',
+
+    'include_navigation_desc' => 'Add links to navigate between generated templates',
+
 );
 
 // EOF

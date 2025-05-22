@@ -141,7 +141,7 @@ class Roles extends AbstractRolesController
                 'selected' => ($role_id && $role->getId() == $role_id),
                 'toolbar_items' => [
                     'members' => [
-                        'href' => ee('CP/URL', 'members', ['role_filter' => $role->getId()]),
+                        'href' => ee('CP/URL')->make('members', ['role_filter' => $role->getId()]),
                         'title' => lang('members'),
                         'content' => '<i class="fal fa-users"></i> ' . $role->total_members . ' ' . lang('members')
                     ]
@@ -465,6 +465,7 @@ class Roles extends AbstractRolesController
         $role->name = ee('Security/XSS')->clean($_POST['name']);
         $role->short_name = ee('Security/XSS')->clean($_POST['short_name']);
         $role->description = ee('Security/XSS')->clean(ee('Request')->post('description'));
+        $role->highlight = ee('Security/XSS')->clean(ee('Request')->post('highlight'));
 
         // Settings
         $settings = ee('Model')->make('RoleSetting')->getValues();
@@ -610,21 +611,27 @@ class Roles extends AbstractRolesController
                 }
             }
         } else {
-            // Clear the slate and remove all the permissions this form has set
-            ee('Model')->get('Permission')
+            $existingRolePermissions = ee('Model')->get('Permission')
                 ->filter('permission', 'IN', $this->getPermissionKeys())
                 ->filter('site_id', $site_id)
                 ->filter('role_id', $role->getId())
-                ->delete();
-
+                ->all();
+            $existingRolePermissionNames = $existingRolePermissions->pluck('permission');
+            // remove the permissions that are no longer allowed
+            foreach ($existingRolePermissions as $permission) {
+                $permIndex = array_search($permission->permission, $allowed_perms);
+                if ($permIndex === false || empty($allowed_perms[$permIndex])) {
+                    $role->Permissions->getAssociation()->remove($permission);
+                }
+            }
             // Add back in all the allowances
             foreach ($allowed_perms as $perm) {
-                if (!empty($perm)) {
-                    ee('Model')->make('Permission', [
-                        'role_id' => $role->getId(),
+                if (!empty($perm) && !in_array($perm, $existingRolePermissionNames)) {
+                    $p = ee('Model')->make('Permission', [
                         'site_id' => $site_id,
                         'permission' => $perm
-                    ])->save();
+                    ]);
+                    $role->Permissions->getAssociation()->add($p);
                 }
             }
         }

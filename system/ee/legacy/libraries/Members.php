@@ -243,6 +243,10 @@ class Members
 
         $types = array('.jpg', '.jpeg', '.gif', '.png');
 
+        if (defined('IMAGETYPE_WEBP')) {
+            $types[] = '.webp';
+        }
+
         if (! in_array(strtolower($extension), $types)) {
             if (REQ == 'CP') {
                 show_error(lang('invalid_image_type'));

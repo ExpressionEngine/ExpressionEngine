@@ -32,6 +32,11 @@ abstract class Request
             CURLOPT_HEADER => 1,
         );
 
+        // If supported attempt to use the native root certificate store
+        if (defined('CURLSSLOPT_NATIVE_CA') && version_compare(curl_version()['version'], '7.71', '>=')) {
+            $this->config[CURLOPT_SSL_OPTIONS] = CURLSSLOPT_NATIVE_CA;
+        }
+
         foreach ($data as $key => $val) {
             if (substr($key, 0, 7) == "CURLOPT") {
                 $this->config[constant($key)] = $val;

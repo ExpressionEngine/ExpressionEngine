@@ -58,6 +58,8 @@ $lang = array(
 
     'required' => 'This field is required.',
 
+    'multiple_selection_not_allowed' => 'Only one selection is allowed',
+
     'starts_with' => 'This field should start with <code>%s</code>.',
 
     'not_starts_with' => 'This field should not start with <code>%s</code>.',

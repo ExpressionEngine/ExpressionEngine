@@ -490,10 +490,15 @@ class EE_Template
         }
 
         if (!empty($errors)) {
+            $this->log_item("Parsing inline errors");
             // Make sure our errors are an associative array so the {errors}{error}{/errors} field tags work properly.
-            $errors = array_map(function ($error) {
-                return array('error' => $error);
-            }, $errors);
+            $errors = (is_array($errors)) ? $errors : [$errors];
+            $errors = array_values(array_map(function ($error, $key) {
+                // Remove error: prefix from key if present
+                $key = (substr($key, 0, 6) === 'error:') ? substr($key, 6) : $key;
+
+                return ['error' => $error, 'error_key' => is_numeric($key) ? '' : str_replace('error:', '', $key)];
+            }, $errors, array_keys($errors)));
 
             $this->template = $this->parse_variables($this->template, array(array('errors' => $errors)));
         }
@@ -692,7 +697,7 @@ class EE_Template
         $this->layout_conditionals = [];
 
         // get all the declared layout variables (excluding layout:contents)
-        if (preg_match_all('/' . LD . 'layout:(?!\bcontents\b)([^!]+?)(' . RD . '|\s|:)/', $str, $matches)) {
+        if (preg_match_all('/' . LD . 'layout:(?!\bset|contents\b)([^!]+?)(' . RD . '|\s|:)/', $str, $matches)) {
             $undefined_layout_vars = [];
 
             foreach ($matches[1] as $key) {
@@ -712,11 +717,15 @@ class EE_Template
         }
 
         foreach ($layout_vars as $key => $val) {
+            if ($val === '' && strpos($str, LD . '/layout:' . $key . RD) !== false) {
+                $val = []; // undefined or empty value that is supposed to be an array
+            }
             if (is_array($val)) {
-                $layout_conditionals['layout:' . $key] = true;
+                $layout_conditionals['layout:' . $key] = !empty($val);
 
                 $total_items = count($val);
                 $variables = [];
+                $item = ''; // initial value for catch-all replacement
 
                 foreach ($val as $idx => $item) {
                     $variables[] = [
@@ -2632,7 +2641,7 @@ class EE_Template
                 // If no access redirect template was defined, 404
                 if ($query->row('no_auth_bounce') != '') {
                     $query = ee()->db->select('a.template_id, a.template_data,
-                        a.template_name, a.template_type, a.edit_date,
+                        a.template_name, a.template_type, a.template_engine, a.edit_date,
                         a.cache, a.refresh, a.hits, a.protect_javascript,
                         a.allow_php, a.php_parse_location, b.group_name, a.group_id, a.enable_frontedit')
                         ->from('templates a')
@@ -3658,8 +3667,16 @@ class EE_Template
      */
     public function parse_variables($tagdata, $variables, $enable_backspace = true)
     {
-        if ($tagdata == '' or !is_array($variables) or empty($variables) or !is_array($variables[0])) {
+        if ($tagdata == '' or !is_array($variables)) {
             return $tagdata;
+        }
+
+        // When variables are empty we should still parse the added loop variables
+        if (empty($variables) or !is_array($variables[0])) {
+            return $this->parse_variables_row($tagdata, [
+                'count' => 0,
+                'total_results' => 0
+            ], false);
         }
 
         // Reset and Match date variables
@@ -4554,6 +4571,27 @@ class EE_Template
         }
 
         return $vars;
+    }
+
+    /**
+     * Parse inline errors from session flashdata
+     *
+     * @param string $str
+     * @return string
+     */
+    public function parse_inline_errors($str)
+    {
+        if (ee()->TMPL->fetch_param('inline_errors') == 'yes'
+            && strpos($str, LD . 'error:') !== false
+            && isset(ee()->session)
+            && !empty(ee()->session->flashdata('errors'))
+        ) {
+            $str = ee()->TMPL->parse_variables($str, [ee()->session->flashdata('errors')]);
+            // Replace old input variables
+            $str = ee()->TMPL->parse_variables($str, [ee()->session->flashdata('old')]);
+        }
+
+        return $str;
     }
 
     public function set_data($data)

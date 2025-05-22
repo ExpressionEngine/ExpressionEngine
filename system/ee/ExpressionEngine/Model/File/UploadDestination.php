@@ -364,7 +364,7 @@ class UploadDestination extends StructureModel
         }
 
         // Do we want to allow variable replacement in adapters that aren't local?
-        $path = $this->parseConfigVars((string) $this->getProperty('server_path')); 
+        $path = $this->parseConfigVars((string) $this->getProperty('server_path'));
         $adapter = $this->getFilesystemAdapter();
 
         $filesystem = ee('File')->getPath($path, $adapter);
@@ -700,6 +700,63 @@ class UploadDestination extends StructureModel
 
         return $file;
     }
+    /**
+     * Get the subdirectories nested array
+     *
+     * @param boolean $includeIcon
+     * @return array
+     */
+    public function getDirectoriesDropdown($includeIcon = false)
+    {
+        $cache_key = '/' . __CLASS__ . '/' . md5(__METHOD__ . '__' . $this->getId() . (($includeIcon) ? 'icon' : ''));
+        $children = ee()->cache->get($cache_key);
+        if ($children !== false) {
+            return $children;
+        }
+
+        // Get all directories within this Upload Destination
+        $directories = ee('Model')->get('Directory')
+            ->fields('file_id', 'directory_id', 'file_name', 'title')
+            ->filter('upload_location_id', $this->getId())
+            ->order('title', 'asc')
+            ->all(true)
+            ->asArray();
+
+        // Group directories by directory_id
+        $directories = array_reduce($directories, function ($carry, $directory) {
+            if (!array_key_exists($directory->directory_id, $carry)) {
+                $carry[$directory->directory_id] = [];
+            }
+
+            $carry[$directory->directory_id][] = $directory;
+            return $carry;
+        }, []);
+
+        $children = $this->getDirectoryDropdownChildren(0, $directories, $includeIcon);
+        ee()->cache->save($cache_key, $children, 5); // Cache results for 5 seconds
+
+        return $children;
+    }
+
+    protected function getDirectoryDropdownChildren($parent_id, $directories, $icon = false, $path = '')
+    {
+        $items = [];
+        $children = array_key_exists($parent_id, $directories) ? $directories[$parent_id] : [];
+
+        foreach ($children as $directory) {
+            $label = (($icon) ? '<i class="fal fa-folder"></i>' : '') . $directory->title;
+            $path = $path . urlencode($directory->file_name) . '/';
+            $items[$this->getId() . '.' . $directory->getId()] = [
+                'label' => $label,
+                'upload_location_id' => $this->getId(),
+                'path' => $path,
+                'directory_id' => $directory->getId(),
+                'children' => $this->getDirectoryDropdownChildren($directory->file_id, $directories, $icon, $path)
+            ];
+        }
+
+        return $items;
+    }
 
     /**
      * Get the subdirectories nested array
@@ -707,14 +764,23 @@ class UploadDestination extends StructureModel
      * @param [type] $key_value
      * @param boolean $root_only
      * @return array
+     * @deprecated No longer used, prefer getDirectoriesDropdown()
      */
     public function buildDirectoriesDropdown($directory_id, $icon = false, $path = '', $root_only = true)
     {
+        // root requests can be cached
+        if ($root_only) {
+            $cache_key = '/' . __CLASS__ . '/' . md5(__METHOD__ . '__' . $directory_id);
+            $children = ee()->cache->get($cache_key);
+            if ($children !== false) {
+                return $children;
+            }
+        }
         $children = [];
         $i = 0;
         $directoriesCount = 0;
         do {
-            $directories = ee('Model')->get('Directory')->fields('file_id', 'upload_location_id', 'directory_id', 'file_name', 'title');
+            $directories = ee('Model')->get('Directory')->fields('file_id', 'upload_location_id', 'directory_id', 'file_name', 'title')->order('title', 'asc');
             if ($root_only) {
                 $directories = $directories->filter('upload_location_id', $directory_id)->filter('directory_id', 0)->all(true);
             } else {
@@ -743,6 +809,11 @@ class UploadDestination extends StructureModel
                 }
             }
         } while ($directoriesCount > ($i + 1));
+
+        if ($root_only) {
+            // cache for 5 seconds, which should suffice for page load even if it takes a while
+            ee()->cache->save($cache_key, $children, 5);
+        }
 
         return $children;
     }

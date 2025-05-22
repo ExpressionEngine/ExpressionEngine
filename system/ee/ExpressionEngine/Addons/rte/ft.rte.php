@@ -323,7 +323,7 @@ class Rte_ft extends EE_Fieldtype
     public function save($data)
     {
         // Trim out any whitespace/empty tags
-        $data = preg_replace('/^(\s|<(\w+)>(&nbsp;|\s)*<\/\2>|<br \/>)*/', '', $data);
+        $data = preg_replace('/^(\s|<(\w+)>(&nbsp;|\s)*<\/\2>|<br \/>)*/', '', (string) $data);
         $data = preg_replace('/(\s|<(\w+)>(&nbsp;|\s)*<\/\2>|<br \/>)*$/', '', $data);
 
         // Remove any ?cachebuster:X query strings
@@ -457,7 +457,7 @@ class Rte_ft extends EE_Fieldtype
      */
     public function replace_has_excerpt($data)
     {
-        return (strpos($data, '<div class="readmore') !== false) ? 'y' : '';
+        return (!empty($data) && strpos($data, '<div class="readmore') !== false) ? 'y' : '';
     }
 
     /**
@@ -470,7 +470,7 @@ class Rte_ft extends EE_Fieldtype
      */
     public function replace_excerpt($data, $params)
     {
-        if (($read_more_tag_pos = strpos($data, '<div class="readmore')) !== false) {
+        if (!empty($data) && ($read_more_tag_pos = strpos($data, '<div class="readmore')) !== false) {
             $data = substr($data, 0, $read_more_tag_pos);
         }
 

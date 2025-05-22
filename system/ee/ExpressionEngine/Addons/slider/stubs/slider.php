@@ -1,0 +1,1 @@
+Between {<?=$field_name?>:min} and {<?=$field_name?>:max} the selected value is {<?=$field_name?>:prefix} <span class="value">{<?=$field_name?>}</span> {<?=$field_name?>:suffix} 

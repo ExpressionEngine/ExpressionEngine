@@ -214,6 +214,8 @@ $lang = array(
 
     'file_dnd_no_directories_desc' => 'This field is limited to upload directory not available for current member and site.',
 
+    'file_dnd_no_directory_permissions' => 'You do not have permission to upload files to any of the available directories.',
+
     'file_grid_vertical_layout_title' => 'File Grid layout',
 
     /* Grid */
@@ -375,7 +377,7 @@ $lang = array(
     /* Date */
 
     'date_localization' => 'Date Localization',
-    'date_localization_desc' => 'Choose how the field data should be localized. <a href="' . DOC_URL . 'fieldtypes/date.html">More info</a>',
+    'date_localization_desc' => 'Choose how the field data should be localized. <a href="' . DOC_URL . 'fieldtypes/date.html" target="_blank">More info</a>',
     'always_localized' => 'Always localized',
     'always_fixed' => 'Always fixed',
     'ask_each_time' => 'Ask each time',

@@ -24,9 +24,11 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
 
     public $has_array_data = false;
 
-    private $_table = 'relationships';
+    protected $_table = 'relationships';
 
-    private $errors;
+    protected $errors;
+
+    protected $entityNamePlural = 'entries';
 
     /**
      * A list of operators that this fieldtype supports
@@ -66,10 +68,10 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
         if ((bool) $this->settings['allow_multiple']) {
             ee()->lang->load('fieldtypes');
             if (isset($this->settings['rel_min']) && (count($set) < (int) $this->settings['rel_min'])) {
-                return sprintf(lang('rel_ft_min_error'), (int) $this->settings['rel_min'], strtolower(lang('entries')));
+                return sprintf(lang('rel_ft_min_error'), (int) $this->settings['rel_min'], strtolower(lang($this->entityNamePlural)));
             }
             if (isset($this->settings['rel_max']) && $this->settings['rel_max'] !== '' && (count($set) > (int) $this->settings['rel_max'])) {
-                return sprintf(lang('rel_ft_max_error'), (int) $this->settings['rel_max'], strtolower(lang('entries')));
+                return sprintf(lang('rel_ft_max_error'), (int) $this->settings['rel_max'], strtolower(lang($this->entityNamePlural)));
             }
         }
 
@@ -193,8 +195,9 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
         // 'relationships_post_save' hook.
         //  - Allow developers to modify or add to the relationships array before saving
         //
-        if (ee()->extensions->active_hook('relationships_post_save') === true) {
-            $ships = ee()->extensions->call('relationships_post_save', $ships, $entry_id, $field_id);
+        $hook = $this->_table . '_post_save';
+        if (ee()->extensions->active_hook($hook) === true) {
+            $ships = ee()->extensions->call($hook, $ships, $entry_id, $field_id);
         }
         //
         // -------------------------------------------
@@ -311,9 +314,10 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             //
             //   All 3 require a returned query result array.
             //
-            if (ee()->extensions->active_hook('relationships_display_field') === true) {
+            $hook = $this->_table . '_display_field';
+            if (ee()->extensions->active_hook($hook) === true) {
                 $related = ee()->extensions->call(
-                    'relationships_display_field',
+                    $hook,
                     $entry_id,
                     $this->field_id,
                     ee()->db->_compile_select(false, false)

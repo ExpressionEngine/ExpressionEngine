@@ -9,10 +9,10 @@
 
 $(document).ready(function(){
 
-	// the code is responsible for preventing the page scrolling when press on 
+	// the code is responsible for preventing the page scrolling when press on
 	// the dropdown list using the spacebar (code 32)
 	window.addEventListener('keydown', (e) => {
-		if ((e.keyCode === 32 || e.keyCode === 13) && (e.target.classList.contains('select__button') || e.target.classList.contains('select__dropdown-item')) ) { 
+		if ((e.keyCode === 32 || e.keyCode === 13) && (e.target.classList.contains('select__button') || e.target.classList.contains('select__dropdown-item')) ) {
 		  e.preventDefault();
 		  e.target.click();
 		}
@@ -661,14 +661,6 @@ $(document).ready(function(){
 					Dropdown.renderFields();
 				}
 
-			// reveal the modal
-			if ($(this).hasClass('modal-wrap')) {
-				$(this).fadeIn('slow');
-			} else {
-				$(this).removeClass('app-modal---closed')
-					.addClass('app-modal---open');
-			}
-
 			// remove viewport scroll for --side
 			if (e.linkIs) {
 				if(e.linkIs.indexOf('js-modal-link--side') !== -1){
@@ -687,7 +679,7 @@ $(document).ready(function(){
 
 			// scroll up, if needed, but only do so after a significant
 			// portion of the overlay is show so as not to disorient the user
-			if ($(this).is('.app-modal--fullscreen'))
+			if ($(this).is('.app-modal--fullscreen') || $(this).is('.modal-file'))
 			{
 				$('body').css('overflow','hidden');
 			}else if ( ! $(this).is('.modal-form-wrap, .app-modal--side'))
@@ -698,6 +690,18 @@ $(document).ready(function(){
 			} else {
 				// Remove viewport scroll
 				$('body').css('overflow','hidden');
+			}
+
+			// reveal the modal
+			if ($(this).hasClass('modal-wrap')) {
+				$(this).fadeIn('slow');
+
+				if ($(this).find('input:visible').length) {
+					$(this).find('input:visible').focus();
+				}
+			} else {
+				$(this).removeClass('app-modal---closed')
+					.addClass('app-modal---open');
 			}
 		});
 
@@ -1063,7 +1067,7 @@ $(document).ready(function(){
 			}
 		});
 
-		// Check if Toggle button has data-group-toggle and 
+		// Check if Toggle button has data-group-toggle and
 		// show and hide dependent blocks depending on toggle button value
 		$('.toggle-btn').find('[data-group-toggle]').each(function() {
 			var val = $(this).val();
@@ -1196,16 +1200,6 @@ $(document).ready(function(){
 			}
 		}
 
-		if ($('.range-slider').length) {
-			$('.range-slider').each(function() {
-				var minValue = $(this).find('input[type="range"]').attr('min');
-				var maxValue = $(this).find('input[type="range"]').attr('max');
-
-				$(this).attr('data-min', minValue);
-				$(this).attr('data-max', maxValue);
-			});
-		}
-
 
 		$('body').on('click', '.title-bar a.upload, .main-nav__toolbar a.dropdown__link', function(e){
 			e.preventDefault();
@@ -1227,6 +1221,8 @@ $(document).ready(function(){
 				if (!$(this).closest('div[data-input-value^="categories["]').length) {
 						$(this).css('pointer-events', 'none');
 						$(this).find('.checkbox-label__text').css('pointer-events', 'auto');
+						$(this).find('.flyout-edit').css('pointer-events', 'auto');
+						$(this).find('.icon-reorder').css('pointer-events', 'auto');
 						$(this).find('input').css('pointer-events', 'auto');
 
 						if ($(this).find('.checkbox-label__text-editable').length) {
@@ -1237,31 +1233,83 @@ $(document).ready(function(){
 			});
 		}
 
-		$('body').on('click', '.js-app-badge', function(e) {
+		$('body').on('click', '.js-app-badge', async function(e) {
 			var el = $(this);
-			// copy asset link to clipboard
+
+			// id is the data-id attribute of the clicked element
+			var id = el.data('id');
+			var contentType = el.data('content_type');
+			var fluid_id = el.data('fluid_id');
+
 			var copyText = el.find('.txt-only').text();
 
-			document.addEventListener('copy', function(e) {
-				e.clipboardData.setData('text/plain', copyText);
-				e.preventDefault();
-			}, true);
+			// if the id is an integer, get the template from the server
+			if(Number.isInteger(id)) {
+				// if EE.cp.exampleTemplateUrls[contentType] not defined, use the default url
+				if(!EE.cp.exampleTemplateUrls[contentType]) {
+					contentType = 'default';
+				}
 
-			document.execCommand('copy');
+				var url = EE.cp.exampleTemplateUrls[contentType];
+				url = url.replace('{id}', id);
 
-			// show notification
-			el.addClass('success');
-			el.find('.fa-copy').addClass('hidden');
-			el.find('.fa-circle-check').removeClass('hidden');
+				// if this is a fluid field, lets replace vars in the URL
+				if(contentType == 'fluid_field' || contentType == 'fluid_fieldgroup') {
+					url = url.replace('{fluid_id}', fluid_id);
+				}
 
-			// hide notification in 2 sec
-			setTimeout(function() {
-				el.removeClass('success');
-				el.find('.fa-copy').removeClass('hidden');
-				el.find('.fa-circle-check').addClass('hidden');
-			}, 2000);
+				// get the template from the server
+				await $.get(url, function(data) {
+					// copy asset link to clipboard and show notification
+					copyText = data;
+				});
+			}
+
+			// copy asset link to clipboard and show notification
+			var success = await copyToClipboard(copyText);
+
+			// show notification if success
+			if (success) {
+				el.addClass('success');
+				el.find('.fa-copy').addClass('hidden');
+				el.find('.fa-circle-check').removeClass('hidden');
+
+				// hide notification in 2 sec
+				setTimeout(function() {
+					el.removeClass('success');
+					el.find('.fa-copy').removeClass('hidden');
+					el.find('.fa-circle-check').addClass('hidden');
+				}, 2000);
+			}
 
 			return false;
+		})
+
+		// add a function to copy text to clipboard
+		async function copyToClipboard(copyText) {
+			// if the browser supports clipboard
+			if (navigator.clipboard) {
+				return await navigator.clipboard.writeText(copyText)
+					.then(() => {
+						// console.log('copyText copied:', copyText);
+						return true;
+					})
+					.catch((error) => {
+						// console.log('copyText wasnt copied')
+						return false;
+					}
+				);
+			}
+
+			return false;
+		}
+
+
+		$('body').on('click', '.js-lv-banner__close-btn', function(e) {
+			e.preventDefault();
+		    $.get(EE.cp.acknowledgeLicenseNoticeURL, function(data) {
+                $('.lv-banner').hide();
+            });
 		})
 
 }); // close (document).ready

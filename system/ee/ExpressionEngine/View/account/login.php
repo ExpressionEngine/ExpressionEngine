@@ -2,7 +2,7 @@
 
 	<div class="login__logo">
 		<?php if (ee('pro:Access')->hasRequiredLicense() && ee()->config->item('login_logo')) : ?>
-		<img src="<?=ee()->config->item('login_logo')?>" alt="Powered by ExpressionEngine&reg;">
+		<img src="<?=ee()->config->item('login_logo')?>" alt="<?=ee()->config->item('site_name')?>">
 		<?php else: ?>
 		<?php $this->embed('ee:_shared/ee-logo')?>
 		<?php endif; ?>

@@ -26,15 +26,6 @@ window.Rte;
 
         this.config = (EE.Rte.configs[config] || EE.Rte.configs['default']);
 
-        if (typeof(this.config.typing) !== 'undefined' && typeof(this.config.typing.transformations) !== 'undefined' && typeof(this.config.typing.transformations.extra) !== 'undefined') {
-            for (const index in this.config.typing.transformations.extra) {
-                var value = this.config.typing.transformations.extra[index];
-                if (typeof value.from !== 'undefined' && value.from.indexOf('/') === 0 && value.from.lastIndexOf('$/') === value.from.length - 2) {
-                    this.config.typing.transformations.extra[index].from = new RegExp(value.from.substring(1, value.from.length - 2) + '$');
-                }
-            }
-        }
-
         if (typeof defer == "undefined") {
             this.defer = this.$element.data('defer') == "y";
         } else {

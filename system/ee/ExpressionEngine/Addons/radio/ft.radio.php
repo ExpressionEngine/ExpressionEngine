@@ -25,6 +25,8 @@ class Radio_ft extends OptionFieldtype
 
     public $size = 'small';
 
+    public $stub = 'select';
+
     // used in display_field() below to set
     // some defaults for third party usage
     public $settings_vars = array(
@@ -45,7 +47,7 @@ class Radio_ft extends OptionFieldtype
     public function validate($data)
     {
         $valid = false;
-        $field_options = $this->_get_field_options($data);
+        $field_options = (REQ == 'CP') ? $this->_get_historic_field_options($data) : $this->_get_field_options($data);
 
         if ($data === false or $data == '') {
             return true;
@@ -100,7 +102,7 @@ class Radio_ft extends OptionFieldtype
         $text_direction = (isset($this->settings['field_text_direction']))
             ? $this->settings['field_text_direction'] : 'ltr';
 
-        $field_options = $this->_get_field_options($data);
+        $field_options = $this->_get_historic_field_options($data);
         $extra = ($this->get_setting('field_disabled')) ? 'disabled' : '';
 
         // Is this new entry?  Set a default

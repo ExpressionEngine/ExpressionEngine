@@ -15,7 +15,6 @@ import Plugin from '@ckeditor/ckeditor5-core/src/plugin';
 
 import FileManagerUI from './filemanagerui';
 import FileManagerEditing from './filemanagerediting';
-import EEUploadAdapter from '../../eeupload/src/uploadadapter';
 
 /**
  * The FileManager feature, a bridge between the CKEditor 5 WYSIWYG editor and the
@@ -47,7 +46,7 @@ export default class FileManager extends Plugin {
 	 * @inheritDoc
 	 */
 	static get requires() {
-		return [ FileManagerEditing, FileManagerUI, EEUploadAdapter ];
+		return [ FileManagerEditing, FileManagerUI ];
 	}
 }
 
