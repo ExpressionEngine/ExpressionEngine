@@ -215,7 +215,9 @@ class EE_Channel_data_parser
             $row['has_categories'] = ! empty($data['categories'][$row['entry_id']]);
             $can_edit = false;
             if (isset(ee()->session) && ee()->session->userdata('member_id') != 0) {
-                if (ee()->session->userdata('member_id') == $row['author_id']) {
+                if (ee('Permission')->isSuperAdmin()) {
+                    $can_edit = true;
+                } elseif (ee()->session->userdata('member_id') == $row['author_id']) {
                     if (ee('Permission')->has('can_edit_self_entries_channel_id_' . $row['channel_id'])) {
                         $can_edit = true;
                     }
