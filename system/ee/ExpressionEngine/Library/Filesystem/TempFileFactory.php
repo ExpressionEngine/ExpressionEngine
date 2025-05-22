@@ -34,6 +34,7 @@ class TempFileFactory
     public static function fallback()
     {
         if (!static::$fallbackRegistered) {
+            ee()->load->library('logger');
             ee()->logger->developer(
                 "Your system has disabled support for PHP's tmpfile(). " .
                 "For best results please enable tmpfile in your php.ini settings",

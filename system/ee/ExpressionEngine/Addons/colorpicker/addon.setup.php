@@ -3,6 +3,7 @@
 return [
     'author' => 'ExpressionEngine',
     'author_url' => 'https://expressionengine.com/',
+    'docs_url' => 'https://docs.expressionengine.com/latest/fieldtypes/colorpicker.html',
     'name' => 'Color Picker',
     'description' => 'A simple color picker fieldtype',
     'version' => '1.0.0',

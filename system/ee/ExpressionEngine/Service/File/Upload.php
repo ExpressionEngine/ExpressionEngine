@@ -359,6 +359,12 @@ class Upload
         );
     }
 
+    /**
+     * Resolve file name conflict on upload
+     *
+     * @param int $file_id ID of new uploaded file
+     * @return array
+     */
     public function resolveNameConflict($file_id)
     {
         $file = ee('Model')->get('File', $file_id)
@@ -389,6 +395,31 @@ class Upload
                 'name' => $original_name
             )
         );
+
+        // Ensure the file extension of the original name matches the file's current name
+        $original_ext_pos = strrpos($original_name, '.');
+        $file_ext_pos = strrpos($file->file_name, '.');
+
+        if ($original_ext_pos === false || $file_ext_pos === false || substr($original_name, $original_ext_pos) != substr($file->file_name, $file_ext_pos)) {
+            ee('CP/Alert')->makeInline('shared-form')
+                ->asIssue()
+                ->withTitle(lang('file_conflict'))
+                ->addToBody(lang('invalid_filename'))
+                ->now();
+
+            return $result;
+        }
+
+        // Ensure the file extension of the original name matches the file's current name
+        if (substr($original_name, $original_ext_pos) != substr($file->file_name, $file_ext_pos)) {
+            ee('CP/Alert')->makeInline('shared-form')
+                ->asIssue()
+                ->withTitle(lang('file_conflict'))
+                ->addToBody(lang('invalid_filename'))
+                ->now();
+
+            return $result;
+        }
 
         if ($upload_options == 'rename') {
             $new_name = ee()->input->post('rename_custom');
@@ -499,6 +530,8 @@ class Upload
                         $file->getFilesystem()->forceCopy($src, $dest);
                     }
                 }
+
+                $original->file_hw_original = $file->file_hw_original;
 
                 $file->delete();
 
