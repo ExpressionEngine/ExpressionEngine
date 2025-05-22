@@ -62,6 +62,7 @@ class CategoryField extends FieldModel
     protected $group_id;
     protected $field_name;
     protected $field_label;
+    protected $field_notes;
     protected $field_type;
     protected $field_list_items;
     protected $field_maxl;

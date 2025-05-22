@@ -43,6 +43,7 @@ class MemberField extends FieldModel
     protected $m_field_name;
     protected $m_field_label;
     protected $m_field_description;
+    protected $m_field_notes;
     protected $m_field_type;
     protected $m_field_list_items;
     protected $m_field_ta_rows;

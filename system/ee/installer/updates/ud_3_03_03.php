@@ -81,6 +81,7 @@ class Updater
         }
         
         $category_fields = ee('Model')->get('CategoryField')
+            ->fields('field_id', 'field_default_fmt')
             ->all()
             ->indexBy('field_id');
 
