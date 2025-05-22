@@ -122,7 +122,7 @@ jobs:
             fail-fast: false
             matrix:
                 php: [8.3]
-                os: [ubuntu-latest]
+                os: [ubuntu-22.04]
                 containers: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
         name: Cypress Tests, PHP${{ matrix.php }} - ${{ matrix.os }} ${{ matrix.containers }}
@@ -214,6 +214,24 @@ jobs:
                 npm install -g maildev
                 maildev &
 
+            # This will get a Stable Chrome version that is 2 releases back from latest, and install it
+            # It gets the version from the Official Chromium Dash API
+            # Get a couple releases back ensures we do not run into the issue where not all runners have the latest version
+            - name: Get Chrome Version
+              id: get-chrome-version
+              run: |
+                latest_version=$(curl -s 'https://chromiumdash.appspot.com/fetch_releases?channel=Stable&platform=Linux&num=1&offset=0' | jq -r '.[0].version')
+                major_version=$(echo $latest_version | cut -d '.' -f 1)
+                previous_major_version=$((major_version - 1))
+                echo "Previous major version of Chrome: $previous_major_version"
+                echo "chrome_version=$previous_major_version" >> $GITHUB_OUTPUT
+
+            - name: Install Specific Chrome Version
+              uses: browser-actions/setup-chrome@latest
+              id: setup-chrome
+              with:
+                chrome-version: ${{ steps.get-chrome-version.outputs.chrome_version }}
+
             - name: Get Cypress Specs
               if: "${{ env.CYPRESS_RECORD_KEY == '' }}"
               env:
@@ -227,21 +245,17 @@ jobs:
               if: "${{ env.CYPRESS_RECORD_KEY == '' }}"
               with:
                 spec: ${{ steps.specs.outputs.SPECS }}
-                browser: chrome
+                browser: ${{ steps.setup-chrome.outputs.chrome-path }}
                 working-directory: tests/cypress
               env:
                 CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-
-            - name: Install Chrome
-              uses: browser-actions/setup-chrome@latest
-              with:
-                chrome-version: latest
+                DEBUG: '@cypress/github-action'
 
             - name: Run Cypress Tests
               uses: cypress-io/github-action@v6
               if: "${{ env.CYPRESS_RECORD_KEY != '' }}"
               with:
-                browser: chrome
+                browser: ${{ steps.setup-chrome.outputs.chrome-path }}
                 working-directory: tests/cypress
                 record: true
                 parallel: true
@@ -251,6 +265,7 @@ jobs:
                 CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                 COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
+                DEBUG: '@cypress/github-action'
 
             - name: Run Cypress Tests (Electron)
               uses: cypress-io/github-action@v6

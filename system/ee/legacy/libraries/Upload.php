@@ -813,9 +813,6 @@ class EE_Upload
         // Check for various PHP opening tags and their variations
         $php_opening_tags = [
             '<?php',
-            '<?=',
-            '<? ',
-            "<?\n",
             '<?/*',
         ];
 

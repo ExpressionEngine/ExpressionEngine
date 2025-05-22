@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -8,9 +9,24 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
+namespace ExpressionEngine\Updater\Version_7_5_7;
+
 /**
- * Fake the schema class
+ * Update
  */
-require_once(SYSPATH . 'ee/installer/schema/mysql_schema.php');
+class Updater
+{
+    public $version_suffix = '';
+
+    /**
+     * Do Update
+     *
+     * @return TRUE
+     */
+    public function do_update()
+    {
+        return true;
+    }
+}
 
 // EOF

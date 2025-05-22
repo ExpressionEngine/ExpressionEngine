@@ -163,7 +163,8 @@ class EE_Form_validation
             if (is_array($setting)) {
                 foreach ($setting['fields'] as $field_name => $field) {
                     // For ajaxified fields with options not currently showing, we skip
-                    if (isset($field['filter_url']) && isset($field['choices']) && count($field['choices']) == 100) {
+                    $choicesLimit = isset($field['limit']) ? $field['limit'] : 100;
+                    if (isset($field['filter_url']) && isset($field['choices']) && count($field['choices']) >= $choicesLimit) {
                         continue;
                     }
 

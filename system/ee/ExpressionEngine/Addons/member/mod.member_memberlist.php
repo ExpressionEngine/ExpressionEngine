@@ -503,6 +503,9 @@ class Member_memberlist extends Member
         $str = '';
         $i = 0;
 
+        $optionVariables = [];
+        $memberVariables = [];
+
         if ($query->num_rows() > 0) {
             $member_ids = [];
             foreach ($query->result_array() as $row) {
@@ -616,96 +619,43 @@ class Member_memberlist extends Member
                 /** ----------------------------------------
                 /**  Manual replacements
                 /** ----------------------------------------*/
-                $name_replacement = ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'];
-                $temp = $this->_var_swap_single('name', $name_replacement, $temp);
-                $temp = $this->_var_swap_single('member_id', $row['member_id'], $temp);
+                $variables = array_merge($row, [
+                    'name' => ($row['screen_name'] != '') ? $row['screen_name'] : $row['username'],
+                    'member_id', $row['member_id'],
+                    'member_css' => $style,
+                    'profile_path' => ee()->functions->create_url(ee()->functions->extract_path('profile_path') . '/' . $row['member_id']),
+                    'path:profile', $this->_member_path($row['member_id']),
+                    'path:avatar' => $avatar_path,
+                    'total_forum_posts' => $row['total_forum_topics'] + $row['total_forum_posts'],
+                    'total_combined_posts' => $row['total_forum_topics'] + $row['total_forum_posts'] + $row['total_entries'] + $row['total_comments'],
+                    'total_entries' => $row['total_entries'],
+                    'total_comments' => $row['total_comments'],
+                ]);
 
-                /** ----------------------------------------
-                /**  1:1 variables
-                /** ----------------------------------------*/
+                $dates = [
+                    'last_visit',
+                    'last_activity',
+                    'join_date',
+                    'last_entry_date',
+                    'last_comment_date',
+                    'last_forum_post_date',
+                ];
+
+
+                if (!is_null(ee()->TMPL->template_engine)) {
+                    $variables['avatar_path'] = $member->getAvatarUrl();
+                }
+
                 foreach ($this->var_single as $key => $val) {
-                    /** ----------------------------------------
-                    /**  parse profile path
-                    /** ----------------------------------------*/
-                    if (strncmp($key, 'profile_path', 12) == 0) {
-                        $temp = $this->_var_swap_single($key, ee()->functions->create_url(ee()->functions->extract_path($key) . '/' . $row['member_id']), $temp);
-                    }
+                    // var_single may contain keys with variable parameters like `join_date format="Y/m/d`
+                    // so we need to extract just the variable name for matching dates and retrieving data
+                    $variable = current(explode(' ', $key));
 
-                    /** ----------------------------------------
-                    /**  parse avatar path
-                    /** ----------------------------------------*/
-                    if ($key == 'path:avatar') {
-                        $temp = $this->_var_swap_single($key, $avatar_path, $temp);
-                    }
-
-                    /** ----------------------------------------
-                    /**  parse "last_visit"
-                    /** ----------------------------------------*/
-                    if (strncmp($key, 'last_visit', 10) == 0) {
-                        $temp = $this->_var_swap_single($key, ($row['last_activity'] > 0) ? ee()->localize->format_date($val, $row['last_activity']) : '--', $temp);
-                    }
-
-                    /** ----------------------------------------
-                    /**  parse "join_date"
-                    /** ----------------------------------------*/
-                    if (strncmp($key, 'join_date', 9) == 0) {
-                        $temp = $this->_var_swap_single($key, ($row['join_date'] > 0) ? ee()->localize->format_date($val, $row['join_date']) : '--', $temp);
-                    }
-
-                    /** ----------------------------------------
-                    /**  parse "last_entry_date"
-                    /** ----------------------------------------*/
-                    if (strncmp($key, 'last_entry_date', 15) == 0) {
-                        $temp = $this->_var_swap_single($key, ($row['last_entry_date'] > 0) ? ee()->localize->format_date($val, $row['last_entry_date']) : '--', $temp);
-                    }
-
-                    /** ----------------------------------------
-                    /**  parse "last_comment_date"
-                    /** ----------------------------------------*/
-                    if (strncmp($key, 'last_comment_date', 17) == 0) {
-                        $temp = $this->_var_swap_single($key, ($row['last_comment_date'] > 0) ? ee()->localize->format_date($val, $row['last_comment_date']) : '--', $temp);
-                    }
-
-                    /** ----------------------------------------
-                    /**  parse "last_forum_post_date"
-                    /** ----------------------------------------*/
-                    if (strncmp($key, 'last_forum_post_date', 20) == 0) {
-                        $temp = $this->_var_swap_single($key, ($row['last_forum_post_date'] > 0) ? ee()->localize->format_date($val, $row['last_forum_post_date']) : '--', $temp);
-                    }
-
-                    /** ----------------------------------------
-                    /**  {total_forum_posts}
-                    /** ----------------------------------------*/
-                    if ($key == 'total_forum_posts') {
-                        $temp = $this->_var_swap_single($val, $row['total_forum_topics'] + $row['total_forum_posts'], $temp);
-                    }
-
-                    /** ----------------------------------------
-                    /**  {total_combined_posts}
-                    /** ----------------------------------------*/
-                    if ($key == 'total_combined_posts') {
-                        $temp = $this->_var_swap_single($val, $row['total_forum_topics'] + $row['total_forum_posts'] + $row['total_entries'] + $row['total_comments'], $temp);
-                    }
-
-                    /** ----------------------------------------
-                    /**  {total_entries}
-                    /** ----------------------------------------*/
-                    if ($key == 'total_entries') {
-                        $temp = $this->_var_swap_single($val, $row['total_entries'], $temp);
-                    }
-
-                    /** ----------------------------------------
-                    /**  {total_comments}
-                    /** ----------------------------------------*/
-                    if ($key == 'total_comments') {
-                        $temp = $this->_var_swap_single($val, $row['total_comments'], $temp);
-                    }
-
-                    /** ----------------------------------------
-                    /**  parse literal variables
-                    /** ----------------------------------------*/
-                    if (isset($row[$val])) {
-                        $temp = $this->_var_swap_single($val, $row[$val], $temp);
+                    if(in_array($variable, $dates)) {
+                        $date = $variables[$variable];
+                        $temp = $this->_var_swap_single($key, ($date > 0) ? ee()->localize->format_date($val, $date) : '--', $temp);
+                    }else if (array_key_exists($variable, $variables)) {
+                        $temp = $this->_var_swap_single($key, $variables[$variable], $temp);
                     }
 
                     /** ----------------------------------------
@@ -720,6 +670,7 @@ class Member_memberlist extends Member
                     }
                 }
 
+                $memberVariables[] = $variables;
                 $str .= $temp;
             }
         }
@@ -759,8 +710,8 @@ class Member_memberlist extends Member
             $menu .= "<option value='" . $role_setting->Role->getId() . "'" . $selected . ">" . $group_title . "</option>\n";
         }
 
-        $template = str_replace(LD . 'group_id_options' . RD, $menu, $template);
-        $template = str_replace(LD . 'role_options' . RD, $menu, $template);
+        $optionVariables['group_id_options'] = $menu;
+        $optionVariables['role_options'] = $menu;
 
         /** ----------------------------------------
         /**  Create the "Order By" menu
@@ -782,7 +733,7 @@ class Member_memberlist extends Member
         $selected = ($order_by == 'join_date') ? " selected='selected' " : '';
         $menu .= "<option value='join_date'" . $selected . ">" . ee()->lang->line('join_date') . "</option>\n";
 
-        $template = str_replace(LD . 'order_by_options' . RD, $menu, $template);
+        $optionVariables['order_by_options'] = $menu;
 
         /** ----------------------------------------
         /**  Create the "Sort By" menu
@@ -793,7 +744,7 @@ class Member_memberlist extends Member
         $selected = ($sort_order == 'desc') ? " selected='selected' " : '';
         $menu .= "<option value='desc'" . $selected . ">" . ee()->lang->line('mbr_descending') . "</option>\n";
 
-        $template = str_replace(LD . 'sort_order_options' . RD, $menu, $template);
+        $optionVariables['sort_order_options'] = $menu;
 
         /** ----------------------------------------
         /**  Create the "Row Limit" menu
@@ -813,7 +764,7 @@ class Member_memberlist extends Member
             $menu .= "<option value='" . $row_limit . "' selected='selected'>" . $row_limit . "</option>\n";
         }
 
-        $template = str_replace(LD . 'row_limit_options' . RD, $menu, $template);
+        $optionVariables['row_limit_options'] = $menu;
 
         /** ----------------------------------------
         /**  Custom Member Fields for Member Search
@@ -828,7 +779,12 @@ class Member_memberlist extends Member
             $profile_options .= "<option value='m_field_id_" . $row['m_field_id'] . "'>" . $row['m_field_label'] . "</option>\n";
         }
 
-        $template = str_replace(LD . 'custom_profile_field_options' . RD, $profile_options, $template);
+        $optionVariables['custom_profile_field_options'] = $profile_options;
+
+        foreach($optionVariables as $variable => $value)
+        {
+            $template = str_replace(LD . $variable . RD, $value, $template);
+        }
 
         /** ----------------------------------------
         /**  Put rendered chunk into template
@@ -885,8 +841,9 @@ class Member_memberlist extends Member
                 'RET' => ee()->TMPL->fetch_param('return') != '' ? ee()->TMPL->fetch_param('return') : str_replace($search_path, '', $result_page),
                 'no_result_page' => ee()->TMPL->fetch_param('no_result_page')
             );
+            $form_open = ee()->functions->form_declaration($data);
             $template = ee()->TMPL->parse_inline_errors(ee()->TMPL->tagdata);
-            $template = ee()->functions->form_declaration($data) . $template . '</form>';
+            $template = $form_open . $template . '</form>';
         } else {
             $template = str_replace(LD . "form_declaration" . RD, $form_open, $template);
             $form_open_member_search = ee()->functions->form_declaration(array(
@@ -906,6 +863,13 @@ class Member_memberlist extends Member
         } else {
             $template = str_replace(LD . "member_rows" . RD, $str, $template);
         }
+
+        ee()->TMPL->set_data([
+            'open' => $form_open,
+            'member_rows' => $memberVariables,
+            'options' => $optionVariables,
+            'pagination' => $pagination->getVariables(),
+        ]);
 
         return $template;
     }

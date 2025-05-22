@@ -426,6 +426,7 @@ class EE_Email
 
         if (ee()->config->item('email_newline') !== false) {
             $config['newline'] = ee()->config->item('email_newline');
+            $config['crlf'] = ee()->config->item('email_newline');
         }
 
         if (ee()->config->item('email_crlf') !== false) {

@@ -63,6 +63,8 @@ class Channel
 
     protected $preview_conditions = array();
 
+    protected $entry_ids = array();
+
     // SQL cache key prefix
     protected $_sql_cache_prefix = 'sql_cache';
 
@@ -181,6 +183,7 @@ class Channel
             }
 
             $this->chunks = $this->fetch_cache('chunks');
+            $this->entry_ids = $this->fetch_cache('entry_ids');
 
             if (($cache = $this->fetch_cache('pagination_count')) !== false) {
                 // We need to establish the per_page limits if we're using
@@ -226,6 +229,7 @@ class Channel
             if ($save_cache == true) {
                 $this->save_cache($this->sql);
                 if (! empty($this->chunks)) {
+                    $this->save_cache($this->entry_ids, 'entry_ids');
                     $this->save_cache($this->chunks, 'chunks');
                 }
             }
@@ -2097,10 +2101,7 @@ class Channel
         $this->sql .= $this->generateSQLForEntries($entries, $channel_ids);
 
         //cache the entry_id
-        if (isset(ee()->session)) {
-            ee()->session->cache['channel']['entry_ids'] = $entries;
-            ee()->session->cache['channel']['channel_ids'] = $channel_ids;
-        }
+        $this->entry_ids = $entries;
 
         $end = "ORDER BY FIELD(t.entry_id, " . implode(',', $entries) . ")";
 
@@ -2201,6 +2202,7 @@ class Channel
         if (! empty($chunks)) {
             $this->chunks = $chunks;
         }
+        $this->entry_ids = $entries;
 
         if (is_array($chunk)) {
             foreach ($chunk as $field) {
@@ -2562,9 +2564,16 @@ class Channel
         }
     }
 
+    /**
+     * When the query is build into chunks (hitting the limit of MySQL fields)
+     * we use this to grab extra custom fields from the DB
+     *
+     * @param array $query_result
+     * @return array
+     */
     private function getExtraData($query_result)
     {
-        $where = "WHERE t.entry_id IN (" . implode(',', ee()->session->cache['channel']['entry_ids']) . ")";
+        $where = "WHERE t.entry_id IN (" . implode(',', $this->entry_ids) . ")";
 
         foreach ($this->chunks as $chunk) {
             $sql = "SELECT t.entry_id";
