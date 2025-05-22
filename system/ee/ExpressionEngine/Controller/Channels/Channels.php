@@ -35,6 +35,8 @@ class Channels extends AbstractChannelsController
         $vars['base_url'] = ee('CP/URL', 'channels');
 
         $channels = ee('Model')->get('Channel')
+            ->order('channel_order', 'asc')
+            ->order('channel_title', 'asc')
             ->filter('site_id', ee()->config->item('site_id'));
 
         if ($search = ee()->input->get_post('filter_by_keyword')) {
@@ -80,6 +82,7 @@ class Channels extends AbstractChannelsController
                     ])
                 ],
                 'selected' => ($highlight_id && $channel->getId() == $highlight_id) or in_array($channel->getId(), $imported_channels),
+                'reorderable' => true,
                 'toolbar_items' => [
                     'download' => [
                         'href' => ee('CP/URL', 'channels/sets/export/' . $channel->getId()),
@@ -102,6 +105,16 @@ class Channels extends AbstractChannelsController
             ];
         }
 
+        ee()->cp->add_js_script('plugin', 'ee_table_reorder');
+        ee()->cp->add_js_script('file', 'cp/channel/fields_reorder');
+
+        ee()->javascript->set_global('fields.reorder_url', ee('CP/URL', 'channels/reorder')->compile());
+        $reorder_ajax_fail = ee('CP/Alert')->makeBanner('reorder-ajax-fail')
+                ->asIssue()
+                ->canClose()
+                ->withTitle(sprintf(lang('ajax_reorder_fail'), lang('channels')))
+                ->addToBody(sprintf(lang('ajax_reorder_fail_desc'), lang('channels')));
+        ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());
         ee()->javascript->set_global('lang.remove_confirm', lang('layout') . ': <b>### ' . lang('channels') . '</b>');
         ee()->cp->add_js_script(array(
             'file' => array(
@@ -127,6 +140,21 @@ class Channels extends AbstractChannelsController
         );
 
         ee()->cp->render('channels/index', $vars);
+    }
+
+    /**
+     * AJAX endpoint for reordering channels
+     */
+    public function reorder()
+    {
+        $channels = ee('Model')->get('Channel')->filter('site_id', ee()->config->item('site_id'))->all()->indexBy('channel_id');
+
+        foreach (ee('Request')->post('order') as $order => $channel_id) {
+            $channels[$channel_id]->channel_order = $order + 1;
+            $channels[$channel_id]->save();
+        }
+
+        return ['success'];
     }
 
     /**

@@ -113,7 +113,7 @@ class Channels extends Jumps
             }
         }
 
-        return $channels->order('channel_title', 'ASC')->limit(11)->all();
+        return $channels->order('channel_order', 'ASC')->order('channel_title', 'ASC')->limit(11)->all();
     }
 
     private function loadChannelFields($searchString = false)

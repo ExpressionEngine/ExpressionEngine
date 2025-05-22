@@ -123,7 +123,7 @@ context('Fields of different types', () => {
 		it('can be moved in publish layout', () => {
 			// Create a publish layout
 			cy.visit('admin.php?/cp/channels')
-			cy.get('div.list-item__content-right > div > div > a.layout-set.button.button--default').first().click()
+			cy.get('.list-item:contains("AATestChannel")').find('div.list-item__content-right > div > div > a.layout-set.button.button--default').first().click()
 			cy.get('a.button').contains('New Layout').first().click()
 			cy.get("input[name = 'layout_name']").type('AATestPublishLayout')
 			cy.get('#fieldset-roles input[type=checkbox]').eq(0).check()

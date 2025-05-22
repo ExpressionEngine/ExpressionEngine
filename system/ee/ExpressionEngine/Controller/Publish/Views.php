@@ -97,6 +97,7 @@ class Views extends CP_Controller
         $channels = ee('Model')->get('Channel')
             ->with('Site')
             ->filter('site_id', ee()->config->item('site_id'))
+            ->order('channel_order', 'ASC')
             ->order('channel_title', 'asc')
             ->all();
 

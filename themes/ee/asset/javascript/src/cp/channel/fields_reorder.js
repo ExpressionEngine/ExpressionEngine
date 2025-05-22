@@ -12,8 +12,6 @@
     "use strict";
     
     $(document).ready(function() {
-
-        console.log('ready');
     
         $('.js-list-group-wrap').eeTableReorder({
             sortableContainer: '.list-group',
