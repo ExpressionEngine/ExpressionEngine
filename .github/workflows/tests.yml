@@ -4,7 +4,8 @@ on:
   push:
     branches:
       - '*.dev'
-      - 'release*'
+      - 'release/**'
+      - '!release/**-alpha'
 
 jobs:
 
@@ -25,14 +26,14 @@ jobs:
         runs-on: ubuntu-latest
         steps:
           - name: Checkout code
-            uses: actions/checkout@v3
+            uses: actions/checkout@v4
 
           - name: Cache repository info
-            uses: actions/cache@v3
+            uses: actions/cache@v4
             with:
               path: .git
               key: cache-ee-git-${{ github.sha }}
-          
+
           - name: Setup PHP
             uses: shivammathur/setup-php@v2
             with:
@@ -41,8 +42,15 @@ jobs:
                 coverage: none
                 ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
 
+          - name: Checkout RedactorX
+            uses: actions/checkout@v4
+            with:
+              repository: ExpressionEngine/RedactorX
+              token: ${{ secrets.ORG_ACCESS_TOKEN }}
+              path: __redactorx
+
           - name: Setup node
-            uses: actions/setup-node@v3
+            uses: actions/setup-node@v4
             with:
               node-version: '10'
 
@@ -63,6 +71,7 @@ jobs:
               RELEASE_PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
               RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
               APP_REPO_PATH: ${{ github.workspace }}
+              REDACTORX_REPO_PATH: ${{ github.workspace }}/__redactorx
             run: gulp build-app --local --nogit --head --skip-lint --skip-pro --version=${{ steps.build_json.outputs.BUILD_VERSION }}
 
           - name: Rename build directory
@@ -71,7 +80,7 @@ jobs:
               mv ExpressionEngine${{ steps.build_json.outputs.BUILD_VERSION }} ExpressionEngine
 
           - name: Cache built EE version
-            uses: actions/cache@v3
+            uses: actions/cache@v4
             with:
               path: build-tools/builds/ExpressionEngine
               key: cache-ee-build-${{ github.sha }}
@@ -85,59 +94,22 @@ jobs:
 
     cypress:
         needs: build-for-testing
-
         runs-on: ${{ matrix.os }}
+        timeout-minutes: 45
 
         strategy:
             fail-fast: false
             matrix:
-                php: [7.4, 8.0]
-                os: [ubuntu-20.04]
-                containers: [0, 1, 2, 3, 4 , 5]
-                include:
-                  - php: 8.1
-                    os: ubuntu-latest
-                    containers: 0
-                  - php: 8.1
-                    os: ubuntu-latest
-                    containers: 1
-                  - php: 8.1
-                    os: ubuntu-latest
-                    containers: 2
-                  - php: 8.1
-                    os: ubuntu-latest
-                    containers: 3
-                  - php: 8.1
-                    os: ubuntu-latest
-                    containers: 4
-                  - php: 8.1
-                    os: ubuntu-latest
-                    containers: 5
-                  - php: 8.2
-                    os: ubuntu-latest
-                    containers: 0
-                  - php: 8.2
-                    os: ubuntu-latest
-                    containers: 1
-                  - php: 8.2
-                    os: ubuntu-latest
-                    containers: 2
-                  - php: 8.2
-                    os: ubuntu-latest
-                    containers: 3
-                  - php: 8.2
-                    os: ubuntu-latest
-                    containers: 4
-                  - php: 8.2
-                    os: ubuntu-latest
-                    containers: 5
+                php: [7.4, 8.0, 8.1, 8.2, 8.3]
+                os: [ubuntu-latest]
+                containers: [0, 1, 2, 3, 4, 5]
 
         name: Cypress Tests, PHP${{ matrix.php }} - ${{ matrix.os }} ${{ matrix.containers }}
 
         steps:
 
             - name: Use cached EE build
-              uses: actions/cache@v3
+              uses: actions/cache@v4
               with:
                 path: build-tools/builds/ExpressionEngine
                 key: cache-ee-build-${{ github.sha }}
@@ -149,7 +121,7 @@ jobs:
                 cp -R build-tools/builds/ExpressionEngine/* ./
 
             - name: Restore cached git history
-              uses: actions/cache@v3
+              uses: actions/cache@v4
               with:
                 path: .git
                 key: cache-ee-git-${{ github.sha }}
@@ -163,6 +135,10 @@ jobs:
               run: |
                 rm -f .env.php
                 cp -f tests/cypress/support/config/.env.php .env.php
+
+            - name: Copy avatar file
+              run: |
+                cp -f tests/cypress/support/file-sync/images/8bit_kevin.png images/avatars/8bit_kevin.png
 
             - name: Remove installer
               run: |
@@ -217,17 +193,30 @@ jobs:
             #     echo "::set-output name=SPECS::$(node tests/cypress-split.js 4 ${{ matrix.containers }})"
             #   id: specs
 
-            - name: Install Chrome
+            # This will get a Stable Chrome version that is 2 releases back from latest, and install it
+            # It gets the version from the Official Chromium Dash API
+            # Get a couple releases back ensures we do not run into the issue where not all runners have the latest version
+            - name: Get Chrome Version
+              id: get-chrome-version
+              run: |
+                latest_version=$(curl -s 'https://chromiumdash.appspot.com/fetch_releases?channel=Stable&platform=Linux&num=1&offset=0' | jq -r '.[0].version')
+                major_version=$(echo $latest_version | cut -d '.' -f 1)
+                previous_major_version=$((major_version - 1))
+                echo "Previous major version of Chrome: $previous_major_version"
+                echo "chrome_version=$previous_major_version" >> $GITHUB_OUTPUT
+
+            - name: Install Specific Chrome Version
               uses: browser-actions/setup-chrome@latest
+              id: setup-chrome
               with:
-                chrome-version: stable
+                chrome-version: ${{ steps.get-chrome-version.outputs.chrome_version }}
 
             - name: Run Cypress Tests
               if: matrix.php != '5.6'
-              uses: cypress-io/github-action@v5
+              uses: cypress-io/github-action@v6
               with:
                 # spec: ${{ steps.specs.outputs.SPECS }}
-                browser: chrome
+                browser: ${{ steps.setup-chrome.outputs.chrome-path }}
                 working-directory: tests/cypress
                 record: true
                 parallel: true
@@ -239,9 +228,9 @@ jobs:
 
             - name: Run Cypress Tests (PHP 5.6)
               if: matrix.php == '5.6'
-              uses: cypress-io/github-action@v5
+              uses: cypress-io/github-action@v6
               with:
-                browser: chrome
+                browser: ${{ steps.setup-chrome.outputs.chrome-path }}
                 working-directory: tests/cypress
                 config: specPattern=cypress/integration/!(updater|pro)/**.ee6.js
                 record: true
@@ -252,29 +241,42 @@ jobs:
                 CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+            - name: Run Cypress Tests (Electron)
+              uses: cypress-io/github-action@v6
+              if: matrix.php == '8.1'
+              with:
+                browser: electron
+                working-directory: tests/cypress
+                config-file: electron.cypress.config.js
+              env:
+                CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+                CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
+
             - name: Archive screenshots
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               if: failure()
               with:
                 name: cypress-tests-PHP${{ matrix.php }}-${{ matrix.containers }}
                 path: tests/cypress/cypress/screenshots/
 
             - name: Archive server errors
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               if: failure()
               with:
                 name: error.PHP${{ matrix.php }}-${{ matrix.containers }}.log
                 path: /home/runner/php_errors.log
 
             - name: Archive JS errors
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               if: failure()
               with:
                 name: js-error.PHP${{ matrix.php }}-${{ matrix.containers }}.log
                 path: tests/cypress/cypress/downloads/js.log.txt
 
             - name: Archive EE error logs
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               with:
                 name: ee-error-logs.PHP${{ matrix.php }}-${{ matrix.containers }}
                 path: system/user/logs/

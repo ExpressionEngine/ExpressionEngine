@@ -153,6 +153,11 @@ class TemplateGroup extends Model
             return null;
         }
 
+        // Templates are always site-specific
+        if (empty($this->site_id)) {
+            return null;
+        }
+
         $basepath = PATH_TMPL;
 
         if (ee()->config->item('save_tmpl_files') != 'y' || $basepath == '') {

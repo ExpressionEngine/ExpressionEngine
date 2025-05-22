@@ -20,6 +20,10 @@ $lang = array(
 
     'category_groups_desc' => 'Assign one or more category groups to this channel.',
 
+    'cat_required' => 'Required?',
+
+    'cat_allow_multiple' => 'Allow multiple?',
+
     'channel' => 'Channel',
 
     'channel_form_layouts' => '%s &ndash; Publish Layouts',
@@ -445,6 +449,8 @@ $lang = array(
 
     'category_ajax_reorder_fail_desc' => 'We failed to save your new categories order. Refresh the page and make sure you\'re logged in.',
 
+    'category_group_no_permissions' => 'You do not have permissions to modify categories in this group.',
+
     'category_created' => 'Category Created',
 
     'category_created_desc' => 'The category <b>%s</b> has been created.',
@@ -634,6 +640,25 @@ $lang = array(
 
     'channel_roles_desc' => 'Members in these roles can perform each selected action in this channel.',
 
+    /* Template Generator */
+
+    'select_channels_to_generate' => 'Select the channels that you want to use in templates',
+
+    'invalid_channel' => 'No valid channel selected',
+
+    'select_fields_to_generate' => 'Select the fields that you want to use in templates',
+
+    'invalid_field' => 'No valid field selected',
+
+    'channel_fields_template_generator' => 'Channel Fields',
+
+    'channel_channels_template_generator' => 'Channels',
+
+    'channel_field_groups_template_generator' => 'Channel Field Groups',
+
+    'show_comments' => 'Show Comments',
+
+    'show_comments_desc' => 'Add comments with generated fields including links to documentation'
 );
 
 // EOF

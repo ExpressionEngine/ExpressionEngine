@@ -118,7 +118,7 @@ context('Entry Manager', () => {
 			cy.dismissLicenseAlert()
 			entry.get('ChannelSort').click()
 
-			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Channel').click();
+			cy.get('a[class*="dropdown__link"]').filter(':visible').contains('Channel').click();
 			cy.wait("@ajax")
 			entry.get('Entries').find('tr').should('have.length',2)
 			cy.get('a').contains('Channel Entry').should('exist')
@@ -126,7 +126,7 @@ context('Entry Manager', () => {
 			cy.visit('admin.php?/cp/publish/edit')
 			cy.dismissLicenseAlert()
 			entry.get('ChannelSort').click()
-			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Contact').click();
+			cy.get('a[class*="dropdown__link"]').filter(':visible').contains('Contact').click();
 			cy.wait("@ajax")
 			entry.get('Entries').find('tr').should('have.length',1)
 			cy.get('a').contains('Contact Entry').should('exist')
@@ -135,7 +135,7 @@ context('Entry Manager', () => {
 			cy.dismissLicenseAlert()
 			entry.get('Entries').find('tr').should('have.length',14)
 			entry.get('ChannelSort').click()
-			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Discover').click();
+			cy.get('a[class*="dropdown__link"]').filter(':visible').contains('Discover').click();
 			cy.wait("@ajax")
 			cy.get('h3').contains('Entries').click()
 			entry.get('Entries').find('tr').should('have.length',1)
@@ -151,56 +151,56 @@ context('Entry Manager', () => {
 			cy.get('h3').contains('Entries').click()
 			entry.get('StatusSort').click()
 
-			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Open').click(); //Open
+			cy.get('a[class*="dropdown__link"]').filter(':visible').contains('Open').click(); //Open
 			cy.wait("@ajax")
 			cy.get('h3').contains('Entries').click()
 			entry.get('Entries').find('tr').should('have.length',12)
 
 			entry.get('StatusSort').click()
-			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Closed').click(); //Closed
+			cy.get('a[class*="dropdown__link"]').filter(':visible').contains('Closed').click(); //Closed
 			cy.wait("@ajax")
 			cy.get('h3').contains('Entries').click()
-			cy.get('a[class="dropdown__link"]').should('not.be.visible')
+			cy.get('a[class*="dropdown__link"]').should('not.be.visible')
 			entry.get('Entries').find('tr').should('have.length',1)
 
 			entry.get('StatusSort').click()
-			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Open').click(); //Open
+			cy.get('a[class*="dropdown__link"]').filter(':visible').contains('Open').click(); //Open
 			cy.wait("@ajax")
 			cy.get('h3').contains('Entries').click()
-			cy.get('a[class="dropdown__link"]').should('not.be.visible')
+			cy.get('a[class*="dropdown__link"]').should('not.be.visible')
 
 			cy.wait(1000)
 			entry.get('ChannelSort').click()
-			cy.get('a[class="dropdown__link"]').should('be.visible')
-			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Channel').click();//Channel
+			cy.get('a[class*="dropdown__link"]').should('be.visible')
+			cy.get('a[class*="dropdown__link"]').filter(':visible').contains('Channel').click();//Channel
 			cy.wait("@ajax")
 			cy.get('h3').contains('Entries').click()
-			cy.get('a[class="dropdown__link"]').should('not.be.visible')
+			cy.get('a[class*="dropdown__link"]').should('not.be.visible')
 			//entry.get('Entries').contains('No Entries found')
 			entry.get('Entries').find('tr').should('have.length',1)
 
 			cy.wait(1000)
 			entry.get('StatusSort').click()
-			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Closed').click(); //Closed
+			cy.get('a[class*="dropdown__link"]').filter(':visible').contains('Closed').click(); //Closed
 			cy.wait("@ajax")
 			cy.get('h3').contains('Entries').click()
-			cy.get('a[class="dropdown__link"]').should('not.be.visible')
+			cy.get('a[class*="dropdown__link"]').should('not.be.visible')
 			entry.get('Entries').find('tr').should('have.length',1)
 
 			cy.wait(1000)
 			entry.get('ChannelSort').click()
-			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Contact').click();//Contact
+			cy.get('a[class*="dropdown__link"]').filter(':visible').contains('Contact').click();//Contact
 			cy.wait("@ajax")
 			cy.get('h3').contains('Entries').click()
-			cy.get('a[class="dropdown__link"]').should('not.be.visible')
+			cy.get('a[class*="dropdown__link"]').should('not.be.visible')
 			entry.get('Entries').contains('No Entries found')
 
 			cy.wait(1000)
 			entry.get('ChannelSort').click()
-			cy.get('a[class="dropdown__link"]').filter(':visible').contains('Discover').click();//Discover
+			cy.get('a[class*="dropdown__link"]').filter(':visible').contains('Discover').click();//Discover
 			cy.wait("@ajax")
 			cy.get('h3').contains('Entries').click()
-			cy.get('a[class="dropdown__link"]').should('not.be.visible')
+			cy.get('a[class*="dropdown__link"]').should('not.be.visible')
 			entry.get('Entries').contains('No Entries found')
 		})
 

@@ -55,6 +55,16 @@ var Dropdown = /*#__PURE__*/function (_React$Component) {
       if (_this.props.conditionalRule == 'operator') {
         EE.cp.check_operator_value(selected, _this.input);
       }
+
+      if (_this.props.conditionalRule == 'rx-redactor-dropdown') {
+        var $rx_react_parent = $(_this.input).parents('.rx-form-div').parent();
+        var $rx_url_input = $($rx_react_parent).next('input.rx-form-input');
+        $rx_url_input.val(selected.value);
+      }
+
+      if ($("[data-publish] > form").length) {
+        $("[data-publish] > form").trigger("entry:startAutosave");
+      }
     });
 
     _defineProperty(_assertThisInitialized(_this), "toggleOpen", function () {
@@ -83,7 +93,7 @@ var Dropdown = /*#__PURE__*/function (_React$Component) {
         }, React.createElement(DropdownItem, {
           key: item.value ? item.value : item.section,
           item: item,
-          selected: _this.state.selected && item.value == _this.state.selected.value,
+          selected: _this.state.selected && item.value === _this.state.selected.value,
           onClick: function onClick(e) {
             return _this.selectionChanged(item);
           },

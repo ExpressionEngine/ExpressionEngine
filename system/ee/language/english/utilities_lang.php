@@ -528,11 +528,11 @@ $lang = array(
 
 Once you are ready to experience the new File Manager features, please run the <a href="%s">Update File Usage</a> Utility and then visit <a href="%s">Content & Design Settings</a> to disable Compatibility Mode.',
 
-    /* Search Reindex */
+    /* Content Reindex */
 
     'search_reindex_fail' => 'Reindexing Failed',
 
-    'search_reindex' => 'Search Reindex',
+    'search_reindex' => 'Content Reindex',
 
     'search_reindex_desc' => '%s Channel entries will be reindexed',
 
@@ -548,9 +548,9 @@ Once you are ready to experience the new File Manager features, please run the <
 
     'all_sites_desc' => 'Reindex the Channel entries across all sites, or just this one?',
 
-    'search_reindexed_started' => 'Search reindexing started.',
+    'search_reindexed_started' => 'Content reindexing started.',
 
-    'search_reindexed_completed' => 'Search reindexing complete. %s entries were reindexed.',
+    'search_reindexed_completed' => 'Content reindexing complete. %s entries were reindexed.',
 
     /* Export Email Addresses */
 
@@ -627,6 +627,14 @@ Once you are ready to experience the new File Manager features, please run the <
     'debug_tools_installed_unused_fieldtypes_desc' => 'These fieldtypes are installed, but are not currently in use.',
 
     'debug_tools_all_used_fieldtypes' => 'All used fieldtypes',
+
+    'debug_tools_channel_entries' => 'Debug Channel Entries',
+
+    'debug_tools_no_entries_missing_data_desc' => 'All entries are properly associated with %s',
+
+    'debug_tools_entries_missing_data_desc' => 'Some entries are referencing non-existent %s',
+
+    'debug_tools_entries_missing_data_count' => '%d entries are referencing non-existent %s',
 
     'debug_tools_members' => 'Debug Members',
 

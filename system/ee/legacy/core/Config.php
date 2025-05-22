@@ -62,6 +62,11 @@ class EE_Config
             show_error('ExpressionEngine does not appear to be installed.  If you are accessing this page for the first time, please consult the user guide for installation instructions.', 503);
         }
 
+        if (array_key_exists('global_vars', $config) && is_array($config['global_vars'])) {
+            $this->_global_vars = $config['global_vars'];
+            unset($config['global_vars']);
+        }
+
         // Add the EE config data to the master CI config array
         foreach ($config as $key => $val) {
             $this->set_item($key, $val);
@@ -129,7 +134,7 @@ class EE_Config
         }
 
         // Assign global variables if they exist
-        $this->_global_vars = (! isset($params['global_vars']) or ! is_array($params['global_vars'])) ? array() : $params['global_vars'];
+        $this->_global_vars = (! isset($params['global_vars']) or ! is_array($params['global_vars'])) ? $this->_global_vars : array_merge($this->_global_vars, $params['global_vars']);
 
         $exceptions = array();
         foreach (array('site_url', 'site_index', 'site_404', 'template_group', 'template', 'cp_url', 'newrelic_app_name') as $exception) {
@@ -348,6 +353,7 @@ class EE_Config
 
         $config['email_newline_form_safe'] = $config['email_newline'];
         $config['email_newline'] = $this->setEmailNewline($config['email_newline']);
+        $config['email_crlf'] = $this->setEmailNewline($config['email_crlf'] ?? '');
 
         if ($mutating) {
             $this->config = $config;
@@ -608,6 +614,7 @@ class EE_Config
             'max_logged_searches',
             'rte_default_toolset',
             'rte_file_browser',
+            'rte_custom_ckeditor_build',
             'forum_trigger',
             //pro config values
             'login_logo',
@@ -627,6 +634,9 @@ class EE_Config
             'allow_member_registration',
             'allow_member_localization',
             'req_mbr_activation',
+            'registration_auto_login',
+            'activation_auto_login',
+            'activation_redirect',
             'new_member_notification',
             'mbr_notification_emails',
             'require_terms_of_service',
@@ -993,8 +1003,8 @@ class EE_Config
 
                     $prefs[$value] = $site_prefs[$value];
 
-                    // exception for email_newline, which uses backslashes, and is not a path variable
-                    if ($value != 'email_newline') {
+                    // exception for email_newline and email_crlf, which uses backslashes, and is not a path variable
+                    if (!in_array($value, ['email_newline', 'email_crlf'])) {
                         $prefs[$value] = str_replace('\\', '/', $prefs[$value]);
                     }
 
@@ -1417,6 +1427,7 @@ class EE_Config
                     '%n/%j/%Y' => 'mm/dd/yyyy',
                     '%j/%n/%Y' => 'dd/mm/yyyy',
                     '%j-%n-%Y' => 'dd-mm-yyyy',
+                    '%d.%m.%Y' => 'dd.mm.yyyy',
                     '%Y-%m-%d' => 'yyyy-mm-dd'
                 )),
                 'time_format' => array('r', array('24' => '24_hour', '12' => '12_hour')),

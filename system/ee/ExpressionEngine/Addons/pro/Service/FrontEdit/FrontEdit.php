@@ -225,7 +225,7 @@ class FrontEdit
                     if (isset($matches[$i + 1]) && $matches[$i + 1][0][0] == $tag) {
                         $substrOrig = substr($orig_tagdata, $match[0][1], $matches[$i + 1][0][1] - $match[0][1] + strlen($tag));
                         // :frontedit tag cannot be inside of tag pair
-                        // (case when jusing image modifiers)
+                        // (case when using image modifiers)
                         $substr = preg_replace_callback('/{([a-zA-Z0-9_-]*):frontedit}(?!(\{\1[\}\s]))(.*?){\/\1}/s', function ($substrMatches) {
                             if (preg_match('/{' . $substrMatches[1] . '[\}\s]/s', $substrMatches[0], $check)) {
                                 return $substrMatches[0];

@@ -64,7 +64,7 @@ class Members extends Jumps
                 'command_title' => $field->m_field_name,
                 'dynamic' => false,
                 'addon' => false,
-                'target' => ee('CP/URL')->make('members/fields/edit/' . $field->getId())->compile()
+                'target' => ee('CP/URL')->make('settings/member-fields/edit/' . $field->getId())->compile()
             );
         }
 

@@ -273,6 +273,13 @@ class EE_Output
 
         // --------------------------------------------------------------------
 
+        if (isset(ee()->extensions) && ee()->extensions->active_hook('before_response_send_output') === true) {
+            $output = ee()->extensions->call('before_response_send_output', $output);
+            if (ee()->extensions->end_script === true) {
+                return;
+            }
+        }
+
         // Set the output data
         if ($output == '') {
             $output = & $this->final_output;
@@ -399,6 +406,13 @@ class EE_Output
         // --------------------------------------------------------------------
 
         echo $output;  // Send it to the browser!
+
+        if (isset(ee()->extensions) && ee()->extensions->active_hook('after_response_send_output') === true) {
+            ee()->extensions->call('after_response_send_output');
+            if (ee()->extensions->end_script === true) {
+                return;
+            }
+        }
 
         log_message('debug', "Final output sent to browser");
         log_message('debug', "Total execution time: " . $elapsed);
@@ -613,6 +627,90 @@ class EE_Output
     }
 
     /**
+     * Show form error
+     *
+     * @access  public
+     * @param   string
+     * @param   mixed
+     * @param   string
+     * @return  void
+     */
+    public function show_form_error($errors = '', $type = 'general')
+    {
+        return $this->show_form_error_aliases($errors, [], $type);
+    }
+
+    /**
+     * Show form error with aliases
+     *
+     * @access  public
+     * @param   string
+     * @param   mixed
+     * @param   string
+     * @return  void
+     */
+    public function show_form_error_aliases($errors = '', $aliases = [], $type = 'general')
+    {
+        $url = ee()->functions->determine_error_return();
+
+        if($errors instanceof \ExpressionEngine\Service\Validation\Result) {
+            $validationErrors = $errors->getFirstErrors();
+            $errors = [];
+
+            foreach ($validationErrors as $field => $error) {
+                $label = $field;
+
+                // Handle aliased field names
+                if(!empty($aliases) && array_key_exists($field, $aliases)) {
+                    $original = $field;
+                    $field = $aliases[$field]['field'] ?? $aliases[$field];
+                    $label = $aliases[$original]['label'] ?? $field;
+                }
+
+                // Build error for system error page
+                // or store as field name for inline error display
+                if($url === false) {
+                    $label = lang($label);
+                    $errors[] = "<b>{$label}: </b>{$error}";
+                }else {
+                    $errors['error:' . $field] = $error;
+                }
+            }
+        }else if(is_array($errors) && $url !== false) {
+            // Automatically prefix error keys
+            $errors = array_reduce(array_keys($errors), function($carry, $key) use($errors) {
+                $error = $errors[$key];
+                if(!is_numeric($key) && strpos($key, 'error:') !== 0) {
+                    $key = "error:$key";
+                }
+                $carry[$key] = $error;
+                return $carry;
+            }, []);
+        }
+
+        // Flash errors for redirect
+        if($url !== false) {
+            ee()->session->set_flashdata('errors', $errors);
+
+            // Save old input values from POST for error redirect.
+            // Filter out temporary hashes and sensitive values and any keys found in $_FILES
+            $old = array_filter($_POST, function ($key) {
+                $key = strtolower($key);
+                return !in_array($key, ['act', 'ret', 'from', 'p', 'site_id', 'csrf', 'csrf_token', 'xid', 'captcha'])
+                    && !in_array($key, array_keys($_FILES ?: []))
+                    && strpos($key, 'password') === false;
+            }, ARRAY_FILTER_USE_KEY);
+
+            // Prefix old input variables for template display
+            $old = array_combine(array_map(function($key) {return "old:$key";}, array_keys($old)), $old);
+
+            ee()->session->set_flashdata('old', $old);
+        }
+
+        return $this->show_user_error($type, $errors, '', $url);
+    }
+
+    /**
      * Show user error
      *
      * @access  public
@@ -674,15 +772,19 @@ class EE_Output
      *
      * @access  public
      * @param   string
-     * @param   bool    whether or not the response is an error
+     * @param   bool|int    HTTP status code. If boolean, status code to send.
      * @return  void
      */
-    public function send_ajax_response($msg, $error = false)
+    public function send_ajax_response($msg, $statusCode = false)
     {
         $this->enable_profiler(false);
 
-        if ($error === true) {
+        if ($statusCode === true) {
             $this->set_status_header(500);
+        } else if ($statusCode === false || (!is_int($statusCode) && !is_bool($statusCode))) {
+            $this->set_status_header(200);
+        } else {
+            $this->set_status_header($statusCode);
         }
 
         if (ee()->config->item('send_headers') == 'y') {

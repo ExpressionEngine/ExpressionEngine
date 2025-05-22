@@ -87,6 +87,7 @@
             <?php if (! $field->isRequired() && ! $field->isVisible()) {
                 continue;
             } ?>
+            <?=$field->renderAlert()?>
             <?php
                 $field_class = '';
                 if ($field->getStatus() == 'warning') {
@@ -115,6 +116,7 @@
                 <div class="field-instruct">
                     <?php if (! $field->titleIsHidden()):?>
                         <label><?php if (!isset($pro_class)) : ?><span class="ico sub-arrow js-toggle-field"></span><?php endif; ?><?=$field->getLabel()?></label>
+                        <?=$field->getNameBadge()?>
                         <?php
                         $fieldInstructions = $field->getInstructions();
                         if (!empty($fieldInstructions)) :?>

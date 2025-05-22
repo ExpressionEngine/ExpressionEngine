@@ -1029,9 +1029,10 @@ class Metaweblog_api
         $cats = array();
 
         $sql = "SELECT exp_categories.cat_id, exp_categories.cat_name, exp_categories.cat_description
-				FROM	exp_categories, exp_channels
-				WHERE  FIND_IN_SET(exp_categories.group_id, REPLACE(exp_channels.cat_group, '|', ','))
-				AND exp_channels.channel_id = '" . ee()->db->escape_str($this->channel_id) . "'";
+				FROM exp_categories
+				LEFT JOIN exp_channel_category_groups ON exp_categories.group_id = exp_channel_category_groups.group_id
+				LEFT JOIN exp_channels ON exp_channel_category_groups.channel_id = exp_channels.channel_id
+				WHERE exp_channels.channel_id = '" . ee()->db->escape_str($this->channel_id) . "'";
 
         $query = ee()->db->query($sql);
 
@@ -1078,9 +1079,10 @@ class Metaweblog_api
         $cats = array();
 
         $sql = "SELECT exp_categories.cat_id, exp_categories.cat_name
-				FROM	exp_categories, exp_channels
-				WHERE  FIND_IN_SET(exp_categories.group_id, REPLACE(exp_channels.cat_group, '|', ','))
-				AND exp_channels.channel_id = '" . ee()->db->escape_str($this->channel_id) . "'";
+				FROM exp_categories
+				LEFT JOIN exp_channel_category_groups ON exp_categories.group_id = exp_channel_category_groups.group_id
+				LEFT JOIN exp_channels ON exp_channel_category_groups.channel_id = exp_channels.channel_id
+				WHERE exp_channels.channel_id = '" . ee()->db->escape_str($this->channel_id) . "'";
 
         $query = ee()->db->query($sql);
 
@@ -1158,9 +1160,10 @@ class Metaweblog_api
         $categories = array_unique($array);
 
         $sql = "SELECT exp_categories.cat_id, exp_categories.cat_name, exp_categories.parent_id, exp_categories.group_id
-				FROM	exp_categories, exp_channels
-				WHERE  FIND_IN_SET(exp_categories.group_id, REPLACE(exp_channels.cat_group, '|', ','))
-				AND exp_channels.channel_id = '" . ee()->db->escape_str($this->channel_id) . "'";
+				FROM exp_categories
+				LEFT JOIN exp_channel_category_groups ON exp_categories.group_id = exp_channel_category_groups.group_id
+				LEFT JOIN exp_channels ON exp_channel_category_groups.channel_id = exp_channels.channel_id
+				WHERE exp_channels.channel_id = '" . ee()->db->escape_str($this->channel_id) . "'";
 
         $query = ee()->db->query($sql);
 

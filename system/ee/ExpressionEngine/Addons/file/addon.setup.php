@@ -3,6 +3,7 @@
 return array(
     'author' => 'ExpressionEngine',
     'author_url' => 'https://expressionengine.com/',
+    'docs_url' => 'https://docs.expressionengine.com/latest/fieldtypes/file.html',
     'name' => 'File',
     'description' => '',
     'version' => '1.1.0',
@@ -11,7 +12,11 @@ return array(
     'built_in' => true,
     'fieldtypes' => array(
         'file' => array(
-            'compatibility' => 'file'
+            'compatibility' => 'file',
+            'templateGenerator' => 'File',
+            'use' => array(
+                'MemberField'
+            )
         )
     )
 );

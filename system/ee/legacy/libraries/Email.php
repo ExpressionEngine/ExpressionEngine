@@ -426,6 +426,7 @@ class EE_Email
 
         if (ee()->config->item('email_newline') !== false) {
             $config['newline'] = ee()->config->item('email_newline');
+            $config['crlf'] = ee()->config->item('email_newline');
         }
 
         if (ee()->config->item('email_crlf') !== false) {
@@ -1690,7 +1691,8 @@ class EE_Email
 
         $ssl = ($this->smtp_crypto === 'ssl') ? 'ssl://' : '';
 
-        $this->_smtp_connect = fsockopen(
+        // suppress warning, we'll catch timeout error later if that happens
+        $this->_smtp_connect = @fsockopen(
             $ssl . $this->smtp_host,
             $this->smtp_port,
             $errno,

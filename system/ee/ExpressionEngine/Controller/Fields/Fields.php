@@ -75,11 +75,22 @@ class Fields extends AbstractFieldsController
         $fieldtype_filter->setPlaceholder(lang('all'));
         $fieldtype_filter->disableCustomValue();
 
+        // Add channel filter
+        $channels = ee('Model')->get('Channel')
+            ->filter('site_id', ee()->config->item('site_id'))
+            ->all()
+            ->getDictionary('channel_id', 'channel_title');
+
+        $channel_filter = $filters->make('channel_id', 'channel_filter', $channels);
+        $channel_filter->setPlaceholder(lang('all'));
+        $channel_filter->disableCustomValue();
+
         $page = ee('Request')->get('page') ?: 1;
         $per_page = 10;
 
         $filters->add($group_filter)
-            ->add($fieldtype_filter);
+            ->add($fieldtype_filter)
+            ->add($channel_filter);
 
         $filter_values = $filters->values();
 
@@ -93,7 +104,12 @@ class Fields extends AbstractFieldsController
         // because we are acting on a collection instead of a query builder
         if ($group) {
             $vars['cp_page_title'] = $group->group_name . ' &mdash; ' . lang('fields');
-            $vars['group_tag'] = '{' . $group->short_name . '}';
+            $vars['group_tag'] = ee('View')->make('publish/partials/name_badge_copy')->render([
+                'name' => ee('Format')->make('Text', $group->short_name)->convertToEntities(),
+                'id' => $group->getId(),
+                'content_type' => 'field_groups'
+            ]);
+
             $fields = $group->ChannelFields->sortBy('field_label')->sortBy('field_order')->asArray();
 
             if ($search = ee()->input->get_post('filter_by_keyword')) {
@@ -110,6 +126,12 @@ class Fields extends AbstractFieldsController
                 });
             }
 
+            if ($channel_id = $filter_values['channel_id']) {
+                $fields = array_filter($fields, function ($field) use ($channel_id, $group) {
+                    return in_array($channel_id, $group->getChannels()->pluck('channel_id'));
+                });
+            }
+
             $total_fields = count($fields);
         } else {
             $vars['cp_page_title'] = lang('all_fields');
@@ -122,6 +144,13 @@ class Fields extends AbstractFieldsController
 
             if ($fieldtype = $filter_values['fieldtype']) {
                 $fields->filter('field_type', $fieldtype);
+            }
+
+            if ($channel_id = $filter_values['channel_id']) {
+                $channel = ee('Model')->get('Channel', $channel_id)->first();
+                $allChannelFields = $channel->getAllCustomFields()->pluck('field_id');
+
+                $fields->filter('field_id', 'IN', $allChannelFields);
             }
 
             if ((string) $group_id === '0') {
@@ -164,10 +193,17 @@ class Fields extends AbstractFieldsController
 
             $data[] = [
                 'id' => $field->getId(),
-                'label' => $field->field_label,
+                'label' => \htmlspecialchars((string) $field->field_label),
                 'faded' => strtolower($fieldtype),
                 'href' => $edit_url,
-                'extra' => LD . $field->field_name . RD,
+                'extra' => [
+                    'encode' => false,
+                    'content' => ee('View')->make('publish/partials/name_badge_copy')->render([
+                        'name' => ee('Format')->make('Text', $field->field_name)->convertToEntities(),
+                        'id' => $field->getId(),
+                        'content_type' => 'field'
+                    ])
+                ],
                 'selected' => ($field_id && $field->getId() == $field_id),
                 'reorderable' => $group,
                 'toolbar_items' => null,
@@ -175,7 +211,7 @@ class Fields extends AbstractFieldsController
                     'name' => 'selection[]',
                     'value' => $field->getId(),
                     'data' => [
-                        'confirm' => lang('field') . ': <b>' . ee('Format')->make('Text', $field->field_label)->convertToEntities() . '</b>'
+                        'confirm' => lang('field') . ': <b>' . \htmlspecialchars((string) $field->field_label) . '</b>'
                     ]
                 ] : null
             ];
@@ -437,6 +473,7 @@ class Fields extends AbstractFieldsController
             if ($_POST['field_label'] == $field->field_label) {
                 $_POST['field_label'] = lang('copy_of') . ' ' . $_POST['field_label'];
             }
+
             return $this->create(!empty($active_groups) ? $active_groups[0] : null);
         }
 
@@ -824,6 +861,16 @@ class Fields extends AbstractFieldsController
 
             try {
                 $field_options = $dummy_field->getSettingsForm();
+                // When fieldtype settings contain fields with their own group toggles
+                // we need to loop through them and append the fieldtype group name
+                foreach ($field_options as &$option) {
+                    foreach ($option['settings'] ?? [] as $key => $setting) {
+                        if (isset($setting['group']) && isset($option['group'])) {
+                            $option['settings'][$key]['group'] = $option['group'] . '|' . $setting['group'];
+                        }
+                    }
+                }
+
                 if (is_array($field_options) && ! empty($field_options)) {
                     $sections = array_merge($sections, $field_options);
                 }

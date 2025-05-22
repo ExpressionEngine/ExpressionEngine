@@ -25,6 +25,8 @@ class Radio_ft extends OptionFieldtype
 
     public $size = 'small';
 
+    public $stub = 'select';
+
     // used in display_field() below to set
     // some defaults for third party usage
     public $settings_vars = array(
@@ -45,7 +47,7 @@ class Radio_ft extends OptionFieldtype
     public function validate($data)
     {
         $valid = false;
-        $field_options = $this->_get_field_options($data);
+        $field_options = (REQ == 'CP') ? $this->_get_historic_field_options($data) : $this->_get_field_options($data);
 
         if ($data === false or $data == '') {
             return true;
@@ -100,7 +102,7 @@ class Radio_ft extends OptionFieldtype
         $text_direction = (isset($this->settings['field_text_direction']))
             ? $this->settings['field_text_direction'] : 'ltr';
 
-        $field_options = $this->_get_field_options($data);
+        $field_options = $this->_get_historic_field_options($data);
         $extra = ($this->get_setting('field_disabled')) ? 'disabled' : '';
 
         // Is this new entry?  Set a default
@@ -124,13 +126,22 @@ class Radio_ft extends OptionFieldtype
                 'disabled' => $this->get_setting('field_disabled'),
                 'filter_url' => $this->get_setting('filter_url', null),
                 'no_results' => $this->get_setting('no_results', null),
+                'nested' => $this->get_setting('nested', false),
+                'nestable_reorder' => $this->get_setting('nestableReorder', false),
+                'force_react' => $this->get_setting('force_react', false),
+                'manageable' => $this->get_setting('editable', false)
+                    && ! $this->get_setting('in_modal_context'),
+                'add_btn_label' => $this->get_setting('add_btn_label', null),
+                'editing' => $this->get_setting('editing', false),
+                'manage_label' => $this->get_setting('manage_toggle_label', lang('manage')),
+                'reorder_ajax_url' => $this->get_setting('reorder_ajax_url', null),
+                'auto_select_parents' => false,
             ]);
         }
 
         $selected = $data;
 
         $r = '';
-        $class = 'choice mr';
 
         foreach ($field_options as $key => $value) {
             $selected = ($key == $data);
@@ -145,7 +156,7 @@ class Radio_ft extends OptionFieldtype
                 break;
 
             default:
-                $r = form_fieldset('') . $r . form_fieldset_close();
+                $r = form_fieldset('', ['class' => 'radio-btn-wrap']) . $r . form_fieldset_close();
 
                 break;
         }

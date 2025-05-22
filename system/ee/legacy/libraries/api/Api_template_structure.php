@@ -254,7 +254,7 @@ class Api_template_structure extends Api
             }
         }
 
-        return '';
+        return (!empty($engine)) ? $engine : '';
     }
 
     /**
@@ -336,6 +336,21 @@ class Api_template_structure extends Api
     public function get_template_engines()
     {
         return $this->template_engines;
+    }
+
+    /**
+     * Get the default template engine
+     *
+     * @return string
+     */
+    public function get_default_template_engine()
+    {
+        if(count($this->template_engines) <= 1) {
+            return '';
+        };
+
+        $default = ee()->config->item('default_template_engine') ?? null;
+        return array_key_exists($default, $this->template_engines) ? $default : '';
     }
 
     /**

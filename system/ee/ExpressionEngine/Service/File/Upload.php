@@ -138,9 +138,7 @@ class Upload
             )
         );
 
-        $cat_groups = ee('Model')->get('CategoryGroup')
-            ->filter('group_id', 'IN', explode('|', (string) $file->UploadDestination->cat_group))
-            ->all();
+        $cat_groups = $file->UploadDestination->CategoryGroups;
 
         if (count($cat_groups) == 0) {
             $url = ee('CP/URL', 'files/uploads/edit/' . $file->UploadDestination->getId())->compile();
@@ -361,6 +359,12 @@ class Upload
         );
     }
 
+    /**
+     * Resolve file name conflict on upload
+     *
+     * @param int $file_id ID of new uploaded file
+     * @return array
+     */
     public function resolveNameConflict($file_id)
     {
         $file = ee('Model')->get('File', $file_id)
@@ -391,6 +395,31 @@ class Upload
                 'name' => $original_name
             )
         );
+
+        // Ensure the file extension of the original name matches the file's current name
+        $original_ext_pos = strrpos($original_name, '.');
+        $file_ext_pos = strrpos($file->file_name, '.');
+
+        if ($original_ext_pos === false || $file_ext_pos === false || substr($original_name, $original_ext_pos) != substr($file->file_name, $file_ext_pos)) {
+            ee('CP/Alert')->makeInline('shared-form')
+                ->asIssue()
+                ->withTitle(lang('file_conflict'))
+                ->addToBody(lang('invalid_filename'))
+                ->now();
+
+            return $result;
+        }
+
+        // Ensure the file extension of the original name matches the file's current name
+        if (substr($original_name, $original_ext_pos) != substr($file->file_name, $file_ext_pos)) {
+            ee('CP/Alert')->makeInline('shared-form')
+                ->asIssue()
+                ->withTitle(lang('file_conflict'))
+                ->addToBody(lang('invalid_filename'))
+                ->now();
+
+            return $result;
+        }
 
         if ($upload_options == 'rename') {
             $new_name = ee()->input->post('rename_custom');
@@ -488,6 +517,10 @@ class Upload
                     $file->getFilesystem()->forceCopy($file->getAbsoluteThumbnailPath(), $original->getAbsoluteThumbnailPath());
                 }
 
+                // Remove generated files for the original file. This must run before we rename the new file's
+                // manipulations otherwise they will take the same names as the original and would be deleted
+                $original->deleteGeneratedFiles();
+
                 foreach ($file->UploadDestination->FileDimensions as $fd) {
                     $src = $file->getAbsoluteManipulationPath($fd->short_name);
                     $dest = $original->getAbsoluteManipulationPath($fd->short_name);
@@ -497,6 +530,8 @@ class Upload
                         $file->getFilesystem()->forceCopy($src, $dest);
                     }
                 }
+
+                $original->file_hw_original = $file->file_hw_original;
 
                 $file->delete();
 
@@ -517,7 +552,12 @@ class Upload
 
         $action = ($file->isNew()) ? 'upload_filedata' : 'edit_file_metadata';
 
-        $file->set($_POST);
+        $file->set(array_intersect_key($_POST, array_flip([
+            'title', 'description', 'credit', 'location', 'categories',
+            'crop_width', 'crop_height', 'crop_x', 'crop_y',
+            'rotate', 'resize_width', 'resize_height'
+        ])));
+
         $file->title = (ee()->input->post('title')) ?: $file->file_name;
 
         $cats = array_key_exists('categories', $_POST) ? $_POST['categories'] : array();

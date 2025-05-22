@@ -32,9 +32,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  */
 var FilterableSelectList = makeFilterableComponent(SelectList);
 
-var SelectField =
-/*#__PURE__*/
-function (_React$Component) {
+var SelectField = /*#__PURE__*/function (_React$Component) {
   _inherits(SelectField, _React$Component);
 
   function SelectField(props) {
@@ -42,11 +40,17 @@ function (_React$Component) {
 
     _classCallCheck(this, SelectField);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(SelectField).call(this, props));
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(SelectField).call(this, props)); // This code is for the page channels->edit->Category
 
     _defineProperty(_assertThisInitialized(_this), "selectionChanged", function (selected) {
       _this.setState({
         selected: selected
+      });
+    });
+
+    _defineProperty(_assertThisInitialized(_this), "toggleChanged", function (items) {
+      _this.setState({
+        toggles: items
       });
     });
 
@@ -61,6 +65,10 @@ function (_React$Component) {
       $(event.target).closest('[data-id]').trigger('select:removeItem', [item]);
     });
 
+    if (_this.props.name == 'cat_group') {
+      props.selected = _this.categorySelected(props.selected, props.items);
+    }
+
     _this.props.items = SelectList.formatItems(props.items);
     _this.state = {
       selected: SelectList.formatItems(props.selected, null, props.multi),
@@ -70,6 +78,21 @@ function (_React$Component) {
   }
 
   _createClass(SelectField, [{
+    key: "categorySelected",
+    // Check and update selected items to get toggles elements
+    // we are using toggles on the select_list.js
+    value: function categorySelected(selected, items) {
+      var catArr = [];
+      items.filter(function (item) {
+        selected.map(function (el) {
+          if (el == item.value) {
+            catArr.push(item);
+          }
+        });
+      });
+      return catArr;
+    }
+  }, {
     key: "render",
     value: function render() {
       var _this2 = this;
@@ -84,7 +107,8 @@ function (_React$Component) {
         handleRemove: function handleRemove(e, item) {
           return _this2.handleRemove(e, item);
         },
-        editable: this.props.editable || this.state.editing
+        editable: this.props.editable || this.state.editing,
+        toggleChanged: this.toggleChanged
       }));
 
       if (this.props.manageable) {

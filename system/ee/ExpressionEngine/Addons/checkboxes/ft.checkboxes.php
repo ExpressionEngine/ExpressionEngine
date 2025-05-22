@@ -29,6 +29,8 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
 
     public $size = 'small';
 
+    public $stub = 'multiselect';
+
     // used in display_field() below to set
     // some defaults for third party usage
     public $settings_vars = array(
@@ -65,7 +67,7 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
         $selected = empty($selected) ? array() : (array) $selected;
 
         // in case another fieldtype was here
-        $field_options = $this->_get_field_options($data);
+        $field_options = (REQ == 'CP') ? $this->_get_historic_field_options($data) : $this->_get_field_options($data);
         $field_options = $this->_flatten($field_options);
 
         if ($selected) {
@@ -128,7 +130,7 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
         }
 
         $values = decode_multi_field($data);
-        $field_options = $this->_get_field_options($data);
+        $field_options = $this->_get_historic_field_options($data);
 
         if (REQ == 'CP') {
             return ee('View')->make('ee:_shared/form/fields/select')->render([
@@ -138,6 +140,7 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
                 'multi' => true,
                 'nested' => true,
                 'nestable_reorder' => true,
+                'force_react' => $this->get_setting('force_react', false),
                 'manageable' => $this->get_setting('editable', false)
                     && ! $this->get_setting('in_modal_context'),
                 'add_btn_label' => $this->get_setting('add_btn_label', null),
@@ -150,7 +153,7 @@ class Checkboxes_ft extends OptionFieldtype implements ColumnInterface
             ]);
         }
 
-        $r = '<div class="scroll-wrap pr">';
+        $r = '<div class="scroll-wrap pr checkbox-wrapper">';
 
         $r .= $this->_display_nested_form($field_options, $values);
 
