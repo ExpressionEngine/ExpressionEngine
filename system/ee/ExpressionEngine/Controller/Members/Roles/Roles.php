@@ -1127,6 +1127,7 @@ class Roles extends AbstractRolesController
                         'title' => 'can_admin_channels',
                         'desc' => 'can_admin_channels_desc',
                         'caution' => true,
+                        'group' => 'can_access_cp',
                         'fields' => [
                             'can_admin_channels' => $permissions['fields']['can_admin_channels']
                         ]
@@ -1213,6 +1214,7 @@ class Roles extends AbstractRolesController
                     [
                         'title' => 'can_access_file_manager',
                         'desc' => 'file_manager_desc',
+                        'group' => 'can_access_cp',
                         'fields' => [
                             'can_access_files' => $permissions['fields']['can_access_files']
                         ]
@@ -1262,6 +1264,7 @@ class Roles extends AbstractRolesController
                     [
                         'title' => 'can_access_members',
                         'desc' => 'can_access_members_desc',
+                        'group' => 'can_access_cp',
                         'fields' => [
                             'can_access_members' => $permissions['fields']['can_access_members']
                         ]
@@ -1310,6 +1313,7 @@ class Roles extends AbstractRolesController
                     [
                         'title' => 'can_access_design',
                         'desc' => 'can_access_design_desc',
+                        'group' => 'can_access_cp',
                         'fields' => [
                             'can_access_design' => $permissions['fields']['can_access_design']
                         ]
@@ -1385,6 +1389,7 @@ class Roles extends AbstractRolesController
                     [
                         'title' => 'can_access_addons',
                         'desc' => 'can_access_addons_desc',
+                        'group' => 'can_access_cp',
                         'fields' => [
                             'can_access_addons' => $permissions['fields']['can_access_addons']
                         ]
@@ -1422,6 +1427,7 @@ class Roles extends AbstractRolesController
                     [
                         'title' => 'access_utilities',
                         'desc' => 'access_utilities_desc',
+                        'group' => 'can_access_cp',
                         'fields' => [
                             'can_access_utilities' => $permissions['fields']['can_access_utilities']
                         ]
@@ -1449,6 +1455,7 @@ class Roles extends AbstractRolesController
                     [
                         'title' => 'can_access_logs',
                         'desc' => 'can_access_logs_desc',
+                        'group' => 'can_access_cp',
                         'fields' => [
                             'can_access_logs' => $permissions['fields']['can_access_logs']
                         ]
@@ -1462,6 +1469,7 @@ class Roles extends AbstractRolesController
                         'title' => 'can_access_sys_prefs',
                         'desc' => 'can_access_sys_prefs_desc',
                         'caution' => true,
+                        'group' => 'can_access_cp',
                         'fields' => [
                             'can_access_sys_prefs' => $permissions['fields']['can_access_sys_prefs']
                         ]

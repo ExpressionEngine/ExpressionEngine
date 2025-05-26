@@ -107,9 +107,10 @@ function toggleSections(sections, show, key) {
 
 			// if we're showing this section, but the field is hidden
 			// from another toggle, then don't show it
-			// if (group && group != key) {
-			// 	hidden[group] = ! show;
-			// }
+
+			if (group && group != key) {
+				hidden[group] = ! show;
+			}
 
 			if (show && group && hidden[group] != undefined) {
 				toggleFields(field, hidden[group], key);
@@ -117,6 +118,20 @@ function toggleSections(sections, show, key) {
 				toggleFields(field, show, key);
 			}
 		});
+
+		if ($(this).attr('data-section-group') == 'relationship' && show) {
+			var field = $(this).siblings('#fieldset-relationship_allow_multiple');
+			var fieldValue = $(field).find('input[name=relationship_allow_multiple]').val();
+			var minField = field.next();
+			var maxField = minField.next();
+			if (fieldValue == 'y') {
+				minField.show();
+				maxField.show();
+			} else {
+				minField.hide();
+				maxField.hide();
+			}
+		}
 	});
 }
 
@@ -241,5 +256,22 @@ function toggleInputs(container, group_name, enable) {
 		*/
 	});
 }
+
+// EE.cp.chech_relationship_allow_multiple_settings = function(element, input) {
+// 	console.log('element', element);
+// 	console.log('input', input);
+
+// 	if ( ! $(element).length) return;
+
+// 	// if( $('#fieldset-relationship_allow_multiple button.toggle-btn').data('state') == 'on' ) {
+// 	// 	$('#fieldset-relationship_allow_multiple').siblings('#fieldset-rel_min').show();
+// 	// 	$('#fieldset-relationship_allow_multiple').siblings('#fieldset-rel_max').show();
+// 	// }
+
+// 	// if( $('#fieldset-relationship_allow_multiple button.toggle-btn').data('state') == 'off' ){
+// 	// 	$('#fieldset-relationship_allow_multiple').siblings('#fieldset-rel_min').hide();
+// 	// 	$('#fieldset-relationship_allow_multiple').siblings('#fieldset-rel_max').hide();
+// 	// }
+// }
 
 })(jQuery);
