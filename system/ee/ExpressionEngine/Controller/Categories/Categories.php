@@ -606,7 +606,7 @@ class Categories extends AbstractCategoriesController
                     $field->setItem('field_required', true);
                 }
                 if (!$categoryGroupSettings->cat_allow_multiple) {
-                    $field->setItem('field_type', 'radio');
+                    //$field->setItem('field_type', 'radio');
                 }
             }
         }

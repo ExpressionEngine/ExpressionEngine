@@ -1,0 +1,1 @@
+{<?=$field_name?>:label}: {<?=$field_name?>:value}

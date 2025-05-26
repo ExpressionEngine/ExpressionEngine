@@ -121,18 +121,16 @@ class Toggle_ft extends EE_Fieldtype
             // at this point, Channel Form requires jquery, so we're safe including this
             // will need to be rewritten in vanilla JS however
             ee()->javascript->output("
-                $('body').on('click', '.ee-cform button.toggle-btn', function (e) {
+                $('body').off('click').on('click', '.ee-cform button.toggle-btn', function (e) {
                     if ($(this).hasClass('disabled') ||
                         $(this).parents('.toggle-tools').length > 0 ||
                         $(this).parents('[data-reactroot]').length > 0) {
                         return;
                     }
-                
                     var input = $(this).find('input[type=hidden]'),
                         yes_no = $(this).hasClass('yes_no'),
                         onOff = $(this).hasClass('off') ? 'on' : 'off',
                         trueFalse = $(this).hasClass('off') ? 'true' : 'false';
-                
                     if ($(this).hasClass('off')){
                         $(this).removeClass('off');
                         $(this).addClass('on');
@@ -142,11 +140,11 @@ class Toggle_ft extends EE_Fieldtype
                         $(this).addClass('off');
                         $(input).val(yes_no ? 'n' : 0).trigger('change');
                     }
-                
+
                     $(this).attr('alt', onOff);
                     $(this).attr('data-state', onOff);
                     $(this).attr('aria-checked', trueFalse);
-                
+
                     e.preventDefault();
                 });
             ");

@@ -24,7 +24,7 @@
 						<a href="" title="<?=lang('delete')?>" rel="modal-confirm-<?=$log->id?>" class="m-link button button--default button--small float-right"><i class="fal fa-trash-alt"><span class="hidden"><?=lang('delete')?></span></i></a>
 						<div style="margin-bottom: 20px;">
 							<b><?=lang('date_logged')?>:</b> <?=$localize->human_time($log->act_date)?>,
-							<b><?=lang('site')?>:</b> <?=$log->getSite()->site_label?><br>
+							<b><?=lang('site')?>:</b> <?=$sites->filter('site_id', $log->site_id)->first()->site_label?><br>
 							<b><?=lang('username')?>:</b> <a href="<?=ee('CP/URL')->make('myaccount', array('id' => $log->member_id))?>"><?=$log->username?></a>,
 							<b><abbr title="<?=lang('internet_protocol')?>"><?=lang('ip')?></abbr>:</b> <?=$log->ip_address?>
 						</div>

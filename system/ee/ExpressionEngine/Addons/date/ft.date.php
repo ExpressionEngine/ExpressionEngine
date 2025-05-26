@@ -90,10 +90,7 @@ class Date_ft extends EE_Fieldtype
             $data = $this->_parse_date($data);
         }
 
-        if (
-            $data === false or is_null($data)
-            or (is_numeric($data) && ($data > 2147483647 or $data < -2147483647))
-        ) {
+        if ($data === false or is_null($data)) {
             return lang('invalid_date');
         }
 
@@ -355,7 +352,7 @@ class Date_ft extends EE_Fieldtype
     public function settings_modify_column($data)
     {
         $fields['field_id_' . $data['field_id']] = array(
-            'type' => 'INT',
+            'type' => 'BIGINT',
             'constraint' => 10,
             'default' => 0
         );
