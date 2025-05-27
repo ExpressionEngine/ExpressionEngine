@@ -1,0 +1,17 @@
+{layout="math/layout"}
+
+{exp:channel:entries entry_id="3" dynamic="no"}
+
+{layout:set:math name="result"}({entry_id} + {channel_id} + 0.3) * 2{/layout:set:math}
+
+<div id="variable-math">{about_staff_title:math expression="+(1 + 0.3) * 2" function="round" decimals="2"}</div>
+
+<div id="variable-math-invalid">{about_staff_title:math expression="(1 + 0.3) * 2" function="round" decimals="2"}</div>
+
+{exp:math expression="-({entry_id} + {channel_id} + 0.3) * 2" function="floor" decimals="3"}
+<div id="tag-pair-math">{result}</div>
+{/exp:math}
+
+<div id="tag-math">{exp:math expression="({entry_id} + {channel_id} + 0.3) * 200000" thousands_separator=""}</div>
+
+{/exp:channel:entries}

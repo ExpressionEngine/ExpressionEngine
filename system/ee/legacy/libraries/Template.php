@@ -1020,6 +1020,15 @@ class EE_Template
                     break;
                 case 'math':
                     $mathEvaluator = new EvalMath();
+                    $mathEvaluator->fb = array_merge($mathEvaluator->fb, [
+                        'round',
+                        'ceil',
+                        'floor'
+                    ]);
+                    $debug = (bool) (DEBUG or (isset(ee()->config) && ee()->config->item('debug') > 1) or (isset(ee()->session) && ee('Permission')->isSuperAdmin()));
+                    if (!$debug) {
+                        $mathEvaluator->suppress_errors = true;
+                    }
                     $value = $mathEvaluator->evaluate($value);
                     $this->layout_vars[$params['name']] = $value;
 

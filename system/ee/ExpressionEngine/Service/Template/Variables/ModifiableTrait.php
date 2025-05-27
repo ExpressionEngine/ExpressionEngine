@@ -243,14 +243,23 @@ trait ModifiableTrait
         }
 
         $mathEvaluator = new EvalMath();
-        if (DEBUG == 0) {
+        $mathEvaluator->fb = array_merge($mathEvaluator->fb, [
+            'round',
+            'ceil',
+            'floor'
+        ]);
+        $debug = (bool) (DEBUG or (isset(ee()->config) && ee()->config->item('debug') > 1) or (isset(ee()->session) && ee('Permission')->isSuperAdmin()));
+        if (!$debug) {
             $mathEvaluator->suppress_errors = true;
         }
         $expression = $data;
         if (isset($params['expression'])) {
-            $expression .= $params['expression'];
+            $expStart = substr($params['expression'], 0, 1);
+            if (in_array($expStart, ['+', '-', '*', '/', '%', '^'])) {
+                $expression .= $params['expression'];
+            }
         }
-        if (isset($params['function'])) {
+        if (isset($params['function']) && in_array((string) $params['function'], $mathEvaluator->fb)) {
             $expression = (string) $params['function'] . '(' . $expression . ')';
         }
 

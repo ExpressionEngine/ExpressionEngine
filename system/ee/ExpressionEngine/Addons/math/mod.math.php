@@ -20,7 +20,22 @@ class Math
     public function __construct()
     {
         $mathEvaluator = new EvalMath();
-        $value = $mathEvaluator->evaluate(ee()->TMPL->fetch_param('expression'));
+
+        $debug = (bool) (DEBUG or (isset(ee()->config) && ee()->config->item('debug') > 1) or (isset(ee()->session) && ee('Permission')->isSuperAdmin()));
+        if (!$debug) {
+            $mathEvaluator->suppress_errors = true;
+        }
+
+        $mathEvaluator->fb = array_merge($mathEvaluator->fb, [
+            'round',
+            'ceil',
+            'floor'
+        ]);
+        $expression = ee()->TMPL->fetch_param('expression');
+        if (ee()->TMPL->fetch_param('function') !== false && in_array((string) ee()->TMPL->fetch_param('function'), $mathEvaluator->fb)) {
+            $expression = (string) ee()->TMPL->fetch_param('function') . '(' . $expression . ')';
+        }
+        $value = $mathEvaluator->evaluate($expression);
 
         if (is_nan($value)) {
             $this->return_data = ee()->TMPL->no_results;
@@ -28,13 +43,13 @@ class Math
         }
 
         $formatOptions = [];
-        if (ee()->TMPL->fetch_param('decimals')) {
+        if (ee()->TMPL->fetch_param('decimals') !== false) {
             $formatOptions['decimals'] = ee()->TMPL->fetch_param('decimals');
         }
-        if (ee()->TMPL->fetch_param('decimal_point')) {
+        if (ee()->TMPL->fetch_param('decimal_point') !== false) {
             $formatOptions['decimal_point'] = ee()->TMPL->fetch_param('decimal_point');
         }
-        if (ee()->TMPL->fetch_param('thousands_separator')) {
+        if (ee()->TMPL->fetch_param('thousands_separator') !== false) {
             $formatOptions['thousands_separator'] = ee()->TMPL->fetch_param('thousands_separator');
         }
 
