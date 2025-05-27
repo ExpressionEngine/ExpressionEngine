@@ -27,7 +27,7 @@ class Stats extends Utilities
     {
         parent::__construct();
 
-        if (! ee('Permission')->can('access_data')) {
+        if (! ee('Permission')->can('can_sync_and_reindex')) {
             show_error(lang('unauthorized_access'), 403);
         }
 

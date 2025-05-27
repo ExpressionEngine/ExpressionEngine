@@ -11,7 +11,7 @@ context('Member Roles / Utilities Permissions', () => {
         cy.addRole('UtilManager')
         cy.addMembers('UtilManager', 1)
 
-        cy.visit('admin.php?/cp/members/roles')
+        cy.authVisit('admin.php?/cp/members/roles')
 
        cy.get('div[class="list-item__title"]').contains('UtilManager').click()
 
@@ -22,12 +22,12 @@ context('Member Roles / Utilities Permissions', () => {
 
         cy.get('#fieldset-can_access_utilities .toggle-btn').click()
 
-        cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(2) input').click();
-        cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(3) input').click();
-        cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(4) input').click();
-        cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(5) input').click();
+        cy.get('div[data-input-value="access_tools"] .field-inputs > .nestable-item[data-id="can_access_translate"] input').first().click();//2
+        cy.get('div[data-input-value="access_tools"] .field-inputs > .nestable-item[data-id="can_access_import"] input').first().click();//3
+        cy.get('div[data-input-value="access_tools"] .field-inputs > .nestable-item[data-id="can_access_sql_manager"] input').first().click();//4
+        cy.get('div[data-input-value="access_tools"] .field-inputs > .nestable-item[data-id="can_access_data"] input').first().click();//5
 
-        cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(1) > .checkbox-label > input').last().click();
+        cy.get('div[data-input-value="access_tools"] .field-inputs > .nestable-item[data-id="can_access_comm"] > .checkbox-label > input').last().click();
         cy.get('button').contains('Save').eq(0).click()
 
         cy.logout()
@@ -77,7 +77,7 @@ context('Member Roles / Utilities Permissions', () => {
 
        cy.get('button').contains('CP Access').click()
 
-        cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(1) > .checkbox-label > input').last().click(); //turn off access to communicate
+        cy.get('div[data-input-value="access_tools"] .field-inputs > .nestable-item[data-id="can_access_comm"] > .checkbox-label > input').last().click(); //turn off access to communicate
         cy.get('body').type('{ctrl}', {release: false}).type('s')
         cy.logout()
 
@@ -121,7 +121,7 @@ context('Member Roles / Utilities Permissions', () => {
 
         cy.get('button').contains('CP Access').click()
 
-        cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(2) input').last().click(); //turn off access to Translations
+        cy.get('div[data-input-value="access_tools"] .field-inputs > .nestable-item[data-id="can_access_translate"] input').last().click(); //turn off access to Translations
         cy.get('body').type('{ctrl}', {release: false}).type('s')
         cy.logout()
 
@@ -167,7 +167,7 @@ context('Member Roles / Utilities Permissions', () => {
         cy.get('button').contains('CP Access').click()
 
 
-        cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(3) input').click();
+        cy.get('div[data-input-value="access_tools"] .field-inputs > .nestable-item[data-id="can_access_import"] input').first().click();
         //turn off access to Imports
         cy.get('body').type('{ctrl}', {release: false}).type('s')
         cy.logout()
@@ -213,7 +213,7 @@ context('Member Roles / Utilities Permissions', () => {
 
         cy.get('button').contains('CP Access').click()
 
-        cy.get('.field-inputs:nth-child(1) > .nestable-item:nth-child(4) input').click();
+        cy.get('div[data-input-value="access_tools"] .field-inputs > .nestable-item[data-id="can_access_sql_manager"] input').click();
 
         //turn off access to SQL
         cy.get('body').type('{ctrl}', {release: false}).type('s')

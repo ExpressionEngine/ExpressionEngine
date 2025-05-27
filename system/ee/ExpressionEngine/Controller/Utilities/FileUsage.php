@@ -33,7 +33,7 @@ class FileUsage extends Utilities
      */
     public function index()
     {
-        if (! ee('Permission')->has('can_access_data')) {
+        if (! ee('Permission')->has('can_sync_and_reindex')) {
             show_error(lang('unauthorized_access'), 403);
         }
 

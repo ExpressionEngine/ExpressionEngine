@@ -332,7 +332,11 @@ class Access extends Profile
                 'can_access_translate',
                 'can_access_import',
                 'can_access_sql_manager',
-                'can_access_data',
+                'can_access_data' => [
+                    'can_clear_cache',
+                    'can_sync_and_reindex',
+                    'can_sandr'
+                ],
             ],
             'logs' => [
                 'can_access_logs',
@@ -447,6 +451,9 @@ class Access extends Profile
             'can_access_import',
             'can_access_sql_manager',
             'can_access_data',
+            'can_clear_cache',
+            'can_sync_and_reindex',
+            'can_sandr',
             'can_access_sys_prefs',
             'can_access_security_settings',
             'can_manage_consents',
