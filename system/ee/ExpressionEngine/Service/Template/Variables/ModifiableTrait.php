@@ -10,6 +10,8 @@
 
 namespace ExpressionEngine\Service\Template\Variables;
 
+use ExpressionEngine\Dependency\Webit\Util\EvalMath\EvalMath;
+
 /**
  * :modifier variable replacement methods
  *
@@ -229,6 +231,45 @@ trait ModifiableTrait
     public function replace_url_slug($data, $params = array(), $tagdata = false)
     {
         return (string) ee('Format')->make('Text', $data)->urlSlug($params);
+    }
+
+    /**
+     * :math modifier
+     */
+    public function replace_math($data, $params = array(), $tagdata = false)
+    {
+        if (! is_numeric($data)) {
+            return '';
+        }
+
+        $mathEvaluator = new EvalMath();
+        $mathEvaluator->fb = array_merge($mathEvaluator->fb, [
+            'round',
+            'ceil',
+            'floor'
+        ]);
+        $debug = (bool) (DEBUG or (isset(ee()->config) && ee()->config->item('debug') > 1) or (isset(ee()->session) && ee('Permission')->isSuperAdmin()));
+        if (!$debug) {
+            $mathEvaluator->suppress_errors = true;
+        }
+        $expression = $data;
+        if (isset($params['expression'])) {
+            $expStart = substr($params['expression'], 0, 1);
+            if (in_array($expStart, ['+', '-', '*', '/', '%', '^'])) {
+                $expression .= $params['expression'];
+            }
+        }
+        if (isset($params['function']) && in_array((string) $params['function'], $mathEvaluator->fb)) {
+            $expression = (string) $params['function'] . '(' . $expression . ')';
+        }
+
+        $value = $mathEvaluator->evaluate($expression);
+
+        if (is_nan($value)) {
+            return '';
+        }
+
+        return (string) ee('Format')->make('Number', $value)->number_format($params);
     }
 }
 // END TRAIT

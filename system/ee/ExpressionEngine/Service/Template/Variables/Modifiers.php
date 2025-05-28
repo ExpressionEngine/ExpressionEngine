@@ -60,7 +60,7 @@ class Modifiers
 
         // also register with add-on name
         $this->modifiers[$provider->getPrefix() . '_' . $name] = $fqcn;
-        
+
         return $this->modifiers;
     }
 

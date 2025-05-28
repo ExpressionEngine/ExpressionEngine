@@ -401,6 +401,7 @@ function install_modules($version)
         'filepicker',
         'relationship',
         'search',
+        'math'
     ];
 
     if (version_compare($version, '7.0.0-rc.1', '>=')) {

@@ -26,7 +26,7 @@
 
 LOCK TABLES `exp_modules` WRITE;
 /*!40000 ALTER TABLE `exp_modules` DISABLE KEYS */;
-INSERT INTO `exp_modules` VALUES (12,'Spam','1.0.0','y','n');
+INSERT INTO `exp_modules` VALUES (20,'Spam','1.0.0','y','n');
 /*!40000 ALTER TABLE `exp_modules` ENABLE KEYS */;
 UNLOCK TABLES;
 
