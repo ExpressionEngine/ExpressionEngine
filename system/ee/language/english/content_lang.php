@@ -241,6 +241,10 @@ $lang = array(
 
     'autosaves' => 'Auto Saves',
 
+    'existing_user_autosave' => 'Auto-saved by other user',
+
+    'existing_user_autosave_desc' => 'There is an existing auto save of this entry by %s made on %s. Perhaps they are still editing.',
+
     'blockquote' => 'Blockquote',
 
     'bold' => 'Bold',
