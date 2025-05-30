@@ -59,6 +59,7 @@ class EE_Typography
     public $censored_replace = '';
     public $text_fmt_types = array('xhtml', 'markdown', 'br', 'none', 'lite');
     public $text_fmt_plugins = array();
+    public $formatting_plugins_initliazed = false;
     public $html_fmt_types = array('safe', 'all', 'none');
     public $yes_no_syntax = array('y', 'n');
     public $code_chunks = array();
@@ -138,7 +139,6 @@ class EE_Typography
         $this->censored_words = array();
         $this->censored_replace = '';
         $this->text_fmt_types = array('xhtml', 'markdown', 'br', 'none', 'lite');
-        $this->text_fmt_plugins = array();
         $this->html_fmt_types = array('safe', 'all', 'none');
         $this->yes_no_syntax = array('y', 'n');
         $this->code_chunks = array();
@@ -219,12 +219,6 @@ class EE_Typography
         if (bool_config_item('enable_censoring')) {
             $this->word_censor = true;
         }
-
-        /** -------------------------------------
-        /**  Fetch plugins
-        /** -------------------------------------*/
-        ee()->load->model('addons_model');
-        $this->text_fmt_plugins = ee()->addons_model->get_plugin_formatting();
     }
 
     /**
@@ -758,6 +752,12 @@ class EE_Typography
                     if (in_array($prefs['text_format'], $this->text_fmt_types)) {
                         $this->text_format = $prefs['text_format'];
                     } else {
+                        if ($this->formatting_plugins_initliazed === false) {
+                            // Initialize the formatting plugins if they haven't been initialized yet
+                            $this->formatting_plugins_initliazed = true;
+                            ee()->load->model('addons_model');
+                            $this->text_fmt_plugins = ee()->addons_model->get_plugin_formatting();
+                        }
                         if (isset($this->text_fmt_plugins[$prefs['text_format']]) &&
                             (file_exists(PATH_ADDONS . $prefs['text_format'] . '/pi.' . $prefs['text_format'] . '.php') or
                             file_exists(PATH_THIRD . $prefs['text_format'] . '/pi.' . $prefs['text_format'] . '.php'))) {
