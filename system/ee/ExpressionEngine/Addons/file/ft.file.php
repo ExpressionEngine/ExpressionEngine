@@ -305,6 +305,7 @@ JSC;
      */
     public function replace_tag($data, $params = array(), $tagdata = false)
     {
+        dump($params, is_array($data));
         // Make sure we have file_info to work with
         if ($tagdata !== false && $data === false) {
             $tagdata = ee()->TMPL->parse_variables($tagdata, array());
@@ -527,6 +528,13 @@ JSC;
 
         if (!$data['model_object']->isImage()) {
             return false;
+        }
+
+        if (!$data['model_object']->isEditableImage()) {
+            if (is_null($tagdata)) {
+                return $data; // allow chaining modifiers
+            }
+            return $this->replace_tag($data, $params, $tagdata);
         }
 
         ee()->load->library('image_lib');
