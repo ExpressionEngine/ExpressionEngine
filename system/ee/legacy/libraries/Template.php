@@ -4554,14 +4554,13 @@ class EE_Template
             }
 
             if (!ee()->session->getMember()) {
-                $role = ee('Model')->get('Role', 3)->fields('role_id', 'short_name')->first();
-                $roles = array($role);
-                $assigned_role_ids = array(3);
-            } else {
-                $member = ee()->session->getMember();
-                $assigned_role_ids = $member->getAllRoles()->pluck('role_id');
-                $roles = ee('Model')->get('Role')->fields('role_id', 'short_name')->all();
+                $vars['has_role_' . ee()->session->userdata('primary_role_short_name')] = true; // has_role_guest
+                return $vars;
             }
+
+            $member = ee()->session->getMember();
+            $assigned_role_ids = $member->getAllRoles()->pluck('role_id');
+            $roles = ee('Model')->get('Role')->fields('role_id', 'short_name')->all();
 
             foreach ($roles as $role) {
                 $value = in_array($role->getId(), $assigned_role_ids);
