@@ -187,6 +187,9 @@ class Grid_ft extends EE_Fieldtype
             'vertical_layout' => isset($this->settings['vertical_layout'])
                 ? ($this->settings['vertical_layout'] == 'horizontal_layout' ? 'horizontal' : $this->settings['vertical_layout'])
                 : 'n',
+            'collapse_rows' => isset($this->settings['collapse_rows'])
+                ? get_bool_from_string($this->settings['collapse_rows'])
+                : false,
         ));
         $grid->loadAssets();
         $grid->setNoResultsText(
@@ -618,10 +621,22 @@ class Grid_ft extends EE_Fieldtype
                                     'y' => lang('grid_vertical_layout'),
                                     'horizontal' => lang('grid_horizontal_layout'),
                                 ),
+                                'group_toggle' => array('y' => 'grid_collapse_rows'),
                                 'value' => isset($data['vertical_layout']) ? ($data['vertical_layout'] == 'horizontal_layout' ? 'horizontal' : $data['vertical_layout']) : 'n'
                             )
                         )
-                    )
+                    ),
+                    array(
+                        'title' => 'collapse_rows',
+                        'desc' => 'collapse_rows_desc',
+                        'group' => 'grid_collapse_rows',
+                        'fields' => array(
+                            'collapse_rows' => array(
+                                'type' => 'yes_no',
+                                'value' => isset($data['collapse_rows']) ? $data['collapse_rows'] : 'n'
+                            )
+                        )
+                    ),
                 )
             ),
             'grid_fields' => array(
@@ -785,6 +800,7 @@ class Grid_ft extends EE_Fieldtype
             'grid_max_rows' => empty($data['grid_max_rows']) ? '' : $data['grid_max_rows'],
             'allow_reorder' => empty($data['allow_reorder']) ? 'y' : $data['allow_reorder'],
             'vertical_layout' => empty($data['vertical_layout']) ? 'n' : $data['vertical_layout'],
+            'collapse_rows' => empty($data['collapse_rows']) ? 'n' : $data['collapse_rows'],
         );
     }
 

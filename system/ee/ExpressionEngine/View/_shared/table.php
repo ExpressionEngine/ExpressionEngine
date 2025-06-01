@@ -348,10 +348,15 @@ else: ?>
                     $i++;
 
                     $row_class = "";
+                    $column_hidden = '';
 
                     if (isset($row['attrs']['class'])) {
                         $row_class = $row['attrs']['class'];
                         unset($row['attrs']['class']);
+                    }
+                    if ($collapse_rows && $row_class != 'grid-blank-row hidden') {
+                        $row_class .= ' grid__item--collapsed';
+                        $column_hidden = ' style="display: none;"';
                     }
                 ?>
                     <tr class="<?=$row_class?>" <?php foreach ($row['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
@@ -424,18 +429,18 @@ else: ?>
 
                             <?php if ($column['encode'] == true && $column['type'] != Table::COL_STATUS): ?>
                                 <?php if (isset($column['href'])): ?>
-                                <td><?=$column_label?><a href="<?=$column['href']?>"><?=htmlentities($column['content'], ENT_QUOTES, 'UTF-8')?></a></td>
+                                <td<?=$column_hidden?>><?=$column_label?><a href="<?=$column['href']?>"><?=htmlentities($column['content'], ENT_QUOTES, 'UTF-8')?></a></td>
                                 <?php else: ?>
-                                <td><?=$column_label?><?=htmlentities($column['content'], ENT_QUOTES, 'UTF-8')?></td>
+                                <td<?=$column_hidden?>><?=$column_label?><?=htmlentities($column['content'], ENT_QUOTES, 'UTF-8')?></td>
                                 <?php endif; ?>
                             <?php elseif ($column['type'] == Table::COL_TOOLBAR): ?>
-                                <td>
+                                <td<?=$column_hidden?>>
                                     <div class="toolbar-wrap">
                                         <?=ee()->load->view('_shared/toolbar', $column, true)?>
                                     </div>
                                 </td>
                             <?php elseif ($column['type'] == Table::COL_CHECKBOX): ?>
-                                <td>
+                                <td<?=$column_hidden?>>
                                     <input
                                         name="<?=form_prep($column['name'])?>"
                                         value="<?=form_prep($column['value'])?>"
@@ -451,7 +456,7 @@ else: ?>
                                     >
                                 </td>
                             <?php elseif ($column['type'] == Table::COL_STATUS): ?>
-                                <td><?=$column_label?><?=$column['content']?></td>
+                                <td<?=$column_hidden?>><?=$column_label?><?=$column['content']?></td>
                             <?php elseif (isset($column['html'])): ?>
                                 <?php
                                     $column_class = '';
@@ -463,7 +468,7 @@ else: ?>
                                         $column_class .= ' invalid';
                                     }
                                 ?>
-                                <td class="<?=$column_class?>" <?php if (isset($column['attrs'])): foreach ($column['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; endif; ?>>
+                                <td<?=$column_hidden?> class="<?=$column_class?>" <?php if (isset($column['attrs'])): foreach ($column['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; endif; ?>>
                                     <?=$column_label?>
                                     <?=$column['html']?>
                                     <?php if (isset($column['error']) && ! empty($column['error'])): ?>
@@ -471,11 +476,11 @@ else: ?>
                                     <?php endif ?>
                                 </td>
                             <?php else: ?>
-                                <td><?=$column_label?><?=$column['content']?></td>
+                                <td<?=$column_hidden?>><?=$column_label?><?=$column['content']?></td>
                             <?php endif ?>
                         <?php endforeach ?>
 
-                        <td class="grid-field__column--tools">
+                        <td<?=$column_hidden?> class="grid-field__column--tools">
                             <div class="grid-field__column-tools">
                                 <?php if ($reorder): ?>
                                 <button type="button" class="button button--small button--default cursor-move js-grid-reorder-handle">
