@@ -589,7 +589,7 @@ class Fluid_field_ft extends EE_Fieldtype
                         'show_field_type' => false,
                         'field_filters' => $filter_options,
                         'field_name_prefix' => $field_name_prefix,
-                        'collapse_rows' => isset($this->settings['collapse_rows']) ? $this->settings['collapse_rows'] : false,
+                        'collapse_rows' => isset($this->settings['collapse_rows']) ? get_bool_from_string($this->settings['collapse_rows']) : false,
                     ];
 
                     if ($is_group) {
