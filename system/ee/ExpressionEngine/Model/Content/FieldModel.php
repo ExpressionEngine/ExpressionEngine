@@ -564,7 +564,7 @@ abstract class FieldModel extends Model
      */
     public function validateNameIsNotReserved($key, $value, $params, $rule)
     {
-        if (in_array($value, ee()->cp->invalid_custom_field_names())) {
+        if (in_array($value, ee()->config->loadFile('reserved_field_names'))) {
             return lang('reserved_word');
         }
 
