@@ -1052,7 +1052,7 @@ class Cp
             return $invalid_fields;
         }
 
-        return $invalid_fields = array_uninue(ee()->config->loadFile('reserved_field_names'));
+        return $invalid_fields = array_unique(ee()->config->loadFile('reserved_field_names'));
     }
 
     /**
