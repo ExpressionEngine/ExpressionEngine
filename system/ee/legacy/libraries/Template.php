@@ -225,7 +225,7 @@ class EE_Template
         }
 
         $this->template = ($template_group != '' and $template != '') ?
-            $this->fetch_template($template_group, $template, false, $site_id) :
+            $this->fetch_template($template_group, $template, false, $site_id, $is_layout) :
             $this->parse_template_uri();
 
         // Add the template to our list of templates loaded
@@ -2444,7 +2444,7 @@ class EE_Template
      * @param   int
      * @return  string
      */
-    public function fetch_template($template_group, $template, $show_default = true, $site_id = '')
+    public function fetch_template($template_group, $template, $show_default = true, $site_id = '', $is_layout = false)
     {
         if ($site_id == '' or !is_numeric($site_id)) {
             $site_id = ee()->config->item('site_id');
@@ -2634,7 +2634,7 @@ class EE_Template
             if (!array_intersect($templates_roles, $currentMemberRoles)) {
                 $this->log_item("No Template Access Privileges");
 
-                if ($this->depth > 0) {
+                if ($this->depth > 0 && !$is_layout) {
                     return '';
                 }
 
