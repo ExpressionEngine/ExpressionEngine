@@ -305,7 +305,6 @@ JSC;
      */
     public function replace_tag($data, $params = array(), $tagdata = false)
     {
-        dump($params, is_array($data));
         // Make sure we have file_info to work with
         if ($tagdata !== false && $data === false) {
             $tagdata = ee()->TMPL->parse_variables($tagdata, array());
