@@ -418,7 +418,11 @@ class EE_Core
         }
 
         // Is MFA required?
-        if (REQ == 'PAGE' && ee()->session->userdata('mfa_flag') != 'skip') {
+        if (
+            REQ == 'PAGE' &&
+            (ee()->config->item('enable_mfa') === false || ee()->config->item('enable_mfa') === 'y') &&
+            ee()->session->userdata('mfa_flag') != 'skip'
+        ) {
             if (ee()->session->userdata('mfa_flag') == 'show') {
                 ee('pro:Mfa')->invokeMfaDialog();
             }
@@ -568,7 +572,12 @@ class EE_Core
         }
 
         //is member role forced to use MFA?
-        if (ee()->session->userdata('member_id') !== 0 && ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa == 'y' && ee()->session->getMember()->enable_mfa !== true) {
+        if (
+            (ee()->config->item('enable_mfa') === false || ee()->config->item('enable_mfa') === 'y') &&
+            ee()->session->userdata('member_id') !== 0 &&
+            ee()->session->getMember()->enable_mfa !== true &&
+            ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa == 'y'
+        ) {
             if (!(ee()->uri->segment(2) == 'login' && ee()->uri->segment(3) == 'logout') && !(ee()->uri->segment(2) == 'members' && ee()->uri->segment(3) == 'profile' && ee()->uri->segment(4) == 'pro' && ee()->uri->segment(5) == 'mfa')) {
                 ee()->lang->load('pro');
                 ee('CP/Alert')->makeInline('shared-form')
