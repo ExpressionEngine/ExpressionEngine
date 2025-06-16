@@ -14,7 +14,7 @@
     "author": "",
     "license": "ISC",
     "devDependencies": {
-        "cypress": "^13.17.0",
+        "cypress": "^14.4.0",
         "find-test-names": "^1.28.12"
     },
     "dependencies": {
