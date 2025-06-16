@@ -3466,10 +3466,6 @@ class EE_Template
 
         $data['member_group'] = $data['logged_in_member_group'] = ee()->session->userdata['role_id'];
 
-        // Logged in and logged out variables
-        $data['logged_in'] = (ee()->session->userdata['member_id'] != 0);
-        $data['logged_out'] = (ee()->session->userdata['member_id'] == 0);
-
         // current time
         $data['current_time'] = ee()->localize->now;
 
@@ -4545,7 +4541,10 @@ class EE_Template
 
         if (!isset(ee()->session)) {
             //early parsing, e.g. called from code and not web request
-            return [];
+            return [
+                'logged_out' => true,
+                'logged_in' => false,
+            ];
         }
 
         if (empty($vars)) {
@@ -4569,6 +4568,10 @@ class EE_Template
                 $vars['has_role_' . $role->short_name] = $value;
             }
         }
+
+        // Logged in and logged out variables
+        $vars['logged_in'] = (ee()->session->userdata['member_id'] != 0);
+        $vars['logged_out'] = (ee()->session->userdata['member_id'] == 0);
 
         return $vars;
     }
