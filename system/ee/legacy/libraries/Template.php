@@ -490,10 +490,15 @@ class EE_Template
         }
 
         if (!empty($errors)) {
+            $this->log_item("Parsing inline errors");
             // Make sure our errors are an associative array so the {errors}{error}{/errors} field tags work properly.
-            $errors = array_map(function ($error) {
-                return array('error' => $error);
-            }, $errors);
+            $errors = (is_array($errors)) ? $errors : [$errors];
+            $errors = array_values(array_map(function ($error, $key) {
+                // Remove error: prefix from key if present
+                $key = (substr($key, 0, 6) === 'error:') ? substr($key, 6) : $key;
+
+                return ['error' => $error, 'error_key' => is_numeric($key) ? '' : str_replace('error:', '', $key)];
+            }, $errors, array_keys($errors)));
 
             $this->template = $this->parse_variables($this->template, array(array('errors' => $errors)));
         }
@@ -686,10 +691,11 @@ class EE_Template
      * @param  array $layout_vars Layout variables to parser, 'variable_name' => 'content'
      * @return string The parsed template/string
      */
-    private function parseLayoutVariables($str, $layout_vars)
+    public function parseLayoutVariables($str, $layout_vars)
     {
         $this->log_item("Layout Variables:", $layout_vars);
         $this->layout_conditionals = [];
+        $layout_conditionals = [];
 
         // get all the declared layout variables (excluding layout:contents)
         if (preg_match_all('/' . LD . 'layout:(?!\bset|contents\b)([^!]+?)(' . RD . '|\s|:)/', $str, $matches)) {
@@ -721,7 +727,7 @@ class EE_Template
                 $total_items = count($val);
                 $variables = [];
                 $item = ''; // initial value for catch-all replacement
-                
+
                 foreach ($val as $idx => $item) {
                     $variables[] = [
                         'index' => $idx,
@@ -2636,7 +2642,7 @@ class EE_Template
                 // If no access redirect template was defined, 404
                 if ($query->row('no_auth_bounce') != '') {
                     $query = ee()->db->select('a.template_id, a.template_data,
-                        a.template_name, a.template_type, a.edit_date,
+                        a.template_name, a.template_type, a.template_engine, a.edit_date,
                         a.cache, a.refresh, a.hits, a.protect_javascript,
                         a.allow_php, a.php_parse_location, b.group_name, a.group_id, a.enable_frontedit')
                         ->from('templates a')
@@ -3461,10 +3467,6 @@ class EE_Template
 
         $data['member_group'] = $data['logged_in_member_group'] = ee()->session->userdata['role_id'];
 
-        // Logged in and logged out variables
-        $data['logged_in'] = (ee()->session->userdata['member_id'] != 0);
-        $data['logged_out'] = (ee()->session->userdata['member_id'] == 0);
-
         // current time
         $data['current_time'] = ee()->localize->now;
 
@@ -3662,8 +3664,16 @@ class EE_Template
      */
     public function parse_variables($tagdata, $variables, $enable_backspace = true)
     {
-        if ($tagdata == '' or !is_array($variables) or empty($variables) or !is_array($variables[0])) {
+        if ($tagdata == '' or !is_array($variables)) {
             return $tagdata;
+        }
+
+        // When variables are empty we should still parse the added loop variables
+        if (empty($variables) or !is_array($variables[0])) {
+            return $this->parse_variables_row($tagdata, [
+                'count' => 0,
+                'total_results' => 0
+            ], false);
         }
 
         // Reset and Match date variables
@@ -4532,7 +4542,10 @@ class EE_Template
 
         if (!isset(ee()->session)) {
             //early parsing, e.g. called from code and not web request
-            return [];
+            return [
+                'logged_out' => true,
+                'logged_in' => false,
+            ];
         }
 
         if (empty($vars)) {
@@ -4557,7 +4570,32 @@ class EE_Template
             }
         }
 
+        // Logged in and logged out variables
+        $vars['logged_in'] = (ee()->session->userdata['member_id'] != 0);
+        $vars['logged_out'] = (ee()->session->userdata['member_id'] == 0);
+
         return $vars;
+    }
+
+    /**
+     * Parse inline errors from session flashdata
+     *
+     * @param string $str
+     * @return string
+     */
+    public function parse_inline_errors($str)
+    {
+        if (ee()->TMPL->fetch_param('inline_errors') == 'yes'
+            && strpos($str, LD . 'error:') !== false
+            && isset(ee()->session)
+            && !empty(ee()->session->flashdata('errors'))
+        ) {
+            $str = ee()->TMPL->parse_variables($str, [ee()->session->flashdata('errors')]);
+            // Replace old input variables
+            $str = ee()->TMPL->parse_variables($str, [ee()->session->flashdata('old')]);
+        }
+
+        return $str;
     }
 
     public function set_data($data)

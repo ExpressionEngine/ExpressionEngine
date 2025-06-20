@@ -112,6 +112,10 @@ class FileDimension extends Model
             return false;
         }
 
+        if (empty($file->file_hw_original)) {
+            return false;
+        }
+
         ee()->load->library('image_lib');
         ee()->image_lib->clear();
 

@@ -171,7 +171,11 @@ gulp.task('_archive_pro', function (cb) {
 });
 
 gulp.task('_archive_redactorx', function (cb) {
-	archive_repo('redactorx', cb);
+    if (process.argv.indexOf('--skip-redactorx') > -1) {
+        cb();
+    } else {
+        archive_repo('redactorx', cb);
+    }
 });
 
 /**

@@ -54,7 +54,7 @@ class Structure_tab
 
     public function renderTableCell($data, $field_id, $entry)
     {
-        $site_pages = $this->sql->get_site_pages(true);
+        $site_pages = $this->sql->get_site_pages();
         $uri = array_key_exists($entry->entry_id, $site_pages['uris']) ? $site_pages['uris'][$entry->entry_id] : '';
         if (!empty($uri)) {
             return '<a href="' . Structure_Helper::remove_double_slashes(ee()->functions->fetch_site_index(0, 0) . $uri) . '" target="_blank"><i class="fal fa-link"></i></a>';
@@ -590,7 +590,24 @@ class Structure_tab
 
             $structure_uri = $uri; // contents of uri input field
 
-            $uri = $structure_uri == '' ? $this->create_uri($title) : $this->create_uri($structure_uri);
+            // if the submitted URI is valid, we can just use it
+            $validUriSubmitted = false;
+            if (!empty($structure_uri)) {
+                $validator = ee('Validation')->make(array(
+                    'uri' => 'alphaDashPeriodEmoji'
+                ));
+
+                $validation = $validator->validate(['uri' => $uri]);
+
+                if ($validation->isValid()) {
+                    $validUriSubmitted = true;
+                }
+            }
+
+            // create Structure URI out of submitted information
+            if ($validUriSubmitted === false) {
+                $uri = $structure_uri == '' ? $this->create_uri($title) : $this->create_uri($structure_uri);
+            }
 
             // If the current channel is not assigned as any sort of Structure channel, then stop
             if ($channel_type == 'page') {

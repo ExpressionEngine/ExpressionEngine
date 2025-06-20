@@ -33,6 +33,7 @@ class Members extends Settings
     {
         $roles = ee('Model')->get('Role')
             ->filter('is_locked', 'n')
+            ->filter('short_name', '!=', 'pending')
             ->order('name', 'asc')
             ->all()
             ->getDictionary('role_id', 'name');

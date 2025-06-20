@@ -204,7 +204,7 @@ class Members extends CP_Controller
      * @param array $ids The ID(s) of the member(s) being approved
      * @return void
      */
-    public function resend(array $ids)
+    public function resend($ids)
     {
         if (! ee('Permission')->can('edit_members') || ee()->config->item('req_mbr_activation') !== 'email') {
             show_error(lang('unauthorized_access'), 403);
@@ -225,13 +225,16 @@ class Members extends CP_Controller
 
         $action_id = ee()->functions->fetch_action_id('Member', 'activate_member');
 
+        ee()->load->library('email');
+        ee()->email->EE_initialize();
+
         foreach ($members as $member) {
             $swap = array(
                 'email' => $member->email,
                 'activation_url' => ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id . '&id=' . $member->authcode
             );
 
-            if (!$this->pendingMemberNotification($template, $member, $swap)) {
+            if (empty($member->authcode) || !$this->pendingMemberNotification($template, $member, $swap)) {
                 $debug_msg = ee()->email->print_debugger(array());
                 show_error(lang('error_sending_email') . BR . BR . $debug_msg);
             }
@@ -1111,8 +1114,7 @@ class Members extends CP_Controller
 
         $base_url = ee('CP/URL')->make('members');
 
-        $members = ee('Model')->get('Member')
-            ->with('PrimaryRole', 'Roles');
+        $members = ee('Model')->get('Member');
 
         $filters = ee('CP/Filter');
         $roleFilter = $this->createRoleFilter($primaryRole);
@@ -1222,18 +1224,6 @@ class Members extends CP_Controller
         }
         $columns = array_filter($columns);
 
-        foreach ($columns as $column) {
-            if (!empty($column)) {
-                if (!empty($column->getEntryManagerColumnModels())) {
-                    foreach ($column->getEntryManagerColumnModels() as $with) {
-                        if (!empty($with)) {
-                            $members->with($with);
-                        }
-                    }
-                }
-            }
-        }
-
         $column_renderer = new ColumnRenderer($columns);
         $table_columns = $column_renderer->getTableColumnsConfig();
         $table->setColumns($table_columns);
@@ -1246,12 +1236,13 @@ class Members extends CP_Controller
 
         $vars['bulk_options'] = [];
         if (!empty($primaryRole) && $primaryRole->role_id == Member::PENDING) {
-            if (ee('Permission')->can('edit_members')) {
-                $vars['bulk_options'][] = [
-                    'value' => "approve",
-                    'text' => lang('approve')
-                ];
-            }
+            // Removing for now - confirmation modals (like decline/delete) do not currently play well with other options
+            // if (ee('Permission')->can('edit_members')) {
+            //     $vars['bulk_options'][] = [
+            //         'value' => "approve",
+            //         'text' => lang('approve')
+            //     ];
+            // }
             if (ee('Permission')->can('delete_members')) {
                 $vars['bulk_options'][] = [
                     'value' => "decline",
@@ -1308,9 +1299,26 @@ class Members extends CP_Controller
             ->offset($offset)
             ->all();
 
-        $data = array();
+        // Re-query the members with relationship data eager loaded for display
+        $memberData = ee('Model')->get('Member')->filter('member_id', 'IN', $members->pluck('member_id'))
+            ->with('PrimaryRole', 'Roles');
 
-        foreach ($members as $member) {
+        // Apply eager loads for columns
+        foreach ($columns as $column) {
+            if (!empty($column) && !empty($column->getEntryManagerColumnModels())) {
+                foreach ($column->getEntryManagerColumnModels() as $with) {
+                    if (!empty($with)) {
+                        $memberData->with($with);
+                    }
+                }
+            }
+        }
+
+        $data = array();
+        $memberData = $memberData->all()->indexBy('member_id');
+
+        foreach ($members->pluck('member_id') as $member_id) {
+            $member = $memberData[$member_id];
             $attrs = [
                 'member_id' => $member->member_id,
                 'title' => $member->screen_name,
