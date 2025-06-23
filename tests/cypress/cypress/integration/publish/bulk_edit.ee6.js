@@ -58,7 +58,7 @@ context('Bulk Edit', () => {
           return Cypress.$(el).text().replace('Add ', '').trim();
       })
 
-      expect(field_options).to.deep.equal(['Entry Status', 'Expiration date', 'Author', 'Allow comments?', 'Comment expiration date', 'Body', 'Extended text', 'News Image', 'Related news', 'Categories'])
+      expect(field_options).to.deep.equal(['Entry Status', 'Expiration date', 'Author', 'Allow comments?', 'Comment expiration date', 'Body', 'Extended text', 'Related news', 'Categories'])
     })
 
     bulk_edit.get('fluid_fields').should('have.length', 0)
@@ -93,7 +93,7 @@ context('Bulk Edit', () => {
           return Cypress.$(el).text().replace('Add ', '').trim();
       })
       expect(field_options).to.deep.equal(['Entry Status', 'Expiration date',
-      'Author', 'Allow comments?', 'Comment expiration date', 'Body', 'Extended text', 'News Image', 'Related news', 'Categories'])
+      'Author', 'Allow comments?', 'Comment expiration date', 'Body', 'Extended text', 'Related news', 'Categories'])
     })
   })
 
@@ -149,7 +149,7 @@ context('Bulk Edit', () => {
     bulk_edit.get('field_options').parent().find('a:contains("Entry Status")').click()
 
     // This channel has comments disabled
-    const expected_fields = ['Expiration date', 'Author', 'Body', 'Image', "Staff Member's Title", 'Extended', 'Categories']
+    const expected_fields = ['Expiration date', 'Author', 'Body', "Staff Member's Title", 'Extended', 'Categories']
 
     // Status should be removed from available options
     //bulk_edit.get('add_field').click()
