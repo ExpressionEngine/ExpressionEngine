@@ -69,7 +69,10 @@ class BulkEdit extends AbstractBulkEdit
         // add custom fields, but only those that can work inside Fluid Field
         $customFields = [];
         foreach ($entry->Channel->getAllCustomFields() as $field) {
-            if ($field->field_type == 'fluid_field') {
+            if ($field->field_type == 'fluid_field' || 
+                $field->field_type == 'grid' || 
+                $field->field_type == 'file' || 
+                $field->field_type == 'file_grid') {
                 continue;
             }
             if (! $field->getField()->acceptsContentType('fluid_field')) {
