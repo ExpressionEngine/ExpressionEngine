@@ -49,7 +49,7 @@ class Filesystem
         }
         // Create the cache store
         $cacheStore = new Flysystem\Cached\Storage\Memory();
-        $adapter = new Flysystem\Cached\CachedAdapter($adapter, $cacheStore);
+        $adapter = new Adapter\CachedAdapter($adapter, $cacheStore);
 
         $defaults = [
             'visibility' => Flysystem\AdapterInterface::VISIBILITY_PUBLIC
@@ -303,6 +303,26 @@ class Filesystem
     }
 
     /**
+     * Retrieve filesystem information for a given set of paths
+     *
+     * @param array $paths
+     * @return array
+     */
+    public function eagerLoadPaths($paths)
+    {
+        if (!method_exists($this->flysystem->getAdapter(), 'eagerLoadPaths')) {
+            $this->getDirectoryContents('/', true);
+            return [];
+        }
+
+        $paths = array_map(function ($file) {
+            return $this->normalizeRelativePath($file);
+        }, $paths);
+
+        return $this->flysystem->getAdapter()->eagerLoadPaths($paths);
+    }
+
+    /*
      * Get a list of files within the $path that share the same prefix as the path's filename
      *
      * @param string $path

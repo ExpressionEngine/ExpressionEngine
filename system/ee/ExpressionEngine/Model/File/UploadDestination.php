@@ -164,7 +164,7 @@ class UploadDestination extends StructureModel
             $allowed_types = [$allowed_types];
         }
         if (in_array('--', $allowed_types)) {
-            $allowed_types =  ['all'];
+            $allowed_types = ['all'];
         }
         if (empty($allowed_types)) {
             $allowed_types = ['img'];
@@ -431,18 +431,8 @@ class UploadDestination extends StructureModel
                 continue;
             }
 
-            if (! $isDir && ! $ignoreAllowedTypes && ! in_array('all', $this->allowed_types)) {
-                $isOfAllowedMimeType = false;
-                foreach ($this->allowed_types as $allowed_type) {
-                    if (ee('MimeType')->isOfKind($this->getFilesystem()->getMimetype($filePath), $allowed_type)) {
-                        $isOfAllowedMimeType = true;
-
-                        break;
-                    }
-                }
-                if (! $isOfAllowedMimeType) {
-                    continue;
-                }
+            if (! $isDir && ! $ignoreAllowedTypes && ! in_array('all', $this->allowed_types) && ! $this->isFileMimetypeAllowed($filePath)) {
+                continue;
             }
 
             $key = $fullPathAsKey ? $filePath : $fileName;
@@ -455,6 +445,21 @@ class UploadDestination extends StructureModel
         }
 
         return $map;
+    }
+
+    public function isFileMimetypeAllowed($filePath)
+    {
+        if(in_array('all', $this->allowed_types)) {
+            return true;
+        }
+
+        foreach ($this->allowed_types as $allowed_type) {
+            if (ee('MimeType')->isOfKind($this->getFilesystem()->getMimetype($filePath), $allowed_type)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

@@ -192,7 +192,7 @@ class Uploads extends AbstractFilesController
                     foreach ($field['fields'] as $input_name => $input) {
                         $prefixed_name = implode('', [
                             "_for_adapter[{$key}]",
-                            (strpos($input_name, '[') !== false) ? '['. str_replace('[', '][', $input_name) : "[{$input_name}]"
+                            (strpos($input_name, '[') !== false) ? '[' . str_replace('[', '][', $input_name) : "[{$input_name}]"
                         ]);
                         $field['fields'][$prefixed_name] = $input;
                         unset($field['fields'][$input_name]);
@@ -231,7 +231,9 @@ class Uploads extends AbstractFilesController
             )
         );
         $vars['sections'][0] = array_merge($vars['sections'][0], $adapter_settings);
-        $vars['sections'][0] = array_merge($vars['sections'][0], array(
+        $vars['sections'][0] = array_merge(
+            $vars['sections'][0],
+            array(
                 array(
                     'title' => 'upload_allowed_types',
                     'desc' => '',
@@ -803,8 +805,17 @@ class Uploads extends AbstractFilesController
             }
         }
 
-        // Get a listing of raw files in the directory
-        $files = $upload_destination->getAllFileNames();
+        // Get a listing of raw files in the directory.  If we are using a non-local filesystem
+        // we will skip the check for allowed mime types since this can be very slow. Instead we
+        // will check during the actual sync because it will feel faster on a smaller chunk of files
+        if($upload_destination->getFilesystem()->isLocal()) {
+            $directoryMap = $upload_destination->getDirectoryMap();
+        } else {
+            $directoryMap = $upload_destination->getDirectoryMap('/', false, false, false, false, true);
+        }
+        $flatDirectoryMap = [];
+        $this->flattenDirectoryMap($flatDirectoryMap, $directoryMap);
+        $files = array_keys($flatDirectoryMap);
 
         $files_count = count($files, COUNT_RECURSIVE);
 
@@ -971,7 +982,7 @@ class Uploads extends AbstractFilesController
                 ));
             }
 
-            
+
         }
     }
 }
