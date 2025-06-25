@@ -408,6 +408,31 @@ class EE_Template
                     }
                 }
             }
+
+            // Handle any partials using the new format {partial="group/template"}
+            if (strpos($this->template, LD . 'partial') !== false && preg_match_all("/(" . LD . "partial\s*=)(.*?)" . RD . "/s", $this->template, $matches)) {
+                // $matches[2] is "group/template"
+                foreach ($matches[2] as $key => $val) {
+                    $parts = preg_split("/\s+/", $val, 2);
+
+                    // get the "group/template" part of the tag plus site ID
+                    $fetch_data = $this->_get_fetch_data($parts[0]);
+
+                    if (!isset($fetch_data)) {
+                        continue;
+                    }
+
+                    list($template_group, $template_name, $site_id) = $fetch_data;
+
+                    $partial = $this->fetch_template($template_group, $template_name, false, $site_id, true);
+
+                    if (!$partial) {
+                        continue;
+                    }
+
+                    $this->template = str_replace($matches[0][$key], $partial, $this->template);
+                }
+            }
         }
 
         // have to handle the silly in_group() conditionals before we
@@ -2443,11 +2468,12 @@ class EE_Template
      * @param   string
      * @param   bool
      * @param   int
+     * @param   bool
      * @return  string
      */
-    public function fetch_template($template_group, $template, $show_default = true, $site_id = '')
+    public function fetch_template($template_group, $template, $show_default = true, $site_id = '', $is_partial = false)
     {
-        if ($site_id == '' or !is_numeric($site_id)) {
+        if ($site_id == '' || !is_numeric($site_id)) {
             $site_id = ee()->config->item('site_id');
         }
 
@@ -2457,6 +2483,7 @@ class EE_Template
             $template,
             ($show_default ? 'true' : 'false'),
             $site_id,
+            $is_partial,
         ]);
 
         $query = isset(ee()->session) ? ee()->session->cache(__CLASS__, $cacheKey) : false;
@@ -2480,8 +2507,9 @@ class EE_Template
 
             if (
                 $this->depth == 0
-                and substr($template, 0, 1) == $hidden_indicator
-                and ee()->uri->page_query_string == ''
+                && substr($template, 0, 1) == $hidden_indicator
+                && ee()->uri->page_query_string == ''
+                && !$is_partial
             ) { // Allow hidden templates to be used for Pages requests
                 /* -------------------------------------------
                 /*  Hidden Configuration Variable
@@ -2494,7 +2522,7 @@ class EE_Template
                 if (ee()->config->item('hidden_template_404') !== 'n') {
                     $x = explode("/", ee()->config->item('site_404'));
 
-                    if (isset($x[0]) and isset($x[1])) {
+                    if (isset($x[0]) && isset($x[1])) {
                         ee()->output->out_type = '404';
                         $this->template_type = '404';
 
