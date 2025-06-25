@@ -27,12 +27,17 @@
         "mlocati/ip-lib": "^1.18",
         "bacon/bacon-qr-code": "^2.0",
         "paragonie/constant_time_encoding": "2.6.3",
-        "spomky-labs/otphp": "^10.0"
+        "spomky-labs/otphp": "^10.0",
+        "voku/anti-xss": "dev-feature/configurable-naughty-javascript"
     },
     "repositories": [
         {
             "type": "vcs",
             "url": "https://github.com/ExpressionEngine/flysystem-cached-adapter"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/ExpressionEngine/anti-xss"
         }
     ],
     "config": {
