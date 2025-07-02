@@ -39,6 +39,10 @@
         },
         {
             "type": "vcs",
+            "url": "https://github.com/ExpressionEngine/mime-type-detection"
+        },
+        {
+            "type": "vcs",
             "url": "https://github.com/ExpressionEngine/otphp"
         },
         {
@@ -48,7 +52,7 @@
     ],
     "config": {
         "platform": {
-            "php": "8.1"
+            "php": "7.2.5"
         },
         "allow-plugins": {
             "bamarni/composer-bin-plugin": true
@@ -68,5 +72,6 @@
             "COMPOSER_VENDOR_DIR=system/ee/vendor-build composer dump-autoload",
             "php scoper.fix.php"
         ]
-    }
+    },
+    "minimum-stability": "dev"
 }

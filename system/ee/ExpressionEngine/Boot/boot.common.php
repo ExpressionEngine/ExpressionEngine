@@ -683,6 +683,16 @@ if (!function_exists('tmpfile') && version_compare(PHP_VERSION, '8', '>=')) {
 }
 
 /**
+ * Polyfill for missing str_contains()
+ * https://www.php.net/manual/en/function.str-contains.php
+ */
+if (!function_exists('str_contains')) {
+    function str_contains($haystack, $needle) {
+        return $needle !== '' && mb_strpos($haystack, $needle) !== false;
+    }
+}
+
+/**
  * Show pre-formatted debug trace of required depth (default: 5)
  */
 if (! function_exists('trace')) {
