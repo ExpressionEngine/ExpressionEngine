@@ -759,9 +759,6 @@
             "require-dev": {
                 "symfony/process": "^6.4|^7.0"
             },
-            "require-dev": {
-                "symfony/process": "^5.4|^6.4"
-            },
             "type": "library",
             "autoload": {
                 "psr-4": {

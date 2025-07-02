@@ -160,8 +160,8 @@ class SimplePie_Parser
             });
             xml_set_element_handler($xml, function($parser, $tag, $attributes) {
                 return $this->tag_open($parser, $tag, $attributes);
-            }, function($parser, $tag, $attributes) {
-                return $this->tag_close($parser, $tag, $attributes);
+            }, function($parser, $tag) {
+                return $this->tag_close($parser, $tag);
             });
 
             // Parse!
