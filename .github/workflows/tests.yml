@@ -6,6 +6,7 @@ on:
       - '*.dev'
       - 'release/**'
       - '!release/**-alpha'
+  workflow_dispatch:
 
 jobs:
 
