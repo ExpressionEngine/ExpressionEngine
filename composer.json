@@ -72,6 +72,5 @@
             "COMPOSER_VENDOR_DIR=system/ee/vendor-build composer dump-autoload",
             "php scoper.fix.php"
         ]
-    },
-    "minimum-stability": "dev"
+    }
 }
