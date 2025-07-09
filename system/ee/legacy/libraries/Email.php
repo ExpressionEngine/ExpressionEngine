@@ -2026,7 +2026,7 @@ class EE_Email
             }
         }
 
-        // Check if directory exists and is writable, create if not present (following legacy Log.php pattern).
+        // Check if directory exists and is writable, create if not present.
         if (!is_dir($tmppath)) {
             mkdir($tmppath, 0755, true);
         }
