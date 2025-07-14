@@ -212,6 +212,12 @@
 			// state to reflect the overall column.
 
 			$table.delegate('td', 'click', function(event) {
+				// check and prevent this script working on Store Addon (Stock) table
+				var store_table = $(this).closest('table');
+				if (store_table.closest('#store_product_stock').length > 0) {
+					return true;
+				}
+
 				var column = this.cellIndex,
 					all_checked = true,
 					$header_checkbox;
