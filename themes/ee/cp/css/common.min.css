@@ -31977,7 +31977,7 @@ fieldset .field-control #eye {
   position: relative;
   top: 0;
   line-height: 0.7;
-  display: inline-block;
+  display: none;
 }
 
 .grid-field__table th {
