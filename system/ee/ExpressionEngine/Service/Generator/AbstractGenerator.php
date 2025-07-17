@@ -22,9 +22,9 @@ abstract class AbstractGenerator
     protected $generatorPath;
     protected $addonPath;
     protected $stubPath;
-    protected $requireAddonExists = true;
+    public $requireAddonExists = true;
 
-    protected $requiredComponentFiles = [
+    public $requiredComponentFiles = [
         // 'mod',
         // 'ext',
         // 'upd',
@@ -94,9 +94,12 @@ abstract class AbstractGenerator
      * Initialize common properties
      *
      * @param string $addonName
+     * @param bool $requireAddonExists Whether to check if the addon exists
      */
     protected function initCommon($addonName = null)
     {
+
+
         $this->generatorPath = SYSPATH . 'ee/ExpressionEngine/Service/Generator';
 
         if ($addonName) {
@@ -114,9 +117,12 @@ abstract class AbstractGenerator
 
     private function checkAddonComponentsExists()
     {
+        if (! $this->requireAddonExists) {
+            return false;
+        }
+
         $addon = $this->checkAddonExists();
         $this->addonPath = $addon->getPath() . '/';
-
         foreach ($this->requiredComponentFiles as $file) {
             if (! file_exists($this->addonPath . $file . '.' . $this->addon . '.php')) {
                 throw new \Exception(lang('cli_error_the_specified_addon_component_does_not_exist: ' . $file), 1);
