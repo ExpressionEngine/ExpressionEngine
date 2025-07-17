@@ -20,7 +20,7 @@ class ActionGenerator extends AbstractGenerator
     protected $actionsPath;
     protected $namespace;
 
-    protected $requiredComponentFiles = [
+    public $requiredComponentFiles = [
         'mod',
     ];
 
