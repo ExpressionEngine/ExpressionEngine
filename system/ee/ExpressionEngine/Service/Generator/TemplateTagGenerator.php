@@ -48,14 +48,18 @@ class TemplateTagGenerator
 
     private function init()
     {
-        $this->generatorPath = SYSPATH . 'ee/ExpressionEngine/Service/Generator';
-        $this->addonPath = SYSPATH . 'user/addons/' . $this->addon . '/';
-        $this->tagsPath = SYSPATH . 'user/addons/' . $this->addon . '/';
+        $addon = ee('Addon')->get($this->addon);
 
         // Make sure the addon exists
-        if (! ee('Addon')->get($this->addon)) {
+        if (! $addon) {
             throw new \Exception(lang('cli_error_the_specified_addon_does_not_exist'), 1);
-        } elseif (! file_exists($this->addonPath . 'mod.' . $this->addon . '.php')) {
+        }
+
+        $this->addonPath = $addon->getPath() . '/';
+        $this->generatorPath = SYSPATH . 'ee/ExpressionEngine/Service/Generator';
+        $this->tagsPath = $this->addonPath;
+
+        if (! file_exists($this->addonPath . 'mod.' . $this->addon . '.php')) {
             throw new \Exception(lang('command_make_template_tag_error_addon_must_have_module'), 1);
         }
 
