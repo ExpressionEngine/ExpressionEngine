@@ -48,10 +48,8 @@ class TemplateTagGenerator
 
     private function init()
     {
-        $addon = ee('Addon')->get($this->addon);
-
         // Make sure the addon exists
-        if (! $addon) {
+        if (! $addon = ee('Addon')->get($this->addon)) {
             throw new \Exception(lang('cli_error_the_specified_addon_does_not_exist'), 1);
         }
 

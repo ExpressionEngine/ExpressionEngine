@@ -47,7 +47,7 @@ class ExtensionHookGenerator
     private function init()
     {
         $this->generatorPath = SYSPATH . 'ee/ExpressionEngine/Service/Generator';
-        $this->addonPath = SYSPATH . 'user/addons/' . $this->addon . '/';
+        $this->addonPath = ee('Addon')->get($this->addon)->getPath() . '/';
 
         // Make sure the addon exists
         if (! ee('Addon')->get($this->addon)) {

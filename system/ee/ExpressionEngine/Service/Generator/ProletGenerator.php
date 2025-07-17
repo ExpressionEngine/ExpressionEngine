@@ -42,7 +42,7 @@ class ProletGenerator
     private function init()
     {
         $this->generatorPath = SYSPATH . 'ee/ExpressionEngine/Service/Generator';
-        $this->addonPath = SYSPATH . 'user/addons/' . $this->addon . '/';
+        $this->addonPath = ee('Addon')->get($this->addon)->getPath() . '/';
 
         // This will copy the default icon into our addon, if the add-on doesnt already have an icon
         if ($this->generateIcon && !$this->addonHasIcon()) {

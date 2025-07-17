@@ -53,8 +53,8 @@ class WidgetGenerator
         }
 
         $this->generatorPath = SYSPATH . 'ee/ExpressionEngine/Service/Generator';
-        $this->addonPath = SYSPATH . 'user/addons/' . $this->addon . '/';
-        $this->widgetsPath = SYSPATH . 'user/addons/' . $this->addon . '/widgets/';
+        $this->addonPath = ee('Addon')->get($this->addon)->getPath() . '/';
+        $this->widgetsPath = $this->addonPath . 'widgets/';
 
         // If the addon doesn't have a
         if (! $this->filesystem->isDir($this->widgetsPath)) {

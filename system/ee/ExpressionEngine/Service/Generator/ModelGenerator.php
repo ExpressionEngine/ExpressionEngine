@@ -54,8 +54,8 @@ class ModelGenerator
     private function init()
     {
         $this->generatorPath = SYSPATH . 'ee/ExpressionEngine/Service/Generator';
-        $this->addonPath = SYSPATH . 'user/addons/' . $this->addon . '/';
-        $this->modelPath = SYSPATH . 'user/addons/' . $this->addon . '/Model/';
+        $this->addonPath = ee('Addon')->get($this->addon)->getPath() . '/';
+        $this->modelPath = $this->addonPath . 'Model/';
 
         // Get stub path
         $this->stubPath = $this->generatorPath . '/stubs' . '/';
