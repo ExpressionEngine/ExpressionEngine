@@ -37,7 +37,7 @@ class CommandGeneratorTest extends TestCase
     public function it_fails_when_addon_doesnt_exist()
     {
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Add-on does not exists: addon_that_doesnt_exist');
+        $this->expectExceptionMessage('cli_error_the_specified_addon_does_not_exist');
 
         // Populate with sample data
         $str = new Str();
