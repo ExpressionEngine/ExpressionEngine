@@ -69,14 +69,14 @@ class CommandMakeService extends Cli
         // Get description
         $this->data['description'] = $this->getOptionOrAsk(
             "--description",
-            "Service " . lang('command_make_service_description_question'),
+            lang('command_make_service_description_question'),
             $this->data['service_name'] . ' service'
         );
 
         // Get author
         $this->data['author'] = $this->getOptionOrAsk(
             "--author",
-            "Service " . lang('command_make_service_author_question'),
+            lang('command_make_service_author_question'),
             ee('Config')->get('cli_default_addon_author'),
             true
         );
@@ -115,7 +115,7 @@ class CommandMakeService extends Cli
         $addon_name = preg_replace("/[^A-Za-z0-9 \-_]/", '', $addon_name);
 
         if (empty(trim($addon_name))) {
-            $this->fail('command_make_service_addon_name_required');
+            $this->fail(lang('command_make_service_addon_name_required'));
         }
 
         return $addon_name;
@@ -125,7 +125,7 @@ class CommandMakeService extends Cli
     {
         $addon_type = $this->getOptionOrAsk(
             "--type",
-            "Addon type (first-party or third-party)",
+            lang('command_make_service_option_type'),
             'third-party',
             true
         );
@@ -133,7 +133,7 @@ class CommandMakeService extends Cli
         // Validate addon type
         $valid_types = ['first-party', 'third-party', 'first', 'third'];
         if (!in_array(strtolower($addon_type), $valid_types)) {
-            $this->fail('command_make_service_invalid_addon_type');
+            $this->fail(lang('command_make_service_invalid_addon_type'));
         }
 
         // Normalize type
@@ -148,7 +148,7 @@ class CommandMakeService extends Cli
     {
         $namespace = $this->getOptionOrAsk(
             "--namespace",
-            "Service namespace (e.g., MyAddon\\Service)",
+            lang('command_make_service_namespace_question'),
             '',
             true
         );
@@ -175,7 +175,7 @@ class CommandMakeService extends Cli
     {
         $service_name = $this->getOptionOrAsk(
             "--service-name",
-            "Service name (e.g., MyService)",
+            lang('command_make_service_name_question'),
             '',
             true
         );
@@ -207,7 +207,7 @@ class CommandMakeService extends Cli
     {
         $is_singleton = $this->getOptionOrAsk(
             "--singleton",
-            "Should this service be a singleton? (y/n)",
+            lang('command_make_service_singleton_question'),
             'n',
             true
         );

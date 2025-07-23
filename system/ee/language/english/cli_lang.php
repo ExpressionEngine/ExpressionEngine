@@ -517,6 +517,50 @@ $lang = array(
     'separate_choices_commas' => 'Separate multiple options with commas',
     'command_generate_templates_building_templates' => 'Building templates...',
 
+    // Lang entries for command make:service
+    'command_make_service_description' => 'Creates a new service for an add-on',
+    'command_make_service_summary' => 'This interactively generates a service for an existing add-on',
+    'command_make_service_lets_build_service' => 'Let\'s build your service!',
+    'command_make_service_lets_build' => 'Let\'s build!',
+    'command_make_service_created_successfully' => 'Your service has been created successfully!',
+    'command_make_service_what_is_addon_name' => 'What is the add-on name?',
+    'command_make_service_addon_name_required' => 'Add-on name is required.',
+    'command_make_service_invalid_addon_type' => 'Invalid add-on type. Please use "first-party" or "third-party".',
+    'command_make_service_addon_not_found' => 'Add-on not found: %s (path: %s)',
+    'command_make_service_description_question' => 'description?',
+    'command_make_service_author_question' => 'author?',
+    'command_make_service_namespace_question' => 'Service namespace (e.g., MyAddon\\Service)?',
+    'command_make_service_singleton_question' => 'Should this service be a singleton? (y/n)',
+    'command_make_service_name_question' => 'Service name (e.g., MyService)?',
+
+    // make:service options
+    'command_make_service_option_addon' => 'Add-on\'s short name',
+    'command_make_service_option_description' => 'Description of the service',
+    'command_make_service_option_author' => 'Author of the service',
+    'command_make_service_option_type' => 'Add-on type (first-party or third-party)',
+    'command_make_service_option_namespace' => 'Service namespace (e.g., MyAddon\\Service)',
+    'command_make_service_option_singleton' => 'Should this service be a singleton',
+    'command_make_service_option_service_name' => 'Service name (e.g., MyService)',
+
+    // Lang entries for command make:helper
+    'command_make_helper_description' => 'Creates a new helper for an add-on',
+    'command_make_helper_summary' => 'This interactively generates a helper for an existing add-on',
+    'command_make_helper_lets_build_helper' => 'Let\'s build your helper!',
+    'command_make_helper_lets_build' => 'Let\'s build!',
+    'command_make_helper_created_successfully' => 'Your helper has been created successfully!',
+    'command_make_helper_what_is_addon_name' => 'What is the add-on name?',
+    'command_make_helper_addon_name_required' => 'Add-on name is required.',
+    'command_make_helper_invalid_addon_type' => 'Invalid add-on type. Please use "first-party" or "third-party".',
+    'command_make_helper_addon_not_found' => 'Add-on not found: %s (path: %s)',
+    'command_make_helper_description_question' => 'description?',
+    'command_make_helper_author_question' => 'author?',
+
+    // make:helper options
+    'command_make_helper_option_addon' => 'Add-on\'s short name',
+    'command_make_helper_option_description' => 'Description of the helper',
+    'command_make_helper_option_author' => 'Author of the helper',
+    'command_make_helper_option_type' => 'Add-on type (first-party or third-party)',
+
 
 );
 
