@@ -229,7 +229,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		var rowsCount = this._getRows().length,
 			neededRows = 0;
 
-		if (typeof(this.settings) !== 'undefined' && typeof(this.settings.grid_min_rows) !== 'undefined')
+		if (typeof(this.settings.grid_min_rows) !== 'undefined')
 		{
 			neededRows = this.settings.grid_min_rows - rowsCount;
 		}
