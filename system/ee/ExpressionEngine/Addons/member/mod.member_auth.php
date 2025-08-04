@@ -713,8 +713,8 @@ class Member_auth extends Member
      *
      * @return void
      */
-	public function send_reset_token()
-	{
+    public function send_reset_token()
+    {
         // Handle our protected data if any. This contains our extra params.
         $protected = ee()->functions->handle_protected();
 
@@ -769,7 +769,7 @@ class Member_auth extends Member
 
         $address = strip_tags($address);
 
-        // // member_auth_send_reset_token_start hook allows overriding posted email address from password reset form
+        // member_auth_send_reset_token_start hook allows overriding posted email address from password reset form
         if (ee()->extensions->active_hook('member_auth_send_reset_token_start')) {
             $address = ee()->extensions->call('member_auth_send_reset_token_start', $address);
             if (ee()->extensions->end_script === true) {
