@@ -1840,8 +1840,15 @@ class Structure extends Channel
      */
     public function delete_data_by_channel($channel_id)
     {
+        
         // Check if channel_id is numeric
         if (!is_numeric($channel_id)) {
+            return false;
+        }
+
+        // Check if user has admin permission
+        $settings = $this->sql->get_settings();
+        if (!$this->sql->user_access('perm_delete', $settings)) {
             return false;
         }
 
