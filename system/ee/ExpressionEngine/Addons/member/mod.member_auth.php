@@ -769,14 +769,13 @@ class Member_auth extends Member
 
         $address = strip_tags($address);
 
-          // Allow extensions to modify submitted address for frontend password reset
-          if (ee()->extensions->active_hook('member_auth_send_reset_token_start')) {
+        // // member_auth_send_reset_token_start hook allows overriding posted email address from password reset form
+        if (ee()->extensions->active_hook('member_auth_send_reset_token_start')) {
             $address = ee()->extensions->call('member_auth_send_reset_token_start', $address);
             if (ee()->extensions->end_script === true) {
                 return;
             }
         }
-        ee()->logger->developer('member_auth_send_reset_token_start'. $address);
 
         $memberQuery = ee()->db->select('member_id, username, screen_name')
             ->where('email', $address)
@@ -859,8 +858,6 @@ class Member_auth extends Member
         // $swap.  If the key doesn't exist then no swapping happens.
         $email_subject = $this->_var_swap($email_subject, $swap);
         $email_msg = $this->_var_swap($email_template, $swap);
-
-        ee()->logger->developer('address: ' . $address);
 
         // Instantiate the email class
         ee()->load->library('email');

@@ -481,6 +481,7 @@ class EE_Email
      */
     public function from($from, $name = '', $return_path = null)
     {
+        // email_from_address allows overriding the from address	
         if (ee()->extensions->active_hook('email_from_address')) {
             $from = ee()->extensions->call('email_from_address', $from, $name);
         }
@@ -513,7 +514,7 @@ class EE_Email
         $this->set_header('Return-Path', '<' . $return_path . '>');
 
         return $this;
-     }
+    }
 
     /**
      * Set Reply-to
@@ -554,10 +555,9 @@ class EE_Email
      */
     public function to($to)
     {
-        ee()->logger->developer('sending email to: '.$to);
+        // email_to_address hook allows overriding the to address
         if (ee()->extensions->active_hook('email_to_address')) {
             $to = ee()->extensions->call('email_to_address', $to);
-            ee()->logger->developer('to email: '.$to);
         }
         
         $to = $this->_str_to_array($to);

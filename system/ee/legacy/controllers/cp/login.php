@@ -787,15 +787,13 @@ class Login extends CP_Controller
 
         $address = strip_tags($address);
 
-        // Allow extensions to modify submitted address for CP password reset
+        // cp_login_send_reset_token_start hook allows overriding posted email address from cp password reset form
         if (ee()->extensions->active_hook('cp_login_send_reset_token_start')) {          
             $address = ee()->extensions->call('cp_login_send_reset_token_start', $address);
             if (ee()->extensions->end_script === true) {
                 return;
             }
         }
-
-        ee()->logger->developer('debug Forgot password request for email: ' . $address);
 
         // Fetch user data
         $this->db->select('member_id, username, screen_name');
@@ -818,8 +816,6 @@ class Login extends CP_Controller
         $member_id = $query->row('member_id');
         $name = ($query->row('screen_name') == '') ? $query->row('username') : $query->row('screen_name');
         $username = $query->row('username');
-
-        ee()->logger->developer('debug Forgot password request for member_id: ' . $member_id);
 
         // Clean out any old reset codes.
         $a_day_ago = time() - (60 * 60 * 24);
