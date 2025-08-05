@@ -38,6 +38,8 @@ window.Rte;
             this.initRedactor();
         } else if (this.config.type == 'redactorX') {
             this.initRedactorX();
+        } else if (this.config.type == 'redactorY') {
+            this.initRedactorY();
         } else {
             this.initCKEditor();
         }
@@ -75,6 +77,8 @@ window.Rte;
                 $(iDoc).click($.proxy(this, 'initCKEditor'));
             } else if (type == 'redactor') {
                 $(iDoc).click(() => {this.initRedactor();});
+            } else if (type == 'redactorY') {
+                $(iDoc).click(() => {this.initRedactorY();});
             } else {
                 $(iDoc).click(() => {this.initRedactorX();});
             }
@@ -96,6 +100,28 @@ window.Rte;
                 }
             };
             $R('#' + this.id, config);
+
+            if (this.$iframe) {
+                this.$iframe.remove();
+            }
+        },
+
+        /**
+         * Init RedactorY
+         */
+        initRedactorY: function() {
+            var config = typeof this.config === 'string'
+                            ? JSON.parse(this.config)
+                            : this.config;
+            config.callbacks = {
+                blur: function(e) {
+                    $('#' + this.id).trigger('change');
+                },
+                keyup: function(e) {
+                    $("[data-publish] > form").trigger("entry:startAutosave")
+                }
+            };
+            Redactor('#' + this.id, config);
 
             if (this.$iframe) {
                 this.$iframe.remove();
