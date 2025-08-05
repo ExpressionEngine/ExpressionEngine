@@ -41,11 +41,6 @@ class CommandMakeService extends Cli
      */
     public $commandOptions = [
         'addon,a:'       => 'command_make_service_option_addon',
-        'description,d:' => 'command_make_service_option_description',
-        'author,au:'     => 'command_make_service_option_author',
-
-        'type,t:'        => 'command_make_service_option_type',
-        'namespace,n:'   => 'command_make_service_option_namespace',
         'singleton,s'    => 'command_make_service_option_singleton',
         'service-name,sn:' => 'command_make_service_option_service_name',
     ];
@@ -61,27 +56,8 @@ class CommandMakeService extends Cli
         $this->info('command_make_service_lets_build_service');
 
         $this->data['addon_name'] = $this->getAddonName();
-        $this->data['addon_type'] = $this->getAddonType();
-        $this->data['namespace'] = $this->getNamespace();
         $this->data['is_singleton'] = $this->getSingletonOption();
         $this->data['service_name'] = $this->getServiceName();
-
-        // Get description
-        $this->data['description'] = $this->getOptionOrAsk(
-            "--description",
-            lang('command_make_service_description_question'),
-            $this->data['service_name'] . ' service'
-        );
-
-        // Get author
-        $this->data['author'] = $this->getOptionOrAsk(
-            "--author",
-            lang('command_make_service_author_question'),
-            ee('Config')->get('cli_default_addon_author'),
-            true
-        );
-
-
 
         $this->info('command_make_service_lets_build');
 
@@ -121,55 +97,7 @@ class CommandMakeService extends Cli
         return $addon_name;
     }
 
-    private function getAddonType()
-    {
-        $addon_type = $this->getOptionOrAsk(
-            "--type",
-            lang('command_make_service_option_type'),
-            'third-party',
-            true
-        );
 
-        // Validate addon type
-        $valid_types = ['first-party', 'third-party', 'first', 'third'];
-        if (!in_array(strtolower($addon_type), $valid_types)) {
-            $this->fail(lang('command_make_service_invalid_addon_type'));
-        }
-
-        // Normalize type
-        if (in_array(strtolower($addon_type), ['first', 'first-party'])) {
-            return 'first-party';
-        }
-
-        return 'third-party';
-    }
-
-    private function getNamespace()
-    {
-        $namespace = $this->getOptionOrAsk(
-            "--namespace",
-            lang('command_make_service_namespace_question'),
-            '',
-            true
-        );
-
-        if (empty($namespace)) {
-            // Generate namespace from addon name
-            $namespace = $this->generateNamespace($this->data['addon_name']);
-        }
-
-        return $namespace;
-    }
-
-    private function generateNamespace($addon_name)
-    {
-        // Convert addon name to proper namespace format
-        $namespace = str_replace(['-', '_'], ' ', $addon_name);
-        $namespace = ucwords($namespace);
-        $namespace = str_replace(' ', '', $namespace);
-        
-        return $namespace . '\\Service';
-    }
 
     private function getServiceName()
     {

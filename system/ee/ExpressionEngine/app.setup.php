@@ -69,6 +69,7 @@ use ExpressionEngine\Service\Generator\SidebarGenerator;
 use ExpressionEngine\Service\Generator\TemplateTagGenerator;
 use ExpressionEngine\Service\Generator\WidgetGenerator;
 use ExpressionEngine\Service\Generator\HelperGenerator;
+use ExpressionEngine\Service\Generator\ServiceGenerator;
 use ExpressionEngine\Model\Channel\ChannelEntry;
 use ExpressionEngine\Model\Channel\Reindex;
 
@@ -456,6 +457,13 @@ $setup = [
             $str = $ee->make('Str');
 
             return new HelperGenerator($filesystem, $str, $data);
+        },
+
+        'ServiceGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
+
+            return new ServiceGenerator($filesystem, $str, $data);
         },
 
         'Consent' => function ($ee, $member_id = null) {

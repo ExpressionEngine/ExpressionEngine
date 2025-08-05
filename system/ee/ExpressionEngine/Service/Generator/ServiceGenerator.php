@@ -30,12 +30,8 @@ class ServiceGenerator extends AbstractGenerator
         $this->str = $str;
 
         $this->addon = $data['addon_name'];
-        $this->addonType = $data['addon_type'];
-        $this->namespace = $data['namespace'];
         $this->isSingleton = $data['is_singleton'];
         $this->serviceName = $data['service_name'];
-        $this->description = $data['description'];
-        $this->author = $data['author'];
 
         // Set up addon path, generator path, and stub path
         $this->init();
@@ -43,11 +39,18 @@ class ServiceGenerator extends AbstractGenerator
 
     private function init()
     {
-        $this->initCommon();
+        $this->initCommon($this->addon);
         $this->servicePath = $this->addonPath . '/Service/';
 
         // Get stub path
         $this->stubPath = $this->generatorPath . '/stubs/';
+
+        // Determine namespace from addon setup file
+        $this->namespace = $this->getNamespaceFromAddon();
+
+        // Set default values
+        $this->description = $this->serviceName . ' service';
+        $this->author = $this->getAuthorFromAddon();
 
         if (!$this->filesystem->isDir($this->servicePath)) {
             $this->filesystem->mkDir($this->servicePath);
@@ -82,17 +85,17 @@ class ServiceGenerator extends AbstractGenerator
 
 
     /**
-     * Update addon.setup.php file to register the service
+     * Update addon.setup.php file to register the service we follow as close as we can how ModelGenerator has done this*
      */
     private function updateAddonSetupFile()
     {
-        $setupFile = $this->addonPath . '/addon.setup.php';
-        
-        if (!$this->filesystem->exists($setupFile)) {
+        try {
+            $addonSetupFile = $this->filesystem->read($this->addonPath . 'addon.setup.php');
+        } catch (\Exception $e) {
             return false;
         }
-
-        $content = $this->filesystem->read($setupFile);
+        
+        $addonSetupArray = require $this->addonPath . 'addon.setup.php';
         
         $serviceKey = $this->isSingleton ? 'services.singletons' : 'services';
         
@@ -105,34 +108,80 @@ class ServiceGenerator extends AbstractGenerator
         $serviceRegistration .= "            return new \\" . $escapedNamespace . "\\" . $this->serviceName . "(\$addon);\n";
         $serviceRegistration .= "        },\n";
 
-        // Check if the services array already exists
-        if (strpos($content, "'" . $serviceKey . "'") !== false) {
-            // Find the existing services array and add to it
-            $pattern = "/('" . preg_quote($serviceKey, '/') . "'\s*=>\s*array\s*\([^)]*)\)/s";
-            if (preg_match($pattern, $content, $matches)) {
-                $existingServices = $matches[1];
-                $newServices = $existingServices . $serviceRegistration . "    ),\n";
-                $newContent = preg_replace($pattern, $newServices, $content);
-                
-                $this->filesystem->write($setupFile, $newContent, true);
-                return true;
-            }
-        } else {
-            // Create new services array
-            $serviceArray = "    '" . $serviceKey . "' => array(\n";
-            $serviceArray .= $serviceRegistration;
-            $serviceArray .= "    ),\n";
+        // The addon setup has the services array
+        if (array_key_exists($serviceKey, $addonSetupArray)) {
+            $pattern = "/($serviceKey)([^=]+)(=>\s)(array\(|\[)([^\S]*)([\s])([\s\S]*)$/";
+            $addonSetupFile = preg_replace($pattern, "$1$2$3$4\n$serviceRegistration$5$6$7", $addonSetupFile);
+            $this->filesystem->write($this->addonPath . 'addon.setup.php', $addonSetupFile, true);
+        } else { // The addon setup does not have the services array
+            $servicesStub = $this->filesystem->read($this->stub('services.addon.php'));
+            $servicesStub = $this->write('service_data', $serviceRegistration, $servicesStub);
+            $pattern = '/(,)([^,]+)$/';
+            $addonSetupFile = preg_replace($pattern, ",\n    $servicesStub $2", $addonSetupFile);
+            $this->filesystem->write($this->addonPath . 'addon.setup.php', $addonSetupFile, true);
+        }
+    }
 
-            // Find the last closing bracket and add services before it
-            $lastBracketPos = strrpos($content, ');');
-            if ($lastBracketPos !== false) {
-                $newContent = substr($content, 0, $lastBracketPos) . $serviceArray . substr($content, $lastBracketPos);
-                
-                $this->filesystem->write($setupFile, $newContent, true);
-                return true;
-            }
+    /**
+     * Get namespace from addon setup file
+     *
+     * @return string
+     */
+    private function getNamespaceFromAddon()
+    {
+        $setupFile = $this->addonPath . '/addon.setup.php';
+        
+        if (!$this->filesystem->exists($setupFile)) {
+            // Fallback to generating namespace from addon name
+            return $this->generateNamespaceFromAddonName();
         }
 
-        return false;
+        $content = $this->filesystem->read($setupFile);
+        
+        // Look for namespace in the setup file
+        if (preg_match("/'namespace'\s*=>\s*'([^']+)'/", $content, $matches)) {
+            $namespace = $matches[1];
+            return $namespace . '\\Service';
+        }
+
+        // Fallback to generating namespace from addon name
+        return $this->generateNamespaceFromAddonName();
+    }
+
+    /**
+     * Generate namespace from addon name
+     *
+     * @return string
+     */
+    private function generateNamespaceFromAddonName()
+    {
+        $namespace = str_replace(['-', '_'], ' ', $this->addon);
+        $namespace = ucwords($namespace);
+        $namespace = str_replace(' ', '', $namespace);
+        
+        return $namespace . '\\Service';
+    }
+
+    /**
+     * Get author from addon setup file
+     *
+     * @return string
+     */
+    private function getAuthorFromAddon()
+    {
+        $setupFile = $this->addonPath . '/addon.setup.php';
+        
+        if (!$this->filesystem->exists($setupFile)) {
+            return 'Unknown';
+        }
+
+        $content = $this->filesystem->read($setupFile);
+        
+        // Look for author in the setup file
+        if (preg_match("/'author'\s*=>\s*'([^']+)'/", $content, $matches)) {
+            return $matches[1];
+        }
+
+        return 'Unknown';
     }
 } 

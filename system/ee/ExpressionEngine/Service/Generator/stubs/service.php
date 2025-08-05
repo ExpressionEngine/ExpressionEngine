@@ -39,7 +39,7 @@ class {{service_name}}
         return 'Example: ' . $param;
     }
 
-
+    /**
      * Get addon information
      *
      * @return array
