@@ -28,9 +28,6 @@ class HelperGenerator extends AbstractGenerator
         $this->str = $str;
 
         $this->addon = $data['addon_name'];
-        $this->addonType = $data['addon_type'];
-        $this->description = $data['description'];
-        $this->author = $data['author'];
 
 
         // Set up addon path, generator path, and stub path
@@ -39,7 +36,7 @@ class HelperGenerator extends AbstractGenerator
 
     private function init()
     {
-        $this->initCommon();
+        $this->initCommon($this->addon);
         $this->helpersPath = $this->addonPath . '/helpers/';
 
         // Get stub path
@@ -65,8 +62,6 @@ class HelperGenerator extends AbstractGenerator
     {
         $helperStub = $this->filesystem->read($this->stub('helper.php'));
         $helperStub = $this->write('addon_name', $this->addon, $helperStub);
-        $helperStub = $this->write('author', $this->author, $helperStub);
-        $helperStub = $this->write('description', $this->description, $helperStub);
 
         $this->putFile($this->addon . '_helper.php', $helperStub, 'helpers');
     }

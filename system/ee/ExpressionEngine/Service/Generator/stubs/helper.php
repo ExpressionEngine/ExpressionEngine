@@ -2,10 +2,7 @@
 
 /**
  * {{addon_name}} Helper
- * 
  * @package     {{addon_name}}
- * @author      {{author}}
- * @description {{description}}
  */
 
 if (!defined('BASEPATH')) {

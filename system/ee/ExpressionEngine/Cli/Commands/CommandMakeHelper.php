@@ -48,10 +48,6 @@ class CommandMakeHelper extends Cli
      */
     public $commandOptions = [
         'addon,a:'       => 'command_make_helper_option_addon',
-        'description,d:' => 'command_make_helper_option_description',
-        'author,au:'     => 'command_make_helper_option_author',
-
-        'type,t:'        => 'command_make_helper_option_type',
     ];
 
     protected $data = [];
@@ -65,25 +61,7 @@ class CommandMakeHelper extends Cli
         $this->info('command_make_helper_lets_build_helper');
 
         $this->data['addon_name'] = $this->getAddonName();
-        $this->data['addon_type'] = $this->getAddonType();
-
-        // Get description
-        $this->data['description'] = $this->getOptionOrAsk(
-            "--description",
-            lang('command_make_helper_description_question'),
-            $this->data['addon_name'] . ' helper functions'
-        );
-
-        // Get author
-        $this->data['author'] = $this->getOptionOrAsk(
-            "--author",
-            lang('command_make_helper_author_question'),
-            ee('Config')->get('cli_default_addon_author'),
-            true
-        );
-
-
-
+       
         $this->info('command_make_helper_lets_build');
 
         $this->build();
@@ -121,29 +99,5 @@ class CommandMakeHelper extends Cli
 
         return $addon_name;
     }
-
-    private function getAddonType()
-    {
-        $addon_type = $this->getOptionOrAsk(
-            "--type",
-            lang('command_make_helper_option_type'),
-            'third-party',
-            true
-        );
-
-        // Validate addon type
-        $valid_types = ['first-party', 'third-party', 'first', 'third'];
-        if (!in_array(strtolower($addon_type), $valid_types)) {
-            $this->fail(lang('command_make_helper_invalid_addon_type'));
-        }
-
-        // Normalize type
-        if (in_array(strtolower($addon_type), ['first', 'first-party'])) {
-            return 'first-party';
-        }
-
-        return 'third-party';
-    }
-
 
 } 
