@@ -201,6 +201,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 				row.removeAttr("style");
 
 				that._fireEvent('afterSort', row);
+				that._updateRowCounter();
 				$(document).trigger('entry:preview');
 			},
 			handle: '.js-grid-reorder-handle',
@@ -373,6 +374,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 			'new_row_' + this.original_row_count
 		);
 
+
 		// Enable inputs
 		el.find(':input').removeAttr('disabled');
 
@@ -381,6 +383,13 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 			this.tableActions.before(el);
 		} else {
 			this.rowContainer.append(el);
+		}
+
+
+		//Add counter to the row
+		if ($('> '+this.cellSelector, el).hasClass('js-row-counter-column')) {
+			el.find('.js-row-counter-column > span').text(this._getRows().length);
+			el.attr('data-row-counter', this._getRows().length);
 		}
 
 		// Make sure empty field message is hidden
@@ -432,6 +441,20 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 	},
 
 	/**
+	 * Inserts new row at the bottom of our field
+	 */ 
+	_updateRowCounter: function() {
+		var totalRows = this._getRows();
+
+		totalRows.each(function(index, row) {
+			if ($(row).is('[data-row-counter]')) {
+				$(row).attr('data-row-counter', index + 1);
+				$(row).find('.js-row-counter-column > span').text(index + 1);
+			}
+		});
+	},
+
+	/**
 	 * Binds click listener to Delete button in row column to delete the row
 	 */
 	_bindDeleteButton: function() {
@@ -448,6 +471,8 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 
 			// Remove the row
 			row.remove();
+
+			that._updateRowCounter();
 
 			that._toggleRowManipulationButtons();
 
