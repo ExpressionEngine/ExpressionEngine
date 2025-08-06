@@ -502,7 +502,7 @@ function _exception_handler($severity, $message, $filepath, $line)
     // For example, if you are running PHP 5 and you use version 4 style
     // class functions (without prefixes like "public", "private", etc.)
     // you'll get notices telling you that these have been deprecated.
-    if ($severity == E_STRICT) {
+    if (PHP_VERSION_ID < 80000 && $severity == E_STRICT) {
         return;
     }
 
@@ -665,6 +665,12 @@ if (!function_exists('array_key_first')) {
     }
 }
 
+if( !function_exists('array_key_last') ) {
+    function array_key_last(array $array) {
+        if( !empty($array) ) return key(array_slice($array, -1, 1, true));
+    }
+}
+
 /**
  * Polyfill for missing tmpfile()
  * https://www.php.net/manual/en/function.tmpfile.php
@@ -673,6 +679,16 @@ if (!function_exists('tmpfile') && version_compare(PHP_VERSION, '8', '>=')) {
     function tmpfile()
     {
         return \ExpressionEngine\Library\Filesystem\TempFileFactory::fallback();
+    }
+}
+
+/**
+ * Polyfill for missing str_contains()
+ * https://www.php.net/manual/en/function.str-contains.php
+ */
+if (!function_exists('str_contains')) {
+    function str_contains($haystack, $needle) {
+        return $needle !== '' && mb_strpos($haystack, $needle) !== false;
     }
 }
 

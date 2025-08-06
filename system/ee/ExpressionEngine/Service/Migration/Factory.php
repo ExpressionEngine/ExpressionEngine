@@ -26,7 +26,7 @@ class Factory
     protected $stepsRemaining;
     protected $respectMigrationGroups;
 
-    public function __construct(Database\Query $db, Filesystem $filesystem, MigrationModel $migration = null)
+    public function __construct(Database\Query $db, Filesystem $filesystem, ?MigrationModel $migration = null)
     {
         $this->db = $db;
         $this->filesystem = $filesystem;

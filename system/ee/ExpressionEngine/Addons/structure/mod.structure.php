@@ -211,9 +211,9 @@ class Structure extends Channel
         $include_status_list = explode('|', $include_status);
         $exclude_status_list = explode('|', $exclude_status);
 
-        // Remove the default "open" status if explicitely set
+        // Remove the default "open" status if explicitly set
         if (in_array('open', $exclude_status_list)) {
-            $status = array_filter($status, create_function('$v', 'return $v != "open";'));
+            $status = array_filter($status, function($v) { return $v != "open"; });
         }
 
         if ($status_state == 'positive') {

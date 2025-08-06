@@ -834,7 +834,7 @@ class ChannelEntry extends ContentModel
     /**
      * Modify the default layout for channels
      */
-    public function getDisplay(LayoutInterface $layout = null)
+    public function getDisplay(?LayoutInterface $layout = null)
     {
         $layout = $layout ?: new Display\DefaultChannelLayout($this->channel_id, $this->entry_id);
 

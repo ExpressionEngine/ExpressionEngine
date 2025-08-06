@@ -294,7 +294,7 @@ class Groups extends AbstractFieldsController
         return $field_group;
     }
 
-    private function form(ChannelFieldGroup $field_group = null)
+    private function form(?ChannelFieldGroup $field_group = null)
     {
         if (! $field_group) {
             $field_group = ee('Model')->make('ChannelFieldGroup');

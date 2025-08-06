@@ -39,7 +39,7 @@ class Communicate extends Utilities
      * @param	obj	$email	An EmailCache object for use in re-populating the form (see: resend())
      * @return string
      */
-    public function index(EmailCache $email = null)
+    public function index(?EmailCache $email = null)
     {
         $default = array(
             'from' => ee()->session->userdata('email'),
