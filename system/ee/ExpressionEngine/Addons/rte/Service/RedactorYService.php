@@ -357,6 +357,7 @@ PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.js"></scri
                     'alignment',
                     'rte_definedlinks',
                     'blockid',
+                    'pages'
                 ]
             ],
             'RedactorY Full' => [
@@ -431,6 +432,7 @@ PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.js"></scri
                     'ai-tools',
                     'emoji',
                     'alignment',
+                    'pages',
                     'blockid',
                     'blockcode',
                     'rte_definedlinks',
