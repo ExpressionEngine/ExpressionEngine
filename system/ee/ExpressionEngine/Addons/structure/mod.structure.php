@@ -1832,8 +1832,26 @@ class Structure extends Channel
         return $changed;
     }
 
+    /**
+     * Delete all Structure data for a specific channel
+     *
+     * @param int $channel_id The channel ID to delete data for
+     * @return bool Returns true on success, false on failure or invalid input
+     */
     public function delete_data_by_channel($channel_id)
     {
+        
+        // Check if channel_id is numeric
+        if (!is_numeric($channel_id)) {
+            return false;
+        }
+
+        // Check if user has admin permission
+        $settings = $this->sql->get_settings();
+        if (!$this->sql->user_access('perm_delete', $settings)) {
+            return false;
+        }
+
         // add structure nav history before deleting data by channel
         // add_structure_nav_revision($site_id, 'Pre deleting data by channel');
 
