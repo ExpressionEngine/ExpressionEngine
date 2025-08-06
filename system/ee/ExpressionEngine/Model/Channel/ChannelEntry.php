@@ -1615,6 +1615,23 @@ class ChannelEntry extends ContentModel
 
         return false;
     }
+
+    public function getAutosaves()
+    {
+        if ($this->isNew()) {
+            return ee('Model')->get('ChannelEntryAutosave')
+                ->filter('original_entry_id', 0)
+                ->filter('site_id', $this->site_id)
+                ->filter('channel_id', $this->channel_id)
+                ->filterGroup()
+                    ->filter('author_id', $this->author_id)
+                    ->orFilter('author_id', ee()->session->userdata('member_id'))
+                ->endFilterGroup()
+                ->all();
+        }
+
+        return $this->Autosaves;
+    }
 }
 
 // EOF
