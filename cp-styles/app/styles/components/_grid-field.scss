@@ -134,6 +134,21 @@
   input[type=email], input[type=number], input[type=password], input[type=text], input[type=url], textarea {
     min-width: 150px;
   }
+
+	.row-counter-column {
+	  width: 0.01% !important;
+	  padding: 7px !important;
+	  max-width: none !important;
+	  min-width: 0 !important;
+	  font-size: 0.9em;
+	  background: var(--ee-bg-0);
+	  color: var(--ee-text-secondary);
+	  font-weight: 500;
+
+	  @include m-tablet-down {
+	  	width: 100% !important;
+	  }
+	}
 }
 
 
@@ -384,6 +399,10 @@
 				}
 			}
 		}
+
+		.row-counter-column {
+			width: 100% !important;
+		}
 	}
 
 	.grid-field__item-fieldset{
@@ -502,6 +521,10 @@
 				}
 			}
 		}
+
+		.row-counter-column {
+			width: 100% !important;
+		}
 	}
 
 	.grid-field:not(.horizontal-layout) .grid-field__column--tools {
@@ -539,6 +562,12 @@
 					min-width: 80px !important;
 				}
 			}
+		}
+
+		.row-counter-column {
+			width: 0.01% !important;
+			max-width: none !important;
+			min-width: 0 !important;
 		}
 	}
 }
@@ -655,6 +684,10 @@
 				}
 			}
 		}
+
+		.row-counter-column {
+			width: 100% !important;
+		}
 	}
 }
 
@@ -685,6 +718,10 @@
 					}
 				}
 			}
+		}
+
+		.row-counter-column {
+			width: 100% !important;
 		}
 	}
 }

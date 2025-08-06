@@ -39,7 +39,7 @@ class Communicate extends Utilities
      * @param	obj	$email	An EmailCache object for use in re-populating the form (see: resend())
      * @return string
      */
-    public function index(EmailCache $email = null)
+    public function index(?EmailCache $email = null)
     {
         $default = array(
             'from' => ee()->session->userdata('email'),
@@ -294,7 +294,7 @@ class Communicate extends Utilities
                 // filter empty inputs, like a hidden no-value input from React
                 $roles = array_filter(ee()->input->post($key));
             } elseif (in_array($key, $form_fields)) {
-                $$key = ee()->input->post($key);
+                $$key = ee('Request')->post($key);
             }
         }
 
