@@ -882,8 +882,8 @@ class Member_auth extends Member
 
         // If we have a success return link, go to that, otherwise, output the standard message.
         ee()->output->show_message($data, true, $return_success_link);
-	}
-		
+    }
+
     /**
      * Reset Password Form Method
      *
