@@ -229,7 +229,7 @@ Grid.Publish.prototype = Grid.MiniField.prototype = {
 		var rowsCount = this._getRows().length,
 			neededRows = 0;
 
-		if (typeof(this.settings)!=='undefined')
+		if (typeof(this.settings)!=='undefined' && typeof(this.settings.grid_min_rows) !== 'undefined')
 		{
 			neededRows = this.settings.grid_min_rows - rowsCount;
 		}
@@ -1080,7 +1080,7 @@ $(document).ready(function () {
 	});
 });
 
-function checkGrigWidthForResize() {
+function checkGridWidthForResize() {
 	var gridTables = $('.grid-field:not(.horizontal-layout)');
 
 	gridTables.each(function(el) {
@@ -1106,7 +1106,7 @@ function checkGrigWidthForResize() {
 	});
 }
 
-function checkGrigWidth() {
+function checkGridWidth() {
 	var gridTables = $('.grid-field:not(.horizontal-layout)');
 
 	gridTables.each(function(el) {
@@ -1146,11 +1146,11 @@ function addHorizontalClassToFluid() {
 
 $(window).on('load', function() {
 	addHorizontalClassToFluid();
-	checkGrigWidth();
+	checkGridWidth();
 });
 
 $(window).on('resize', function() {
-	checkGrigWidthForResize();
+	checkGridWidthForResize();
 });
 
 })(jQuery);
