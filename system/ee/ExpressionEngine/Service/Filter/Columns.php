@@ -22,7 +22,7 @@ class Columns extends Filter
     public $view_id = null;
     public $channel_id = null;
 
-    public function __construct(array $columns = array(), StructureModel $channel = null, $view_id = null)
+    public function __construct(array $columns = array(), ?StructureModel $channel = null, $view_id = null)
     {
         $this->name = 'columns';
         $this->label = lang('columns_filter');

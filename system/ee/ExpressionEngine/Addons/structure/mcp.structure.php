@@ -697,6 +697,16 @@ class Structure_mcp
 
     public function delete_channels()
     {
+        // Check if user has admin permission
+        $settings = $this->sql->get_settings();
+        if (!$this->sql->user_access('perm_delete', $settings)) {
+            ee('CP/Alert')->makeInline('Permission Denied')
+            ->asIssue()->withTitle('Permission Denied')
+            ->canClose()->defer();
+ 
+            ee()->functions->redirect($this->base_url);
+        }
+
         $channel_ids = explode(',', ee()->input->get_post('channel_ids'));
 
         // add structure nav history beofre deleting data by channel

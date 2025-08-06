@@ -17,7 +17,7 @@ use ExpressionEngine\Model\File;
  */
 class ThumbnailFactory
 {
-    public function get(File\FileSystemEntity $file = null)
+    public function get(?File\FileSystemEntity $file = null)
     {
         $thumb = new Thumbnail($file);
 

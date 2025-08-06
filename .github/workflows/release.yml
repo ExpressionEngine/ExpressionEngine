@@ -3,7 +3,7 @@ on:
   push:
     tags:
       - '[0-9]+.[0-9]+.[0-9]+'
-      
+
 jobs:
   build:
     #if: github.base_ref == '6.x'
@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: olegtarasov/get-tag@v2.1
         id: tagName
-      
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -26,7 +26,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-            php-version: '8.1'
+            php-version: '8.2'
             extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
             coverage: none
             ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
@@ -35,11 +35,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '10'
-      
+
       - name: Install build tool dependencies
         working-directory: build-tools
         run: npm install
-      
+
       - name: Rebuild CSS and JS
         run: |
           npm install
@@ -56,7 +56,7 @@ jobs:
           REDACTORX_REPO_PATH: ${{ github.workspace }}/__redactorx
         run: |
           gulp app --local --head --skip-lint --skip-pro --version=${{ steps.tagName.outputs.tag }}
-  
+
       - name: Archive Build files
         uses: actions/upload-artifact@v4
         with:
