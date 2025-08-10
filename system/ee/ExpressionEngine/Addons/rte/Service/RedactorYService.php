@@ -253,8 +253,8 @@ class RedactorYService extends RedactorService implements RteService {
          ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' .
 PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.css" type="text/css" />');
 
-         ee()->cp->add_to_foot('<script src="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' .
-PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.js"></script>');
+         //ee()->cp->add_to_foot('<script src="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' .
+//PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.js"></script>');
 
         $selection = [];
         if (is_object($config->settings['toolbar'])) {
@@ -262,6 +262,7 @@ PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.js"></scri
         } else {
             $selection = isset($config->settings['toolbar'][$toolbar]) ? $config->settings['toolbar'][$toolbar] : $config->settings['toolbar'];
         }
+
 
         if ($toolbar == 'hide') {
             $allButtons = static::defaultToolbars()['RedactorY Full']['editor'];
@@ -325,7 +326,6 @@ PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.js"></scri
                     'embed',
                     'table',
                     'quote',
-                    'pre',
                     'line'
                 ],
                 'context' => [
@@ -336,7 +336,6 @@ PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.js"></scri
                     'deleted',
                     'link',
                     'code',
-                    'mark',
                     'sub',
                     'sup',
                 ],
@@ -358,7 +357,7 @@ PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.js"></scri
                     'rte_definedlinks',
                     'blockid',
                     'pages'
-                ]
+                ],
             ],
             'RedactorY Full' => [
                 'toolbar_hide' => 'y',
@@ -383,7 +382,6 @@ PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.js"></scri
                     'embed',
                     'table',
                     'quote',
-                    'pre',
                     'line',
                     'layout',
                     'wrapper'
@@ -396,10 +394,8 @@ PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.js"></scri
                     'deleted',
                     'link',
                     'code',
-                    'mark',
                     'sub',
                     'sup',
-                    'moreinline'
                 ],
                 'editor' => [
                     'add',
@@ -436,7 +432,6 @@ PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.js"></scri
                     'blockid',
                     'blockcode',
                     'rte_definedlinks',
-                    'pages',
                     'filebrowser',
                     'imageposition',
                     'imageresize',

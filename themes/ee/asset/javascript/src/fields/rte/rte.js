@@ -121,6 +121,13 @@ window.Rte;
                     $("[data-publish] > form").trigger("entry:startAutosave")
                 }
             };
+
+            config.popups = config.popups || {};
+            config.popups.extrabar = config['buttons']['extrabar'];
+            config.popups.addbar = config['buttons']['addbar'];
+            config.popups.context = config['buttons']['context'];
+            config.popups.format = config['format'];
+            console.log('initRedactorY', config);
             Redactor('#' + this.id, config);
 
             if (this.$iframe) {
