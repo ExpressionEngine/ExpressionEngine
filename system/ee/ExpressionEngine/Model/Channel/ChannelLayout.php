@@ -110,10 +110,20 @@ class ChannelLayout extends Model implements LayoutInterface
                     $field->setWidth(100);
                 }
 
+                // set required for custom fields
+                $mainFields = array('title', 'url_title', 'entry_date', 'expiration_date', 'comment_expiration_date', 'channel_id', 'status', 'author_id', 'allow_comments');
+                $channel = ee('Model')->get('Channel', $this->channel_id)->with('CategoryGroups')->all()->first();
+                foreach ($channel->CategoryGroups as $cat_group) {
+                    $mainFields[] = "categories[cat_group_id_" . $cat_group->getId() . "]";
+                }
                 if (isset($field_info['required_condition'])) {
                     $field->setRequiredCondition($field_info['required_condition']);
                 } else {
-                    $field->setRequiredCondition(false);
+                    if (in_array($field_info['field'], $mainFields)) {
+                        $field->setRequiredCondition(false);
+                    } else {
+                        $field->setRequiredCondition(true);
+                    }
                 }
 
                 // Fields can be configured to start collapsed or expaned, but
