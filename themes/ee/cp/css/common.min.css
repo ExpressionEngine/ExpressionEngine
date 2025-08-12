@@ -47625,7 +47625,7 @@ a.ck.ck-button.ck-on {
 .rx-toolbar .rx-button-topbar svg,
 .rx-topbar .rx-button-toolbar svg,
 .rx-topbar .rx-button-topbar svg {
-  fill: var(--ee-text-primary);
+  fill: var(--ee-text-primary) !important;
 }
 .rx-toolbar .rx-button-toolbar:hover,
 .rx-toolbar .rx-button-topbar:hover,

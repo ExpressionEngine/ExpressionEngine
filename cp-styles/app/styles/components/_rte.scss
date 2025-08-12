@@ -923,7 +923,7 @@ a.ck.ck-button.ck-on {
         color: var(--ee-text-primary);
 
         svg {
-            fill: var(--ee-text-primary);
+            fill: var(--ee-text-primary) !important;
         }
 
         &:hover {
