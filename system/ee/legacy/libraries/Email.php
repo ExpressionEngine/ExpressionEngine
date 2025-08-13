@@ -481,9 +481,14 @@ class EE_Email
      */
     public function from($from, $name = '', $return_path = null)
     {
-        // email_from_address allows overriding the from address	
+        // email_from_address allows overriding the from/name
         if (ee()->extensions->active_hook('email_from_address')) {
-            $from = ee()->extensions->call('email_from_address', $from, $name);
+            $processed_address = ee()->extensions->call('email_from_address', $from, $name);
+            $from = $processed_address['from'] ?? $from;
+            $name = $processed_address['name'] ?? $name;
+            if (ee()->extensions->end_script === true) {
+                return;
+            }
         }
         
         if (preg_match('/\<(.*)\>/', $from, $match)) {
@@ -558,6 +563,9 @@ class EE_Email
         // email_to_address hook allows overriding the to address
         if (ee()->extensions->active_hook('email_to_address')) {
             $to = ee()->extensions->call('email_to_address', $to);
+            if (ee()->extensions->end_script === true) {
+                return;
+            }			
         }
         
         $to = $this->_str_to_array($to);
