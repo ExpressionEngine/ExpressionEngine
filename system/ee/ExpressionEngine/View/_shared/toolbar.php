@@ -63,8 +63,18 @@
                     if (isset($attributes['title'])) {
                         $content .= '<span class="hidden">' . $attributes['title'] . '</span>';
                     }
+
+                    $button_classes = 'button button--default';
+                    if (isset($attributes['button']) && $attributes['button'] === false) {
+                        $button_classes = '';
+                    }
+
+                    $html_tag = 'a';
+                    if (isset($attributes['html_tag'])) {
+                        $html_tag = $attributes['html_tag'];
+                    }
                     ?>
-                    <a class="<?=$class?> button button--default" <?=$attr?>><?=$content?></a>
+                    <<?=$html_tag?> class="<?=$class?> <?=$button_classes?>" <?=$attr?>><?=$content?></<?=$html_tag?>>
                 <?php endforeach ?>
           </div>
         </div>
