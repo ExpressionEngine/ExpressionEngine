@@ -67,9 +67,9 @@ class NumberFormatterTest extends TestCase
                 array(10732049531, $p[0], $p[1], "10.00{$space}formatter_gigabytes{$p[2]}"),
                 array(10732049530, $p[0], $p[1], "9.99{$space}formatter_gigabytes{$p[2]}"),
 
-                array(1048576, $p[0], $p[1], "1.0{$space}formatter_megabytes{$p[2]}"),
-                array(10433332, $p[0], $p[1], "10.0{$space}formatter_megabytes{$p[2]}"),
-                array(10433331, $p[0], $p[1], "9.9{$space}formatter_megabytes{$p[2]}"),
+                array(1048576, $p[0], $p[1], "1.00{$space}formatter_megabytes{$p[2]}"),
+                array(10433332, $p[0], $p[1], "9.95{$space}formatter_megabytes{$p[2]}"),
+                array(10423332, $p[0], $p[1], "9.94{$space}formatter_megabytes{$p[2]}"),
 
                 array(1024, $p[0], $p[1], "1{$space}formatter_kilobytes{$p[2]}"),
                 array(10752, $p[0], $p[1], "11{$space}formatter_kilobytes{$p[2]}"),

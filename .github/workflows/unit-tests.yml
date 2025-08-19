@@ -38,7 +38,7 @@ jobs:
           - name: Setup PHP
             uses: shivammathur/setup-php@v2
             with:
-                php-version: '8.1'
+                php-version: '8.3'
                 extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
                 coverage: none
                 ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
@@ -120,7 +120,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.3, 7.4, 8.0, 8.1, 8.2, 8.3]
+                php: [7.3, 7.4, 8.0, 8.1, 8.2, 8.3, 8.4]
                 os: [ubuntu-latest]
                 include:
                   - php: 8.2
@@ -176,7 +176,7 @@ jobs:
                 composer require overtrue/phplint --dev --no-progress --no-suggest --prefer-dist
 
             - name: Run PHPLint
-              run: ./system/ee/ExpressionEngine/Tests/vendor/bin/phplint --no-configuration ./ --exclude=system/ee/ExpressionEngine/Tests/vendor --exclude=system/ee/installer/config/config_tmpl.php --exclude=system/ee/ExpressionEngine/Service/Generator/stubs
+              run: ./system/ee/ExpressionEngine/Tests/vendor/bin/phplint --no-configuration ./ --exclude=system/ee/ExpressionEngine/Tests/vendor --exclude=system/ee/installer/config/config_tmpl.php --exclude=system/ee/ExpressionEngine/Service/Generator/stubs --exclude=system/ee/vendor-build/symfony/polyfill-mbstring --exclude=system/ee/vendor-build/symfony/polyfill-ctype --exclude=vendor-bin --exclude=vendor
 
             - name: Configure matchers
               uses: mheap/phpunit-matcher-action@v1

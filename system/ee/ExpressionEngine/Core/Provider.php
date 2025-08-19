@@ -296,7 +296,7 @@ class Provider extends InjectionBindingDecorator
      * @param Closure $map Closure to call on the data before returning
      * @return Mixed Setup value
      */
-    public function get($key, $default = null, Closure $map = null)
+    public function get($key, $default = null, ?Closure $map = null)
     {
         if (array_key_exists($key, $this->data)) {
             $data = $this->data[$key];

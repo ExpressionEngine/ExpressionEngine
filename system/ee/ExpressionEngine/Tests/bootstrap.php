@@ -1,7 +1,7 @@
 <?php
 
 // Report all errors
-error_reporting(E_ALL | E_STRICT);
+error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 $project_base = realpath(dirname(__FILE__) . '/../../../') . '/';
@@ -11,7 +11,7 @@ define('SYSPATH', $project_base);
 define('BASEPATH', SYSPATH . 'ee/legacy/');
 define('PATH_CACHE', SYSPATH . 'user/cache/');
 define('APPPATH', BASEPATH);
-define('APP_VER', '7.5.13');
+define('APP_VER', '7.5.14');
 define('PATH_THEMES', realpath(SYSPATH . '/../themes') . '/');
 define('DOC_URL', 'http://our.doc.url/');
 define('PATH_THIRD', SYSPATH . 'user/addons/');

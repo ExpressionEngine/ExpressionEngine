@@ -436,7 +436,7 @@ class EE_Encrypt
     public function sha1($str)
     {
         if (! function_exists('sha1')) {
-            return bin2hex(mhash(MHASH_SHA1, $str));
+            return bin2hex(hash('sha1', $str, true));
         } else {
             return sha1($str);
         }
