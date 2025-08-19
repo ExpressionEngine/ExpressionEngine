@@ -165,7 +165,7 @@ class EE_Exceptions
         }
 
         // if this is CP request and they are logged in, throw special kind of Exception
-        if (defined('REQ') && constant('REQ') == 'CP' && isset(ee()->session) && ee()->session->userdata('admin_sess') != 0) {
+        if (defined('REQ') && constant('REQ') == 'CP' && ee() && isset(ee()->session) && ee()->session->userdata('admin_sess') != 0) {
             throw new \ExpressionEngine\Error\CPException($message, $status_code);
         }
 
@@ -350,6 +350,9 @@ class EE_Exceptions
      */
     private function lookupSeverity($severity)
     {
+        if (PHP_VERSION_ID < 80000 && $severity === E_STRICT) {
+            return array('E_STRICT', 'Notice');
+        }
         switch ($severity) {
             case E_ERROR:
                 return array('E_ERROR', 'Error');
@@ -373,8 +376,6 @@ class EE_Exceptions
                 return array('E_USER_WARNING', 'Warning');
             case E_USER_NOTICE:
                 return array('E_USER_NOTICE', 'Notice');
-            case E_STRICT:
-                return array('E_STRICT', 'Notice');
             case E_RECOVERABLE_ERROR:
                 return array('E_RECOVERABLE_ERROR', 'Error');
             case E_DEPRECATED:

@@ -7,6 +7,20 @@ on:
       - '*.dev'
       - '[0-9]+.[0-9]+.[0-9]+'
       - 'release/[0-9]+.[0-9]+.[0-9]+'
+  workflow_dispatch:
+    inputs:
+      php_version:
+        type: choice
+        description: PHP Version
+        options:
+        - '8.4'
+        - '8.3'
+        - '8.2'
+        - '8.1'
+        - '8.0'
+        - '7.4'
+        - '7.3'
+        - '7.2'
 
 jobs:
     cancel-running-tests:
@@ -112,17 +126,28 @@ jobs:
               ls -latr build-tools/builds
               ls -latr build-tools/builds/ExpressionEngine
 
+    choose-php:
+        runs-on: ubuntu-latest
+        outputs:
+            version: ${{ steps.set_php.outputs.version }}
+        steps:
+            - name: Set PHP Version
+              id: set_php
+              run: |
+                USER_INPUT=${{ github.event.inputs.php_version }}
+                echo "version=${USER_INPUT:-"8.4"}" >> $GITHUB_OUTPUT
+
     cypress-minimal:
         if: github.event.pull_request.draft == false
-        needs: [cancel-running-tests, build-for-testing]
+        needs: [cancel-running-tests, build-for-testing, choose-php]
         runs-on: ${{ matrix.os }}
         timeout-minutes: 45
 
         strategy:
             fail-fast: false
             matrix:
-                php: [8.3]
-                os: [ubuntu-22.04]
+                php: ["${{needs.choose-php.outputs.version}}"]
+                os: [ubuntu-latest]
                 containers: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
         name: Cypress Tests, PHP${{ matrix.php }} - ${{ matrix.os }} ${{ matrix.containers }}

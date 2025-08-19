@@ -208,7 +208,7 @@ class Groups extends AbstractRolesController
         return $role_group;
     }
 
-    private function form(RoleGroup $role_group = null)
+    private function form(?RoleGroup $role_group = null)
     {
         if (! $role_group) {
             $role_group = ee('Model')->make('RoleGroup');
