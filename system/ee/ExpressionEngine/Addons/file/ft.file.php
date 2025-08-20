@@ -529,6 +529,13 @@ JSC;
             return false;
         }
 
+        if (!$data['model_object']->isEditableImage()) {
+            if (is_null($tagdata)) {
+                return $data; // allow chaining modifiers
+            }
+            return $this->replace_tag($data, $params, $tagdata);
+        }
+
         ee()->load->library('image_lib');
         $filename = ee()->image_lib->explode_name($data['fs_filename']);
         if ($function == 'webp') {
