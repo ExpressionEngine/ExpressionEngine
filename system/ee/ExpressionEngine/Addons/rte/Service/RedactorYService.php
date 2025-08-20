@@ -49,19 +49,19 @@ class RedactorYService extends RedactorService implements RteService {
             return $configHandle;
         }
 
-        if (!isset($config['toolbar']['editor']) || !is_object($config['toolbar']['editor'])) {
-            $config['toolbar']['editor'] = new \stdClass();
+        if (!isset($config['toolbar']['buttons']) || !is_object($config['toolbar']['buttons'])) {
+            $config['toolbar']['buttons'] = new \stdClass();
         }
 
         // language
         $language = isset(ee()->session) ? ee()->session->get_language() : ee()->config->item('deft_lang');
-        $config['toolbar']['editor']->lang = ee()->lang->code($language);
+        $config['toolbar']['buttons']->lang = ee()->lang->code($language);
         if (isset($config['field_text_direction']) && $config['field_text_direction'] == 'rtl') {
-            $config['toolbar']['editor']->direction = 'rtl';
+            $config['toolbar']['buttons']->direction = 'rtl';
         }
 
-        $config['toolbar']['editor']->focus = false;
-        $config['toolbar']['editor']->drop = false;
+        $config['toolbar']['buttons']->focus = false;
+        $config['toolbar']['buttons']->drop = false;
         $config['toolbar']['reorder'] = true;
 
         // toolbars
@@ -130,15 +130,15 @@ class RedactorYService extends RedactorService implements RteService {
         if (isset($config['toolbar']['spellcheck'])) {
             switch ($config['toolbar']['spellcheck']) {
                 case 'browser':
-                    $config['toolbar']['editor']->spellcheck = true;
+                    $config['toolbar']['buttons']->spellcheck = true;
                     break;
                 case 'grammarly':
-                    $config['toolbar']['editor']->spellcheck = false;
-                    $config['toolbar']['editor']->grammarly = true;
+                    $config['toolbar']['buttons']->spellcheck = false;
+                    $config['toolbar']['buttons']->grammarly = true;
                     break;
                 case 'none':
                 default:
-                    $config['toolbar']['editor']->spellcheck = false;
+                    $config['toolbar']['buttons']->spellcheck = false;
                     break;
             }
             unset($config['toolbar']['spellcheck']);
@@ -154,7 +154,7 @@ class RedactorYService extends RedactorService implements RteService {
             $config['toolbar']['handle'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id->row('action_id') . '&t=' . ee()->localize->now;
         }
 
-        $config['toolbar']['editor']->classname = 'content redactor-styles rte_' . $configHandle;
+        $config['toolbar']['buttons']->classname = 'content redactor-styles rte_' . $configHandle;
 
         // -------------------------------------------
         //  File Browser Config
@@ -191,10 +191,10 @@ class RedactorYService extends RedactorService implements RteService {
         }
 
         if (isset($config['height']) && !empty($config['height']) && is_numeric($config['height'])) {
-            $config['toolbar']['editor']->minHeight = (int) $config['height'] . 'px';
+            $config['toolbar']['buttons']->minHeight = (int) $config['height'] . 'px';
         }
         if (isset($config['max_height']) && !empty($config['max_height']) && is_numeric($config['max_height'])) {
-            $config['toolbar']['editor']->maxHeight = (int) $config['max_height'] . 'px';
+            $config['toolbar']['buttons']->maxHeight = (int) $config['max_height'] . 'px';
         }
 
         //link
@@ -265,12 +265,12 @@ PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.css" type=
 
 
         if ($toolbar == 'hide') {
-            $allButtons = static::defaultToolbars()['RedactorY Full']['editor'];
+            $allButtons = static::defaultToolbars()['RedactorY Full']['buttons'];
         } elseif ($toolbar == 'plugins' || $toolbar == 'format') {
             $allButtons = static::defaultToolbars()['RedactorY Full'][$toolbar];
         } else {
             $allButtons = array_merge(
-                static::defaultToolbars()['RedactorY Full']['editor'],
+                static::defaultToolbars()['RedactorY Full']['buttons'],
                 static::defaultToolbars()['RedactorY Full']['addbar'],
                 static::defaultToolbars()['RedactorY Full']['context'],
                 static::defaultToolbars()['RedactorY Full']['extrabar']
@@ -339,7 +339,7 @@ PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.css" type=
                     'sub',
                     'sup',
                 ],
-                'editor' => [
+                'buttons' => [
                     'format',
                     'bold',
                     'italic',
@@ -397,7 +397,7 @@ PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.css" type=
                     'sub',
                     'sup',
                 ],
-                'editor' => [
+                'buttons' => [
                     'add',
                     'html',
                     'format',
