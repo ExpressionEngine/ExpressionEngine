@@ -1236,3 +1236,47 @@ a.ck.ck-button.ck-on {
         }
     }
 }
+
+.ck-content ul {
+    list-style: none !important;
+
+    li {
+        position: relative;
+        padding-left: 15px !important;
+
+        &:before {
+            position: absolute;
+            width: 4px;
+            display: inline-block;
+            content: '';
+            height: 4px;
+            background: var(--ee-input-color);
+            border-radius: 50%;
+            left: 0;
+            top: 10px;
+        }
+    }
+}
+
+.ck-content ol {
+    counter-reset: item;
+    list-style: none !important;
+    
+    li {
+        counter-increment: item;
+        position: relative;
+        padding-left: 20px !important;
+
+        &::marker {
+            content: none;
+        }
+
+        &:before {
+            content: counter(item) ".";
+            position: absolute;
+            display: inline-block;
+            left: 0;
+            top: 0;
+        }
+    }
+}
