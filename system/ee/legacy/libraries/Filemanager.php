@@ -1182,7 +1182,7 @@ class Filemanager
         $filesystem = $prefs['directory']->getFilesystem();
         $file_path = str_replace('\\', '/', $filesystem->absolute($file_path));
 
-        $img_path = ($prefs['directory']->adapter == 'local') ? rtrim(str_replace('\\', '/', $prefs['server_path']), '/') . '/' : '';
+        $img_path = ($prefs['directory']->getProperty('adapter') == 'local') ? rtrim(str_replace('\\', '/', $prefs['server_path']), '/') . '/' : '';
         $dirname = rtrim(str_replace('\\', '/', $filesystem->absolute($filesystem->subdirectory($file_path))), '/') . '/';
         if (empty($img_path) || strpos($dirname, $img_path) === 0) {
             $img_path = $dirname;
