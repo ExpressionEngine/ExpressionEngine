@@ -10,6 +10,7 @@ cypress.env.json
 phpcs.ruleset.xml
 .phpunit.result.cache
 .tool-versions
+.GEMINI.md
 
 system/user/addons/*
 !system/user/addons/index.html
