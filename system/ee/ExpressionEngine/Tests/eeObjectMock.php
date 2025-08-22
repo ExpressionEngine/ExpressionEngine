@@ -57,6 +57,14 @@ class eeSingletonMock
         require_once APPPATH . 'libraries/Api.php';
         $this->legacy_api = new \Api();
         $this->mock = $mock;
+
+        // Override with static mocks if set
+        $overridable = ['db', 'config', 'functions', 'TMPL', 'session', 'load', 'logger', 'dbforge', 'input', 'lang'];
+        foreach ($overridable as $prop) {
+            if (array_key_exists($prop, self::$mocks)) {
+                $this->$prop = self::$mocks[$prop];
+            }
+        }
     }
 
     public function setMock($name, $return)
@@ -114,6 +122,7 @@ class eeSingletonLoadMock
 class eeSingletonConfigMock
 {
     protected static $config = [];
+    public $items = [];
 
     public function item($item, $index = '', $raw_value = false)
     {
@@ -191,6 +200,26 @@ class eeLangMock
 
 class eeDbArMock
 {
+    public $rows = [];
+    private $whereConditions = [];
+    private $limitValue = null;
+    public function setRows(array $rows)
+    {
+        $this->rows = $rows;
+        return $this;
+    }
+    public function where($field = null, $value = null)
+    {
+        if ($field !== null) {
+            $this->whereConditions[$field] = $value;
+        }
+        return $this;
+    }
+    public function limit($value = null)
+    {
+        $this->limitValue = $value;
+        return $this;
+    }
     public function select()
     {
         return $this;
@@ -203,22 +232,36 @@ class eeDbArMock
     {
         return $this;
     }
-    public function limit()
-    {
-        return $this;
-    }
     public function get()
     {
-        return new eeDbResultMock();
+        $filtered = $this->rows;
+        foreach ($this->whereConditions as $field => $value) {
+            $filtered = array_values(array_filter($filtered, function ($row) use ($field, $value) {
+                return isset($row[$field]) && $row[$field] == $value;
+            }));
+        }
+        if (!is_null($this->limitValue)) {
+            $filtered = array_slice($filtered, 0, $this->limitValue);
+        }
+        // reset conditions between calls
+        $this->whereConditions = [];
+        $this->limitValue = null;
+        return new eeDbResultMock($filtered);
+    }
+    public function query($sql)
+    {
+        return new eeDbResultMock($this->rows);
     }
 }
 
 class eeDbResultMock
 {
     public $resultArray;
+    public $rows = [];
     public function __construct($resultArray = [])
     {
         $this->resultArray = $resultArray;
+        $this->rows = $resultArray;
     }
     public function result()
     {
@@ -230,5 +273,21 @@ class eeDbResultMock
     }
     public function num_rows()
     {
+        return count($this->rows);
+    }
+    public function result_array()
+    {
+        return $this->rows;
+    }
+    public function row()
+    {
+        if (empty($this->rows)) {
+            return null;
+        }
+        return (object) $this->rows[0];
+    }
+    public function free_result()
+    {
+        // no-op for tests
     }
 }
