@@ -20,7 +20,7 @@ $lang = array(
 
     'collapse_rows' => 'Collapse Rows',
 
-    'collapse_rows_desc' => 'When enabled, existing rows will be collapsed by default in the publish form.',
+    'collapse_rows_desc' => 'When enabled, existing rows will be collapsed by default in the publish form when in Vertical layout.',
 
     /* Relationships */
     'any_author' => 'Any author',

@@ -331,7 +331,18 @@ else: ?>
     <?php endif ?>
 
         <tbody>
-            <tr class="no-results<?php if (! empty($action_buttons) || ! empty($action_content)): ?> last<?php endif?> <?php if (!empty($data)): ?>hidden<?php endif?>"><td colspan="<?=(count($columns) + @intval($header_sorts))?>">
+            <?php
+                $colspan = count($columns);
+                if (isset($row_counter) && $row_counter) {
+                    $colspan++;
+                }
+                if ($header_sorts) {
+                    $colspan++;
+                }
+                // add a column for the remove button
+                $colspan++;
+            ?>
+            <tr class="no-results<?php if (! empty($action_buttons) || ! empty($action_content)): ?> last<?php endif?> <?php if (!empty($data)): ?>hidden<?php endif?>"><td colspan="<?=$colspan?>">
             <?php
             // Output this if Grid input so we can dynamically show it via JS
             ?>
@@ -451,18 +462,18 @@ else: ?>
 
                             <?php if ($column['encode'] == true && $column['type'] != Table::COL_STATUS): ?>
                                 <?php if (isset($column['href'])): ?>
-                                <td<?=$column_hidden?>><?=$column_label?><a href="<?=$column['href']?>"><?=htmlentities($column['content'], ENT_QUOTES, 'UTF-8')?></a></td>
+                                <td><?=$column_label?><a href="<?=$column['href']?>"><?=htmlentities($column['content'], ENT_QUOTES, 'UTF-8')?></a></td>
                                 <?php else: ?>
-                                <td<?=$column_hidden?>><?=$column_label?><?=htmlentities($column['content'], ENT_QUOTES, 'UTF-8')?></td>
+                                <td><?=$column_label?><?=htmlentities($column['content'], ENT_QUOTES, 'UTF-8')?></td>
                                 <?php endif; ?>
                             <?php elseif ($column['type'] == Table::COL_TOOLBAR): ?>
-                                <td<?=$column_hidden?>>
+                                <td>
                                     <div class="toolbar-wrap">
                                         <?=ee()->load->view('_shared/toolbar', $column, true)?>
                                     </div>
                                 </td>
                             <?php elseif ($column['type'] == Table::COL_CHECKBOX): ?>
-                                <td<?=$column_hidden?>>
+                                <td>
                                     <input
                                         name="<?=form_prep($column['name'])?>"
                                         value="<?=form_prep($column['value'])?>"
@@ -478,7 +489,7 @@ else: ?>
                                     >
                                 </td>
                             <?php elseif ($column['type'] == Table::COL_STATUS): ?>
-                                <td<?=$column_hidden?>><?=$column_label?><?=$column['content']?></td>
+                                <td><?=$column_label?><?=$column['content']?></td>
                             <?php elseif (isset($column['html'])): ?>
                                 <?php
                                     $column_class = '';
@@ -490,7 +501,7 @@ else: ?>
                                         $column_class .= ' invalid';
                                     }
                                 ?>
-                                <td<?=$column_hidden?> class="<?=$column_class?>" <?php if (isset($column['attrs'])): foreach ($column['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; endif; ?>>
+                                <td class="<?=$column_class?>" <?php if (isset($column['attrs'])): foreach ($column['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; endif; ?>>
                                     <?=$column_label?>
                                     <?=$column['html']?>
                                     <?php if (isset($column['error']) && ! empty($column['error'])): ?>
@@ -498,11 +509,11 @@ else: ?>
                                     <?php endif ?>
                                 </td>
                             <?php else: ?>
-                                <td<?=$column_hidden?>><?=$column_label?><?=$column['content']?></td>
+                                <td><?=$column_label?><?=$column['content']?></td>
                             <?php endif ?>
                         <?php endforeach ?>
 
-                        <td<?=$column_hidden?> class="grid-field__column--tools">
+                        <td class="grid-field__column--tools">
                             <div class="grid-field__column-tools">
                                 <?php if ($reorder): ?>
                                 <button type="button" class="button button--small button--default cursor-move js-grid-reorder-handle">
