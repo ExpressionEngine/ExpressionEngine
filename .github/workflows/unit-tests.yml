@@ -61,6 +61,13 @@ jobs:
               token: ${{ secrets.ORG_ACCESS_TOKEN }}
               path: __redactorx
 
+          - name: Checkout RedactorY
+            uses: actions/checkout@v4
+            with:
+              repository: ExpressionEngine/RedactorY
+              token: ${{ secrets.ORG_ACCESS_TOKEN }}
+              path: __redactory
+
           - name: Setup node
             uses: actions/setup-node@v4
             with:
@@ -85,6 +92,7 @@ jobs:
               RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
               APP_REPO_PATH: ${{ github.workspace }}
               REDACTORX_REPO_PATH: ${{ github.workspace }}/__redactorx
+              REDACTORY_REPO_PATH: ${{ github.workspace }}/__redactory
             run: gulp build-app --local --nogit --head --skip-lint --skip-pro --version=${{ steps.build_json.outputs.BUILD_VERSION }}
 
           - name: Run build process
@@ -92,7 +100,7 @@ jobs:
             if: ${{ steps.organization-access.outputs.available != 'true' }}
             env:
               APP_REPO_PATH: ${{ github.workspace }}
-            run: gulp build-app --local --nogit --head --skip-lint --skip-pro --skip-redactorx --version=${{ steps.build_json.outputs.BUILD_VERSION }}
+            run: gulp build-app --local --nogit --head --skip-lint --skip-pro --skip-redactorx --skip-redactory --version=${{ steps.build_json.outputs.BUILD_VERSION }}
 
           - name: Rename build directory
             working-directory: build-tools/builds
