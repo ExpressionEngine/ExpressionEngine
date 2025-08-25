@@ -1145,6 +1145,7 @@ class Structure extends Channel
         $name = 'structure_' . $type . '_id';
 
         $data = array();
+        $selected = 0;
 
         if ($type == 'template') {
             $templates = $this->sql->get_templates();

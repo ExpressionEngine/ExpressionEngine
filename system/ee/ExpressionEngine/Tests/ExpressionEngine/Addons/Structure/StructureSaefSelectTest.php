@@ -31,10 +31,11 @@ class StructureSaefSelectTest extends StructureTestBase
         $this->assertFalse($this->structure->saef_select());
     }
 
-    public function testUnknownTypeReturnsFalse()
+    public function testUnknownTypeBuildsEmptyDropdown()
     {
         $this->setTemplateParams(['type' => 'unknown']);
-        $this->assertFalse($this->structure->saef_select());
+        $html = $this->structure->saef_select();
+        $this->assertStringContainsString('<select name="structure_unknown_id">', $html);
     }
 
     public function testTemplateTypeBuildsDropdownWithSelectedFromSitePages()
