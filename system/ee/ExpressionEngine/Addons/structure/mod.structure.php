@@ -1648,8 +1648,11 @@ class Structure extends Channel
         // ensure beginning and ending slash
         $uri = '/' . trim($uri, '/');
 
-        // if double slash, reduce to one
-        return str_replace('//', '/', $uri);
+        // collapse multiple slashes to a single slash without regex
+        while (strpos($uri, '//') !== false) {
+            $uri = str_replace('//', '/', $uri);
+        }
+        return $uri;
     }
 
     /*

@@ -12,9 +12,9 @@ class StructureCreatePageUriTest extends StructureTestBase
 
 	public function testCreatePageUriBoundaryProducesDoubleSlashWithLeadingChild()
 	{
-		// Current implementation collapses only one pair of slashes; '/parent/' + '/child' results in '/parent//child'
+		// After fix: '/parent/' + '/child' results in '/parent/child'
 		$uri = $this->structure->create_page_uri('/parent/', '/child');
-		$this->assertSame('/parent//child', $uri);
+		$this->assertSame('/parent/child', $uri);
 	}
 
 	public function testCreatePageUriHandlesEmptyChild()
