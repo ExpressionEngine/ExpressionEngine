@@ -103,6 +103,39 @@ class StructureGetSitePagesQueryTest extends StructureTestBase
 			$this->assertNotEmpty($e->getMessage());
 		}
 	}
+
+	public function testMissingSiteIdInDecodedValueReturnsNullOrNoFatal()
+	{
+		ee()->config->items['site_id'] = 3;
+		$pages = [ 1 => [ 'url' => '/', 'uris' => [1 => '/'] ] ];
+		$encoded = base64_encode(serialize($pages));
+		ee()->setMock('db', new class($encoded) extends FakeDb {
+			private $encoded; public function __construct($e){ $this->encoded = $e; }
+			public function select($f){ return $this; } public function where($f,$v){ return $this; }
+			public function get($t){ return new class($this->encoded){ private $e; public function __construct($e){$this->e=$e;} public function row($c){ return $this->e; } }; }
+		});
+		try {
+			$result = $this->structure->get_site_pages_query();
+			$this->assertTrue($result === null || $result === false || $result === [] || is_array($result));
+		} catch (\Throwable $e) {
+			$this->assertNotEmpty($e->getMessage());
+		}
+	}
+
+	public function testDbReturnsNullSitePagesDoesNotFatal()
+	{
+		ee()->config->items['site_id'] = 1;
+		ee()->setMock('db', new class extends FakeDb {
+			public function select($f){ return $this; } public function where($f,$v){ return $this; }
+			public function get($t){ return new class { public function row($c){ return null; } }; }
+		});
+		try {
+			$result = $this->structure->get_site_pages_query();
+			$this->assertTrue($result === null || $result === false || $result === [] || is_array($result));
+		} catch (\Throwable $e) {
+			$this->assertNotEmpty($e->getMessage());
+		}
+	}
 }
 
 

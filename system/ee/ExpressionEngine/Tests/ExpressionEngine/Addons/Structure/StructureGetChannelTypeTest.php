@@ -67,6 +67,51 @@ class StructureGetChannelTypeTest extends StructureTestBase
 		$this->setDbRows([]);
 		$this->assertSame('listing', $this->structure->get_channel_type());
 	}
+
+	public function testStringChannelIdMatchesNumericListingCid()
+	{
+		ee()->setMock('input', new class {
+			public function get_post($key) { return '77'; }
+		});
+
+		$this->setDbRows([
+			['entry_id' => 100, 'listing_cid' => 77],
+		]);
+
+		$type = $this->structure->get_channel_type();
+		$this->assertSame('listing', $type);
+	}
+
+	public function testPresetChannelTypeSkipsDbCheck()
+	{
+		// Simulate cached value
+		$ref = new ReflectionProperty($this->structure, 'channel_type');
+		$ref->setAccessible(true);
+		$ref->setValue($this->structure, 'listing');
+
+		ee()->setMock('input', new class {
+			public function get_post($key) { return 0; }
+		});
+		$this->setDbRows([]);
+
+		$this->assertSame('listing', $this->structure->get_channel_type());
+	}
+
+	public function testZeroOrNonNumericPostedChannelIdReturnsStatic()
+	{
+		ee()->setMock('input', new class {
+			public function get_post($key) { return '0'; }
+		});
+		$this->setDbRows([
+			['entry_id' => 100, 'listing_cid' => 77],
+		]);
+		$this->assertSame('static', $this->structure->get_channel_type());
+
+		ee()->setMock('input', new class {
+			public function get_post($key) { return 'abc'; }
+		});
+		$this->assertSame('static', $this->structure->get_channel_type());
+	}
 }
 
 

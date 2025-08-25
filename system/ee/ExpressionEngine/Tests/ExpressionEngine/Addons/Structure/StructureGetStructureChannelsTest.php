@@ -93,6 +93,25 @@ class StructureGetStructureChannelsTest extends StructureTestBase
 		$this->assertArrayHasKey('template_id', $result[50]);
 		$this->assertArrayHasKey('type', $result[50]);
 	}
+
+	public function testNoAssignedChannelsReturnsNullWhenAllowedTrueButMayBeBug()
+	{
+		// When allowed=true and no assigned channels, current implementation returns null.
+		// This may be unintended if allowed=false, but we document behavior.
+		ee()->config->items['site_id'] = 1;
+		ee()->setMock('functions', new class {
+			public function fetch_assigned_channels() { return []; }
+		});
+		$rows = [
+			['channel_id' => 10, 'channel_title' => 'Blog', 'template_id' => 7, 'type' => 'page', 'site_id' => 1],
+		];
+		ee()->setMock('db', new class($rows) extends FakeDb {
+			public $rows; public function __construct($r){$this->rows=$r;}
+			public function query($sql) { return new FakeDbResult($this->rows); }
+		});
+		$result = $this->structure->get_structure_channels('', '', '', true);
+		$this->assertNull($result);
+	}
 }
 
 

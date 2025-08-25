@@ -51,6 +51,30 @@ class StructureCreateUriTest extends StructureTestBase
 		$result = $this->structure->create_uri('123456', '');
 		$this->assertSame('123456', $result);
 	}
+
+	public function testCreateUriAllowedPunctuationAndUnderscore()
+	{
+		$result = $this->structure->create_uri('a-b.c_d', '');
+		$this->assertSame('a-b.c_d', $result);
+	}
+
+	public function testCreateUriOnlyUnderscoresTrimsToEmpty()
+	{
+		$result = $this->structure->create_uri('____', '');
+		$this->assertSame('', $result);
+	}
+
+	public function testCreateUriLeadingDotIsAllowed()
+	{
+		$result = $this->structure->create_uri('.hidden', '');
+		$this->assertSame('.hidden', $result);
+	}
+
+	public function testCreateUriMixedSeparatorsAreSanitized()
+	{
+		$result = $this->structure->create_uri('a b_c-d.e', '');
+		$this->assertSame('ab_c-d.e', $result);
+	}
 }
 
 

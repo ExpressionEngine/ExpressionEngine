@@ -77,6 +77,49 @@ class StructureNestedSortableToNestedSetTest extends StructureTestBase
 		$this->assertSame([1], $result[1]['crumb']);
 	}
 
+	public function testCustomStartingLeftPointerOffsetsAllValues()
+	{
+		$input = [ ['id' => 1], ['id' => 2] ];
+		$lft = 10;
+		$data = [];
+		$result = $this->structure->nestedsortable_to_nestedset($input, $data, $lft);
+		$this->assertSame(10, $result[1]['lft']);
+		$this->assertSame(11, $result[1]['rgt']);
+		$this->assertSame(12, $result[2]['lft']);
+		$this->assertSame(13, $result[2]['rgt']);
+	}
+
+	public function testChildrenKeyPresentButEmptyArray()
+	{
+		$input = [ ['id' => 1, 'children' => []] ];
+		$result = $this->structure->nestedsortable_to_nestedset($input);
+		$this->assertSame(2, $result[1]['lft']);
+		$this->assertSame(3, $result[1]['rgt']);
+		$this->assertSame([1], $result[1]['crumb']);
+	}
+
+	public function testPreseededDataAndPointerContinuesSequence()
+	{
+		$pre = [ 99 => ['lft' => 2, 'rgt' => 3, 'crumb' => [99]] ];
+		$lft = 4;
+		$input = [ ['id' => 1] ];
+		$result = $this->structure->nestedsortable_to_nestedset($input, $pre, $lft);
+		$this->assertSame(4, $result[1]['lft']);
+		$this->assertSame(5, $result[1]['rgt']);
+		$this->assertArrayHasKey(99, $result);
+	}
+
+	public function testCrumbResetsBetweenSiblings()
+	{
+		$input = [
+			['id' => 1, 'children' => [ ['id' => 10] ]],
+			['id' => 2],
+		];
+		$result = $this->structure->nestedsortable_to_nestedset($input);
+		$this->assertSame([1, 10], $result[10]['crumb']);
+		$this->assertSame([2], $result[2]['crumb']);
+	}
+
 	public function testDeeplyNestedTreeSatisfiesNestedSetInvariants()
 	{
 		$input = [

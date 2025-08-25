@@ -46,6 +46,30 @@ class StructureCreatePageUriTest extends StructureTestBase
 		$uri = $this->structure->create_page_uri('/parent', 'child?x=1#frag');
 		$this->assertSame('/parent/child?x=1#frag', $uri);
 	}
+
+	public function testCreatePageUriBothEmptyReturnsRoot()
+	{
+		$uri = $this->structure->create_page_uri('', '');
+		$this->assertSame('/', $uri);
+	}
+
+	public function testCreatePageUriRootParentAndVariousChildForms()
+	{
+		$this->assertSame('/child', $this->structure->create_page_uri('/', 'child'));
+		$this->assertSame('/child', $this->structure->create_page_uri('/', '/child'));
+	}
+
+	public function testCreatePageUriCollapsesDoubleSlashesInChild()
+	{
+		$uri = $this->structure->create_page_uri('/x', 'a//b');
+		$this->assertSame('/x/a/b', $uri);
+	}
+
+	public function testCreatePageUriPreservesNonAsciiChild()
+	{
+		$uri = $this->structure->create_page_uri('/parent', 'ümlaut');
+		$this->assertSame('/parent/ümlaut', $uri);
+	}
 }
 
 
