@@ -59,6 +59,16 @@ class Moblog
     public $files = array();				// Suffixes for other types of accepted files
 
     public $txt_override = false;				// When set to TRUE, all .txt files are treated as message text
+	
+	
+    private $host = '';
+    private $port = 995;
+    private $username;
+    private $password;
+    private $connection;
+    private $isConnected = false;	
+	
+	
 
     /**
      * 	Constructor
@@ -191,6 +201,207 @@ class Moblog
 
         return $message;
     }
+	
+	
+	
+    public function connect() {
+        try {
+            // Create SSL context
+            $context = stream_context_create([
+                'ssl' => [
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                    'allow_self_signed' => true
+                ]
+            ]);
+
+            // Connect to Gmail POP3 server
+            $this->connection = stream_socket_client(
+                "ssl://{$this->host}:{$this->port}",
+                $errno,
+                $errstr,
+                30,
+                STREAM_CLIENT_CONNECT,
+                $context
+            );
+
+            if (!$this->connection) {
+                throw new Exception("Failed to connect: $errstr ($errno)");
+            }
+
+            // Read server greeting
+            $response = $this->readResponse();
+            if (!str_starts_with($response, '+OK')) {
+                throw new Exception("Server greeting failed: $response");
+            }
+
+            // Authenticate
+            $this->authenticate();
+            $this->isConnected = true;
+            
+            echo "Successfully connected to Gmail POP3 server.\n";
+            return true;
+
+        } catch (Exception $e) {
+            echo "Connection failed: " . $e->getMessage() . "\n";
+            return false;
+        }
+    }
+	
+	
+    /**
+     * Authenticate with username and password
+     */
+    private function authenticate($username, $password) {
+        // Send USER command
+        $this->sendCommand("USER {$username}");
+        
+        // Send PASS command
+        $this->sendCommand("PASS {$password}");
+    }
+	
+    /**
+     * Send command to server
+     */
+    private function sendCommand($command) {
+        fwrite($this->connection, $command . "\r\n");
+        return $this->readResponse();
+    }
+	
+    /**
+     * Read response from server
+     */
+    private function readResponse() {
+        $response = '';
+        while (($line = fgets($this->connection)) !== false) {
+            $response .= $line;
+            if (str_starts_with($line, '+OK') || str_starts_with($line, '-ERR')) {
+                if (str_ends_with($line, "\r\n")) {
+                    break;
+                }
+            }
+        }
+        return $response;
+    }
+		
+	
+    /**
+     * Get email statistics
+     */
+    public function getStats() {
+        if (!$this->isConnected) {
+            throw new Exception("Not connected to server");
+        }
+
+        $response = $this->sendCommand("STAT");
+        if (str_starts_with($response, '+OK')) {
+            $parts = explode(' ', trim($response));
+            return [
+                'count' => (int)$parts[1],
+                'size' => (int)$parts[2]
+            ];
+        }
+        
+        throw new Exception("Failed to get stats: $response");
+    }
+	
+    /**
+     * Disconnect from server
+     */
+    public function disconnect() {
+        if ($this->isConnected && $this->connection) {
+            $this->sendCommand("QUIT");
+            fclose($this->connection);
+            $this->isConnected = false;
+        }
+    }
+
+    /**
+     * Destructor to ensure connection is closed
+     */
+    public function __destruct() {
+        $this->disconnect();
+    }
+	
+    /**
+     * List all emails
+     */
+    public function listEmails() {
+        if (!$this->isConnected) {
+            throw new Exception("Not connected to server");
+        }
+
+        $response = $this->sendCommand("LIST");
+        if (!str_starts_with($response, '+OK')) {
+            throw new Exception("Failed to list emails: $response");
+        }
+
+        $emails = [];
+        $lines = explode("\n", $response);
+        
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if (preg_match('/^(\d+)\s+(\d+)$/', $line, $matches)) {
+                $emails[] = [
+                    'id' => (int)$matches[1],
+                    'size' => (int)$matches[2]
+                ];
+				
+				$sizes[$matches[1]] = $matches[2];
+            }
+        }
+
+        return $emails;
+    }
+	
+	
+    public function fetchHeaders($emailId) {
+        if (!$this->isConnected) {
+            throw new Exception("Not connected to server");
+        }
+
+        $response = $this->sendCommand("TOP $emailId 0");
+        if (!str_starts_with($response, '+OK')) {
+            throw new Exception("Failed to fetch headers for email $emailId: $response");
+        }
+
+        return $this->parseEmail($response);
+    }
+
+    /**
+     * Parse email content
+     */
+    private function parseEmail($rawEmail) {
+        $lines = explode("\n", $rawEmail);
+        $headers = [];
+        $body = [];
+        $inHeaders = true;
+
+        foreach ($lines as $line) {
+            if ($inHeaders) {
+                if (trim($line) === '') {
+                    $inHeaders = false;
+                    continue;
+                }
+                
+                if (preg_match('/^([^:]+):\s*(.+)$/', $line, $matches)) {
+                    $headers[strtolower($matches[1])] = trim($matches[2]);
+                }
+            } else {
+                $body[] = $line;
+            }
+        }
+
+        return [
+            'headers' => $headers,
+            'body' => implode("\n", $body)
+        ];
+    }
+	
+
+
+//$this->email_sizes[$x['0']] = $x['1'];
+	
 
     /**
      * 	Check Pop3 Moblog
@@ -203,6 +414,10 @@ class Moblog
         /**  Email Login Check
         /** ------------------------------*/
         $port = 110;
+		$port = 995; 
+		
+
+		
         $ssl = (substr($this->moblog_array['moblog_email_server'], 0, 6) == 'ssl://');
 
         if ($ssl or stripos($this->moblog_array['moblog_email_server'], 'gmail') !== false) {
@@ -212,6 +427,8 @@ class Moblog
 
             $port = 995;
         }
+		
+		/*
 
         if (! $this->fp = @fsockopen($this->moblog_array['moblog_email_server'], $port, $errno, $errstr, 20)) {
             $this->message_array[] = 'no_server_connection';
@@ -231,12 +448,44 @@ class Moblog
         // Check if the response is from a POP3 server
         if ($response === false || strncasecmp($response, '+OK', 3) != 0) {
             // Handle the case where the response is not from a POP3 server
+			log_message('error', 'Response: ' . $response);
             $this->message_array[] = 'invalid_server_response';
             @fclose($this->fp);
 
             return false;
         }
+		*/
+		
+		
+        // Create SSL context
+        $context = stream_context_create([
+            'ssl' => [
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                'allow_self_signed' => true
+            ]
+        ]);
 
+        // Connect to Gmail POP3 server
+        $this->connection = stream_socket_client(
+            "ssl://{$this->moblog_array['moblog_email_server']}:{$port}",
+            $errno,
+            $errstr,
+            30,
+            STREAM_CLIENT_CONNECT,
+            $context
+        );
+
+        if (!$this->connection) {
+            $this->message_array[] = 'no_server_connection';
+			log_message('error', 'no connection: ');
+            return false;
+        }
+		
+		log_message('error', 'connected: ');
+		
+
+		/*
         if (strncasecmp($this->pop_command("USER " . base64_decode($this->moblog_array['moblog_email_login'])), '+OK', 3) != 0) {
             // Windows servers something require a different line break.
             // So, we change the line break and try again.
@@ -259,46 +508,78 @@ class Moblog
 
             return false;
         }
+		
+		*/
+		
+		
+        // Read server greeting
+        $response = $this->readResponse();
+        if (!str_starts_with($response, '+OK')) {
+			$this->message_array[] = '"Server greeting failed: $response"';
+			return FALSE;
+        }
+
+        // Authenticate
+        $this->authenticate(base64_decode($this->moblog_array['moblog_email_login']), base64_decode($this->moblog_array['moblog_email_password']));
+        $this->isConnected = true;
+		
+		log_message('error', 'authenticated: ');
+		
 
         /** ------------------------------
         /**  Got Mail?
         /** ------------------------------*/
+		
+/*		
+		
         $this->pop_newline = "\r\n";
         if (! $line = $this->pop_command("STAT")) {
             $this->message_array[] = 'unable_to_retrieve_emails';
             $line = $this->pop_command("QUIT");
-            @fclose($this->fp);
+            @fclose($this->connection);
 
             return false;
         }
-
+		
         $stats = explode(" ", $line);
         $total = (! isset($stats['1'])) ? 0 : $stats['1'];
-        $this->total_size = (! isset($stats['2'])) ? 0 : $stats['2'];
+        $this->total_size = (! isset($stats['2'])) ? 0 : $stats['2'];		
+		
+*/
+		
+		$stats = $this->getStats();
+
+        $total = (! isset($stats['count'])) ? 0 : $stats['count'];
+        $this->total_size = (! isset($stats['size'])) ? 0 : $stats['size'];
 
         if ($total == 0) {
             $this->message_array[] = 'no_valid_emails';
-            $line = $this->pop_command("QUIT");
-            @fclose($this->fp);
+			
+			log_message('error', 'no emails: ' . $line);
+            $this->disconnect();
 
             return;
         }
+		
+		log_message('error', 'got emails: ' . $total . 'max: ' . $this->max_size);
 
         /** ------------------------------
         /**  Determine Sizes of Emails
         /** ------------------------------*/
         if ($this->total_size > $this->max_size) {
-            if (! $line = $this->pop_command("LIST")) {
+			
+			/*
+            if (! $line = $this->sendCommand("LIST")) {
                 $this->message_array[] = 'unable_to_retrieve_emails';
-                $line = $this->pop_command("QUIT");
-                @fclose($this->fp);
-
+                $this->disconnect();
                 return false;
             }
 
             do {
-                $data = fgets($this->fp, 1024);
+                $data = fgets($this->connection, 1024);
                 $data = $this->iso_clean($data);
+				
+				log_message('error', 'do emails: ' . $data);
 
                 if (empty($data) or trim($data) == '.') {
                     break;
@@ -312,7 +593,15 @@ class Moblog
 
                 $this->email_sizes[$x['0']] = $x['1'];
             } while (strncmp($data, ".\r\n", 3) != 0);
+			
+			*/
+			
+			$this->email_sizes = $this->listEmails();
+			
+			
         }
+		
+		log_message('error', 'got emails: ' . implode(',', $this->email_sizes));
 
         /** ------------------------------
         /**  Find Valid Emails
@@ -321,29 +610,47 @@ class Moblog
         $valid_froms = explode("|", $this->moblog_array['moblog_valid_from']);
 
         for ($i = 1; $i <= $total; $i++) {
-            if (strncasecmp($this->pop_command("TOP {$i} 0"), '+OK', 3) != 0) {
-                $line = $this->pop_command("QUIT");
-                @fclose($this->fp);
+           // if (strncasecmp($this->pop_command("TOP {$i} 0"), '+OK', 3) != 0) {
+           //     $this->disconnect();
 
-                return false;
-            }
+            //    return false;
+           // }
+			
+			$valid_emails[] = $i;
+		}
+			
+			////$valid_emails[] = $this->getValidEmails($i, $this->moblog_array['moblog_valid_from'], $this->moblog_array['moblog_subject_prefix']);
 
-            $valid_subject = 'n';
-            $valid_from = ($this->moblog_array['moblog_valid_from'] != '') ? 'n' : 'y';
-            $str = fgets($this->fp, 1024);
+          //  $valid_subject = 'n';
+          //  $valid_from = ($this->moblog_array['moblog_valid_from'] != '') ? 'n' : 'y';
+            
+			
+			
+			/*
+			
+			$str = fgets($this->connection, 1024);
+			
+			
+
+			
+			log_message('error', 'valid email check: ' . $str);
 
             while (strncmp($str, ".\r\n", 3) != 0) {
-                $str = fgets($this->fp, 1024);
+                $str = fgets($this->connection, 1024);
                 $str = $this->iso_clean($str);
 
                 if (empty($str)) {
+					log_message('error', 'empty_string: ' . $str);
                     break;
                 }
+				log_message('error', 'got string: ' . $str);
 
                 // ------------------------
                 // Does email contain correct prefix? (if prefix is set)
                 // Liberal interpretation of prefix location
                 // ------------------------
+				
+
 
                 if ($this->moblog_array['moblog_subject_prefix'] == '') {
                     $valid_subject = 'y';
@@ -354,31 +661,40 @@ class Moblog
                 }
 
                 if ($this->moblog_array['moblog_valid_from'] != '') {
-                    if (preg_match("/From:\s*(.*)\s*\<(.*)\>/", $str, $from) or preg_match("/From:\s*(.*)\s*/", $str, $from)) {
+*/			
+//                    if (preg_match("/From:\s*(.*)\s*\<(.*)\>/", $str, $from) or preg_match("/From:\s*(.*)\s*/", $str, $from)) {
+	/*
                         $address = (! isset($from['2'])) ? $from['1'] : $from['2'];
 
-                        if (in_array(trim($address), $valid_froms)) {
+                      if (in_array(trim($address), $valid_froms)) {
                             $valid_from = 'y';
                         }
                     }
                 }
             }
+			
+			*/
 
-            if ($valid_subject == 'y' && $valid_from == 'y') {
-                $valid_emails[] = $i;
-            }
-        }
+ //           if ($valid_subject == 'y' && $valid_from == 'y') {
+//				log_message('error', 'valid email checkis valid: ' . $str);
+//                $valid_emails[] = $i;
+//            }
+//			else { log_message('error', 'valid email check NOT valid: ' . $str); }
+//        }
 
-        unset($subject);
-        unset($str);
+//        unset($subject);
+//        unset($str);
 
         if (count($valid_emails) == 0) {
             $this->message_array[] = 'no_valid_emails';
-            $line = $this->pop_command("QUIT");
-            @fclose($this->fp);
+			
+			log_message('error', 'no emails2: ');
+            $this->disconnect();
 
             return;
         }
+		
+		log_message('error', 'valid emails2: ' . count($valid_emails));
 
         /** ------------------------------
         /**  Process Valid Emails
@@ -407,9 +723,33 @@ class Moblog
             /** ---------------------------------------
             /**  Failure does happen at times
             /** ---------------------------------------*/
-            if (strncasecmp($this->pop_command("RETR {$email_id}"), '+OK', 3) != 0) {
-                continue;
-            }
+           // if (strncasecmp($this->pop_command("RETR {$email_id}"), '+OK', 3) != 0) {
+           //     continue;
+           // }
+			
+		    /**
+		     * Fetch a specific email by ID
+		     */
+		    //public function fetchEmail($emailId) {
+		    //    if (!$this->isConnected) {
+		    //        throw new Exception("Not connected to server");
+		   //     }
+
+		        $response = $this->sendCommand("RETR $email_id");
+		        if (!str_starts_with($response, '+OK')) {
+					
+					log_message('error', 'no retr: ' . $emailId);
+		            throw new Exception("Failed to fetch email $emailId: $response");
+		        }
+
+	//	        return $this->parseEmail($response);
+//		    }
+	//		
+			
+			
+			
+			
+			
 
             // Under redundant, see redundant
             $this->post_data['subject'] = 'Moblog Entry';
@@ -420,10 +760,15 @@ class Moblog
             /**  Retrieve Email data
             /** ------------------------------*/
             do {
-                $data = fgets($this->fp, 1024);
+				
+				log_message('error', 'do itttt: ');
+				
+                $data = fgets($this->connection, 1024);
                 $data = $this->iso_clean($data);
 
                 if (empty($data)) {
+					
+					log_message('error', 'do itttt no data: ');
                     break;
                 }
 
@@ -439,6 +784,8 @@ class Moblog
             if (preg_match("/charset=(.*?)(\s|" . $this->newline . ")/is", $email_data, $match)) {
                 $this->charset = trim(str_replace(array("'", '"', ';'), '', $match['1']));
             }
+			
+			log_message('error', 'presubject email data: ' . $email_data);
 
             /** --------------------------
             /**  Set Subject, Remove Moblog Prefix
@@ -492,11 +839,16 @@ class Moblog
             /**  Eliminate new line confusion
             /** -------------------------------------*/
             $email_data = $this->remove_newlines($email_data, $this->newline);
+			
+			log_message('error', 'post data subject: ' . $this->post_data['subject']);
 
             /** -------------------------------------
             /**  Determine Boundary
             /** -------------------------------------*/
             if (! $this->find_boundary($email_data)) { // OR $this->moblog_array['moblog_upload_directory'] == '0')
+ 
+ log_message('error', 'boundery 1 ' . $this->post_data['subject']);
+ 
                 // Figure out content type and subtype
                 $contents = $this->find_data($email_data, "Content-Type: ", $this->newline);
                 $x = explode(';', $contents);
@@ -562,8 +914,14 @@ class Moblog
                     }
                 }
             } else {
+				
+			log_message('error', 'Boundary 2: ' . $this->post_data['subject']);
+			
+				
                 if (! $this->parse_email($email_data)) {
                     $this->message_array[] = 'unable_to_parse';
+					
+					log_message('error', 'cant parse');
 
                     return false;
                 }
@@ -613,6 +971,8 @@ class Moblog
                     continue;
                 }
             }
+			
+			log_message('error', 'passed auth: ' . $this->post_data['subject']);
 
             /** -----------------------------
             /**  Format Flow Fix - Oh Joy!
@@ -690,6 +1050,8 @@ class Moblog
                 $this->post_data['sticky'] = (trim($mayo['1']) == 'yes' or trim($mayo['1']) == 'y') ? 'y' : 'n';
                 $this->body = str_replace($mayo['0'], '', $this->body);
             }
+			
+			log_message('error', 'pre default field check: ' . $this->post_data['subject']);
 
             /** -----------------------------
             /**  Default Field set in email?
@@ -734,6 +1096,8 @@ class Moblog
             /** ----------------------------
             /**  Post Entry
             /** ----------------------------*/
+			log_message('error', 'post the entry: ' . $this->post_data['subject']);
+			
             if ($this->moblog_array['moblog_channel_id'] != '0' && $this->moblog_array['moblog_file_archive'] == 'n') {
                 $this->template = $this->moblog_array['moblog_template'];
 
@@ -756,19 +1120,22 @@ class Moblog
             /** -------------------------*/
             if (strncasecmp($this->pop_command("DELE {$email_id}"), '+OK', 3) != 0) {
                 $this->message_array[] = 'undeletable_email'; //.$email_id;
+				log_message('error', 'delete email: ' . $this->post_data['subject']);
 
                 return false;
             }
 
             $this->emails_done++;
         }
+		
+		log_message('error', 'emails done: ' . $this->emails_done);
 
         /** -----------------------------
         /**  Close Email Connection
         /** -----------------------------*/
         $line = $this->pop_command("QUIT");
 
-        @fclose($this->fp);
+        @fclose($this->connection);
 
         /** ---------------------------------
         /**  Clear caches if needed
@@ -1786,15 +2153,15 @@ class Moblog
      */
     public function pop_command($cmd = "")
     {
-        if (! $this->fp) {
+        if (! $this->connection) {
             return false;
         }
 
         if ($cmd != "") {
-            fwrite($this->fp, $cmd . $this->pop_newline);
+            fwrite($this->connection, $cmd . $this->pop_newline);
         }
 
-        $line = $this->remove_newlines(fgets($this->fp, 1024));
+        $line = $this->remove_newlines(fgets($this->connection, 1024));
 
         return $line;
     }
