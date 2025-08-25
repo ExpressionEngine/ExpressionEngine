@@ -10,6 +10,12 @@ class StructureSetListingsTest extends StructureTestBase
 
         ee()->config->items['site_id'] = 1;
 
+        // Ensure extensions mock exists for hook checks inside set_listings
+        ee()->setMock('extensions', new class {
+            public function active_hook($name) { return false; }
+            public function call($name) { return null; }
+        });
+
         ee()->setMock('db', new class($captured) extends FakeDb {
             private $cap;
             private $callIndex = 0;
