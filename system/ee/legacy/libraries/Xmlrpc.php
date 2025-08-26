@@ -620,10 +620,16 @@ class XML_RPC_Message extends EE_Xmlrpc
         $this->xh[$parser_name]['valuestack'] = array();
         $this->xh[$parser_name]['isf_reason'] = 0;
 
-        xml_set_object($parser, $this);
         xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, true);
-        xml_set_element_handler($parser, 'open_tag', 'closing_tag');
-        xml_set_character_data_handler($parser, 'character_data');
+        xml_set_character_data_handler($parser, function($parser, $cdata) {
+            return $this->character_data($parser, $cdata);
+        });
+        xml_set_element_handler($parser, function($parser, $tag, $attributes) {
+            return $this->open_tag($parser, $tag, $attributes);
+        }, function($parser, $tag) {
+            return $this->closing_tag($parser, $tag);
+        });
+
         //xml_set_default_handler($parser, 'default_handler');
 
         //-------------------------------------

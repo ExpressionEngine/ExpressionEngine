@@ -22,7 +22,7 @@ class File
     public $query;
     public $return_data = '';
     public $temp_array = array();
-    public $cat_array= array();	
+    public $cat_array= array();
 
     /**
       * Constructor
@@ -156,6 +156,11 @@ class File
         // File type
         if (($file_type = ee()->TMPL->fetch_param('file_type')) !== false) {
             ee()->functions->ar_andor_string($file_type, 'file_type');
+        }
+
+        // Mime type
+        if (($mime_type = ee()->TMPL->fetch_param('mime_type')) !== false) {
+            ee()->functions->ar_andor_string($mime_type, 'mime_type');
         }
 
         // Specify category and category group ID(s) if supplied

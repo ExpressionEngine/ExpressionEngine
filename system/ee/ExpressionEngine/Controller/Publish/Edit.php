@@ -16,6 +16,7 @@ use ExpressionEngine\Model\Channel\ChannelEntry as ChannelEntry;
 use ExpressionEngine\Service\Validation\Result as ValidationResult;
 use Mexitek\PHPColors\Color;
 use ExpressionEngine\Library\CP\EntryManager;
+use ExpressionEngine\Library\CP\EntryManager\Columns\Column;
 
 /**
  * Publish/Edit Controller
@@ -161,11 +162,15 @@ class Edit extends AbstractPublishController
                 break;
             }
         }
-        $sort_field = $columns[$sort_col]->getEntryManagerColumnSortField();
-        $entries->order($sort_field, $table->sort_dir);
-        if ($sort_col != 'entry_id') {
-            $entries->order('entry_id', $table->sort_dir);
+
+        if(isset($columns[$sort_col]) && $columns[$sort_col] instanceof Column) {
+            $sort_field = $columns[$sort_col]->getEntryManagerColumnSortField();
+            $entries->order($sort_field, $table->sort_dir);
+            if ($sort_col != 'entry_id') {
+                $entries->order('entry_id', $table->sort_dir);
+            }
         }
+
         $entries->limit($filter_values['perpage'])
             ->offset($offset);
         $entries = $entries->all();
@@ -488,21 +493,25 @@ class Edit extends AbstractPublishController
             }
         }
 
-        $channel_layout = ee('Model')->get('ChannelLayout')
-            ->filter('site_id', ee()->config->item('site_id'))
-            ->filter('channel_id', $entry->channel_id)
-            ->with('PrimaryRoles')
-            ->filter('PrimaryRoles.role_id', ee()->session->userdata('role_id'))
-            ->first();
-
-        if (empty($channel_layout)) {
+        if (isset($vars['pro_class'])) {
+            $channel_layout = null;
+        } else {
             $channel_layout = ee('Model')->get('ChannelLayout')
                 ->filter('site_id', ee()->config->item('site_id'))
                 ->filter('channel_id', $entry->channel_id)
                 ->with('PrimaryRoles')
-                ->filter('PrimaryRoles.role_id', 'IN', ee()->session->getMember()->getAllRoles()->pluck('role_id'))
-                ->all()
+                ->filter('PrimaryRoles.role_id', ee()->session->userdata('role_id'))
                 ->first();
+
+            if (empty($channel_layout)) {
+                $channel_layout = ee('Model')->get('ChannelLayout')
+                    ->filter('site_id', ee()->config->item('site_id'))
+                    ->filter('channel_id', $entry->channel_id)
+                    ->with('PrimaryRoles')
+                    ->filter('PrimaryRoles.role_id', 'IN', ee()->session->getMember()->getAllRoles()->pluck('role_id'))
+                    ->all()
+                    ->first();
+            }
         }
 
         $vars['layout'] = $entry->getDisplay($channel_layout);

@@ -11,6 +11,7 @@
 use ExpressionEngine\Addons\FilePicker\FilePicker;
 use ExpressionEngine\Library\CP\EntryManager\ColumnInterface;
 use ExpressionEngine\Library\CP\Table;
+use ExpressionEngine\Library\Filesystem\FilesystemException;
 
 /**
  * File Fieldtype
@@ -525,15 +526,23 @@ JSC;
         }
 
         if (!$data['model_object']->isImage()) {
-            return ee()->TMPL->no_results();
+            return false;
+        }
+
+        if (!$data['model_object']->isEditableImage()) {
+            if (is_null($tagdata)) {
+                return $data; // allow chaining modifiers
+            }
+            return $this->replace_tag($data, $params, $tagdata);
         }
 
         ee()->load->library('image_lib');
         $filename = ee()->image_lib->explode_name($data['fs_filename']);
         if ($function == 'webp') {
+            $filename['name'] = $filename['name'] . '_' . $filename['ext'];
             $filename['ext'] = '.webp';
         }
-        $new_image = $filename['name'] . '_' . $function . '_' . md5(serialize($params)) . $filename['ext'];
+        $new_image = substr($filename['name'], 0, 150) . '_' . $function . '_' . md5(serialize($params)) . $filename['ext'];
         $data['fs_filename'] = $filename['name'] . '_' . $function . $filename['ext'];
 
         $new_image_dir = rtrim($data['model_object']->getBaseServerPath() . $data['model_object']->getSubfoldersPath(), '/') . '/_' . $function . DIRECTORY_SEPARATOR;
@@ -550,7 +559,14 @@ JSC;
         if (!$data['filesystem']->exists($destination_path)) {
             // We need to get a temporary local copy of the file in case it's stored
             // on another filesystem.
-            $source = $data['filesystem']->copyToTempFile($data['source_image']);
+            try {
+                $source = $data['filesystem']->copyToTempFile($data['source_image']);
+            } catch (FilesystemException $e) {
+                // if the file does not exist (e.g. we run a local copy without all files)
+                // just return the original URL
+                log_message('debug', $e->getMessage());
+                return $data['model_object']->getAbsoluteURL();
+            }
             $new = $data['filesystem']->createTempFile();
 
             $imageLibConfig = array(
@@ -1126,6 +1142,36 @@ JSC;
 
         $modifiers = ['resize', 'crop', 'rotate', 'webp', 'resize_crop', 'length', 'raw_content', 'attr_safe', 'limit', 'form_prep', 'rot13', 'encrypt', 'url_slug', 'censor', 'json', 'replace', 'url_encode', 'url_decode'];
         return $modifiers;
+    }
+
+    /**
+     * Prepare data for Pro Search
+     *
+     * @param array $data Field value
+     * @return string File name and title
+     */
+    public function third_party_search_index($data)
+    {
+        if (!is_string($data)) {
+            return '';
+        }
+        if (preg_match('/^{file\:(\d+)\:url}/', $data, $matches)) {
+            // If the file field is in the "{file:XX:url}" format
+            $file = ee('Model')->get('File', $matches[1])->first(true);
+            if (!is_null($file)) {
+                if ($file->file_name != $file->title) {
+                    return $file->file_name . ' ' . $file->title;
+                }
+                return $file->file_name;
+            } else {
+                return '';
+            }
+        } elseif (preg_match('/^{filedir_(\d+)}/', $data, $matches)) {
+            // If the file field is in the "{filedir_n}image.jpg" format
+            $file_name = str_replace($matches[0], '', $data);
+            return $file_name;
+        }
+        return $data;
     }
 }
 

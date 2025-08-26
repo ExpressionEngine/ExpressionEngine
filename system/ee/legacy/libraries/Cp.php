@@ -744,7 +744,7 @@ class Cp
                     return $templateModel->edit_date;
                 }
 
-                break;
+                return 0;
 
             default:
                 return 0;

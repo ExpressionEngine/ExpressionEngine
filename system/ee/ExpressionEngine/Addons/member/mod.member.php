@@ -940,13 +940,11 @@ class Member
 
         $data['action'] = ee()->TMPL->fetch_param('action');
 
-        $res = ee()->functions->form_declaration($data);
+        $open = ee()->functions->form_declaration($data);
 
-        $res .= stripslashes(ee()->TMPL->tagdata);
+        ee()->TMPL->set_data(['open' => $open]);
 
-        $res .= "</form>";
-
-        return $res;
+        return $open . stripslashes(ee()->TMPL->tagdata) . "</form>";
     }
 
     /**
@@ -994,13 +992,11 @@ class Member
 
         $data['action'] = ee()->TMPL->fetch_param('action');
 
-        $res = ee()->functions->form_declaration($data);
+        $open = ee()->functions->form_declaration($data);
 
-        $res .= stripslashes(ee()->TMPL->tagdata);
+        ee()->TMPL->set_data(['open' => $open]);
 
-        $res .= "</form>";
-
-        return $res;
+        return $open . stripslashes(ee()->TMPL->tagdata) . "</form>";
     }
 
     public function send_username()
@@ -1046,13 +1042,11 @@ class Member
 
         $data['action'] = ee()->TMPL->fetch_param('action');
 
-        $res = ee()->functions->form_declaration($data);
+        $open = ee()->functions->form_declaration($data);
 
-        $res .= stripslashes(ee()->TMPL->tagdata);
+        ee()->TMPL->set_data(['open' => $open]);
 
-        $res .= "</form>";
-
-        return $res;
+        return $open . stripslashes(ee()->TMPL->tagdata) . "</form>";
     }
 
     /**
@@ -1124,6 +1118,10 @@ class Member
 
         // Check to see whether we're in the forum or not.
         $in_forum = isset($_GET['r']) && $_GET['r'] == 'f';
+
+        if (ee()->TMPL->fetch_param('inline_errors') == 'yes' && ee()->TMPL->fetch_param('return_error') == '') {
+            ee()->TMPL->tagparams['return_error'] = ee()->functions->fetch_current_uri() . '?id=' . $resetcode;
+        }
 
         // Create form
         $data['hidden_fields'] = array(
@@ -1606,15 +1604,13 @@ class Member
 
         $data['action'] = ee()->TMPL->fetch_param('action');
 
-        $res = ee()->functions->form_declaration($data);
+        $open = ee()->functions->form_declaration($data);
 
         $template = ee()->TMPL->parse_inline_errors(ee()->TMPL->tagdata);
 
-        $res .= stripslashes($template);
+        ee()->TMPL->set_data(['open' => $open]);
 
-        $res .= "</form>";
-
-        return $res;
+        return $open . stripslashes($template) . "</form>";
     }
 
     /**
@@ -1746,14 +1742,13 @@ class Member
             $data['action'] = '/' . $data['action'];
         }
 
-        $res = ee()->functions->form_declaration($data);
+        $open = ee()->functions->form_declaration($data);
 
         $template = ee()->TMPL->parse_inline_errors(ee()->TMPL->tagdata);
-        $res .= stripslashes($template);
 
-        $res .= "</form>";
+        ee()->TMPL->set_data(['open' => $open]);
 
-        return $res;
+        return $open . stripslashes($template) . "</form>";
     }
 
     /**
@@ -2555,6 +2550,8 @@ class Member
                 $default_fields
             )]
         ];
+
+        ee()->TMPL->set_data(array_merge($default_fields, $dates, $data));
 
         ee()->TMPL->tagdata = $parser->parse($channel, $data);
 
