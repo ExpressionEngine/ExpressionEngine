@@ -59,7 +59,7 @@ class EE_Typography
     public $censored_replace = '';
     public $text_fmt_types = array('xhtml', 'markdown', 'br', 'none', 'lite');
     public $text_fmt_plugins = array();
-    public $formatting_plugins_initliazed = false;
+    public formatting_plugins_initialized = false;
     public $html_fmt_types = array('safe', 'all', 'none');
     public $yes_no_syntax = array('y', 'n');
     public $code_chunks = array();
@@ -752,9 +752,9 @@ class EE_Typography
                     if (in_array($prefs['text_format'], $this->text_fmt_types)) {
                         $this->text_format = $prefs['text_format'];
                     } else {
-                        if ($this->formatting_plugins_initliazed === false) {
+                        if ($this->formatting_plugins_initialized === false) {
                             // Initialize the formatting plugins if they haven't been initialized yet
-                            $this->formatting_plugins_initliazed = true;
+                            $this->formatting_plugins_initialized = true;
                             ee()->load->model('addons_model');
                             $this->text_fmt_plugins = ee()->addons_model->get_plugin_formatting();
                         }
