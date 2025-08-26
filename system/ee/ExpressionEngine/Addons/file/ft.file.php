@@ -529,13 +529,20 @@ JSC;
             return false;
         }
 
+        if (!$data['model_object']->isEditableImage()) {
+            if (is_null($tagdata)) {
+                return $data; // allow chaining modifiers
+            }
+            return $this->replace_tag($data, $params, $tagdata);
+        }
+
         ee()->load->library('image_lib');
         $filename = ee()->image_lib->explode_name($data['fs_filename']);
         if ($function == 'webp') {
             $filename['name'] = $filename['name'] . '_' . $filename['ext'];
             $filename['ext'] = '.webp';
         }
-        $new_image = $filename['name'] . '_' . $function . '_' . md5(serialize($params)) . $filename['ext'];
+        $new_image = substr($filename['name'], 0, 150) . '_' . $function . '_' . md5(serialize($params)) . $filename['ext'];
         $data['fs_filename'] = $filename['name'] . '_' . $function . $filename['ext'];
 
         $new_image_dir = rtrim($data['model_object']->getBaseServerPath() . $data['model_object']->getSubfoldersPath(), '/') . '/_' . $function . DIRECTORY_SEPARATOR;
@@ -1135,6 +1142,36 @@ JSC;
 
         $modifiers = ['resize', 'crop', 'rotate', 'webp', 'resize_crop', 'length', 'raw_content', 'attr_safe', 'limit', 'form_prep', 'rot13', 'encrypt', 'url_slug', 'censor', 'json', 'replace', 'url_encode', 'url_decode'];
         return $modifiers;
+    }
+
+    /**
+     * Prepare data for Pro Search
+     *
+     * @param array $data Field value
+     * @return string File name and title
+     */
+    public function third_party_search_index($data)
+    {
+        if (!is_string($data)) {
+            return '';
+        }
+        if (preg_match('/^{file\:(\d+)\:url}/', $data, $matches)) {
+            // If the file field is in the "{file:XX:url}" format
+            $file = ee('Model')->get('File', $matches[1])->first(true);
+            if (!is_null($file)) {
+                if ($file->file_name != $file->title) {
+                    return $file->file_name . ' ' . $file->title;
+                }
+                return $file->file_name;
+            } else {
+                return '';
+            }
+        } elseif (preg_match('/^{filedir_(\d+)}/', $data, $matches)) {
+            // If the file field is in the "{filedir_n}image.jpg" format
+            $file_name = str_replace($matches[0], '', $data);
+            return $file_name;
+        }
+        return $data;
     }
 }
 

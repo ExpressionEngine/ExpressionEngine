@@ -211,9 +211,9 @@ class Structure extends Channel
         $include_status_list = explode('|', $include_status);
         $exclude_status_list = explode('|', $exclude_status);
 
-        // Remove the default "open" status if explicitely set
+        // Remove the default "open" status if explicitly set
         if (in_array('open', $exclude_status_list)) {
-            $status = array_filter($status, create_function('$v', 'return $v != "open";'));
+            $status = array_filter($status, function($v) { return $v != "open"; });
         }
 
         if ($status_state == 'positive') {
@@ -1832,8 +1832,26 @@ class Structure extends Channel
         return $changed;
     }
 
+    /**
+     * Delete all Structure data for a specific channel
+     *
+     * @param int $channel_id The channel ID to delete data for
+     * @return bool Returns true on success, false on failure or invalid input
+     */
     public function delete_data_by_channel($channel_id)
     {
+        
+        // Check if channel_id is numeric
+        if (!is_numeric($channel_id)) {
+            return false;
+        }
+
+        // Check if user has admin permission
+        $settings = $this->sql->get_settings();
+        if (!$this->sql->user_access('perm_delete', $settings)) {
+            return false;
+        }
+
         // add structure nav history before deleting data by channel
         // add_structure_nav_revision($site_id, 'Pre deleting data by channel');
 

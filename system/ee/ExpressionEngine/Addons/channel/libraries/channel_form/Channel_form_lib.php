@@ -1130,8 +1130,17 @@ GRID_FALLBACK;
             $conditional_errors['field_errors'] = array();
 
             foreach ($this->field_errors as $field => $error) {
-                $conditional_errors['field_errors'][] = array('field' => $field, 'error' => $error);
+                if (strpos($field, 'field_id_') === 0) {
+                    $fieldId = str_replace('field_id_', '', $field);
+                    $fieldName = array_key_exists($fieldId, $this->custom_field_names) ? $this->custom_field_names[$fieldId] : $field;
+                } else {
+                    $fieldName = $field;
+                }
+                $label = array_key_exists($fieldName, $this->custom_fields) ? $this->custom_fields[$fieldName]->field_label : lang($field);
+
+                $conditional_errors['field_errors'][$fieldName] = array('field' => $label, 'error' => $error);
             }
+            $conditional_errors['field_errors'] = array_values($conditional_errors['field_errors']);
         }
 
         $conditional_errors['field_errors:count'] = count($this->field_errors);
