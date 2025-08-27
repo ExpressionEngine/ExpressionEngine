@@ -612,6 +612,17 @@ class EE_Core
 
         //show them post-update checks, again
         if (ee()->input->get('after') == 'update' || ee()->session->flashdata('update:completed')) {
+
+            // -------------------------------------------
+            // 'updater_complete' hook.
+            //  - added 7.5.16
+            //
+            if (ee()->extensions->active_hook('updater_complete') === true) {
+                ee()->extensions->call('updater_complete');
+            }
+            //
+            // -------------------------------------------
+
             $advisor = new \ExpressionEngine\Library\Advisor\Advisor();
             $messages = $advisor->postUpdateChecks();
             if (!empty($messages)) {
