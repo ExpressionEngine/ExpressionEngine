@@ -44,12 +44,28 @@ class TestEnvironment
     public $functions;
     public $db;
     public $uri;
+    public $session;
+    public $extensions;
+    public $api_channel_fields;
+    public $load;
     
     public function setMock($name, $mock)
     {
         $this->mocks[$name] = $mock;
         // Also set as a direct property for ee()->uri access
         $this->$name = $mock;
+    }
+
+    public function set($name, $value)
+    {
+        $this->$name = $value;
+    }
+
+    public function remove($name)
+    {
+        if (isset($this->$name)) {
+            unset($this->$name);
+        }
     }
 }
 
@@ -61,6 +77,7 @@ class FakeTemplate
     
     public function setMap(array $map): void { $this->map = $map; }
     public function setTagdata(string $tagdata): void { $this->tagdata = $tagdata; }
+    public function no_results() { return 'NO_RESULTS'; }
     
     public function fetch_param($key, $default = null) {
         return array_key_exists($key, $this->map) ? $this->map[$key] : $default;
@@ -102,6 +119,21 @@ class FakeConfig
 class FakeFunctions
 {
     public function fetch_site_index($a = 0, $b = 0) { return '/'; }
+    public function create_url($path = '') { return 'https://example.com/'; }
+    public function assign_parameters($param_string)
+    {
+        $params = [];
+        $param_string = trim($param_string);
+        if ($param_string === '') {
+            return $params;
+        }
+        // Very simple key="value" parser
+        preg_match_all('/(\w+)\s*=\s*"([^"]*)"/', $param_string, $matches, PREG_SET_ORDER);
+        foreach ($matches as $m) {
+            $params[$m[1]] = $m[2];
+        }
+        return $params;
+    }
 }
 
 class FakeDbResult
@@ -118,6 +150,7 @@ class FakeDb
 {
     public $rows = [];
     private $whereConditions = [];
+    private $whereInConditions = [];
     private $limitValue = null;
     private $tableName = null;
     
@@ -127,6 +160,12 @@ class FakeDb
     public function where($field, $value)
     {
         $this->whereConditions[$field] = $value;
+        return $this;
+    }
+    
+    public function where_in($field, $values)
+    {
+        $this->whereInConditions[$field] = (array) $values;
         return $this;
     }
     
@@ -146,6 +185,11 @@ class FakeDb
                 return isset($row[$field]) && $row[$field] == $value;
             }));
         }
+        foreach ($this->whereInConditions as $field => $values) {
+            $filtered = array_values(array_filter($filtered, function ($row) use ($field, $values) {
+                return isset($row[$field]) && in_array($row[$field], $values);
+            }));
+        }
         
         if (!is_null($this->limitValue)) {
             $filtered = array_slice($filtered, 0, $this->limitValue);
@@ -153,6 +197,7 @@ class FakeDb
         
         // Reset conditions between calls
         $this->whereConditions = [];
+        $this->whereInConditions = [];
         $this->limitValue = null;
         
         return new FakeDbResult($filtered);
@@ -174,11 +219,69 @@ abstract class StructureTestBase extends TestCase
             ee()->config->items = [
                 'site_id' => 1,
                 'reserved_category_word' => 'category',
+                'charset' => 'UTF-8',
             ];
             // Functions mock
             ee()->setMock('functions', new FakeFunctions());
             // DB mock (core provides eeDbArMock with setRows, but ensure it's present)
             ee()->setMock('db', new FakeDb());
+            // URI mock for Channel constructor
+            ee()->setMock('uri', new class {
+                public $page_query_string = '';
+                public $query_string = '';
+                public $uri_string = '';
+            });
+            // Cache mock for potential cache calls
+            ee()->setMock('cache', new class {
+                public function get($key){ return false; }
+                public function save($key, $val, $ttl = 0){ return true; }
+            });
+            // Session mock with caching API
+            ee()->setMock('session', new class {
+                private $cache = [];
+                public function cache($class, $key) { return $this->cache[$class][$key] ?? false; }
+                public function set_cache($class, $key, $value) { $this->cache[$class][$key] = $value; }
+            });
+            // Extensions mock
+            ee()->setMock('extensions', new class {
+                public $hooks = [];
+                public function active_hook($name) { return $this->hooks[$name]['active'] ?? false; }
+                public function call($name, $arg) { return $this->hooks[$name]['return'] ?? null; }
+            });
+            // Channel fields API mock
+            ee()->setMock('api_channel_fields', new class {
+                public $settings = [];
+                public function set_settings($id, $settings) { $this->settings[$id] = $settings; }
+                public function setup_handler($id) { return false; }
+                public function apply($method, $args) { return null; }
+                public function check_method_exists($method) { return false; }
+            });
+            // Loader mock to satisfy add_package_path and library calls
+            ee()->setMock('load', new class {
+                public function add_package_path($path) { /* no-op */ }
+                public function helper($name) { /* no-op */ }
+                public function model($name) { /* no-op */ }
+                public function library($name)
+                {
+                    if ($name === 'file_field') {
+                        $obj = new class { public function parse_string($s){ return $s; } };
+                        if (function_exists('ee') && method_exists(ee(), 'setMock')) {
+                            ee()->setMock('file_field', $obj);
+                        } else {
+                            ee()->file_field = $obj;
+                        }
+                    }
+                    if ($name === 'pagination') {
+                        ee()->pagination = new class { public function create(){ return new class {}; } };
+                    }
+                    if ($name === 'api') {
+                        ee()->legacy_api = new class { public function instantiate($name) {} };
+                    }
+                    if ($name === 'typography') {
+                        ee()->typography = new class {};
+                    }
+                }
+            });
         } else {
             // Fallback minimal env when running outside core bootstrap
             global $__EE_TEST_ENV__;
@@ -187,9 +290,60 @@ abstract class StructureTestBase extends TestCase
             $__EE_TEST_ENV__->config = new FakeConfig();
             $__EE_TEST_ENV__->functions = new FakeFunctions();
             $__EE_TEST_ENV__->db = new FakeDb();
+            $__EE_TEST_ENV__->session = new class {
+                private $cache = [];
+                public function cache($class, $key) { return $this->cache[$class][$key] ?? false; }
+                public function set_cache($class, $key, $value) { $this->cache[$class][$key] = $value; }
+            };
+            $__EE_TEST_ENV__->extensions = new class {
+                public $hooks = [];
+                public function active_hook($name) { return $this->hooks[$name]['active'] ?? false; }
+                public function call($name, $arg) { return $this->hooks[$name]['return'] ?? null; }
+            };
+            $__EE_TEST_ENV__->api_channel_fields = new class {
+                public $settings = [];
+                public function set_settings($id, $settings) { $this->settings[$id] = $settings; }
+                public function setup_handler($id) { return false; }
+                public function apply($method, $args) { return null; }
+                public function check_method_exists($method) { return false; }
+            };
+            $__EE_TEST_ENV__->load = new class {
+                public function add_package_path($path) { /* no-op for tests */ }
+                public function helper($name) { /* no-op for tests */ }
+                public function model($name) { /* no-op for tests */ }
+                public function library($name)
+                {
+                    if ($name === 'file_field') {
+                        $obj = new class { public function parse_string($s) { return $s; } };
+                        if (function_exists('ee') && method_exists(ee(), 'setMock')) {
+                            ee()->setMock('file_field', $obj);
+                        } else {
+                            ee()->file_field = $obj;
+                        }
+                        return;
+                    }
+                    if ($name === 'pagination') {
+                        ee()->pagination = new class {
+                            public function create(){ return new class {}; }
+                        };
+                        return;
+                    }
+                    if ($name === 'api') {
+                        ee()->legacy_api = new class {
+                            public function instantiate($name) { /* set up by tests if needed */ }
+                        };
+                        return;
+                    }
+                    if ($name === 'typography') {
+                        ee()->typography = new class {};
+                        return;
+                    }
+                }
+            };
             $__EE_TEST_ENV__->config->items = [
                 'site_id' => 1,
                 'reserved_category_word' => 'category',
+                'charset' => 'UTF-8',
             ];
         }
 
