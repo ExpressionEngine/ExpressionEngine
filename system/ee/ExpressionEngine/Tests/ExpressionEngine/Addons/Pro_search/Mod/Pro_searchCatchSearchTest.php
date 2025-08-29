@@ -4,27 +4,56 @@ require_once __DIR__ . '/Pro_searchTestBase.php';
 
 class Pro_searchCatchSearchTest extends Pro_searchTestBase
 {
-	public function testCatchSearchRedirectsToResultUrl()
-	{
-		// input contains params and a keyword
-		ee()->setMock('input', new class {
-			public function post($k){ return null; }
-			public function get_post($k){ return null; }
-		});
+    public function testCatchSearchRedirectsToCreatedUrl()
+    {
+        // Mock input->post/get
+        ee()->setMock('input', new class {
+            public function post($k){ return null; }
+            public function get_post($k){ return null; }
+        });
 
-		// Simulate POSTed params (encoded empty) and query data via superglobals
-		$_POST = ['params' => base64_encode(json_encode(['result_page' => '/results'])), 'keywords' => 'alpha'];
-		$_GET = [];
+        // Provide $_GET/$_POST values through superglobals access the code uses
+        $_GET = ['keywords' => 'alpha', 'category' => '5'];
+        $_POST = [];
 
-		$func = new class extends ProSearchFakeFunctions {
-			public function redirect($url){ $this->lastRedirect = $url; }
-		};
-		ee()->setMock('functions', $func);
+        // Run
+        $this->pro->catch_search();
 
-		$this->pro->catch_search();
-		$this->assertNotNull($func->lastRedirect);
-		$this->assertStringContainsString('/results', $func->lastRedirect);
-	}
+        $redirect = $this->getLastRedirect();
+        $this->assertNotNull($redirect);
+        $this->assertStringContainsString('https://', $redirect);
+        // With default encode_query=y, should include base64 payload segment
+        $this->assertStringContainsString('/search/results/', $redirect);
+    }
+
+    public function testCatchSearchSetsFlashdataOnRequiredMissing()
+    {
+        ee()->setMock('input', new class {
+            public function post($k){ return $k === 'params' ? base64_encode(json_encode(['required' => 'keywords'])) : null; }
+            public function get_post($k){ return null; }
+        });
+
+        // No keywords provided, triggers required error and redirect back to referer
+        $_GET = [];
+        $_POST = ['params' => base64_encode(json_encode(['required' => 'keywords']))];
+        $_SERVER['HTTP_REFERER'] = 'https://example.com/form';
+
+        // Override functions->redirect to emulate exit on redirect
+        $func = new class extends ProSearchFakeFunctions {
+            public function redirect($url){ $this->lastRedirect = $url; throw new RuntimeException('redirect'); }
+        };
+        ee()->setMock('functions', $func);
+
+        try {
+            $this->pro->catch_search();
+            $this->fail('Expected redirect exception');
+        } catch (RuntimeException $e) {
+            $this->assertSame('redirect', $e->getMessage());
+        }
+
+        $this->assertSame('https://example.com/form', $func->lastRedirect);
+        $this->assertSame('fields_missing', ee()->session->flashdata['error_message'] ?? null);
+    }
 }
 
 
