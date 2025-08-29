@@ -282,6 +282,15 @@ abstract class Pro_searchTestBase extends TestCase
 	{
 		return ee()->functions->lastRedirect;
 	}
+
+	protected function mockEmptyCollectionModel(): void
+	{
+		$this->setMock('pro_search_collection_model', new class {
+			public function get_by_site($ids){ return []; }
+			public function get_by_param($v, $rows){ return $rows; }
+			public function get_by_language($v, $in, $rows){ return $rows; }
+		});
+	}
 }
 
 

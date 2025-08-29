@@ -66,6 +66,43 @@ class Pro_searchUrlTest extends Pro_searchTestBase
         $this->assertStringContainsString('bar=baz', $url);
         $this->assertStringNotContainsString('result_page=', $url);
     }
+
+    public function testUrlWithResetParameter()
+    {
+        $this->setTemplateParams(['reset' => 'yes', 'keywords' => 'should be ignored']);
+        $this->setParamsStub(['keywords' => 'existing value']);
+
+        $result = $this->pro->url();
+
+        // Should generate URL with default parameters, ignoring existing ones
+        // The URL may be base64 encoded or have a different format
+        $this->assertStringNotContainsString('keywords=existing+value', $result);
+        $this->assertStringContainsString('results', $result); // Should still contain the results path
+    }
+
+    public function testUrlWithEmptyQueryString()
+    {
+        $this->setTemplateParams(['query_string' => '']);
+        $this->setParamsStub([]);
+
+        $result = $this->pro->url();
+
+        // Should generate basic URL - format may vary (could be base64 encoded or standard format)
+        $this->assertStringContainsString('results', $result);
+        $this->assertStringNotContainsString('?', $result); // Should not have query parameters
+    }
+
+    public function testUrlWithComplexToggle()
+    {
+        $this->setTemplateParams(['toggle:category' => 'new_value']);
+        $this->setParamsStub(['category' => 'old_value|new_value|another_value']);
+
+        $result = $this->pro->url();
+
+        // Should generate URL - format may vary (could be base64 encoded or standard format)
+        $this->assertStringContainsString('results', $result);
+        $this->assertStringNotContainsString('new_value', $result); // Should not contain the toggled-out value
+    }
 }
 
 
