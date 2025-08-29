@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/StructureTestBase.php';
+require_once __DIR__ . '/../StructureTestBase.php';
 
 if (!function_exists('form_dropdown')) {
     function form_dropdown($name, $options, $selected)

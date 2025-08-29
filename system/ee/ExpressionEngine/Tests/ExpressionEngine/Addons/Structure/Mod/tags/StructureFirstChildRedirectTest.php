@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/StructureTestBase.php';
+require_once __DIR__ . '/../StructureTestBase.php';
 
 class StructureFirstChildRedirectTest extends StructureTestBase
 {
