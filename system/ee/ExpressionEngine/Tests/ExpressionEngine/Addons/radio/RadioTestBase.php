@@ -23,22 +23,47 @@ abstract class RadioTestBase extends OptionFieldtypeTestBase
     protected function createMockFieldtype()
     {
         $fieldtype = m::mock();
+
+        // Radio-specific display settings (must be set before common mocks)
+        $fieldtype->shouldReceive('display_settings')->withAnyArgs()->andReturn([
+            'field_options_radio' => [
+                'label' => 'field_options',
+                'group' => 'radio',
+                'settings' => []
+            ]
+        ]);
+
+        $fieldtype->shouldReceive('grid_display_settings')->withAnyArgs()->andReturn([
+            'field_options_radio' => [
+                'label' => 'field_options',
+                'group' => 'radio',
+                'settings' => []
+            ]
+        ]);
+
+        // Mark display settings as configured to prevent base class override
+        $fieldtype->_display_settings_configured = true;
+
+        // Setup basic fieldtype mocks using base class methods
+        $this->setupCommonFieldtypeMocks($fieldtype);
+
+        // Radio-specific mocks
         $fieldtype->shouldReceive('display_field')->andReturn('<div>Mock radio display</div>');
         $fieldtype->shouldReceive('grid_display_field')->andReturn('<div>Mock radio grid display</div>');
         $fieldtype->shouldReceive('get_setting')->andReturn(null);
         $fieldtype->shouldReceive('validate')->andReturn(true);
-        $fieldtype->shouldReceive('save')->andReturnUsing(function($data) {
-            // Radio fieldtype doesn't have array data, so just return the data as-is
-            return $data;
-        });
-        $fieldtype->shouldReceive('replace_tag')->andReturnUsing(function($data, $params = [], $tagdata = false) {
-            // Radio fieldtype uses _parse_single directly
-            return $data;
-        });
+
+        // Setup radio-specific behaviors (single-value)
+        $this->setupSaveMock($fieldtype, false);
+        $this->setupReplaceTagMock($fieldtype, false);
+        $this->setupParseSingleMock($fieldtype, false);
+
+        // Radio-specific replace methods
         $fieldtype->shouldReceive('replace_value')->andReturnUsing(function($data, $params = [], $tagdata = false) {
             // replace_value is just a wrapper for replace_tag
             return $data;
         });
+
         $fieldtype->shouldReceive('replace_label')->andReturnUsing(function($data, $params = [], $tagdata = false) {
             // For radio fieldtype, replace_label handles value-label pairs
             if (isset($this->settings['value_label_pairs']) && isset($this->settings['value_label_pairs'][$data])) {
@@ -46,17 +71,13 @@ abstract class RadioTestBase extends OptionFieldtypeTestBase
             }
             return $data;
         });
-        $fieldtype->shouldReceive('accepts_content_type')->andReturn(true);
-        $fieldtype->shouldReceive('update')->andReturn(true);
-        $fieldtype->shouldReceive('_get_historic_field_options')->andReturn(['option1' => 'Option 1']);
-        $fieldtype->shouldReceive('_get_field_options')->andReturn(['option1' => 'Option 1']);
+
+        // Radio-specific display field mock
         $fieldtype->shouldReceive('_display_field')->andReturnUsing(function($data, $container = 'fieldset') {
             // Mock radio button display
             $field_options = ['option1' => 'Option 1', 'option2' => 'Option 2', 'option3' => 'Option 3'];
-            $selected = $data;
 
             $r = '';
-
             foreach ($field_options as $key => $value) {
                 $checked = ($key == $data) ? ' checked' : '';
                 $r .= '<label><input type="radio" name="' . $this->field_name . '" value="' . $key . '"' . $checked . '> ' . $value . '</label>';
@@ -68,50 +89,11 @@ abstract class RadioTestBase extends OptionFieldtypeTestBase
 
             return $r;
         });
-        $fieldtype->shouldReceive('_parse_single')->andReturnUsing(function($data, $params = []) {
-            // Radio fieldtype processes single values
-            if (is_array($data) && !empty($data)) {
-                $data = $data[0];
-            } elseif (is_array($data) && empty($data)) {
-                return '';
-            }
 
-            // Handle value-label pairs
-            if (isset($this->settings['value_label_pairs']) && isset($this->settings['value_label_pairs'][$data])) {
-                $data = $this->settings['value_label_pairs'][$data];
-            }
-
-            return $data;
-        });
-        $fieldtype->shouldReceive('display_settings')->andReturn([
-            'field_options_radio' => [
-                'label' => 'field_options',
-                'group' => 'radio',
-                'settings' => []
-            ]
-        ]);
-        $fieldtype->shouldReceive('grid_display_settings')->andReturn([
-            'field_options_radio' => [
-                'label' => 'field_options',
-                'group' => 'radio',
-                'settings' => []
-            ]
-        ]);
+        // Radio-specific render table cell
         $fieldtype->shouldReceive('renderTableCell')->andReturnUsing(function($data) {
-            // Simulate renderTableCell calling _parse_single for radio fieldtype
             return $data;
         });
-
-        $fieldtype->field_name = $this->mockFieldName;
-        $fieldtype->field_id = $this->mockFieldId;
-        $fieldtype->settings = [];
-        $fieldtype->settings_vars = [
-            'field_text_direction' => 'rtl',
-            'field_pre_populate' => 'n',
-            'field_list_items' => [],
-            'field_pre_field_id' => '',
-            'field_pre_channel_id' => ''
-        ];
 
         return $fieldtype;
     }
@@ -121,11 +103,39 @@ abstract class RadioTestBase extends OptionFieldtypeTestBase
      */
     protected function getMockRadioFieldtypeWithSettings($settings = [])
     {
-        $fieldtype = $this->createMockFieldtype();
+        $fieldtype = m::mock();
 
-        // Override settings
-        $fieldtype->settings = array_merge($fieldtype->settings_vars, $settings);
+        // Radio-specific display settings (must be set before common mocks)
+        $fieldtype->shouldReceive('display_settings')->andReturn([
+            'field_options_radio' => [
+                'label' => 'field_options',
+                'group' => 'radio',
+                'settings' => []
+            ]
+        ]);
 
+        $fieldtype->shouldReceive('grid_display_settings')->andReturn([
+            'field_options_radio' => [
+                'label' => 'field_options',
+                'group' => 'radio',
+                'settings' => []
+            ]
+        ]);
+
+        // Setup basic fieldtype mocks using base class methods
+        $this->setupCommonFieldtypeMocks($fieldtype, $settings);
+
+        // Radio-specific mocks
+        $fieldtype->shouldReceive('display_field')->andReturn('<div>Mock radio display</div>');
+        $fieldtype->shouldReceive('grid_display_field')->andReturn('<div>Mock radio grid display</div>');
+        $fieldtype->shouldReceive('validate')->andReturn(true);
+
+        // Setup radio-specific behaviors (single-value)
+        $this->setupSaveMock($fieldtype, false);
+        $this->setupReplaceTagMock($fieldtype, false);
+        $this->setupParseSingleMock($fieldtype, false);
+
+        // Override get_setting to handle custom settings
         $fieldtype->shouldReceive('get_setting')->andReturnUsing(function($key) use ($settings) {
             return isset($settings[$key]) ? $settings[$key] : null;
         });
@@ -136,34 +146,47 @@ abstract class RadioTestBase extends OptionFieldtypeTestBase
             return $data;
         });
 
-        // Configure replace_tag for radio fieldtype (single value, no pipe splitting)
-        $fieldtype->shouldReceive('replace_tag')->andReturnUsing(function($data, $params = [], $tagdata = false) {
-            // Radio fieldtype replace_tag just returns the data (single value)
-            return $data;
-        });
-
-        // Configure replace_label for radio fieldtype
-        $fieldtype->shouldReceive('replace_label')->andReturnUsing(function($data, $params = [], $tagdata = false) use ($settings) {
+        // Configure replace_label for radio fieldtype with custom settings
+        $fieldtype->shouldReceive('replace_label')->andReturnUsing(function($data, $params = [], $tagdata = false) use ($settings, $fieldtype) {
             // Handle value-label pairs
             if (isset($settings['value_label_pairs']) && isset($settings['value_label_pairs'][$data])) {
                 $data = $settings['value_label_pairs'][$data];
             }
 
             // Process typography (mocked to return data as-is)
-            $data = $this->processTypograpghy($data);
+            $data = $fieldtype->processTypograpghy($data);
 
             // Call replace_tag with processed data and params
-            return $this->replace_tag($data, $params, $tagdata);
+            return $fieldtype->replace_tag($data, $params, $tagdata);
         });
 
         // Configure replace_value for radio fieldtype
-        $fieldtype->shouldReceive('replace_value')->andReturnUsing(function($data, $params = [], $tagdata = false) {
+        $fieldtype->shouldReceive('replace_value')->andReturnUsing(function($data, $params = [], $tagdata = false) use ($fieldtype) {
             // replace_value is a simple wrapper for replace_tag
-            return $this->replace_tag($data, $params, $tagdata);
+            return $fieldtype->replace_tag($data, $params, $tagdata);
         });
 
-        // Configure update for radio fieldtype
-        $fieldtype->shouldReceive('update')->andReturn(true);
+        // Radio-specific display field mock
+        $fieldtype->shouldReceive('_display_field')->andReturnUsing(function($data, $container = 'fieldset') {
+            $field_options = ['option1' => 'Option 1', 'option2' => 'Option 2', 'option3' => 'Option 3'];
+
+            $r = '';
+            foreach ($field_options as $key => $value) {
+                $checked = ($key == $data) ? ' checked' : '';
+                $r .= '<label><input type="radio" name="' . $this->field_name . '" value="' . $key . '"' . $checked . '> ' . $value . '</label>';
+            }
+
+            if ($container === 'fieldset') {
+                $r = '<fieldset class="radio-btn-wrap">' . $r . '</fieldset>';
+            }
+
+            return $r;
+        });
+
+        // Radio-specific render table cell
+        $fieldtype->shouldReceive('renderTableCell')->andReturnUsing(function($data) {
+            return $data;
+        });
 
         return $fieldtype;
     }

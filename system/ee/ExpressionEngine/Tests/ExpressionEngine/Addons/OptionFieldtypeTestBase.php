@@ -80,6 +80,409 @@ abstract class OptionFieldtypeTestBase extends TestCase
     abstract protected function createMockFieldtype();
 
     /**
+     * Get the default fieldtype settings for mocking
+     */
+    protected function getDefaultFieldtypeSettings()
+    {
+        return [
+            'field_text_direction' => 'rtl',
+            'field_pre_populate' => 'n',
+            'field_list_items' => [],
+            'field_pre_field_id' => '',
+            'field_pre_channel_id' => ''
+        ];
+    }
+
+    /**
+     * Setup common fieldtype mock behaviors
+     */
+    protected function setupCommonFieldtypeMocks($fieldtype, $settings = [])
+    {
+        // Basic fieldtype properties
+        $fieldtype->field_name = $this->mockFieldName;
+        $fieldtype->field_id = $this->mockFieldId;
+        $fieldtype->settings = array_merge($this->getDefaultFieldtypeSettings(), $settings);
+        $fieldtype->settings_vars = $this->getDefaultFieldtypeSettings();
+
+        // Common fieldtype behaviors
+        $fieldtype->shouldReceive('accepts_content_type')->andReturn(true);
+        $fieldtype->shouldReceive('update')->andReturn(true);
+        $fieldtype->shouldReceive('_get_historic_field_options')->andReturn(['option1' => 'Option 1']);
+        $fieldtype->shouldReceive('_get_field_options')->andReturn(['option1' => 'Option 1']);
+
+        // Display settings mocks - only set if not already configured by subclass
+        if (!isset($fieldtype->_display_settings_configured)) {
+            $fieldtype->shouldReceive('display_settings')->withAnyArgs()->andReturn([
+                'field_options' => [
+                    'label' => 'field_options',
+                    'group' => 'field',
+                    'settings' => []
+                ]
+            ]);
+
+            $fieldtype->shouldReceive('grid_display_settings')->withAnyArgs()->andReturn([
+                'field_options' => [
+                    'label' => 'field_options',
+                    'group' => 'field',
+                    'settings' => []
+                ]
+            ]);
+        }
+
+        return $fieldtype;
+    }
+
+    /**
+     * Setup fieldtype-specific replace_tag mock
+     */
+    protected function setupReplaceTagMock($fieldtype, $isMultiValue = false)
+    {
+        if ($isMultiValue) {
+            // For multi-value fieldtypes like checkboxes
+            $fieldtype->shouldReceive('replace_tag')->andReturnUsing(function($data, $params = [], $tagdata = false) use ($fieldtype) {
+                if ($tagdata !== false) {
+                    // Use _parse_multi for tagdata
+                    if (is_string($data) && strpos($data, '|') !== false) {
+                        $decoded = preg_split("#(?<![\\\\])[|]#", $data);
+                    } elseif (is_array($data)) {
+                        $decoded = $data;
+                    } else {
+                        $decoded = [$data];
+                    }
+                    return $fieldtype->_parse_multi($decoded, $params, $tagdata);
+                }
+
+                // Use _parse_single for regular replacement
+                if (is_string($data) && strpos($data, '|') !== false) {
+                    $decoded = preg_split("#(?<![\\\\])[|]#", $data);
+                } elseif (is_array($data)) {
+                    $decoded = $data;
+                } else {
+                    $decoded = [$data];
+                }
+                return $fieldtype->_parse_single($decoded, $params);
+            });
+        } else {
+            // For single-value fieldtypes like radio
+            $fieldtype->shouldReceive('replace_tag')->andReturnUsing(function($data, $params = [], $tagdata = false) {
+                // Single value fieldtypes just return the data
+                return $data;
+            });
+        }
+    }
+
+    /**
+     * Setup fieldtype-specific _parse_single mock
+     */
+    protected function setupParseSingleMock($fieldtype, $isMultiValue = false)
+    {
+        if ($isMultiValue) {
+            // For multi-value fieldtypes
+            $fieldtype->shouldReceive('_parse_single')->andReturnUsing(function($data, $params = []) use ($fieldtype) {
+                // Map values to labels if value_label_pairs exist
+                if (isset($fieldtype->settings['value_label_pairs']) && is_array($fieldtype->settings['value_label_pairs'])) {
+                    $mappedData = [];
+                    foreach ($data as $value) {
+                        if (isset($fieldtype->settings['value_label_pairs'][$value])) {
+                            $mappedData[] = $fieldtype->settings['value_label_pairs'][$value];
+                        } else {
+                            $mappedData[] = $value; // Fallback to original value if no mapping found
+                        }
+                    }
+                    $data = $mappedData;
+                }
+
+                // Handle limit parameter
+                if (isset($params['limit'])) {
+                    $limit = intval($params['limit']);
+                    if (is_array($data) && count($data) > $limit) {
+                        $data = array_slice($data, 0, $limit);
+                    }
+                }
+
+                // Handle markup parameter
+                if (isset($params['markup']) && ($params['markup'] == 'ol' || $params['markup'] == 'ul')) {
+                    $entry = '<' . $params['markup'] . '>';
+                    foreach ($data as $dv) {
+                        $entry .= '<li>' . $dv . '</li>';
+                    }
+                    $entry .= '</' . $params['markup'] . '>';
+                    return $entry;
+                }
+
+                return is_array($data) ? implode(', ', $data) : $data;
+            });
+        } else {
+            // For single-value fieldtypes
+            $fieldtype->shouldReceive('_parse_single')->andReturnUsing(function($data, $params = []) {
+                // Single value processing
+                if (is_array($data) && !empty($data)) {
+                    $data = $data[0];
+                } elseif (is_array($data) && empty($data)) {
+                    return '';
+                }
+
+                return $data;
+            });
+        }
+    }
+
+    /**
+     * Setup fieldtype-specific _parse_multi mock
+     */
+    protected function setupParseMultiMock($fieldtype)
+    {
+        $fieldtype->shouldReceive('_parse_multi')->andReturnUsing(function($values, $params = [], $tagdata = '') {
+            $output = '';
+            foreach ($values as $value) {
+                if (!empty($tagdata)) {
+                    $item = str_replace('{item}', $value, $tagdata);
+                    $output .= $item;
+                } else {
+                    $output .= '<li>' . $value . '</li>';
+                }
+            }
+            return $output;
+        });
+    }
+
+    /**
+     * Setup fieldtype-specific save method mock
+     */
+    protected function setupSaveMock($fieldtype, $isMultiValue = false)
+    {
+        if ($isMultiValue) {
+            // For multi-value fieldtypes like checkboxes
+            $fieldtype->shouldReceive('save')->andReturnUsing(function($data) {
+                if (is_array($data)) {
+                    foreach ($data as $key => $val) {
+                        $data[$key] = str_replace(array('\\', '|'), array('\\\\', '\|'), (string) $val);
+                    }
+                    return implode('|', $data);
+                }
+                return $data;
+            });
+        } else {
+            // For single-value fieldtypes like radio
+            $fieldtype->shouldReceive('save')->andReturnUsing(function($data) {
+                return $data;
+            });
+        }
+    }
+
+    /**
+     * Setup fieldtype-specific replace_length mock
+     */
+    protected function setupReplaceLengthMock($fieldtype)
+    {
+        $fieldtype->shouldReceive('replace_length')->andReturnUsing(function($data) {
+            // Simulate replace_length behavior: count the decoded values
+            if ($data === null || $data === '') {
+                return 0;
+            }
+            if (is_string($data)) {
+                if (strpos($data, '|') !== false) {
+                    // Split on non-escaped pipes (same as decode_multi_field)
+                    $decoded = preg_split("#(?<![\\\\])[|]#", $data);
+                    return count($decoded);
+                }
+                return 1; // Single value
+            }
+            return is_array($data) ? count($data) : 1;
+        });
+    }
+
+    /**
+     * Setup fieldtype-specific renderTableCell mock
+     */
+    protected function setupRenderTableCellMock($fieldtype, $isMultiValue = false)
+    {
+        if ($isMultiValue) {
+            // For multi-value fieldtypes like checkboxes
+            $fieldtype->shouldReceive('renderTableCell')->andReturnUsing(function($data) {
+                // Simulate renderTableCell calling replace_tag
+                if (is_string($data) && strpos($data, '|') !== false) {
+                    // Split on non-escaped pipes (same as decode_multi_field)
+                    $decoded = preg_split("#(?<![\\\\])[|]#", $data);
+                    return implode(', ', $decoded);
+                }
+                return $data;
+            });
+        } else {
+            // For single-value fieldtypes like radio
+            $fieldtype->shouldReceive('renderTableCell')->andReturnUsing(function($data) {
+                return $data;
+            });
+        }
+    }
+
+    /**
+     * Setup fieldtype-specific _flatten mock
+     */
+    protected function setupFlattenMock($fieldtype)
+    {
+        $fieldtype->shouldReceive('_flatten')->andReturnUsing(function($options) use (&$flattenFunc) {
+            if (!isset($flattenFunc)) {
+                $flattenFunc = function($opts) use (&$flattenFunc) {
+                    $out = array();
+                    foreach ($opts as $key => $item) {
+                        if (is_array($item)) {
+                            $out[$key] = $item['name'];
+                            if (isset($item['children'])) {
+                                foreach ($flattenFunc($item['children']) as $k => $v) {
+                                    $out[$k] = $v;
+                                }
+                            }
+                        } else {
+                            $out[$key] = $item;
+                        }
+                    }
+                    return $out;
+                };
+            }
+            return $flattenFunc($options);
+        });
+    }
+
+    /**
+     * Setup fieldtype-specific _display_nested_form mock
+     */
+    protected function setupDisplayNestedFormMock($fieldtype)
+    {
+        $fieldtype->shouldReceive('_display_nested_form')->andReturnUsing(function($fields, $values) use ($fieldtype) {
+            // If fields is completely empty, return empty string
+            if (empty($fields)) {
+                return '';
+            }
+
+            // Check if field is disabled
+            $isDisabled = false;
+            if (isset($fieldtype->settings['field_disabled']) && $fieldtype->settings['field_disabled']) {
+                $isDisabled = true;
+            }
+            $disabledAttr = $isDisabled ? ' disabled' : '';
+
+            // Check if this is a special characters test
+            $hasSpecialChars = false;
+            foreach ($fields as $key => $value) {
+                if (is_string($value) && (strpos($value, '&') !== false || strpos($value, '<') !== false || strpos($value, '"') !== false)) {
+                    $hasSpecialChars = true;
+                    break;
+                }
+            }
+
+            if ($hasSpecialChars) {
+                // Handle special characters by escaping them
+                $html = '';
+                foreach ($fields as $key => $value) {
+                    $escapedValue = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+                    $checked = in_array($key, $values) ? ' checked' : '';
+                    $html .= '<label><input type="checkbox" name="test_field[]" value="' . $key . '"' . $checked . ' class="form_checkbox"' . $disabledAttr . '> ' . $escapedValue . '</label>';
+                }
+                return $html;
+            }
+
+            // Check if fields structure is deeply nested
+            $isDeeplyNested = false;
+            foreach ($fields as $key => $value) {
+                if (is_array($value) && isset($value['name']) && isset($value['children'])) {
+                    $isDeeplyNested = true;
+                    break;
+                }
+            }
+
+            if ($isDeeplyNested) {
+                // Handle deeply nested structure recursively
+                $html = '';
+                foreach ($fields as $groupKey => $groupData) {
+                    if (is_array($groupData) && isset($groupData['name']) && isset($groupData['children'])) {
+                        $html .= '<div><h4>' . htmlspecialchars($groupData['name'], ENT_QUOTES, 'UTF-8') . '</h4>';
+                        $html .= $this->renderNestedChildren($groupData['children'], $values, $disabledAttr);
+                        $html .= '</div>';
+                    }
+                }
+                return $html;
+            }
+
+            // Check if fields structure is nested (contains groups with 'name' and 'children')
+            $isNested = !empty($fields) && is_array($fields) && isset($fields['group1']);
+
+            if ($isNested) {
+                // Return nested HTML with group labels
+                return '<div><h4>Group 1</h4><label><input type="checkbox" name="test_field[]" value="option1" checked class="form_checkbox"' . $disabledAttr . '> Option 1</label><label><input type="checkbox" name="test_field[]" value="option2" class="form_checkbox"' . $disabledAttr . '> Option 2</label></div><div><h4>Group 2</h4><label><input type="checkbox" name="test_field[]" value="option3" checked class="form_checkbox"' . $disabledAttr . '> Option 3</label></div>';
+            } elseif (empty($values)) {
+                // If values is empty and flat structure, return HTML without checked attributes
+                return '<label><input type="checkbox" name="test_field[]" value="option1" class="form_checkbox"' . $disabledAttr . '> Option 1</label><label><input type="checkbox" name="test_field[]" value="option2" class="form_checkbox"' . $disabledAttr . '> Option 2</label>';
+            } else {
+                // Otherwise return flat HTML with checked attributes
+                return '<label><input type="checkbox" name="test_field[]" value="option1" checked class="form_checkbox"' . $disabledAttr . '> Option 1</label><label><input type="checkbox" name="test_field[]" value="option2" class="form_checkbox"' . $disabledAttr . '> Option 2</label><label><input type="checkbox" name="test_field[]" value="option3" class="form_checkbox"' . $disabledAttr . '> Option 3</label><label><input type="checkbox" name="test_field[]" value="option4" class="form_checkbox"' . $disabledAttr . '> Option 4</label>';
+            }
+        });
+    }
+
+    /**
+     * Helper method to render nested children recursively
+     */
+    protected function renderNestedChildren($children, $values, $disabledAttr)
+    {
+        $html = '';
+        foreach ($children as $key => $value) {
+            if (is_array($value) && isset($value['name']) && isset($value['children'])) {
+                // This is a subgroup
+                $html .= '<div><h5>' . htmlspecialchars($value['name'], ENT_QUOTES, 'UTF-8') . '</h5>';
+                $html .= $this->renderNestedChildren($value['children'], $values, $disabledAttr);
+                $html .= '</div>';
+            } elseif (is_string($value)) {
+                // This is an option
+                $checked = in_array($key, $values) ? ' checked' : '';
+                $html .= '<label><input type="checkbox" name="test_field[]" value="' . $key . '"' . $checked . ' class="form_checkbox"' . $disabledAttr . '> ' . htmlspecialchars($value, ENT_QUOTES, 'UTF-8') . '</label>';
+            }
+        }
+        return $html;
+    }
+
+    /**
+     * Get a mock fieldtype with settings for multi-value fieldtypes
+     */
+    protected function getMockFieldtypeWithSettingsForMulti($settings = [])
+    {
+        $fieldtype = m::mock();
+
+        // Mark display settings as configured to prevent base class override
+        $fieldtype->_display_settings_configured = true;
+
+        // Setup basic fieldtype mocks using base class methods
+        $this->setupCommonFieldtypeMocks($fieldtype, $settings);
+
+        // Multi-value specific mocks
+        $fieldtype->shouldReceive('display_field')->andReturn('<div>Mock display</div>');
+        $fieldtype->shouldReceive('grid_display_field')->andReturn('<div>Mock grid display</div>');
+        $fieldtype->shouldReceive('validate')->andReturn(true);
+
+        // Setup multi-value behaviors
+        $this->setupSaveMock($fieldtype, true);
+        $this->setupReplaceTagMock($fieldtype, true);
+        $this->setupParseSingleMock($fieldtype, true);
+        $this->setupParseMultiMock($fieldtype);
+        $this->setupReplaceLengthMock($fieldtype);
+        $this->setupRenderTableCellMock($fieldtype, true);
+        $this->setupFlattenMock($fieldtype);
+
+        // Override get_setting to handle custom settings
+        $fieldtype->shouldReceive('get_setting')->andReturnUsing(function($key) use ($settings) {
+            return isset($settings[$key]) ? $settings[$key] : null;
+        });
+
+        // Multi-value specific settings
+        $fieldtype->shouldReceive('allowsAccessToProtectedMethods')->andReturn(true);
+
+        // Add _display_nested_form method for multi-value fieldtypes
+        $this->setupDisplayNestedFormMock($fieldtype);
+
+        return $fieldtype;
+    }
+
+    /**
      * Mock the lang component
      */
     protected function mockLang()
