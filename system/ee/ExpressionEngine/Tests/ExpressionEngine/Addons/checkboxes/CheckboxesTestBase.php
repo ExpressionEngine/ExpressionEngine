@@ -8,38 +8,14 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-// Bootstrap minimal EE environment so we can include the real class
-if (!defined('APP_VER')) {
-    define('APP_VER', '7.5.14');
-}
-if (!defined('BASEPATH')) {
-    define('BASEPATH', __DIR__ . '/../../../legacy/');
-}
-// Determine addons path relative to this file when core bootstrap is not used
-$__addons = (defined('SYSPATH') ? (SYSPATH . 'ee/ExpressionEngine/Addons/') : (__DIR__ . '/../../../../Addons/'));
-if (!defined('PATH_ADDONS')) {
-    define('PATH_ADDONS', $__addons);
-}
-if (!defined('PATH_PRO_ADDONS')) {
-    define('PATH_PRO_ADDONS', PATH_ADDONS);
-}
-if (!defined('PATH_MOD')) {
-    define('PATH_MOD', PATH_ADDONS);
-}
+require_once __DIR__ . '/../OptionFieldtypeTestBase.php';
 
-// Include the eeObjectMock for testing
-require_once __DIR__ . '/../../../eeObjectMock.php';
-// Include the custom field helper for encode/decode functions
-require_once __DIR__ . '/../../../../../legacy/helpers/custom_field_helper.php';
-// Note: We'll mock the fieldtype dependencies instead of requiring them directly
-
-use PHPUnit\Framework\TestCase;
 use Mockery as m;
 
 /**
  * Base test class for Checkboxes fieldtype tests
  */
-abstract class CheckboxesTestBase extends TestCase
+abstract class CheckboxesTestBase extends OptionFieldtypeTestBase
 {
     protected $fieldtype;
     protected $mockFieldName = 'test_field';
@@ -49,21 +25,32 @@ abstract class CheckboxesTestBase extends TestCase
     {
         parent::setUp();
 
-        // Reset ee() mock between tests
-        ee()->resetMocks();
-
-        // Mock essential EE components
-        $this->mockLang();
-
         // Create a mock fieldtype instance with the methods we need
-        $this->fieldtype = m::mock();
-        $this->fieldtype->shouldReceive('display_field')->andReturn('<div>Mock display</div>');
-        $this->fieldtype->shouldReceive('grid_display_field')->andReturn('<div>Mock grid display</div>');
-        $this->fieldtype->shouldReceive('get_setting')->andReturn(null);
+        $this->fieldtype = $this->createMockFieldtype();
+    }
 
-        $this->fieldtype->shouldReceive('validate')->andReturn(true);
-        $this->fieldtype->shouldReceive('save')->andReturnUsing(function($data) {
-            // Simulate the actual save method behavior
+    public function tearDown(): void
+    {
+        parent::tearDown();
+
+        // Clean up mocks
+        ee()->resetMocks();
+        m::close();
+    }
+
+    /**
+     * Create a mock fieldtype instance specific to Checkboxes fieldtype
+     */
+    protected function createMockFieldtype()
+    {
+        $fieldtype = m::mock();
+        $fieldtype->shouldReceive('display_field')->andReturn('<div>Mock display</div>');
+        $fieldtype->shouldReceive('grid_display_field')->andReturn('<div>Mock grid display</div>');
+        $fieldtype->shouldReceive('get_setting')->andReturn(null);
+
+        $fieldtype->shouldReceive('validate')->andReturn(true);
+        $fieldtype->shouldReceive('save')->andReturnUsing(function($data) {
+            // Simulate the actual save method behavior for checkboxes (handles arrays)
             if (is_array($data)) {
                 // Escape pipes and backslashes, then join with pipes
                 foreach ($data as $key => $val) {
@@ -73,7 +60,7 @@ abstract class CheckboxesTestBase extends TestCase
             }
             return $data;
         });
-        $this->fieldtype->shouldReceive('replace_tag')->andReturnUsing(function($data, $params = [], $tagdata = false) use (&$fieldtype) {
+        $fieldtype->shouldReceive('replace_tag')->andReturnUsing(function($data, $params = [], $tagdata = false) {
             // If tagdata is provided, this indicates we should use _parse_multi
             if ($tagdata !== false) {
                 // Decode the data first (simulate decode_multi_field behavior)
@@ -100,7 +87,7 @@ abstract class CheckboxesTestBase extends TestCase
             // Call the mocked _parse_single method to handle parameters like limit
             return $fieldtype->_parse_single($decoded, $params);
         });
-        $this->fieldtype->shouldReceive('replace_length')->andReturnUsing(function($data) {
+        $fieldtype->shouldReceive('replace_length')->andReturnUsing(function($data) {
             // Simulate replace_length behavior: count the decoded values
             if ($data === null || $data === '') {
                 return 0;
@@ -115,7 +102,7 @@ abstract class CheckboxesTestBase extends TestCase
             }
             return is_array($data) ? count($data) : 1;
         });
-        $this->fieldtype->shouldReceive('renderTableCell')->andReturnUsing(function($data) {
+        $fieldtype->shouldReceive('renderTableCell')->andReturnUsing(function($data) {
             // Simulate renderTableCell calling replace_tag
             if (is_string($data) && strpos($data, '|') !== false) {
                 // Split on non-escaped pipes (same as decode_multi_field)
@@ -124,31 +111,26 @@ abstract class CheckboxesTestBase extends TestCase
             }
             return $data;
         });
-        $this->fieldtype->shouldReceive('accepts_content_type')->andReturn(true);
-        $this->fieldtype->shouldReceive('update')->andReturn(true);
-        $this->fieldtype->shouldReceive('_get_historic_field_options')->andReturn(['option1' => 'Option 1']);
-        $this->fieldtype->shouldReceive('_flatten')->andReturnUsing(function($options) use (&$flattenFunc) {
-            if (!isset($flattenFunc)) {
-                $flattenFunc = function($opts) use (&$flattenFunc) {
-                    $out = array();
-                    foreach ($opts as $key => $item) {
-                        if (is_array($item)) {
-                            $out[$key] = $item['name'];
-                            if (isset($item['children'])) {
-                                foreach ($flattenFunc($item['children']) as $k => $v) {
-                                    $out[$k] = $v;
-                                }
-                            }
-                        } else {
-                            $out[$key] = $item;
+        $fieldtype->shouldReceive('accepts_content_type')->andReturn(true);
+        $fieldtype->shouldReceive('update')->andReturn(true);
+        $fieldtype->shouldReceive('_get_historic_field_options')->andReturn(['option1' => 'Option 1']);
+        $fieldtype->shouldReceive('_flatten')->andReturnUsing(function($options) {
+            $out = array();
+            foreach ($options as $key => $item) {
+                if (is_array($item)) {
+                    $out[$key] = $item['name'];
+                    if (isset($item['children'])) {
+                        foreach ($this->_flatten($item['children']) as $k => $v) {
+                            $out[$k] = $v;
                         }
                     }
-                    return $out;
-                };
+                } else {
+                    $out[$key] = $item;
+                }
             }
-            return $flattenFunc($options);
+            return $out;
         });
-        $this->fieldtype->shouldReceive('_parse_single')->andReturnUsing(function($data, $params = []) use (&$fieldtype) {
+        $fieldtype->shouldReceive('_parse_single')->andReturnUsing(function($data, $params = []) {
             // Handle limit parameter
             if (isset($params['limit'])) {
                 $limit = intval($params['limit']);
@@ -157,9 +139,9 @@ abstract class CheckboxesTestBase extends TestCase
                 }
             }
 
-            // Handle value-label pairs (if fieldtype has get_setting method)
-            if (is_array($data) && method_exists($fieldtype, 'get_setting')) {
-                $pairs = $fieldtype->get_setting('value_label_pairs');
+            // Handle value-label pairs
+            if (is_array($data) && isset($this->settings['value_label_pairs'])) {
+                $pairs = $this->settings['value_label_pairs'];
                 if (!empty($pairs)) {
                     foreach ($data as $key => $value) {
                         if (isset($pairs[$value])) {
@@ -183,7 +165,7 @@ abstract class CheckboxesTestBase extends TestCase
 
             return is_array($data) ? implode(', ', $data) : $data;
         });
-        $this->fieldtype->shouldReceive('_parse_multi')->andReturnUsing(function($values, $params = [], $tagdata = '') {
+        $fieldtype->shouldReceive('_parse_multi')->andReturnUsing(function($values, $params = [], $tagdata = '') {
             // Default implementation for _parse_multi that respects tagdata
             $output = '';
             foreach ($values as $value) {
@@ -198,7 +180,7 @@ abstract class CheckboxesTestBase extends TestCase
             }
             return $output;
         });
-        $this->fieldtype->shouldReceive('_display_nested_form')->andReturnUsing(function($fields, $values) {
+        $fieldtype->shouldReceive('_display_nested_form')->andReturnUsing(function($fields, $values) {
             // If fields is completely empty, return empty string
             if (empty($fields)) {
                 return '';
@@ -218,26 +200,16 @@ abstract class CheckboxesTestBase extends TestCase
                 return '<label><input type="checkbox" name="test_field[]" value="option1" checked class="form_checkbox"> Option 1</label><label><input type="checkbox" name="test_field[]" value="option2" class="form_checkbox"> Option 2</label><label><input type="checkbox" name="test_field[]" value="option3" class="form_checkbox"> Option 3</label><label><input type="checkbox" name="test_field[]" value="option4" class="form_checkbox"> Option 4</label>';
             }
         });
-        $this->fieldtype->shouldReceive('get_setting')->andReturn(null);
-        $this->fieldtype->shouldReceive('allowsAccessToProtectedMethods')->andReturn(true);
+        $fieldtype->shouldReceive('display_settings')->andReturn(['field_options_checkboxes' => []]);
+        $fieldtype->shouldReceive('grid_display_settings')->andReturn(['field_options_checkboxes' => []]);
+        $fieldtype->shouldReceive('allowsAccessToProtectedMethods')->andReturn(true);
 
-        $this->fieldtype->field_name = $this->mockFieldName;
-        $this->fieldtype->field_id = $this->mockFieldId;
-        $this->fieldtype->settings = [];
-        $this->fieldtype->settings_vars = [];
+        $fieldtype->field_name = $this->mockFieldName;
+        $fieldtype->field_id = $this->mockFieldId;
+        $fieldtype->settings = [];
+        $fieldtype->settings_vars = [];
 
-        // Mock common EE components
-        $this->mockLang();
-        $this->mockLoad();
-    }
-
-    public function tearDown(): void
-    {
-        parent::tearDown();
-
-        // Clean up mocks
-        ee()->resetMocks();
-        m::close();
+        return $fieldtype;
     }
 
     /**
