@@ -22,7 +22,7 @@ class StructureSetSitePagesTest extends StructureTestBase
             public function query($sql)
             {
                 $this->cap->queries[] = $sql;
-                return new FakeDbResult([]);
+                return new eeDbResultMock([]);
             }
         });
 
@@ -46,7 +46,7 @@ class StructureSetSitePagesTest extends StructureTestBase
             private $cap; public function __construct($c){$this->cap=$c;}
             public function escape_str($str){ return addslashes($str); }
             public function update_string($table, $data, $where){ $this->cap->data=$data; $this->cap->where=$where; return 'UPDATE'; }
-            public function query($sql){ return new FakeDbResult([]); }
+            public function query($sql){ return new eeDbResultMock([]); }
         });
         $pages = ['url' => '/', 'uris' => [9 => '/x']];
         $this->structure->set_site_pages(5, $pages);

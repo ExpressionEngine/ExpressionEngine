@@ -186,6 +186,12 @@ class eeSingletonInputMock
     public function get_post($item)
     {
     }
+
+    public function get($item)
+    {
+        // Mock implementation - return null for most cases
+        return null;
+    }
 }
 
 class eeLangMock
@@ -279,15 +285,247 @@ class eeDbResultMock
     {
         return $this->rows;
     }
-    public function row()
+    public function row($column = null)
     {
         if (empty($this->rows)) {
             return null;
         }
-        return (object) $this->rows[0];
+        $row = (object) $this->rows[0];
+        if ($column !== null && isset($row->$column)) {
+            return $row->$column;
+        }
+        return $row;
+    }
+    public function row_array()
+    {
+        if (empty($this->rows)) {
+            return [];
+        }
+        return $this->rows[0];
     }
     public function free_result()
     {
         // no-op for tests
+    }
+}
+
+// Enhanced fake classes for broader test compatibility
+class FakeTemplate
+{
+    public $map = [];
+    public $tagdata = '';
+    public $tagproper = '';
+    public $site_ids = [1];
+    public $cache_timestamp = '';
+    public $var_single = [];
+
+    public function setMap(array $map): void { $this->map = $map; }
+    public function setTagdata(string $tagdata): void { $this->tagdata = $tagdata; }
+    public function no_results() { return 'NO_RESULTS'; }
+    public function fetch_param($key, $default = null) {
+        return array_key_exists($key, $this->map) ? $this->map[$key] : $default;
+    }
+    public function set_data($data) { /* no-op */ }
+    public function parse_variables($tagdata, $vars) {
+        // Simple variable replacement for testing
+        $result = $tagdata;
+        foreach ($vars as $var) {
+            if (isset($var['prev']) && is_array($var['prev'])) {
+                foreach ($var['prev'] as $prev) {
+                    $result = str_replace('{prev_title}', $prev['title'], $result);
+                    $result = str_replace('{prev_url}', $prev['url'], $result);
+                    $result = str_replace('{prev_entry_id}', $prev['entry_id'], $result);
+                }
+            }
+            if (isset($var['next']) && is_array($var['next'])) {
+                foreach ($var['next'] as $next) {
+                    $result = str_replace('{next_title}', $next['title'], $result);
+                    $result = str_replace('{next_url}', $next['url'], $result);
+                    $result = str_replace('{next_entry_id}', $next['entry_id'], $result);
+                }
+            }
+        }
+        return $result;
+    }
+
+    public function log_item($str)
+    {
+        // Simple no-op for logging in tests
+        return true;
+    }
+}
+
+class FakeConfig
+{
+    public $items = [];
+    public function item($key) { return array_key_exists($key, $this->items) ? $this->items[$key] : null; }
+}
+
+class FakeFunctions
+{
+    public function fetch_site_index($a = 0, $b = 0) { return '/'; }
+    public function create_url($path = '') { return 'https://example.com/'; }
+    public function assign_parameters($param_string)
+    {
+        $params = [];
+        $param_string = trim($param_string);
+        if ($param_string === '') {
+            return $params;
+        }
+        // Very simple key="value" parser
+        preg_match_all('/(\w+)\s*=\s*"([^"]*)"/', $param_string, $matches, PREG_SET_ORDER);
+        foreach ($matches as $m) {
+            $params[$m[1]] = $m[2];
+        }
+        return $params;
+    }
+    public function prep_conditionals($str, $vars = [])
+    {
+        // Simple mock implementation - just return the string
+        return $str;
+    }
+
+    public function sql_andor_string($str, $field)
+    {
+        // Simple mock implementation for SQL AND/OR string generation
+        if (strpos($str, '|') !== false) {
+            $parts = explode('|', $str);
+            $conditions = [];
+            foreach ($parts as $part) {
+                $conditions[] = "$field = '$part'";
+            }
+            return ' AND (' . implode(' OR ', $conditions) . ')';
+        }
+        return " AND $field = '$str'";
+    }
+}
+
+class FakeDb
+{
+    public $rows = [];
+    private $whereConditions = [];
+    private $whereInConditions = [];
+    private $limitValue = null;
+    private $tableName = null;
+
+    public function setRows(array $rows): void { $this->rows = $rows; }
+    public function query($sql) { return new eeDbResultMock($this->rows); }
+
+    public function where($field, $value = null)
+    {
+        if ($value === null) {
+            // Handle single argument case - treat $field as a condition
+            $this->whereConditions[] = $field;
+        } else {
+            $this->whereConditions[$field] = $value;
+        }
+        return $this;
+    }
+
+    public function where_in($field, $values)
+    {
+        $this->whereInConditions[$field] = (array) $values;
+        return $this;
+    }
+
+    public function limit($value)
+    {
+        $this->limitValue = $value;
+        return $this;
+    }
+
+    public function select($fields = '*')
+    {
+        return $this;
+    }
+
+    public function from($table)
+    {
+        $this->tableName = $table;
+        return $this;
+    }
+
+    public function order_by($field, $direction = '')
+    {
+        return $this;
+    }
+
+    public function escape_str($str)
+    {
+        return addslashes($str);
+    }
+
+    public function join($table, $cond, $type = '')
+    {
+        return $this;
+    }
+
+    public function get($table = null)
+    {
+        if ($table) {
+            $this->tableName = $table;
+        }
+        $filtered = $this->rows;
+
+        foreach ($this->whereConditions as $field => $value) {
+            $filtered = array_values(array_filter($filtered, function ($row) use ($field, $value) {
+                return isset($row[$field]) && $row[$field] == $value;
+            }));
+        }
+        foreach ($this->whereInConditions as $field => $values) {
+            $filtered = array_values(array_filter($filtered, function ($row) use ($field, $values) {
+                return isset($row[$field]) && in_array($row[$field], $values);
+            }));
+        }
+
+        if (!is_null($this->limitValue)) {
+            $filtered = array_slice($filtered, 0, $this->limitValue);
+        }
+
+        // Reset conditions between calls
+        $this->whereConditions = [];
+        $this->whereInConditions = [];
+        $this->limitValue = null;
+
+        return new eeDbResultMock($filtered);
+    }
+}
+
+// Test environment class with proper method support
+class TestEnvironment
+{
+    public $mocks = [];
+    public $TMPL;
+    public $config;
+    public $functions;
+    public $db;
+    public $uri;
+    public $session;
+    public $extensions;
+    public $api_channel_fields;
+    public $load;
+    public $cache;
+    public $input;
+    public $lang;
+    public $legacy_api;
+    public $localize;
+
+    public function setMock($name, $mock)
+    {
+        $this->mocks[$name] = $mock;
+        // Also set as a direct property for ee()->uri access
+        $this->$name = $mock;
+    }
+
+    public function set($name, $value)
+    {
+        $this->$name = $value;
+    }
+
+    public function remove($name)
+    {
+        if (isset($this->$name)) {
+            unset($this->$name);
+        }
     }
 }

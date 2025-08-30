@@ -34,7 +34,7 @@ class StructureNavParserAddEntryVarsEe23Test extends StructureTestBase
         ];
         ee()->extensions->hooks['structure_get_custom_variables'] = [
             'active' => true,
-            'return' => new FakeDbResult($rows),
+            'return' => new eeDbResultMock($rows),
         ];
 
         // Ensure template var arrays exist for get_vars_to_parse()

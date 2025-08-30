@@ -28,7 +28,7 @@ class StructureFirstChildRedirectTest extends StructureTestBase
 
         // Fake DB returns first child id 101
         ee()->setMock('db', new class extends FakeDb {
-            public function query($sql) { return new FakeDbResult([[ 'entry_id' => 101 ]]); }
+            public function query($sql) { return new eeDbResultMock([[ 'entry_id' => 101 ]]); }
         });
     }
 

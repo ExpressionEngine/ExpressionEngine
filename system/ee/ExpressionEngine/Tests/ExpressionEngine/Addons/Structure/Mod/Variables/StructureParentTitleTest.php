@@ -76,15 +76,15 @@ class StructureParentTitleTest extends StructureTestBase
         ee()->setMock('db', new class extends FakeDb {
             public function query($sql) {
                 if (strpos($sql, 'FROM exp_channel_titles') !== false) {
-                    return new FakeDbResult([[ 'channel_id' => 77 ]]);
+                    return new eeDbResultMock([[ 'channel_id' => 77 ]]);
                 }
                 if (strpos($sql, 'FROM exp_structure') !== false && strpos($sql, 'listing_cid') !== false) {
-                    return new FakeDbResult([[ 'entry_id' => 5 ]]);
+                    return new eeDbResultMock([[ 'entry_id' => 5 ]]);
                 }
                 if (strpos($sql, 'INNER JOIN exp_channel_titles') !== false) {
-                    return new FakeDbResult([[ 'entry_id' => 5, 'title' => 'Parent Title' ]]);
+                    return new eeDbResultMock([[ 'entry_id' => 5, 'title' => 'Parent Title' ]]);
                 }
-                return new FakeDbResult([]);
+                return new eeDbResultMock([]);
             }
         });
 
