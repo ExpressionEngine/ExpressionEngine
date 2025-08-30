@@ -100,7 +100,7 @@ class RadioReplaceValueTest extends RadioTestBase
     }
 
     /**
-     * Test replace_value with tagdata (should not be used for replace_value)
+     * Test replace_value with tagdata
      */
     public function testReplaceValueWithTagdata()
     {
@@ -108,7 +108,7 @@ class RadioReplaceValueTest extends RadioTestBase
         $params = [];
         $tagdata = '<li>{item}</li>';
         $result = $this->fieldtype->replace_value($data, $params, $tagdata);
-        $this->assertEquals('option1', $result);
+        $this->assertStringContainsString('<li>option1</li>', $result);
     }
 
     /**

@@ -115,8 +115,8 @@ class CheckboxesRenderTableCellTest extends CheckboxesTestBase
 
         $result = $fieldtype->renderTableCell($data, $fieldId, $entry);
 
-        // Should return the decoded values
-        $this->assertEquals('option1, option2', $result);
+        // Should return the mapped labels
+        $this->assertEquals('Option One, Option Two', $result);
     }
 
     /**

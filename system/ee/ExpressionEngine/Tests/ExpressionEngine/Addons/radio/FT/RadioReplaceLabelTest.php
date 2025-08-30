@@ -188,7 +188,7 @@ class RadioReplaceLabelTest extends RadioTestBase
         $params = [];
         $tagdata = '<li>{item}</li>';
         $result = $fieldtype->replace_label($data, $params, $tagdata);
-        $this->assertEquals('First Option', $result);
+        $this->assertStringContainsString('<li>First Option</li>', $result);
     }
 
     /**

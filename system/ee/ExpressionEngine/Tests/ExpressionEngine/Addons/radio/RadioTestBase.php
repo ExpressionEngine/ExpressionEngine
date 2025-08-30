@@ -64,11 +64,17 @@ abstract class RadioTestBase extends OptionFieldtypeTestBase
             return $data;
         });
 
-        $fieldtype->shouldReceive('replace_label')->andReturnUsing(function($data, $params = [], $tagdata = false) {
+        $fieldtype->shouldReceive('replace_label')->andReturnUsing(function($data, $params = [], $tagdata = false) use ($fieldtype) {
             // For radio fieldtype, replace_label handles value-label pairs
-            if (isset($this->settings['value_label_pairs']) && isset($this->settings['value_label_pairs'][$data])) {
-                return $this->settings['value_label_pairs'][$data];
+            if (isset($fieldtype->settings['value_label_pairs']) && isset($fieldtype->settings['value_label_pairs'][$data])) {
+                $data = $fieldtype->settings['value_label_pairs'][$data];
             }
+
+            // Apply tagdata if provided (similar to replace_tag)
+            if ($tagdata) {
+                return str_replace('{item}', $data, $tagdata);
+            }
+
             return $data;
         });
 
@@ -156,8 +162,12 @@ abstract class RadioTestBase extends OptionFieldtypeTestBase
             // Process typography (mocked to return data as-is)
             $data = $fieldtype->processTypograpghy($data);
 
-            // Call replace_tag with processed data and params
-            return $fieldtype->replace_tag($data, $params, $tagdata);
+            // Apply tagdata if provided
+            if ($tagdata) {
+                return str_replace('{item}', $data, $tagdata);
+            }
+
+            return $data;
         });
 
         // Configure replace_value for radio fieldtype

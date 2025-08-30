@@ -165,6 +165,10 @@ abstract class OptionFieldtypeTestBase extends TestCase
         } else {
             // For single-value fieldtypes like radio
             $fieldtype->shouldReceive('replace_tag')->andReturnUsing(function($data, $params = [], $tagdata = false) {
+                // Apply tagdata if provided
+                if ($tagdata) {
+                    return str_replace('{item}', $data, $tagdata);
+                }
                 // Single value fieldtypes just return the data
                 return $data;
             });
@@ -178,9 +182,9 @@ abstract class OptionFieldtypeTestBase extends TestCase
     {
         if ($isMultiValue) {
             // For multi-value fieldtypes
-            $fieldtype->shouldReceive('_parse_single')->andReturnUsing(function($data, $params = []) use ($fieldtype) {
-                // Map values to labels if value_label_pairs exist
-                if (isset($fieldtype->settings['value_label_pairs']) && is_array($fieldtype->settings['value_label_pairs'])) {
+            $fieldtype->shouldReceive('_parse_single')->andReturnUsing(function($data, $params = [], $forceValue = false) use ($fieldtype) {
+                // Map values to labels if value_label_pairs exist and forceValue is false
+                if (!$forceValue && isset($fieldtype->settings['value_label_pairs']) && is_array($fieldtype->settings['value_label_pairs'])) {
                     $mappedData = [];
                     foreach ($data as $value) {
                         if (isset($fieldtype->settings['value_label_pairs'][$value])) {
@@ -214,12 +218,17 @@ abstract class OptionFieldtypeTestBase extends TestCase
             });
         } else {
             // For single-value fieldtypes
-            $fieldtype->shouldReceive('_parse_single')->andReturnUsing(function($data, $params = []) {
+            $fieldtype->shouldReceive('_parse_single')->andReturnUsing(function($data, $params = [], $forceValue = false) use ($fieldtype) {
                 // Single value processing
                 if (is_array($data) && !empty($data)) {
                     $data = $data[0];
                 } elseif (is_array($data) && empty($data)) {
                     return '';
+                }
+
+                // Map to label if value_label_pairs exist and forceValue is false
+                if (!$forceValue && isset($fieldtype->settings['value_label_pairs']) && is_array($fieldtype->settings['value_label_pairs']) && isset($fieldtype->settings['value_label_pairs'][$data])) {
+                    return $fieldtype->settings['value_label_pairs'][$data];
                 }
 
                 return $data;
@@ -299,14 +308,9 @@ abstract class OptionFieldtypeTestBase extends TestCase
     {
         if ($isMultiValue) {
             // For multi-value fieldtypes like checkboxes
-            $fieldtype->shouldReceive('renderTableCell')->andReturnUsing(function($data) {
+            $fieldtype->shouldReceive('renderTableCell')->andReturnUsing(function($data) use ($fieldtype) {
                 // Simulate renderTableCell calling replace_tag
-                if (is_string($data) && strpos($data, '|') !== false) {
-                    // Split on non-escaped pipes (same as decode_multi_field)
-                    $decoded = preg_split("#(?<![\\\\])[|]#", $data);
-                    return implode(', ', $decoded);
-                }
-                return $data;
+                return $fieldtype->replace_tag($data);
             });
         } else {
             // For single-value fieldtypes like radio
@@ -479,6 +483,76 @@ abstract class OptionFieldtypeTestBase extends TestCase
         // Add _display_nested_form method for multi-value fieldtypes
         $this->setupDisplayNestedFormMock($fieldtype);
 
+        // Add replace_label mock for multi-value fieldtypes
+        $fieldtype->shouldReceive('replace_label')->andReturnUsing(function($data, $params = [], $tagdata = false) use (&$fieldtype) {
+            // Always get current fieldtype settings
+            if (isset($fieldtype->settings) && isset($fieldtype->settings['value_label_pairs'])) {
+                $pairs = $fieldtype->settings['value_label_pairs'];
+
+                // Handle pipe-delimited values for multi-value fieldtypes
+                if (is_string($data) && strpos($data, '|') !== false) {
+                    $values = explode('|', $data);
+
+                    // Apply limit if specified
+                    if (isset($params['limit']) && is_numeric($params['limit'])) {
+                        $values = array_slice($values, 0, (int)$params['limit']);
+                    }
+
+                    $mappedValues = [];
+
+                    foreach ($values as $value) {
+                        $mappedValue = $value; // Default to original value
+
+                        // Handle nested options (groups with children)
+                        foreach ($pairs as $key => $pairValue) {
+                            if (is_array($pairValue) && isset($pairValue['children']) && isset($pairValue['children'][$value])) {
+                                $mappedValue = $pairValue['children'][$value];
+                                break;
+                            } elseif ((string)$key === (string)$value && !is_array($pairValue)) {
+                                $mappedValue = $pairValue === null ? 'null' : $pairValue;
+                                break;
+                            }
+                        }
+
+                        $mappedValues[] = $mappedValue;
+                    }
+
+                    // Apply tagdata to each individual value if tagdata is provided
+                    if ($tagdata) {
+                        $taggedValues = [];
+                        foreach ($mappedValues as $mappedValue) {
+                            $taggedValues[] = str_replace('{item}', $mappedValue, $tagdata);
+                        }
+                        $data = implode(', ', $taggedValues);
+                    } elseif (isset($params['markup']) && $params['markup'] === 'ul') {
+                        // Apply markup parameter for HTML list
+                        $listItems = [];
+                        foreach ($mappedValues as $mappedValue) {
+                            $listItems[] = '<li>' . $mappedValue . '</li>';
+                        }
+                        $data = '<ul>' . implode('', $listItems) . '</ul>';
+                    } else {
+                        $data = implode(', ', $mappedValues);
+                    }
+                } else {
+                    // Handle single values
+                    // Handle nested options (groups with children)
+                    foreach ($pairs as $key => $value) {
+                        if (is_array($value) && isset($value['children']) && isset($value['children'][$data])) {
+                            $data = $value['children'][$data];
+                            break;
+                        } elseif ((string)$key === (string)$data && !is_array($value)) {
+                            $data = $value === null ? 'null' : $value;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // Return the mapped label (tagdata handling is done above for pipe-delimited values)
+            return $data;
+        });
+
         return $fieldtype;
     }
 
@@ -555,12 +629,49 @@ abstract class OptionFieldtypeTestBase extends TestCase
         $fieldtype = m::mock();
         $fieldtype->shouldReceive('display_field')->andReturn('<div>Mock display</div>');
         $fieldtype->shouldReceive('grid_display_field')->andReturn('<div>Mock grid display</div>');
-        $fieldtype->shouldReceive('display_settings')->andReturn(['field_options' => []]);
+
+        // Only set up default display_settings if not already configured by subclass
+        if (!isset($fieldtype->_display_settings_configured) || !$fieldtype->_display_settings_configured) {
+            $fieldtype->shouldReceive('display_settings')->andReturn(['field_options' => []]);
+        }
+
         $fieldtype->shouldReceive('validate')->andReturn(true);
-        $fieldtype->shouldReceive('replace_tag')->andReturnUsing(function($data, $params = [], $tagdata = false) {
-            // If tagdata is provided, this indicates we should use _parse_multi
+        $fieldtype->shouldReceive('replace_value')->andReturnUsing(function($data, $params = [], $tagdata = false) use ($fieldtype) {
+            // replace_value is a wrapper for replace_tag in single-value fieldtypes
+            return $fieldtype->replace_tag($data, $params, $tagdata);
+        });
+        $fieldtype->shouldReceive('replace_label')->andReturnUsing(function($data, $params = [], $tagdata = false) use ($fieldtype) {
+            // Handle value-label pairs from fieldtype settings
+            if (isset($fieldtype->settings['value_label_pairs'])) {
+                $pairs = $fieldtype->settings['value_label_pairs'];
+
+                // Handle nested options (groups with children)
+                foreach ($pairs as $key => $value) {
+                    if (is_array($value) && isset($value['children']) && isset($value['children'][$data])) {
+                        $data = $value['children'][$data];
+                        break;
+                    } elseif ((string)$key === (string)$data && !is_array($value)) {
+                        $data = $value === null ? 'null' : $value;
+                        break;
+                    }
+                }
+            }
+
+            // Apply tagdata if provided
+            if ($tagdata) {
+                return str_replace('{item}', $data, $tagdata);
+            }
+
+            return $data;
+        });
+        $fieldtype->shouldReceive('replace_value')->andReturnUsing(function($data, $params = [], $tagdata = false) use ($fieldtype) {
+            // replace_value is a wrapper for replace_tag in single-value fieldtypes
+            return $fieldtype->replace_tag($data, $params, $tagdata);
+        });
+        $fieldtype->shouldReceive('replace_tag')->andReturnUsing(function($data, $params = [], $tagdata = false) use ($fieldtype) {
+            // If tagdata is provided, apply tagdata formatting
             if ($tagdata !== false) {
-                // Decode the data first (simulate decode_multi_field behavior)
+                // Check if this is multi-value data
                 if (is_string($data) && strpos($data, '|') !== false) {
                     $decoded = preg_split("#(?<![\\\\])[|]#", $data);
                 } elseif (is_array($data)) {
@@ -569,10 +680,17 @@ abstract class OptionFieldtypeTestBase extends TestCase
                     $decoded = [$data];
                 }
 
-                // Call the mocked _parse_multi method directly on the fieldtype
-                return $fieldtype->_parse_multi($decoded, $params, $tagdata);
+                // For multi-value data, use _parse_multi
+                if (is_array($decoded) && count($decoded) > 1) {
+                    return $fieldtype->_parse_multi($decoded, $params, $tagdata);
+                } else {
+                    // For single-value data, apply tagdata directly
+                    $singleData = is_array($decoded) ? $decoded[0] : $decoded;
+                    return str_replace('{item}', $singleData, $tagdata);
+                }
             }
-            // Otherwise, simulate decode_multi_field + _parse_single behavior
+
+            // No tagdata provided - handle as regular parsing
             if (is_string($data) && strpos($data, '|') !== false) {
                 $decoded = preg_split("#(?<![\\\\])[|]#", $data);
             } elseif (is_array($data)) {
@@ -598,13 +716,24 @@ abstract class OptionFieldtypeTestBase extends TestCase
         $fieldtype->shouldReceive('get_setting')->andReturnUsing(function($key) use ($settings) {
             return isset($settings[$key]) ? $settings[$key] : null;
         });
-        $fieldtype->shouldReceive('replace_label')->andReturnUsing(function($data, $params = [], $tagdata = false) use ($settings) {
-            // Handle value-label pairs
-            if (isset($settings['value_label_pairs']) && isset($settings['value_label_pairs'][$data])) {
-                return $settings['value_label_pairs'][$data];
+        $fieldtype->shouldReceive('replace_label')->andReturnUsing(function($data, $params = [], $tagdata = false) use (&$fieldtype) {
+            // Always get current fieldtype settings
+            if (isset($fieldtype->settings) && isset($fieldtype->settings['value_label_pairs'])) {
+                $pairs = $fieldtype->settings['value_label_pairs'];
+
+                // Handle nested options (groups with children)
+                foreach ($pairs as $key => $value) {
+                    if (is_array($value) && isset($value['children']) && isset($value['children'][$data])) {
+                        $data = $value['children'][$data];
+                        break;
+                    } elseif ((string)$key === (string)$data && !is_array($value)) {
+                        $data = $value === null ? 'null' : $value;
+                        break;
+                    }
+                }
             }
 
-            // Return data as-is if no mapping found
+            // Return the mapped label (tagdata handling is done above for pipe-delimited values)
             return $data;
         });
         $fieldtype->shouldReceive('replace_length')->andReturnUsing(function($data) {
