@@ -79,9 +79,9 @@ class MultiSelectReplaceTagTest extends MultiSelectTestBase
 
         $result = $this->fieldtype->replace_tag($data, $params, $tagdata);
 
-        // Should use _parse_multi with tagdata
-        $this->assertStringContainsString('<li>option1</li>', $result);
-        $this->assertStringContainsString('<li>option2</li>', $result);
+        // Should use _parse_multi with tagdata and mapped labels
+        $this->assertStringContainsString('<li>Option 1</li>', $result);
+        $this->assertStringContainsString('<li>Option 2</li>', $result);
     }
 
     /**
@@ -220,8 +220,8 @@ class MultiSelectReplaceTagTest extends MultiSelectTestBase
 
         $result = $this->fieldtype->replace_tag($data, $params, $tagdata);
 
-        $this->assertStringContainsString('<div class="item" data-value="option1">option1</div>', $result);
-        $this->assertStringContainsString('<div class="item" data-value="option2">option2</div>', $result);
+        $this->assertStringContainsString('<div class="item" data-value="Option 1">Option 1</div>', $result);
+        $this->assertStringContainsString('<div class="item" data-value="Option 2">Option 2</div>', $result);
     }
 }
 

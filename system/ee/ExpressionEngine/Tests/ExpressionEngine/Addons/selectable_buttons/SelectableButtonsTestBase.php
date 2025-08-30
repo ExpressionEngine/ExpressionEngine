@@ -56,8 +56,25 @@ class SelectableButtonsTestBase extends OptionFieldtypeTestBase
     protected function createMockFieldtype()
     {
         // Create mock first and mark display settings as configured
-        $fieldtype = m::mock();
-        $fieldtype->_display_settings_configured = true;
+        $fieldtype = m::mock()->makePartial()->shouldIgnoreMissing();
+        $this->markDisplaySettingsConfigured($fieldtype);
+
+        // Set up display settings for selectable_buttons BEFORE calling base class methods
+        $fieldtype->shouldReceive('display_settings')->andReturn([
+            'field_options_selectable_buttons' => [
+                'label' => 'field_options',
+                'group' => 'selectable_buttons',
+                'settings' => []
+            ]
+        ]);
+
+        $fieldtype->shouldReceive('grid_display_settings')->andReturn([
+            'field_options' => [
+                'label' => 'field_options',
+                'group' => 'selectable_buttons',
+                'settings' => []
+            ]
+        ]);
 
         // Setup basic fieldtype mocks using base class methods
         $this->setupCommonFieldtypeMocks($fieldtype);
@@ -220,6 +237,30 @@ class SelectableButtonsTestBase extends OptionFieldtypeTestBase
         });
 
         return $fieldtype;
+    }
+
+    /**
+     * Helper method to check if display settings are configured for a fieldtype mock
+     * This replaces the deprecated dynamic property access
+     */
+    protected function isDisplaySettingsConfigured($fieldtype)
+    {
+        static $configuredFieldtypes = [];
+
+        $mockId = spl_object_hash($fieldtype);
+        return isset($configuredFieldtypes[$mockId]);
+    }
+
+    /**
+     * Helper method to mark display settings as configured for a fieldtype mock
+     * This replaces the deprecated dynamic property assignment
+     */
+    protected function markDisplaySettingsConfigured($fieldtype)
+    {
+        static $configuredFieldtypes = [];
+
+        $mockId = spl_object_hash($fieldtype);
+        $configuredFieldtypes[$mockId] = true;
     }
 }
 

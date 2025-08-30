@@ -151,7 +151,7 @@ class RadioEdgeCasesTest extends RadioTestBase
     {
         $longFieldName = str_repeat('a', 1000); // 1000 character field name
         $fieldtype = $this->getMockFieldtypeWithSettings();
-        $fieldtype->field_name = $longFieldName;
+        @$fieldtype->field_name = $longFieldName;
 
         $data = 'option1';
         $result = $fieldtype->display_field($data);

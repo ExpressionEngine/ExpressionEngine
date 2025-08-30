@@ -76,7 +76,7 @@ class SelectTestBase extends OptionFieldtypeTestBase
         ]);
 
         // Mark display settings as configured to prevent base class override
-        $fieldtype->_display_settings_configured = true;
+        $this->markDisplaySettingsConfigured($fieldtype);
 
         return $fieldtype;
     }

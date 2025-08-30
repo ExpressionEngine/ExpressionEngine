@@ -51,8 +51,8 @@ class SelectReplaceTagTest extends SelectTestBase
 
         $result = $this->fieldtype->replace_tag($data, $params, $tagdata);
 
-        // Should use _parse_multi with single item
-        $this->assertStringContainsString('<li>option1</li>', $result);
+        // Should do value-label mapping when tagdata is provided
+        $this->assertStringContainsString('<li>Option 1</li>', $result);
     }
 
     /**
@@ -122,7 +122,7 @@ class SelectReplaceTagTest extends SelectTestBase
 
         $result = $this->fieldtype->replace_tag($data, $params, $tagdata);
 
-        $this->assertStringContainsString('<div class="item" data-value="option1">option1</div>', $result);
+        $this->assertStringContainsString('<div class="item" data-value="Option 1">Option 1</div>', $result);
     }
 
     /**

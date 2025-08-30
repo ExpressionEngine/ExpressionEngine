@@ -50,7 +50,7 @@ abstract class CheckboxesTestBase extends OptionFieldtypeTestBase
         $fieldtype->shouldReceive('grid_display_settings')->withAnyArgs()->andReturn(['field_options_checkboxes' => []]);
 
         // Mark display settings as configured to prevent base class override
-        $fieldtype->_display_settings_configured = true;
+        $this->markDisplaySettingsConfigured($fieldtype);
 
         // Setup basic fieldtype mocks using base class methods
         $this->setupCommonFieldtypeMocks($fieldtype);
@@ -106,12 +106,137 @@ abstract class CheckboxesTestBase extends OptionFieldtypeTestBase
      */
     protected function getMockFieldtypeWithSettings($settings = [])
     {
-        // Use the base class method for multi-value fieldtypes
-        $fieldtype = $this->getMockFieldtypeWithSettingsForMulti($settings);
+        // Create mock and mark display settings as configured BEFORE calling base class methods
+        $fieldtype = m::mock()->makePartial();
 
-        // Override display settings for checkboxes (must be set after base class method)
-        $fieldtype->shouldReceive('display_settings')->withAnyArgs()->andReturn(['field_options_checkboxes' => []]);
-        $fieldtype->shouldReceive('grid_display_settings')->withAnyArgs()->andReturn(['field_options_checkboxes' => []]);
+        // Mark as configured to prevent base class from setting up display_settings
+        $this->markDisplaySettingsConfigured($fieldtype);
+
+        // Set up display settings for checkboxes BEFORE calling base class methods
+        $fieldtype->shouldReceive('display_settings')->withAnyArgs()->andReturn(['field_options_checkboxes' => ['label' => 'field_options', 'group' => 'checkboxes', 'settings' => []]]);
+        $fieldtype->shouldReceive('grid_display_settings')->withAnyArgs()->andReturn(['field_options_checkboxes' => ['label' => 'field_options', 'group' => 'checkboxes', 'settings' => []]]);
+
+        // Setup basic fieldtype mocks using base class methods
+        $this->setupCommonFieldtypeMocks($fieldtype, $settings);
+
+        // Multi-value specific mocks
+        $fieldtype->shouldReceive('display_field')->andReturn('<div>Mock display</div>');
+        $fieldtype->shouldReceive('grid_display_field')->andReturn('<div>Mock grid display</div>');
+        $fieldtype->shouldReceive('validate')->andReturn(true);
+
+        // Setup multi-value behaviors
+        $this->setupSaveMock($fieldtype, true);
+        $this->setupParseSingleMock($fieldtype, true);
+        $this->setupReplaceTagMock($fieldtype, true);
+        $this->setupParseMultiMock($fieldtype);
+
+        // Mock _display_nested_form method
+        $fieldtype->shouldReceive('_display_nested_form')->andReturnUsing(function($fields, $values = []) use ($fieldtype) {
+            $disabled = isset($fieldtype->settings['field_disabled']) && $fieldtype->settings['field_disabled'] ? ' disabled' : '';
+
+            // Recursive function to handle nested structures
+            $renderFields = function($fields, $values, $disabled) use (&$renderFields) {
+                $output = '';
+                foreach ($fields as $key => $value) {
+                    if (is_array($value) && isset($value['name']) && isset($value['children'])) {
+                        // Handle complex nested structure (groups with name and children)
+                        $output .= '<div class="group">' . htmlspecialchars($value['name']) . '</div>';
+                        $output .= $renderFields($value['children'], $values, $disabled);
+                    } elseif (is_array($value)) {
+                        // Handle nested structure (groups)
+                        $output .= '<div class="group">' . htmlspecialchars($key) . '</div>';
+                        $output .= $renderFields($value, $values, $disabled);
+                    } else {
+                        // Handle flat structure (actual options)
+                        $checked = in_array($key, $values) ? ' checked' : '';
+                        $output .= '<label><input type="checkbox" name="test_field[]" value="' . $key . '"' . $checked . $disabled . ' class="form_checkbox"> ' . htmlspecialchars($value) . '</label>';
+                    }
+                }
+                return $output;
+            };
+
+            return $renderFields($fields, $values, $disabled);
+        });
+
+        // Mock _flatten method
+        $fieldtype->shouldReceive('_flatten')->andReturnUsing(function($options) {
+            if (!is_array($options)) {
+                return $options;
+            }
+
+            $flattened = [];
+
+            // Recursive function to flatten nested structures
+            $flattenRecursive = function($options, $prefix = '') use (&$flattenRecursive, &$flattened) {
+                foreach ($options as $key => $value) {
+                    if (is_array($value) && isset($value['name']) && isset($value['children'])) {
+                        // Add the group name
+                        $flattened[$key] = $value['name'];
+
+                        // Recursively process children
+                        $children = isset($value['children']) ? $value['children'] : [];
+                        if (is_array($children)) {
+                            $flattenRecursive($children);
+                        }
+                    } elseif (is_array($value)) {
+                        // Handle simple nested structure
+                        $flattened[$key] = $key; // Add group name
+                        $flattenRecursive($value);
+                    } else {
+                        // Handle flat structure (actual options)
+                        $flattened[$key] = $value;
+                    }
+                }
+            };
+
+            $flattenRecursive($options);
+            return $flattened;
+        });
+
+        // Mock renderTableCell method
+        $fieldtype->shouldReceive('renderTableCell')->andReturnUsing(function($data, $fieldId, $entry) use ($fieldtype) {
+            // Parse the data
+            if (is_array($data)) {
+                $values = $data;
+            } elseif (is_string($data) && strpos($data, '|') !== false) {
+                $values = explode('|', $data);
+            } else {
+                $values = [$data];
+            }
+
+            // Map values to labels if value_label_pairs exist
+            $mappedValues = [];
+            if (isset($fieldtype->settings['value_label_pairs']) && is_array($fieldtype->settings['value_label_pairs'])) {
+                foreach ($values as $value) {
+                    if (isset($fieldtype->settings['value_label_pairs'][$value])) {
+                        $mappedValues[] = $fieldtype->settings['value_label_pairs'][$value];
+                    } else {
+                        $mappedValues[] = $value;
+                    }
+                }
+            } else {
+                $mappedValues = $values;
+            }
+
+            return implode(', ', $mappedValues);
+        });
+
+        // Mock replace_length method
+        $fieldtype->shouldReceive('replace_length')->andReturnUsing(function($data, $params, $tagdata) {
+            if (empty($data)) {
+                return 0; // Empty data
+            } elseif (is_array($data)) {
+                return count($data);
+            } elseif (is_string($data) && strpos($data, '|') !== false) {
+                // Handle escaped pipes - split on non-escaped pipes
+                $values = preg_split('/(?<!\\\\)\|/', $data);
+                $values = array_filter($values, function($value) {
+                    return !empty($value) || $value === '0'; // Keep '0' but filter empty strings
+                });
+                return count($values);
+            }
+            return 1; // Single value
+        });
 
         return $fieldtype;
     }

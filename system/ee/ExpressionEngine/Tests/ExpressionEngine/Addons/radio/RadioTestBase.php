@@ -22,7 +22,7 @@ abstract class RadioTestBase extends OptionFieldtypeTestBase
      */
     protected function createMockFieldtype()
     {
-        $fieldtype = m::mock();
+        $fieldtype = m::mock()->makePartial()->shouldIgnoreMissing();
 
         // Radio-specific display settings (must be set before common mocks)
         $fieldtype->shouldReceive('display_settings')->withAnyArgs()->andReturn([
@@ -42,7 +42,7 @@ abstract class RadioTestBase extends OptionFieldtypeTestBase
         ]);
 
         // Mark display settings as configured to prevent base class override
-        $fieldtype->_display_settings_configured = true;
+        $this->markDisplaySettingsConfigured($fieldtype);
 
         // Setup basic fieldtype mocks using base class methods
         $this->setupCommonFieldtypeMocks($fieldtype);
@@ -60,7 +60,7 @@ abstract class RadioTestBase extends OptionFieldtypeTestBase
 
         // Radio-specific replace methods
         $fieldtype->shouldReceive('replace_value')->andReturnUsing(function($data, $params = [], $tagdata = false) {
-            // replace_value is just a wrapper for replace_tag
+            // replace_value returns raw values, not mapped labels
             return $data;
         });
 
@@ -109,7 +109,7 @@ abstract class RadioTestBase extends OptionFieldtypeTestBase
      */
     protected function getMockRadioFieldtypeWithSettings($settings = [])
     {
-        $fieldtype = m::mock();
+        $fieldtype = m::mock()->makePartial()->shouldIgnoreMissing();
 
         // Radio-specific display settings (must be set before common mocks)
         $fieldtype->shouldReceive('display_settings')->andReturn([
@@ -140,6 +140,30 @@ abstract class RadioTestBase extends OptionFieldtypeTestBase
         $this->setupSaveMock($fieldtype, false);
         $this->setupReplaceTagMock($fieldtype, false);
         $this->setupParseSingleMock($fieldtype, false);
+
+        // Radio-specific replace methods
+        $fieldtype->shouldReceive('replace_value')->andReturnUsing(function($data, $params = [], $tagdata = false) {
+            // replace_value returns raw values, not mapped labels
+            // Apply tagdata if provided
+            if ($tagdata) {
+                return str_replace('{item}', $data, $tagdata);
+            }
+            return $data;
+        });
+
+        $fieldtype->shouldReceive('replace_label')->andReturnUsing(function($data, $params = [], $tagdata = false) use ($fieldtype) {
+            // For radio fieldtype, replace_label handles value-label pairs
+            if (isset($fieldtype->settings['value_label_pairs']) && isset($fieldtype->settings['value_label_pairs'][$data])) {
+                $data = $fieldtype->settings['value_label_pairs'][$data];
+            }
+
+            // Apply tagdata if provided (similar to replace_tag)
+            if ($tagdata) {
+                return str_replace('{item}', $data, $tagdata);
+            }
+
+            return $data;
+        });
 
         // Override get_setting to handle custom settings
         $fieldtype->shouldReceive('get_setting')->andReturnUsing(function($key) use ($settings) {
@@ -219,6 +243,30 @@ abstract class RadioTestBase extends OptionFieldtypeTestBase
         $mock = m::mock(\Radio_ft::class)->makePartial();
         $mock->shouldReceive('_get_historic_field_options')->andReturn($returnValue);
         return $mock;
+    }
+
+    /**
+     * Helper method to check if display settings are configured for a fieldtype mock
+     * This replaces the deprecated dynamic property access
+     */
+    protected function isDisplaySettingsConfigured($fieldtype)
+    {
+        static $configuredFieldtypes = [];
+
+        $mockId = spl_object_hash($fieldtype);
+        return isset($configuredFieldtypes[$mockId]);
+    }
+
+    /**
+     * Helper method to mark display settings as configured for a fieldtype mock
+     * This replaces the deprecated dynamic property assignment
+     */
+    protected function markDisplaySettingsConfigured($fieldtype)
+    {
+        static $configuredFieldtypes = [];
+
+        $mockId = spl_object_hash($fieldtype);
+        $configuredFieldtypes[$mockId] = true;
     }
 }
 

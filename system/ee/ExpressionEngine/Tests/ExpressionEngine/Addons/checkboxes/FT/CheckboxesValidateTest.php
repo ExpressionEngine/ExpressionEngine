@@ -41,9 +41,9 @@ class CheckboxesValidateTest extends CheckboxesTestBase
         $mock->shouldReceive('_get_historic_field_options')->with($data)->andReturn($fieldOptions);
         $mock->shouldReceive('validate')->andReturn(true);
         $mock->shouldReceive('validate')->andReturn(true);
-        $mock->field_name = $this->mockFieldName;
-        $mock->field_id = $this->mockFieldId;
-        $mock->settings = $this->fieldtype->settings;
+        @$mock->field_name = $this->mockFieldName;
+        @$mock->field_id = $this->mockFieldId;
+        @$mock->settings = $this->fieldtype->settings;
 
         $result = $mock->validate($data);
 
@@ -62,9 +62,9 @@ class CheckboxesValidateTest extends CheckboxesTestBase
         $mock = m::mock(Checkboxes_ft::class)->makePartial();
         $mock->shouldReceive('_get_historic_field_options')->with($data)->andReturn($fieldOptions);
         $mock->shouldReceive('validate')->andReturn(true);
-        $mock->field_name = $this->mockFieldName;
-        $mock->field_id = $this->mockFieldId;
-        $mock->settings = $this->fieldtype->settings;
+        @$mock->field_name = $this->mockFieldName;
+        @$mock->field_id = $this->mockFieldId;
+        @$mock->settings = $this->fieldtype->settings;
 
         $result = $mock->validate($data);
 
@@ -83,9 +83,9 @@ class CheckboxesValidateTest extends CheckboxesTestBase
         $mock = m::mock(Checkboxes_ft::class)->makePartial();
         $mock->shouldReceive('_get_historic_field_options')->with($data)->andReturn($fieldOptions);
         $mock->shouldReceive('validate')->andReturn(true);
-        $mock->field_name = $this->mockFieldName;
-        $mock->field_id = $this->mockFieldId;
-        $mock->settings = $this->fieldtype->settings;
+        @$mock->field_name = $this->mockFieldName;
+        @$mock->field_id = $this->mockFieldId;
+        @$mock->settings = $this->fieldtype->settings;
 
         $result = $mock->validate($data);
 
@@ -104,9 +104,9 @@ class CheckboxesValidateTest extends CheckboxesTestBase
         $mock = m::mock(Checkboxes_ft::class)->makePartial();
         $mock->shouldReceive('_get_historic_field_options')->with($data)->andReturn($fieldOptions);
         $mock->shouldReceive('validate')->andReturn(true);
-        $mock->field_name = $this->mockFieldName;
-        $mock->field_id = $this->mockFieldId;
-        $mock->settings = $this->fieldtype->settings;
+        @$mock->field_name = $this->mockFieldName;
+        @$mock->field_id = $this->mockFieldId;
+        @$mock->settings = $this->fieldtype->settings;
 
         $result = $mock->validate($data);
 
@@ -125,9 +125,9 @@ class CheckboxesValidateTest extends CheckboxesTestBase
         $mock = m::mock(Checkboxes_ft::class)->makePartial();
         $mock->shouldReceive('_get_historic_field_options')->with($data)->andReturn($fieldOptions);
         $mock->shouldReceive('validate')->andReturn(true);
-        $mock->field_name = $this->mockFieldName;
-        $mock->field_id = $this->mockFieldId;
-        $mock->settings = $this->fieldtype->settings;
+        @$mock->field_name = $this->mockFieldName;
+        @$mock->field_id = $this->mockFieldId;
+        @$mock->settings = $this->fieldtype->settings;
 
         $result = $mock->validate($data);
 
@@ -146,9 +146,9 @@ class CheckboxesValidateTest extends CheckboxesTestBase
         $mock = m::mock(Checkboxes_ft::class)->makePartial();
         $mock->shouldReceive('_get_historic_field_options')->with($data)->andReturn($fieldOptions);
         $mock->shouldReceive('validate')->andReturn(true);
-        $mock->field_name = $this->mockFieldName;
-        $mock->field_id = $this->mockFieldId;
-        $mock->settings = $this->fieldtype->settings;
+        @$mock->field_name = $this->mockFieldName;
+        @$mock->field_id = $this->mockFieldId;
+        @$mock->settings = $this->fieldtype->settings;
 
         $result = $mock->validate($data);
 
@@ -167,9 +167,9 @@ class CheckboxesValidateTest extends CheckboxesTestBase
         $mock = m::mock(Checkboxes_ft::class)->makePartial();
         $mock->shouldReceive('_get_historic_field_options')->with($data)->andReturn($fieldOptions);
         $mock->shouldReceive('validate')->andReturn(true);
-        $mock->field_name = $this->mockFieldName;
-        $mock->field_id = $this->mockFieldId;
-        $mock->settings = $this->fieldtype->settings;
+        @$mock->field_name = $this->mockFieldName;
+        @$mock->field_id = $this->mockFieldId;
+        @$mock->settings = $this->fieldtype->settings;
 
         $result = $mock->validate($data);
 
@@ -188,9 +188,9 @@ class CheckboxesValidateTest extends CheckboxesTestBase
         $mock = m::mock(Checkboxes_ft::class)->makePartial();
         $mock->shouldReceive('_get_historic_field_options')->with($data)->andReturn($fieldOptions);
         $mock->shouldReceive('validate')->andReturn(true);
-        $mock->field_name = $this->mockFieldName;
-        $mock->field_id = $this->mockFieldId;
-        $mock->settings = $this->fieldtype->settings;
+        @$mock->field_name = $this->mockFieldName;
+        @$mock->field_id = $this->mockFieldId;
+        @$mock->settings = $this->fieldtype->settings;
 
         $result = $mock->validate($data);
 

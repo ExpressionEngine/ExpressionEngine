@@ -55,10 +55,13 @@ class MultiSelectTestBase extends OptionFieldtypeTestBase
      */
     protected function createMockFieldtype()
     {
-        // Use the base class method to get a multi-value fieldtype
-        $fieldtype = $this->getMockFieldtypeWithSettingsForMulti();
+        // Create mock and mark display settings as configured BEFORE calling base class methods
+        $fieldtype = m::mock()->makePartial();
 
-        // Multi Select specific display settings
+        // Mark as configured to prevent base class from setting up display_settings
+        $this->markDisplaySettingsConfigured($fieldtype);
+
+        // Set up display settings for multi_select BEFORE calling base class methods
         $fieldtype->shouldReceive('display_settings')->andReturn([
             'field_options_multi_select' => [
                 'label' => 'field_options',
@@ -75,8 +78,22 @@ class MultiSelectTestBase extends OptionFieldtypeTestBase
             ]
         ]);
 
-        // Mark display settings as configured to prevent base class override
-        $fieldtype->_display_settings_configured = true;
+        // Setup basic fieldtype mocks using base class methods
+        $this->setupCommonFieldtypeMocks($fieldtype);
+
+        // Multi-value specific mocks
+        $fieldtype->shouldReceive('display_field')->andReturn('<div>Mock display</div>');
+        $fieldtype->shouldReceive('grid_display_field')->andReturn('<div>Mock grid display</div>');
+        $fieldtype->shouldReceive('validate')->andReturn(true);
+
+        // Setup multi-value behaviors
+        $this->setupSaveMock($fieldtype, true);
+        $this->setupParseSingleMock($fieldtype, true);
+        $this->setupReplaceTagMock($fieldtype, true);
+        $this->setupParseMultiMock($fieldtype);
+        $this->setupReplaceLengthMock($fieldtype);
+        $this->setupRenderTableCellMock($fieldtype, true);
+        $this->setupFlattenMock($fieldtype);
 
         return $fieldtype;
     }

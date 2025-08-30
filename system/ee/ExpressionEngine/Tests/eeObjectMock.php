@@ -62,7 +62,7 @@ class eeSingletonMock
         $overridable = ['db', 'config', 'functions', 'TMPL', 'session', 'load', 'logger', 'dbforge', 'input', 'lang'];
         foreach ($overridable as $prop) {
             if (array_key_exists($prop, self::$mocks)) {
-                $this->$prop = self::$mocks[$prop];
+                @$this->$prop = self::$mocks[$prop];
             }
         }
     }
