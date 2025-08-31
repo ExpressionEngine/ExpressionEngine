@@ -4,167 +4,104 @@ require_once __DIR__ . '/ChannelTestBase.php';
 
 class ChannelParseChannelEntriesTest extends ChannelTestBase
 {
-    public function testParseChannelEntriesReturnsEmptyStringWhenNoResults()
+    public function testPerRowCallbackInvokedAndOutputAggregated()
     {
-        // Mock database to return no results
+        // DB rows returned by initial query
+        $rows = [
+            ['entry_id' => 1, 'title' => 'First'],
+            ['entry_id' => 2, 'title' => 'Second'],
+        ];
+        $this->setDbRows($rows);
+
+        // Provide a simple parser that applies callbacks and concatenates tagdata
+        $this->setMock('channel_entries_parser', new class {
+            public function create($tagdata) { return new class($tagdata) {
+                private $tagdata; public function __construct($t){ $this->tagdata = $t; }
+                public function parse($ctx, $data, $config) {
+                    $out = '';
+                    foreach ($data['entries'] as $row) {
+                        $td = $this->tagdata;
+                        if (isset($config['callbacks']['tagdata_loop_end'])) {
+                            $td = call_user_func($config['callbacks']['tagdata_loop_end'], $td, $row);
+                        }
+                        $out .= $td;
+                    }
+                    return $out;
+                }
+            }; }
+        });
+
+        // Tagdata with a marker to help us detect callback effects
+        $this->setTemplateTagdata('X');
+
+        // Simulate Channel having a DB query result already executed
+        $this->channel->query = new class($rows) {
+            private $r; public function __construct($r){ $this->r = $r; }
+            public function result_array(){ return $this->r; }
+            public function free_result() { /* no-op */ }
+        };
+
+        // Per-row callback appends row title
+        $result = $this->channel->parse_channel_entries(function ($tagdata, $row) {
+            return $tagdata . $row['title'] . '|';
+        });
+
+        $this->assertNull($result); // method sets return_data, does not return a value
+        $this->assertEquals('First|Second|', $this->channel->return_data);
+    }
+
+    public function testEmptyResultReturnsNoResults()
+    {
+        $this->setDbRows([]); // no rows
+        $this->setTemplateTagdata('X');
+
+        // Minimal parser stub not used because early no-results path triggers
+        $this->setMock('channel_entries_parser', new class {
+            public function create($t){ return new class { public function parse(){ return 'UNUSED'; } }; }
+        });
+
+        $this->channel->parse_channel_entries();
+        $this->assertEquals('NO_RESULTS', $this->channel->return_data);
+    }
+
+    public function testLivePreviewConditionsIncludeNewEntryWhenConditionPasses()
+    {
+        // No DB rows; rely on preview add path
         $this->setDbRows([]);
+        $this->setTemplateTagdata('OK');
 
-        $result = $this->channel->parse_channel_entries();
-
-        $this->assertEquals('', $result);
-    }
-
-    public function testParseChannelEntriesReturnsEmptyStringWhenSqlIsEmpty()
-    {
-        // Set sql to empty
-        $this->channel->sql = '';
-
-        $result = $this->channel->parse_channel_entries();
-
-        $this->assertEquals('', $result);
-    }
-
-    public function testParseChannelEntriesProcessesQueryResults()
-    {
-        // Set sql query
-        $this->channel->sql = 'SELECT * FROM exp_channel_titles WHERE entry_id = 1';
-
-        // Mock database to return entry data
-        $this->setDbRows([
-            [
-                'entry_id' => 1,
-                'title' => 'Test Entry',
-                'url_title' => 'test-entry',
-                'entry_date' => 1704067200,
-                'status' => 'open'
-            ]
-        ]);
-
-        // Mock template to have tagdata
-        $this->setMock('TMPL', new class {
-            public $tagdata = '{title} - {entry_date}';
-            public function fetch_param($key) {
-                return null;
-            }
-            public function no_results() {
-                return 'NO_RESULTS';
-            }
+        // Mock LivePreview service
+        $previewData = [
+            'entry_id' => 123,
+            'url_title' => 'foo',
+            'status' => 'open',
+            'expiration_date' => 0,
+            'channel_name' => 'news',
+        ];
+        // Make URL title match preview data to trigger inclusion
+        $this->channel->query_string = 'foo';
+        $this->setTemplateParams(['url_title' => 'foo', 'channel' => 'news']);
+        // Set protected preview_conditions via reflection
+        $ref = new ReflectionClass('Channel');
+        $prop = $ref->getProperty('preview_conditions');
+        $prop->setAccessible(true);
+        $prop->setValue($this->channel, ["(t.status = 'open')"]);
+        $this->setMock('LivePreview', new class($previewData) {
+            private $d; public function __construct($d){ $this->d = $d; }
+            public function hasEntryData(){ return true; }
+            public function getEntryData(){ return $this->d; }
         });
 
-        $result = $this->channel->parse_channel_entries();
-
-        // Should return processed template data or null if no data
-        $this->assertTrue(is_string($result) || is_null($result));
-    }
-
-    public function testParseChannelEntriesHandlesPerRowCallback()
-    {
-        // Set sql query
-        $this->channel->sql = 'SELECT * FROM exp_channel_titles WHERE entry_id = 1';
-
-        // Mock database to return entry data
-        $this->setDbRows([
-            [
-                'entry_id' => 1,
-                'title' => 'Test Entry',
-                'url_title' => 'test-entry'
-            ]
-        ]);
-
-        // Mock template to have tagdata
-        $this->setMock('TMPL', new class {
-            public $tagdata = '{title}';
-            public function fetch_param($key) {
-                return null;
-            }
-            public function no_results() {
-                return 'NO_RESULTS';
-            }
+        // Parser returns tagdata as-is
+        $this->setMock('channel_entries_parser', new class {
+            public function create($tagdata) { return new class($tagdata) {
+                private $tagdata; public function __construct($t){ $this->tagdata = $t; }
+                public function parse(){ return $this->tagdata; }
+            }; }
         });
 
-        // Define a callback function
-        $callback = function($tagdata, $row) {
-            return strtoupper($tagdata);
-        };
-
-        $result = $this->channel->parse_channel_entries($callback);
-
-        // Should return processed template data or null if no data
-        $this->assertTrue(is_string($result) || is_null($result));
-    }
-
-    public function testParseChannelEntriesHandlesMultipleEntries()
-    {
-        // Set sql query
-        $this->channel->sql = 'SELECT * FROM exp_channel_titles';
-
-        // Mock database to return multiple entries
-        $this->setDbRows([
-            [
-                'entry_id' => 1,
-                'title' => 'First Entry',
-                'url_title' => 'first-entry'
-            ],
-            [
-                'entry_id' => 2,
-                'title' => 'Second Entry',
-                'url_title' => 'second-entry'
-            ]
-        ]);
-
-        // Mock template to have tagdata
-        $this->setMock('TMPL', new class {
-            public $tagdata = '<div>{title}</div>';
-            public function fetch_param($key) {
-                return null;
-            }
-            public function no_results() {
-                return 'NO_RESULTS';
-            }
-        });
-
-        $result = $this->channel->parse_channel_entries();
-
-        // Should return processed template data or null if no data
-        $this->assertTrue(is_string($result) || is_null($result));
-    }
-
-    public function testParseChannelEntriesHandlesPagination()
-    {
-        // Set sql query
-        $this->channel->sql = 'SELECT * FROM exp_channel_titles LIMIT 10';
-
-        // Mock database to return paginated results
-        $this->setDbRows([
-            [
-                'entry_id' => 1,
-                'title' => 'Paginated Entry',
-                'url_title' => 'paginated-entry'
-            ]
-        ]);
-
-        // Mock template to have tagdata
-        $this->setMock('TMPL', new class {
-            public $tagdata = '{title}';
-            public function fetch_param($key) {
-                return null;
-            }
-            public function no_results() {
-                return 'NO_RESULTS';
-            }
-        });
-
-        // Mock pagination
-        $this->channel->pagination = new class {
-            public function create_links() {
-                return 'Page 1 of 2';
-            }
-        };
-
-        $result = $this->channel->parse_channel_entries();
-
-        // Should return processed template data or null if no data
-        $this->assertTrue(is_string($result) || is_null($result));
+        $this->channel->parse_channel_entries();
+        // Live preview should bypass early NO_RESULTS
+        $this->assertNotEquals('NO_RESULTS', $this->channel->return_data);
     }
 }
-

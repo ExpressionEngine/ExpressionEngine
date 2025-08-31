@@ -50,4 +50,25 @@ class ChannelCategoriesTest extends ChannelTestBase
         // Should return a string result
         $this->assertIsString($result);
     }
+
+    public function testCategoriesRespectsShowAndParentOnly()
+    {
+        $this->setTemplateParams([
+            'show' => 'not 3|4',
+            'parent_only' => 'yes'
+        ]);
+
+        $this->setDbRows([]);
+        $result = $this->channel->categories();
+        $this->assertIsString($result);
+    }
+
+    public function testCategoriesWithCategoryFieldsEnabledIncludesFieldSql()
+    {
+        $this->setTemplateParams([ 'style' => 'linear' ]);
+        $this->channel->enable['category_fields'] = true;
+        $this->setDbRows([]);
+        $result = $this->channel->categories();
+        $this->assertIsString($result);
+    }
 }

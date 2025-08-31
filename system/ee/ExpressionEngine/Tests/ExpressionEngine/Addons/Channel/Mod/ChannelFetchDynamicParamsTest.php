@@ -4,319 +4,113 @@ require_once __DIR__ . '/ChannelTestBase.php';
 
 class ChannelFetchDynamicParamsTest extends ChannelTestBase
 {
-    public function testFetchDynamicParamsReturnsEmptyStringWhenNoTagData()
+    public function testNoDynamicParametersNoInputNoOp()
     {
-        // Mock template with no tagdata
         $this->setMock('TMPL', new class {
-            public $tagdata = '';
-            public $tagproper = '';
-            public function fetch_param($key, $default = null) {
-                return $default;
-            }
-        });
-
-        $result = $this->channel->fetch_dynamic_params();
-
-        $this->assertEquals('', $result);
-    }
-
-    public function testFetchDynamicParamsReturnsEmptyStringWhenNoTagProper()
-    {
-        // Mock template with tagdata but no tagproper
-        $this->setMock('TMPL', new class {
-            public $tagdata = 'some_tagdata';
-            public $tagproper = '';
-            public function fetch_param($key, $default = null) {
-                return $default;
-            }
-        });
-
-        $result = $this->channel->fetch_dynamic_params();
-
-        $this->assertEquals('', $result);
-    }
-
-    public function testFetchDynamicParamsReturnsEmptyStringWhenNoChannelParam()
-    {
-        // Mock template with tagdata and tagproper but no channel param
-        $this->setMock('TMPL', new class {
-            public $tagdata = 'some_tagdata';
             public $tagproper = 'channel:entries';
-            public function fetch_param($key) {
-                return ($key === 'channel') ? null : 'some_value';
-            }
+            public $tagparams = [];
+            public $search_fields = [];
+            public function fetch_param($key){ return false; }
         });
-
-        $result = $this->channel->fetch_dynamic_params();
-
-        $this->assertEquals('', $result);
+        $out = $this->channel->fetch_dynamic_params();
+        $this->assertSame('', $out);
+        $this->assertEmpty(ee()->TMPL->tagparams);
+        $this->assertEmpty(ee()->TMPL->search_fields);
     }
 
-    public function testFetchDynamicParamsConstructsParamsString()
+    public function testAllowedParamsArrayJoinAndZeroPreserved()
     {
-        // Mock template with complete setup including dynamic_parameters
+        // Stub TMPL and input
         $this->setMock('TMPL', new class {
-            public $tagdata = 'some_tagdata';
             public $tagproper = 'channel:entries';
-            public function fetch_param($key) {
-                $params = [
-                    'channel' => 'news',
-                    'entry_id' => '123',
-                    'category' => 'sports',
-                    'orderby' => 'date',
-                    'sort' => 'desc',
-                    'dynamic_parameters' => 'channel|entry_id|category|orderby|sort'
-                ];
-                return $params[$key] ?? null;
-            }
+            public $tagparams = [];
+            public $search_fields = [];
+            public function fetch_param($key){ return $key==='dynamic_parameters' ? 'author_id|limit' : null; }
         });
-
-        // Mock GET/POST data
         $this->setMock('input', new class {
-            public function get_post($key) {
-                $data = [
-                    'channel' => 'news',
-                    'entry_id' => '123',
-                    'category' => 'sports',
-                    'orderby' => 'date',
-                    'sort' => 'desc'
-                ];
-                return $data[$key] ?? null;
+            public function get_post($key){
+                if ($key==='author_id') return ['0','1',''];
+                if ($key==='limit') return '25';
+                return null;
             }
+            public function get($k){ return null; }
         });
-
-        // Mock global POST array
-        $_POST = [
-            'channel' => 'news',
-            'entry_id' => '123',
-            'category' => 'sports',
-            'orderby' => 'date',
-            'sort' => 'desc'
-        ];
-        $_GET = [];
-
-        // Initialize dynamic parameters array since constructor wasn't called
-        $reflection = new ReflectionClass($this->channel);
-        $property = $reflection->getProperty('_dynamic_parameters');
-        $property->setAccessible(true);
-        $property->setValue($this->channel, array('channel', 'entry_id', 'category', 'orderby',
+        // Initialize required dynamic param whitelist
+        $ref = new ReflectionClass($this->channel);
+        $prop = $ref->getProperty('_dynamic_parameters');
+        $prop->setAccessible(true);
+        $prop->setValue($this->channel, array('channel', 'entry_id', 'category', 'orderby',
             'sort', 'sticky', 'show_future_entries', 'show_expired', 'entry_id_from',
             'entry_id_to', 'not_entry_id', 'start_on', 'stop_before', 'year', 'month',
             'day', 'display_by', 'limit', 'username', 'status', 'group_id', 'primary_role_id', 'cat_limit',
             'month_limit', 'offset', 'author_id', 'url_title'));
-
-        $result = $this->channel->fetch_dynamic_params();
-
-        // Clean up globals
+        // Provide POST so method doesn't early-return
+        $_POST = ['author_id' => ['0','1',''], 'limit' => '25'];
+        $out = $this->channel->fetch_dynamic_params();
+        $this->assertStringContainsString('author_id="0|1"', $out);
+        $this->assertStringContainsString('limit="25"', $out);
+        $this->assertEquals('0|1', ee()->TMPL->tagparams['author_id']);
+        $this->assertEquals('25', ee()->TMPL->tagparams['limit']);
         $_POST = [];
         $_GET = [];
-
-        // Should return a params string
-        $this->assertIsString($result);
-        $this->assertNotEmpty($result);
-        $this->assertTrue(strpos($result, 'channel=') !== false);
-        $this->assertTrue(strpos($result, 'entry_id=') !== false);
-        $this->assertTrue(strpos($result, 'category=') !== false);
     }
 
-    public function testFetchDynamicParamsHandlesMultipleDynamicParameters()
+    public function testSearchParamsDoubleAmpersand()
     {
-        // Mock template with multiple dynamic parameters
         $this->setMock('TMPL', new class {
-            public $tagdata = 'some_tagdata';
             public $tagproper = 'channel:entries';
-            public function fetch_param($key) {
-                $params = [
-                    'channel' => 'news',
-                    'entry_id' => '123',
-                    'category' => 'sports',
-                    'orderby' => 'date',
-                    'sort' => 'desc',
-                    'sticky' => 'yes',
-                    'show_future_entries' => 'no',
-                    'dynamic_parameters' => 'channel|entry_id|category|orderby|sort|sticky|show_future_entries'
-                ];
-                return $params[$key] ?? null;
-            }
+            public $tagparams = [];
+            public $search_fields = [];
+            public function fetch_param($key){ return $key==='dynamic_parameters' ? 'search:title[*AMP*]' : null; }
         });
-
-        // Mock GET/POST data
         $this->setMock('input', new class {
-            public function get_post($key) {
-                $data = [
-                    'channel' => 'news',
-                    'entry_id' => '123',
-                    'category' => 'sports',
-                    'orderby' => 'date',
-                    'sort' => 'desc',
-                    'sticky' => 'yes',
-                    'show_future_entries' => 'no'
-                ];
-                return $data[$key] ?? null;
+            public function get_post($key){
+                if ($key==='search:title') return ['foo','bar'];
+                return null;
             }
+            public function get($k){ return null; }
         });
-
-        // Mock global POST array
-        $_POST = [
-            'channel' => 'news',
-            'entry_id' => '123',
-            'category' => 'sports',
-            'orderby' => 'date',
-            'sort' => 'desc',
-            'sticky' => 'yes',
-            'show_future_entries' => 'no'
-        ];
-        $_GET = [];
-
-        // Initialize dynamic parameters array since constructor wasn't called
-        $reflection = new ReflectionClass($this->channel);
-        $property = $reflection->getProperty('_dynamic_parameters');
-        $property->setAccessible(true);
-        $property->setValue($this->channel, array('channel', 'entry_id', 'category', 'orderby',
+        $ref = new ReflectionClass($this->channel);
+        $prop = $ref->getProperty('_dynamic_parameters');
+        $prop->setAccessible(true);
+        $prop->setValue($this->channel, array('channel', 'entry_id', 'category', 'orderby',
             'sort', 'sticky', 'show_future_entries', 'show_expired', 'entry_id_from',
             'entry_id_to', 'not_entry_id', 'start_on', 'stop_before', 'year', 'month',
             'day', 'display_by', 'limit', 'username', 'status', 'group_id', 'primary_role_id', 'cat_limit',
             'month_limit', 'offset', 'author_id', 'url_title'));
-
-        $result = $this->channel->fetch_dynamic_params();
-
-        // Clean up globals
+        $_POST = ['search:title' => ['foo','bar']];
+        $out = $this->channel->fetch_dynamic_params();
+        $this->assertStringContainsString('title="foo&&bar"', $out);
+        $this->assertEquals('foo&&bar', ee()->TMPL->search_fields['title']);
         $_POST = [];
         $_GET = [];
-
-        // Should return a params string with multiple parameters
-        $this->assertIsString($result);
-        $this->assertNotEmpty($result);
-        $this->assertTrue(strpos($result, 'channel=') !== false);
-        $this->assertTrue(strpos($result, 'entry_id=') !== false);
-        $this->assertTrue(strpos($result, 'category=') !== false);
-        $this->assertTrue(strpos($result, 'orderby=') !== false);
-        $this->assertTrue(strpos($result, 'sort=') !== false);
     }
 
-    public function testFetchDynamicParamsIgnoresNonDynamicParameters()
+    public function testNonWhitelistedParamsIgnored()
     {
-        // Mock template with dynamic and non-dynamic parameters
         $this->setMock('TMPL', new class {
-            public $tagdata = 'some_tagdata';
             public $tagproper = 'channel:entries';
-            public function fetch_param($key) {
-                $params = [
-                    'channel' => 'news',
-                    'entry_id' => '123',
-                    'limit' => '10', // This is dynamic
-                    'cache' => 'yes', // This is NOT dynamic
-                    'refresh' => '60', // This is NOT dynamic
-                    'dynamic_parameters' => 'channel|entry_id|limit|cache|refresh'
-                ];
-                return $params[$key] ?? null;
-            }
+            public $tagparams = [];
+            public $search_fields = [];
+            public function fetch_param($key){ return $key==='dynamic_parameters' ? 'not_a_param' : null; }
         });
-
-        // Mock GET/POST data
-        $this->setMock('input', new class {
-            public function get_post($key) {
-                $data = [
-                    'channel' => 'news',
-                    'entry_id' => '123',
-                    'limit' => '10',
-                    'cache' => 'yes',
-                    'refresh' => '60'
-                ];
-                return $data[$key] ?? null;
-            }
-        });
-
-        // Mock global POST array
-        $_POST = [
-            'channel' => 'news',
-            'entry_id' => '123',
-            'limit' => '10',
-            'cache' => 'yes',
-            'refresh' => '60'
-        ];
-        $_GET = [];
-
-        // Initialize dynamic parameters array since constructor wasn't called
-        $reflection = new ReflectionClass($this->channel);
-        $property = $reflection->getProperty('_dynamic_parameters');
-        $property->setAccessible(true);
-        $property->setValue($this->channel, array('channel', 'entry_id', 'category', 'orderby',
+        $ref = new ReflectionClass($this->channel);
+        $prop = $ref->getProperty('_dynamic_parameters');
+        $prop->setAccessible(true);
+        $prop->setValue($this->channel, array('channel', 'entry_id', 'category', 'orderby',
             'sort', 'sticky', 'show_future_entries', 'show_expired', 'entry_id_from',
             'entry_id_to', 'not_entry_id', 'start_on', 'stop_before', 'year', 'month',
             'day', 'display_by', 'limit', 'username', 'status', 'group_id', 'primary_role_id', 'cat_limit',
             'month_limit', 'offset', 'author_id', 'url_title'));
-
-        $result = $this->channel->fetch_dynamic_params();
-
-        // Clean up globals
-        $_POST = [];
-        $_GET = [];
-
-        // Should include dynamic parameters but not non-dynamic ones
-        $this->assertIsString($result);
-        $this->assertTrue(strpos($result, 'channel=') !== false);
-        $this->assertTrue(strpos($result, 'entry_id=') !== false);
-        $this->assertTrue(strpos($result, 'limit=') !== false);
-        // Non-dynamic parameters should not be included
-        $this->assertFalse(strpos($result, 'cache=') !== false);
-        $this->assertFalse(strpos($result, 'refresh=') !== false);
-    }
-
-    public function testFetchDynamicParamsReturnsCleanString()
-    {
-        // Mock template with complete setup
-        $this->setMock('TMPL', new class {
-            public $tagdata = 'some_tagdata';
-            public $tagproper = 'channel:entries';
-            public function fetch_param($key) {
-                $params = [
-                    'channel' => 'news',
-                    'entry_id' => '123',
-                    'dynamic_parameters' => 'channel|entry_id'
-                ];
-                return $params[$key] ?? null;
-            }
-        });
-
-        // Mock GET/POST data
+        $_POST = ['not_a_param' => 'x'];
         $this->setMock('input', new class {
-            public function get_post($key) {
-                $data = [
-                    'channel' => 'news',
-                    'entry_id' => '123'
-                ];
-                return $data[$key] ?? null;
-            }
+            public function get_post($key){ return 'x'; }
+            public function get($k){ return null; }
         });
-
-        // Mock global POST array
-        $_POST = [
-            'channel' => 'news',
-            'entry_id' => '123'
-        ];
-        $_GET = [];
-
-        // Initialize dynamic parameters array since constructor wasn't called
-        $reflection = new ReflectionClass($this->channel);
-        $property = $reflection->getProperty('_dynamic_parameters');
-        $property->setAccessible(true);
-        $property->setValue($this->channel, array('channel', 'entry_id', 'category', 'orderby',
-            'sort', 'sticky', 'show_future_entries', 'show_expired', 'entry_id_from',
-            'entry_id_to', 'not_entry_id', 'start_on', 'stop_before', 'year', 'month',
-            'day', 'display_by', 'limit', 'username', 'status', 'group_id', 'primary_role_id', 'cat_limit',
-            'month_limit', 'offset', 'author_id', 'url_title'));
-
-        $result = $this->channel->fetch_dynamic_params();
-
-        // Clean up globals
+        $out = $this->channel->fetch_dynamic_params();
+        $this->assertSame('', $out);
+        $this->assertArrayNotHasKey('not_a_param', ee()->TMPL->tagparams);
         $_POST = [];
         $_GET = [];
-
-        // Should return a clean params string without extra formatting
-        $this->assertIsString($result);
-        $this->assertStringStartsWith('channel=', $result);
-        // Should not have leading/trailing whitespace or other artifacts
-        $this->assertEquals(trim($result), $result);
     }
 }
