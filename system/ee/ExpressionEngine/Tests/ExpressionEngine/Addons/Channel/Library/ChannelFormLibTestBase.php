@@ -612,6 +612,20 @@ abstract class ChannelFormLibTestBase extends TestCase
             }
 
             public function save() {}
+
+            public function getDisplay() {
+                return new class {
+                    private $entry;
+                    public function __construct() {
+                        $this->entry = null;
+                    }
+
+                    public function getFields() {
+                        // Return empty array by default, can be overridden in tests
+                        return [];
+                    }
+                };
+            }
         };
 
         return new $entry($properties);
