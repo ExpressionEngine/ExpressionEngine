@@ -676,4 +676,22 @@ abstract class ChannelFormLibTestBase extends TestCase
 
         return new $member($properties);
     }
+
+    // Helper methods for accessing protected properties
+    protected function getProtectedProperty($property) {
+        $reflection = new ReflectionClass($this->channelFormLib);
+        $prop = $reflection->getProperty($property);
+        $prop->setAccessible(true);
+        return $prop;
+    }
+
+    protected function setProtectedProperty($property, $value) {
+        $prop = $this->getProtectedProperty($property);
+        $prop->setValue($this->channelFormLib, $value);
+    }
+
+    protected function getProtectedPropertyValue($property) {
+        $prop = $this->getProtectedProperty($property);
+        return $prop->getValue($this->channelFormLib);
+    }
 }
