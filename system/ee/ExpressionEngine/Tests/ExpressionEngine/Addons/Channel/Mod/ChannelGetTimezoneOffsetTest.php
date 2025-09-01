@@ -120,4 +120,112 @@ class ChannelGetTimezoneOffsetTest extends ChannelTestBase
         $this->assertEquals(-21600, $result);
         $this->assertIsInt($result);
     }
+
+    public function testHandlesMalformedTimezoneString()
+    {
+        // Set up malformed timezone using ee() mock
+        ee()->setMock('config', new class {
+            public function item($key) {
+                return $key === 'default_site_timezone' ? 'Invalid/Timezone@#$%' : false;
+            }
+        });
+
+        // The method currently throws an exception for malformed timezones
+        // This test documents the current behavior
+        $this->expectException(Exception::class);
+        $this->method->invoke($this->channel);
+    }
+
+    public function testHandlesVeryLongTimezoneName()
+    {
+        // Set up extremely long timezone name using ee() mock
+        $longTimezone = str_repeat('A', 1000) . '/LongTimezoneName';
+        ee()->setMock('config', new class($longTimezone) {
+            private $tz;
+            public function __construct($tz) { $this->tz = $tz; }
+            public function item($key) {
+                return $key === 'default_site_timezone' ? $this->tz : false;
+            }
+        });
+
+        // The method currently throws an exception for invalid timezones
+        // This test documents the current behavior
+        $this->expectException(Exception::class);
+        $this->method->invoke($this->channel);
+    }
+
+    public function testHandlesTimezoneWithNumbers()
+    {
+        // Set up timezone-like string with numbers using ee() mock
+        ee()->setMock('config', new class {
+            public function item($key) {
+                return $key === 'default_site_timezone' ? 'UTC+05:30' : false;
+            }
+        });
+
+        // The method currently throws an exception for timezone-like strings with numbers
+        // This test documents the current behavior
+        $this->expectException(Exception::class);
+        $this->method->invoke($this->channel);
+    }
+
+    public function testHandlesTimezoneWithNegativeNumbers()
+    {
+        // Set up timezone with negative offset using ee() mock
+        ee()->setMock('config', new class {
+            public function item($key) {
+                return $key === 'default_site_timezone' ? 'UTC-08:00' : false;
+            }
+        });
+
+        // The method currently throws an exception for timezone-like strings with numbers
+        // This test documents the current behavior
+        $this->expectException(Exception::class);
+        $this->method->invoke($this->channel);
+    }
+
+    public function testHandlesEmptyTimezoneString()
+    {
+        // Set up empty timezone string using ee() mock
+        ee()->setMock('config', new class {
+            public function item($key) {
+                return $key === 'default_site_timezone' ? '' : false;
+            }
+        });
+
+        // Empty string currently causes an exception when passed to DateTimeZone
+        // This test documents the current behavior
+        $this->expectException(Exception::class);
+        $this->method->invoke($this->channel);
+    }
+
+    public function testHandlesNullTimezoneConfig()
+    {
+        // Set up null timezone config using ee() mock
+        ee()->setMock('config', new class {
+            public function item($key) {
+                return $key === 'default_site_timezone' ? null : false;
+            }
+        });
+
+        // Null value currently causes an exception when passed to DateTimeZone
+        // This test documents the current behavior
+        $this->expectException(Exception::class);
+        $this->method->invoke($this->channel);
+    }
+
+    public function testHandlesTimezoneWithSpecialCharacters()
+    {
+        // Set up timezone with special characters using ee() mock
+        ee()->setMock('config', new class {
+            public function item($key) {
+                return $key === 'default_site_timezone' ? 'America/New_York!' : false;
+            }
+        });
+
+        // The method currently throws an exception for invalid timezones
+        // This test documents the current behavior
+        $this->expectException(Exception::class);
+        $this->method->invoke($this->channel);
+    }
 }

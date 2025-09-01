@@ -154,4 +154,103 @@ class ChannelFetchDisableParamTest extends ChannelTestBase
             $this->assertFalse($enabled, "Feature '$feature' should be disabled");
         }
     }
+
+    public function testHandlesWhitespaceAroundPipeSeparators()
+    {
+        // NOTE: Current implementation does NOT handle whitespace around pipe separators
+        // This is a potential bug - 'categories | custom_fields' becomes ['categories ', ' custom_fields']
+        // which don't match the expected keys. This test documents the current behavior.
+
+        // Set up TMPL mock with whitespace around pipes
+        $this->setTemplateParams(['disable' => 'categories | custom_fields']);
+
+        // Call the method
+        $this->method->invoke($this->channel);
+
+        // Due to lack of trim(), whitespace around values prevents proper matching
+        $this->assertTrue($this->channel->enable['categories'], "POTENTIAL BUG: Whitespace around 'categories ' prevents matching");
+        $this->assertTrue($this->channel->enable['custom_fields'], "POTENTIAL BUG: Whitespace around ' custom_fields' prevents matching");
+        $this->assertTrue($this->channel->enable['member_data']);
+    }
+
+    public function testHandlesCaseInsensitiveFeatureNames()
+    {
+        // Test case variations - current implementation is case-sensitive
+        // This documents the current behavior
+        $this->setTemplateParams(['disable' => 'Categories']); // Capital C
+
+        // Call the method
+        $this->method->invoke($this->channel);
+
+        // 'Categories' should be treated as invalid (case-sensitive)
+        $this->assertTrue($this->channel->enable['categories'], "Case-sensitive: 'Categories' should not match 'categories'");
+    }
+
+    public function testHandlesTrailingPipe()
+    {
+        // Set up TMPL mock with trailing pipe
+        $this->setTemplateParams(['disable' => 'categories|']);
+
+        // Call the method
+        $this->method->invoke($this->channel);
+
+        // Categories should be disabled, empty string after pipe should be ignored
+        $this->assertFalse($this->channel->enable['categories']);
+        $this->assertTrue($this->channel->enable['custom_fields']);
+    }
+
+    public function testHandlesLeadingPipe()
+    {
+        // Set up TMPL mock with leading pipe
+        $this->setTemplateParams(['disable' => '|categories']);
+
+        // Call the method
+        $this->method->invoke($this->channel);
+
+        // Categories should be disabled, empty string before pipe should be ignored
+        $this->assertFalse($this->channel->enable['categories']);
+        $this->assertTrue($this->channel->enable['custom_fields']);
+    }
+
+    public function testHandlesMultipleConsecutivePipes()
+    {
+        // Set up TMPL mock with consecutive pipes
+        $this->setTemplateParams(['disable' => 'categories||custom_fields']);
+
+        // Call the method
+        $this->method->invoke($this->channel);
+
+        // Valid features should be disabled, empty strings ignored
+        $this->assertFalse($this->channel->enable['categories']);
+        $this->assertFalse($this->channel->enable['custom_fields']);
+        $this->assertTrue($this->channel->enable['member_data']);
+    }
+
+    public function testHandlesOnlyPipes()
+    {
+        // Set up TMPL mock with only pipes
+        $this->setTemplateParams(['disable' => '|||']);
+
+        // Call the method
+        $this->method->invoke($this->channel);
+
+        // All features should remain enabled (empty strings ignored)
+        foreach ($this->channel->enable as $feature => $enabled) {
+            $this->assertTrue($enabled, "Feature '$feature' should remain enabled with only pipes");
+        }
+    }
+
+    public function testHandlesSingleSpaceParameter()
+    {
+        // Set up TMPL mock with single space
+        $this->setTemplateParams(['disable' => ' ']);
+
+        // Call the method
+        $this->method->invoke($this->channel);
+
+        // Single space should be treated as invalid feature name
+        foreach ($this->channel->enable as $feature => $enabled) {
+            $this->assertTrue($enabled, "Feature '$feature' should remain enabled with space parameter");
+        }
+    }
 }

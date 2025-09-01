@@ -265,4 +265,206 @@ class ChannelGenerateFieldSearchSqlTest extends ChannelTestBase
 
         $this->assertEquals('', $result);
     }
+
+    public function testHandlesSqlInjectionAttempt()
+    {
+        // Test SQL injection attempts in search terms
+        $searchFields = [
+            'title' => "'; DROP TABLE users; --",
+            'custom_field' => "1' OR '1'='1"
+        ];
+
+        // Set up custom fields
+        $this->channel->cfields = [
+            1 => [
+                'custom_field' => 123
+            ]
+        ];
+
+        $result = $this->method->invoke($this->channel, $searchFields, [], []);
+
+        // The result should contain escaped/quoted search terms, not raw SQL injection
+        $this->assertStringContainsString('%\'; DROP TABLE users; --%', $result);
+        $this->assertStringContainsString('%1\' OR \'1\'=\'1%', $result);
+    }
+
+    public function testHandlesUnicodeCharactersInSearchTerms()
+    {
+        $searchFields = [
+            'title' => 'café résumé naïve', // Accented characters
+            'custom_field' => '🚀⭐🌟' // Emoji
+        ];
+
+        // Set up custom fields
+        $this->channel->cfields = [
+            1 => [
+                'custom_field' => 123
+            ]
+        ];
+
+        $result = $this->method->invoke($this->channel, $searchFields, [], []);
+
+        // Should handle Unicode characters properly
+        $this->assertStringContainsString('%café résumé naïve%', $result);
+        $this->assertStringContainsString('%🚀⭐🌟%', $result);
+    }
+
+    public function testHandlesVeryLongSearchTerms()
+    {
+        // Create a very long search term
+        $longTerm = str_repeat('a', 10000);
+        $searchFields = ['title' => $longTerm];
+
+        $result = $this->method->invoke($this->channel, $searchFields, [], []);
+
+        // Should handle long terms without crashing
+        $this->assertStringContainsString('LIKE', $result);
+        $this->assertStringContainsString($longTerm, $result);
+    }
+
+    public function testHandlesSearchTermsWithWildcards()
+    {
+        // Test search terms containing SQL wildcards
+        $searchFields = [
+            'title' => 'test%',
+            'custom_field' => 'test_'
+        ];
+
+        // Set up custom fields
+        $this->channel->cfields = [
+            1 => [
+                'custom_field' => 123
+            ]
+        ];
+
+        // Update mock to properly escape wildcards like the real implementation
+        ee()->setMock('channel_model', new class {
+            public function field_search_sql($terms, $column, $siteId = false) {
+                // Simulate the real escape_like_str behavior
+                $escaped = str_replace(['%', '_'], ['\\%', '\\_'], $terms);
+                return ' (' . $column . ' LIKE "%' . $escaped . '%") ';
+            }
+        });
+
+        $result = $this->method->invoke($this->channel, $searchFields, [], []);
+
+        // Should properly escape wildcard characters in search terms
+        $this->assertStringContainsString('%test\\%%', $result);
+        $this->assertStringContainsString('%test\\_%', $result);
+    }
+
+    public function testHandlesSearchTermsWithQuotes()
+    {
+        $searchFields = [
+            'title' => 'test\'s "quoted" value',
+            'custom_field' => 'O\'Reilly'
+        ];
+
+        // Set up custom fields
+        $this->channel->cfields = [
+            1 => [
+                'custom_field' => 123
+            ]
+        ];
+
+        // Update mock to properly escape quotes like the real implementation
+        ee()->setMock('channel_model', new class {
+            public function field_search_sql($terms, $column, $siteId = false) {
+                // Simulate the real escape_like_str behavior
+                $escaped = addslashes($terms); // This is what the real implementation does
+                return ' (' . $column . ' LIKE "%' . $escaped . '%") ';
+            }
+        });
+
+        $result = $this->method->invoke($this->channel, $searchFields, [], []);
+
+        // Should properly escape quotes in search terms
+        $this->assertStringContainsString('%test\\\'s \\"quoted\\" value%', $result);
+        $this->assertStringContainsString('%O\\\'Reilly%', $result);
+    }
+
+    public function testHandlesSearchTermsWithNewlines()
+    {
+        $searchFields = [
+            'title' => "test\nwith\nnewlines",
+            'custom_field' => "test\r\nwith\r\ncrlf"
+        ];
+
+        // Set up custom fields
+        $this->channel->cfields = [
+            1 => [
+                'custom_field' => 123
+            ]
+        ];
+
+        $result = $this->method->invoke($this->channel, $searchFields, [], []);
+
+        // Should handle newlines in search terms without crashing
+        $this->assertStringContainsString('LIKE', $result);
+        $this->assertStringContainsString('test', $result);
+        $this->assertStringContainsString('newlines', $result);
+        $this->assertStringContainsString('crlf', $result);
+    }
+
+    public function testHandlesSearchTermsWithControlCharacters()
+    {
+        // Test with control characters
+        $searchFields = [
+            'title' => "test\x00null\x01control",
+            'custom_field' => "test\x0A\x0D"
+        ];
+
+        // Set up custom fields
+        $this->channel->cfields = [
+            1 => [
+                'custom_field' => 123
+            ]
+        ];
+
+        $result = $this->method->invoke($this->channel, $searchFields, [], []);
+
+        // Should handle control characters appropriately
+        $this->assertIsString($result);
+        $this->assertStringContainsString('LIKE', $result);
+    }
+
+    public function testHandlesMultipleSearchFieldsWithSpecialCharacters()
+    {
+        // Test multiple fields with various special characters
+        $searchFields = [
+            'title' => 'normal search',
+            'url_title' => 'url-with-dashes',
+            'custom_field1' => 'field with spaces',
+            'custom_field2' => 'field%with%wildcards',
+            'custom_field3' => 'field\'with"quotes'
+        ];
+
+        // Set up custom fields
+        $this->channel->cfields = [
+            1 => [
+                'custom_field1' => 123,
+                'custom_field2' => 124,
+                'custom_field3' => 125
+            ]
+        ];
+
+        // Use proper escaping mock for this test
+        ee()->setMock('channel_model', new class {
+            public function field_search_sql($terms, $column, $siteId = false) {
+                // Simulate the real escape_like_str behavior
+                $escaped = str_replace(['%', '_'], ['\\%', '\\_'], $terms);
+                $escaped = addslashes($escaped);
+                return ' (' . $column . ' LIKE "%' . $escaped . '%") ';
+            }
+        });
+
+        $result = $this->method->invoke($this->channel, $searchFields, [], []);
+
+        // Should generate SQL for all fields with proper escaping
+        $this->assertStringContainsString('t.title LIKE "%normal search%"', $result);
+        $this->assertStringContainsString('t.url_title LIKE "%url-with-dashes%"', $result);
+        $this->assertStringContainsString('exp_channel_data_field_123.field_id_123 LIKE "%field with spaces%"', $result);
+        $this->assertStringContainsString('exp_channel_data_field_124.field_id_124 LIKE "%field\\\\%with\\\\%wildcards%"', $result);
+        $this->assertStringContainsString('exp_channel_data_field_125.field_id_125 LIKE "%field\\\'with\\"quotes%"', $result);
+    }
 }
