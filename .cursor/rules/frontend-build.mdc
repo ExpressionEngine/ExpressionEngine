@@ -1,0 +1,17 @@
+---
+globs: *.js,*.ts,*.tsx,*.scss,*.less
+---
+# Frontend Build & Asset Rules
+
+- Root NPM scripts:
+  - `build:js`/`watch:js` invoke Gulp tasks; see [`gulpfile.js`](mdc:gulpfile.js).
+  - `build:ckeditor` uses Webpack; see [`webpack.config.js`](mdc:webpack.config.js) and sources in [`js-src/ckeditor5-build-classic`](mdc:js-src/ckeditor5-build-classic).
+  - `build:css`/`watch:css` use Brunch; sources are under [`cp-styles/app`](mdc:cp-styles/app), outputs to `themes/ee`.
+- Additional package.json files exist in [`frontedit`](mdc:frontedit) and [`build-tools`](mdc:build-tools). Check local `gulpfile.js`/`vue.config.js` as needed.
+
+## Conventions
+
+- Prefer TypeScript in `cp-styles/app/main.ts` and related modules; keep strict types.
+- Match existing module patterns in `themes/ee/*` when updating shipped assets.
+- Avoid introducing new build tools; extend Gulp/Brunch/Webpack configs instead.
+- When editing styles, keep variables/mixins centralized and avoid inline styles.

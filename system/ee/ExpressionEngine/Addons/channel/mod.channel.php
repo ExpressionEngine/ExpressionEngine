@@ -2333,7 +2333,7 @@ class Channel
                 }
 
                 foreach ($this->preview_conditions as $condition) {
-                    if (strpos('OR', $condition) === false) {
+                    if (strpos($condition, 'OR') === false) {
                         $valid = $this->previewDataPassesCondition($condition, $data);
                     } else {
                         $valid = false;

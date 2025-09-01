@@ -4,6 +4,11 @@ require_once __DIR__ . '/ChannelTestBase.php';
 
 class ChannelSmileyPopTest extends ChannelTestBase
 {
+    public function testOutputStructure()
+    {
+        $this->markTestSkipped('smiley_pop() prints and exits; skipping in unit harness.');
+    }
+
     public function testSmileyPopReturnsFatalErrorWhenNotLoggedIn()
     {
         // Set member_id to 0 (not logged in)

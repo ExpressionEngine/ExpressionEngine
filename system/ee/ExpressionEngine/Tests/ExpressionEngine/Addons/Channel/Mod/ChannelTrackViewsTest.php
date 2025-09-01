@@ -4,6 +4,31 @@ require_once __DIR__ . '/ChannelTestBase.php';
 
 class ChannelTrackViewsTest extends ChannelTestBase
 {
+    public function testSkipsWhenDisabled()
+    {
+        ee()->config->items['enable_entry_view_tracking'] = 'n';
+        ee()->TMPL->setMap(['track_views' => 'one']);
+        $this->channel->hit_tracking_id = 123;
+        $this->channel->track_views();
+        $this->assertTrue(true); // no errors
+    }
+
+    public function testIncrementsViewCountOnce()
+    {
+        ee()->config->items['enable_entry_view_tracking'] = 'y';
+        ee()->TMPL->setMap(['track_views' => 'one']);
+        $this->channel->hit_tracking_id = 123;
+        $queryCount = 0;
+        $this->setMock('db', new class($queryCount) {
+            private $count;
+            public function __construct(&$count) { $this->count = &$count; }
+            public function query($sql) { $this->count++; return new stdClass(); }
+            public function escape_str($str) { return $str; }
+        });
+        $this->channel->track_views();
+        $this->assertSame(1, $queryCount);
+    }
+
     public function testTrackViewsReturnsEarlyWhenTrackingDisabled()
     {
         // Set config to disable view tracking

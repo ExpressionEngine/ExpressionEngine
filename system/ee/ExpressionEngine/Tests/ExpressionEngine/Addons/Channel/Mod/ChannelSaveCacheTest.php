@@ -4,6 +4,21 @@ require_once __DIR__ . '/ChannelTestBase.php';
 
 class ChannelSaveCacheTest extends ChannelTestBase
 {
+    public function testIdentifierChangesKey()
+    {
+        ee()->uri->uri_string = '/abc';
+        $spy = new class {
+            public $keys = [];
+            public function save($k,$v,$t){ $this->keys[]=$k; return true; }
+        };
+        $this->setMock('cache', $spy);
+        ee()->TMPL->tagproper = 'channel:entries';
+        $this->channel->save_cache('SQL');
+        $this->channel->save_cache('SQL','chunks');
+        $this->assertCount(2, $spy->keys);
+        $this->assertNotSame($spy->keys[0], $spy->keys[1]);
+    }
+
     public function testSaveCacheReturnsTrueOnSuccess()
     {
         $sql = 'SELECT * FROM exp_channel_data';

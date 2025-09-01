@@ -4,6 +4,16 @@ require_once __DIR__ . '/ChannelTestBase.php';
 
 class ChannelSubmitEntryTest extends ChannelTestBase
 {
+    public function testReturnsEmptyWhenNotAction()
+    {
+        if (defined('REQ')) {
+            // REQ already defined as CP in base; expect empty string
+            $this->assertSame('', $this->channel->submit_entry());
+        } else {
+            $this->assertSame('', $this->channel->submit_entry());
+        }
+    }
+
     public function testSubmitEntryReturnsFatalErrorWhenNotLoggedIn()
     {
         // Mock session to indicate user is not logged in

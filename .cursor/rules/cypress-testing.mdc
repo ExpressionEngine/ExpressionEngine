@@ -1,0 +1,14 @@
+---
+globs: tests/cypress/**
+---
+# Cypress E2E Testing Guide
+
+- Tests live under [`tests/cypress`](mdc:tests/cypress). Run via your local Cypress setup.
+- Use existing helpers under `tests/cypress/support` to reduce duplication.
+- Prefer data-testid or stable selectors; avoid brittle class-based selectors from built assets.
+- For complex UI flows, structure tests by feature directory and co-locate fixtures.
+- Keep tests idempotent and independent; reset state explicitly when needed.
+
+## CI/Local
+
+- Refer to `tests/cypress/readme.md` for environment details and splitting via `cypress-split.js`.

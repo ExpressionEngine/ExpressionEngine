@@ -40,6 +40,7 @@ class eeSingletonMock
     public $input;
     public $lang;
     public $legacy_api;
+    public $typography;
 
     protected $mock;
     protected static $mocks = [];
@@ -54,12 +55,13 @@ class eeSingletonMock
         $this->input = new eeSingletonInputMock();
         $this->db = new eeDbArMock();
         $this->lang = new eeLangMock();
+        $this->typography = new FakeTypography();
         require_once APPPATH . 'libraries/Api.php';
         $this->legacy_api = new \Api();
         $this->mock = $mock;
 
         // Override with static mocks if set
-        $overridable = ['db', 'config', 'functions', 'TMPL', 'session', 'load', 'logger', 'dbforge', 'input', 'lang'];
+        $overridable = ['db', 'config', 'functions', 'TMPL', 'session', 'load', 'logger', 'dbforge', 'input', 'lang', 'typography'];
         foreach ($overridable as $prop) {
             if (array_key_exists($prop, self::$mocks)) {
                 @$this->$prop = self::$mocks[$prop];
@@ -238,6 +240,7 @@ class eeDbArMock
     {
         return $this;
     }
+
     public function get()
     {
         $filtered = $this->rows;
@@ -249,6 +252,7 @@ class eeDbArMock
         if (!is_null($this->limitValue)) {
             $filtered = array_slice($filtered, 0, $this->limitValue);
         }
+
         // reset conditions between calls
         $this->whereConditions = [];
         $this->limitValue = null;
@@ -256,7 +260,36 @@ class eeDbArMock
     }
     public function query($sql)
     {
-        return new eeDbResultMock($this->rows);
+        $this->last_query = $sql;
+
+
+
+        // Return different mock data based on the SQL query
+        if ((strpos($sql, 'exp_channel_titles') !== false || strpos($sql, 'FROM exp_channel_titles') !== false) &&
+            (strpos($sql, 'year(FROM_UNIXTIME') !== false || strpos($sql, 'MONTH(FROM_UNIXTIME') !== false)) {
+            // For month_links query, return year/month data
+            return new eeDbResultMock([
+                ['year' => '2024', 'month' => '1']
+            ]);
+        } elseif (strpos($sql, 'exp_channel_titles') !== false || strpos($sql, 'FROM exp_channel_titles') !== false) {
+            // For other channel titles queries, return entry data
+            return new eeDbResultMock([
+                ['entry_id' => '123', 'url_title' => 'sample-article', 'channel_id' => '1']
+            ]);
+        } elseif (strpos($sql, 'exp_categories') !== false) {
+            // For categories query, return category data
+            return new eeDbResultMock([
+                ['cat_id' => '5', 'cat_url_title' => 'sample-category']
+            ]);
+        } else {
+            // Default fallback
+            return new eeDbResultMock($this->rows);
+        }
+    }
+
+    public function last_query()
+    {
+        return $this->last_query ?? '';
     }
 }
 
@@ -291,8 +324,13 @@ class eeDbResultMock
             return null;
         }
         $row = (object) $this->rows[0];
-        if ($column !== null && isset($row->$column)) {
-            return $row->$column;
+        if ($column !== null) {
+            if (isset($row->$column)) {
+                return $row->$column;
+            } else {
+                // Return null for missing columns instead of the entire row object
+                return null;
+            }
         }
         return $row;
     }
@@ -344,6 +382,26 @@ class FakeTemplate
                     $result = str_replace('{next_entry_id}', $next['entry_id'], $result);
                 }
             }
+
+            // Handle simple variables like {title}
+            if (isset($var['title'])) {
+                $result = str_replace('{title}', $var['title'], $result);
+            }
+            if (isset($var['entry_id'])) {
+                $result = str_replace('{entry_id}', $var['entry_id'], $result);
+            }
+            if (isset($var['url_title'])) {
+                $result = str_replace('{url_title}', $var['url_title'], $result);
+            }
+            if (isset($var['channel_short_name'])) {
+                $result = str_replace('{channel_short_name}', $var['channel_short_name'], $result);
+            }
+            if (isset($var['channel'])) {
+                $result = str_replace('{channel}', $var['channel'], $result);
+            }
+            if (isset($var['channel_url'])) {
+                $result = str_replace('{channel_url}', $var['channel_url'], $result);
+            }
         }
         return $result;
     }
@@ -353,18 +411,98 @@ class FakeTemplate
         // Simple no-op for logging in tests
         return true;
     }
+
+    public function swap_var_single($variable, $replacement, $source)
+    {
+        // Handle both braced and unbraced variables
+        if (strpos($variable, '{') === 0 && strrpos($variable, '}') === strlen($variable) - 1) {
+            // Variable already has braces, use as-is
+            return str_replace($variable, $replacement, $source);
+        } else {
+            // Variable doesn't have braces, add them
+            return str_replace('{' . $variable . '}', $replacement, $source);
+        }
+    }
+
+    public function delete_var_pairs($opening, $closing, $source)
+    {
+        // Simple implementation - remove the variable pair tags
+        $pattern = '/' . preg_quote($opening, '/') . '.*?' . preg_quote($closing, '/') . '/s';
+        return preg_replace($pattern, '', $source);
+    }
+
+    public function swap_var_pairs($opening, $closing, $source)
+    {
+        // Simple implementation - for testing, just return the source
+        return $source;
+    }
+
+    public $var_pair = [];
 }
 
 class FakeConfig
 {
     public $items = [];
     public function item($key) { return array_key_exists($key, $this->items) ? $this->items[$key] : null; }
+    public function get_cached_site_prefs($site_id = 1) {
+        // Return default site preferences for testing
+        return [
+            'site_name' => 'Test Site',
+            'site_url' => 'https://example.com/',
+            'site_index' => '',
+            'template_group' => 'default',
+            'template' => 'index'
+        ];
+    }
+}
+
+class FakeTypography
+{
+    public function format_characters($str) {
+        // Simple mock implementation - just return the string as-is
+        return $str;
+    }
+
+    public function formatTitle($str) {
+        // Simple mock implementation - just return the string as-is
+        return $str;
+    }
+
+    public function initialize($config = []) {
+        // Simple mock implementation - do nothing
+        return true;
+    }
 }
 
 class FakeFunctions
 {
     public function fetch_site_index($a = 0, $b = 0) { return '/'; }
-    public function create_url($path = '') { return 'https://example.com/'; }
+    public function create_url($path = '') {
+        // Handle dynamic path generation for path variables
+        if ($path) {
+            return 'https://example.com/' . ltrim($path, '/');
+        }
+        return 'https://example.com/';
+    }
+    public function sql_andor_string($str, $field, $prefix = '', $null_check = true) {
+        // Simple mock implementation for AND/OR SQL generation
+        if (strpos($str, '|') !== false) {
+            $parts = explode('|', $str);
+            $conditions = [];
+            foreach ($parts as $part) {
+                $conditions[] = "$field = '$part'";
+            }
+            return ' AND (' . implode(' OR ', $conditions) . ')';
+        } else {
+            return " AND $field = '$str'";
+        }
+    }
+
+    public function ar_andor_string($str, $field, $prefix = '', $null_check = true) {
+        // Alias for sql_andor_string
+        return $this->sql_andor_string($str, $field, $prefix, $null_check);
+    }
+
     public function assign_parameters($param_string)
     {
         $params = [];
@@ -385,18 +523,21 @@ class FakeFunctions
         return $str;
     }
 
-    public function sql_andor_string($str, $field)
+
+
+    public function extract_path($variable)
     {
-        // Simple mock implementation for SQL AND/OR string generation
-        if (strpos($str, '|') !== false) {
-            $parts = explode('|', $str);
-            $conditions = [];
-            foreach ($parts as $part) {
-                $conditions[] = "$field = '$part'";
-            }
-            return ' AND (' . implode(' OR ', $conditions) . ')';
+        // Simple mock implementation for path extraction
+        if (strpos($variable, ':') !== false) {
+            return str_replace('path:', '', $variable);
         }
-        return " AND $field = '$str'";
+        return $variable;
+    }
+
+    public function trim_slashes($str)
+    {
+        // Simple mock implementation of trim_slashes function
+        return trim($str, '/');
     }
 }
 
@@ -428,6 +569,11 @@ class FakeDb
         return $this;
     }
 
+    public function join($table, $condition, $type = '')
+    {
+        return $this;
+    }
+
     public function limit($value)
     {
         $this->limitValue = $value;
@@ -455,11 +601,6 @@ class FakeDb
         return addslashes($str);
     }
 
-    public function join($table, $cond, $type = '')
-    {
-        return $this;
-    }
-
     public function get($table = null)
     {
         if ($table) {
@@ -468,13 +609,17 @@ class FakeDb
         $filtered = $this->rows;
 
         foreach ($this->whereConditions as $field => $value) {
-            $filtered = array_values(array_filter($filtered, function ($row) use ($field, $value) {
-                return isset($row[$field]) && $row[$field] == $value;
+            // Handle table prefixes (e.g., "t.entry_id" should match "entry_id")
+            $fieldWithoutPrefix = strpos($field, '.') !== false ? substr($field, strpos($field, '.') + 1) : $field;
+            $filtered = array_values(array_filter($filtered, function ($row) use ($fieldWithoutPrefix, $value) {
+                return isset($row[$fieldWithoutPrefix]) && $row[$fieldWithoutPrefix] == $value;
             }));
         }
         foreach ($this->whereInConditions as $field => $values) {
-            $filtered = array_values(array_filter($filtered, function ($row) use ($field, $values) {
-                return isset($row[$field]) && in_array($row[$field], $values);
+            // Handle table prefixes (e.g., "w.site_id" should match "site_id")
+            $fieldWithoutPrefix = strpos($field, '.') !== false ? substr($field, strpos($field, '.') + 1) : $field;
+            $filtered = array_values(array_filter($filtered, function ($row) use ($fieldWithoutPrefix, $values) {
+                return isset($row[$fieldWithoutPrefix]) && in_array($row[$fieldWithoutPrefix], $values);
             }));
         }
 

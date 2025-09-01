@@ -82,12 +82,23 @@ abstract class ChannelTestBase extends TestCase
                 public $now = 0;
                 public function __construct() { $this->now = time(); }
                 public function localize_month($month) { return $month; }
+                public function string_to_timestamp($human_string, $localized = true, $date_format = null) {
+                    // Simple mock implementation - return current timestamp
+                    return time();
+                }
             });
             // Session mock with caching API
             ee()->setMock('session', new class {
                 public $cache = [];
+                public $userdata_values = [];
                 public function cache($class, $key) { return $this->cache[$class][$key] ?? false; }
                 public function set_cache($class, $key, $value) { $this->cache[$class][$key] = $value; }
+                public function userdata($key, $default = false) {
+                    return $this->userdata_values[$key] ?? $default;
+                }
+                public function set_userdata($key, $value) {
+                    $this->userdata_values[$key] = $value;
+                }
             });
             // Extensions mock
             ee()->setMock('extensions', new class {
@@ -153,8 +164,11 @@ abstract class ChannelTestBase extends TestCase
                             function timezones() {
                                 return [
                                     'UTC' => 0,
-                                    'America/New_York' => -18000,
+                                    'America/New_York' => -5, // Eastern Time UTC-5
                                     'Europe/London' => 0,
+                                    'Asia/Tokyo' => 9, // UTC+9
+                                    'America/Los_Angeles' => -8, // Pacific Time UTC-8
+                                    'America/Chicago' => -6, // Central Time UTC-6
                                 ];
                             }
                         }
@@ -208,7 +222,7 @@ abstract class ChannelTestBase extends TestCase
                         ee()->legacy_api = new class { public function instantiate($name) {} };
                     }
                     if ($name === 'typography') {
-                        ee()->typography = new class {};
+                        ee()->typography = new FakeTypography();
                     }
                 }
             });
@@ -230,11 +244,22 @@ abstract class ChannelTestBase extends TestCase
                 public $now = 0;
                 public function __construct() { $this->now = time(); }
                 public function localize_month($month) { return $month; }
+                public function string_to_timestamp($human_string, $localized = true, $date_format = null) {
+                    // Simple mock implementation - return current timestamp
+                    return time();
+                }
             };
             $__EE_TEST_ENV__->session = new class {
                 public $cache = [];
+                public $userdata_values = [];
                 public function cache($class, $key) { return $this->cache[$class][$key] ?? false; }
                 public function set_cache($class, $key, $value) { $this->cache[$class][$key] = $value; }
+                public function userdata($key, $default = false) {
+                    return $this->userdata_values[$key] ?? $default;
+                }
+                public function set_userdata($key, $value) {
+                    $this->userdata_values[$key] = $value;
+                }
             };
             $__EE_TEST_ENV__->lang = new class {
                 public function load($item) { return; }
@@ -278,8 +303,11 @@ abstract class ChannelTestBase extends TestCase
                             function timezones() {
                                 return [
                                     'UTC' => 0,
-                                    'America/New_York' => -18000,
+                                    'America/New_York' => -5, // Eastern Time UTC-5
                                     'Europe/London' => 0,
+                                    'Asia/Tokyo' => 9, // UTC+9
+                                    'America/Los_Angeles' => -8, // Pacific Time UTC-8
+                                    'America/Chicago' => -6, // Central Time UTC-6
                                 ];
                             }
                         }
@@ -330,7 +358,7 @@ abstract class ChannelTestBase extends TestCase
                         return;
                     }
                     if ($name === 'typography') {
-                        ee()->typography = new class {};
+                        ee()->typography = new FakeTypography();
                         return;
                     }
                 }
@@ -397,6 +425,17 @@ abstract class ChannelTestBase extends TestCase
                 return preg_replace("#([^/:])/+#", "\\1/", $str);
             }
         }
+        if (!function_exists('trim_slashes')) {
+            function trim_slashes($str) {
+                return trim($str, '/');
+            }
+        }
+        if (!function_exists('days_in_month')) {
+            function days_in_month($month, $year) {
+                // Simple mock implementation of days_in_month function
+                return cal_days_in_month(CAL_GREGORIAN, $month, $year);
+            }
+        }
     }
 
     // Add tearDown to clean up mocks
@@ -438,3 +477,7 @@ abstract class ChannelTestBase extends TestCase
         ee()->db->setRows($rows);
     }
 }
+
+
+
+
