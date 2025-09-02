@@ -1,5 +1,4 @@
 (function($) {
-
 	/**
 	 * Position element relative to anothor
 	 */
@@ -316,12 +315,14 @@
 	initToolbarSelector('tb-selections-redactorX-context', '#redactorX-toolbar-context', '.rx-button', 'disable');
 	initToolbarSelector('tb-selections-redactorX-format', '#redactorX-toolbar-format', '.rx-button', 'disable');
 	initToolbarSelector('tb-selections-redactorX-plugins', '#redactorX-toolbar-plugins', '.rx-button', 'disable');
-	initToolbarSelector('tb-selections-redactorY-hide', '#redactorX-toolbar-hide', '.rx-button', 'disable', true);
-	initToolbarSelector('tb-selections-redactorY-topbar', '#redactorX-toolbar-topbar', '.rx-button', 'disable');
-	initToolbarSelector('tb-selections-redactorY-addbar', '#redactorX-toolbar-addbar', '.rx-button', 'disable');
-	initToolbarSelector('tb-selections-redactorY-context', '#redactorX-toolbar-context', '.rx-button', 'disable');
-	initToolbarSelector('tb-selections-redactorY-format', '#redactorX-toolbar-format', '.rx-button', 'disable');
-	initToolbarSelector('tb-selections-redactorY-plugins', '#redactorX-toolbar-plugins', '.rx-button', 'disable');
+
+	initToolbarSelector('tb-selections-redactorY-hide', '#redactorY-toolbar-hide', '.rx-button', 'disable', true);
+	initToolbarSelector('tb-selections-redactorY-extrabar', '#redactorY-toolbar-extrabar', '.rx-button', 'disable');
+	initToolbarSelector('tb-selections-redactorY-addbar', '#redactorY-toolbar-addbar', '.rx-button', 'disable');
+	initToolbarSelector('tb-selections-redactorY-context', '#redactorY-toolbar-context', '.rx-button', 'disable');
+	initToolbarSelector('tb-selections-redactorY-format', '#redactorY-toolbar-format', '.rx-button', 'disable');
+	initToolbarSelector('tb-selections-redactorY-plugins', '#redactorY-toolbar-plugins', '.rx-button', 'disable');
+
 
 
 	})(jQuery);
