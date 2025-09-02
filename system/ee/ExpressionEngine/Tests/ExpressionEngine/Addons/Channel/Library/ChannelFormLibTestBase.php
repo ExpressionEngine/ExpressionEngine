@@ -633,7 +633,7 @@ abstract class ChannelFormLibTestBase extends TestCase
 
     protected function createMockMember($properties = [])
     {
-        $member = new class {
+        $member = new #[\AllowDynamicProperties] class {
             public $member_id = 1;
             public $PrimaryRole = null;
 
