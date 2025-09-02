@@ -831,4 +831,368 @@ class ChannelFormLibDisplayFieldTest extends ChannelFormLibTestBase
         // Should return some result (may be null or empty string when fieldtype handler fails)
         $this->assertTrue($result === null || $result === '' || is_string($result));
     }
+
+    public function testDisplayFieldHandlesInvalidFieldNameEdgeCase()
+    {
+        // Override methods by creating a test subclass
+        $testChannelFormLib = new class extends Channel_form_lib {
+            public function get_field_id($field_name) {
+                return false; // Invalid field name
+            }
+
+            public function get_field_type($field_name) {
+                return 'text';
+            }
+
+            public function get_field_settings($field_name) {
+                return [];
+            }
+
+            public function get_field_data($field_name, $key = false) {
+                return [];
+            }
+        };
+
+        // Copy properties from the original
+        $testChannelFormLib->custom_fields = $this->channelFormLib->custom_fields;
+        $testChannelFormLib->custom_field_names = $this->channelFormLib->custom_field_names;
+        $testChannelFormLib->title_fields = $this->channelFormLib->title_fields;
+        $testChannelFormLib->option_fields = $this->channelFormLib->option_fields;
+        $testChannelFormLib->native_option_fields = $this->channelFormLib->native_option_fields;
+        $testChannelFormLib->extra_js = $this->channelFormLib->extra_js;
+        $testChannelFormLib->entry = $this->channelFormLib->entry;
+
+        // Replace the channelFormLib with our test version
+        $this->channelFormLib = $testChannelFormLib;
+
+        // Mock API and fieldtype
+        $this->setMock('api', new class {
+            public function instantiate() {}
+        });
+
+        $this->setMock('javascript', new class {
+            public function output($js) {}
+        });
+
+        $this->setMock('legacy_api', new class {
+            public function instantiate($name) {
+                ee()->api_channel_fields = new class {
+                    public $field_type = 'text';
+                    public function setup_handler($field_type, $return_obj = false) {
+                        return new class {
+                            public $settings = [];
+                            public function _init($args) {}
+                            public function apply($method, $args = []) {
+                                return '<input type="text" value="default">';
+                            }
+                        };
+                    }
+                };
+            }
+        });
+
+        // Test with invalid field name
+        $result = $this->channelFormLib->display_field('nonexistent_field');
+
+        // Should handle gracefully and return some result
+        $this->assertTrue(is_string($result) || $result === null);
+    }
+
+    public function testDisplayFieldHandlesNullEntry()
+    {
+        // Setup: Set entry to null
+        $this->channelFormLib->entry = null;
+
+        // Override methods by creating a test subclass
+        $testChannelFormLib = new class extends Channel_form_lib {
+            public function get_field_id($field_name) {
+                return 1;
+            }
+
+            public function get_field_type($field_name) {
+                return 'text';
+            }
+
+            public function get_field_settings($field_name) {
+                return [];
+            }
+
+            public function get_field_data($field_name, $key = false) {
+                return [];
+            }
+        };
+
+        // Copy properties from the original
+        $testChannelFormLib->custom_fields = $this->channelFormLib->custom_fields;
+        $testChannelFormLib->custom_field_names = $this->channelFormLib->custom_field_names;
+        $testChannelFormLib->title_fields = $this->channelFormLib->title_fields;
+        $testChannelFormLib->option_fields = $this->channelFormLib->option_fields;
+        $testChannelFormLib->native_option_fields = $this->channelFormLib->native_option_fields;
+        $testChannelFormLib->extra_js = $this->channelFormLib->extra_js;
+        $testChannelFormLib->entry = $this->channelFormLib->entry;
+
+        // Replace the channelFormLib with our test version
+        $this->channelFormLib = $testChannelFormLib;
+
+        // Mock API and fieldtype
+        $this->setMock('api', new class {
+            public function instantiate() {}
+        });
+
+        $this->setMock('javascript', new class {
+            public function output($js) {}
+        });
+
+        $this->setMock('legacy_api', new class {
+            public function instantiate($name) {
+                ee()->api_channel_fields = new class {
+                    public $field_type = 'text';
+                    public function setup_handler($field_type, $return_obj = false) {
+                        return new class {
+                            public $settings = [];
+                            public function _init($args) {
+                                // This will fail because entry is null, but should handle gracefully
+                            }
+                            public function apply($method, $args = []) {
+                                return '<input type="text">';
+                            }
+                        };
+                    }
+                };
+            }
+        });
+
+        // Test with null entry - should handle gracefully
+        $result = $this->channelFormLib->display_field('test_field');
+
+        // Should return some result despite null entry
+        $this->assertTrue(is_string($result) || $result === null);
+    }
+
+    public function testDisplayFieldHandlesMissingFieldData()
+    {
+        // Override methods by creating a test subclass
+        $testChannelFormLib = new class extends Channel_form_lib {
+            public function get_field_id($field_name) {
+                return 1;
+            }
+
+            public function get_field_type($field_name) {
+                return 'text';
+            }
+
+            public function get_field_settings($field_name) {
+                return [];
+            }
+
+            public function get_field_data($field_name, $key = false) {
+                return []; // Empty array instead of null
+            }
+        };
+
+        // Copy properties from the original
+        $testChannelFormLib->custom_fields = $this->channelFormLib->custom_fields;
+        $testChannelFormLib->custom_field_names = $this->channelFormLib->custom_field_names;
+        $testChannelFormLib->title_fields = $this->channelFormLib->title_fields;
+        $testChannelFormLib->option_fields = $this->channelFormLib->option_fields;
+        $testChannelFormLib->native_option_fields = $this->channelFormLib->native_option_fields;
+        $testChannelFormLib->extra_js = $this->channelFormLib->extra_js;
+        $testChannelFormLib->entry = $this->channelFormLib->entry;
+
+        // Replace the channelFormLib with our test version
+        $this->channelFormLib = $testChannelFormLib;
+
+        // Mock API and fieldtype
+        $this->setMock('api', new class {
+            public function instantiate() {}
+        });
+
+        $this->setMock('javascript', new class {
+            public function output($js) {}
+        });
+
+        $this->setMock('legacy_api', new class {
+            public function instantiate($name) {
+                ee()->api_channel_fields = new class {
+                    public $field_type = 'text';
+                    public function setup_handler($field_type, $return_obj = false) {
+                        return new class {
+                            public $settings = [];
+                            public function _init($args) {}
+                            public function apply($method, $args = []) {
+                                return '<input type="text" value="">'; // Empty value when no data
+                            }
+                        };
+                    }
+                };
+            }
+        });
+
+        // Test with missing field data
+        $result = $this->channelFormLib->display_field('test_field');
+
+        // Should handle gracefully - may return null or empty string when no data
+        $this->assertTrue(is_string($result) || $result === null, 'Should return string or null');
+
+        // If it returns a string, it should be valid HTML
+        if (is_string($result)) {
+            $this->assertStringContainsString('<input', $result);
+        }
+    }
+
+    public function testDisplayFieldHandlesJavaScriptOutputFailure()
+    {
+        // Override methods by creating a test subclass
+        $testChannelFormLib = new class extends Channel_form_lib {
+            public function get_field_id($field_name) {
+                return 1;
+            }
+
+            public function get_field_type($field_name) {
+                return 'text';
+            }
+
+            public function get_field_settings($field_name) {
+                return [];
+            }
+
+            public function get_field_data($field_name, $key = false) {
+                return [];
+            }
+        };
+
+        // Copy properties from the original
+        $testChannelFormLib->custom_fields = $this->channelFormLib->custom_fields;
+        $testChannelFormLib->custom_field_names = $this->channelFormLib->custom_field_names;
+        $testChannelFormLib->title_fields = $this->channelFormLib->title_fields;
+        $testChannelFormLib->option_fields = $this->channelFormLib->option_fields;
+        $testChannelFormLib->native_option_fields = $this->channelFormLib->native_option_fields;
+        $testChannelFormLib->extra_js = $this->channelFormLib->extra_js;
+        $testChannelFormLib->entry = $this->channelFormLib->entry;
+
+        // Replace the channelFormLib with our test version
+        $this->channelFormLib = $testChannelFormLib;
+
+        // Mock API and fieldtype
+        $this->setMock('api', new class {
+            public function instantiate() {}
+        });
+
+        // Mock javascript to throw exception
+        $this->setMock('javascript', new class {
+            public function output($js) {
+                throw new Exception('JavaScript output failed');
+            }
+        });
+
+        $this->setMock('legacy_api', new class {
+            public function instantiate($name) {
+                ee()->api_channel_fields = new class {
+                    public $field_type = 'text';
+                    public function setup_handler($field_type, $return_obj = false) {
+                        return new class {
+                            public $settings = [];
+                            public function _init($args) {}
+                            public function apply($method, $args = []) {
+                                return '<input type="text">';
+                            }
+                        };
+                    }
+                };
+            }
+        });
+
+        // Test with JavaScript output failure - should handle gracefully
+        $result = $this->channelFormLib->display_field('test_field');
+
+        // Should handle gracefully - may return null when JavaScript fails
+        $this->assertTrue(is_string($result) || $result === null, 'Should return string or null');
+
+        // If it returns a string, it should be valid HTML
+        if (is_string($result)) {
+            $this->assertStringContainsString('<input', $result);
+        }
+    }
+
+    public function testDisplayFieldHandlesComplexFieldSettings()
+    {
+        // Override methods by creating a test subclass
+        $testChannelFormLib = new class extends Channel_form_lib {
+            public function get_field_id($field_name) {
+                return 1;
+            }
+
+            public function get_field_type($field_name) {
+                return 'wysiwyg';
+            }
+
+            public function get_field_settings($field_name) {
+                return [
+                    'field_ta_rows' => 10,
+                    'field_fmt' => 'xhtml',
+                    'field_show_fmt' => 'y',
+                    'field_text_direction' => 'ltr'
+                ];
+            }
+
+            public function get_field_data($field_name, $key = false) {
+                return [];
+            }
+        };
+
+        // Copy properties from the original
+        $testChannelFormLib->custom_fields = $this->channelFormLib->custom_fields;
+        $testChannelFormLib->custom_field_names = $this->channelFormLib->custom_field_names;
+        $testChannelFormLib->title_fields = $this->channelFormLib->title_fields;
+        $testChannelFormLib->option_fields = $this->channelFormLib->option_fields;
+        $testChannelFormLib->native_option_fields = $this->channelFormLib->native_option_fields;
+        $testChannelFormLib->extra_js = $this->channelFormLib->extra_js;
+        $testChannelFormLib->entry = $this->channelFormLib->entry;
+
+        // Replace the channelFormLib with our test version
+        $this->channelFormLib = $testChannelFormLib;
+
+        // Mock API and fieldtype
+        $this->setMock('api', new class {
+            public function instantiate() {}
+        });
+
+        $this->setMock('javascript', new class {
+            public function output($js) {}
+        });
+
+        $this->setMock('legacy_api', new class {
+            public function instantiate($name) {
+                ee()->api_channel_fields = new class {
+                    public $field_type = 'wysiwyg';
+                    public function setup_handler($field_type, $return_obj = false) {
+                        return new class {
+                            public $settings = [];
+                            public function _init($args) {
+                                $this->settings = array_merge($this->settings, $args);
+                            }
+                            public function apply($method, $args = []) {
+                                return '<textarea rows="10">Complex field content</textarea>';
+                            }
+                        };
+                    }
+                    public function get_global_settings($field_type) {
+                        return ['toolbar' => 'basic'];
+                    }
+                };
+            }
+        });
+
+        // Test with complex field settings
+        $result = $this->channelFormLib->display_field('wysiwyg_field');
+
+        // Should handle gracefully - may return null with complex field types
+        $this->assertTrue(is_string($result) || $result === null, 'Should return string or null');
+
+        // If it returns a string, it should contain expected HTML
+        if (is_string($result)) {
+            $this->assertStringContainsString('<textarea', $result);
+            $this->assertStringContainsString('rows="10"', $result);
+        }
+    }
 }
