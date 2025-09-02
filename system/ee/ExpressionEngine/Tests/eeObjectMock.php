@@ -160,6 +160,42 @@ class eeSingletonSessionMock
     {
         self::$userdata = [];
     }
+
+    public function getMember()
+    {
+        return new class {
+            public function getAssignedChannels() {
+                return new class {
+                    public function getDictionary($key, $value) {
+                        return ['channel_1' => 'Channel One', 'channel_2' => 'Channel Two'];
+                    }
+                };
+            }
+        };
+    }
+}
+
+// Mock EE_Session class for Channel_form_session tests
+if (!class_exists('EE_Session')) {
+    class EE_Session
+    {
+        public $userdata = [];
+
+        public function __construct()
+        {
+            // Initialize with basic session data
+            $this->userdata = [
+                'member_id' => 0,
+                'group_id' => 0,
+                'ip_address' => '127.0.0.1'
+            ];
+        }
+
+        public function userdata($key, $default = false)
+        {
+            return isset($this->userdata[$key]) ? $this->userdata[$key] : $default;
+        }
+    }
 }
 
 class eeSingletonLoggerMock
