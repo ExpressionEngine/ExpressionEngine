@@ -534,6 +534,31 @@ $lang = array(
     'command_channels_list_option_site' => 'Site ID to list channels for',
     'command_channels_list_option_format' => 'Output format: table, json, or csv',
 
+    // fields:list
+    'command_fields_list_description' => 'Lists all channel fields in the system',
+    'command_fields_list_summary' => 'Displays all channel fields with their details in various formats',
+    'command_fields_list_header' => 'Channel Fields:',
+    'command_fields_list_no_fields_found' => 'No fields found.',
+    'command_fields_list_total' => 'Total fields: %d',
+    'command_fields_list_id' => 'ID',
+    'command_fields_list_name' => 'Name',
+    'command_fields_list_label' => 'Label',
+    'command_fields_list_type' => 'Type',
+    'command_fields_list_required' => 'Required',
+    'command_fields_list_search' => 'Search',
+    'command_fields_list_hidden' => 'Hidden',
+    'command_fields_list_ask_site' => 'Which site ID?',
+    'command_fields_list_ask_format' => 'Output format (table, json, csv)?',
+    'command_fields_list_ask_type' => 'Filter by fieldtype?',
+    'command_fields_list_ask_group' => 'Filter by field group name?',
+    'command_fields_list_ask_channel_id' => 'Filter by channel ID?',
+    'command_fields_list_option_site' => 'Site ID to list fields for',
+    'command_fields_list_option_format' => 'Output format: table, json, or csv',
+    'command_fields_list_option_type' => 'Filter by field type (e.g., text, textarea, select)',
+    'command_fields_list_option_group' => 'Filter by field group name or short name',
+    'command_fields_list_option_channel_id' => 'Filter by channel ID',
+    'command_fields_list_option_field_id' => 'Filter by specific field ID',
+
 
 );
 

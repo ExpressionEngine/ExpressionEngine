@@ -113,6 +113,9 @@ class Cli
         // Channels
         'channels:list' => Commands\CommandChannelsList::class,
 
+        // Fields
+        'fields:list' => Commands\CommandFieldsList::class,
+
         // Config
         'config:config' => Commands\CommandConfigConfig::class,
         'config:env' => Commands\CommandConfigEnv::class,
