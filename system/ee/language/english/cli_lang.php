@@ -533,6 +533,7 @@ $lang = array(
     'command_channels_list_ask_format' => 'Output format (table, json, csv)?',
     'command_channels_list_option_site' => 'Site ID to list channels for',
     'command_channels_list_option_format' => 'Output format: table, json, or csv',
+    'command_channels_list_option_channel_id' => 'Filter by specific channel ID',
 
     // fields:list
     'command_fields_list_description' => 'Lists all channel fields in the system',

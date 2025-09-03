@@ -43,6 +43,7 @@ class CommandChannelsList extends Cli
     public $commandOptions = [
         'site,s:' => 'command_channels_list_option_site',
         'format,f:' => 'command_channels_list_option_format',
+        'channel_id,c:' => 'command_channels_list_option_channel_id',
     ];
 
     /**
@@ -57,14 +58,22 @@ class CommandChannelsList extends Cli
      */
     public function handle()
     {
-        $site_id = $this->getOptionOrAsk('--site', 'command_channels_list_ask_site', ee()->config->item('site_id'));
-        $format = $this->getOptionOrAsk('--format', 'command_channels_list_ask_format', 'table');
+        $site_id = $this->option('--site', '');
+        $format = $this->option('--format', 'table');
+        $channel_id = $this->option('--channel_id', '');
 
-        // Get all channels for the specified site
-        $channels = ee('Model')->get('Channel')
-            ->filter('site_id', $site_id)
-            ->order('channel_title')
-            ->all();
+        // Get all channels, optionally filtered by site and channel_id
+        $query = ee('Model')->get('Channel');
+
+        if (!empty($site_id)) {
+            $query->filter('site_id', $site_id);
+        }
+
+        if (!empty($channel_id)) {
+            $query->filter('channel_id', $channel_id);
+        }
+
+        $channels = $query->order('channel_title')->all();
 
         if ($channels->count() == 0) {
             $this->info('command_channels_list_no_channels_found');
@@ -146,7 +155,7 @@ class CommandChannelsList extends Cli
             ];
         }
 
-        $this->write(json_encode($data, JSON_PRETTY_PRINT));
+        $this->write(json_encode($data, JSON_PRETTY_PRINT | JSON_HEX_QUOT | JSON_HEX_APOS));
     }
 
     /**
