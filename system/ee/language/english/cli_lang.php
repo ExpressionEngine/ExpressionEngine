@@ -517,6 +517,23 @@ $lang = array(
     'separate_choices_commas' => 'Separate multiple options with commas',
     'command_generate_templates_building_templates' => 'Building templates...',
 
+    // channels:list
+    'command_channels_list_description' => 'Lists all channels in the system',
+    'command_channels_list_summary' => 'Displays all channels with their details in various formats',
+    'command_channels_list_header' => 'Channels:',
+    'command_channels_list_no_channels_found' => 'No channels found.',
+    'command_channels_list_total' => 'Total channels: %d',
+    'command_channels_list_id' => 'ID',
+    'command_channels_list_name' => 'Name',
+    'command_channels_list_title' => 'Title',
+    'command_channels_list_entries' => 'Entries',
+    'command_channels_list_last_entry' => 'Last Entry',
+    'command_channels_list_never' => 'Never',
+    'command_channels_list_ask_site' => 'Which site ID?',
+    'command_channels_list_ask_format' => 'Output format (table, json, csv)?',
+    'command_channels_list_option_site' => 'Site ID to list channels for',
+    'command_channels_list_option_format' => 'Output format: table, json, or csv',
+
 
 );
 

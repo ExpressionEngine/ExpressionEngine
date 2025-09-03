@@ -110,6 +110,9 @@ class Cli
         // Cache
         'cache:clear' => Commands\CommandClearCaches::class,
 
+        // Channels
+        'channels:list' => Commands\CommandChannelsList::class,
+
         // Config
         'config:config' => Commands\CommandConfigConfig::class,
         'config:env' => Commands\CommandConfigEnv::class,
