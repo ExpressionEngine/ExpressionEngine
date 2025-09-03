@@ -543,6 +543,8 @@ $lang = array(
     'command_version_build' => 'Build: %s',
     'command_version_php' => 'PHP Version: %s',
     'command_version_option_format' => 'Output format: simple, or json',
+    'command_version_option_field' => 'Output only a specific field: version, build, or php_version',
+    'command_version_invalid_field' => 'Invalid field: %s. Available fields: version, build, php_version',
 
     // fields:list
     'command_fields_list_description' => 'Lists all channel fields in the system',

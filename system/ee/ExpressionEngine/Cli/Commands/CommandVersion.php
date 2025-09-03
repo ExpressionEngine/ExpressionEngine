@@ -41,6 +41,7 @@ class CommandVersion extends Cli
      */
     public $commandOptions = [
         'format,f:' => 'command_version_option_format',
+        'field,e:' => 'command_version_option_field',
     ];
 
     /**
@@ -50,6 +51,7 @@ class CommandVersion extends Cli
     public function handle()
     {
         $format = $this->option('--format', 'simple');
+        $field = $this->option('--field', '');
 
         // Get ExpressionEngine version information
         $version_info = [
@@ -57,6 +59,12 @@ class CommandVersion extends Cli
             'build' => defined('APP_BUILD') ? APP_BUILD : 'Unknown',
             'php_version' => PHP_VERSION,
         ];
+
+        // If a specific field is requested, output only that field
+        if (!empty($field)) {
+            $this->displayField($version_info, $field);
+            return;
+        }
 
         // Display version based on format
         switch ($format) {
@@ -90,5 +98,20 @@ class CommandVersion extends Cli
     private function displayJson($version_info)
     {
         $this->write(json_encode($version_info, JSON_PRETTY_PRINT | JSON_HEX_QUOT | JSON_HEX_APOS));
+    }
+
+    /**
+     * Display a specific field value
+     * @param array $version_info
+     * @param string $field
+     */
+    private function displayField($version_info, $field)
+    {
+        if (!array_key_exists($field, $version_info)) {
+            $this->write(sprintf(lang('command_version_invalid_field'), $field));
+            return;
+        }
+
+        $this->write($version_info[$field]);
     }
 }
