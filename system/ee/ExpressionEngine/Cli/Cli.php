@@ -116,6 +116,9 @@ class Cli
         // Fields
         'fields:list' => Commands\CommandFieldsList::class,
 
+        // Version
+        'version' => Commands\CommandVersion::class,
+
         // Config
         'config:config' => Commands\CommandConfigConfig::class,
         'config:env' => Commands\CommandConfigEnv::class,

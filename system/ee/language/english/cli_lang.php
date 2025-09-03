@@ -535,6 +535,15 @@ $lang = array(
     'command_channels_list_option_format' => 'Output format: table, json, or csv',
     'command_channels_list_option_channel_id' => 'Filter by specific channel ID',
 
+    // version
+    'command_version_description' => 'Displays ExpressionEngine version information',
+    'command_version_summary' => 'Shows the current ExpressionEngine version and system information',
+    'command_version_header' => 'ExpressionEngine Version Information',
+    'command_version_expressionengine' => 'ExpressionEngine Version: %s',
+    'command_version_build' => 'Build: %s',
+    'command_version_php' => 'PHP Version: %s',
+    'command_version_option_format' => 'Output format: simple, or json',
+
     // fields:list
     'command_fields_list_description' => 'Lists all channel fields in the system',
     'command_fields_list_summary' => 'Displays all channel fields with their details in various formats',
