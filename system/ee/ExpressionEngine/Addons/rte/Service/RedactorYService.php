@@ -49,19 +49,19 @@ class RedactorYService extends RedactorService implements RteService {
             return $configHandle;
         }
 
-        if (!isset($config['toolbar']['buttons']) || !is_object($config['toolbar']['buttons'])) {
-            $config['toolbar']['buttons'] = new \stdClass();
+        if (!isset($config['toolbar']['editor']) || !is_object($config['toolbar']['editor'])) {
+            $config['toolbar']['editor'] = new \stdClass();
         }
 
         // language
         $language = isset(ee()->session) ? ee()->session->get_language() : ee()->config->item('deft_lang');
-        $config['toolbar']['buttons']->lang = ee()->lang->code($language);
+        $config['toolbar']['editor']->lang = ee()->lang->code($language);
         if (isset($config['field_text_direction']) && $config['field_text_direction'] == 'rtl') {
-            $config['toolbar']['buttons']->direction = 'rtl';
+            $config['toolbar']['editor']->direction = 'rtl';
         }
 
-        $config['toolbar']['buttons']->focus = false;
-        $config['toolbar']['buttons']->drop = false;
+        $config['toolbar']['editor']->focus = false;
+        $config['toolbar']['editor']->drop = false;
         $config['toolbar']['reorder'] = true;
 
         // toolbars
@@ -87,6 +87,7 @@ class RedactorYService extends RedactorService implements RteService {
         if (!isset($config['toolbar']['buttons']) || !is_object($config['toolbar']['buttons'])) {
             $config['toolbar']['buttons'] = new \stdClass();
         }
+        // The set of buttons to the right of the toolbar
         if (isset($config['toolbar']['extrabar'])) {
             $config['toolbar']['buttons']->extrabar = $config['toolbar']['extrabar'];
         }
@@ -107,6 +108,7 @@ class RedactorYService extends RedactorService implements RteService {
             }
         }
 
+        // The context bar appears when text is selected.
         if (isset($config['toolbar']['context'])) {
             $config['toolbar']['buttons']->context = $config['toolbar']['context'];
         }
@@ -130,15 +132,15 @@ class RedactorYService extends RedactorService implements RteService {
         if (isset($config['toolbar']['spellcheck'])) {
             switch ($config['toolbar']['spellcheck']) {
                 case 'browser':
-                    $config['toolbar']['buttons']->spellcheck = true;
+                    $config['toolbar']['editor']->spellcheck = true;
                     break;
                 case 'grammarly':
-                    $config['toolbar']['buttons']->spellcheck = false;
-                    $config['toolbar']['buttons']->grammarly = true;
+                    $config['toolbar']['editor']->spellcheck = false;
+                    $config['toolbar']['editor']->grammarly = true;
                     break;
                 case 'none':
                 default:
-                    $config['toolbar']['buttons']->spellcheck = false;
+                    $config['toolbar']['editor']->spellcheck = false;
                     break;
             }
             unset($config['toolbar']['spellcheck']);
@@ -154,7 +156,7 @@ class RedactorYService extends RedactorService implements RteService {
             $config['toolbar']['handle'] = ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id->row('action_id') . '&t=' . ee()->localize->now;
         }
 
-        $config['toolbar']['buttons']->classname = 'content redactor-styles rte_' . $configHandle;
+        $config['toolbar']['editor']->classname = 'content redactor-styles rte_' . $configHandle;
 
         // -------------------------------------------
         //  File Browser Config
@@ -191,10 +193,10 @@ class RedactorYService extends RedactorService implements RteService {
         }
 
         if (isset($config['height']) && !empty($config['height']) && is_numeric($config['height'])) {
-            $config['toolbar']['buttons']->minHeight = (int) $config['height'] . 'px';
+            $config['toolbar']['editor']->minHeight = (int) $config['height'] . 'px';
         }
         if (isset($config['max_height']) && !empty($config['max_height']) && is_numeric($config['max_height'])) {
-            $config['toolbar']['buttons']->maxHeight = (int) $config['max_height'] . 'px';
+            $config['toolbar']['editor']->maxHeight = (int) $config['max_height'] . 'px';
         }
 
         //link
@@ -250,11 +252,8 @@ class RedactorYService extends RedactorService implements RteService {
 
     public function toolbarInputHtml($config, $toolbar = 'buttons')
     {
-         ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' .
-PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.css" type="text/css" />');
-
-         //ee()->cp->add_to_foot('<script src="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' .
-//PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.js"></script>');
+        // var_dump('$config', $config);
+        ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.css" type="text/css" />');
 
         $selection = [];
         if (is_object($config->settings['toolbar'])) {
@@ -263,14 +262,14 @@ PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.css" type=
             $selection = isset($config->settings['toolbar'][$toolbar]) ? $config->settings['toolbar'][$toolbar] : $config->settings['toolbar'];
         }
 
-
         if ($toolbar == 'hide') {
-            $allButtons = static::defaultToolbars()['RedactorY Full']['buttons'];
+            $allButtons = static::defaultToolbars()['RedactorY Full']['editor'];
+            unset($allButtons[array_search('image', $allButtons)]);
         } elseif ($toolbar == 'plugins' || $toolbar == 'format') {
             $allButtons = static::defaultToolbars()['RedactorY Full'][$toolbar];
         } else {
             $allButtons = array_merge(
-                static::defaultToolbars()['RedactorY Full']['buttons'],
+                static::defaultToolbars()['RedactorY Full']['editor'],
                 static::defaultToolbars()['RedactorY Full']['addbar'],
                 static::defaultToolbars()['RedactorY Full']['context'],
                 static::defaultToolbars()['RedactorY Full']['extrabar']
@@ -282,6 +281,7 @@ PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.css" type=
             unset($allButtons[array_search('link', $allButtons)]);
             unset($allButtons[array_search('text', $allButtons)]);
             unset($allButtons[array_search('hotkeys', $allButtons)]);
+            unset($allButtons[array_search('image', $allButtons)]);
         }
         if (empty($config->toolset_id)) {
             $selection = ($toolbar != 'hide') ? static::defaultToolbars()['RedactorY Full'][$toolbar] : [];
@@ -294,6 +294,7 @@ PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.css" type=
             }
         }
 
+        // var_dump('$selection', $selection);
         return ee('View')->make('rte:redactorY-toolbar')->render(
             [
                 'buttons' => $fullToolset,
@@ -315,31 +316,20 @@ PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.css" type=
                 'toolbar_control' => 'n',
                 'hide' => [],
                 'extrabar' => [
-                    'undo',
-                    'redo',
                     'hotkeys'
                 ],
                 'addbar' => [
-                    'ai-tools',
                     'text',
-                    'list',
-                    'embed',
-                    'table',
-                    'quote',
-                    'line'
+                    'image',
+                    'table'
                 ],
                 'context' => [
-                    'ai-tools',
-                    'format',
                     'bold',
                     'italic',
-                    'deleted',
-                    'link',
-                    'code',
-                    'sub',
-                    'sup',
+                    'mark',
+                    'link'
                 ],
-                'buttons' => [
+                'editor' => [
                     'format',
                     'bold',
                     'italic',
@@ -348,16 +338,13 @@ PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.css" type=
                 'format' =>  [
                     'text',
                     'bulletlist',
-                    'numberedlist',
-                    'todo'
+                    'numberedlist'
                 ],
                 'plugins' => [
-                    'ai-tools',
-                    'alignment',
+                    'filebrowser',
                     'rte_definedlinks',
-                    'blockid',
-                    'pages'
-                ],
+                    'pages',
+                ]
             ],
             'RedactorY Full' => [
                 'toolbar_hide' => 'y',
@@ -366,17 +353,25 @@ PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.css" type=
                 'toolbar_context' => 'y',
                 'toolbar_control' => 'y',
                 'hide' => [],
+                'editor' => [
+                    'add',
+                    'html',
+                    'format',
+                    'bold',
+                    'italic',
+                    'deleted',
+                    'link'
+                ],
                 'extrabar' => [
                     'undo',
                     'redo',
-                    'hotkeys'
+                    'hotkeys' //????
                 ],
-                'addbar' => [
+                'addbar' => [ //??????
                     'ai-tools',
                     'ai-image',
                     'text',
                     'heading',
-                    'image',
                     'todo',
                     'list',
                     'embed',
@@ -392,56 +387,32 @@ PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.css" type=
                     'bold',
                     'italic',
                     'deleted',
-                    'link',
-                    'code',
-                    'sub',
-                    'sup',
+                    'link'
                 ],
-                'buttons' => [
-                    'add',
-                    'html',
-                    'format',
-                    'bold',
-                    'italic',
-                    'deleted',
-                    'link',
-                    'code',
-                    'underline',
-                    'sup',
-                    'sub',
-                    'highlight',
-                    'removeinline'
-                ],
-                'format' =>  [
-                    'text',
-                    'h1',
-                    'h2',
-                    'h3',
-                    'h4',
-                    'bulletlist',
-                    'numberedlist',
-                    'todo'
+                'format' => [
+                    'text', // +
+                    'h1', // +
+                    'h2', // +
+                    'h3', // +
+                    'h4', // +
+                    'quote', // + ?
+                    'bulletlist', // + ?
+                    'numberedlist', // + ?
+                    'todo' // +
                 ],
                 'plugins' => [
-                    'ai-tools',
-                    'emoji',
-                    'alignment',
-                    'pages',
-                    'blockid',
-                    'blockcode',
-                    'rte_definedlinks',
-                    'filebrowser',
-                    'imageposition',
-                    'imageresize',
-                    'inlineformat',
-                    'removeformat',
-                    'counter',
-                    'selector',
-                    'specialchars',
-                    'textdirection',
-                    'readmore',
+                    'underline', // +
+                    'alignment', // +
+                    'blockid', // +
+                    'blockcode', // +
+                    'rte_definedlinks', // +
+                    'pages', // +
+                    'filebrowser', // +
+                    'imageposition', // +
+                    'imageresize', // +
                 ]
             ]
         ];
     }
+
 }

@@ -103,8 +103,7 @@ class Rte_upd extends Installer
             if ($check->num_rows() == 0) {
                 $toolbars = ee('rte:RedactorYService')->defaultToolbars();
                 foreach ($toolbars as $name => $toolbar) {
-                    $config_settings = array_merge(ee('rte:RedactorYService')->defaultConfigSettings(), array
-                    ('toolbar' => $toolbar));
+                    $config_settings = array_merge(ee('rte:RedactorYService')->defaultConfigSettings(), array('toolbar' => $toolbar));
                     $config = ee('Model')->make('rte:Toolset');
                     $config->toolset_name = $name;
                     $config->toolset_type = 'redactorY';

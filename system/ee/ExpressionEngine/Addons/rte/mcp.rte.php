@@ -379,6 +379,7 @@ class Rte_mcp
             $rte_config_json = json_encode(ee('rte:CkeditorService')->buildToolbarConfig($config->settings), JSON_PRETTY_PRINT);
         }
 
+
         $sections = array(
             'rte_basic_settings' => array(
                 array(
@@ -740,7 +741,7 @@ class Rte_mcp
                     'group' => 'redactorY_toolbar|redactorY_toolbar_context',
                     'wide' => true,
                     'fields' => array(
-                        'settings[redactorY_toolbar][addbar]' => array(
+                        'settings[redactorY_toolbar][context]' => array(
                             'type' => 'html',
                             'content' => ee('rte:RedactorYService')->toolbarInputHtml($config, 'context')
                         )
