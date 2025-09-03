@@ -695,12 +695,12 @@ class TestEnvironment
     {
         $this->mocks[$name] = $mock;
         // Also set as a direct property for ee()->uri access
-        $this->$name = $mock;
+        @$this->$name = $mock;
     }
 
     public function set($name, $value)
     {
-        $this->$name = $value;
+        @$this->$name = $value;
     }
 
     public function remove($name)

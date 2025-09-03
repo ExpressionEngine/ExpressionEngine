@@ -236,10 +236,10 @@ class RadioDisplayFieldTest extends RadioTestBase
     public function testDisplayFieldNumericOptions()
     {
         $fieldtype = $this->getMockRadioFieldtypeWithSettings([
-            'field_options' => [
+            'field_options' =>             [
                 0 => 'Zero',
                 1 => 'One',
-                2.5 => 'Two point five',
+                2 => 'Two point five',
                 '3' => 'Three as string'
             ]
         ]);
@@ -273,7 +273,7 @@ class RadioDisplayFieldTest extends RadioTestBase
     public function testDisplayFieldWithContentId()
     {
         $fieldtype = $this->getMockRadioFieldtypeWithSettings();
-        $fieldtype->content_id = 123; // Simulate existing entry
+        @$fieldtype->content_id = 123; // Simulate existing entry
 
         $data = null;
         $result = $fieldtype->display_field($data);

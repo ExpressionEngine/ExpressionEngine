@@ -23,10 +23,10 @@ class ChannelGenerateFieldSearchSqlTest extends ChannelTestBase
     private function setupMocks()
     {
         // Mock TMPL for logging
-        $this->channel->TMPL = new FakeTemplate();
+        @$this->channel->TMPL = new FakeTemplate();
 
         // Mock config for site_id
-        $this->channel->config = new class {
+        @$this->channel->config = new class {
             public function item($key) {
                 return $key === 'site_id' ? 1 : false;
             }
@@ -64,7 +64,7 @@ class ChannelGenerateFieldSearchSqlTest extends ChannelTestBase
     public function testHandlesEqualsOnlySearchTerms()
     {
         $searchFields = ['title' => '='];
-        $this->channel->TMPL->log_item_calls = [];
+        @$this->channel->TMPL->log_item_calls = [];
 
         $result = $this->method->invoke($this->channel, $searchFields, [], []);
 

@@ -262,13 +262,13 @@ class ChannelFormLibSubmitEntryEnhancedTest extends ChannelFormLibTestBase
 
         // Mock successful validation and saving
         $mockEntry = $this->createMockEntry(['entry_id' => 0]);
-        $mockEntry->validate = function() {
+        @$mockEntry->validate = function() {
             return new class {
                 public function isValid() { return true; }
                 public function getAllErrors() { return []; }
             };
         };
-        $mockEntry->save = function() {
+        @$mockEntry->save = function() {
             // Simulate successful save
             $this->entry_id = 123;
         };
@@ -311,7 +311,7 @@ class ChannelFormLibSubmitEntryEnhancedTest extends ChannelFormLibTestBase
 
         // Mock validation failure
         $mockEntry = $this->createMockEntry(['entry_id' => 0]);
-        $mockEntry->validate = function() {
+        @$mockEntry->validate = function() {
             return new class {
                 public function isValid() { return false; }
                 public function getAllErrors() {
@@ -405,13 +405,13 @@ class ChannelFormLibSubmitEntryEnhancedTest extends ChannelFormLibTestBase
 
         // Mock successful entry creation
         $mockEntry = $this->createMockEntry(['entry_id' => 123, 'url_title' => 'test-entry']);
-        $mockEntry->validate = function() {
+        @$mockEntry->validate = function() {
             return new class {
                 public function isValid() { return true; }
                 public function getAllErrors() { return []; }
             };
         };
-        $mockEntry->save = function() {
+        @$mockEntry->save = function() {
             // Simulate successful save
         };
 
@@ -461,13 +461,13 @@ class ChannelFormLibSubmitEntryEnhancedTest extends ChannelFormLibTestBase
 
         // Mock successful entry creation
         $mockEntry = $this->createMockEntry(['entry_id' => 123, 'url_title' => 'test-entry']);
-        $mockEntry->validate = function() {
+        @$mockEntry->validate = function() {
             return new class {
                 public function isValid() { return true; }
                 public function getAllErrors() { return []; }
             };
         };
-        $mockEntry->save = function() {
+        @$mockEntry->save = function() {
             // Simulate successful save
         };
 

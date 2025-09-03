@@ -40,6 +40,7 @@ class ChannelFormLibFetchChannelTest extends ChannelFormLibTestBase
         // Mock the Model query
         $mockQuery = new class($mockChannel) {
             private $channel;
+            private $query;
             public function __construct($channel) { $this->query = $this; $this->channel = $channel; }
             public function with($relation) { return $this; }
             public function filter($field, $value) { return $this; }

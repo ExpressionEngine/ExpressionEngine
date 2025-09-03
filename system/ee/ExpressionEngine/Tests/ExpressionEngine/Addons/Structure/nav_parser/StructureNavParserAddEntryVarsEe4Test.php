@@ -74,11 +74,12 @@ class StructureNavParserAddEntryVarsEe4Test extends StructureTestBase
                     public function with(){ return $this; }
                     public function all(){
                         if ($this->mode === 'channels') {
-                            return new class($this->channels) implements IteratorAggregate {
-                                private $channels;
-                                public function __construct($c){ $this->channels = $c; }
-                                public function getIterator(){ return new ArrayIterator($this->channels); }
-                            };
+                                                    return new class($this->channels) implements IteratorAggregate {
+                            private $channels;
+                            public function __construct($c){ $this->channels = $c; }
+                            #[ReturnTypeWillChange]
+                            public function getIterator(){ return new ArrayIterator($this->channels); }
+                        };
                         }
                         // Wrap array in a proxy that exposes Channel property methods used
                         return new class($this->entries) implements IteratorAggregate {
@@ -92,9 +93,11 @@ class StructureNavParserAddEntryVarsEe4Test extends StructureTestBase
                                 }
                                 return null;
                             }
+                            #[ReturnTypeWillChange]
                             public function getIterator(){ return new ArrayIterator($this->entries); }
                         };
                     }
+                    #[ReturnTypeWillChange]
                     public function getIterator(){ return new ArrayIterator($this->entries); }
                 };
             }
@@ -125,8 +128,8 @@ class StructureNavParserAddEntryVarsEe4Test extends StructureTestBase
 
         // Seed file field value for the custom field path
         // Use magic property access in add_entry_vars_ee4: field_id_55
-        $entry100->field_id_55 = '{filedir_1}image.jpg';
-        $entry101->field_id_55 = '{filedir_1}image2.jpg';
+        @$entry100->field_id_55 = '{filedir_1}image.jpg';
+        @$entry101->field_id_55 = '{filedir_1}image2.jpg';
 
         // Ensure file_field library is available (StructureTestBase sets it on demand)
         $ref = new ReflectionClass($parser);

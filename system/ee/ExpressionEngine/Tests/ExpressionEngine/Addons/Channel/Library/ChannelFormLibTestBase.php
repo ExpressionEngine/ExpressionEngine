@@ -346,7 +346,7 @@ abstract class ChannelFormLibTestBase extends TestCase
                 public function helper($name) {}
                 public function library($name) {
                     if ($name === 'javascript') {
-                        ee()->javascript = new class {
+                        @ee()->javascript = new class {
                             public $output_js = [];
                             public function output($js) {}
                             public function get_global() { return ''; }
@@ -538,7 +538,7 @@ abstract class ChannelFormLibTestBase extends TestCase
 
             public function __construct($properties = []) {
                 foreach ($properties as $key => $value) {
-                    $this->$key = $value;
+                    @$this->$key = $value;
                 }
             }
 
@@ -573,7 +573,7 @@ abstract class ChannelFormLibTestBase extends TestCase
 
             public function __construct($properties = []) {
                 foreach ($properties as $key => $value) {
-                    $this->$key = $value;
+                    @$this->$key = $value;
                 }
             }
 
@@ -583,7 +583,7 @@ abstract class ChannelFormLibTestBase extends TestCase
 
             public function set($data) {
                 foreach ($data as $key => $value) {
-                    $this->$key = $value;
+                    @$this->$key = $value;
                 }
             }
 
@@ -639,7 +639,7 @@ abstract class ChannelFormLibTestBase extends TestCase
 
             public function __construct($properties = []) {
                 foreach ($properties as $key => $value) {
-                    $this->$key = $value;
+                    @$this->$key = $value;
                 }
                 if (!$this->PrimaryRole) {
                     $this->PrimaryRole = new class {

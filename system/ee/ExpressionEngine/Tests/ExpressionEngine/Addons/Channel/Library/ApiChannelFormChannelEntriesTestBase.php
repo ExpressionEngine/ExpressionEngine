@@ -62,7 +62,7 @@ abstract class ApiChannelFormChannelEntriesTestBase extends ChannelFormLibTestBa
         ee()->setMock('channel_form', $channelFormMock);
 
         // Also set it as a direct property for convenience
-        $this->channel_form = $channelFormMock;
+        @$this->channel_form = $channelFormMock;
 
         // Mock API channel categories for parent class
         $this->setupApiChannelCategoriesMock();
@@ -221,7 +221,7 @@ abstract class ApiChannelFormChannelEntriesTestBase extends ChannelFormLibTestBa
      */
     protected function setupCustomFields(array $fields)
     {
-        $this->channel_form->custom_fields = $fields;
+        @$this->channel_form->custom_fields = $fields;
     }
 
     /**
@@ -229,8 +229,8 @@ abstract class ApiChannelFormChannelEntriesTestBase extends ChannelFormLibTestBa
      */
     protected function setEditMode($edit = true, $entry_id = 1)
     {
-        $this->channel_form->edit = $edit;
-        $this->channel_form->entry_id = $entry_id;
+        @$this->channel_form->edit = $edit;
+        @$this->channel_form->entry_id = $entry_id;
     }
 
     /**

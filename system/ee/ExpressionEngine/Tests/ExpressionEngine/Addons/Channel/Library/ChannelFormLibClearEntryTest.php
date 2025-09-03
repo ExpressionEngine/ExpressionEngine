@@ -56,8 +56,8 @@ class ChannelFormLibClearEntryTest extends ChannelFormLibTestBase
         ]);
 
         // Add custom properties to simulate real entry
-        $mockEntry->custom_field_1 = 'Custom Value 1';
-        $mockEntry->custom_field_2 = 'Custom Value 2';
+        @$mockEntry->custom_field_1 = 'Custom Value 1';
+        @$mockEntry->custom_field_2 = 'Custom Value 2';
         $mockEntry->Categories = new \ExpressionEngine\Service\Model\Collection([
             (object)['cat_id' => 1, 'cat_name' => 'Category 1'],
             (object)['cat_id' => 2, 'cat_name' => 'Category 2']

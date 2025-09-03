@@ -615,7 +615,7 @@ class ChannelFormLibEntryFormTest extends ChannelFormLibTestBase
         };
 
         // Mock selected categories
-        $this->channelFormLib->get_selected_cats = function() {
+        @$this->channelFormLib->get_selected_cats = function() {
             return [1];
         };
 

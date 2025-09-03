@@ -206,7 +206,7 @@ abstract class ChannelTestBase extends TestCase
                         }
                     }
                     if ($name === 'pagination') {
-                        ee()->pagination = new class {
+                        @ee()->pagination = new class {
                             public function create(){
                                 return new class {
                                     public $per_page = 10;
@@ -346,7 +346,7 @@ abstract class ChannelTestBase extends TestCase
                         return;
                     }
                     if ($name === 'pagination') {
-                        ee()->pagination = new class {
+                        @ee()->pagination = new class {
                             public function create(){ return new class {}; }
                         };
                         return;
@@ -403,10 +403,10 @@ abstract class ChannelTestBase extends TestCase
 
         // Initialize hidden_fields array to prevent undefined property errors
         $this->channel->hidden_fields = [];
-        $this->channel->paginate = false;
-        $this->channel->p_limit = 100;
-        $this->channel->p_page = 0;
-        $this->channel->fixed_order = false;
+        @$this->channel->paginate = false;
+        @$this->channel->p_limit = 100;
+        @$this->channel->p_page = 0;
+        @$this->channel->fixed_order = false;
         $this->channel->sql = '';
         $this->channel->categories = [];
         $this->channel->cfields = [];

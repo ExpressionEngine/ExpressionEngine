@@ -61,6 +61,7 @@ class ChannelFormLibFetchStatusesTest extends ChannelFormLibTestBase
             private $statuses;
             public function __construct($statuses) { $this->statuses = $statuses; }
             public function count() { return count($this->statuses); }
+            #[ReturnTypeWillChange]
             public function getIterator() {
                 return new ArrayIterator($this->statuses);
             }

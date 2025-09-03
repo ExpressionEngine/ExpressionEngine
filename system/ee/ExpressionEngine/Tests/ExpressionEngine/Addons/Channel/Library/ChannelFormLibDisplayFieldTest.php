@@ -42,7 +42,7 @@ class ChannelFormLibDisplayFieldTest extends ChannelFormLibTestBase
 
         // Mock entry
         $mockEntry = $this->createMockEntry(['entry_id' => 123, 'channel_id' => 5]);
-        $mockEntry->{'field_id_1'} = 'Test field value';
+        @$mockEntry->{'field_id_1'} = 'Test field value';
         $this->channelFormLib->entry = $mockEntry;
 
         // Override methods by creating a test subclass
@@ -161,7 +161,7 @@ class ChannelFormLibDisplayFieldTest extends ChannelFormLibTestBase
 
         // Mock entry with field data
         $mockEntry = $this->createMockEntry(['entry_id' => 123, 'channel_id' => 5]);
-        $mockEntry->{'field_id_4'} = 'test field value'; // Add the field data that display_field expects
+        @$mockEntry->{'field_id_4'} = 'test field value'; // Add the field data that display_field expects
         $this->channelFormLib->entry = $mockEntry;
 
         // Override methods by creating a test subclass
@@ -395,7 +395,7 @@ class ChannelFormLibDisplayFieldTest extends ChannelFormLibTestBase
 
         // Mock entry with field data
         $mockEntry = $this->createMockEntry(['entry_id' => 123, 'channel_id' => 5]);
-        $mockEntry->{'field_id_4'} = 'test field value'; // Add the field data that display_field expects
+        @$mockEntry->{'field_id_4'} = 'test field value'; // Add the field data that display_field expects
         $this->channelFormLib->entry = $mockEntry;
 
         // Override methods by creating a test subclass
@@ -517,7 +517,7 @@ class ChannelFormLibDisplayFieldTest extends ChannelFormLibTestBase
 
         // Mock entry with field data
         $mockEntry = $this->createMockEntry(['entry_id' => 123, 'channel_id' => 5]);
-        $mockEntry->{'field_id_4'} = 'test field value'; // Add the field data that display_field expects
+        @$mockEntry->{'field_id_4'} = 'test field value'; // Add the field data that display_field expects
         $this->channelFormLib->entry = $mockEntry;
 
         // Override methods by creating a test subclass
@@ -685,7 +685,7 @@ class ChannelFormLibDisplayFieldTest extends ChannelFormLibTestBase
 
         // Mock entry with field data
         $mockEntry = $this->createMockEntry(['entry_id' => 123, 'channel_id' => 5]);
-        $mockEntry->{'field_id_4'} = 'test field value'; // Add the field data that display_field expects
+        @$mockEntry->{'field_id_4'} = 'test field value'; // Add the field data that display_field expects
         $this->channelFormLib->entry = $mockEntry;
 
         // Override methods by creating a test subclass
@@ -771,7 +771,7 @@ class ChannelFormLibDisplayFieldTest extends ChannelFormLibTestBase
 
         // Mock entry with field data
         $mockEntry = $this->createMockEntry(['entry_id' => 123, 'channel_id' => 5]);
-        $mockEntry->{'field_id_4'} = 'test field value'; // Add the field data that display_field expects
+        @$mockEntry->{'field_id_4'} = 'test field value'; // Add the field data that display_field expects
         $this->channelFormLib->entry = $mockEntry;
 
         // Override methods by creating a test subclass

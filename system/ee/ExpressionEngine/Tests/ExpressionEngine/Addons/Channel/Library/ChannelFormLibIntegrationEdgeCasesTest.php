@@ -298,7 +298,7 @@ class ChannelFormLibIntegrationEdgeCasesTest extends ChannelFormLibTestBase
         ];
 
         $mockEntry = $this->createMockEntry();
-        $mockEntry->getDisplay = function() {
+        @$mockEntry->getDisplay = function() {
             return new class {
                 public function getFields() {
                     return [];

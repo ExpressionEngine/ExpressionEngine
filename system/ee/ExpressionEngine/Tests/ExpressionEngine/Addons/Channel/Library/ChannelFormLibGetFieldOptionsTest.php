@@ -45,7 +45,7 @@ class ChannelFormLibGetFieldOptionsTest extends ChannelFormLibTestBase
         $this->channelFormLib->native_option_fields = ['multi_select', 'select', 'radio', 'checkboxes']; // Set native option fields
 
         $mockEntry = $this->createMockEntry();
-        $mockEntry->{'field_id_2'} = 'Option 2'; // Field ID 2 corresponds to select_field
+        @$mockEntry->{'field_id_2'} = 'Option 2'; // Field ID 2 corresponds to select_field
         $this->channelFormLib->entry = $mockEntry;
 
         $result = $this->channelFormLib->get_field_options('select_field');
@@ -82,7 +82,7 @@ class ChannelFormLibGetFieldOptionsTest extends ChannelFormLibTestBase
         $this->channelFormLib->native_option_fields = ['multi_select', 'select', 'radio', 'checkboxes']; // Set native option fields
 
         $mockEntry = $this->createMockEntry();
-        $mockEntry->{'field_id_3'} = 'Red|Green'; // Field ID 3 corresponds to color_field
+        @$mockEntry->{'field_id_3'} = 'Red|Green'; // Field ID 3 corresponds to color_field
         $this->channelFormLib->entry = $mockEntry;
 
         $result = $this->channelFormLib->get_field_options('color_field');
@@ -129,7 +129,7 @@ class ChannelFormLibGetFieldOptionsTest extends ChannelFormLibTestBase
         $this->channelFormLib->native_option_fields = ['multi_select', 'select', 'radio', 'checkboxes']; // Set native option fields
 
         $mockEntry = $this->createMockEntry();
-        $mockEntry->{'field_id_4'} = 'value2'; // Field ID 4 corresponds to paired_field
+        @$mockEntry->{'field_id_4'} = 'value2'; // Field ID 4 corresponds to paired_field
         $this->channelFormLib->entry = $mockEntry;
 
         $result = $this->channelFormLib->get_field_options('paired_field');

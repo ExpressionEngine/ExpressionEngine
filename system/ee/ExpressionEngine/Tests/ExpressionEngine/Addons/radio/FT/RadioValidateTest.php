@@ -284,7 +284,7 @@ class RadioValidateTest extends RadioTestBase
             0 => 'Zero',
             1 => 'One',
             '2' => 'Two as string',
-            3.14 => 'Pi'
+            3 => 'Pi'
         ];
         $data = 0;
 
