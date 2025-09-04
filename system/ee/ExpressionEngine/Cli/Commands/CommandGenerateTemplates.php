@@ -44,7 +44,6 @@ class CommandGenerateTemplates extends Cli
         /* 'themes,t'      => 'command_generate_templates_list_themes', */
         'show,s'        => 'command_generate_templates_show_template_content',
         'json,j'        => 'command_generate_templates_show_template_content_json',
-        'options-json,o' => 'command_generate_templates_show_generator_options_json'
     ];
 
     protected $data = [];
@@ -87,9 +86,9 @@ class CommandGenerateTemplates extends Cli
         $generator = $this->instantiateGenerator($generatorKey);
 
         // Check for JSON options output first (before any other messages)
-        if ($this->option('--options-json', false)) {
+        if ($this->option('--json', false)) {
             // Show JSON for specific generator options
-            $this->displayGeneratorOptionsJson($generator);
+            $this->displayGeneratorOptionsJson($generator, $generatorKey);
             $this->complete();
         }
 
@@ -213,12 +212,13 @@ class CommandGenerateTemplates extends Cli
      * Display JSON for a specific generator's options
      *
      * @param mixed $generator
+     * @param string $generatorKey
      */
-    private function displayGeneratorOptionsJson($generator)
+    private function displayGeneratorOptionsJson($generator, $generatorKey)
     {
         $generatorData = [
             'generator' => [
-                'key' => $this->getGeneratorKey($generator),
+                'key' => $generatorKey,
                 'name' => $generator->getName(),
                 'templates' => $generator->getTemplates(),
                 'options' => $this->formatGeneratorOptions($generator->getOptions()),
@@ -232,23 +232,6 @@ class CommandGenerateTemplates extends Cli
         $this->displayJson($generatorData);
     }
 
-    /**
-     * Get the generator key for a generator instance
-     *
-     * @param mixed $generator
-     * @return string
-     */
-    private function getGeneratorKey($generator)
-    {
-        // Try to find the generator key by comparing with all available generators
-        $generatorsList = $this->getAllGenerators();
-        foreach ($generatorsList as $key => $gen) {
-            if ($gen->getName() === $generator->getName()) {
-                return $key;
-            }
-        }
-        return 'unknown';
-    }
 
     /**
      * Get all available template generators
