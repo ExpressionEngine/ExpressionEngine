@@ -116,6 +116,9 @@ class Cli
         // Fields
         'fields:list' => Commands\CommandFieldsList::class,
 
+        // Fieldtypes
+        'fieldtypes:list' => Commands\CommandFieldtypesList::class,
+
         // Version
         'version' => Commands\CommandVersion::class,
 

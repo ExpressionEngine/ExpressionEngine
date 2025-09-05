@@ -572,6 +572,18 @@ $lang = array(
     'command_fields_list_option_channel_id' => 'Filter by channel ID',
     'command_fields_list_option_field_id' => 'Filter by specific field ID',
 
+    // fieldtypes:list
+    'command_fieldtypes_list_description' => 'Lists all available fieldtypes in the system',
+    'command_fieldtypes_list_summary' => 'Displays all fieldtypes provided by installed and bundled add-ons',
+    'command_fieldtypes_list_header' => 'Fieldtypes:',
+    'command_fieldtypes_list_no_fieldtypes_found' => 'No fieldtypes found.',
+    'command_fieldtypes_list_total' => 'Total fieldtypes: %d',
+    'command_fieldtypes_list_shortname' => 'Shortname',
+    'command_fieldtypes_list_name' => 'Name',
+    'command_fieldtypes_list_addon' => 'Addon',
+    'command_fieldtypes_list_option_format' => 'Output format: table, json, or csv',
+    'command_fieldtypes_list_option_installed' => 'Show only fieldtypes from installed add-ons',
+    'command_fieldtypes_list_option_addon' => 'Filter by add-on short name(s), comma-separated',
 
 );
 
