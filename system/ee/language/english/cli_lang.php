@@ -584,6 +584,7 @@ $lang = array(
     'command_fieldtypes_list_option_format' => 'Output format: table, json, or csv',
     'command_fieldtypes_list_option_installed' => 'Show only fieldtypes from installed add-ons',
     'command_fieldtypes_list_option_addon' => 'Filter by add-on short name(s), comma-separated',
+    'command_fieldtypes_list_option_short' => 'Filter by fieldtype short name(s), comma-separated',
 
 );
 
