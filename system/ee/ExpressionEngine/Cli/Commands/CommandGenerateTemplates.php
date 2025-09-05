@@ -33,7 +33,7 @@ class CommandGenerateTemplates extends Cli
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli.php generate:templates [generator] [--options] [--json] [--options-json]';
+    public $usage = 'php eecli.php generate:templates [generator] [--options] [--json] [--options-json] [--code]';
 
     /**
      * options available for use in command
@@ -43,6 +43,7 @@ class CommandGenerateTemplates extends Cli
         'list,l'        => 'command_generate_templates_list_generators',
         /* 'themes,t'      => 'command_generate_templates_list_themes', */
         'show,s'        => 'command_generate_templates_show_template_content',
+        'code,c'        => 'command_generate_templates_show_template_code',
         'json,j'        => 'command_generate_templates_show_template_content_json',
     ];
 
@@ -92,11 +93,14 @@ class CommandGenerateTemplates extends Cli
             $this->complete();
         }
 
-        if (! $this->option('--help', false)) {
+        // Determine if we should only output raw template code
+        $codeOnly = $this->option('--code', false);
+
+        if (! $this->option('--help', false) && !$codeOnly) {
             $this->info('generate_templates_started');
         }
 
-        $showOnly = $this->option('--show', false);
+        $showOnly = $this->option('--show', false) || $codeOnly;
 
         // If the generator is disabled for the CP, we will only show the templates rather than trying to generate them as files
         if($generator->generatorDisabledForLocation('CP')) {
@@ -117,10 +121,12 @@ class CommandGenerateTemplates extends Cli
         $this->processGeneratorOptions($options, $generator, $showOnly);
 
         // Generate templates
-        $this->generateTemplates($generator, $showOnly);
+        $this->generateTemplates($generator, $showOnly, $codeOnly);
 
-        $this->info('');
-        $this->info('generate_templates_created_successfully');
+        if (!$codeOnly) {
+            $this->info('');
+            $this->info('generate_templates_created_successfully');
+        }
     }
 
     private function displayJson($data = null)
@@ -530,18 +536,27 @@ class CommandGenerateTemplates extends Cli
      * @param mixed $generator
      * @param bool $showOnly
      */
-    private function generateTemplates($generator, $showOnly)
+    private function generateTemplates($generator, $showOnly, $codeOnly = false)
     {
         try {
-            $this->info('command_generate_templates_building_templates');
-            $this->info('');
+            if (!$codeOnly) {
+                $this->info('command_generate_templates_building_templates');
+                $this->info('');
+            }
             $result = $generator->generate($this->data['options'], !$showOnly);
 
             foreach ($result['templates'] as $templateName => $template) {
-                $this->info($this->data['options']['template_group'] . '/' . $templateName . ': ' . $template['template_notes']);
+                if (!$codeOnly) {
+                    $this->info($this->data['options']['template_group'] . '/' . $templateName . ': ' . $template['template_notes']);
+                }
 
                 if ($showOnly) {
-                    $this->info($template['template_data']);
+                    if ($codeOnly) {
+                        // Output only raw template code
+                        $this->output->outln($template['template_data']);
+                    } else {
+                        $this->info($template['template_data']);
+                    }
                 }
             }
         } catch (\Exception $e) {

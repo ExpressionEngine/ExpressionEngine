@@ -511,6 +511,7 @@ $lang = array(
     'command_generate_templates_list_generators' => 'List available template generators',
     'command_generate_templates_list_themes' => 'List available themes',
     'command_generate_templates_show_template_content' => 'Show template content without saving',
+    'command_generate_templates_show_template_code' => 'Output only generated template code (suppresses all other output)',
     'command_generate_templates_listing_generators' => 'Available template generators:',
     'command_generate_templates_listing_themes' => 'Available themes:',
     'command_generate_templates_ask_generator' => 'What is the generator that you want to use?',
