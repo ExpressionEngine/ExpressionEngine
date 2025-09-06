@@ -392,6 +392,7 @@ class FakeTemplate
     public $site_ids = [1];
     public $cache_timestamp = '';
     public $var_single = [];
+    public $tagparams = [];
 
     public function setMap(array $map): void { $this->map = $map; }
     public function setTagdata(string $tagdata): void { $this->tagdata = $tagdata; }

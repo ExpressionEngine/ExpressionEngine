@@ -109,6 +109,7 @@ abstract class ChannelTestBase extends TestCase
             // Channel fields API mock
             ee()->setMock('api_channel_fields', new class {
                 public $settings = [];
+                public $field_type;
                 public function set_settings($id, $settings) { $this->settings[$id] = $settings; }
                 public function setup_handler($id) { return false; }
                 public function apply($method, $args) { return null; }
