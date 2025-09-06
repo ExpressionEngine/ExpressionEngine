@@ -240,6 +240,10 @@ class eeLangMock
     public function loadfile($name)
     {
     }
+    public function line($key)
+    {
+        return $key; // Return the key as-is for testing
+    }
 }
 
 class eeDbArMock

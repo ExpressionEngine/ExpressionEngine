@@ -51,3 +51,6 @@ function lang($str)
 }
 
 require_once 'eeObjectMock.php';
+
+// Helper functions for testing - only define if not already loaded by EE
+// Note: remove_invisible_characters is defined in boot.common.php when EE is fully loaded
