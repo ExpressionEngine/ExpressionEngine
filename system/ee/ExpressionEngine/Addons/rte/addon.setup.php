@@ -11,9 +11,9 @@ return array(
     'settings_exist' => true,
     'services' => array(
         'CkeditorService' => 'Service\CkeditorService',
-        'RedactorService' => 'Service\RedactorService',
+        'RedactorClassicService' => 'Service\RedactorClassicService',
         'RedactorXService' => 'Service\RedactorXService',
-        'RedactorYService' => 'Service\RedactorYService',
+        'RedactorService' => 'Service\RedactorService',
     ),
     'models' => array(
         'Toolset' => 'Model\Toolset'

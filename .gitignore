@@ -49,7 +49,7 @@ system/user/templates/*
 themes/user/*
 themes/ee/asset/javascript/compressed/
 themes/ee/asset/javascript/src/fields/rte/redactorx
-themes/ee/asset/javascript/src/fields/rte/redactory
+themes/ee/asset/javascript/src/fields/rte/redactor
 
 
 # Tests ========================================================================

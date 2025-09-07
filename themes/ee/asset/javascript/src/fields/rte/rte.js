@@ -34,12 +34,12 @@ window.Rte;
 
         if (this.defer) {
             this.showIframe(this.config.type);
-        } else if (this.config.type == 'redactor') {
-            this.initRedactor();
+        } else if (this.config.type == 'redactorClassic') {
+            this.initRedactorClassic();
         } else if (this.config.type == 'redactorX') {
             this.initRedactorX();
-        } else if (this.config.type == 'redactorY') {
-            this.initRedactorY();
+        } else if (this.config.type == 'redactor') {
+            this.initRedactor();
         } else {
             this.initCKEditor();
         }
@@ -75,10 +75,10 @@ window.Rte;
 
             if (type == 'ckeditor') {
                 $(iDoc).click($.proxy(this, 'initCKEditor'));
+            } else if (type == 'redactorClassic') {
+                $(iDoc).click(() => {this.initRedactorClassic();});
             } else if (type == 'redactor') {
                 $(iDoc).click(() => {this.initRedactor();});
-            } else if (type == 'redactorY') {
-                $(iDoc).click(() => {this.initRedactorY();});
             } else {
                 $(iDoc).click(() => {this.initRedactorX();});
             }
@@ -87,7 +87,7 @@ window.Rte;
         /**
          * Init Redactor
          */
-        initRedactor: function() {
+        initRedactorClassic: function() {
             var config = typeof this.config === 'string'
                             ? JSON.parse(this.config)
                             : this.config;
@@ -107,9 +107,9 @@ window.Rte;
         },
 
         /**
-         * Init RedactorY
+         * Init Redactor
          */
-        initRedactorY: function() {
+        initRedactor: function() {
             var config = typeof this.config === 'string'
                             ? JSON.parse(this.config)
                             : this.config;
@@ -127,7 +127,7 @@ window.Rte;
             config.popups.addbar = config['buttons']['addbar'];
             config.popups.context = config['buttons']['context'];
             config.popups.format = config['format'];
-            console.log('initRedactorY', config);
+            console.log('initRedactor', config);
             Redactor('#' + this.id, config);
 
             if (this.$iframe) {

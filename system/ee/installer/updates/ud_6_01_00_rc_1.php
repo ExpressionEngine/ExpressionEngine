@@ -196,12 +196,12 @@ class Updater
             }
 
             //install Redactor toolsets
-            $toolbars = ee('rte:RedactorService')->defaultToolbars();
+            $toolbars = ee('rte:RedactorClassicService')->defaultToolbars();
             foreach ($toolbars as $name => $toolbar) {
-                $config_settings = array_merge(ee('rte:RedactorService')->defaultConfigSettings(), array('toolbar' => $toolbar));
+                $config_settings = array_merge(ee('rte:RedactorClassicService')->defaultConfigSettings(), array('toolbar' => $toolbar));
                 $config = ee('Model')->make('rte:Toolset');
                 $config->toolset_name = $name;
-                $config->toolset_type = 'redactor';
+                $config->toolset_type = 'redactorClassic';
                 $config->settings = $config_settings;
                 $config->save();
             }
