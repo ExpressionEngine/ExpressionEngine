@@ -252,7 +252,6 @@ class RedactorService extends RedactorClassicService implements RteService {
 
     public function toolbarInputHtml($config, $toolbar = 'buttons')
     {
-        // var_dump('$config', $config);
         ee()->cp->add_to_head('<link rel="stylesheet" href="' . URL_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/fields/rte/' . strtolower(static::$type) . '/redactor.min.css" type="text/css" />');
 
         $selection = [];
@@ -262,19 +261,28 @@ class RedactorService extends RedactorClassicService implements RteService {
             $selection = isset($config->settings['toolbar'][$toolbar]) ? $config->settings['toolbar'][$toolbar] : $config->settings['toolbar'];
         }
 
-        if ($toolbar == 'hide') {
-            $allButtons = static::defaultToolbars()['Redactor Full']['editor'];
-            unset($allButtons[array_search('image', $allButtons)]);
-        } elseif ($toolbar == 'plugins' || $toolbar == 'format') {
-            $allButtons = static::defaultToolbars()['Redactor Full'][$toolbar];
-        } else {
-            $allButtons = array_merge(
-                static::defaultToolbars()['Redactor Full']['editor'],
-                static::defaultToolbars()['Redactor Full']['addbar'],
-                static::defaultToolbars()['Redactor Full']['context'],
-                static::defaultToolbars()['Redactor Full']['extrabar']
-            );
+        switch ($toolbar) {
+            case 'hide':
+                $allButtons = static::defaultToolbars()['Redactor Full']['editor'];
+                unset($allButtons[array_search('image', $allButtons)]);
+                break;
+            case 'format':
+            case 'plugins':
+            case 'addbar':
+            case 'context':
+            case 'extrabar':
+                $allButtons = static::defaultToolbars()['Redactor Full'][$toolbar];
+                break;
+            default:
+                $allButtons = array_merge(
+                    static::defaultToolbars()['Redactor Full']['editor'],
+                    static::defaultToolbars()['Redactor Full']['addbar'],
+                    static::defaultToolbars()['Redactor Full']['context'],
+                    static::defaultToolbars()['Redactor Full']['extrabar']
+                );
+                break;
         }
+
         $allButtons = array_unique($allButtons);
         if ($toolbar == 'addbar') {
             unset($allButtons[array_search('addbar', $allButtons)]);
@@ -297,7 +305,6 @@ class RedactorService extends RedactorClassicService implements RteService {
             }
         }
 
-        // var_dump('$selection', $selection);
         return ee('View')->make('rte:redactor-toolbar')->render(
             [
                 'buttons' => $fullToolset,
@@ -357,20 +364,22 @@ class RedactorService extends RedactorClassicService implements RteService {
                 'toolbar_control' => 'y',
                 'hide' => [],
                 'editor' => [
-                    'add',
+                    'ai-tools',
                     'html',
                     'format',
                     'bold',
                     'italic',
                     'deleted',
+                    'moreinline',
+                    'list',
                     'link'
                 ],
                 'extrabar' => [
                     'undo',
                     'redo',
-                    'hotkeys' //????
+                    'hotkeys'
                 ],
-                'addbar' => [ //??????
+                'addbar' => [
                     'ai-tools',
                     'ai-image',
                     'text',
@@ -380,6 +389,7 @@ class RedactorService extends RedactorClassicService implements RteService {
                     'embed',
                     'table',
                     'quote',
+                    'pre',
                     'line',
                     'layout',
                     'wrapper'
@@ -390,18 +400,19 @@ class RedactorService extends RedactorClassicService implements RteService {
                     'bold',
                     'italic',
                     'deleted',
+                    'moreinline',
                     'link'
                 ],
                 'format' => [
-                    'text', // +
-                    'h1', // +
-                    'h2', // +
-                    'h3', // +
-                    'h4', // +
-                    'quote', // + ?
-                    'bulletlist', // + ?
-                    'numberedlist', // + ?
-                    'todo' // +
+                    'text',
+                    'h1',
+                    'h2',
+                    'h3',
+                    'h4',
+                    'quote',
+                    'bulletlist',
+                    'numberedlist',
+                    'todo'
                 ],
                 'plugins' => [
                     'underline', // +
