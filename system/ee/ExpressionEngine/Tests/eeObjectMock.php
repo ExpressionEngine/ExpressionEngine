@@ -258,7 +258,12 @@ class eeDbArMock
     }
     public function where($field = null, $value = null)
     {
-        if ($field !== null) {
+        if (is_array($field)) {
+            // Handle array input like ee()->db->where(array('field' => 'value'))
+            foreach ($field as $f => $v) {
+                $this->whereConditions[$f] = $v;
+            }
+        } elseif ($field !== null) {
             $this->whereConditions[$field] = $value;
         }
         return $this;
@@ -330,6 +335,63 @@ class eeDbArMock
     public function last_query()
     {
         return $this->last_query ?? '';
+    }
+
+    public function count_all_results($table = '')
+    {
+        // Simple implementation - return count of filtered rows
+        $filtered = $this->rows;
+        foreach ($this->whereConditions as $field => $value) {
+            $filtered = array_values(array_filter($filtered, function ($row) use ($field, $value) {
+                return isset($row[$field]) && $row[$field] == $value;
+            }));
+        }
+        return count($filtered);
+    }
+
+    public function insert($table, $data = null)
+    {
+        // Simple implementation - just return success
+        return true;
+    }
+
+    public function update($table, $data = null, $where = null)
+    {
+        // Simple implementation - just return success
+        return true;
+    }
+
+    public function delete($table, $where = null)
+    {
+        // Simple implementation - just return success
+        return true;
+    }
+
+    public function insert_id()
+    {
+        // Return a mock insert ID
+        return 123;
+    }
+
+    public function field_data($table)
+    {
+        // Return mock field data for channel_data table
+        if ($table === 'channel_data') {
+            return [
+                (object)['name' => 'entry_id', 'type' => 'int'],
+                (object)['name' => 'channel_id', 'type' => 'int'],
+                (object)['name' => 'site_id', 'type' => 'int'],
+                (object)['name' => 'field_id_1', 'type' => 'text'],
+                (object)['name' => 'field_id_2', 'type' => 'text']
+            ];
+        }
+        return [];
+    }
+
+    public function set($key, $value = null)
+    {
+        // Simple implementation - just return $this for chaining
+        return $this;
     }
 }
 

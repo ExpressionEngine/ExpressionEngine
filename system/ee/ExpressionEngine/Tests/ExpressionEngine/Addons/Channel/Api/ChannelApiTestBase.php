@@ -67,6 +67,37 @@ abstract class ChannelApiTestBase extends TestCase
 
         // Session mock
         $this->mockSession = new eeSingletonSessionMock();
+
+        // Extend the mock session with getMember method
+        $mockSessionWithMember = new class($this->mockSession) extends eeSingletonSessionMock {
+            private $baseSession;
+
+            public function __construct($baseSession) {
+                $this->baseSession = $baseSession;
+            }
+
+            public function getMember() {
+                return new class {
+                    public function getAssignedStatuses() {
+                        return new class {
+                            public function getDictionary($key, $value) {
+                                return ['1' => 'open', '2' => 'closed'];
+                            }
+                        };
+                    }
+                };
+            }
+
+            // Delegate other methods to base session
+            public function __call($method, $args) {
+                if (method_exists($this->baseSession, $method)) {
+                    return call_user_func_array([$this->baseSession, $method], $args);
+                }
+                return parent::__call($method, $args);
+            }
+        };
+
+        $this->mockSession = $mockSessionWithMember;
         ee()->setMock('session', $this->mockSession);
 
         // Config mock
@@ -201,8 +232,39 @@ abstract class ChannelApiTestBase extends TestCase
         // Model mock
         $mockModel = new class {
             public function get($model, $ids) {
-                return new class {
+                $mockStatuses = new class {
+                    public function getDictionary($key, $value) {
+                        return ['open' => 'open', 'closed' => 'closed', 'draft' => 'draft'];
+                    }
+                };
+
+                $mockCustomFields = new class {
+                    public function asArray() { return []; }
+                };
+
+                $mockChannel = new class($mockStatuses, $mockCustomFields) {
+                    public $Statuses;
+                    private $customFields;
+
+                    public function __construct($statuses, $customFields) {
+                        $this->Statuses = $statuses;
+                        $this->customFields = $customFields;
+                    }
+
+                    public function getAllCustomFields() {
+                        return $this->customFields;
+                    }
+                };
+
+                return new class($mockChannel) {
+                    private $mockChannel;
+
+                    public function __construct($channel) {
+                        $this->mockChannel = $channel;
+                    }
+
                     public function delete() { return true; }
+                    public function first() { return $this->mockChannel; }
                 };
             }
         };
@@ -221,7 +283,7 @@ abstract class ChannelApiTestBase extends TestCase
                         $this->content = preg_replace('/[^a-z0-9\-_]/', '-', $this->content);
                         $this->content = preg_replace('/-+/', '-', $this->content);
                         $this->content = trim($this->content, '-');
-                        return $this;
+                        return $this->content;
                     }
                     public function compile() {
                         return $this->content;
