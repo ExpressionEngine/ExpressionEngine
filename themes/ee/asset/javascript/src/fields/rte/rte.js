@@ -127,6 +127,7 @@ window.Rte;
             config.popups.addbar = config['buttons']['addbar'];
             config.popups.context = config['buttons']['context'];
             config.popups.format = config['format'];
+            config.toolbar.hide = ['image'];
             console.log('initRedactor', config);
             Redactor('#' + this.id, config);
 
