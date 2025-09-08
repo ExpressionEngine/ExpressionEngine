@@ -415,15 +415,15 @@ class RedactorService extends RedactorClassicService implements RteService {
                     'todo'
                 ],
                 'plugins' => [
-                    'underline', // +
-                    'alignment', // +
-                    'blockid', // +
-                    'blockcode', // +
-                    'rte_definedlinks', // +
-                    'pages', // +
-                    'filebrowser', // +
-                    'imageposition', // +
-                    'imageresize', // +
+                    'underline',
+                    'alignment',
+                    'blockid',
+                    'blockcode',
+                    'rte_definedlinks',
+                    'pages',
+                    'filebrowser',
+                    'imageposition',
+                    'imageresize',
                 ]
             ]
         ];

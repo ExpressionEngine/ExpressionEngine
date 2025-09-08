@@ -316,12 +316,12 @@
 	initToolbarSelector('tb-selections-redactorX-format', '#redactorX-toolbar-format', '.rx-button', 'disable');
 	initToolbarSelector('tb-selections-redactorX-plugins', '#redactorX-toolbar-plugins', '.rx-button', 'disable');
 
-	initToolbarSelector('tb-selections-redactorY-hide', '#redactorY-toolbar-hide', '.rx-button', 'disable', true);
-	initToolbarSelector('tb-selections-redactorY-extrabar', '#redactorY-toolbar-extrabar', '.rx-button', 'disable');
-	initToolbarSelector('tb-selections-redactorY-addbar', '#redactorY-toolbar-addbar', '.rx-button', 'disable');
-	initToolbarSelector('tb-selections-redactorY-context', '#redactorY-toolbar-context', '.rx-button', 'disable');
-	initToolbarSelector('tb-selections-redactorY-format', '#redactorY-toolbar-format', '.rx-button', 'disable');
-	initToolbarSelector('tb-selections-redactorY-plugins', '#redactorY-toolbar-plugins', '.rx-button', 'disable');
+	initToolbarSelector('tb-selections-redactor-hide', '#redactor-toolbar-hide', '.rx-button', 'disable', true);
+	initToolbarSelector('tb-selections-redactor-extrabar', '#redactor-toolbar-extrabar', '.rx-button', 'disable');
+	initToolbarSelector('tb-selections-redactor-addbar', '#redactor-toolbar-addbar', '.rx-button', 'disable');
+	initToolbarSelector('tb-selections-redactor-context', '#redactor-toolbar-context', '.rx-button', 'disable');
+	initToolbarSelector('tb-selections-redactor-format', '#redactor-toolbar-format', '.rx-button', 'disable');
+	initToolbarSelector('tb-selections-redactor-plugins', '#redactor-toolbar-plugins', '.rx-button', 'disable');
 
 
 
