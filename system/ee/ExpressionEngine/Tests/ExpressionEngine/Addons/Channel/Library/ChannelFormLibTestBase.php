@@ -240,7 +240,7 @@ abstract class ChannelFormLibTestBase extends TestCase
             ee()->setMock('db', new FakeDb());
 
             // URI mock
-            ee()->setMock('uri', new class {
+            ee()->setMock('uri', new #[AllowDynamicProperties] class {
                 public $page_query_string = '';
                 public $query_string = '';
                 public $uri_string = '';
@@ -249,7 +249,7 @@ abstract class ChannelFormLibTestBase extends TestCase
             });
 
             // Session mock
-            ee()->setMock('session', new class {
+            ee()->setMock('session', new #[AllowDynamicProperties] class {
                 public $cache = [];
                 public $userdata = ['member_id' => 1, 'group_id' => 1, 'ip_address' => '127.0.0.1'];
                 public function userdata($key, $default = false) {
@@ -319,7 +319,7 @@ abstract class ChannelFormLibTestBase extends TestCase
             });
 
             // Input mock
-            ee()->setMock('input', new class {
+            ee()->setMock('input', new #[AllowDynamicProperties] class {
                 public $post_data = [];
                 public function get_post($item, $xss_clean = false) {
                     return $this->post_data[$item] ?? null;
@@ -342,18 +342,18 @@ abstract class ChannelFormLibTestBase extends TestCase
             });
 
             // Load mock
-            ee()->setMock('load', new class {
+            ee()->setMock('load', new #[AllowDynamicProperties] class {
                 public function helper($name) {}
                 public function library($name) {
                     if ($name === 'javascript') {
-                        @ee()->javascript = new class {
+                        @ee()->javascript = new #[AllowDynamicProperties] class {
                             public $output_js = [];
                             public function output($js) {}
                             public function get_global() { return ''; }
                         };
                     }
                     if ($name === 'cp') {
-                        ee()->cp = new class {
+                        ee()->cp = new #[AllowDynamicProperties] class {
                             public $js_files = [];
                             public function _get_js_mtime($type, $files) { return time(); }
                             public function get_head() { return []; }
@@ -522,7 +522,7 @@ abstract class ChannelFormLibTestBase extends TestCase
 
     protected function createMockChannel($properties = [])
     {
-        $channel = new #[\AllowDynamicProperties] class {
+        $channel = new #[AllowDynamicProperties] class {
             public $channel_id = 1;
             public $channel_name = 'test_channel';
             public $default_entry_title = 'Test Entry';
@@ -560,7 +560,7 @@ abstract class ChannelFormLibTestBase extends TestCase
 
     protected function createMockEntry($properties = [])
     {
-        $entry = new #[\AllowDynamicProperties] class {
+        $entry = new #[AllowDynamicProperties] class {
             public $entry_id = 1;
             public $channel_id = 1;
             public $author_id = 1;
@@ -633,7 +633,7 @@ abstract class ChannelFormLibTestBase extends TestCase
 
     protected function createMockMember($properties = [])
     {
-        $member = new #[\AllowDynamicProperties] class {
+        $member = new #[AllowDynamicProperties] class {
             public $member_id = 1;
             public $PrimaryRole = null;
 
@@ -642,7 +642,7 @@ abstract class ChannelFormLibTestBase extends TestCase
                     @$this->$key = $value;
                 }
                 if (!$this->PrimaryRole) {
-                    $this->PrimaryRole = new class {
+                    $this->PrimaryRole = new #[AllowDynamicProperties] class {
                         public function getId() { return 1; }
                     };
                 }
