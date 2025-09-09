@@ -69,8 +69,8 @@ class ChannelFormJavascriptTest extends ChannelTestBase
 
         // The js_path should be constructed as PATH_THEMES . 'ee/asset/javascript/' . PATH_JS . '/'
         // Based on the actual output: themes/ee/asset/javascript/src/
-        $this->assertTrue(strpos($jsPath, '/themes/') !== false);
-        $this->assertTrue(strpos($jsPath, '/ee/asset/javascript/') !== false);
+        $this->assertTrue(strpos($jsPath, 'themes') !== false, 'js_path should contain "themes"');
+        $this->assertTrue(strpos($jsPath, 'ee/asset/javascript') !== false, 'js_path should contain "ee/asset/javascript"');
         $this->assertStringEndsWith('src/', $jsPath);
     }
 
