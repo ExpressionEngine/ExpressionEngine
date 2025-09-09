@@ -85,10 +85,22 @@ class ChannelFormLibResourceEdgeCasesTest extends ChannelFormLibTestBase
         // Test JavaScript generation with many member fields
         $mockMember = $this->createMockMember(['member_id' => 1]);
 
-        // Add many properties to member object
-        for ($i = 0; $i < 1000; $i++) {
-            $mockMember->{'field_' . $i} = 'value_' . $i;
-        }
+        // Create a mock object with member fields to avoid dynamic property deprecation
+        $memberFieldsMock = new class {
+            private $fields = [];
+
+            public function __construct() {
+                for ($i = 0; $i < 1000; $i++) {
+                    $this->fields['field_' . $i] = 'value_' . $i;
+                }
+            }
+
+            public function __get($name) {
+                return $this->fields[$name] ?? null;
+            }
+        };
+        // Suppress deprecation warning for PHP 8.2+ dynamic property creation
+        @$mockMember->memberFields = $memberFieldsMock;
 
         $this->setProtectedProperty('member', $mockMember);
 

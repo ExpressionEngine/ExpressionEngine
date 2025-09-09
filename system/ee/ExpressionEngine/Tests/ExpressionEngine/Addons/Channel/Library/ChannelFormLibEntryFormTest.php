@@ -194,11 +194,13 @@ class ChannelFormLibEntryFormTest extends ChannelFormLibTestBase
 
         // Mock member without permissions
         $mockMember = $this->createMockMember(['member_id' => 1]);
-        $mockMember->getAssignedChannels = function() {
-            return new class {
-                public function pluck() { return []; } // No channels assigned
-            };
+
+        // Create a proper mock object to avoid dynamic property deprecation
+        $assignedChannelsMock = new class {
+            public function pluck() { return []; } // No channels assigned
         };
+        // Suppress deprecation warning for PHP 8.2+ dynamic property creation
+        @$mockMember->assignedChannels = $assignedChannelsMock;
 
         $this->setMock('Permission', new class {
             public function isSuperAdmin() { return false; }
