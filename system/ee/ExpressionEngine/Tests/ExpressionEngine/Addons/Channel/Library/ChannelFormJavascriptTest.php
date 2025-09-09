@@ -19,6 +19,17 @@ class ChannelFormJavascriptTest extends ChannelTestBase
             define('PATH_JS', 'src');
         }
 
+        // Define PATH_THEMES relative to this test file for portability
+        if (!defined('PATH_THEMES')) {
+            $__themes = __DIR__ . '/../../../../../../../themes/';
+            define('PATH_THEMES', $__themes);
+        }
+
+        // Define PATH_JQUERY before instantiating Channel_form_javascript
+        if (!defined('PATH_JQUERY')) {
+            define('PATH_JQUERY', PATH_THEMES . 'ee/asset/javascript/' . PATH_JS . '/jquery/');
+        }
+
         // Define mock smiley_js function if not already defined
         if (!function_exists('smiley_js')) {
             function smiley_js($alias = '', $field_id = '', $inline = true) {
@@ -36,7 +47,7 @@ class ChannelFormJavascriptTest extends ChannelTestBase
         $reflection = new ReflectionClass($this->channelFormJavascript);
         $jsPathProperty = $reflection->getProperty('js_path');
         $jsPathProperty->setAccessible(true);
-        $jsPathProperty->setValue($this->channelFormJavascript, '/Users/tomjaeger/Sites/ee_repo/themes/ee/asset/javascript/src/');
+        $jsPathProperty->setValue($this->channelFormJavascript, PATH_THEMES . 'ee/asset/javascript/' . PATH_JS . '/');
 
         // PATH_JQUERY is defined in constructor, but we can't easily override it
         // The tests will handle file system dependencies as best as possible
@@ -56,10 +67,10 @@ class ChannelFormJavascriptTest extends ChannelTestBase
         $jsPathProperty->setAccessible(true);
         $jsPath = $jsPathProperty->getValue($this->channelFormJavascript);
 
-        // The js_path should be constructed as PATH_THEMES . 'asset/javascript/' . PATH_JS . '/'
-        // Based on the actual output: /Users/tomjaeger/Sites/ee_repo/themes/asset/javascript/src/
+        // The js_path should be constructed as PATH_THEMES . 'ee/asset/javascript/' . PATH_JS . '/'
+        // Based on the actual output: themes/ee/asset/javascript/src/
         $this->assertTrue(strpos($jsPath, '/themes/') !== false);
-        $this->assertTrue(strpos($jsPath, '/asset/javascript/') !== false);
+        $this->assertTrue(strpos($jsPath, '/ee/asset/javascript/') !== false);
         $this->assertStringEndsWith('src/', $jsPath);
     }
 

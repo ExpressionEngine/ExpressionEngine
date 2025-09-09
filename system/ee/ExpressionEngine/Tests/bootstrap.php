@@ -45,6 +45,9 @@ if (file_exists(__DIR__ . '/vendor/autoload.php')) {
 }
 require_once SYSPATH . 'ee/vendor-build/autoload.php';
 
+// Load Hamcrest functions
+require_once __DIR__ . '/vendor/hamcrest/hamcrest-php/hamcrest/Hamcrest.php';
+
 function lang($str)
 {
     return $str;
