@@ -216,10 +216,41 @@ class ApiChannelEntriesDataValidationTest extends ChannelApiTestBase
 
         // Track which helpers are loaded
         $loadedHelpers = [];
+
+        // Create a new mock load object that tracks helper calls
         $originalLoad = ee()->load;
-        $originalLoad->helper = function($helper) use (&$loadedHelpers) {
-            $loadedHelpers[] = $helper;
+        $mockLoad = new class($originalLoad) {
+            private $originalLoad;
+            private $loadedHelpers;
+
+            public function __construct($originalLoad) {
+                $this->originalLoad = $originalLoad;
+                $this->loadedHelpers = [];
+            }
+
+            public function setLoadedHelpersReference(&$loadedHelpers) {
+                $this->loadedHelpers = &$loadedHelpers;
+            }
+
+            public function helper($helper) {
+                $this->loadedHelpers[] = $helper;
+                // Call the original helper method if it exists
+                if (method_exists($this->originalLoad, 'helper')) {
+                    return $this->originalLoad->helper($helper);
+                }
+                return null;
+            }
+
+            public function __call($method, $args) {
+                if (method_exists($this->originalLoad, $method)) {
+                    return call_user_func_array([$this->originalLoad, $method], $args);
+                }
+                return null;
+            }
         };
+        $mockLoad->setLoadedHelpersReference($loadedHelpers);
+
+        ee()->setMock('load', $mockLoad);
 
         // Create data
         $data = [
@@ -239,6 +270,9 @@ class ApiChannelEntriesDataValidationTest extends ChannelApiTestBase
         // Verify helpers were loaded (though our mock might not capture this perfectly)
         // The important thing is that no exceptions were thrown
         $this->assertTrue(true);
+
+        // Restore original load service
+        ee()->setMock('load', $originalLoad);
     }
 
     /**
@@ -556,6 +590,16 @@ class ApiChannelEntriesDataValidationTest extends ChannelApiTestBase
 
         ee()->setMock('Model', $mockModel);
 
+        // Ensure extensions mock is set up before creating API instance
+        $mockExtensions = new class {
+            public $end_script = false;
+            public function active_hook($hook) { return false; }
+            public function call($hook, $params = null) { return null; }
+        };
+        ee()->setMock('extensions', $mockExtensions);
+        // Also set it directly on the ee() instance
+        ee()->extensions = $mockExtensions;
+
         // Create valid data
         $data = [
             'channel_id' => 1,
@@ -568,8 +612,8 @@ class ApiChannelEntriesDataValidationTest extends ChannelApiTestBase
             'allow_comments' => 'y'
         ];
 
-        // Mock the _validate_url_title method to return a string
-        $this->api = $this->getMockBuilder(Api_channel_entries::class)
+        // Mock the _validate_url_title method on the existing API instance
+        $this->api = $this->getMockBuilder(get_class($this->api))
             ->setMethods(['_validate_url_title'])
             ->getMock();
 
@@ -677,8 +721,18 @@ class ApiChannelEntriesDataValidationTest extends ChannelApiTestBase
 
         ee()->setMock('session', $mockSession);
 
+        // Ensure extensions mock is set up before creating API instance
+        $mockExtensions = new class {
+            public $end_script = false;
+            public function active_hook($hook) { return false; }
+            public function call($hook, $params = null) { return null; }
+        };
+        ee()->setMock('extensions', $mockExtensions);
+        // Also set it directly on the ee() instance
+        ee()->extensions = $mockExtensions;
+
         // Mock _validate_url_title to return a string
-        $this->api = $this->getMockBuilder(Api_channel_entries::class)
+        $this->api = $this->getMockBuilder(get_class($this->api))
             ->setMethods(['_validate_url_title'])
             ->getMock();
 
@@ -807,8 +861,18 @@ class ApiChannelEntriesDataValidationTest extends ChannelApiTestBase
 
         ee()->setMock('session', $mockSession);
 
+        // Ensure extensions mock is set up before creating API instance
+        $mockExtensions = new class {
+            public $end_script = false;
+            public function active_hook($hook) { return false; }
+            public function call($hook, $params = null) { return null; }
+        };
+        ee()->setMock('extensions', $mockExtensions);
+        // Also set it directly on the ee() instance
+        ee()->extensions = $mockExtensions;
+
         // Mock _validate_url_title to return a string
-        $this->api = $this->getMockBuilder(Api_channel_entries::class)
+        $this->api = $this->getMockBuilder(get_class($this->api))
             ->setMethods(['_validate_url_title'])
             ->getMock();
 
@@ -943,8 +1007,18 @@ class ApiChannelEntriesDataValidationTest extends ChannelApiTestBase
 
         ee()->setMock('session', $mockSession);
 
+        // Ensure extensions mock is set up before creating API instance
+        $mockExtensions = new class {
+            public $end_script = false;
+            public function active_hook($hook) { return false; }
+            public function call($hook, $params = null) { return null; }
+        };
+        ee()->setMock('extensions', $mockExtensions);
+        // Also set it directly on the ee() instance
+        ee()->extensions = $mockExtensions;
+
         // Mock _validate_url_title to return a string
-        $this->api = $this->getMockBuilder(Api_channel_entries::class)
+        $this->api = $this->getMockBuilder(get_class($this->api))
             ->setMethods(['_validate_url_title'])
             ->getMock();
 
@@ -1074,8 +1148,18 @@ class ApiChannelEntriesDataValidationTest extends ChannelApiTestBase
 
         ee()->setMock('session', $mockSession);
 
+        // Ensure extensions mock is set up before creating API instance
+        $mockExtensions = new class {
+            public $end_script = false;
+            public function active_hook($hook) { return false; }
+            public function call($hook, $params = null) { return null; }
+        };
+        ee()->setMock('extensions', $mockExtensions);
+        // Also set it directly on the ee() instance
+        ee()->extensions = $mockExtensions;
+
         // Mock _validate_url_title to return a string
-        $this->api = $this->getMockBuilder(Api_channel_entries::class)
+        $this->api = $this->getMockBuilder(get_class($this->api))
             ->setMethods(['_validate_url_title'])
             ->getMock();
 

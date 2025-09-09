@@ -208,10 +208,11 @@ class ChannelGetTimezoneOffsetTest extends ChannelTestBase
             }
         });
 
-        // Null value currently causes an exception when passed to DateTimeZone
-        // This test documents the current behavior
-        $this->expectException(Exception::class);
-        $this->method->invoke($this->channel);
+        // Null value now falls back to UTC timezone
+        $result = $this->method->invoke($this->channel);
+
+        // Should return UTC offset (0)
+        $this->assertEquals(0, $result);
     }
 
     public function testHandlesTimezoneWithSpecialCharacters()
