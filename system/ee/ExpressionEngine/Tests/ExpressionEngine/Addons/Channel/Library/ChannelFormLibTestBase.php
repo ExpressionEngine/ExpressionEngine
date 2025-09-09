@@ -18,6 +18,11 @@ $__addons = __DIR__ . '/../../../../../Addons/';
 if (!defined('PATH_ADDONS')) {
     define('PATH_ADDONS', $__addons);
 }
+
+// Define a constant to check if we should use AllowDynamicProperties attribute (PHP 8.0+ only)
+if (!defined('USE_ALLOW_DYNAMIC_PROPERTIES')) {
+    define('USE_ALLOW_DYNAMIC_PROPERTIES', PHP_VERSION_ID >= 80000);
+}
 if (!defined('PATH_PRO_ADDONS')) {
     define('PATH_PRO_ADDONS', PATH_ADDONS);
 }
@@ -240,7 +245,13 @@ abstract class ChannelFormLibTestBase extends TestCase
             ee()->setMock('db', new FakeDb());
 
             // URI mock
-            ee()->setMock('uri', new #[AllowDynamicProperties] class {
+            ee()->setMock('uri', USE_ALLOW_DYNAMIC_PROPERTIES ? new #[AllowDynamicProperties] class {
+                public $page_query_string = '';
+                public $query_string = '';
+                public $uri_string = '';
+                public $uri_string_return = '';
+                public function uri_string() { return $this->uri_string_return; }
+            } : new class {
                 public $page_query_string = '';
                 public $query_string = '';
                 public $uri_string = '';
@@ -249,7 +260,18 @@ abstract class ChannelFormLibTestBase extends TestCase
             });
 
             // Session mock
-            ee()->setMock('session', new #[AllowDynamicProperties] class {
+            ee()->setMock('session', USE_ALLOW_DYNAMIC_PROPERTIES ? new #[AllowDynamicProperties] class {
+                public $cache = [];
+                public $userdata = ['member_id' => 1, 'group_id' => 1, 'ip_address' => '127.0.0.1'];
+                public function userdata($key, $default = false) {
+                    return $this->userdata[$key] ?? $default;
+                }
+                public function set_userdata($key, $value) {
+                    $this->userdata[$key] = $value;
+                }
+                public function cache($class, $key) { return $this->cache[$class][$key] ?? false; }
+                public function set_cache($class, $key, $value) { $this->cache[$class][$key] = $value; }
+            } : new class {
                 public $cache = [];
                 public $userdata = ['member_id' => 1, 'group_id' => 1, 'ip_address' => '127.0.0.1'];
                 public function userdata($key, $default = false) {
@@ -319,7 +341,18 @@ abstract class ChannelFormLibTestBase extends TestCase
             });
 
             // Input mock
-            ee()->setMock('input', new #[AllowDynamicProperties] class {
+            ee()->setMock('input', USE_ALLOW_DYNAMIC_PROPERTIES ? new #[AllowDynamicProperties] class {
+                public $post_data = [];
+                public function get_post($item, $xss_clean = false) {
+                    return $this->post_data[$item] ?? null;
+                }
+                public function get($item) { return null; }
+                public function post($item = null, $xss_clean = false) {
+                    if ($item === null) return $this->post_data;
+                    return $this->post_data[$item] ?? false;
+                }
+                public function ip_address() { return '127.0.0.1'; }
+            } : new class {
                 public $post_data = [];
                 public function get_post($item, $xss_clean = false) {
                     return $this->post_data[$item] ?? null;
@@ -342,18 +375,52 @@ abstract class ChannelFormLibTestBase extends TestCase
             });
 
             // Load mock
-            ee()->setMock('load', new #[AllowDynamicProperties] class {
+            ee()->setMock('load', USE_ALLOW_DYNAMIC_PROPERTIES ? new #[AllowDynamicProperties] class {
                 public function helper($name) {}
                 public function library($name) {
                     if ($name === 'javascript') {
-                        @ee()->javascript = new #[AllowDynamicProperties] class {
+                        @ee()->javascript = USE_ALLOW_DYNAMIC_PROPERTIES ? new #[AllowDynamicProperties] class {
+                            public $output_js = [];
+                            public function output($js) {}
+                            public function get_global() { return ''; }
+                        } : new class {
                             public $output_js = [];
                             public function output($js) {}
                             public function get_global() { return ''; }
                         };
                     }
                     if ($name === 'cp') {
-                        ee()->cp = new #[AllowDynamicProperties] class {
+                        ee()->cp = USE_ALLOW_DYNAMIC_PROPERTIES ? new #[AllowDynamicProperties] class {
+                            public $js_files = [];
+                            public function _get_js_mtime($type, $files) { return time(); }
+                            public function get_head() { return []; }
+                            public function get_foot() { return []; }
+                        } : new class {
+                            public $js_files = [];
+                            public function _get_js_mtime($type, $files) { return time(); }
+                            public function get_head() { return []; }
+                            public function get_foot() { return []; }
+                        };
+                    }
+                    if ($name === 'api') {
+                        ee()->legacy_api = new class {
+                            public function instantiate($name) {}
+                        };
+                    }
+                }
+                public function model($name) {}
+            } : new class {
+                public function helper($name) {}
+                public function library($name) {
+                    if ($name === 'javascript') {
+                        @ee()->javascript = new class {
+                            public $output_js = [];
+                            public function output($js) {}
+                            public function get_global() { return ''; }
+                        };
+                    }
+                    if ($name === 'cp') {
+                        ee()->cp = new class {
                             public $js_files = [];
                             public function _get_js_mtime($type, $files) { return time(); }
                             public function get_head() { return []; }
@@ -522,7 +589,38 @@ abstract class ChannelFormLibTestBase extends TestCase
 
     protected function createMockChannel($properties = [])
     {
-        $channel = new #[AllowDynamicProperties] class {
+        $channel = USE_ALLOW_DYNAMIC_PROPERTIES ? new #[AllowDynamicProperties] class {
+            public $channel_id = 1;
+            public $channel_name = 'test_channel';
+            public $default_entry_title = 'Test Entry';
+            public $url_title_prefix = 'test-';
+            public $deft_status = 'open';
+            public $deft_comments = 'y';
+            public $comment_system_enabled = 'y';
+            public $comment_expiration = 0;
+            public $enable_versioning = 'n';
+            public $CategoryGroups = null;
+            public $Statuses = null;
+            public $ChannelFormSettings = null;
+
+            public function __construct($properties = []) {
+                foreach ($properties as $key => $value) {
+                    @$this->$key = $value;
+                }
+            }
+
+            public function getProperty($key) {
+                return $this->$key ?? null;
+            }
+
+            public function getAllCustomFields() {
+                return [];
+            }
+
+            public function getId() {
+                return $this->channel_id;
+            }
+        } : new class {
             public $channel_id = 1;
             public $channel_name = 'test_channel';
             public $default_entry_title = 'Test Entry';
@@ -560,7 +658,73 @@ abstract class ChannelFormLibTestBase extends TestCase
 
     protected function createMockEntry($properties = [])
     {
-        $entry = new #[AllowDynamicProperties] class {
+        $entry = USE_ALLOW_DYNAMIC_PROPERTIES ? new #[AllowDynamicProperties] class {
+            public $entry_id = 1;
+            public $channel_id = 1;
+            public $author_id = 1;
+            public $title = 'Test Entry';
+            public $url_title = 'test-entry';
+            public $status = 'open';
+            public $Channel = null;
+            public $Categories = null;
+            public $toArray_called = false;
+
+            public function __construct($properties = []) {
+                foreach ($properties as $key => $value) {
+                    @$this->$key = $value;
+                }
+            }
+
+            public function getProperty($key) {
+                return $this->$key ?? null;
+            }
+
+            public function set($data) {
+                foreach ($data as $key => $value) {
+                    @$this->$key = $value;
+                }
+            }
+
+            public function hasCustomField($field) {
+                return property_exists($this, $field) || strpos($field, 'field_id_') === 0;
+            }
+
+            public function getCustomField($field) {
+                return new class {
+                    public function getItem($key) {
+                        return $key === 'field_label' ? 'Test Field' : '';
+                    }
+                };
+            }
+
+            public function toArray() {
+                $this->toArray_called = true;
+                return get_object_vars($this);
+            }
+
+            public function validate() {
+                return new class {
+                    public function isValid() { return true; }
+                    public function getAllErrors() { return []; }
+                };
+            }
+
+            public function save() {}
+
+            public function getDisplay() {
+                return new class {
+                    private $entry;
+                    public function __construct() {
+                        $this->entry = null;
+                    }
+
+                    public function getFields() {
+                        // Return empty array by default, can be overridden in tests
+                        return [];
+                    }
+                };
+            }
+        } : new class {
             public $entry_id = 1;
             public $channel_id = 1;
             public $author_id = 1;
@@ -633,7 +797,7 @@ abstract class ChannelFormLibTestBase extends TestCase
 
     protected function createMockMember($properties = [])
     {
-        $member = new #[AllowDynamicProperties] class {
+        $member = USE_ALLOW_DYNAMIC_PROPERTIES ? new #[AllowDynamicProperties] class {
             public $member_id = 1;
             public $PrimaryRole = null;
 
@@ -642,7 +806,48 @@ abstract class ChannelFormLibTestBase extends TestCase
                     @$this->$key = $value;
                 }
                 if (!$this->PrimaryRole) {
-                    $this->PrimaryRole = new #[AllowDynamicProperties] class {
+                    $this->PrimaryRole = USE_ALLOW_DYNAMIC_PROPERTIES ? new #[AllowDynamicProperties] class {
+                        public function getId() { return 1; }
+                    } : new class {
+                        public function getId() { return 1; }
+                    };
+                }
+            }
+
+            public function getId() {
+                return $this->member_id;
+            }
+
+            public function getAssignedChannels() {
+                return new class {
+                    public function pluck($field) { return [1]; }
+                };
+            }
+
+            public function getAssignedStatuses() {
+                return new class {
+                    public function indexBy($field) {
+                        return new class {
+                            public function __isset($key) { return true; }
+                            public function offsetGet($key) {
+                                return new class {
+                                    public function getId() { return 1; }
+                                };
+                            }
+                        };
+                    }
+                };
+            }
+        } : new class {
+            public $member_id = 1;
+            public $PrimaryRole = null;
+
+            public function __construct($properties = []) {
+                foreach ($properties as $key => $value) {
+                    @$this->$key = $value;
+                }
+                if (!$this->PrimaryRole) {
+                    $this->PrimaryRole = new class {
                         public function getId() { return 1; }
                     };
                 }
