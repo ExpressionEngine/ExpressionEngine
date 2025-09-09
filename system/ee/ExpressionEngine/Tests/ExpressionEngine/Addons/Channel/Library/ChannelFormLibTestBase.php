@@ -522,7 +522,7 @@ abstract class ChannelFormLibTestBase extends TestCase
 
     protected function createMockChannel($properties = [])
     {
-        $channel = new class {
+        $channel = new #[\AllowDynamicProperties] class {
             public $channel_id = 1;
             public $channel_name = 'test_channel';
             public $default_entry_title = 'Test Entry';
@@ -560,7 +560,7 @@ abstract class ChannelFormLibTestBase extends TestCase
 
     protected function createMockEntry($properties = [])
     {
-        $entry = new class {
+        $entry = new #[\AllowDynamicProperties] class {
             public $entry_id = 1;
             public $channel_id = 1;
             public $author_id = 1;
