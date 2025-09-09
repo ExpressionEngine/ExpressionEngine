@@ -1236,3 +1236,36 @@ a.ck.ck-button.ck-on {
         }
     }
 }
+
+// Redactor
+
+.rx-dropdown {
+    background-color: var(--ee-bg-dropdown) !important;
+    color: var(--ee-text-primary);
+    box-shadow: 0 1px 4px 0 var(--ee-shadow-dropdown) !important;
+    z-index: 1000 !important;
+
+    .rx-form { padding: 0 !important;}
+
+    .rx-dropdown-items {
+        padding: 0;
+
+        .rx-form-item {
+            padding: 16px 16px 0 16px;
+        }
+
+        .rx-form-input {
+            color: var(--ee-input-color);
+            background-color: var(--ee-input-bg);
+            border: 1px solid var(--ee-input-border);
+        }
+
+        .rx-form-flex { display: block; }
+
+        .rx-form-button.rx-form-button-primary {
+            font-weight: 700;
+            font-size: 14px;
+            padding: 8px 24px; 
+        }
+    }
+}
