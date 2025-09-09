@@ -113,12 +113,23 @@ class ChannelFormDataSorterTest extends ChannelFormDataSorterTestBase
         $sorter = $this->createDataSorter();
         $sorter->sort($data, 'value', 'asc');
 
-        // Null should come first, then numbers, then strings
+        // PHP 8.0+ changed sorting behavior: numbers now sort before strings
+        // Null should always come first
         $this->assertNull($data[0]['value']);
-        $this->assertEquals(50, $data[1]['value']);
-        $this->assertEquals(100, $data[2]['value']);
-        $this->assertEquals('apple', $data[3]['value']);
-        $this->assertEquals('banana', $data[4]['value']);
+
+        if (version_compare(PHP_VERSION, '8.0', '>=')) {
+            // PHP 8.0+: numbers sort before strings
+            $this->assertEquals(50, $data[1]['value']);
+            $this->assertEquals(100, $data[2]['value']);
+            $this->assertEquals('apple', $data[3]['value']);
+            $this->assertEquals('banana', $data[4]['value']);
+        } else {
+            // PHP 7.x: strings sort before numbers
+            $this->assertEquals('apple', $data[1]['value']);
+            $this->assertEquals('banana', $data[2]['value']);
+            $this->assertEquals(50, $data[3]['value']);
+            $this->assertEquals(100, $data[4]['value']);
+        }
     }
 
     /**
