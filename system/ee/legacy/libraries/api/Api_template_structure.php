@@ -1,4 +1,4 @@
-u<?php
+<?php
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
