@@ -41,6 +41,9 @@ class eeSingletonMock
     public $lang;
     public $legacy_api;
     public $typography;
+    public $extensions;
+    public $Permission;
+    public $call;
 
     protected $mock;
     protected static $mocks = [];
@@ -61,7 +64,7 @@ class eeSingletonMock
         $this->mock = $mock;
 
         // Override with static mocks if set
-        $overridable = ['db', 'config', 'functions', 'TMPL', 'session', 'load', 'logger', 'dbforge', 'input', 'lang', 'typography'];
+        $overridable = ['db', 'config', 'functions', 'TMPL', 'session', 'load', 'logger', 'dbforge', 'input', 'lang', 'typography', 'extensions'];
         foreach ($overridable as $prop) {
             if (array_key_exists($prop, self::$mocks)) {
                 @$this->$prop = self::$mocks[$prop];
@@ -100,6 +103,9 @@ class eeSingletonMock
 
 class eeSingletonLoadMock
 {
+    public $helper;
+    public $model;
+
     public function helper()
     {
         return;
@@ -145,6 +151,7 @@ class eeSingletonConfigMock
 class eeSingletonSessionMock
 {
     public static $userdata = [];
+    public $cache = [];
 
     public function userdata($item, $default = false)
     {
@@ -251,6 +258,7 @@ class eeDbArMock
     public $rows = [];
     private $whereConditions = [];
     private $limitValue = null;
+    public $whereInConditions = [];
     public function setRows(array $rows)
     {
         $this->rows = $rows;

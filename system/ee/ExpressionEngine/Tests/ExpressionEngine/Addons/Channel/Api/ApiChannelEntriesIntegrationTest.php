@@ -21,7 +21,7 @@ class ApiChannelEntriesIntegrationTest extends ChannelApiTestBase
         // Define missing helper functions
         if (!function_exists('ascii_to_entities')) {
             function ascii_to_entities($str) {
-                return str_replace(['&', '<', '>', '"', "'"], ['&amp;', '&lt;', '&gt;', '&quot;', '&#39;'], $str);
+                return str_replace(['&', '<', '>', '"', "'"], ['&amp;', '&lt;', '&gt;', '&quot;', '&#39;'], $str ?? '');
             }
         }
 

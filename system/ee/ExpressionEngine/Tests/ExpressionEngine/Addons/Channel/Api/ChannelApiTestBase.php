@@ -205,6 +205,7 @@ abstract class ChannelApiTestBase extends TestCase
         // Channel fields API mock
         $this->mockApiChannelFields = new class {
             public $settings = [];
+            public $field_type = null;
             public function fetch_custom_channel_fields() { return []; }
             public function apply($method, $args = []) { return null; }
             public function setup_handler($field_id) { return false; }
@@ -395,14 +396,47 @@ abstract class ChannelApiTestBase extends TestCase
         };
 
         // Mock the model loading
-        $mockLoad = ee()->load;
-        $originalLibrary = $mockLoad->library ?? null;
-        $mockLoad->model = function($name) use ($mockModel) {
-            if ($name === 'channel_entries_model') {
-                return $mockModel;
+        $originalLoad = ee()->load;
+        $originalLibrary = $originalLoad->library ?? null;
+
+        // Create a wrapper class to avoid dynamic property assignment
+        $mockLoad = new class($originalLoad, $mockModel) {
+            private $originalLoad;
+            private $mockModel;
+
+            public function __construct($originalLoad, $mockModel) {
+                $this->originalLoad = $originalLoad;
+                $this->mockModel = $mockModel;
             }
-            return null;
+
+            public function model($name) {
+                if ($name === 'channel_entries_model') {
+                    return $this->mockModel;
+                }
+                // Call original model method if it exists
+                if (method_exists($this->originalLoad, 'model')) {
+                    return $this->originalLoad->model($name);
+                }
+                return null;
+            }
+
+            public function __call($method, $args) {
+                if (method_exists($this->originalLoad, $method)) {
+                    return call_user_func_array([$this->originalLoad, $method], $args);
+                }
+                return null;
+            }
+
+            public function __get($property) {
+                return $this->originalLoad->$property ?? null;
+            }
+
+            public function __set($property, $value) {
+                $this->originalLoad->$property = $value;
+            }
         };
+
+        ee()->setMock('load', $mockLoad);
     }
 
     /**
