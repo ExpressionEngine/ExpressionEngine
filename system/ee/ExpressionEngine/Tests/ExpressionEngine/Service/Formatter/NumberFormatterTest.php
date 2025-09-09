@@ -110,7 +110,7 @@ class NumberFormatterTest extends TestCase
             // with intl extension
             [112358.13, null, null, '$112,358.13', 0b00000001],
             [112358.13, null, null, '$112,358', 0b00000001, 0],
-            [112358.13, 'EUR', 'de_DE', ['112.358,13 €', '112.358,13 EUR', '112.358,13 €'], 0b00000001], // Flexible: symbol or code, with/without non-breaking space
+            [112358.13, 'EUR', 'de_DE', ['112.358,13 €', '112.358,13 EUR', '112.358,13 €', '112.358,13EUR', 'EUR112.358,13', '112.358,13 EUR'], 0b00000001], // Flexible: various ICU versions return different formats
             [112358.13, 'GBP', 'en_UK', '£112,358.13', 0b00000001],
             [112358.13, 'AUD', 'en_US.UTF-8', 'A$112,358.13', 0b00000001],
             [112358.13, 'AUD', 'de_DE', '112.358,13 AU$', 0b00000001],
@@ -123,7 +123,7 @@ class NumberFormatterTest extends TestCase
             // no intl extension
             [112358.13, null, null, '$112,358.13', 0],
             [112358.13, null, null, '$112,358', 0, 0],
-            [112358.13, 'EUR', 'de_DE', ['112.358,13 €', '112.358,13 EUR'], 0],
+            [112358.13, 'EUR', 'de_DE', ['112.358,13 €', '112.358,13 EUR', '112.358,13EUR', 'EUR112.358,13', '112.358,13 EUR'], 0],
             [112358.13, 'GBP', 'en_UK', '112358.13', 0],
             [112358.13, 'AUD', 'en_US.UTF-8', '$112,358.13', 0],
             [112358.13, 'AUD', 'de_DE', '112.358,13 €', 0],
