@@ -16,6 +16,7 @@ class Channel_form_session extends EE_Session
     public $logged_out_member_id;
     public $logged_out_group_id;
     public $session_object;
+    public $test_property;
 
     /**
      * SC_Session

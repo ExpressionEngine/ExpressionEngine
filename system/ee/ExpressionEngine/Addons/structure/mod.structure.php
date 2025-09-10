@@ -189,11 +189,11 @@ class Structure extends Channel
         }
 
         $css_class = ee()->TMPL->fetch_param('css_class');
-        $css_class = $css_class ? strtolower($css_class) : '';
+        $css_class = $css_class ? strtolower((string) $css_class) : '';
 
         // DEPRECIATED SUPPORT for exclude_status and include_status
-        $include_status = strtolower(ee()->TMPL->fetch_param('include_status'));
-        $exclude_status = strtolower(ee()->TMPL->fetch_param('exclude_status'));
+        $include_status = strtolower((string) ee()->TMPL->fetch_param('include_status'));
+        $exclude_status = strtolower((string) ee()->TMPL->fetch_param('exclude_status'));
 
         // New, native EE status mode
         $status = ee()->TMPL->fetch_param('status', 'open');
@@ -223,10 +223,10 @@ class Structure extends Channel
         }
 
         // Retrieve entry_ids to exclude
-        $exclude = explode("|", ee()->TMPL->fetch_param('exclude'));
+        $exclude = explode("|", (string) ee()->TMPL->fetch_param('exclude'));
 
         // Sitemap mode -- Completely alternate output
-        $mode = strtolower(ee()->TMPL->fetch_param('mode'));
+        $mode = strtolower((string) ee()->TMPL->fetch_param('mode'));
         if ($mode == "") {
             $mode = "html";
         }
@@ -1145,6 +1145,7 @@ class Structure extends Channel
         $name = 'structure_' . $type . '_id';
 
         $data = array();
+        $selected = 0;
 
         if ($type == 'template') {
             $templates = $this->sql->get_templates();
@@ -1647,8 +1648,11 @@ class Structure extends Channel
         // ensure beginning and ending slash
         $uri = '/' . trim($uri, '/');
 
-        // if double slash, reduce to one
-        return str_replace('//', '/', $uri);
+        // collapse multiple slashes to a single slash without regex
+        while (strpos($uri, '//') !== false) {
+            $uri = str_replace('//', '/', $uri);
+        }
+        return $uri;
     }
 
     /*
@@ -1710,7 +1714,7 @@ class Structure extends Channel
 
         ee()->load->helper('string');
 
-        $site_pages = unserialize(base64_decode($query->row('site_pages')));
+        $site_pages = unserialize(base64_decode((string) $query->row('site_pages')));
 
         return $site_pages[ee()->config->item('site_id')];
 

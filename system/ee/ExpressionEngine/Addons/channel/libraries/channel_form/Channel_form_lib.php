@@ -1713,11 +1713,11 @@ GRID_FALLBACK;
      */
     public function bool_string($string, $default = false)
     {
-        if (preg_match('/true|t|yes|y|on|1/i', $string)) {
+        if (preg_match('/true|t|yes|y|on|1/i', (string) $string)) {
             return true;
         }
 
-        if (preg_match('/false|f|no|n|off|0/i', $string)) {
+        if (preg_match('/false|f|no|n|off|0/i', (string) $string)) {
             return false;
         }
 
@@ -2980,7 +2980,7 @@ GRID_FALLBACK;
     public function unserialize($data, $base64_decode = false)
     {
         if ($base64_decode) {
-            $data = base64_decode($data);
+            $data = base64_decode((string) $data);
         }
 
         $data = @unserialize($data);
