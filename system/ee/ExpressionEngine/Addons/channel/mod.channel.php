@@ -410,7 +410,7 @@ class Channel
         $this->mpfields = ee()->api_channel_fields->custom_member_field_pairs;
 
         ee()->session->cache['channel']['custom_member_fields'] = $this->mfields;
-        ee()->session->cache['channel']['custom_member_fields'] = $this->mpfields;
+        ee()->session->cache['channel']['custom_member_field_pairs'] = $this->mpfields;
     }
 
     /**
