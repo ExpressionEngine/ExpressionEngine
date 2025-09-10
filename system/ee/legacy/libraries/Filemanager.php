@@ -251,6 +251,10 @@ class Filemanager
             return false;
         }
 
+        if ($mime == 'image/avif' && !defined('IMAGETYPE_AVIF')) {
+            return false;
+        }
+
         $imageMimes = [
             'image/gif', // .gif
             'image/jpeg', // .jpg, .jpe, .jpeg
@@ -1837,7 +1841,7 @@ class Filemanager
 
                 // Permissions can only get more strict!
                 if (isset($settings['field_content_type']) && $settings['field_content_type'] == 'image') {
-                    $allowed_types = 'gif|jpg|jpeg|png|jpe|svg|webp';
+                    $allowed_types = 'gif|jpg|jpeg|png|jpe|svg|webp|avif';
                 }
             }
 

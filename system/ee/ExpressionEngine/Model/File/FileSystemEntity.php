@@ -178,6 +178,9 @@ class FileSystemEntity extends ContentModel
         if (defined('IMAGETYPE_WEBP')) {
             $imageMimes[] = 'image/webp'; // .webp
         }
+        if (defined('IMAGETYPE_AVIF')) {
+            $imageMimes[] = 'image/avif'; // .avif
+        }
 
         return (in_array($this->mime_type, $imageMimes));
     }
@@ -374,7 +377,7 @@ class FileSystemEntity extends ContentModel
     {
         $filesystem = $this->UploadDestination->getFilesystem();
 
-        $manipulations = ['thumbs', 'resize', 'crop', 'rotate', 'webp'];
+        $manipulations = ['thumbs', 'resize', 'crop', 'rotate', 'webp', 'avif'];
         $manipulations = array_merge($manipulations, $this->UploadDestination->FileDimensions->pluck('short_name'));
 
         foreach ($manipulations as $manipulation) {
