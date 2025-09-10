@@ -411,13 +411,17 @@ class FileSystemEntity extends ContentModel
     public function onBeforeSave()
     {
         $this->setProperty('modified_date', ee()->localize->now);
-        $this->setProperty('modified_by_member_id', ee()->session->userdata('member_id'));
+        if (isset(ee()->session)) {
+            $this->setProperty('modified_by_member_id', ee()->session->userdata('member_id'));
+        }
     }
 
     public function onBeforeInsert()
     {
         $this->setProperty('upload_date', ee()->localize->now);
-        $this->setProperty('uploaded_by_member_id', ee()->session->userdata('member_id'));
+        if (isset(ee()->session)) {
+            $this->setProperty('uploaded_by_member_id', ee()->session->userdata('member_id'));
+        }
     }
 
     public function onBeforeDelete()
