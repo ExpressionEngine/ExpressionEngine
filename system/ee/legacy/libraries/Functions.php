@@ -432,7 +432,14 @@ class EE_Functions
             $query = ee()->input->server('QUERY_STRING');
 
             if ($query !== '') {
-                $location .= '?' . $query;
+                // Parse query strings as arrays. Then merge them to recreate the param string.
+                parse_str($query, $query_params);
+                parse_str(parse_url($location, PHP_URL_QUERY) ?? '', $location_query);
+                $query = http_build_query(array_merge($query_params, $location_query));
+
+                // Rebuild the redirect URL with the updated parameters
+                $path = explode('?', $location)[0];
+                $location = $path . '?' . $query;
             }
         }
 
