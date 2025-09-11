@@ -417,6 +417,8 @@ if (! function_exists('log_message')) {
 function set_status_header($code = 200, $text = '')
 {
     $stati = array(
+        103 => 'Early Hints',
+
         200 => 'OK',
         201 => 'Created',
         202 => 'Accepted',
@@ -450,6 +452,8 @@ function set_status_header($code = 200, $text = '')
         416 => 'Requested Range Not Satisfiable',
         417 => 'Expectation Failed',
         422 => 'Unprocessable Entity',
+        425 => 'Too Early',
+        451 => 'Unavailable For Legal Reasons',
 
         500 => 'Internal Server Error',
         501 => 'Not Implemented',
