@@ -294,6 +294,7 @@ class Buttons extends Settings
         $close = isset($values['tag_close']) ? $values['tag_close'] : '';
         $shortcut = isset($values['accesskey']) ? $values['accesskey'] : '';
         $readonly = isset($values['classname']) && $values['classname'] == 'html-upload' ? true : false;
+        $icon = isset($values['icon']) ? $values['icon'] : '';
 
         $vars['sections'] = array(
             array(
@@ -322,6 +323,13 @@ class Buttons extends Settings
                     'desc' => 'accesskey_desc',
                     'fields' => array(
                         'accesskey' => array('type' => 'text', 'value' => $shortcut, 'attrs' => ($readonly ? 'readonly="readonly"' : ''))
+                    )
+                ),
+                array(
+                    'title' => 'tag_icon',
+                    'desc' => 'tag_icon_desc',
+                    'fields' => array(
+                        'tag_icon' => array('type' => 'text', 'value' => $icon, 'attrs' => ($readonly ? 'readonly="readonly"' : ''))
                     )
                 )
             )

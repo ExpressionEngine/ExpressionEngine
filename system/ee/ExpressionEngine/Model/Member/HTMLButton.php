@@ -43,6 +43,7 @@ class HTMLButton extends Model
         'tag_close' => 'required',
         'accesskey' => 'required',
         'tag_order' => 'required|isNatural',
+        'tag_icon' => 'required'
     );
 
     // Properties
@@ -56,6 +57,7 @@ class HTMLButton extends Model
     protected $tag_order;
     protected $tag_row;
     protected $classname;
+    protected $tag_icon;
 
     public function prepForJSON()
     {
@@ -68,7 +70,8 @@ class HTMLButton extends Model
                 'key' => strtoupper($this->accesskey),
                 'openWith' => $this->tag_open,
                 'closeWith' => $this->tag_close,
-                'className' => $this->classname . ' id' . $this->id
+                'className' => $this->classname . ' id' . $this->id,
+                'icon' => $this->tag_icon,
             );
         }
 
