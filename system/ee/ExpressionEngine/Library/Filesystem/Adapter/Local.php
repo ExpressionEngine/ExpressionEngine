@@ -64,7 +64,7 @@ class Local extends Flysystem\Adapter\Local implements AdapterInterface, Validat
                 'fields' => [
                     'url' => [
                         'type' => 'text',
-                        'value' => $settings['url'] ?? (strrpos(ee()->config->item('base_url'), '/', strlen(ee()->config->item('base_url')) - 1) === false) ? '{base_url}/uploads' : '{base_url}uploads',
+                        'value' => $settings['url'] ?? (strrpos(ee()->config->item('base_url'), '/', strlen(ee()->config->item('base_url')) - 1 === false) ? '{base_url}/uploads' : '{base_url}uploads'),
                         'required' => true
                     ]
                 ]
@@ -75,7 +75,7 @@ class Local extends Flysystem\Adapter\Local implements AdapterInterface, Validat
                 'fields' => [
                     'server_path' => [
                         'type' => 'text',
-                        'value' => $settings['server_path'] ?? (strrpos(ee()->config->item('base_path'), '/', strlen(ee()->config->item('base_path')) - 1) === false && strrpos(ee()->config->item('base_path'), DIRECTORY_SEPARATOR, strlen(ee()->config->item('base_path')) - 1) === false) ? '{base_path}/uploads' : '{base_path}uploads',
+                        'value' => $settings['server_path'] ?? (strrpos(ee()->config->item('base_path'), '/', strlen(ee()->config->item('base_path')) - 1) === false && strrpos(ee()->config->item('base_path'), DIRECTORY_SEPARATOR, strlen(ee()->config->item('base_path')) - 1 === false) ? '{base_path}/uploads' : '{base_path}uploads'),
                         'required' => true
                     ]
                 ]
