@@ -295,13 +295,15 @@ class Buttons extends Settings
      */
     private function form($vars, $values = array())
     {
+        $specialButtons = ['html-bold','html-italic','html-order-list','html-list','html-link','html-upload','html-quote','html-strike','html-ins'];
         $name = isset($values['tag_name']) ? $values['tag_name'] : '';
         $open = isset($values['tag_open']) ? $values['tag_open'] : '';
         $close = isset($values['tag_close']) ? $values['tag_close'] : '';
         $shortcut = isset($values['accesskey']) ? $values['accesskey'] : '';
         $class = isset($values['classname']) ? $values['classname'] : '';
         $readonly = isset($values['classname']) && $values['classname'] == 'html-upload' ? true : false;
-        $icon = isset($values['icon']) ? $values['icon'] : '';
+        $icon = isset($values['tag_icon']) ? $values['tag_icon'] : '';
+        $readonly_icon = in_array(isset($values['classname']) && $values['classname'], $specialButtons);
 
         $vars['sections'] = array(
             array(
@@ -337,7 +339,7 @@ class Buttons extends Settings
                     'title' => 'tag_icon',
                     'desc' => 'tag_icon_desc',
                     'fields' => array(
-                        'tag_icon' => array('type' => 'text', 'value' => $icon, 'attrs' => ($readonly ? 'readonly="readonly"' : ''))
+                        'tag_icon' => array('type' => 'text', 'value' => $icon, 'attrs' => ($readonly_icon ? 'readonly="readonly"' : ''))
                     )
                 )
 

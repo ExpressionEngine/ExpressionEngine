@@ -80,6 +80,8 @@
 			'html-link',
 			'html-upload',
 			'html-quote',
+			'html-strike',
+			'html-ins'
 		];
 
 		options = {	id:						'',
@@ -213,6 +215,8 @@
 
 						if (specialButtons.indexOf(button.className.split(' ')[0]) > -1) {
 							name = '';
+						} else if (button.icon) {
+							name = button.icon || '';
 						} else {
 							name = button.name||'';
 						}

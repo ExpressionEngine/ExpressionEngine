@@ -458,6 +458,10 @@ $lang = array(
 
     'tag_close_desc' => 'Closing output of this button. i.e. <b><code>&lt;/b&gt;</code></b>',
 
+    'tag_icon' => 'Tag Icon',
+
+    'tag_icon_desc' => 'Add your custom Font Awesome 6 Pro icon. Insert it as HTML using the <i> tag with classes. i.e. &lt;i class="fa-solid fa-newspaper"&gt;&lt;/i&gt;',
+
     'tag_name' => 'Name',
 
     'tag_open' => 'Opening Tag',

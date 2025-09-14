@@ -63,9 +63,11 @@
   display: inline-block;
 	position:relative;
 }
+
 .markItUpHeader ul li:hover > ul{
 	display:block;
 }
+.markItUpHeader ul li a i { font-weight: 400;}
 .markItUpHeader ul .markItUpDropMenu {
 	background:transparent url(images/menu.png) no-repeat 115% 50%;
 	margin-right:5px;
@@ -169,7 +171,8 @@
     content: fa-content($fa-var-list-ol);
   }
 }
-.markItUp .html-underline a {
+.markItUp .html-underline a, 
+.markItUp .html-ins a {
   &:before{
     content: fa-content($fa-var-underline);
   }

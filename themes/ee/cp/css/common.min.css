@@ -21251,6 +21251,10 @@ body[data-theme=dark] .hljs .apache .hljs-attribute {
   display: block;
 }
 
+.markItUpHeader ul li a i {
+  font-weight: 400;
+}
+
 .markItUpHeader ul .markItUpDropMenu {
   background: transparent url(images/menu.png) no-repeat 115% 50%;
   margin-right: 5px;
@@ -21350,7 +21354,8 @@ body[data-theme=dark] .hljs .apache .hljs-attribute {
   content: "\f0cb";
 }
 
-.markItUp .html-underline a:before {
+.markItUp .html-underline a:before,
+.markItUp .html-ins a:before {
   content: "\f0cd";
 }
 
