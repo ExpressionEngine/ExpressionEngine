@@ -2,6 +2,11 @@ name: PHP Unit Tests
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - '*.dev'
+      - 'release/**'
+      - '!release/**-alpha'
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:
