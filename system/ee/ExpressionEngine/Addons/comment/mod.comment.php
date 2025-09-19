@@ -551,6 +551,10 @@ class Comment
             }
             $return .= ee()->TMPL->parse_variables_row($tagdata, $variables);
         }
+		
+        if (!empty(ee()->TMPL->fetch_param('backspace'))) {
+            $return = substr($return, 0, - (int) ee()->TMPL->fetch_param('backspace'));
+        }		
 
         if ($enabled['pagination']) {
             return $pagination->render($return);

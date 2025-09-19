@@ -235,6 +235,8 @@ $lang = array(
 
     'grid_vertical_layout_desc' => 'Choose how the field is displayed on publish pages.',
 
+    'grid_row_count_title' => 'Show Row Numbers',
+
     'grid_chars_allowed' => 'Characters allowed.',
 
     'grid_col_instr' => 'Instructions',

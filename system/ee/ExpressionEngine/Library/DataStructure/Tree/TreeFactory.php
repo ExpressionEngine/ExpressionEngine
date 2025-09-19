@@ -28,7 +28,7 @@ class TreeFactory
      *
      * @return TreeNode	The frozen root node of an immutable tree.
      */
-    public function fromList($data, array $conf = null)
+    public function fromList($data, ?array $conf = null)
     {
         $conf = array_merge(
             array(

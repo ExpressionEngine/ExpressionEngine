@@ -388,7 +388,7 @@ class Updater
     }
 
     // Upgrades from pre-v3 may not have a default set for the cp_homepage_channel field
-    // in exp_role_settings, which may cause a MySQL error in ensureBuiltinRoles hence adding it here as well as 7.10
+    // in exp_role_settings, which may cause a MySQL error in ensureBuiltinRoles hence adding it here as well as 7.5.10
     private function ensureRoleChannelDefault()
     {
         ee()->db->query("ALTER TABLE exp_role_settings ALTER COLUMN cp_homepage_channel SET DEFAULT 0");
