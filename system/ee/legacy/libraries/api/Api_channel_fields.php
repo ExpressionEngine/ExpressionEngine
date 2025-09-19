@@ -441,7 +441,7 @@ class Api_channel_fields extends Api
             $parameters = $this->custom_field_data_hook($ft, $method, $parameters);
         }
 
-        $res = call_user_func_array(array(&$ft, $method), $parameters);
+        $res = call_user_func_array(array(&$ft, $method), array_values($parameters));
 
         ee()->load->remove_package_path($_ft_path);
 
