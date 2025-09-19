@@ -63,6 +63,8 @@ class Channel
 
     protected $preview_conditions = array();
 
+    protected $entry_ids = array();
+
     // SQL cache key prefix
     protected $_sql_cache_prefix = 'sql_cache';
 
@@ -79,6 +81,7 @@ class Channel
       */
     public function __construct()
     {
+        ee()->load->add_package_path(PATH_ADDONS . 'channel');
         ee()->load->library('pagination');
         $this->pagination = ee()->pagination->create();
 
@@ -180,6 +183,7 @@ class Channel
             }
 
             $this->chunks = $this->fetch_cache('chunks');
+            $this->entry_ids = $this->fetch_cache('entry_ids');
 
             if (($cache = $this->fetch_cache('pagination_count')) !== false) {
                 // We need to establish the per_page limits if we're using
@@ -225,6 +229,7 @@ class Channel
             if ($save_cache == true) {
                 $this->save_cache($this->sql);
                 if (! empty($this->chunks)) {
+                    $this->save_cache($this->entry_ids, 'entry_ids');
                     $this->save_cache($this->chunks, 'chunks');
                 }
             }
@@ -367,6 +372,13 @@ class Channel
             }
         }
 
+        if (!isset(ee()->session->cache) || !is_array(ee()->session->cache)) {
+            ee()->session->cache = [];
+        }
+        if (!isset(ee()->session->cache['channel']) || !is_array(ee()->session->cache['channel'])) {
+            ee()->session->cache['channel'] = [];
+        }
+
         ee()->session->cache['channel']['custom_channel_fields'] = $this->cfields;
         ee()->session->cache['channel']['date_fields'] = $this->dfields;
         ee()->session->cache['channel']['relationship_fields'] = $this->rfields;
@@ -390,7 +402,7 @@ class Channel
             $this->mpfields = ee()->session->cache['channel']['custom_member_field_pairs'];
             return;
         }
-        
+
         ee()->load->library('api');
         ee()->legacy_api->instantiate('channel_fields');
 
@@ -398,7 +410,7 @@ class Channel
         $this->mpfields = ee()->api_channel_fields->custom_member_field_pairs;
 
         ee()->session->cache['channel']['custom_member_fields'] = $this->mfields;
-        ee()->session->cache['channel']['custom_member_fields'] = $this->mpfields;
+        ee()->session->cache['channel']['custom_member_field_pairs'] = $this->mpfields;
     }
 
     /**
@@ -541,7 +553,7 @@ class Channel
 
         // Swap out a placeholder for [&] and [|]
         $placeholders = array('[*PIPE*]', '[*AMP*]');
-        $dynamic_params = explode('|', str_replace(array('[|]', '[&]'), $placeholders, ee()->TMPL->fetch_param('dynamic_parameters')));
+        $dynamic_params = explode('|', str_replace(array('[|]', '[&]'), $placeholders, (string) ee()->TMPL->fetch_param('dynamic_parameters')));
 
         foreach ($dynamic_params as $var) {
             // We default to pipes for joining arrays
@@ -1022,7 +1034,7 @@ class Channel
         /** -------------------------------------
         /**  Multiple Orders and Sorts...
         /** -------------------------------------*/
-        if ($order !== false && stristr($order, '|')) {
+        if ($order !== false && stristr((string) $order, '|')) {
             $order_array = explode('|', $order);
 
             if ($order_array[0] == 'random') {
@@ -1032,7 +1044,7 @@ class Channel
             $order_array = array($order);
         }
 
-        if ($sort !== false && stristr($sort, '|')) {
+        if ($sort !== false && stristr((string) $sort, '|')) {
             $sort_array = explode('|', $sort);
         } else {
             $sort_array = array($sort);
@@ -1052,7 +1064,7 @@ class Channel
                     /** -------------------------------------
                     /**  Site Namespace is Being Used, Parse Out
                     /** -------------------------------------*/
-                    if (strpos($order, ':') !== false) {
+                    if (strpos((string) $order, ':') !== false) {
                         $order_parts = explode(':', $order, 2);
 
                         if (isset(ee()->TMPL->site_ids[$order_parts[0]]) && isset($this->cfields[ee()->TMPL->site_ids[$order_parts[0]]][$order_parts[1]])) {
@@ -1103,13 +1115,13 @@ class Channel
         }
 
         // fixed entry id ordering
-        if (($fixed_order = ee()->TMPL->fetch_param('fixed_order')) === false or preg_match('/[^0-9\|]/', $fixed_order)) {
+        if (($fixed_order = ee()->TMPL->fetch_param('fixed_order')) === false or preg_match('/[^0-9\|]/', (string) $fixed_order)) {
             $fixed_order = false;
         } else {
             // MySQL will not order the entries correctly unless the results are constrained
             // to matching rows only, so we force the entry_id as well
             $entry_id = $fixed_order;
-            $fixed_order = preg_split('/\|/', $fixed_order, -1, PREG_SPLIT_NO_EMPTY);
+            $fixed_order = preg_split('/\|/', (string) $fixed_order, -1, PREG_SPLIT_NO_EMPTY);
 
             // some peeps might want to be able to 'flip' it
             // the default sort order is 'desc' but in this context 'desc' has a stronger "reversing"
@@ -1147,7 +1159,7 @@ class Channel
             /*  entries that are not assigned to a category.
             /* --------------------------------*/
 
-            if ((substr(ee()->TMPL->fetch_param('category_group'), 0, 3) == 'not' or substr(ee()->TMPL->fetch_param('category'), 0, 3) == 'not') && ee()->TMPL->fetch_param('uncategorized_entries') !== 'no') {
+            if ((substr((string) ee()->TMPL->fetch_param('category_group'), 0, 3) == 'not' or substr((string) ee()->TMPL->fetch_param('category'), 0, 3) == 'not') && ee()->TMPL->fetch_param('uncategorized_entries') !== 'no') {
                 $sql .= "LEFT JOIN exp_category_posts ON t.entry_id = exp_category_posts.entry_id
                          LEFT JOIN exp_categories ON exp_category_posts.cat_id = exp_categories.cat_id ";
             } else {
@@ -2096,10 +2108,7 @@ class Channel
         $this->sql .= $this->generateSQLForEntries($entries, $channel_ids);
 
         //cache the entry_id
-        if (isset(ee()->session)) {
-            ee()->session->cache['channel']['entry_ids'] = $entries;
-            ee()->session->cache['channel']['channel_ids'] = $channel_ids;
-        }
+        $this->entry_ids = $entries;
 
         $end = "ORDER BY FIELD(t.entry_id, " . implode(',', $entries) . ")";
 
@@ -2122,7 +2131,7 @@ class Channel
         if (! $needed_fields_only = ee()->TMPL->fetch_param('needed_fields_only')) {
             // string is weird on this one.. but it keeps the query
             // well formatted for viewing when fully rendered
-            $sql .= ", 
+            $sql .= ",
                         wd.*";
         }
 
@@ -2200,6 +2209,7 @@ class Channel
         if (! empty($chunks)) {
             $this->chunks = $chunks;
         }
+        $this->entry_ids = $entries;
 
         if (is_array($chunk)) {
             foreach ($chunk as $field) {
@@ -2239,7 +2249,7 @@ class Channel
             $offset = $timezones[$timezone] * 3600;
         } else {
             // Otherwise, get the offset from DateTime
-            $dt = new DateTime('now', new DateTimeZone($timezone));
+            $dt = new DateTime('now', new DateTimeZone($timezone ?? 'UTC'));
 
             if ($dt) {
                 $offset = $dt->getOffset();
@@ -2288,7 +2298,7 @@ class Channel
             $show_expired = (ee()->TMPL->fetch_param('show_expired') == 'yes');
 
             if (($status = ee()->TMPL->fetch_param('status')) !== false) {
-                $status = strtolower($status);
+                $status = strtolower((string) $status);
                 $parts = preg_split('/\|/', $status, -1, PREG_SPLIT_NO_EMPTY);
                 $parts = array_map('trim', $parts);
                 $show_closed = in_array('closed', $parts);
@@ -2330,7 +2340,7 @@ class Channel
                 }
 
                 foreach ($this->preview_conditions as $condition) {
-                    if (strpos('OR', $condition) === false) {
+                    if (strpos($condition, 'OR') === false) {
                         $valid = $this->previewDataPassesCondition($condition, $data);
                     } else {
                         $valid = false;
@@ -2549,7 +2559,7 @@ class Channel
         }
 
         // Kill multi_field variable
-        if (strpos($this->return_data, 'multi_field=') !== false) {
+        if (strpos((string) $this->return_data, 'multi_field=') !== false) {
             $this->return_data = preg_replace("/" . LD . "multi_field\=[\"'](.+?)[\"']" . RD . "/s", "", $this->return_data);
         }
 
@@ -2561,9 +2571,16 @@ class Channel
         }
     }
 
+    /**
+     * When the query is build into chunks (hitting the limit of MySQL fields)
+     * we use this to grab extra custom fields from the DB
+     *
+     * @param array $query_result
+     * @return array
+     */
     private function getExtraData($query_result)
     {
-        $where = "WHERE t.entry_id IN (" . implode(',', ee()->session->cache['channel']['entry_ids']) . ")";
+        $where = "WHERE t.entry_id IN (" . implode(',', $this->entry_ids) . ")";
 
         foreach ($this->chunks as $chunk) {
             $sql = "SELECT t.entry_id";
@@ -4449,7 +4466,7 @@ class Channel
         /*  entries that are not assigned to a category.
         /* --------------------------------*/
 
-        if ((substr(ee()->TMPL->fetch_param('category_group'), 0, 3) == 'not' or substr(ee()->TMPL->fetch_param('category'), 0, 3) == 'not') && ee()->TMPL->fetch_param('uncategorized_entries') !== 'no') {
+        if ((substr((string) ee()->TMPL->fetch_param('category_group'), 0, 3) == 'not' or substr((string) ee()->TMPL->fetch_param('category'), 0, 3) == 'not') && ee()->TMPL->fetch_param('uncategorized_entries') !== 'no') {
             $sql .= 'LEFT JOIN exp_category_posts ON t.entry_id = exp_category_posts.entry_id
                      LEFT JOIN exp_categories ON exp_category_posts.cat_id = exp_categories.cat_id ';
         } elseif (ee()->TMPL->fetch_param('category_group') or ee()->TMPL->fetch_param('category')) {
@@ -4722,6 +4739,7 @@ class Channel
         $year_limit = (is_numeric(ee()->TMPL->fetch_param('year_limit'))) ? ee()->TMPL->fetch_param('year_limit') : 50;
         $total_years = 0;
         $current_year = '';
+        $data = [];
 
         foreach ($query->result_array() as $row) {
             $tagdata = ee()->TMPL->tagdata;
@@ -4758,6 +4776,7 @@ class Channel
             $cond['month_num'] = $month;
             $cond['year'] = $year;
             $cond['year_short'] = substr($year, 2);
+            $data[] = $cond;
 
             $tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
 
@@ -4799,6 +4818,8 @@ class Channel
 
             $return .= trim($tagdata) . "\n";
         }
+
+        ee()->TMPL->set_data($data);
 
         return $return;
     }
@@ -5174,7 +5195,7 @@ class Channel
     public function combo_loader()
     {
         if (ee()->input->get('type') == 'css') {
-            $package = strtolower(ee()->input->get('package'));
+            $package = strtolower((string) ee()->input->get('package'));
             $file = ee()->input->get_post('file');
             $path = PATH_THIRD . $package . '/';
 
@@ -5320,6 +5341,43 @@ class Channel
         $prefer_system_preview = ee()->input->get('prefer_system_preview') == 'y';
 
         return ee('LivePreview')->preview($channel_id, $entry_id, $return, $prefer_system_preview);
+    }
+
+    /**
+     * Get information about the field
+     */
+    public function field()
+    {
+        $where = [];
+        if (!empty(ee()->TMPL->fetch_param('field_id'))) {
+            $where['field_id'] = (int) ee()->TMPL->fetch_param('field_id');
+        } elseif (!empty(ee()->TMPL->fetch_param('field_name'))) {
+            $where['field_name'] = (string) ee()->TMPL->fetch_param('field_name');
+        }
+        if (empty($where)) {
+            return ee()->TMPL->no_results();
+        }
+
+        $site_id = !empty(ee()->TMPL->fetch_param('site_id')) ? (int) ee()->TMPL->fetch_param('site_id') : ee()->config->item('site_id');
+
+        $field = ee('Model')->get('ChannelField')->filter(array_key_first($where), reset($where))->filter('site_id', 'IN', [0, $site_id])->first();
+        if (empty($field)) {
+            return ee()->TMPL->no_results();
+        }
+
+        $data = $field->getValues();
+        unset($data['field_settings']);// don't want to expose those, as might contain sensitive data such as API key
+        $data['field_options'] = (array) $field->getPossibleValuesForEvaluation();
+        if (!empty($data['field_options'])) {
+            $data['field_options'] = array_map(function ($value, $label) {
+                return [
+                    'value' => $value,
+                    'label' => $label
+                ];
+            }, array_keys($data['field_options']), $data['field_options']);
+        }
+
+        return ee()->TMPL->parse_variables(ee()->TMPL->tagdata, [$data]);
     }
 }
 // END CLASS

@@ -7,6 +7,7 @@ return array(
     'namespace' => 'ExpressionEngine\Addons\Rte',
     'author' => 'ExpressionEngine',
     'author_url' => 'https://expressionengine.com/',
+    'docs_url' => 'https://docs.expressionengine.com/latest/fieldtypes/rte.html',
     'settings_exist' => true,
     'services' => array(
         'CkeditorService' => 'Service\CkeditorService',

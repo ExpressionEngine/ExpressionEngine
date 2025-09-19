@@ -145,6 +145,11 @@ class Unpacker
 
         $source = $this->getExtractedArchivePath() . '/system/ee/installer/updater';
 
+        // Check to see if the updater directory already exists
+        if ($this->filesystem->exists(SYSPATH . 'ee/updater')) {
+            $this->filesystem->deleteDir(SYSPATH . 'ee/updater');
+        }
+
         $this->filesystem->rename($source, SYSPATH . 'ee/updater');
 
         try {

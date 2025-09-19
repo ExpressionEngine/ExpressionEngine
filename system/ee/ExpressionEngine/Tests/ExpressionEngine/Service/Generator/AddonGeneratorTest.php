@@ -50,5 +50,8 @@ class AddonGeneratorTest extends TestCase
         $this->filesystem->shouldReceive('isDir');
         $this->filesystem->shouldReceive('mkDir');
         $this->addonGenerator = new AddonGenerator($this->filesystem, $str, $data);
+
+        // Assert that the AddonGenerator was created successfully
+        $this->assertInstanceOf(AddonGenerator::class, $this->addonGenerator);
     }
 }

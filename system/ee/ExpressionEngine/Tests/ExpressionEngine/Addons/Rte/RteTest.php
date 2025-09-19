@@ -186,3 +186,5 @@ class RteHelperMock extends RteHelper
 }
 
 // EOF
+
+// Removed duplicated content below to fix parse error

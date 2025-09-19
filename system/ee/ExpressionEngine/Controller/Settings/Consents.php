@@ -474,7 +474,7 @@ class Consents extends Settings
         ee()->cp->render('settings/form', $vars);
     }
 
-    private function makeNewVersion(ConsentRequest $request = null)
+    private function makeNewVersion(?ConsentRequest $request = null)
     {
         $version = ee('Model')->make('ConsentRequestVersion');
         $version->author_id = ee()->session->userdata['member_id'];

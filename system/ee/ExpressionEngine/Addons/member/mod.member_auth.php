@@ -117,16 +117,17 @@ class Member_auth extends Member
         $password = ee()->input->post('password');
 
         if (! $multi && ! ($username && $password)) {
-            return ee()->output->show_user_error('general', lang('mbr_form_empty'));
+            $key = ($multi === false) ? (empty($username) ? 'username' : 'password') : 'general';
+            return ee()->output->show_form_error([$key => lang('mbr_form_empty')]);
         }
 
         if (strlen($password) > PASSWORD_MAX_LENGTH) {
-            return ee()->output->show_user_error('general', lang('credential_missmatch'));
+            return ee()->output->show_form_error(['password' => lang('credential_missmatch')]);
         }
 
         // This should go in the auth lib.
         if (! ee()->auth->check_require_ip()) {
-            return ee()->output->show_user_error('general', lang('unauthorized_request'));
+            return ee()->output->show_form_error(['general' => lang('unauthorized_request')]);
         }
 
         // Check password lockout status
@@ -134,7 +135,7 @@ class Member_auth extends Member
             $line = lang('password_lockout_in_effect');
             $line = sprintf($line, ee()->config->item('password_lockout_interval'));
 
-            ee()->output->show_user_error('general', $line);
+            ee()->output->show_form_error(['password' => $line]);
         }
 
         $success = '';
@@ -169,7 +170,7 @@ class Member_auth extends Member
         }
 
         if (!empty($sites) && $current_idx === false) {
-            ee()->output->show_user_error('general', lang('multi_auth_redirect_site_not_found'));
+            ee()->output->show_form_error(['general' => lang('multi_auth_redirect_site_not_found')]);
         }
 
         // Set login state
@@ -249,22 +250,23 @@ class Member_auth extends Member
             ee()->session->save_password_lockout($username);
 
             if (empty($username) or empty($password)) {
-                return ee()->output->show_user_error('general', lang('mbr_form_empty'));
+                $key = empty($username) ? 'username' : 'password';
+                return ee()->output->show_form_error([$key => lang('mbr_form_empty')]);
             } else {
-                return ee()->output->show_user_error('general', lang('invalid_existing_un_pw'));
+                return ee()->output->show_form_error(['general' => lang('invalid_existing_un_pw')]);
             }
         }
 
         // Banned
         if ($sess->is_banned()) {
-            return ee()->output->show_user_error('general', lang('not_authorized'));
+            return ee()->output->show_form_error(['general' => lang('not_authorized')]);
         }
 
         // Allow multiple logins?
         // Do we allow multiple logins on the same account?
         if (ee()->config->item('allow_multi_logins') == 'n') {
             if ($sess->has_other_session()) {
-                return ee()->output->show_user_error('general', lang('not_authorized'));
+                return ee()->output->show_form_error(['general' => lang('not_authorized')]);
             }
         }
 
@@ -299,7 +301,7 @@ class Member_auth extends Member
     private function _do_multi_auth($sites, $login_state)
     {
         if (! $sites or empty($login_state)) {
-            return ee()->output->show_user_error('general', lang('not_authorized'));
+            return ee()->output->show_form_error(['general' => lang('not_authorized')]);
         }
 
         // Kill old sessions first
@@ -313,7 +315,7 @@ class Member_auth extends Member
         ));
 
         if (! $sess_q->num_rows()) {
-            return ee()->output->show_user_error('general', lang('not_authorized'));
+            return ee()->output->show_form_error(['general' => lang('not_authorized')]);
         }
 
         // Grab member
@@ -460,7 +462,7 @@ class Member_auth extends Member
             }
 
             if (! bool_config_item('disable_csrf_protection') && $token != CSRF_TOKEN) {
-                return ee()->output->show_user_error('general', array(lang('not_authorized')));
+                return ee()->output->show_form_error(['general' => lang('not_authorized')]);
             }
         }
         // Kill the session and cookies
@@ -522,17 +524,17 @@ class Member_auth extends Member
 
         // Is user banned?
         if (ee()->session->userdata('is_banned') === true) {
-            return ee()->output->show_user_error('general', array(lang('not_authorized')), '', $return_error_link);
+            return ee()->output->show_form_error(['general' => lang('not_authorized')]);
         }
 
         // Error trapping
         if (! $address = ee()->input->post('email')) {
-            return ee()->output->show_user_error('submission', array(lang('invalid_email_address')), '', $return_error_link);
+            return ee()->output->show_form_error(['email' => lang('invalid_email_address')], 'submission');
         }
 
         ee()->load->helper('email');
         if (! valid_email($address)) {
-            return ee()->output->show_user_error('submission', array(lang('invalid_email_address')), '', $return_error_link);
+            return ee()->output->show_form_error(['email' => lang('invalid_email_address')], 'submission');
         }
 
         if (ee()->input->get_post('FROM') == 'forum' && bool_config_item('forum_is_installed')) {
@@ -619,7 +621,7 @@ class Member_auth extends Member
         ee()->email->message($email_msg);
 
         if (! ee()->email->send()) {
-            return ee()->output->show_user_error('submission', array(lang('error_sending_email')), '', $return_error_link);
+            return ee()->output->show_form_error(['general' => lang('error_sending_email')], 'submission');
         }
 
         // Build success message
@@ -727,17 +729,18 @@ class Member_auth extends Member
 
         // Is user banned?
         if (ee()->session->userdata('is_banned') === true) {
-            return ee()->output->show_user_error('general', array(lang('not_authorized')), '', $return_error_link);
+            return ee()->output->show_form_error(['general' => lang('not_authorized')]);
         }
 
         // Error trapping
         if (! $address = ee()->input->post('email')) {
-            return ee()->output->show_user_error('submission', array(lang('invalid_email_address')), '', $return_error_link);
+            return ee()->output->show_form_error(['email' => lang('invalid_email_address')], 'submission');
         }
 
         ee()->load->helper('email');
+
         if (! valid_email($address)) {
-            return ee()->output->show_user_error('submission', array(lang('invalid_email_address')), '', $return_error_link);
+            return ee()->output->show_form_error(['email' => lang('invalid_email_address')], 'submission');
         }
 
         if (ee()->input->get_post('FROM') == 'forum' && bool_config_item('forum_is_installed')) {
@@ -766,6 +769,14 @@ class Member_auth extends Member
 
         $address = strip_tags($address);
 
+        // member_auth_send_reset_token_start hook allows overriding posted email address from password reset form
+        if (ee()->extensions->active_hook('member_auth_send_reset_token_start')) {
+            $address = ee()->extensions->call('member_auth_send_reset_token_start', $address);
+            if (ee()->extensions->end_script === true) {
+                return;
+            }
+        }
+
         $memberQuery = ee()->db->select('member_id, username, screen_name')
             ->where('email', $address)
             ->get('members');
@@ -779,7 +790,8 @@ class Member_auth extends Member
                 'link' => array($return, $site_name)
             );
 
-            ee()->output->show_message($data);
+            // If we have a success return link, go to that, otherwise, output the standard message.
+            ee()->output->show_message($data, true, $return_success_link);	
         }
 
         $member_id = $memberQuery->row('member_id');
@@ -796,7 +808,7 @@ class Member_auth extends Member
             ->count_all_results('reset_password');
 
         if ($requests >= $max_requests_in_a_day) {
-            return ee()->output->show_user_error('submission', array(lang('password_reset_flood_lock')), '', $return_error_link);
+            return ee()->output->show_form_error(['general' => lang('password_reset_flood_lock')], 'submission');
         }
 
         // Create a new DB record with the temporary reset code
@@ -812,7 +824,7 @@ class Member_auth extends Member
 
             // Make sure it's an actual URL.
             if (substr($reset_url, 0, 4) !== 'http') {
-                $reset_url = ee()->functions->fetch_site_index(0, 0) . '/' . $reset_url;
+                $reset_url = reduce_double_slashes(ee()->functions->fetch_site_index(0, 0) . '/' . $reset_url);
             }
         } else {
             $reset_url = reduce_double_slashes(ee()->functions->fetch_site_index(0, 0) . '/' . ee()->config->item('profile_trigger') . '/reset_password');
@@ -858,7 +870,7 @@ class Member_auth extends Member
         ee()->email->message($email_msg);
 
         if (! ee()->email->send()) {
-            return ee()->output->show_user_error('submission', array(lang('error_sending_email')), '', $return_error_link);
+            return ee()->output->show_form_error(['general' => lang('error_sending_email')], 'submission');
         }
 
         // Build success message
@@ -892,12 +904,12 @@ class Member_auth extends Member
         }
         // If the user is banned, send them away.
         if (ee()->session->userdata('is_banned') === true) {
-            return ee()->output->show_user_error('general', array(lang('not_authorized')));
+            return ee()->output->show_form_error(['general' => lang('not_authorized')]);
         }
 
         // They didn't include their token.  Give em an error.
         if (! ($resetcode = ee()->input->get_post('id'))) {
-            return ee()->output->show_user_error('submission', array(lang('mbr_no_reset_id')));
+            return ee()->output->show_form_error(['general' => lang('mbr_no_reset_id')], 'submission');
         }
 
         // Make sure the token is valid and belongs to a member.
@@ -907,7 +919,7 @@ class Member_auth extends Member
             ->get('reset_password');
 
         if ($member_id_query->num_rows() === 0) {
-            return ee()->output->show_user_error('submission', array(lang('mbr_id_not_found')));
+            return ee()->output->show_form_error(['general' => lang('mbr_id_not_found')], 'submission');
         }
 
         // Check to see whether we're in the forum or not.
@@ -969,11 +981,11 @@ class Member_auth extends Member
 
         // If the user is banned, send them away.
         if (ee()->session->userdata('is_banned') === true) {
-            return ee()->output->show_user_error('general', array(lang('not_authorized')), '', $return_error_link);
+            return ee()->output->show_form_error(['general' => lang('not_authorized')]);
         }
 
         if (! ($resetcode = ee()->input->get_post('resetcode'))) {
-            return ee()->output->show_user_error('submission', array(lang('mbr_no_reset_id')), '', $return_error_link);
+            return ee()->output->show_form_error(['general' => lang('mbr_no_reset_id')], 'submission');
         }
 
         // We'll use this in a couple of places to determine whether a token is still valid
@@ -992,7 +1004,7 @@ class Member_auth extends Member
             ->get();
 
         if ($member_id_query->num_rows() === 0) {
-            return ee()->output->show_user_error('submission', array(lang('mbr_id_not_found')), '', $return_error_link);
+            return ee()->output->show_form_error(['general' => lang('mbr_id_not_found')], 'submission');
         }
 
         // If we're here, the reset code was in the URL properly so make sure it's on the error_link
@@ -1003,11 +1015,11 @@ class Member_auth extends Member
 
         // Ensure the passwords match.
         if (! ($password = ee()->input->get_post('password'))) {
-            return ee()->output->show_user_error('submission', array(lang('mbr_missing_password')), '', $return_error_link);
+            return ee()->output->show_form_error(['password' => lang('mbr_missing_password')], 'submission');
         }
 
         if (! ($password_confirm = ee()->input->get_post('password_confirm'))) {
-            return ee()->output->show_user_error('submission', array(lang('mbr_missing_confirm')), '', $return_error_link);
+            return ee()->output->show_form_error(['password' => lang('mbr_missing_confirm')], 'submission');
         }
 
         // Validate the password. This will also
@@ -1027,12 +1039,7 @@ class Member_auth extends Member
         $validationResult = ee('Validation')->make($validationRules)->validate($pw_data);
 
         if ($validationResult->isNotValid()) {
-            $errors = [];
-            foreach ($validationResult->getAllErrors() as $error) {
-                $errors = array_merge($errors, array_values($error));
-            }
-
-            return ee()->output->show_user_error('submission', $errors, '', $return_error_link);
+            return ee()->output->show_form_error($validationResult, 'submission');
         }
 
         // Update the database with the new password.  Apply the appropriate salt first.

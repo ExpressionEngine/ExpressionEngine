@@ -24,7 +24,7 @@ class Channel_form_exception extends Exception
             $message = implode("</li>\n<li>", $message);
         }
 
-        parent::__construct($message);
+        parent::__construct((string) $message);
         $this->_type = $type;
     }
 

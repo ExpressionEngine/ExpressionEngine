@@ -397,8 +397,12 @@ abstract class AbstractPublish extends CP_Controller
             $entry->markAsDirty();
         } else {
             if ($entry->isNew() && $entry->Channel->enforce_auto_url_title) {
-                $_POST['url_title'] = ee('Format')->make('Text',  $entry->Channel->url_title_prefix . ee()->input->post('title', true))->urlSlug()->compile();
+                $_POST['url_title'] = ee('Format')->make('Text', $entry->Channel->url_title_prefix . ee()->input->post('title', true))->urlSlug()->compile();
                 $word_separator = ee()->config->item('word_separator') != "dash" ? '_' : '-';
+                // when title contains no ascii characters, url_title might get empty, so we'll need a workaround
+                if (empty($_POST['url_title'])) {
+                    $_POST['url_title'] = $entry->Channel->url_title_prefix . $entry->Channel->channel_name . $word_separator . uniqid();
+                }
                 while (true !== $entry->validateUniqueUrlTitle('url_title', $_POST['url_title'], ['channel_id'], null)) {
                     $_POST['url_title'] = $_POST['url_title'] . $word_separator . uniqid();
                 }
@@ -457,6 +461,8 @@ abstract class AbstractPublish extends CP_Controller
                 'view_count_four' => 0,
                 'entry_date' => ee()->localize->now,
             ]);
+            // Unset versions relationship so that entry revisions are not moved to the cloned entry
+            $entry->Versions = null;
         }
         $entry->save();
 
@@ -491,7 +497,9 @@ abstract class AbstractPublish extends CP_Controller
                 'item' => [
                     'value' => $entry->getId(),
                     'label' => $entry->title,
-                    'instructions' => $entry->Channel->channel_title
+                    'instructions' => $entry->Channel->channel_title,
+                    'can_edit' => ($entry->author_id == ee()->session->userdata('member_id')) ? ee('Permission')->has('can_edit_self_entries_channel_id_' . $entry->channel_id) : ee('Permission')->has('can_edit_other_entries_channel_id_' . $entry->channel_id),
+                    'editable' => (ee('Permission')->isSuperAdmin() || array_key_exists($entry->Channel->getId(), ee()->session->userdata('assigned_channels'))),
                 ]
             ];
 

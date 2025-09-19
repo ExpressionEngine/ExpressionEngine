@@ -5,7 +5,7 @@ window.Rte;
     /**
      * Rte
      */
-    Rte = function(id, config, defer) {
+    window.Rte = function(id, config, defer) {
         // Allow initializing by a jQuery object that matched something
         if (typeof id == "object" && typeof id.is == "function" && id.is('textarea')) {
             this.$element = id;

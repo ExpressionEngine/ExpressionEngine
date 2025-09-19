@@ -1031,7 +1031,7 @@ class Filesystem
         $path = $this->normalizeRelativePath($path);
 
         if (!$this->isFile($path)) {
-            throw new \Exception("Cannot create a temp file from path: $path");
+            throw new FilesystemException("Cannot create a temp file from path: $path");
         }
 
         $tmp = $this->createTempFile();
@@ -1049,7 +1049,7 @@ class Filesystem
     {
         $file = tmpfile();
         if ($file === false) {
-            throw new \Exception('Cannot create temp file at "' . sys_get_temp_dir() . '"');
+            throw new FilesystemException('Cannot create temp file at "' . sys_get_temp_dir() . '"');
         }
 
         $path = stream_get_meta_data($file)['uri'];

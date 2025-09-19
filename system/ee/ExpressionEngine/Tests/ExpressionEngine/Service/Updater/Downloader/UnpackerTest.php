@@ -111,13 +111,13 @@ class UnpackerTest extends TestCase
 
     public function testMoveUpdater()
     {
+        // First test case - successful move
         $this->filesystem->shouldReceive('mkDir')->with(PATH_CACHE . 'ee_update/');
+        $this->filesystem->shouldReceive('exists')->with(SYSPATH . 'ee/updater')->andReturn(false)->once();
         $this->filesystem->shouldReceive('rename')->with(
             PATH_CACHE . 'ee_update/ExpressionEngine/system/ee/installer/updater',
             SYSPATH . 'ee/updater'
         );
-
-        // Now moveUpdater()
         $this->verifier->shouldReceive('verifyPath')->with(
             SYSPATH . '/ee/updater',
             SYSPATH . '/ee/updater/hash-manifest',
@@ -126,13 +126,24 @@ class UnpackerTest extends TestCase
 
         $this->unpacker->moveUpdater();
 
+        // Reset mock expectations for second test case
+        $this->filesystem = Mockery::mock('ExpressionEngine\Library\Filesystem\Filesystem');
+        $this->verifier = Mockery::mock('ExpressionEngine\Service\Updater\Verifier');
+        $this->unpacker = new Unpacker($this->filesystem, $this->zip_archive, $this->verifier, $this->logger, $this->requirements);
+
+        // Second test case - failed verification
+        $this->filesystem->shouldReceive('mkDir')->with(PATH_CACHE . 'ee_update/');
+        $this->filesystem->shouldReceive('exists')->with(SYSPATH . 'ee/updater')->andReturn(false)->once();
+        $this->filesystem->shouldReceive('rename')->with(
+            PATH_CACHE . 'ee_update/ExpressionEngine/system/ee/installer/updater',
+            SYSPATH . 'ee/updater'
+        );
         $exception = new UpdaterException('Something bad happened.', 23);
         $this->verifier->shouldReceive('verifyPath')->with(
             SYSPATH . '/ee/updater',
             SYSPATH . '/ee/updater/hash-manifest',
             'system/ee/installer/updater'
         )->andThrow($exception)->once();
-
         $this->filesystem->shouldReceive('deleteDir')->once();
 
         try {

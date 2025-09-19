@@ -141,7 +141,7 @@ class Roles extends AbstractRolesController
                 'selected' => ($role_id && $role->getId() == $role_id),
                 'toolbar_items' => [
                     'members' => [
-                        'href' => ee('CP/URL', 'members', ['role_filter' => $role->getId()]),
+                        'href' => ee('CP/URL')->make('members', ['role_filter' => $role->getId()]),
                         'title' => lang('members'),
                         'content' => '<i class="fal fa-users"></i> ' . $role->total_members . ' ' . lang('members')
                     ]
@@ -1569,7 +1569,7 @@ class Roles extends AbstractRolesController
             ->render(array('name' => null, 'settings' => $section, 'errors' => $errors));
     }
 
-    private function getChannelAccess($channels, Role $role = null)
+    private function getChannelAccess($channels, ?Role $role = null)
     {
         $channel_access = [
             'choices' => [],
@@ -1604,7 +1604,7 @@ class Roles extends AbstractRolesController
         return $channel_access;
     }
 
-    private function getTemplateGroupAccess(Role $role = null)
+    private function getTemplateGroupAccess(?Role $role = null)
     {
         $template_groups = ee('Model')->get('TemplateGroup')
             ->fields('group_id', 'group_name')
@@ -1642,7 +1642,7 @@ class Roles extends AbstractRolesController
         return $template_group_access;
     }
 
-    private function getPermissions(Role $role = null)
+    private function getPermissions(?Role $role = null)
     {
         $permissions = [
             'fields' => [

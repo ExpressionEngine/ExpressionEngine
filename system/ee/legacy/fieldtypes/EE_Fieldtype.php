@@ -163,10 +163,9 @@ abstract class EE_Fieldtype
     }
 
     /**
-     * Row accessor
+     * Grab a row element
      *
-     * Provides access to the row variable for an entry. Since not all
-     * content types provide a concrete row, and most don't agree on what
+     * Since the row data is not always available and the default
      * fields are always available, this method is useful to provide defaults
      * to row data.
      *
@@ -176,7 +175,25 @@ abstract class EE_Fieldtype
      */
     public function row($key, $default = null)
     {
-        return (isset($this->row) && array_key_exists($key, $this->row)) ? $this->row[$key] : $default;
+        if (!isset($this->row)) {
+            return $default;
+        }
+
+        // Handle both array and object types
+        if (is_array($this->row)) {
+            return array_key_exists($key, $this->row) ? $this->row[$key] : $default;
+        }
+
+        if (is_object($this->row)) {
+            // For objects, try to get the property using getProperty method if available
+            if (method_exists($this->row, 'getProperty')) {
+                return $this->row->getProperty($key) ?: $default;
+            }
+            // Fallback to direct property access
+            return isset($this->row->$key) ? $this->row->$key : $default;
+        }
+
+        return $default;
     }
 
     /**
@@ -863,6 +880,12 @@ abstract class EE_Fieldtype
             }
         }
 
+        return $field_options;
+    }
+
+    protected function _get_historic_field_options($data, $show_empty = '')
+    {
+        $field_options = $this->_get_field_options($data, $show_empty);
         // if there are saved options that are not available anymore
         // show them at the beginning of field options
         if (!empty($data)) {

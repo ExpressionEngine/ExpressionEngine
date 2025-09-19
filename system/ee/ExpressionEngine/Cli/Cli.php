@@ -14,6 +14,7 @@ use ExpressionEngine\Cli\CliFactory;
 use ExpressionEngine\Cli\Help;
 use ExpressionEngine\Cli\Status;
 use ExpressionEngine\Cli\Context\OptionFactory;
+use ExpressionEngine\Cli\Exception;
 use ExpressionEngine\Library\Filesystem\Filesystem;
 
 class Cli
@@ -109,9 +110,24 @@ class Cli
         // Cache
         'cache:clear' => Commands\CommandClearCaches::class,
 
+        // Channels
+        'channels:list' => Commands\CommandChannelsList::class,
+
+        // Fields
+        'fields:list' => Commands\CommandFieldsList::class,
+
+        // Fieldtypes
+        'fieldtypes:list' => Commands\CommandFieldtypesList::class,
+
+        // Version
+        'version' => Commands\CommandVersion::class,
+
         // Config
         'config:config' => Commands\CommandConfigConfig::class,
         'config:env' => Commands\CommandConfigEnv::class,
+
+        // Generate
+        'generate:templates' => Commands\CommandGenerateTemplates::class,
 
         // List
         'list' => Commands\CommandListCommands::class,
@@ -244,7 +260,16 @@ class Cli
         $command->loadOptions();
 
         if ($command->option('-h', false)) {
-            return $command->help();
+            // special case for generate:templates generator:name --help
+            if ($command->signature == 'generate:templates' && count($this->arguments) > 1 && in_array($this->arguments[1], ['--help', '-h'])) {
+                // template generator, when having generator specified, will handle displaying help later
+            } else {
+                return $command->help();
+            }
+        }
+
+        if ($command->option('--help-json', false)) {
+            return $command->helpJson();
         }
 
         // -------------------------------------------
@@ -281,12 +306,40 @@ class Cli
             ->setOptions($this->commandOptions);
 
         // Echo out just the simple options for the command
-        if($this->option('--options')) {
+        if ($this->option('--options')) {
             $this->write($help->getHelpOptionsSimple());
             exit();
         }
 
         $this->output->outln($help->getHelp($this->name));
+
+        exit();
+    }
+
+    /**
+     * get command's help information in JSON format
+     * @return null
+     */
+    public function helpJson()
+    {
+        $help = new Help(new OptionFactory());
+
+        $help->setSummary($this->summary)
+            ->setDescr($this->description)
+            ->setUsage($this->usage)
+            ->setOptions($this->commandOptions);
+
+        // Build JSON structure with help information
+        $helpData = [
+            'command' => $this->name,
+            'signature' => $this->signature,
+            'summary' => $this->summary,
+            'description' => $this->description,
+            'usage' => $this->usage,
+            'options' => $this->getOptionsAsJson($this->commandOptions)
+        ];
+
+        $this->output->outln(json_encode($helpData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
         exit();
     }
@@ -364,7 +417,7 @@ class Cli
     public function table(array $headers, array $data)
     {
         // We need headers in order to print a table
-        if(empty($headers)) {
+        if (empty($headers)) {
             return;
         }
 
@@ -389,7 +442,7 @@ class Cli
             $format .= '%-' . $width . 's | ';
 
             // if last row by key
-            if($k === array_key_last($widths)) {
+            if ($k === array_key_last($widths)) {
                 $format = rtrim($format, '| ');
             }
         }
@@ -401,14 +454,14 @@ class Cli
         $dash_str = '';
         foreach ($widths as $k => $width) {
             $length = $width + 2;
-            if($k === array_key_first($widths)) {
+            if ($k === array_key_first($widths)) {
                 $length -= 1;
             }
 
             $dash_str .= str_repeat('-', $length) . '|';
 
             // if last row by key
-            if($k === array_key_last($widths)) {
+            if ($k === array_key_last($widths)) {
                 $dash_str = rtrim($dash_str, '|');
             }
         }
@@ -437,6 +490,34 @@ class Cli
         $this->output->out(lang($question) . ' ' . $defaultChoice);
 
         $result = (string) $this->input->in();
+
+        return $result ? addslashes($result) : $default;
+    }
+
+    public function askFromList($question, $options, $default = '')
+    {
+        $this->output->outln(lang($question));
+
+        $optionNumber = 1;
+        // numbered list of options
+        foreach ($options as $key => $option) {
+            $this->output->outln(" {$optionNumber}. {$key} : {$option}");
+            $optionNumber++;
+        }
+
+        $this->output->outln('');
+        $this->output->out('Selection: ');
+
+        $result = (string) $this->input->in();
+
+        // If the result is a number, we can use it to get the key
+        if (is_numeric($result)) {
+            $keys = array_keys($options);
+            // if the result is one of the keys, return the key
+            if (isset($keys[$result - 1])) {
+                $result = $keys[$result - 1];
+            }
+        }
 
         return $result ? addslashes($result) : $default;
     }
@@ -610,6 +691,7 @@ class Cli
             $this->commandOptions,
             [
                 'help,h' => 'cli_option_help',
+                'help-json' => 'cli_option_help_json',
                 'options' => 'cli_option_help_options'
             ]
         );
@@ -619,12 +701,18 @@ class Cli
         if ($this->options->hasErrors()) {
             $errors = $this->options->getErrors();
 
-            foreach ($errors as $error) {
+            foreach ($errors as $i => $error) {
+                if ($this->signature == 'generate:templates' && $error instanceof Exception\OptionNotDefined) {
+                    // a very specific exception that we make for command that's dynamically loading options
+                    unset($errors[$i]);
+                    continue;
+                }
                 // print error messages to stderr using a Stdio object
                 $this->error($error->getMessage());
             }
-
-            $this->fail();
+            if (count($errors) > 0) {
+                $this->fail();
+            }
         };
     }
 
@@ -772,5 +860,37 @@ class Cli
         }
 
         return $list;
+    }
+
+    /**
+     * Convert command options to JSON-friendly format
+     * @param array $options
+     * @return array
+     */
+    protected function getOptionsAsJson($options)
+    {
+        $jsonOptions = [];
+
+        foreach ($options as $option => $description) {
+            // Parse option string (e.g., "help,h" or "verbose")
+            $optionParts = explode(',', $option);
+            $longOption = $optionParts[0];
+            $shortOption = isset($optionParts[1]) ? $optionParts[1] : null;
+
+            // Check if option requires a value
+            $needsValue = (strpos($longOption, ':') !== false);
+            if ($needsValue) {
+                $longOption = str_replace(':', '', $longOption);
+            }
+
+            $jsonOptions[] = [
+                'long' => $longOption,
+                'short' => $shortOption,
+                'description' => $description,
+                'requires_value' => $needsValue
+            ];
+        }
+
+        return $jsonOptions;
     }
 }
