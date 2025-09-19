@@ -44,6 +44,7 @@ class eeSingletonMock
     public $extensions;
     public $Permission;
     public $call;
+    public $core;
 
     protected $mock;
     protected static $mocks = [];
@@ -64,7 +65,7 @@ class eeSingletonMock
         $this->mock = $mock;
 
         // Override with static mocks if set
-        $overridable = ['db', 'config', 'functions', 'TMPL', 'session', 'load', 'logger', 'dbforge', 'input', 'lang', 'typography', 'extensions'];
+        $overridable = ['db', 'config', 'functions', 'TMPL', 'session', 'load', 'logger', 'dbforge', 'input', 'lang', 'typography', 'extensions', 'core'];
         foreach ($overridable as $prop) {
             if (array_key_exists($prop, self::$mocks)) {
                 @$this->$prop = self::$mocks[$prop];
@@ -131,6 +132,7 @@ class eeSingletonConfigMock
 {
     protected static $config = [];
     public $items = [];
+    public $_global_vars = [];
 
     public function item($item, $index = '', $raw_value = false)
     {
@@ -145,6 +147,11 @@ class eeSingletonConfigMock
     public function resetConfig()
     {
         self::$config = [];
+    }
+
+    public function site_url()
+    {
+        return 'https://example.com/';
     }
 }
 
@@ -166,6 +173,20 @@ class eeSingletonSessionMock
     public function resetUserdata()
     {
         self::$userdata = [];
+    }
+
+    public function cache($class, $key, $value = null)
+    {
+        if ($value === null) {
+            return isset($this->cache[$class][$key]) ? $this->cache[$class][$key] : false;
+        }
+        $this->cache[$class][$key] = $value;
+        return true;
+    }
+
+    public function set_cache($class, $key, $value)
+    {
+        return $this->cache($class, $key, $value);
     }
 
     public function getMember()
@@ -286,6 +307,14 @@ class eeDbArMock
         return $this;
     }
     public function from()
+    {
+        return $this;
+    }
+    public function join($table, $condition, $type = '')
+    {
+        return $this;
+    }
+    public function order_by($field, $direction = '')
     {
         return $this;
     }
