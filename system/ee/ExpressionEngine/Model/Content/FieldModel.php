@@ -148,6 +148,19 @@ abstract class FieldModel extends Model
     {
         $this->createTable();
         $this->callPostSaveSettings();
+
+        // generic logger call for all field models
+        // relection is required to get the short class name and list of properties
+        $refl = new \ReflectionClass($this);
+        $logChannel = $refl->getShortName();
+        $logContext = $this->getValues();
+        $prefix = $this->getColumnPrefix();
+        if ($prefix != '') {
+            $logContext = array_filter($logContext, function ($key) use ($prefix) {
+                return strpos($key, $prefix) !== 0;
+            }, ARRAY_FILTER_USE_KEY);
+        }
+        ee('Logger')->get($logChannel)->info('Created: ' . $logContext['field_name'], $logContext);
     }
 
     /**
@@ -170,6 +183,19 @@ abstract class FieldModel extends Model
             || $this->getProperty($this->getColumnPrefix() . 'legacy_field_data') == true) {
             $this->dropColumns($this->getColumns());
         }
+
+        // generic logger call for all field models
+        // relection is required to get the short class name and list of properties
+        $refl = new \ReflectionClass($this);
+        $logChannel = $refl->getShortName();
+        $logContext = $this->getValues();
+        $prefix = $this->getColumnPrefix();
+        if ($prefix != '') {
+            $logContext = array_filter($logContext, function ($key) use ($prefix) {
+                return strpos($key, $prefix) !== 0;
+            }, ARRAY_FILTER_USE_KEY);
+        }
+        ee('Logger')->get($logChannel)->info('Deleted: ' . $logContext['field_name'], $logContext);
     }
 
     /**

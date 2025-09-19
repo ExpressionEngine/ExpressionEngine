@@ -119,6 +119,7 @@ class Javascript extends CI_Controller
         }
 
         if (! $file or ! file_exists($file)) {
+            ee('Logger')->get()->error('Could not load javascript file: ' . $file);
             if ($this->config->item('debug') >= 1) {
                 $this->output->fatal_error(lang('missing_jquery_file'));
             } else {

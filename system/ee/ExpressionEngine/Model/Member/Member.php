@@ -344,6 +344,11 @@ class Member extends ContentModel
         $this->setProperty('role_id', $group_id);
     }
 
+    public function getTitle()
+    {
+        return $this->screen_name;
+    }
+
     /**
      * Support for legacy `group_id` property
      */
@@ -445,6 +450,7 @@ class Member extends ContentModel
 
     public function onAfterDelete()
     {
+        parent::onAfterDelete();
         $this->updateRoleTotalMembers();
     }
 

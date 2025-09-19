@@ -104,6 +104,7 @@ class Category extends ContentModel
 
     protected static $_events = array(
         'beforeInsert',
+        'afterInsert',
         'beforeSave',
         'beforeDelete',
         'afterAssociationsSave',
@@ -134,6 +135,11 @@ class Category extends ContentModel
     public function getStructure()
     {
         return $this->CategoryGroup;
+    }
+
+    public function getTitle()
+    {
+        return $this->cat_name;
     }
 
     /**

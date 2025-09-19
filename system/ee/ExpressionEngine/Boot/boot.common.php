@@ -395,6 +395,19 @@ function show_404($page = '', $log_error = true)
 if (! function_exists('log_message')) {
     function log_message($level = 'error', $message = '', $php_error = false)
     {
+        static $logger;
+
+        // might be not fully booted yet, so can't use ee('Logger')
+        if (!isset($logger)) {
+            $logger = new \ExpressionEngine\Service\Logger\Logger();
+        }
+        $logger->get()->log($level, $message);
+
+        // the below is legacy,
+        // deprecated, will be removed in EE8
+        // if you need to log into files, you can achive similar behavior using
+        // ExpressionEngine\Dependency\Monolog\Handler\RotatingFileHandler
+        // [SYSPATH . 'user/logs/log.php']
         static $_log;
 
         if (config_item('log_threshold') == 0) {
@@ -404,6 +417,25 @@ if (! function_exists('log_message')) {
         $_log = load_class('Log');
         $_log->write_log($level, $message, $php_error);
     }
+}
+
+/**
+ * Get logger configs without fully instantiating config class
+ * 
+ * @return array
+ */
+function & get_logger_config()
+{
+    static $loggerConfig;
+
+    if (isset($loggerConfig)) {
+        return $loggerConfig;
+    }
+
+    $configReflection = new \ReflectionClass('EE_Config');
+    $configInstance = $configReflection->newInstanceWithoutConstructor();
+    $loggerConfig = $configInstance->loadFile('logger');
+    return $loggerConfig;
 }
 
 /**

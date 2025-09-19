@@ -45,6 +45,11 @@ class Config extends Model
 
     public function set__value($value)
     {
+        // arrays can't be saved directly, json_encode those
+        if (is_array($value)) {
+            $value = json_encode($value);
+        }
+
         // exception for email_newline and email_crlf, which uses backslashes, and is not a path variable
         if (!in_array($this->key, ['email_newline', 'email_crlf'])) {
             $value = str_replace('\\', '/', (string) $value);

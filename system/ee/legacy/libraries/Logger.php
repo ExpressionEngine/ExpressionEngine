@@ -55,19 +55,9 @@ class EE_Logger
             return;
         }
 
-        $this->logger_db()->query(
-            $this->logger_db()->insert_string(
-                'exp_cp_log',
-                array(
-                    'member_id' => $this->getMemberId(),
-                    'username' => $this->getUsername(),
-                    'ip_address' => ee()->input->ip_address(),
-                    'act_date' => ee()->localize->now,
-                    'action' => $action,
-                    'site_id' => ee()->config->item('site_id')
-                )
-            )
-        );
+        ee('Logger')->get('cp')->info($action, array(
+            'username' => $this->getUsername()
+        ));
     }
 
     /**
@@ -92,33 +82,90 @@ class EE_Logger
      */
     public function developer($data, $update = false, $expires = 0)
     {
+        ee()->lang->loadfile('logs');
+
         // Grab previously-logged items upfront and cache
         if (empty($this->_dev_log_hashes)) {
-            $rows = $this->logger_db()->select('hash, timestamp')
-                ->order_by('log_id', 'desc')
+            $rows = ee('Model')
+                ->get('Log')
+                ->fields('log_date', 'message', 'context')
+                ->filter('channel', 'developer')
+                ->order('log_date', 'desc')
                 ->limit(100)
-                ->get('developer_log')
-                ->result_array();
+                ->all()
+                ->asArray();
 
             // store only the latest timestamp in the cache array
             $rows = array_reverse($rows);
             foreach ($rows as $row) {
-                $this->_dev_log_hashes[$row['hash']] = $row['timestamp'];
+                $hash = md5(serialize(['message' => $row->message, 'context' => $row->context]));
+                $this->_dev_log_hashes[$hash] = $row->log_date;
             }
         }
 
-        $log_data = array();
+        $context = [];
 
         // If we were passed an array, place its contents to $log_data
         if (is_array($data)) {
-            $log_data = $data;
+            if (!isset($data['function'])) {
+                $description = isset($data['message']) ? $data['message'] : $data['description'];
+            } else {
+                $description = '<p>';
+
+                // "Deprecated function %s called"
+                $description .= sprintf(lang('deprecated_function'), $data['function']);
+                // "in %s on line %d."
+                if (isset($data['file']) && !empty($data['file']) && isset($data['line']) && !empty($data['line'])) {
+                    $description .= ' ' . sprintf(lang('deprecated_on_line'), '<code>' . $data['file'] . '</code>', $data['line']) . '. ';
+                }
+                $description .= '</p>';
+
+                // "from template tag: %s in template %s"
+                if (isset($data['addon_module']) && !empty($data['addon_module']) && isset($data['addon_method']) && !empty($data['addon_method'])) {
+                    $description .= '<p>';
+                    $description .= sprintf(
+                        lang('deprecated_template'),
+                        '<code>exp:' . strtolower($data['addon_module']) . ':' . $data['addon_method'] . '</code>',
+                        '<a href="' . ee('CP/URL')->make('design/template/edit/' . $data['template_id']) . '">' . $data['template_group'] . '/' . $data['template_name'] . '</a>'
+                    );
+
+                    if (isset($data['snippets']) && !empty($data['snippets'])) {
+                        $snippets = explode('|', $data['snippets']);
+
+                        foreach ($snippets as &$snip) {
+                            $snip = '<a href="' . ee('CP/URL')->make('design/snippets_edit', array('snippet' => $snip)) . '">{' . $snip . '}</a>';
+                        }
+
+                        $description .= '<br>';
+                        $description .= sprintf(lang('deprecated_snippets'), implode(', ', $snippets));
+                    }
+                    $description .= '</p>';
+                }
+
+                if (isset($data['deprecated_since']) || isset($data['use_instead'])) {
+                    // Add a line break if there is additional information
+                    $description .= '<p>';
+
+                    // "Deprecated since %s."
+                    if (isset($data['deprecated_since']) && !empty($data['deprecated_since'])) {
+                        $description .= sprintf(lang('deprecated_since'), $data['deprecated_since']);
+                    }
+
+                    // "Use %s instead."
+                    if (isset($data['use_instead']) && !empty($data['use_instead'])) {
+                        $description .= NBS . sprintf(lang('deprecated_use_instead'), $data['use_instead']);
+                    }
+                    $description .= '</p>';
+                }
+                $context = $data;
+            }
         } else {
             // Otherwise it's probably a string, stick it in the 'description' field
-            $log_data['description'] = $data;
+            $description = $data;
         }
 
         // Get a hash of the data to see if we've aleady logged this
-        $hash = md5(serialize($log_data));
+        $hash = md5(serialize(['message' => $description, 'context' => $context]));
 
         // Load Localize in case this is being called via the Javascript
         // controller where full EE bootstrapping hasn't run
@@ -130,36 +177,27 @@ class EE_Logger
             if (ee()->localize->now - $expires > $this->_dev_log_hashes[$hash]) {
                 // There may be multiple items with the same hash for if a log item
                 // was previously set not to update, so update based on timestamp too
-                $this->logger_db()->where(
-                    array(
-                        'hash' => $hash,
-                        'timestamp' => $this->_dev_log_hashes[$hash]
-                    )
-                );
-
-                // Set log item as unviewed and update the timestamp
-                $this->logger_db()->update(
-                    'developer_log',
-                    array(
-                        'viewed' => 'n',
-                        'timestamp' => ee()->localize->now
-                    )
-                );
+                $logs = ee('Model')->get('Log')
+                    ->filter('channel', 'developer')
+                    ->filter('log_date', $this->_dev_log_hashes[$hash])
+                    ->filter('message', $description)
+                    ->filter('context', $context)
+                    ->all();
+                    // update the timestamp
+                foreach ($logs as $log) {
+                    $log->setProperty('log_date', ee()->localize->now)
+                        ->save();
+                }
             }
 
             return;
         }
 
         // If we got here, we're inserting a new item into the log
-        $log_data['timestamp'] = ee()->localize->now;
-        $log_data['hash'] = $hash;
-
-        $this->logger_db()->insert('developer_log', $log_data);
+        ee('Logger')->get('developer')->warning($description, $context);
 
         // Add to the hash cache so we don't have to requery
-        $this->_dev_log_hashes[$hash] = $log_data['timestamp'];
-
-        return $log_data;
+        $this->_dev_log_hashes[$hash] = ee()->localize->now;
     }
 
     /**

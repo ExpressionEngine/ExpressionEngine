@@ -26,7 +26,8 @@
         "expressionengine/flysystem-cached-adapter": "dev-master",
         "mlocati/ip-lib": "^1.18",
         "expressionengine/bacon-qr-code": "dev-main",
-        "expressionengine/otphp": "11.4.x-dev"
+        "expressionengine/otphp": "11.4.x-dev",
+        "monolog/monolog": "^2.0"
     },
     "repositories": [
         {

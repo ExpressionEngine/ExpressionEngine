@@ -125,6 +125,8 @@ class CommandAddonsInstall extends Cli
         ee()->cache->file->delete('/addons-status');
         ee('CP/JumpMenu')->clearAllCaches();
 
+        ee('Logger')->get('cli')->info(lang('addons_installed_desc') . ' ' . $addon->getName());
+
         $this->info(sprintf(lang('command_addons_install_complete'), $addon->getName()));
     }
 }

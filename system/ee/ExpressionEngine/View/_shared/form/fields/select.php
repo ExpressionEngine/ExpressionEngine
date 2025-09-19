@@ -45,7 +45,6 @@ $no_radio_value = ! $multi
 
 // If it's a small list, just render it server-side
 if ($count <= $too_many
-    && ! ($count > 2 && $multi)
     && ! $nested
     && ! $has_groupings
     && ! $force_react):
