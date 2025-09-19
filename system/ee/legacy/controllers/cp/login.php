@@ -499,6 +499,8 @@ class Login extends CP_Controller
             $return_path = ee('CP/URL')->make('/')->compile();
         }
 
+        ee('pro:Access')->expireAcknowledgement();
+
         $this->functions->redirect($return_path);
     }
 
@@ -715,6 +717,7 @@ class Login extends CP_Controller
         $this->session->destroy();
 
         $this->input->delete_cookie('read_topics');
+        ee('pro:Access')->expireAcknowledgement();
 
         $this->logger->log_action(lang('member_logged_out'));
 
@@ -783,6 +786,14 @@ class Login extends CP_Controller
         }
 
         $address = strip_tags($address);
+
+        // cp_member_send_reset_token_start hook allows overriding posted email address from cp password reset form
+        if (ee()->extensions->active_hook('cp_member_send_reset_token_start')) {          
+            $address = ee()->extensions->call('cp_member_send_reset_token_start', $address);
+            if (ee()->extensions->end_script === true) {
+                return;
+            }
+        }
 
         // Fetch user data
         $this->db->select('member_id, username, screen_name');
@@ -943,6 +954,18 @@ class Login extends CP_Controller
                     ->or_where('member_id', $member_id)
                     ->delete('reset_password');
 
+		        /* -------------------------------------------
+		        /* 'cp_member_reset_password' hook.
+		        /*  - Additional processing after user resets password
+		        /*  - Added EE 2.9.3
+		        */
+		        $this->extensions->call('cp_member_reset_password');
+		        if ($this->extensions->end_script === true) {
+		            return;
+		        }
+		        /*
+		        /* -------------------------------------------*/
+
                 ee('CP/Alert')
                     ->makeInline()
                     ->asSuccess()
@@ -953,18 +976,6 @@ class Login extends CP_Controller
                 return $this->index();
             }
         }
-
-        /* -------------------------------------------
-        /* 'cp_member_reset_password' hook.
-        /*  - Additional processing after user resets password
-        /*  - Added EE 2.9.3
-        */
-        $this->extensions->call('cp_member_reset_password');
-        if ($this->extensions->end_script === true) {
-            return;
-        }
-        /*
-        /* -------------------------------------------*/
 
         $alert = ee('CP/Alert')
             ->makeInline()

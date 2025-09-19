@@ -129,6 +129,7 @@ class ColorPicker extends React.Component<ColorPickerProps, ColorPickerState> {
     public selectColor(newColor, inputValue = null) {
         inputValue = inputValue == null ? this.getReturnColorStr(newColor) : inputValue
         this.setState({ selectedColor: newColor, inputValue: inputValue })
+        $("[data-publish] > form").trigger("entry:startAutosave");
     }
 
     /** Notifies that the color has changed by calling the onChange callback  */

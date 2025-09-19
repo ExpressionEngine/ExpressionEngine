@@ -11,6 +11,33 @@
 	.ui-sortable-placeholder > * {
 		display: none !important;
 	}
+
+	.required {
+		&:after {
+			content: "\*";
+			color: var(--ee-brand-danger);
+			font-size: 1em;
+			position: relative;
+			top: 0px;
+			margin-left: 0;
+		}
+	}
+
+	tbody {
+		td.required {
+			&:after { display: none; }
+
+			&:before {
+				content: "\*";
+				color: var(--ee-brand-danger);
+				font-size: 1em;
+				position: relative;
+				top: 0;
+				line-height: 0.7;
+				display: none;
+			}
+		}
+	}
 }
 
 .grid-field__table {
@@ -107,6 +134,21 @@
   input[type=email], input[type=number], input[type=password], input[type=text], input[type=url], textarea {
     min-width: 150px;
   }
+
+	.row-counter-column {
+	  width: 0.01% !important;
+	  padding: 7px !important;
+	  max-width: none !important;
+	  min-width: 0 !important;
+	  font-size: 0.9em;
+	  background: var(--ee-bg-0);
+	  color: var(--ee-text-secondary);
+	  font-weight: 500;
+
+	  @include m-tablet-down {
+	  	width: 100% !important;
+	  }
+	}
 }
 
 
@@ -136,7 +178,7 @@
 	display: none;
 
 	label {
-		display: block;
+		display: inline-block;
 		color: var(--ee-text-normal);
 		margin-bottom: 5px;
 		font-weight: 500;
@@ -346,6 +388,20 @@
 					}
 				}
 			}
+
+			td.required {
+				&:before {
+					top: 45px;
+				}
+
+				.grid-field__column-label {
+					margin-bottom: 15px;
+				}
+			}
+		}
+
+		.row-counter-column {
+			width: 100% !important;
 		}
 	}
 
@@ -465,6 +521,10 @@
 				}
 			}
 		}
+
+		.row-counter-column {
+			width: 100% !important;
+		}
 	}
 
 	.grid-field:not(.horizontal-layout) .grid-field__column--tools {
@@ -502,6 +562,12 @@
 					min-width: 80px !important;
 				}
 			}
+		}
+
+		.row-counter-column {
+			width: 0.01% !important;
+			max-width: none !important;
+			min-width: 0 !important;
 		}
 	}
 }
@@ -607,6 +673,20 @@
 					}
 				}
 			}
+
+			td.required {
+				&:before {
+					top: 45px;
+				}
+
+				.grid-field__column-label {
+					margin-bottom: 15px !important;
+				}
+			}
+		}
+
+		.row-counter-column {
+			width: 100% !important;
 		}
 	}
 }
@@ -638,6 +718,10 @@
 					}
 				}
 			}
+		}
+
+		.row-counter-column {
+			width: 100% !important;
 		}
 	}
 }

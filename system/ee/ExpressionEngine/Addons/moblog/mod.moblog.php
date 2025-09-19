@@ -219,7 +219,18 @@ class Moblog
             return false;
         }
 
-        if (strncasecmp(fgets($this->fp, 1024), '+OK', 3) != 0) {
+        // Set the socket to non-blocking mode
+        stream_set_blocking($this->fp, false);
+
+        // Set a timeout for the socket
+        stream_set_timeout($this->fp, 10); // 10 seconds timeout
+
+        // Attempt to read from the socket
+        $response = fgets($this->fp, 1024);
+
+        // Check if the response is from a POP3 server
+        if ($response === false || strncasecmp($response, '+OK', 3) != 0) {
+            // Handle the case where the response is not from a POP3 server
             $this->message_array[] = 'invalid_server_response';
             @fclose($this->fp);
 
@@ -959,16 +970,10 @@ class Moblog
         $data['category'] = array();
 
         if ($this->post_data['categories'] == 'all') {
-            $cat_groups = explode('|', $query->row('cat_group'));
-            ee()->load->model('category_model');
-
-            foreach ($cat_groups as $cat_group_id) {
-                $cats_q = ee()->category_model->get_channel_categories($cat_group_id);
-
-                if ($cats_q->num_rows() > 0) {
-                    foreach ($cats_q->result() as $row) {
-                        $data['category'][] = $row->cat_id;
-                    }
+            $channel = ee('Model')->get('Channel', $channel_id)->with('CategoryGroups')->first();
+            if (!empty($channel)) {
+                foreach ($channel->CategoryGroups as $cat_group) {
+                    $data['category'] = array_merge($data['category'], $cat_group->Categories->pluck('cat_id'));
                 }
             }
 

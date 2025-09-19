@@ -159,11 +159,7 @@ class EE_Image_lib
          * full server path in order to more reliably read it.
          *
          */
-        if (function_exists('realpath') and @realpath($this->source_image) !== false) {
-            $full_source_path = str_replace("\\", "/", realpath($this->source_image));
-        } else {
-            $full_source_path = $this->source_image;
-        }
+        $full_source_path = str_replace("\\", "/", $this->realpath($this->source_image));
 
         $x = explode('/', $full_source_path);
         $this->source_image = end($x);
@@ -191,11 +187,7 @@ class EE_Image_lib
                 $this->dest_folder = $this->source_folder;
                 $this->dest_image = $this->new_image;
             } else {
-                if (function_exists('realpath') and @realpath($this->new_image) !== false) {
-                    $full_dest_path = str_replace("\\", "/", realpath($this->new_image));
-                } else {
-                    $full_dest_path = $this->new_image;
-                }
+                $full_dest_path = str_replace("\\", "/", $this->realpath($this->new_image));
 
                 // Are we writing to a temp file
                 if (stripos($full_dest_path, '/tmp') === 0
@@ -295,7 +287,7 @@ class EE_Image_lib
         }
 
         if ($this->wm_overlay_path != '') {
-            $this->wm_overlay_path = str_replace("\\", "/", realpath($this->wm_overlay_path));
+            $this->wm_overlay_path = str_replace("\\", "/", $this->realpath(parse_config_variables($this->wm_overlay_path)));
         }
 
         if (isset($props['wm_opacity']) and $props['wm_opacity'] != 100) {
@@ -342,6 +334,17 @@ class EE_Image_lib
         }
 
         return $this->$protocol('webp');
+    }
+
+    public function avif()
+    {
+        $protocol = 'image_process_' . $this->image_library;
+
+        if (preg_match('/gd2$/i', $protocol)) {
+            $protocol = 'image_process_gd';
+        }
+
+        return $this->$protocol('avif');
     }
 
     /**
@@ -481,6 +484,9 @@ class EE_Image_lib
         //if we are converting, change image type
         if ($action == 'webp') {
             $this->image_type = 18; //IMAGETYPE_WEBP
+        }
+        if ($action == 'avif') {
+            $this->image_type = 19; //IMAGETYPE_AVIF
         }
 
         //  Show the image
@@ -1181,6 +1187,16 @@ class EE_Image_lib
                 return imagecreatefromwebp($path);
 
                 break;
+            case 19: //IMAGETYPE_AVIF
+                if (! function_exists('imagecreatefromavif')) {
+                    $this->set_error(array('imglib_unsupported_imagecreate', 'imglib_avif_not_supported'));
+
+                    return false;
+                }
+
+                return imagecreatefromavif($path);
+
+                break;
         }
 
         $this->set_error(array('imglib_unsupported_imagecreate'));
@@ -1265,6 +1281,19 @@ class EE_Image_lib
                 }
 
                 break;
+            case 19://IMAGETYPE_AVIF
+                if (! function_exists('imageavif')) {
+                    $this->set_error(array('imglib_unsupported_imagecreate', 'imglib_avif_not_supported'));
+
+                    return false;
+                }
+                if (! @imageavif($resource, $this->full_dst_path, $this->quality)) {
+                    $this->set_error('imglib_save_failed');
+
+                    return false;
+                }
+
+                break;
             default:
                 $this->set_error(array('imglib_unsupported_imagecreate'));
 
@@ -1305,6 +1334,10 @@ class EE_Image_lib
                 break;
             case 18: //IMAGETYPE_WEBP
                 imagewebp($resource);
+
+                break;
+            case 19: //IMAGETYPE_AVIF
+                imageavif($resource);
 
                 break;
             default:
@@ -1381,7 +1414,13 @@ class EE_Image_lib
 
         $vals = @getimagesize($path);
 
-        $types = array(IMAGETYPE_GIF => 'gif', IMAGETYPE_JPEG => 'jpeg', IMAGETYPE_PNG => 'png', '18' => 'webp');
+        if (! $vals) {
+            $this->set_error('imglib_properties_failed');
+
+            return false;
+        }
+
+        $types = array(IMAGETYPE_GIF => 'gif', IMAGETYPE_JPEG => 'jpeg', IMAGETYPE_PNG => 'png', '18' => 'webp', '19' => 'avif');
 
         $mime = (isset($types[$vals['2']])) ? 'image/' . $types[$vals['2']] : 'image/jpg';
 
@@ -1539,6 +1578,51 @@ class EE_Image_lib
         }
 
         return $str;
+    }
+
+    /**
+     * A fail-safe wrapper for php's realpath() method
+     *
+     * @param string $path
+     * @return string
+     */
+    protected function realpath($path)
+    {
+        if (function_exists('realpath') and @realpath($path) !== false) {
+            return realpath($path);
+        }
+
+        return $path;
+    }
+
+    /**
+     * Strip Image Tags
+     *
+     * Strips exif data from image files
+     * Requires Imagick extension
+     *
+     * @access  public
+     * @return  void
+     */
+    public function strip_metadata()
+    {
+        // If we dont have imagick installed, we can't strip metadata
+        if ($this->image_library != 'imagemagick' || ! extension_loaded('imagick') || ! class_exists('Imagick')) {
+            return false;
+        }
+
+        try {
+            $img = new Imagick($this->full_src_path);
+            $img->stripImage();
+            $img->writeImage($this->full_src_path);
+            $img->clear();
+            $img->destroy();
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        return true;
+
     }
 }
 // END Image_lib Class

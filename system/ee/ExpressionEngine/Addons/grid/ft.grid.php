@@ -187,6 +187,9 @@ class Grid_ft extends EE_Fieldtype
             'vertical_layout' => isset($this->settings['vertical_layout'])
                 ? ($this->settings['vertical_layout'] == 'horizontal_layout' ? 'horizontal' : $this->settings['vertical_layout'])
                 : 'n',
+            'row_counter' => isset($this->settings['row_counter'])
+                ? get_bool_from_string($this->settings['row_counter'])
+                : false,
         ));
         $grid->loadAssets();
         $grid->setNoResultsText(
@@ -621,6 +624,16 @@ class Grid_ft extends EE_Fieldtype
                                 'value' => isset($data['vertical_layout']) ? ($data['vertical_layout'] == 'horizontal_layout' ? 'horizontal' : $data['vertical_layout']) : 'n'
                             )
                         )
+                    ),
+                    array(
+                        'title' => 'grid_row_count_title',
+                        'desc' => '',
+                        'fields' => array(
+                            'row_counter' => array(
+                                'type' => 'yes_no',
+                                'value' => isset($data['row_counter']) ? $data['row_counter'] : 'n'
+                            )
+                        )
                     )
                 )
             ),
@@ -785,6 +798,7 @@ class Grid_ft extends EE_Fieldtype
             'grid_max_rows' => empty($data['grid_max_rows']) ? '' : $data['grid_max_rows'],
             'allow_reorder' => empty($data['allow_reorder']) ? 'y' : $data['allow_reorder'],
             'vertical_layout' => empty($data['vertical_layout']) ? 'n' : $data['vertical_layout'],
+            'row_counter' => empty($data['row_counter']) ? 'n' : $data['row_counter'],
         );
     }
 
@@ -844,6 +858,7 @@ class Grid_ft extends EE_Fieldtype
         ee()->grid_lib->entry_id = ($this->content_id() == null) ? $entry_id : $this->content_id();
         ee()->grid_lib->field_id = $this->id();
         ee()->grid_lib->field_name = $this->name();
+        ee()->grid_lib->field_short_name = isset($this->settings['field_short_name']) ? $this->settings['field_short_name'] : null;
         ee()->grid_lib->field_required = $this->settings['field_required'] ?? 'n';
         ee()->grid_lib->content_type = $this->content_type();
         ee()->grid_lib->fluid_field_data_id = (isset($this->settings['fluid_field_data_id'])) ? $this->settings['fluid_field_data_id'] : 0;

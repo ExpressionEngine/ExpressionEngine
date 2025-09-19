@@ -171,15 +171,25 @@ class Settings extends Profile
 
         ee()->cp->add_js_script('file', 'cp/members/avatar');
 
-        ee()->view->base_url = $this->base_url;
-        ee()->view->ajax_validate = true;
-        ee()->view->cp_page_title = lang('personal_settings');
-        ee()->view->save_btn_text = 'btn_save_settings';
-        ee()->view->save_btn_text_working = 'btn_saving';
+        $vars['base_url'] = $this->base_url;
+        $vars['ajax_validate'] = true;
+        $vars['cp_page_title'] = lang('personal_settings');
+        $vars['header'] = ee()->view->header;
+        $vars['save_btn_text'] = 'btn_save_settings';
+        $vars['save_btn_text_working'] = 'btn_saving';
 
-        ee()->view->cp_breadcrumbs = array_merge($this->breadcrumbs, [
+        $vars['cp_breadcrumbs'] = array_merge($this->breadcrumbs, [
             '' => lang('personal_settings')
         ]);
+
+        if (ee('Request')->get('modal_form') == 'y') {
+            $sidebar = ee('CP/Sidebar')->render();
+            if (! empty($sidebar)) {
+                $vars['left_nav'] = $sidebar;
+                $vars['left_nav_collapsed'] = ee('CP/Sidebar')->collapsedState;
+            }
+            return ee('View')->make('settings/modal-form')->render($vars);
+        }
 
         ee()->cp->render('settings/form', $vars);
     }
@@ -198,6 +208,18 @@ class Settings extends Profile
         }
 
         $saved = parent::saveSettings($settings);
+
+        if ($saved === true && ee('Request')->get('modal_form') == 'y') {
+            $result = [
+                'saveId' => $this->member->getId(),
+                'item' => [
+                    'value' => $this->member->getId(),
+                    'label' => $this->member->screen_name,
+                    'instructions' => $this->member->username
+                ]
+            ];
+            return $result;
+        }
 
         return $saved;
     }

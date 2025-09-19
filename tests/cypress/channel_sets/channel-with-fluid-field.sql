@@ -19,6 +19,11 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
+# Remove testing entry from channel_titles
+# ------------------------------------------------------------
+
+DELETE FROM `exp_channel_titles` WHERE `url_title` IN ('fluid-field-test-first','fluid-field-test-the-first');
+
 
 # Dump of table exp_channel_data
 # ------------------------------------------------------------
@@ -459,7 +464,8 @@ LOCK TABLES `exp_channels_channel_fields` WRITE;
 INSERT INTO `exp_channels_channel_fields` (`channel_id`, `field_id`)
 VALUES
 	(3,10),
-	(3,17);
+	(3,17),
+	(3,19);
 
 /*!40000 ALTER TABLE `exp_channels_channel_fields` ENABLE KEYS */;
 UNLOCK TABLES;

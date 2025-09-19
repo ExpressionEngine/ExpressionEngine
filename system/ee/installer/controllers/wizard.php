@@ -13,7 +13,7 @@
  */
 class Wizard extends CI_Controller
 {
-    public $version = '7.3.14'; // The version being installed
+    public $version = '7.5.16'; // The version being installed
     public $installed_version = '';  // The version the user is currently running (assuming they are running EE)
     public $schema = null; // This will contain the schema object with our queries
     public $languages = array(); // Available languages the installer supports (set dynamically based on what is in the "languages" folder)
@@ -231,7 +231,12 @@ class Wizard extends CI_Controller
         $this->load->add_theme_cascade(APPPATH . 'views/');
 
         // First try the current directory, if they are running the system with an admin.php file
-        $this->base_path = substr($_SERVER['SCRIPT_FILENAME'], 0, -strlen(EESELF));
+        if (strpos($_SERVER['SCRIPT_FILENAME'], EESELF) !== false) {
+            $this->base_path = substr($_SERVER['SCRIPT_FILENAME'], 0, -strlen(EESELF));
+        } else {
+            $this->base_path = realpath(SYSPATH . '/../');
+        }
+        $this->base_path = rtrim($this->base_path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 
         if (is_dir($this->base_path . 'themes')) {
             $this->theme_path = $this->base_path . 'themes/';
@@ -511,20 +516,24 @@ class Wizard extends CI_Controller
      */
     private function postflight()
     {
+        // clear all caches
         ee()->functions->clear_caching('all');
 
         // reset the flag for dismissed banner for members
         ee('db')->update('members', ['dismissed_banner' => 'n']);
 
+        // update entry stats
         foreach (ee('Model')->get('Channel')->all() as $channel) {
             $channel->updateEntryStats();
         }
 
+        // synchronize all channel layouts
         ee('Model')->get('ChannelLayout')
             ->with('Channel')
             ->all()
             ->synchronize();
 
+        // check if any fieldtypes are missing, or template tags broken
         $advisor = new \ExpressionEngine\Library\Advisor\Advisor();
 
         return $advisor->postUpdateChecks();
@@ -779,7 +788,7 @@ class Wizard extends CI_Controller
             array(
                 'field' => 'email_address',
                 'label' => 'lang:email_address',
-                'rules' => 'required|email|max_length[' . USERNAME_MAX_LENGTH . ']'
+                'rules' => 'required|email|max_length[254]'
             ),
             array(
                 'field' => 'license_agreement',
@@ -1674,6 +1683,9 @@ class Wizard extends CI_Controller
             'allow_member_localization' => 'y',
             'req_mbr_activation' => 'email',
             'new_member_notification' => 'n',
+            'registration_auto_login' => 'y',
+            'activation_auto_login' => 'n',
+            'activation_redirect' => '',
             'mbr_notification_emails' => '',
             'require_terms_of_service' => 'y',
             'default_primary_role' => '5',

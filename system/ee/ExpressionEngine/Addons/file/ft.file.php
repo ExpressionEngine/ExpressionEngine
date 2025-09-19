@@ -11,6 +11,7 @@
 use ExpressionEngine\Addons\FilePicker\FilePicker;
 use ExpressionEngine\Library\CP\EntryManager\ColumnInterface;
 use ExpressionEngine\Library\CP\Table;
+use ExpressionEngine\Library\Filesystem\FilesystemException;
 
 /**
  * File Fieldtype
@@ -154,7 +155,16 @@ class File_ft extends EE_Fieldtype implements ColumnInterface
         $show_existing = (isset($this->settings['show_existing'])) ? $this->settings['show_existing'] : 'n';
         $filebrowser = (REQ == 'CP');
 
+        ee()->javascript->set_global([
+            'file.publishCreateUrl' => ee('CP/URL')->make('files/file/view/###', ['modal_form' => 'y'])->compile(),
+        ]);
+
         if (REQ == 'CP') {
+            ee()->cp->add_js_script(array(
+                'file' => array(
+                    'cp/publish/entry-list',
+                ),
+            ));
             return ee()->file_field->dragAndDropField($this->field_name, $data, $allowed_file_dirs, $content_type);
         }
 
@@ -507,24 +517,49 @@ JSC;
     }
 
     /**
+     * Convert to AVIF
+     *
+     * Supported parameters same as for resize
+     */
+    public function replace_avif($data, $params = array(), $tagdata = false)
+    {
+        if (empty($data) || !isset($data['model_object'])) {
+            return $this->replace_tag($data, $params, $tagdata);
+        }
+        $data['fs_filename'] = $data['fs_filename'] ?? $data['model_object']->file_name;
+        $data['filesystem'] = $data['filesystem'] ?? $data['model_object']->UploadDestination->getFilesystem();
+        $data['source_image'] = $data['source_image'] ?? $data['model_object']->getAbsolutePath();
+
+        return $this->process_image('avif', $data, $params, $tagdata);
+    }
+
+    /**
      * Generic image processing
      */
     private function process_image($function = 'resize', $data = [], $params = array(), $tagdata = false, $return_as_path = false)
     {
-        if (!in_array($function, ['resize', 'crop', 'rotate', 'webp'])) {
+        if (!in_array($function, ['resize', 'crop', 'rotate', 'webp', 'avif'])) {
             return false;
         }
 
         if (!$data['model_object']->isImage()) {
-            return ee()->TMPL->no_results();
+            return false;
+        }
+
+        if (!$data['model_object']->isEditableImage()) {
+            if (is_null($tagdata)) {
+                return $data; // allow chaining modifiers
+            }
+            return $this->replace_tag($data, $params, $tagdata);
         }
 
         ee()->load->library('image_lib');
         $filename = ee()->image_lib->explode_name($data['fs_filename']);
-        if ($function == 'webp') {
-            $filename['ext'] = '.webp';
+        if ($function == 'webp' || $function == 'avif') {
+            $filename['name'] = $filename['name'] . '_' . $filename['ext'];
+            $filename['ext'] = '.' . $function;
         }
-        $new_image = $filename['name'] . '_' . $function . '_' . md5(serialize($params)) . $filename['ext'];
+        $new_image = substr($filename['name'], 0, 150) . '_' . $function . '_' . md5(serialize($params)) . $filename['ext'];
         $data['fs_filename'] = $filename['name'] . '_' . $function . $filename['ext'];
 
         $new_image_dir = rtrim($data['model_object']->getBaseServerPath() . $data['model_object']->getSubfoldersPath(), '/') . '/_' . $function . DIRECTORY_SEPARATOR;
@@ -541,7 +576,14 @@ JSC;
         if (!$data['filesystem']->exists($destination_path)) {
             // We need to get a temporary local copy of the file in case it's stored
             // on another filesystem.
-            $source = $data['filesystem']->copyToTempFile($data['source_image']);
+            try {
+                $source = $data['filesystem']->copyToTempFile($data['source_image']);
+            } catch (FilesystemException $e) {
+                // if the file does not exist (e.g. we run a local copy without all files)
+                // just return the original URL
+                log_message('debug', $e->getMessage());
+                return $data['model_object']->getAbsoluteURL();
+            }
             $new = $data['filesystem']->createTempFile();
 
             $imageLibConfig = array(
@@ -574,6 +616,17 @@ JSC;
                 if ($imageLibConfig['master_dim'] == 'auto' && !isset($params['width'])) {
                     $imageLibConfig['master_dim'] = 'height';
                     $imageLibConfig['width'] = 100;
+                }
+            }
+
+            // if position parameter is provided, use it to calculate x and y
+            if ($function == 'crop' && isset($params['position'])) {
+                $props = ee()->image_lib->get_image_properties($source['path'], true);
+                if (isset($params['width'])) {
+                    $imageLibConfig['x_axis'] += floor(($props['width'] - (int) $params['width']) / 2);
+                }
+                if (isset($params['height'])) {
+                    $imageLibConfig['y_axis'] += floor(($props['height'] - (int) $params['height']) / 2);
                 }
             }
 
@@ -784,7 +837,7 @@ JSC;
             if (is_null($tagdata)) {
                 // null means we're chaning modifier to pre-defined manipulation
                 // need to set some data and return array instead of string
-                if (array_key_exists('path:' . $modifier, $data)) {
+                if (is_array($data) && array_key_exists('path:' . $modifier, $data)) {
                     $data['fs_filename'] = $modifier . '_' . ($data['fs_filename'] ?? $data['model_object']->file_name);
                     $data['source_image'] = $data['path:' . $modifier];
                     $data['url'] = $full_path;
@@ -983,9 +1036,9 @@ JSC;
      * Help simplify the form building and enforces a strict layout. If
      * you think this table needs to look different, go bug James.
      *
-     * @param   left cell content
-     * @param   right cell content
-     * @param   vertical alignment of left column
+     * @param string  left cell content
+     * @param string  right cell content
+     * @param string  vertical alignment of left column
      *
      * @return  void - adds a row to the EE table class
      */
@@ -1104,8 +1157,38 @@ JSC;
     public function getChainableModifiersThatRequireArray($data = [])
     {
 
-        $modifiers = ['resize', 'crop', 'rotate', 'webp', 'resize_crop', 'length', 'raw_content', 'attr_safe', 'limit', 'form_prep', 'rot13', 'encrypt', 'url_slug', 'censor', 'json', 'replace', 'url_encode', 'url_decode'];
+        $modifiers = ['resize', 'crop', 'rotate', 'webp', 'avif', 'resize_crop', 'length', 'raw_content', 'attr_safe', 'limit', 'form_prep', 'rot13', 'encrypt', 'url_slug', 'censor', 'json', 'replace', 'url_encode', 'url_decode'];
         return $modifiers;
+    }
+
+    /**
+     * Prepare data for Pro Search
+     *
+     * @param array $data Field value
+     * @return string File name and title
+     */
+    public function third_party_search_index($data)
+    {
+        if (!is_string($data)) {
+            return '';
+        }
+        if (preg_match('/^{file\:(\d+)\:url}/', $data, $matches)) {
+            // If the file field is in the "{file:XX:url}" format
+            $file = ee('Model')->get('File', $matches[1])->first(true);
+            if (!is_null($file)) {
+                if ($file->file_name != $file->title) {
+                    return $file->file_name . ' ' . $file->title;
+                }
+                return $file->file_name;
+            } else {
+                return '';
+            }
+        } elseif (preg_match('/^{filedir_(\d+)}/', $data, $matches)) {
+            // If the file field is in the "{filedir_n}image.jpg" format
+            $file_name = str_replace($matches[0], '', $data);
+            return $file_name;
+        }
+        return $data;
     }
 }
 

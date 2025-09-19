@@ -50,6 +50,13 @@ class DebugTools extends Utilities
         $ftAdvisor = new Advisor\FieldtypeAdvisor();
         $vars['missing_fieldtype_count'] = $ftAdvisor->getMissingFieldtypeCount();
 
+        $entryAdvisor = new Advisor\EntryAdvisor();
+        $vars['entries_missing_data'] = [
+            'channel' => $entryAdvisor->getEntriesMissingData('channel'),
+            'status' => $entryAdvisor->getEntriesMissingData('status'),
+            'author' => $entryAdvisor->getEntriesMissingAuthor()
+        ];
+
         ee()->view->cp_breadcrumbs = array(
             '' => lang('debug_tools')
         );
@@ -143,6 +150,27 @@ class DebugTools extends Utilities
         );
 
         return ee()->cp->render('utilities/debug-tools/missing_fieldtypes', $vars);
+    }
+
+    public function debugEntries()
+    {
+        ee()->view->cp_page_title = lang('debug_tools_channel_entries');
+
+        $entryAdvisor = new Advisor\EntryAdvisor();
+
+        $vars = [];
+        $vars['entries_missing_data'] = [
+            'channel' => $entryAdvisor->getEntriesMissingData('channel'),
+            'status' => $entryAdvisor->getEntriesMissingData('status'),
+            'author' => $entryAdvisor->getEntriesMissingAuthor()
+        ];
+
+        ee()->view->cp_breadcrumbs = array(
+            ee('CP/URL')->make('utilities/debug-tools')->compile() => lang('debug_tools'),
+            '' => lang('debug_tools_channel_entries')
+        );
+
+        return ee()->cp->render('utilities/debug-tools/channel_entries', $vars);
     }
 
     public function duplicateTemplateGroups()

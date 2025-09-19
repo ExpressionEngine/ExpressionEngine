@@ -155,9 +155,14 @@ class SimplePie_Parser
             $xml = xml_parser_create_ns($this->encoding, $this->separator);
             xml_parser_set_option($xml, XML_OPTION_SKIP_WHITE, 1);
             xml_parser_set_option($xml, XML_OPTION_CASE_FOLDING, 0);
-            xml_set_object($xml, $this);
-            xml_set_character_data_handler($xml, 'cdata');
-            xml_set_element_handler($xml, 'tag_open', 'tag_close');
+            xml_set_character_data_handler($xml, function($parser, $cdata) {
+                return $this->cdata($parser, $cdata);
+            });
+            xml_set_element_handler($xml, function($parser, $tag, $attributes) {
+                return $this->tag_open($parser, $tag, $attributes);
+            }, function($parser, $tag) {
+                return $this->tag_close($parser, $tag);
+            });
 
             // Parse!
             if (!xml_parse($xml, $data, true)) {

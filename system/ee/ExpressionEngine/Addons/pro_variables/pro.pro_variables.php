@@ -24,10 +24,8 @@ class Pro_variables_pro extends AbstractProlet implements InitializableProletInt
         ee()->table->set_heading('Variable Name', 'Variable Label', 'Variable Type', 'Early');
         foreach ($local as $var) {
             $id = $var['variable_id'];
-            $base = ee()->config->item('base_url');
-            $rest = 'admin.php?/cp/addons/settings/pro_variables/edit_var/' . $id;
-            $base = $base . $rest;
-            $link = '<a href=' . $base . '>' . $var['variable_name'] . ' </a>';
+            $rest = ee('CP/URL')->make('addons/settings/pro_variables/edit_var/' . $id);
+            $link = '<a href=' . $rest . '>' . $var['variable_name'] . ' </a>';
             ee()->table->add_row($link, $var['variable_label'], $var['variable_type'], $var['early_parsing']);
         }
         echo ee()->table->generate();
@@ -37,10 +35,8 @@ class Pro_variables_pro extends AbstractProlet implements InitializableProletInt
         ee()->table->set_heading('Variable Name', 'Variable Label', 'Variable Type', 'Early');
         foreach ($vars as $var) {
             $id = $var['variable_id'];
-            $base = ee()->config->item('base_url');
-            $rest = 'admin.php?/cp/addons/settings/pro_variables/edit_var/' . $id;
-            $base = $base . $rest;
-            $link = '<a href=' . $base . '>' . $var['variable_name'] . ' </a>';
+            $rest = ee('CP/URL')->make('addons/settings/pro_variables/edit_var/' . $id);
+            $link = '<a href=' . $rest . '>' . $var['variable_name'] . ' </a>';
             ee()->table->add_row($link, $var['variable_label'], $var['variable_type'], $var['early_parsing']);
         }
         echo ee()->table->generate();

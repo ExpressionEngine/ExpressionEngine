@@ -1,0 +1,59 @@
+.member_manager-wrapper {
+    .dropdown {
+        a.edit,
+        a.download,
+        a.approve,
+        a.link {
+            &:before { display: none;}
+        }
+    }
+
+
+    .members--filter-search-bar {
+        .filter-search-bar__filter-row {
+
+            @media (max-width: 1080px) {
+                flex-wrap: wrap;
+            }
+
+            .filter-search-bar__item {
+                flex: auto;
+                margin-bottom: 0;
+
+                &:last-child {
+                    margin-right: 0;
+                }
+
+                &-no-search {
+                    flex-grow: 0;
+
+                    div[rev="toggle-columns"] {
+                        width: fit-content;
+                    }
+                }
+
+                &-search {
+                    flex-grow: 3;
+
+                    @media (max-width: 1200px) {
+                        flex-grow: 2;
+                    }
+                }
+
+
+                @media (max-width: 1080px) {
+                    margin-bottom: 10px;
+
+                    &:last-child {
+                        margin-bottom: 0;
+                    }
+                }
+
+                @media (max-width: 767px) {
+                    margin-bottom: 5px;
+                    margin-right: 0;
+                }
+            }
+        }
+    }
+}

@@ -12,7 +12,7 @@
 use Isolated\Symfony\Component\Finder\Finder;
 
 return [
-    'prefix' => 'ExpressionEngine\\Dependency',                       // string|null
+    'prefix' => 'ExpressionEngine\\Dependency', // string|null
     'finders' => [
         Finder::create()
             ->files()
@@ -30,14 +30,20 @@ return [
                 'vendor-bin',
             ])
             ->in('vendor'),
-    ],                        // Finder[]
+    ],                                      // Finder[]
     'patchers' => [],                       // callable[]
-    // 'files-whitelist' => [],                // string[]
-    'whitelist' => [],                      // string[]
-    #'expose-global-constants' => true,   // bool
-    #'expose-global-classes' => true,     // bool
-    #'expose-global-functions' => true,   // bool
-    #'exclude-constants' => [],             // string[]
-    #'exclude-classes' => [],               // string[]
-    #'exclude-functions' => [],             // string[]
+    // 'exclude-files' => [],      // list<string>
+    // 'exclude-namespaces' => [], // list<string|regex>
+    // 'exclude-constants' => [],  // list<string|regex>
+    // 'exclude-classes' => [],    // list<string|regex>
+    // 'exclude-functions' => [],  // list<string|regex>
+
+    // 'expose-global-constants' => true,   // bool
+    // 'expose-global-classes' => true,     // bool
+    // 'expose-global-functions' => true,   // bool
+
+    // 'expose-namespaces' => [], // list<string|regex>
+    // 'expose-constants' => [],  // list<string|regex>
+    // 'expose-classes' => [],    // list<string|regex>
+    // 'expose-functions' => [],  // list<string|regex>
 ];

@@ -186,6 +186,24 @@ class ChannelField extends FieldModel
         return $this;
     }
 
+    /**
+     * Overridable setter for unserialization
+     *
+     * @param Mixed $data Data returned from `getSerializedData`
+     * @return void
+     */
+    public function setSerializeData($data)
+    {
+        // Make sure that field_settings are set back on the root $data array that gets set() on this model and
+        // ultimately goes to a fieldtype's save_settings($data) method.  The fieldtype is not expecting the
+        // settings to be nested under a 'field_settings' key at this point
+        if (array_key_exists('field_settings', $data['values'] ?? []) && is_array($data['values']['field_settings'])) {
+            $data['values'] = array_merge($data['values']['field_settings'], $data['values']);
+        }
+
+        parent::setSerializeData($data);
+    }
+
     public function onBeforeInsert()
     {
         if ($this->getProperty('field_list_items') == null) {
@@ -333,6 +351,19 @@ class ChannelField extends FieldModel
         // If there are any matches, return the lang key of the error
         if ($channelFieldGroups->count() > 0) {
             return 'unique_among_field_groups';
+        }
+
+        // check member fields
+        $unique = $this->getModelFacade()
+            ->get('MemberField')
+            ->filter('m_' . $key, $value);
+
+        foreach ($params as $field) {
+            $unique->filter('m_' . $field, $this->getProperty($field));
+        }
+
+        if ($unique->count() > 0) {
+            return 'unique_among_member_fields'; // lang key
         }
 
         return true;

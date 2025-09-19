@@ -197,6 +197,8 @@ context('Bulk Edit', () => {
     cy.wait(100)
     bulk_edit.get('fluid_fields').eq(0).find('div[data-dropdown-react] .select__dropdown-items span:contains("Closed")').click({force:true})
 
+    cy.hasNoErrors()
+
     //bulk_edit.get('save_all_button').click()
     cy.get('button').contains('Save All & Close').first().click()
 
@@ -251,6 +253,8 @@ context('Bulk Edit', () => {
     bulk_edit.get('field_options').should('exist')
     bulk_edit.get('field_options').parent().find('a:contains("Categories")').click()
     bulk_edit.get('fluid_fields').eq(5).find('input[value="2"]').click()
+
+    cy.hasNoErrors()
 
     // Make sure fields retain values after removing an entry!
     cy.intercept("GET", "**/cp/publish/bulk-edit**").as("ajax");

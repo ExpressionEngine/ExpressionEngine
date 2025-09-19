@@ -294,6 +294,7 @@ class Access extends Profile
                     'can_create_members',
                     'can_edit_members',
                     'can_delete_members',
+                    'can_edit_member_fields',
                     'can_ban_users',
                     'can_email_from_profile',
                     'can_edit_html_buttons',
