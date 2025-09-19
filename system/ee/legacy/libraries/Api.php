@@ -67,7 +67,10 @@ class Api
         $this->errors = array();
 
         foreach ($params as $param => $val) {
-            $this->{$param} = $val;
+            // Skip numeric keys to avoid creating dynamic properties like $0, $1, etc.
+            if (!is_numeric($param)) {
+                $this->{$param} = $val;
+            }
         }
     }
 

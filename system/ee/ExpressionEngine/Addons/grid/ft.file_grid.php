@@ -50,6 +50,9 @@ class file_grid_ft extends Grid_ft
             'vertical_layout' => isset($this->settings['vertical_layout'])
                 ? ($this->settings['vertical_layout'] == 'horizontal_layout' ? 'horizontal' : $this->settings['vertical_layout'])
                 : 'n',
+            'row_counter' => isset($this->settings['row_counter'])
+                ? get_bool_from_string($this->settings['row_counter'])
+                : false,
         ]);
     }
 
@@ -145,6 +148,16 @@ class file_grid_ft extends Grid_ft
                                 'value' => isset($data['vertical_layout']) ? ($data['vertical_layout'] == 'horizontal_layout' ? 'horizontal' : $data['vertical_layout']) : 'n'
                             ]
                         ]
+                    ],
+                    [
+                        'title' => 'grid_row_count_title',
+                        'desc' => '',
+                        'fields' => array(
+                            'row_counter' => array(
+                                'type' => 'yes_no',
+                                'value' => isset($data['row_counter']) ? $data['row_counter'] : 'n'
+                            )
+                        )
                     ]
                 ]
             ],
@@ -222,6 +235,7 @@ class file_grid_ft extends Grid_ft
         $settings['field_content_type'] = $data['field_content_type'];
         $settings['allowed_directories'] = $data['allowed_directories'];
         $settings['vertical_layout'] = empty($data['vertical_layout']) ? 'n' : $data['vertical_layout'];
+        $settings['row_counter'] = empty($data['row_counter']) ? 'n' : $data['row_counter'];
 
         return $settings;
     }

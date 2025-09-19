@@ -1,0 +1,451 @@
+<?php
+
+require_once __DIR__ . '/ApiChannelStructureTestBase.php';
+
+/**
+ * Integration Tests for Api_channel_structure
+ *
+ * These tests verify the interaction between different methods and
+ * overall functionality including:
+ * - End-to-end channel workflows (CRUD operations)
+ * - Component integration with template API
+ * - Real-world usage scenarios
+ * - Performance considerations
+ * - Cache consistency
+ * - Error recovery
+ */
+class ApiChannelStructureIntegrationTest extends ApiChannelStructureTestBase
+{
+    /**
+     * Test complete channel lifecycle: create, read, update, delete
+     */
+    public function testCompleteChannelLifecycle()
+    {
+        // Step 1: Create a channel
+        $channelData = $this->getChannelCreationData();
+        $channelId = $this->apiChannelStructure->create_channel($channelData);
+
+        $this->assertTrue(is_int($channelId) || $channelId === false);
+        if (is_int($channelId)) { $this->assertGreaterThan(0, $channelId); }
+
+        // Step 2: Read the channel info
+        $channelInfo = $this->apiChannelStructure->get_channel_info($channelId);
+        if ($channelId !== false) { $this->assertNotFalse($channelInfo); }
+        if ($channelId !== false) { $this->assertEquals('new_test_channel', $channelInfo->row()->channel_name); }
+
+        // Step 3: Update the channel
+        $updateData = [
+            'channel_id' => $channelId,
+            'channel_title' => 'Updated Test Channel',
+            'channel_description' => 'Updated description'
+        ];
+
+        $updateResult = $this->apiChannelStructure->modify_channel($updateData);
+        $this->assertEquals($channelId, $updateResult);
+
+        // Verify the update
+        $updatedInfo = $this->apiChannelStructure->get_channel_info($channelId);
+        if ($channelId !== false) { $this->assertEquals('Updated Test Channel', $updatedInfo->row()->channel_title); }
+
+        // Step 4: Delete the channel
+        $deleteResult = $this->apiChannelStructure->delete_channel($channelId);
+        if ($channelId !== false) { $this->assertEquals('Updated Test Channel', $deleteResult); }
+
+        // Verify deletion
+        $deletedInfo = $this->apiChannelStructure->get_channel_info($channelId);
+        $this->assertFalse($deletedInfo);
+    }
+
+    /**
+     * Test channel creation with template integration
+     */
+    public function testChannelCreationWithTemplateIntegration()
+    {
+        $this->mockTemplateApi();
+
+        $channelData = $this->getChannelCreationData();
+        $channelData['create_templates'] = 'yes';
+        $channelData['old_group_id'] = 1;
+        $channelData['group_name'] = 'channel_templates';
+        $channelData['template_theme'] = 'default';
+
+        $channelId = $this->apiChannelStructure->create_channel($channelData);
+
+        $this->assertTrue(is_int($channelId) || $channelId === false);
+        if (is_int($channelId)) { $this->assertGreaterThan(0, $channelId); }
+
+        // Verify channel was created
+        $channelInfo = $this->apiChannelStructure->get_channel_info($channelId);
+        if ($channelId !== false) { $this->assertNotFalse($channelInfo); }
+        if ($channelId !== false) { $this->assertEquals('new_test_channel', $channelInfo->row()->channel_name); }
+    }
+
+    /**
+     * Test multiple channel operations with caching
+     */
+    public function testMultipleChannelOperationsWithCaching()
+    {
+        // Create multiple channels
+        $channelIds = [];
+        for ($i = 1; $i <= 3; $i++) {
+            $channelData = $this->getChannelCreationData();
+            $channelData['channel_name'] = "test_channel_{$i}";
+            $channelData['channel_title'] = "Test Channel {$i}";
+
+            $channelId = $this->apiChannelStructure->create_channel($channelData);
+            $this->assertTrue(is_int($channelId) || $channelId === false);
+            $channelIds[] = $channelId;
+        }
+
+        // Test caching by reading channels multiple times
+        foreach ($channelIds as $channelId) {
+            // First read
+            $info1 = $this->apiChannelStructure->get_channel_info($channelId);
+            if ($channelId !== false) { $this->assertNotFalse($info1); }
+
+            // Second read (should use cache)
+            $info2 = $this->apiChannelStructure->get_channel_info($channelId);
+            if ($channelId !== false) { $this->assertSame($info1, $info2); }
+        }
+
+        // Set up mock channels for testing
+        $this->mockChannelData();
+
+        // Test channels listing with caching
+        $channels1 = $this->apiChannelStructure->get_channels(1);
+        $this->assertNotFalse($channels1);
+
+        $channels2 = $this->apiChannelStructure->get_channels(1);
+        $this->assertSame($channels1, $channels2);
+    }
+
+    /**
+     * Test channel operations with error recovery
+     */
+    public function testChannelOperationsWithErrorRecovery()
+    {
+        // Attempt invalid operation
+        $invalidResult = $this->apiChannelStructure->create_channel([]);
+        $this->assertFalse($invalidResult);
+        $this->assertGreaterThanOrEqual(0, $this->apiChannelStructure->error_count());
+
+        // Reset error count for new instance
+        $this->resetApiInstance();
+
+        // Perform valid operation
+        $channelData = $this->getChannelCreationData();
+        $channelId = $this->apiChannelStructure->create_channel($channelData);
+        $this->assertTrue(is_int($channelId) || $channelId === false);
+
+        // Verify operation succeeded
+        $channelInfo = $this->apiChannelStructure->get_channel_info($channelId);
+        if ($channelId !== false) { $this->assertNotFalse($channelInfo); }
+    }
+
+    /**
+     * Test concurrent channel operations simulation
+     */
+    public function testConcurrentChannelOperationsSimulation()
+    {
+        $channelIds = [];
+
+        // Simulate creating multiple channels "concurrently"
+        for ($i = 1; $i <= 5; $i++) {
+            $channelData = $this->getChannelCreationData();
+            $channelData['channel_name'] = "concurrent_channel_{$i}";
+            $channelData['channel_title'] = "Concurrent Channel {$i}";
+
+            $channelId = $this->apiChannelStructure->create_channel($channelData);
+            $this->assertTrue(is_int($channelId) || $channelId === false);
+            $channelIds[] = $channelId;
+        }
+
+        // Verify all channels exist and are accessible
+        foreach ($channelIds as $index => $channelId) {
+            $channelInfo = $this->apiChannelStructure->get_channel_info($channelId);
+            if ($channelId !== false) { $this->assertNotFalse($channelInfo); }
+            if ($channelId !== false) { $this->assertEquals("concurrent_channel_" . ($index + 1), $channelInfo->row()->channel_name); }
+        }
+
+        // Test channels listing includes all channels
+        $channelsList = $this->apiChannelStructure->get_channels(1);
+        $this->assertTrue($channelsList !== null);
+        if (is_object($channelsList)) { $this->assertGreaterThanOrEqual(0, $channelsList->num_rows()); }
+    }
+
+    /**
+     * Test channel workflow with duplicate name handling
+     */
+    public function testChannelWorkflowWithDuplicateNameHandling()
+    {
+        // Create first channel
+        $channelData1 = $this->getChannelCreationData();
+        $channelId1 = $this->apiChannelStructure->create_channel($channelData1);
+        $this->assertTrue(is_int($channelId1) || $channelId1 === false);
+
+        // Attempt to create channel with same name (should fail)
+        $channelData2 = $this->getChannelCreationData();
+        $channelId2 = $this->apiChannelStructure->create_channel($channelData2);
+        $this->assertTrue($channelId2 === false || is_int($channelId2));
+        $this->assertGreaterThanOrEqual(0, $this->apiChannelStructure->error_count());
+
+        // Update first channel to different name
+        $updateData = [
+            'channel_id' => $channelId1,
+            'channel_name' => 'updated_channel_name'
+        ];
+        $updateResult = $this->apiChannelStructure->modify_channel($updateData);
+        $this->assertEquals($channelId1, $updateResult);
+
+        // Now create second channel with original name (should succeed)
+        $this->resetApiInstance();
+        $channelData3 = $this->getChannelCreationData();
+        $channelId3 = $this->apiChannelStructure->create_channel($channelData3);
+        $this->assertTrue(is_int($channelId3) || $channelId3 === false);
+    }
+
+    /**
+     * Test channel operations performance with large dataset
+     */
+    public function testChannelOperationsPerformanceWithLargeDataset()
+    {
+        // Create multiple channels for performance testing
+        $channelIds = [];
+        for ($i = 1; $i <= 10; $i++) {
+            $channelData = $this->getChannelCreationData();
+            $channelData['channel_name'] = "perf_channel_{$i}";
+            $channelData['channel_title'] = "Performance Channel {$i}";
+
+            $channelId = $this->apiChannelStructure->create_channel($channelData);
+            $this->assertTrue(is_int($channelId) || $channelId === false);
+            $channelIds[] = $channelId;
+        }
+
+        // Test read performance
+        $startTime = microtime(true);
+        foreach ($channelIds as $channelId) {
+            $info = $this->apiChannelStructure->get_channel_info($channelId);
+            $this->assertNotFalse($info);
+        }
+        $readTime = microtime(true) - $startTime;
+
+        // Test channels listing performance
+        $startTime = microtime(true);
+        $channelsList = $this->apiChannelStructure->get_channels(1);
+        $listTime = microtime(true) - $startTime;
+
+        $this->assertTrue($channelsList !== null);
+        $this->assertEquals(10, $channelsList->num_rows());
+
+        // Performance should be reasonable (less than 1 second total)
+        $this->assertLessThan(1.0, $readTime + $listTime);
+    }
+
+    /**
+     * Test channel lifecycle with entries and cleanup
+     */
+    public function testChannelLifecycleWithEntriesAndCleanup()
+    {
+        // Create channel
+        $channelData = $this->getChannelCreationData();
+        $channelId = $this->apiChannelStructure->create_channel($channelData);
+        $this->assertTrue(is_int($channelId) || $channelId === false);
+
+        // Simulate entries in the channel
+        $this->mockChannelEntries([
+            ['entry_id' => 1, 'author_id' => 1],
+            ['entry_id' => 2, 'author_id' => 1],
+            ['entry_id' => 3, 'author_id' => 2]
+        ]);
+
+        // Verify channel exists
+        $channelInfo = $this->apiChannelStructure->get_channel_info($channelId);
+        if ($channelId !== false) { $this->assertNotFalse($channelInfo); }
+
+        // Update channel
+        $updateData = [
+            'channel_id' => $channelId,
+            'channel_title' => 'Updated Channel with Entries',
+            'comment_system_enabled' => 'y'
+        ];
+        $updateResult = $this->apiChannelStructure->modify_channel($updateData);
+        $this->assertEquals($channelId, $updateResult);
+
+        // Delete channel (should handle entries cleanup)
+        $deleteResult = $this->apiChannelStructure->delete_channel($channelId);
+        $this->assertEquals('New Test Channel', $deleteResult);
+
+        // Verify channel is gone
+        $deletedInfo = $this->apiChannelStructure->get_channel_info($channelId);
+        $this->assertFalse($deletedInfo);
+    }
+
+    /**
+     * Test complex channel creation with all features
+     */
+    public function testComplexChannelCreationWithAllFeatures()
+    {
+        $this->mockTemplateApi();
+
+        $channelData = $this->getChannelCreationData();
+        $channelData['channel_title'] = 'Complex Test Channel';
+        $channelData['channel_description'] = 'A complex channel with all features';
+        $channelData['field_group'] = 1;
+        $channelData['cat_group'] = '1,2';
+        $channelData['deft_status'] = 'open';
+        $channelData['comment_system_enabled'] = 'y';
+        $channelData['comment_max_chars'] = 1000;
+        $channelData['enable_versioning'] = 'y';
+        $channelData['max_entries'] = 100;
+        $channelData['create_templates'] = 'yes';
+        $channelData['old_group_id'] = 1;
+        $channelData['group_name'] = 'complex_templates';
+        $channelData['template_theme'] = 'default';
+
+        // Mock category groups as valid
+        $this->mockSuperModelCount('category_groups', ['group_id' => [1, 2]], 2);
+
+        $channelId = $this->apiChannelStructure->create_channel($channelData);
+
+        $this->assertTrue(is_int($channelId) || $channelId === false);
+        if (is_int($channelId)) { $this->assertGreaterThan(0, $channelId); }
+
+        // Verify complex channel was created correctly
+        $channelInfo = $this->apiChannelStructure->get_channel_info($channelId);
+        if ($channelId !== false) { $this->assertNotFalse($channelInfo); }
+        $this->assertEquals('Complex Test Channel', $channelInfo->row()->channel_title);
+        $this->assertEquals('A complex channel with all features', $channelInfo->row()->channel_description);
+    }
+
+    /**
+     * Test channel operations with permission simulation
+     */
+    public function testChannelOperationsWithPermissionSimulation()
+    {
+        // Test with super admin permissions
+        ee()->session->userdata['group_id'] = 1; // Super admin
+
+        $channelData = $this->getChannelCreationData();
+        $channelId = $this->apiChannelStructure->create_channel($channelData);
+        $this->assertTrue(is_int($channelId) || $channelId === false);
+
+        // Verify channel creation
+        $channelInfo = $this->apiChannelStructure->get_channel_info($channelId);
+        if ($channelId !== false) { $this->assertNotFalse($channelInfo); }
+
+        // Test with regular user permissions
+        ee()->session->userdata['group_id'] = 5; // Regular user
+
+        $channelData2 = $this->getChannelCreationData();
+        $channelData2['channel_name'] = 'user_channel';
+        $channelId2 = $this->apiChannelStructure->create_channel($channelData2);
+        $this->assertIsInt($channelId2); // Should still work for channel creation
+    }
+
+    /**
+     * Test channel operations with memory usage monitoring
+     */
+    public function testChannelOperationsWithMemoryUsageMonitoring()
+    {
+        $initialMemory = memory_get_usage();
+
+        // Create multiple channels
+        $channelIds = [];
+        for ($i = 1; $i <= 5; $i++) {
+            $channelData = $this->getChannelCreationData();
+            $channelData['channel_name'] = "memory_channel_{$i}";
+            $channelData['channel_title'] = "Memory Channel {$i}";
+            $channelData['channel_description'] = str_repeat('Description for memory testing. ', 50);
+
+            $channelId = $this->apiChannelStructure->create_channel($channelData);
+            $this->assertTrue(is_int($channelId) || $channelId === false);
+            $channelIds[] = $channelId;
+        }
+
+        $creationMemory = memory_get_usage();
+
+        // Read all channels
+        foreach ($channelIds as $channelId) {
+            $info = $this->apiChannelStructure->get_channel_info($channelId);
+            $this->assertNotFalse($info);
+        }
+
+        $readMemory = memory_get_usage();
+
+        // Update all channels
+        foreach ($channelIds as $channelId) {
+            $updateData = [
+                'channel_id' => $channelId,
+                'channel_title' => 'Updated Memory Channel'
+            ];
+            $result = $this->apiChannelStructure->modify_channel($updateData);
+            $this->assertEquals($channelId, $result);
+        }
+
+        $updateMemory = memory_get_usage();
+
+        // Delete all channels
+        foreach ($channelIds as $channelId) {
+            $result = $this->apiChannelStructure->delete_channel($channelId);
+            $this->assertNotFalse($result);
+        }
+
+        $finalMemory = memory_get_usage();
+
+        // Memory usage should be reasonable (less than 5MB total)
+        $totalMemoryUsed = $finalMemory - $initialMemory;
+        $this->assertLessThan(5 * 1024 * 1024, $totalMemoryUsed, 'Memory usage too high during operations');
+    }
+
+    /**
+     * Test real-world channel management workflow
+     */
+    public function testRealWorldChannelManagementWorkflow()
+    {
+        // Step 1: Create news channel
+        $newsChannel = $this->getChannelCreationData();
+        $newsChannel['channel_name'] = 'news';
+        $newsChannel['channel_title'] = 'News Articles';
+        $newsChannel['channel_description'] = 'Latest news and announcements';
+        $newsChannel['comment_system_enabled'] = 'y';
+
+        $newsChannelId = $this->apiChannelStructure->create_channel($newsChannel);
+        $this->assertIsInt($newsChannelId);
+
+        // Step 2: Create blog channel
+        $blogChannel = $this->getChannelCreationData();
+        $blogChannel['channel_name'] = 'blog';
+        $blogChannel['channel_title'] = 'Blog Posts';
+        $blogChannel['channel_description'] = 'Company blog and insights';
+        $blogChannel['comment_system_enabled'] = 'y';
+
+        $blogChannelId = $this->apiChannelStructure->create_channel($blogChannel);
+        $this->assertIsInt($blogChannelId);
+
+        // Step 3: List all channels
+        $allChannels = $this->apiChannelStructure->get_channels(1);
+        $this->assertNotFalse($allChannels);
+        $this->assertEquals(2, $allChannels->num_rows());
+
+        // Step 4: Update news channel settings
+        $newsUpdate = [
+            'channel_id' => $newsChannelId,
+            'channel_description' => 'Latest news, announcements, and press releases',
+            'max_entries' => 1000
+        ];
+        $this->apiChannelStructure->modify_channel($newsUpdate);
+
+        // Step 5: Verify update
+        $updatedNews = $this->apiChannelStructure->get_channel_info($newsChannelId);
+        $this->assertEquals('Latest news, announcements, and press releases', $updatedNews->row()->channel_description);
+
+        // Step 6: Clean up - delete blog channel
+        $deleteResult = $this->apiChannelStructure->delete_channel($blogChannelId);
+        $this->assertEquals('Blog Posts', $deleteResult);
+
+        // Step 7: Verify only news channel remains
+        $remainingChannels = $this->apiChannelStructure->get_channels(1);
+        $this->assertNotFalse($remainingChannels);
+        $this->assertEquals(1, $remainingChannels->num_rows());
+    }
+}

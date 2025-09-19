@@ -372,6 +372,13 @@ class Channel
             }
         }
 
+        if (!isset(ee()->session->cache) || !is_array(ee()->session->cache)) {
+            ee()->session->cache = [];
+        }
+        if (!isset(ee()->session->cache['channel']) || !is_array(ee()->session->cache['channel'])) {
+            ee()->session->cache['channel'] = [];
+        }
+
         ee()->session->cache['channel']['custom_channel_fields'] = $this->cfields;
         ee()->session->cache['channel']['date_fields'] = $this->dfields;
         ee()->session->cache['channel']['relationship_fields'] = $this->rfields;
@@ -403,7 +410,7 @@ class Channel
         $this->mpfields = ee()->api_channel_fields->custom_member_field_pairs;
 
         ee()->session->cache['channel']['custom_member_fields'] = $this->mfields;
-        ee()->session->cache['channel']['custom_member_fields'] = $this->mpfields;
+        ee()->session->cache['channel']['custom_member_field_pairs'] = $this->mpfields;
     }
 
     /**
@@ -546,7 +553,7 @@ class Channel
 
         // Swap out a placeholder for [&] and [|]
         $placeholders = array('[*PIPE*]', '[*AMP*]');
-        $dynamic_params = explode('|', str_replace(array('[|]', '[&]'), $placeholders, ee()->TMPL->fetch_param('dynamic_parameters')));
+        $dynamic_params = explode('|', str_replace(array('[|]', '[&]'), $placeholders, (string) ee()->TMPL->fetch_param('dynamic_parameters')));
 
         foreach ($dynamic_params as $var) {
             // We default to pipes for joining arrays
@@ -1027,7 +1034,7 @@ class Channel
         /** -------------------------------------
         /**  Multiple Orders and Sorts...
         /** -------------------------------------*/
-        if ($order !== false && stristr($order, '|')) {
+        if ($order !== false && stristr((string) $order, '|')) {
             $order_array = explode('|', $order);
 
             if ($order_array[0] == 'random') {
@@ -1037,7 +1044,7 @@ class Channel
             $order_array = array($order);
         }
 
-        if ($sort !== false && stristr($sort, '|')) {
+        if ($sort !== false && stristr((string) $sort, '|')) {
             $sort_array = explode('|', $sort);
         } else {
             $sort_array = array($sort);
@@ -1057,7 +1064,7 @@ class Channel
                     /** -------------------------------------
                     /**  Site Namespace is Being Used, Parse Out
                     /** -------------------------------------*/
-                    if (strpos($order, ':') !== false) {
+                    if (strpos((string) $order, ':') !== false) {
                         $order_parts = explode(':', $order, 2);
 
                         if (isset(ee()->TMPL->site_ids[$order_parts[0]]) && isset($this->cfields[ee()->TMPL->site_ids[$order_parts[0]]][$order_parts[1]])) {
@@ -1108,13 +1115,13 @@ class Channel
         }
 
         // fixed entry id ordering
-        if (($fixed_order = ee()->TMPL->fetch_param('fixed_order')) === false or preg_match('/[^0-9\|]/', $fixed_order)) {
+        if (($fixed_order = ee()->TMPL->fetch_param('fixed_order')) === false or preg_match('/[^0-9\|]/', (string) $fixed_order)) {
             $fixed_order = false;
         } else {
             // MySQL will not order the entries correctly unless the results are constrained
             // to matching rows only, so we force the entry_id as well
             $entry_id = $fixed_order;
-            $fixed_order = preg_split('/\|/', $fixed_order, -1, PREG_SPLIT_NO_EMPTY);
+            $fixed_order = preg_split('/\|/', (string) $fixed_order, -1, PREG_SPLIT_NO_EMPTY);
 
             // some peeps might want to be able to 'flip' it
             // the default sort order is 'desc' but in this context 'desc' has a stronger "reversing"
@@ -1152,7 +1159,7 @@ class Channel
             /*  entries that are not assigned to a category.
             /* --------------------------------*/
 
-            if ((substr(ee()->TMPL->fetch_param('category_group'), 0, 3) == 'not' or substr(ee()->TMPL->fetch_param('category'), 0, 3) == 'not') && ee()->TMPL->fetch_param('uncategorized_entries') !== 'no') {
+            if ((substr((string) ee()->TMPL->fetch_param('category_group'), 0, 3) == 'not' or substr((string) ee()->TMPL->fetch_param('category'), 0, 3) == 'not') && ee()->TMPL->fetch_param('uncategorized_entries') !== 'no') {
                 $sql .= "LEFT JOIN exp_category_posts ON t.entry_id = exp_category_posts.entry_id
                          LEFT JOIN exp_categories ON exp_category_posts.cat_id = exp_categories.cat_id ";
             } else {
@@ -2242,7 +2249,7 @@ class Channel
             $offset = $timezones[$timezone] * 3600;
         } else {
             // Otherwise, get the offset from DateTime
-            $dt = new DateTime('now', new DateTimeZone($timezone));
+            $dt = new DateTime('now', new DateTimeZone($timezone ?? 'UTC'));
 
             if ($dt) {
                 $offset = $dt->getOffset();
@@ -2291,7 +2298,7 @@ class Channel
             $show_expired = (ee()->TMPL->fetch_param('show_expired') == 'yes');
 
             if (($status = ee()->TMPL->fetch_param('status')) !== false) {
-                $status = strtolower($status);
+                $status = strtolower((string) $status);
                 $parts = preg_split('/\|/', $status, -1, PREG_SPLIT_NO_EMPTY);
                 $parts = array_map('trim', $parts);
                 $show_closed = in_array('closed', $parts);
@@ -2333,7 +2340,7 @@ class Channel
                 }
 
                 foreach ($this->preview_conditions as $condition) {
-                    if (strpos('OR', $condition) === false) {
+                    if (strpos($condition, 'OR') === false) {
                         $valid = $this->previewDataPassesCondition($condition, $data);
                     } else {
                         $valid = false;
@@ -2552,7 +2559,7 @@ class Channel
         }
 
         // Kill multi_field variable
-        if (strpos($this->return_data, 'multi_field=') !== false) {
+        if (strpos((string) $this->return_data, 'multi_field=') !== false) {
             $this->return_data = preg_replace("/" . LD . "multi_field\=[\"'](.+?)[\"']" . RD . "/s", "", $this->return_data);
         }
 
@@ -4459,7 +4466,7 @@ class Channel
         /*  entries that are not assigned to a category.
         /* --------------------------------*/
 
-        if ((substr(ee()->TMPL->fetch_param('category_group'), 0, 3) == 'not' or substr(ee()->TMPL->fetch_param('category'), 0, 3) == 'not') && ee()->TMPL->fetch_param('uncategorized_entries') !== 'no') {
+        if ((substr((string) ee()->TMPL->fetch_param('category_group'), 0, 3) == 'not' or substr((string) ee()->TMPL->fetch_param('category'), 0, 3) == 'not') && ee()->TMPL->fetch_param('uncategorized_entries') !== 'no') {
             $sql .= 'LEFT JOIN exp_category_posts ON t.entry_id = exp_category_posts.entry_id
                      LEFT JOIN exp_categories ON exp_category_posts.cat_id = exp_categories.cat_id ';
         } elseif (ee()->TMPL->fetch_param('category_group') or ee()->TMPL->fetch_param('category')) {
@@ -5188,7 +5195,7 @@ class Channel
     public function combo_loader()
     {
         if (ee()->input->get('type') == 'css') {
-            $package = strtolower(ee()->input->get('package'));
+            $package = strtolower((string) ee()->input->get('package'));
             $file = ee()->input->get_post('file');
             $path = PATH_THIRD . $package . '/';
 

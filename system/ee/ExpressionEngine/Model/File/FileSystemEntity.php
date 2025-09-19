@@ -185,6 +185,9 @@ class FileSystemEntity extends ContentModel
         if (defined('IMAGETYPE_WEBP')) {
             $imageMimes[] = 'image/webp'; // .webp
         }
+        if (defined('IMAGETYPE_AVIF')) {
+            $imageMimes[] = 'image/avif'; // .avif
+        }
 
         return (in_array($this->mime_type, $imageMimes));
     }
@@ -231,7 +234,7 @@ class FileSystemEntity extends ContentModel
      */
     public function getBaseServerPath()
     {
-        if (empty($this->_baseServerPath) && $this->UploadDestination->adapter == 'local') {
+        if (empty($this->_baseServerPath) && $this->UploadDestination->getProperty('adapter') == 'local') {
             $this->_baseServerPath = rtrim($this->UploadDestination->server_path, '\\/') . '/';
         }
 
@@ -381,7 +384,7 @@ class FileSystemEntity extends ContentModel
     {
         $filesystem = $this->UploadDestination->getFilesystem();
 
-        $manipulations = ['thumbs', 'resize', 'crop', 'rotate', 'webp'];
+        $manipulations = ['thumbs', 'resize', 'crop', 'rotate', 'webp', 'avif'];
         $manipulations = array_merge($manipulations, $this->UploadDestination->FileDimensions->pluck('short_name'));
 
         foreach ($manipulations as $manipulation) {
@@ -418,13 +421,17 @@ class FileSystemEntity extends ContentModel
     public function onBeforeSave()
     {
         $this->setProperty('modified_date', ee()->localize->now);
-        $this->setProperty('modified_by_member_id', ee()->session->userdata('member_id'));
+        if (isset(ee()->session)) {
+            $this->setProperty('modified_by_member_id', ee()->session->userdata('member_id'));
+        }
     }
 
     public function onBeforeInsert()
     {
         $this->setProperty('upload_date', ee()->localize->now);
-        $this->setProperty('uploaded_by_member_id', ee()->session->userdata('member_id'));
+        if (isset(ee()->session)) {
+            $this->setProperty('uploaded_by_member_id', ee()->session->userdata('member_id'));
+        }
     }
 
     public function onBeforeDelete()
@@ -543,11 +550,9 @@ class FileSystemEntity extends ContentModel
             if (array_key_exists('cat_group_id_' . $cat_group, $categories)) {
                 $group_cats = $categories['cat_group_id_' . $cat_group];
 
-                $cats = implode('|', $group_cats);
-
                 $group_cat_objects = $this->getModelFacade()
                     ->get('Category')
-                    ->filter('site_id', ee()->config->item('site_id'))
+                    ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
                     ->filter('cat_id', 'IN', $group_cats)
                     ->all();
 
