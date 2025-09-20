@@ -251,6 +251,8 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
 
           _this2.props.itemsChanged(_this2.getItemsArrayForNestable(itemsHash, nestedItems));
 
+          _this2.props.selectionChanged(_this2.getOrderedSelection(_this2.props.selected));
+
           if (_this2.props.reorderAjaxUrl) {
             $.ajax({
               url: _this2.props.reorderAjaxUrl,
@@ -744,7 +746,7 @@ var SelectItem = /*#__PURE__*/function (_React$Component2) {
         dangerouslySetInnerHTML: {
           __html: label
         }
-      }), !props.editable && React.createElement("div", {
+      }), !props.editable && React.createElement("span", {
         dangerouslySetInnerHTML: {
           __html: label
         }

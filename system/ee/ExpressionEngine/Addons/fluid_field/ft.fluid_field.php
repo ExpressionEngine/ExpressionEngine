@@ -509,7 +509,9 @@ class Fluid_field_ft extends EE_Fieldtype
 
         $field_channel_field_groups = isset($this->settings['field_channel_field_groups']) ? $this->settings['field_channel_field_groups'] : [];
 
+        $orderByField = array_filter($this->settings['field_channel_fields']) ?: [0];
         $field_templates = ee('Model')->get('ChannelField', $this->settings['field_channel_fields'])
+            ->order('FIELD( field_id, ' . implode(',', $orderByField) . ' )', 'ASC', false)
             ->order('field_label')
             ->all();
 
@@ -524,8 +526,10 @@ class Fluid_field_ft extends EE_Fieldtype
             })
             ->indexByIds();
 
+        $orderByField = array_filter($this->settings['field_channel_field_groups']) ?: [0];
         $field_groups = ee('Model')->get('ChannelFieldGroup', $field_channel_field_groups)
             ->with('ChannelFields')
+            ->order('FIELD( ChannelFieldGroup_field_groups.group_id, ' . implode(',', $orderByField) . ' )', 'ASC', false)
             ->order('group_name')
             ->all()
             ->indexByIds();
@@ -822,9 +826,11 @@ class Fluid_field_ft extends EE_Fieldtype
 
     public function display_settings($data)
     {
+        $orderByField = array_filter($data['field_channel_fields']) ?: [0];
         $custom_field_options = ee('Model')->get('ChannelField')
             ->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
             ->filter('field_type', '!=', 'fluid_field')
+            ->order('FIELD( field_id, ' . implode(',', $orderByField) . ' )', 'ASC', false)
             ->order('field_label')
             ->all()
             ->filter(function ($field) {
@@ -844,6 +850,8 @@ class Fluid_field_ft extends EE_Fieldtype
                 'fields' => array(
                     'field_channel_fields' => array(
                         'type' => 'checkbox',
+                        'force_react' => true,
+                        'reorderable' => true,
                         'choices' => $custom_field_options,
                         'value' => isset($data['field_channel_fields']) ? $data['field_channel_fields'] : array(),
                         'no_results' => [
@@ -856,8 +864,10 @@ class Fluid_field_ft extends EE_Fieldtype
             ),
         );
 
+        $orderByField = array_filter($data['field_channel_field_groups']) ?: [0];
         $custom_field_group_options = ee('Model')->get('ChannelFieldGroup')
             ->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
+            ->order('FIELD( ChannelFieldGroup_field_groups.group_id, ' . implode(',', $orderByField) . ' )', 'ASC', false)
             ->order('group_name')
             ->with('ChannelFields')
             ->all()
@@ -876,6 +886,7 @@ class Fluid_field_ft extends EE_Fieldtype
                 'field_channel_field_groups' => array(
                     'type' => 'checkbox',
                     'force_react' => true,
+                    'reorderable' => true,
                     'choices' => $custom_field_group_options,
                     'value' => isset($data['field_channel_field_groups']) ? $data['field_channel_field_groups'] : array(),
                     'no_results' => [
@@ -979,7 +990,7 @@ class Fluid_field_ft extends EE_Fieldtype
         }
 
         if (isset($this->settings['field_channel_field_groups'])) {
-            $this->settings['field_channel_field_groups'] = array_filter($this->settings['field_channel_fields'], function ($value) {
+            $this->settings['field_channel_field_groups'] = array_filter($this->settings['field_channel_field_groups'], function ($value) {
                 return is_numeric($value);
             });
 

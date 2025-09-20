@@ -166,6 +166,8 @@ class SelectList extends React.Component {
           this.getItemsArrayForNestable(itemsHash, nestedItems)
         )
 
+        this.props.selectionChanged(this.getOrderedSelection(this.props.selected));
+
         if (this.props.reorderAjaxUrl) {
           $.ajax({
             url: this.props.reorderAjaxUrl,
@@ -617,7 +619,7 @@ class SelectItem extends React.Component {
         {props.editable && (
             <a href="#" class="flyout-edit" data-id={props.item.value} dangerouslySetInnerHTML={{ __html: label }}></a>
         )}
-        { ! props.editable && <div dangerouslySetInnerHTML={{ __html: label }} />}
+        { ! props.editable && <span dangerouslySetInnerHTML={{ __html: label }} />}
         {" "}
         {props.item.instructions && (
           <span className="meta-info">{props.item.instructions}</span>

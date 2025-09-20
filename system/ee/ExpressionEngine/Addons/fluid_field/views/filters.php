@@ -1,8 +1,8 @@
 <?php if (count($filters) < 20) : ?>
     <?php foreach ($filters as $filter) : ?>
         <a href="#" class="button button--auto button--default button--small" data-field-name="<?=$filter->name?>">
-            <img src="<?=$filter->icon?>" width="16" height="16" alt="<?=lang('add')?> <?=$filter->label?>" /><br />
-            <?=lang('add')?> <?=$filter->label?>
+            <img src="<?=$filter->icon?>" width="16" height="16" alt="<?=$filter->label?>" /><br />
+            <?=$filter->label?>
         </a>
     <?php endforeach; ?>
 
