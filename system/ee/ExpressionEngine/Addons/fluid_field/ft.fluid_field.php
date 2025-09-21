@@ -526,7 +526,7 @@ class Fluid_field_ft extends EE_Fieldtype
             })
             ->indexByIds();
 
-        $orderByField = array_filter($this->settings['field_channel_field_groups']) ?: [0];
+        $orderByField = isset($this->settings['field_channel_field_groups']) && array_filter($this->settings['field_channel_field_groups']) ? array_filter($this->settings['field_channel_field_groups']) : [0];
         $field_groups = ee('Model')->get('ChannelFieldGroup', $field_channel_field_groups)
             ->with('ChannelFields')
             ->order('FIELD( ChannelFieldGroup_field_groups.group_id, ' . implode(',', $orderByField) . ' )', 'ASC', false)
