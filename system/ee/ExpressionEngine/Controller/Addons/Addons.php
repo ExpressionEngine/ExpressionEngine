@@ -1103,7 +1103,7 @@ class Addons extends CP_Controller
         $data = array(
             'developer' => $info->getAuthor(),
             'version' => '--',
-            'installed' => false,
+            'installed' => $info->get('built_in'),
             'name' => $display_name,
             'description' => $info->get('description'),
             'package' => $name,
@@ -1544,7 +1544,7 @@ class Addons extends CP_Controller
 
             $this->assertUserHasAccess($addon);
         } else {
-            if (! isset($module)) {
+            if (! isset($module) && ! $info->get('built_in')) { // still can access built_in modules
                 show_error(lang('requested_module_not_installed') . NBS . $addon);
             }
         }

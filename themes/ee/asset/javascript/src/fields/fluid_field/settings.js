@@ -51,4 +51,7 @@
 			}
 		});
 	});
+
+	var fieldChannelFields = new MutableSelectField('field_channel_fields', {editUrl: EE.fields.fluid_field.filterEditUrl});
+	var fieldChannelFieldGroups = new MutableSelectField('field_channel_field_groups', {editUrl: EE.fields.fluid_field.filterEditUrl.replace('/field/', '/group/')});
 })(jQuery);

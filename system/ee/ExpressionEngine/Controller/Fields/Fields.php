@@ -1091,6 +1091,116 @@ class Fields extends AbstractFieldsController
 
         return null;
     }
+
+    /**
+     * Save the data for Fluid "filter"
+     *
+     * @param int $field_id Fluid field id
+     * @param String $type field|group
+     * @param int $id
+     * @return void
+     */
+    public function fluidFilter($field_id, $type, $id)
+    {
+        if (empty($field_id) or !is_numeric($field_id) or !in_array($type, ['field', 'group']) or empty($id) or ! is_numeric($id)) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
+        if (! AJAX_REQUEST) {
+            //show_error(lang('unauthorized_access'), 403);
+        }
+
+        $filter = ee('Model')->get('fluid_field:FluidFieldFilter')
+            ->filter('fluid_field_id', $field_id);
+        if ($type == 'field') {
+            $filter->filter('field_id', $id);
+        } else {
+            $filter->filter('field_group_id', $id);
+        }
+        $filter = $filter->first();
+
+        if (is_null($filter)) {
+            $data = [
+                'fluid_field_id' => $field_id,
+                'field_id' => ($type == 'field') ? $id : null,
+                'field_group_id' => ($type == 'group') ? $id : null
+            ];
+            $filter = ee('Model')->make('fluid_field:FluidFieldFilter', $data);
+        }
+
+        if ($type == 'field') {
+            $original = ee('Model')->get('ChannelField', $id)->first();
+        } else {
+            $original = ee('Model')->get('ChannelFieldGroup', $id)->first();
+        }
+
+        if (! $original) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
+        $vars = array(
+            'base_url' => ee('CP/URL')->make('fields/fluid-filter/' . $field_id . '/' . $type . '/' . $id),
+            'cp_page_title' => lang($type . '_settings'),
+            'save_btn_text' => 'save',
+            'save_btn_text_working' => 'btn_saving'
+        );
+        $vars['sections'] = array(
+            array(
+                array(
+                    'title' => 'name',
+                    'desc' => '',
+                    'fields' => array(
+                        'label' => array(
+                            'type' => 'text',
+                            'value' => $filter->label,
+                            'placeholder' => property_exists($original, 'field_label') ? $original->field_label : $original->group_name,
+                        )
+                    )
+                ),
+                array(
+                    'title' => 'instructions',
+                    'desc' => 'instructions_desc',
+                    'fields' => array(
+                        'instructions' => array(
+                            'type' => 'textarea',
+                            'value' => $filter->instructions,
+                            'placeholder' => property_exists($original, 'field_instructions') ? $original->field_instructions : $original->group_description,
+                        )
+                    )
+                )
+            )
+        );
+
+        ee()->view->ajax_validate = true;
+
+        if (! empty($_POST)) {
+            $data = [
+                'label' => ee('Security/XSS')->clean($_POST['label']),
+                'instructions' => ee('Security/XSS')->clean($_POST['instructions']),
+                'fluid_field_id' => $field_id,
+                'field_id' => ($type == 'field') ? $id : null,
+                'field_group_id' => ($type == 'group') ? $id : null,
+                'modified_by_member_id' => ee()->session->userdata('member_id'),
+                'modified_date' => ee()->localize->now
+            ];
+            $filter->set($data);
+            $result = $filter->validate();
+
+            if (isset($_POST['ee_fv_field']) && $response = $this->ajaxValidation($result)) {
+                return $response;
+            }
+
+            if ($result->isValid()) {
+                $filter = $filter->save();
+                return ['success'];
+            } else {
+                ee()->load->library('form_validation');
+                ee()->form_validation->_error_array = $result->renderErrors();
+            }
+        }
+
+        return ee()->cp->render('_shared/form', $vars);
+    }
 }
 
 // EOF

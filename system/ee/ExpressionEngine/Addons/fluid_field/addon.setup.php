@@ -8,7 +8,7 @@ return array(
     'docs_url' => 'https://docs.expressionengine.com/latest/fieldtypes/fluid.html',
     'name' => 'Fluid',
     'description' => 'Fluid Fields',
-    'version' => '1.0.0',
+    'version' => '1.1.0',
     'namespace' => 'ExpressionEngine\Addons\FluidField',
     'settings_exist' => false,
     'built_in' => true,
@@ -28,6 +28,7 @@ return array(
 
     'models' => array(
         'FluidField' => 'Model\FluidField',
+        'FluidFieldFilter' => 'Model\FluidFieldFilter',
     ),
 
     'models.dependencies' => array(

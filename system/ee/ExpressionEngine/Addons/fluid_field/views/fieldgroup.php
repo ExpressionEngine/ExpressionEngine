@@ -7,10 +7,10 @@
             <div class="field-instruct">
                 <label>
                     <i class="icon--reorder reorder"></i>
-                    <?= $field_group->group_name ?> <?php if ($show_field_type) : ?><span class="faded">(group)</span><?php endif; ?>
+                    <?= $label ?> <?php if ($show_field_type) : ?><span class="faded">(group)</span><?php endif; ?>
                 </label>
                 <?=(isset($field_name_prefix) ? $field_group->getNameBadge(['prefix' => $field_name_prefix, 'content_type' => 'fluid_fieldgroup', 'fluid_id' => $fluid_field_id]) : '')?>
-                <em><?= $field_group->group_description ?></em>
+                <em><?= $instructions ?></em>
             </div>
         </div>
 

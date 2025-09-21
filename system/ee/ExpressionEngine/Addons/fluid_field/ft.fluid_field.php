@@ -537,6 +537,23 @@ class Fluid_field_ft extends EE_Fieldtype
         $filter_options = $field_templates->map(function ($field) {
             $field = $field->getField();
 
+            $filter = ee('Model')->get('fluid_field:FluidFieldFilter')
+                ->filter('fluid_field_id', $this->field_id)
+                ->filter('field_id', $field->getId())
+                ->first();
+            if (!empty($filter)) {
+                if (empty($filter->label)) {
+                    $filter->label = $field->getItem('field_label');
+                }
+                if (empty($filter->name)) {
+                    $filter->name = $field->getShortName();
+                }
+                if (empty($filter->icon)) {
+                    $filter->icon = $field->getIcon();
+                }
+                return $filter;
+            }
+
             return \ExpressionEngine\Addons\FluidField\Model\FluidFieldFilter::make([
                 'name' => $field->getShortName(),
                 'label' => $field->getItem('field_label'),
@@ -546,6 +563,24 @@ class Fluid_field_ft extends EE_Fieldtype
 
         foreach ($field_groups as $field_group) {
             if ($field_group->ChannelFields->count() > 0) {
+                $filter = ee('Model')->get('fluid_field:FluidFieldFilter')
+                    ->filter('fluid_field_id', $this->field_id)
+                    ->filter('field_group_id', $field_group->getId())
+                    ->first();
+                if (!empty($filter)) {
+                    if (empty($filter->label)) {
+                        $filter->label = $field_group->group_name;
+                    }
+                    if (empty($filter->name)) {
+                        $filter->name = $field_group->short_name;
+                    }
+                    if (empty($filter->icon)) {
+                        $filter->icon = URL_THEMES . 'asset/img/' . 'fluid_group_icon.svg';
+                    }
+                    $filter_options[] = $filter;
+                    continue;
+                }
+
                 $filter_options[] = \ExpressionEngine\Addons\FluidField\Model\FluidFieldFilter::make([
                     'name' => $field_group->short_name,
                     'label' =>  $field_group->group_name,
@@ -765,11 +800,18 @@ class Fluid_field_ft extends EE_Fieldtype
             $f->setItem('fluid_field_data_id', null);
             $f->setName($this->name() . '[fields][new_field_0][field_group_id_0][field_id_' . $field->getId() . ']');
 
+            $filter = ee('Model')->get('fluid_field:FluidFieldFilter')
+                ->filter('fluid_field_id', $this->field_id)
+                ->filter('field_id', $field->getId())
+                ->first();
+
             $templates .= ee('View')->make('fluid_field:field')->render([
                 'field' => $f,
                 'fluid_field_id' => $this->field_id,
                 'field_name' => $field->field_name,
                 'field_name_prefix' => $field_name_prefix,
+                'label' => !empty($filter) ? $filter->label : $field->field_label,
+                'instructions' => !empty($filter) ? $filter->instructions : $field->field_instructions,
                 'filters' => $filters,
                 'errors' => $this->errors,
                 'reorderable' => true,
@@ -782,6 +824,10 @@ class Fluid_field_ft extends EE_Fieldtype
             $field_group_fields = $field_group->ChannelFields->sortBy('field_label')->sortBy('field_order')->filter(function ($field) {
                 return $field->getField()->acceptsContentType('fluid_field');
             });
+            $filter = ee('Model')->get('fluid_field:FluidFieldFilter')
+                ->filter('fluid_field_id', $this->field_id)
+                ->filter('field_group_id', $field_group->getId())
+                ->first();
             $templates .= ee('View')->make('fluid_field:fieldgroup')->render([
                 'fluid_field_id' => $this->field_id,
                 'field_group' => $field_group,
@@ -794,6 +840,8 @@ class Fluid_field_ft extends EE_Fieldtype
                 }),
                 'field_name' => $field_group->short_name,
                 'field_name_prefix' => $field_name_prefix,
+                'label' => !empty($filter) ? $filter->label : $field_group->group_name,
+                'instructions' => !empty($filter) ? $filter->instructions : $field_group->group_description,
                 'filters' => $filters,
                 'errors' => $this->errors,
                 'reorderable' => true,
@@ -826,6 +874,18 @@ class Fluid_field_ft extends EE_Fieldtype
 
     public function display_settings($data)
     {
+        $filters = ee('Model')->get('fluid_field:FluidFieldFilter')
+            ->filter('fluid_field_id', $this->field_id)
+            ->all()
+            ->indexBy(function ($filter) {
+                if (!empty($filter->field_id)) {
+                    return 'field_' . $filter->field_id;
+                }
+                if (!empty($filter->field_group_id)) {
+                    return 'group_' . $filter->field_group_id;
+                }
+                return 'id_' . $filter->getId();
+            });
         $orderByField = isset($data['field_channel_fields']) && array_filter($data['field_channel_fields']) ? array_filter($data['field_channel_fields']) : [0];
         $custom_field_options = ee('Model')->get('ChannelField')
             ->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
@@ -836,9 +896,9 @@ class Fluid_field_ft extends EE_Fieldtype
             ->filter(function ($field) {
                 return $field->getField()->acceptsContentType('fluid_field');
             })
-            ->map(function ($field) {
+            ->map(function ($field) use ($filters) {
                 return [
-                    'label' => $field->field_label,
+                    'label' => isset($filters['field_' . $field->getId()]) && !empty($filters['field_' . $field->getId()]->label) ? $filters['field_' . $field->getId()]->label : $field->field_label,
                     'value' => $field->getId(),
                     'instructions' => LD . $field->field_name . RD
                 ];
@@ -852,6 +912,7 @@ class Fluid_field_ft extends EE_Fieldtype
                         'type' => 'checkbox',
                         'force_react' => true,
                         'reorderable' => true,
+                        'editable' => !$this->isNew(),
                         'choices' => $custom_field_options,
                         'value' => isset($data['field_channel_fields']) ? $data['field_channel_fields'] : array(),
                         'no_results' => [
@@ -871,9 +932,9 @@ class Fluid_field_ft extends EE_Fieldtype
             ->order('group_name')
             ->with('ChannelFields')
             ->all()
-            ->map(function ($group) {
+            ->map(function ($group) use ($filters) {
                 return [
-                    'label' => $group->group_name,
+                    'label' => isset($filters['group_' . $group->getId()]) && !empty($filters['group_' . $group->getId()]->label) ? $filters['group_' . $group->getId()]->label : $group->group_name,
                     'value' => $group->getId(),
                     'instructions' => LD . $group->short_name . RD
                 ];
@@ -887,6 +948,7 @@ class Fluid_field_ft extends EE_Fieldtype
                     'type' => 'checkbox',
                     'force_react' => true,
                     'reorderable' => true,
+                    'editable' => !$this->isNew(),
                     'choices' => $custom_field_group_options,
                     'value' => isset($data['field_channel_field_groups']) ? $data['field_channel_field_groups'] : array(),
                     'no_results' => [
@@ -901,7 +963,8 @@ class Fluid_field_ft extends EE_Fieldtype
         if (! $this->isNew()) {
             ee()->javascript->set_global(array(
                 'fields.fluid_field.fields' => $data['field_channel_fields'],
-                'fields.fluid_field.groups' => isset($data['field_channel_field_groups']) ? $data['field_channel_field_groups'] : []
+                'fields.fluid_field.groups' => isset($data['field_channel_field_groups']) ? $data['field_channel_field_groups'] : [],
+                'fields.fluid_field.filterEditUrl' => ee('CP/URL')->make('fields/fluid-filter/' . $this->field_id . '/field/###')->compile()
             ));
 
             ee()->cp->add_js_script(array(

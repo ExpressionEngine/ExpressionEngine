@@ -705,6 +705,8 @@ $lang = array(
 
     'formatting_options' => 'Field Formatting Options',
 
+    'group_settings' => 'Group Settings',
+
     'invalid_characters' => 'The field name you submitted contains invalid characters',
 
     'invalid_field_type' => 'Invalid fieldtype',

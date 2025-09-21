@@ -1610,6 +1610,21 @@ class EE_Schema
 			KEY `fluid_field_id_entry_id` (`fluid_field_id`,`entry_id`)
 		)";
 
+        $Q[] = "CREATE TABLE `exp_fluid_field_filters` (
+			`filter_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+			`fluid_field_id` int(11) unsigned NOT NULL,
+			`field_group_id` int(11) unsigned DEFAULT NULL,
+			`field_id` int(11) unsigned DEFAULT NULL,
+			`label` varchar(100) NULL,
+			`icon` varchar(255) NULL,
+			`instructions` TEXT NULL,
+			`modified_by_member_id` int(10) unsigned DEFAULT '0',
+			`modified_date` bigint(10) DEFAULT NULL,
+			PRIMARY KEY (`filter_id`),
+			KEY `fluid_field_id_field_group_id` (`fluid_field_id`,`field_group_id`),
+			KEY `fluid_field_id_field_id` (`fluid_field_id`,`field_id`)
+		)";
+
         $Q[] = "CREATE TABLE `exp_menu_sets` (
   			`set_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   			`name` varchar(50) DEFAULT NULL,
