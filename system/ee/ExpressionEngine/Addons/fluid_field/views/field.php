@@ -7,10 +7,10 @@
             <div class="field-instruct">
                 <label>
                     <i class="icon--reorder reorder"></i>
-                    <?=$label?> <?php if ($show_field_type): ?><span class="faded">(<?=$field->getType()?>)</span><?php endif ?>
+                    <?=isset($label) ? $label : $field->getItem('field_label')?> <?php if ($show_field_type): ?><span class="faded">(<?=$field->getType()?>)</span><?php endif ?>
                 </label>
                 <?=(isset($field_name_prefix) ? $field->getNameBadge(['prefix' => $field_name_prefix, 'content_type' => 'fluid_field', 'fluid_id' => $fluid_field_id]) : '')?>
-                <em><?=$instructions?></em>
+                <em><?=isset($instructions) ? $instructions : $field->getItem('field_instructions')?></em>
             </div>
         </div>
 

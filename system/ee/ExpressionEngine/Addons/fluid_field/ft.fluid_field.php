@@ -629,6 +629,14 @@ class Fluid_field_ft extends EE_Fieldtype
                         'field_filters' => $filter_options,
                         'field_name_prefix' => $field_name_prefix
                     ];
+                    $filter = ee('Model')->get('fluid_field:FluidFieldFilter')
+                        ->filter('fluid_field_id', $this->field_id);
+                    if ($is_group) {
+                        $filter->filter('field_group_id', $current->field_group_id);
+                    } else {
+                        $filter->filter('field_id', $current->field_id);
+                    }
+                    $filter = $filter->first();
 
                     if ($is_group) {
                         $field_group = $field_groups[$current->field_group_id];//current($field_data)->ChannelFieldGroup; // might want to eager load this
@@ -650,6 +658,8 @@ class Fluid_field_ft extends EE_Fieldtype
                                 return $f;
                             }, $field_group_fields),
                             'field_name' => $field_group->short_name,
+                            'label' => !empty($filter) ? $filter->label : $field_group->group_name,
+                            'instructions' => !empty($filter) ? $filter->instructions : $field_group->description,
                         ]);
                     } else {
                         $field = $current->getField();
@@ -658,6 +668,8 @@ class Fluid_field_ft extends EE_Fieldtype
                         $viewData = array_merge($viewData, [
                             'field' => $field,
                             'field_name' => $current->ChannelField->field_name,
+                            'label' => !empty($filter) ? $filter->label : $field->field_label,
+                            'instructions' => !empty($filter) ? $filter->instructions : $field->field_instructions,
                         ]);
                     }
 
@@ -759,6 +771,14 @@ class Fluid_field_ft extends EE_Fieldtype
                     'field_filters' => $filter_options,
                     'field_name_prefix' => $field_name_prefix
                 ];
+                $filter = ee('Model')->get('fluid_field:FluidFieldFilter')
+                    ->filter('fluid_field_id', $this->field_id);
+                if ($is_group) {
+                    $filter->filter('field_group_id', $firstRow['field_group']->getId());
+                } else {
+                    $filter->filter('field_id', $firstRow['field']->getId());
+                }
+                $filter = $filter->first();
 
                 if ($is_group) {
                     $field_group = $firstRow['field_group'];
@@ -781,11 +801,15 @@ class Fluid_field_ft extends EE_Fieldtype
                             return $this->setupFieldInstance($f, [], null);
                         }, $field_group_fields),
                         'field_name' => $field_group->short_name,
+                        'label' => !empty($filter) ? $filter->label : $field_group->group_name,
+                        'instructions' => !empty($filter) ? $filter->instructions : $field_group->description,
                     ]);
                 } else {
                     $viewData = array_merge($viewData, [
                         'field' => $firstRow['field'],
-                        'field_name' => $firstRow['field_name']
+                        'field_name' => $firstRow['field_name'],
+                        'label' => !empty($filter) ? $filter->label : $firstRow['field']->field_label,
+                        'instructions' => !empty($filter) ? $filter->instructions : $firstRow['field']->field_instructions,
                     ]);
                 }
 
