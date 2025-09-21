@@ -439,8 +439,8 @@ context('Member field', () => {
             cy.get('.fields-grid-setup .fields-grid-item---open .select__dropdown-item span:contains("Members")').first().click();
             cy.get('.fields-grid-setup .fields-grid-item---open [name*="[col_label]"]').type("Members Title");
 
-            cy.get('.fields-grid-setup .fields-grid-item---open #fieldset-roles .checkbox-label__text div:contains("Super Admin")').first().click();
-            cy.get('.fields-grid-setup .fields-grid-item---open #fieldset-roles .checkbox-label__text div:contains("Members")').first().click();
+            cy.get('.fields-grid-setup .fields-grid-item---open #fieldset-roles .checkbox-label__text span:contains("Super Admin")').first().click();
+            cy.get('.fields-grid-setup .fields-grid-item---open #fieldset-roles .checkbox-label__text span:contains("Members")').first().click();
             cy.get('[data-toggle-for="allow_multiple"]').should('have.class', 'on')
             cy.get('[name="grid[cols][new_2][col_settings][rel_min]"]').should('be.visible');
             cy.get('[name="grid[cols][new_2][col_settings][rel_max]"]').should('be.visible');
@@ -448,7 +448,7 @@ context('Member field', () => {
             cy.get('body').type('{ctrl}', {release: false}).type('s')
 
             cy.visit('admin.php?/cp/fields/groups/edit/1')
-            cy.get('.lots-of-checkboxes .checkbox-label__text div:contains("Stupid Grid")').first().click()
+            cy.get('.lots-of-checkboxes .checkbox-label__text span:contains("Stupid Grid")').first().click()
             cy.get('body').type('{ctrl}', {release: false}).type('s')
 
             cy.visit('admin.php?/cp/publish/edit/entry/1')

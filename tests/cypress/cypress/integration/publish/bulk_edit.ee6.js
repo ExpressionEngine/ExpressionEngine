@@ -311,7 +311,7 @@ context('Bulk Edit', () => {
 
     bulk_edit.get('field_options').should('exist')
 
-    bulk_edit.get('field_options').contains('Add Make entry sticky?')
+    bulk_edit.get('field_options').contains('Make entry sticky?')
 
     entry_manager.load()
     
@@ -323,7 +323,7 @@ context('Bulk Edit', () => {
 
     bulk_edit.get('field_options').should('exist')
 
-    bulk_edit.get('field_options').should('not.contain', 'Add Make entry sticky?')
+    bulk_edit.get('field_options').should('not.contain', 'Make entry sticky?')
     
 
   })

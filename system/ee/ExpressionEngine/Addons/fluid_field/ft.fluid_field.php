@@ -659,7 +659,7 @@ class Fluid_field_ft extends EE_Fieldtype
                             }, $field_group_fields),
                             'field_name' => $field_group->short_name,
                             'label' => !empty($filter) ? $filter->label : $field_group->group_name,
-                            'instructions' => !empty($filter) ? $filter->instructions : $field_group->description,
+                            'instructions' => !empty($filter) ? $filter->instructions : $field_group->group_description,
                         ]);
                     } else {
                         $field = $current->getField();
@@ -668,8 +668,8 @@ class Fluid_field_ft extends EE_Fieldtype
                         $viewData = array_merge($viewData, [
                             'field' => $field,
                             'field_name' => $current->ChannelField->field_name,
-                            'label' => !empty($filter) ? $filter->label : $field->field_label,
-                            'instructions' => !empty($filter) ? $filter->instructions : $field->field_instructions,
+                            'label' => !empty($filter) ? $filter->label : $current->ChannelField->field_label,
+                            'instructions' => !empty($filter) ? $filter->instructions : $current->ChannelField->field_instructions,
                         ]);
                     }
 
@@ -802,14 +802,14 @@ class Fluid_field_ft extends EE_Fieldtype
                         }, $field_group_fields),
                         'field_name' => $field_group->short_name,
                         'label' => !empty($filter) ? $filter->label : $field_group->group_name,
-                        'instructions' => !empty($filter) ? $filter->instructions : $field_group->description,
+                        'instructions' => !empty($filter) ? $filter->instructions : $field_group->group_description,
                     ]);
                 } else {
                     $viewData = array_merge($viewData, [
                         'field' => $firstRow['field'],
                         'field_name' => $firstRow['field_name'],
-                        'label' => !empty($filter) ? $filter->label : $firstRow['field']->field_label,
-                        'instructions' => !empty($filter) ? $filter->instructions : $firstRow['field']->field_instructions,
+                        'label' => !empty($filter) ? $filter->label : $firstRow['field']->getItem('field_label'),
+                        'instructions' => !empty($filter) ? $filter->instructions : $firstRow['field']->getItem('field_instructions'),
                     ]);
                 }
 

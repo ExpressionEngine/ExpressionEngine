@@ -323,7 +323,7 @@ context('Entry Manager', () => {
 			cy.dismissLicenseAlert()
 			cy.get('div').contains('Discover').click()
 			cy.get('button').contains('Fields').click()
-			cy.get('.checkbox-label__text div').contains('Simple Text').click()
+			cy.get('.checkbox-label__text span').contains('Simple Text').click()
 			cy.get('body').type('{ctrl}', {release: false}).type('s')
 
 			cy.visit('admin.php?/cp/publish/edit')

@@ -89,7 +89,7 @@ context('Publish Entry with Fluid', () => {
         page.get('url_title').clear().type("fluid-field-test-first")
         cy.hasNoErrors();
 
-        cy.get('.fluid__footer a').contains('Add News').click();
+        cy.get('.fluid__footer a').contains('News').click();
 
         // Check that News Group fields are visible and set some test values
         cy.get('.fluid__item[data-field-type="field_group"]').first().within(() => {

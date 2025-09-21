@@ -423,7 +423,7 @@ context('Edit entry with Relationship field', () => {
 			cy.get('.fields-grid-setup .fields-grid-item---open .select__dropdown-item span:contains("Relationships")').first().click();
 			cy.get('.fields-grid-setup .fields-grid-item---open [name*="[col_label]"]').type("Relationship Title");
 
-			cy.get('.fields-grid-setup .fields-grid-item---open #fieldset-relationship_channels .checkbox-label__text div:contains("News")').first().click();
+			cy.get('.fields-grid-setup .fields-grid-item---open #fieldset-relationship_channels .checkbox-label__text span:contains("News")').first().click();
 			cy.get('[data-toggle-for="relationship_allow_multiple"]').should('have.class', 'on')
 			cy.get('[name="grid[cols][new_2][col_settings][rel_min]"]').should('be.visible');
 			cy.get('[name="grid[cols][new_2][col_settings][rel_max]"]').should('be.visible');
@@ -431,7 +431,7 @@ context('Edit entry with Relationship field', () => {
 			cy.get('body').type('{ctrl}', {release: false}).type('s')
 
 			cy.visit('admin.php?/cp/fields/groups/edit/1')
-			cy.get('.lots-of-checkboxes .checkbox-label__text div:contains("Stupid Grid")').first().click()
+			cy.get('.lots-of-checkboxes .checkbox-label__text span:contains("Stupid Grid")').first().click()
 			cy.get('body').type('{ctrl}', {release: false}).type('s')
 		})
 
