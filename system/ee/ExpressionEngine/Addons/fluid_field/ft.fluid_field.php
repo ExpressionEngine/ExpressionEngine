@@ -826,7 +826,7 @@ class Fluid_field_ft extends EE_Fieldtype
 
     public function display_settings($data)
     {
-        $orderByField = array_filter($data['field_channel_fields']) ?: [0];
+        $orderByField = isset($data['field_channel_fields']) && array_filter($data['field_channel_fields']) ? array_filter($data['field_channel_fields']) : [0];
         $custom_field_options = ee('Model')->get('ChannelField')
             ->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
             ->filter('field_type', '!=', 'fluid_field')
@@ -864,7 +864,7 @@ class Fluid_field_ft extends EE_Fieldtype
             ),
         );
 
-        $orderByField = array_filter($data['field_channel_field_groups']) ?: [0];
+        $orderByField = isset($data['field_channel_field_groups']) && array_filter($data['field_channel_field_groups']) ? array_filter($data['field_channel_field_groups']) : [0];
         $custom_field_group_options = ee('Model')->get('ChannelFieldGroup')
             ->filter('site_id', 'IN', [ee()->config->item('site_id'), 0])
             ->order('FIELD( ChannelFieldGroup_field_groups.group_id, ' . implode(',', $orderByField) . ' )', 'ASC', false)
