@@ -80,6 +80,9 @@ class Moblog extends Model
     protected $moblog_subject_prefix;
     protected $moblog_valid_from;
     protected $moblog_ignore_text;
+    protected $moblog_email_port;
+    protected $moblog_email_ssl;
+    protected $moblog_email_newline;
 
     /**
      * Ensures fields with multiple emails contain valid emails

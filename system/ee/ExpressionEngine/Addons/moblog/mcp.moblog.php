@@ -466,6 +466,40 @@ EOT;
                         )
                     )
                 ),
+				
+	                array(
+	                    'title' => 'moblog_email_newline',
+	                    'fields' => array(
+	                        'moblog_email_newline' => array(
+	                            'type' => 'select',
+	                            'choices' => array(
+                                    '\n' => '\n',
+							        '\n\r' => '\n\r'
+                                    ),
+	                            'value' => $moblog->moblog_email_newline
+	                        )
+	                    )
+	                ),
+                array(
+                    'title' => 'moblog_email_port',
+                    'desc' => 'moblog_email_port_subtext',
+                    'fields' => array(
+                        'moblog_email_port' => array(
+                            'type' => 'text',
+                            'value' => $moblog->moblog_email_port
+                        )
+                    )
+                ),				
+                array(
+                    'title' => 'moblog_email_ssl',
+                    'fields' => array(
+                        'moblog_email_ssl' => array(
+                            'type' => 'yes_no',
+                            'value' => $moblog->moblog_email_ssl
+                        )
+                    )
+                ),
+			
                 array(
                     'title' => 'moblog_subject_prefix',
                     'desc' => 'moblog_subject_subtext',

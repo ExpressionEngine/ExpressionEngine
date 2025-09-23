@@ -63,6 +63,11 @@ class Moblog_upd extends Installer
             'moblog_email_type' => array('type' => 'varchar', 'constraint' => 10, 'default' => ''),
             'moblog_email_address' => array('type' => 'varchar', 'constraint' => 125, 'default' => ''),
             'moblog_email_server' => array('type' => 'varchar', 'constraint' => 100, 'default' => ''),
+            'moblog_email_port' => array('type' => 'varchar', 'constraint' => 100, 'default' => '995'),
+			'moblog_email_newline' => array('type' => 'varchar', 'constraint' => 100, 'default' => '\n'),
+			'moblog_email_ssl' => array('type' => 'varchar', 'constraint' => 100, 'default' => 'y'),			
+			
+			
             'moblog_email_login' => array('type' => 'varchar', 'constraint' => 125, 'default' => ''),
             'moblog_email_password' => array('type' => 'varchar', 'constraint' => 125, 'default' => ''),
             'moblog_subject_prefix' => array('type' => 'varchar', 'constraint' => 50, 'default' => ''),
@@ -190,6 +195,26 @@ class Moblog_upd extends Installer
         if (version_compare($current, '3.2', '<')) {
             $this->_drop_columns(array('moblog_ping_servers'));
         }
+		
+        if (version_compare($current, '4.0', '<')) {
+            // Add new columns
+            $new_fields = array(
+                'moblog_email_port' => array(
+                    'alter' => array('type' => 'varchar', 'constraint' => 10, 'default' => '995'),
+                    'after' => 'moblog_email_server'
+                ),
+                'moblog_email_newline' => array(
+                    'alter' => array('type' => 'varchar', 'constraint' => 10, 'default' => '\n'),
+                    'after' => 'moblog_email_port'
+                ),
+                'moblog_email_ssl' => array(
+                    'alter' => array('type' => 'char', 'constraint' => 1, 'default' => 'y'),
+                    'after' => 'moblog_email_newline'
+                )				
+            );
+            $this->_add_fields($new_fields);
+
+        }		
 
         return true;
     }
