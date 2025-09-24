@@ -1,7 +1,7 @@
 <?php
 namespace ExpressionEngine\Tests\ExpressionEngine\legacy\EE_Template;
 
-require_once SYSPATH . 'ee/ExpressionEngine/Tests/eeObjectMock.php';
+require_once __DIR__ . '/../../../eeObjectMock.php';
 
 class EE_TemplateTestBase extends \PHPUnit\Framework\TestCase
 {
@@ -17,11 +17,21 @@ class EE_TemplateTestBase extends \PHPUnit\Framework\TestCase
 
         // Load required CodeIgniter helpers
         if (!function_exists('directory_map')) {
-            require_once SYSPATH . 'ee/legacy/helpers/directory_helper.php';
+            $helperPath = BASEPATH . 'helpers/directory_helper.php';
+            if (!file_exists($helperPath)) {
+                // Fallback: try to find it relative to this file
+                $helperPath = __DIR__ . '/../../../../../../system/ee/legacy/helpers/directory_helper.php';
+            }
+            require_once $helperPath;
         }
 
         // Include the EE_Template class
-        require_once SYSPATH . 'ee/legacy/libraries/Template.php';
+        $templatePath = BASEPATH . 'libraries/Template.php';
+        if (!file_exists($templatePath)) {
+            // Fallback: try to find it relative to this file
+            $templatePath = __DIR__ . '/../../../../../../system/ee/legacy/libraries/Template.php';
+        }
+        require_once $templatePath;
 
         // Create template instance
         $this->template = new \EE_Template();
@@ -38,17 +48,16 @@ class EE_TemplateTestBase extends \PHPUnit\Framework\TestCase
 
     private function defineConstants(): void
     {
-        if (!defined('BASEPATH')) {
-            define('BASEPATH', realpath(__DIR__ . '/../../../../../../') . '/');
-        }
-        if (!defined('APPPATH')) {
-            define('APPPATH', BASEPATH . 'system/ee/legacy/');
-        }
+        // Constants are already defined by bootstrap.php
+        // Just ensure they exist as fallbacks
         if (!defined('SYSPATH')) {
-            define('SYSPATH', BASEPATH . 'system/ee/');
+            define('SYSPATH', realpath(getcwd() . '/system/') . '/');
+        }
+        if (!defined('BASEPATH')) {
+            define('BASEPATH', SYSPATH . 'ee/legacy/');
         }
         if (!defined('PATH_CACHE')) {
-            define('PATH_CACHE', BASEPATH . 'user/cache/');
+            define('PATH_CACHE', BASEPATH . 'system/ee/cache/');
         }
         if (!defined('PATH_THIRD')) {
             define('PATH_THIRD', BASEPATH . 'user/addons/');

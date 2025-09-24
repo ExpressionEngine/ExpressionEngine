@@ -3370,7 +3370,11 @@ class EE_Template
             for ($i = 0, $s = count($match[0]); $i < $s; $i++) {
                 $class = ee()->security->sanitize_filename(strtolower($match[1][$i]));
 
-                $fqcn = ee('Addon')->get($class)->getModuleClass();
+                $addon = ee('Addon')->get($class);
+                if (!$addon) {
+                    continue; // Skip if addon not found
+                }
+                $fqcn = $addon->getModuleClass();
 
                 $this->tagdata = $match[3][$i];
 
