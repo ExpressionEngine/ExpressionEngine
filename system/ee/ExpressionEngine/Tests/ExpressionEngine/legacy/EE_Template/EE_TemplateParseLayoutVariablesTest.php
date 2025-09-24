@@ -110,3 +110,4 @@ class EE_TemplateParseLayoutVariablesTest extends EE_TemplateTestBase
         $this->assertFalse($conditionals['layout:empty_array']);
     }
 }
+

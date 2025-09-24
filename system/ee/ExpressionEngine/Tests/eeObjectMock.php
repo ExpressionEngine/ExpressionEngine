@@ -24,9 +24,11 @@
 //
 //      ee()->resetMocks();
 //
-function ee($mock = '')
-{
-    return new eeSingletonMock($mock);
+if (!function_exists('ee')) {
+    function ee($mock = '')
+    {
+        return new eeSingletonMock($mock);
+    }
 }
 
 class eeSingletonMock
@@ -45,6 +47,7 @@ class eeSingletonMock
     public $Permission;
     public $call;
     public $core;
+    public $uri;
 
     protected $mock;
     protected static $mocks = [];
@@ -60,12 +63,12 @@ class eeSingletonMock
         $this->db = new eeDbArMock();
         $this->lang = new eeLangMock();
         $this->typography = new FakeTypography();
-        require_once APPPATH . 'libraries/Api.php';
+        require_once SYSPATH . 'ee/legacy/libraries/Api.php';
         $this->legacy_api = new \Api();
         $this->mock = $mock;
 
         // Override with static mocks if set
-        $overridable = ['db', 'config', 'functions', 'TMPL', 'session', 'load', 'logger', 'dbforge', 'input', 'lang', 'typography', 'extensions', 'core'];
+        $overridable = ['db', 'config', 'functions', 'TMPL', 'session', 'load', 'logger', 'dbforge', 'input', 'lang', 'typography', 'extensions', 'core', 'uri'];
         foreach ($overridable as $prop) {
             if (array_key_exists($prop, self::$mocks)) {
                 @$this->$prop = self::$mocks[$prop];
@@ -160,6 +163,11 @@ class eeSingletonSessionMock
     public static $userdata = [];
     public $cache = [];
 
+    public function __construct()
+    {
+        // Initialize instance with static data if needed
+    }
+
     public function userdata($item, $default = false)
     {
         return (! isset(self::$userdata[$item])) ? $default : self::$userdata[$item];
@@ -173,6 +181,21 @@ class eeSingletonSessionMock
     public function resetUserdata()
     {
         self::$userdata = [];
+    }
+
+    public function __get($name)
+    {
+        if ($name === 'userdata') {
+            return self::$userdata;
+        }
+        return null;
+    }
+
+    public function __set($name, $value)
+    {
+        if ($name === 'userdata') {
+            self::$userdata = $value;
+        }
     }
 
     public function cache($class, $key, $value = null)
@@ -189,6 +212,17 @@ class eeSingletonSessionMock
         return $this->cache($class, $key, $value);
     }
 
+    public function flashdata($key = null)
+    {
+        // Simple mock implementation - return empty array for errors
+        return [];
+    }
+
+    public function get_language()
+    {
+        return 'english';
+    }
+
     public function getMember()
     {
         return new class {
@@ -196,6 +230,13 @@ class eeSingletonSessionMock
                 return new class {
                     public function getDictionary($key, $value) {
                         return ['channel_1' => 'Channel One', 'channel_2' => 'Channel Two'];
+                    }
+                };
+            }
+            public function getAllRoles() {
+                return new class {
+                    public function pluck($field) {
+                        return [3]; // Return guest role ID
                     }
                 };
             }
@@ -432,6 +473,7 @@ class eeDbArMock
     }
 }
 
+if (!class_exists('eeDbResultMock')) {
 class eeDbResultMock
 {
     public $resultArray;
@@ -485,8 +527,10 @@ class eeDbResultMock
         // no-op for tests
     }
 }
+}
 
 // Enhanced fake classes for broader test compatibility
+if (!class_exists('FakeTemplate')) {
 class FakeTemplate
 {
     public $map = [];
@@ -579,11 +623,17 @@ class FakeTemplate
 
     public $var_pair = [];
 }
+}
 
+if (!class_exists('FakeConfig')) {
 class FakeConfig
 {
     public $items = [];
+    public $_global_vars = [];
     public function item($key) { return array_key_exists($key, $this->items) ? $this->items[$key] : null; }
+    public function setItem($item, $value) {
+        $this->items[$item] = $value;
+    }
     public function get_cached_site_prefs($site_id = 1) {
         // Return default site preferences for testing
         return [
@@ -594,6 +644,7 @@ class FakeConfig
             'template' => 'index'
         ];
     }
+}
 }
 
 class FakeTypography
@@ -614,6 +665,7 @@ class FakeTypography
     }
 }
 
+if (!class_exists('FakeFunctions')) {
 class FakeFunctions
 {
     public function fetch_site_index($a = 0, $b = 0) { return '/'; }
@@ -663,6 +715,20 @@ class FakeFunctions
         return $str;
     }
 
+    public function evaluate($str)
+    {
+        // Simple mock implementation - execute basic PHP
+        ob_start();
+        eval('?>' . $str);
+        return ob_get_clean();
+    }
+
+    public function encode_email($email)
+    {
+        // Simple mock implementation - just return encoded email
+        return '[email]' . $email . '[/email]';
+    }
+
 
 
     public function extract_path($variable)
@@ -679,8 +745,22 @@ class FakeFunctions
         // Simple mock implementation of trim_slashes function
         return trim($str, '/');
     }
+
+    public function fetch_current_uri()
+    {
+        // Simple mock implementation - return current URI
+        return 'default/index';
+    }
+
+    public function insert_action_ids($str)
+    {
+        // Simple mock implementation - just return the string
+        return $str;
+    }
+}
 }
 
+if (!class_exists('FakeDb')) {
 class FakeDb
 {
     public $rows = [];
@@ -731,6 +811,22 @@ class FakeDb
         return $this;
     }
 
+    public function get_where($table, $where = null, $limit = null, $offset = null)
+    {
+        if ($table) {
+            $this->tableName = $table;
+        }
+        if ($where) {
+            foreach ($where as $field => $value) {
+                $this->whereConditions[$field] = $value;
+            }
+        }
+        if ($limit) {
+            $this->limitValue = $limit;
+        }
+        return $this->get();
+    }
+
     public function order_by($field, $direction = '')
     {
         return $this;
@@ -775,8 +871,10 @@ class FakeDb
         return new eeDbResultMock($filtered);
     }
 }
+}
 
 // Test environment class with proper method support
+if (!class_exists('TestEnvironment')) {
 class TestEnvironment
 {
     public $mocks = [];
@@ -813,4 +911,5 @@ class TestEnvironment
             unset($this->$name);
         }
     }
+}
 }

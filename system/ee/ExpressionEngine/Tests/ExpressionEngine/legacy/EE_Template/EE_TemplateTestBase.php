@@ -1,106 +1,98 @@
 <?php
-
-/**
- * This source file is part of the open source project
- * ExpressionEngine (https://expressionengine.com)
- *
- * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
- * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
- */
-
 namespace ExpressionEngine\Tests\ExpressionEngine\legacy\EE_Template;
 
-use PHPUnit\Framework\TestCase;
-use ReflectionClass;
+require_once SYSPATH . 'ee/ExpressionEngine/Tests/eeObjectMock.php';
 
-// Bootstrap minimal EE environment
-if (!defined('APP_VER')) {
-    define('APP_VER', '7.5.14');
-}
-if (!defined('BASEPATH')) {
-    define('BASEPATH', __DIR__ . '/../../../../../../');
-}
-if (!defined('APPPATH')) {
-    define('APPPATH', BASEPATH . 'ee/');
-}
-if (!defined('SYSPATH')) {
-    define('SYSPATH', BASEPATH . '../');
-}
-if (!defined('PATH_CACHE')) {
-    define('PATH_CACHE', SYSPATH . 'user/cache/');
-}
-if (!defined('PATH_THIRD')) {
-    define('PATH_THIRD', SYSPATH . 'user/addons/');
-}
-if (!defined('PATH_ADDONS')) {
-    define('PATH_ADDONS', SYSPATH . 'ee/ExpressionEngine/Addons/');
-}
-if (!defined('PATH_THEMES')) {
-    define('PATH_THEMES', realpath(SYSPATH . '../themes') . '/');
-}
-
-// Template constants
-if (!defined('LD')) {
-    define('LD', '{');
-}
-if (!defined('RD')) {
-    define('RD', '}');
-}
-if (!defined('AMP')) {
-    define('AMP', '&amp;');
-}
-
-// Include required files
-require_once APPPATH . '../legacy/libraries/Template.php';
-
-// Include eeObjectMock for mocking
-require_once __DIR__ . '/../../../eeObjectMock.php';
-
-/**
- * Base test class for EE_Template tests
- *
- * Provides common setup and mocking infrastructure for all EE_Template test classes.
- */
-class EE_TemplateTestBase extends TestCase
+class EE_TemplateTestBase extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @var \EE_Template
-     */
     protected $template;
-
-    /**
-     * @var TestEnvironment
-     */
-    protected $__EE_TEST_ENV__;
 
     protected function setUp(): void
     {
-        parent::setUp();
+        // Define essential EE constants if not already defined
+        $this->defineConstants();
 
-        // Initialize test environment
-        $this->__EE_TEST_ENV__ = new \TestEnvironment();
+        // Initialize the EE mock environment
+        $this->setupMinimalEE();
 
-        // Set up mocks for EE_Template dependencies
-        $this->setupMocks();
+        // Load required CodeIgniter helpers
+        if (!function_exists('directory_map')) {
+            require_once SYSPATH . 'ee/legacy/helpers/directory_helper.php';
+        }
 
-        // Create EE_Template instance
+        // Include the EE_Template class
+        require_once SYSPATH . 'ee/legacy/libraries/Template.php';
+
+        // Create template instance
         $this->template = new \EE_Template();
+
+        // Set up common mocks
+        $this->setupMocks();
     }
 
     protected function tearDown(): void
     {
-        // Reset mocks after each test
-        if (isset($this->__EE_TEST_ENV__)) {
-            ee()->resetMocks();
-        }
-
-        parent::tearDown();
+        // Reset EE mocks between tests
+        ee()->resetMocks();
     }
 
-    /**
-     * Set up the necessary mocks for EE_Template testing
-     */
+    private function defineConstants(): void
+    {
+        if (!defined('BASEPATH')) {
+            define('BASEPATH', realpath(__DIR__ . '/../../../../../../') . '/');
+        }
+        if (!defined('APPPATH')) {
+            define('APPPATH', BASEPATH . 'system/ee/legacy/');
+        }
+        if (!defined('SYSPATH')) {
+            define('SYSPATH', BASEPATH . 'system/ee/');
+        }
+        if (!defined('PATH_CACHE')) {
+            define('PATH_CACHE', BASEPATH . 'user/cache/');
+        }
+        if (!defined('PATH_THIRD')) {
+            define('PATH_THIRD', BASEPATH . 'user/addons/');
+        }
+        if (!defined('PATH_ADDONS')) {
+            define('PATH_ADDONS', BASEPATH . 'system/ee/ExpressionEngine/Addons/');
+        }
+        if (!defined('PATH_THEMES')) {
+            define('PATH_THEMES', BASEPATH . 'themes/');
+        }
+        if (!defined('PATH_TMPL')) {
+            define('PATH_TMPL', BASEPATH . 'user/templates/');
+        }
+        if (!defined('LD')) {
+            define('LD', '{');
+        }
+        if (!defined('RD')) {
+            define('RD', '}');
+        }
+        if (!defined('AMP')) {
+            define('AMP', '&');
+        }
+        if (!defined('REQ')) {
+            define('REQ', 'CP');
+        }
+        if (!defined('AJAX_REQUEST')) {
+            define('AJAX_REQUEST', false);
+        }
+        if (!defined('APP_VER')) {
+            define('APP_VER', '7.5.13');
+        }
+    }
+
+    private function setupMinimalEE(): void
+    {
+        // Ensure ee() function is available
+        if (!function_exists('ee')) {
+            function ee($mock = '')
+            {
+                return new eeSingletonMock($mock);
+            }
+        }
+    }
+
     protected function setupMocks(): void
     {
         // Mock config with basic site settings
@@ -111,26 +103,67 @@ class EE_TemplateTestBase extends TestCase
             'site_id' => 1,
             'site_short_name' => 'default_site',
             'site_url' => 'https://example.com/',
+            'site_name' => 'Test Site',
+            'site_label' => 'Test Site',
+            'site_description' => 'Test Description',
+            'site_index' => '',
+            'webmaster_email' => 'test@example.com',
             'multiple_sites_enabled' => 'n',
-            'show_profiler' => 'n'
+            'show_profiler' => 'n',
+            'smart_static_parsing' => 'y',
+            'site_404' => '',
+            'enable_template_routes' => 'n',
+            'strict_urls' => 'n',
+            'save_tmpl_files' => 'n',
+            'hidden_template_indicator' => '_',
+            'hidden_template_404' => 'n',
+            'template_loop_prevention' => 'y',
+            'allow_php' => 'n',
+            'enable_hit_tracking' => 'y',
+            'max_caches' => 1000,
+            'send_headers' => 'y',
+            'encode_removed_text' => '',
+            'enable_frontedit' => 'n',
+            'disable_tag_caching' => 'n'
         ];
+        $configMock->_global_vars = []; // Initialize as empty array
         $configMock->method('site_url')->willReturn('https://example.com/');
-        $this->__EE_TEST_ENV__->setMock('config', $configMock);
+        ee()->setMock('config', $configMock);
 
         // Mock session
         $sessionMock = new \eeSingletonSessionMock();
         $sessionMock->setUserdata('member_id', 0);
         $sessionMock->setUserdata('group_id', 3);
         $sessionMock->setUserdata('role_id', 3);
-        $this->__EE_TEST_ENV__->setMock('session', $sessionMock);
+        $sessionMock->setUserdata('primary_role_id', 3);
+        $sessionMock->setUserdata('primary_role_description', 'Guest');
+        $sessionMock->setUserdata('primary_role_name', 'guest');
+        $sessionMock->setUserdata('primary_role_short_name', 'guest');
+        $sessionMock->setUserdata('username', '');
+        $sessionMock->setUserdata('screen_name', '');
+        $sessionMock->setUserdata('avatar_filename', '');
+        $sessionMock->setUserdata('avatar_width', 0);
+        $sessionMock->setUserdata('avatar_height', 0);
+        $sessionMock->setUserdata('email', '');
+        $sessionMock->setUserdata('ip_address', '127.0.0.1');
+        $sessionMock->setUserdata('total_entries', 0);
+        $sessionMock->setUserdata('total_comments', 0);
+        $sessionMock->setUserdata('private_messages', 0);
+        $sessionMock->setUserdata('total_forum_posts', 0);
+        $sessionMock->setUserdata('total_forum_topics', 0);
+        $sessionMock->setUserdata('total_forum_replies', 0);
+        $sessionMock->setUserdata('mfa_enabled', 'n');
+        $sessionMock->setUserdata('group_description', 'Guests');
+        $sessionMock->setUserdata('group_title', 'Guests');
+        ee()->setMock('session', $sessionMock);
 
-        // Mock database
+        // Mock db
         $dbMock = new \FakeDb();
-        $this->__EE_TEST_ENV__->setMock('db', $dbMock);
+        ee()->setMock('db', $dbMock);
 
         // Mock functions
         $functionsMock = new \FakeFunctions();
-        $this->__EE_TEST_ENV__->setMock('functions', $functionsMock);
+        ee()->setMock('functions', $functionsMock);
 
         // Mock URI
         $uriMock = $this->getMockBuilder('stdClass')
@@ -143,29 +176,31 @@ class EE_TemplateTestBase extends TestCase
         $uriMock->method('segment_array')->willReturn(['default', 'index']);
         $uriMock->method('uri_string')->willReturn('default/index');
         $uriMock->method('page_query_string')->willReturn('');
-        $this->__EE_TEST_ENV__->setMock('uri', $uriMock);
+        $uriMock->uri_string = 'default/index'; // Direct property for access without method calls
+        $uriMock->page_query_string = ''; // Direct property
+        ee()->setMock('uri', $uriMock);
 
         // Mock extensions
         $extensionsMock = $this->getMockBuilder('stdClass')
             ->setMethods(['active_hook', 'call'])
             ->getMock();
         $extensionsMock->method('active_hook')->willReturn(false);
-        $this->__EE_TEST_ENV__->setMock('extensions', $extensionsMock);
+        ee()->setMock('extensions', $extensionsMock);
 
         // Mock core
         $coreMock = $this->getMockBuilder('stdClass')
             ->setMethods(['set_newrelic_transaction'])
             ->getMock();
         $coreMock->method('set_newrelic_transaction')->willReturn(null);
-        $this->__EE_TEST_ENV__->setMock('core', $coreMock);
+        ee()->setMock('core', $coreMock);
 
         // Mock load
         $loadMock = new \eeSingletonLoadMock();
-        $this->__EE_TEST_ENV__->setMock('load', $loadMock);
+        ee()->setMock('load', $loadMock);
 
         // Mock input
         $inputMock = new \eeSingletonInputMock();
-        $this->__EE_TEST_ENV__->setMock('input', $inputMock);
+        ee()->setMock('input', $inputMock);
 
         // Mock localize
         $localizeMock = $this->getMockBuilder('stdClass')
@@ -173,12 +208,44 @@ class EE_TemplateTestBase extends TestCase
             ->getMock();
         $localizeMock->method('now')->willReturn(time());
         $localizeMock->method('string_to_timestamp')->willReturn(time());
-        $localizeMock->method('format_date')->willReturn('2024-01-01');
-        $this->__EE_TEST_ENV__->setMock('localize', $localizeMock);
+        $localizeMock->method('format_date')->willReturnCallback(function($format, $timestamp, $localize = true) {
+            // Handle EE date format strings that start with %
+            if (strpos($format, '%') === 0) {
+                $phpFormat = str_replace(
+                    ['%Y', '%m', '%d', '%H', '%i', '%s'],
+                    ['Y', 'm', 'd', 'H', 'i', 's'],
+                    $format
+                );
+                return date($phpFormat, $timestamp);
+            }
+            return date($format, $timestamp);
+        });
+        // Add format property with common date formats
+        $localizeMock->format = [
+            '%D, %M %j, %Y' => 'D, M j, Y',
+            '%M %j, %Y' => 'M j, Y',
+            '%m/%d/%Y' => 'm/d/Y',
+            '%m/%d/%y' => 'm/d/y',
+            '%Y-%m-%d' => 'Y-m-d',
+            '%d %M %Y' => 'd M Y'
+        ];
+        // Add now property
+        $localizeMock->now = time();
+        ee()->setMock('localize', $localizeMock);
+
+        // Mock relative_date
+        $relativeDateMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['create', 'calculate', 'render', 'valid_units'])
+            ->getMock();
+        $relativeDateMock->valid_units = ['years', 'months', 'days', 'hours', 'minutes', 'seconds'];
+        $relativeDateMock->method('create')->willReturnSelf();
+        $relativeDateMock->method('calculate')->willReturnSelf();
+        $relativeDateMock->method('render')->willReturn('1 hour ago');
+        ee()->setMock('relative_date', $relativeDateMock);
 
         // Mock logger
         $loggerMock = new \eeSingletonLoggerMock();
-        $this->__EE_TEST_ENV__->setMock('logger', $loggerMock);
+        ee()->setMock('logger', $loggerMock);
 
         // Mock cache
         $cacheMock = $this->getMockBuilder('stdClass')
@@ -187,6 +254,61 @@ class EE_TemplateTestBase extends TestCase
         $cacheMock->method('get')->willReturn(false);
         $cacheMock->method('save')->willReturn(true);
         $cacheMock->method('get_metadata')->willReturn([]);
-        $this->__EE_TEST_ENV__->setMock('cache', $cacheMock);
+        ee()->setMock('cache', $cacheMock);
+
+        // Mock Model service
+        $modelMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['get', 'make'])
+            ->getMock();
+        $modelMock->method('get')->willReturnCallback(function($modelName) {
+            return new class {
+                public function with($relation) {
+                    return $this;
+                }
+                public function fields() {
+                    return $this;
+                }
+                public function all() {
+                    return new class {
+                        public function getDictionary() {
+                            return [];
+                        }
+                    };
+                }
+            };
+        });
+        $modelMock->method('make')->willReturnCallback(function($modelName, $data = []) {
+            return new class($data) {
+                private $data;
+                public function __construct($data) {
+                    $this->data = $data;
+                }
+                public function save() {
+                    return true;
+                }
+                public function getId() {
+                    return 1;
+                }
+                public function Roles() {
+                    return new class {
+                        public function all() {
+                            return new class {
+                                public function pluck() {
+                                    return [];
+                                }
+                            };
+                        }
+                    };
+                }
+            };
+        });
+        ee()->setMock('Model', $modelMock);
+
+        // Mock Addon service
+        $addonMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['all'])
+            ->getMock();
+        $addonMock->method('all')->willReturn([]);
+        ee()->setMock('Addon', $addonMock);
     }
 }

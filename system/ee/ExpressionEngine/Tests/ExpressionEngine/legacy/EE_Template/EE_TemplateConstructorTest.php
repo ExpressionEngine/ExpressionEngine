@@ -109,3 +109,5 @@ class EE_TemplateConstructorTest extends EE_TemplateTestBase
         ee()->config->setItem('show_profiler', 'n');
     }
 }
+
+

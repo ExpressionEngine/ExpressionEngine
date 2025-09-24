@@ -40,14 +40,7 @@ if (!defined('PATH_THEMES')) {
     define('PATH_THEMES', realpath(SYSPATH . '../themes') . '/');
 }
 
-// Define global helper functions needed by EE_Template
-function trim_slashes($str) {
-    return trim($str, '/');
-}
-
-function strip_quotes($str) {
-    return str_replace(array('"', "'"), '', $str);
-}
+// Global helper functions are defined in other test files
 
 // Include eeObjectMock for mocking first
 require_once __DIR__ . '/../../../eeObjectMock.php';
@@ -67,7 +60,8 @@ if (!defined('AMP')) {
 require_once __DIR__ . '/../../../eeObjectMock.php';
 
 // Include required files
-require_once APPPATH . '../legacy/libraries/Template.php';
+// Use SYSPATH to find the correct path regardless of bootstrap configuration
+require_once SYSPATH . 'ee/legacy/libraries/Template.php';
 
 /**
  * Base test class for EE_Template tests
