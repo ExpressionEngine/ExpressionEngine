@@ -271,7 +271,7 @@ class Moblog
 	/**
 	 * Read response from server
 	 */
-	private function readResponse() {
+	private function readResponse($alertFalse = false) {
 		$response = '';
 		while (($line = fgets($this->connection)) !== false) {
 			$response .= $line;
@@ -318,7 +318,7 @@ class Moblog
 	/**
 	 * List all emails
 	 */
-	public function listEmails() {
+	public function listEmails($type = 'emails') {
 		if (!$this->isConnected) {
 			throw new Exception("Not connected to server");
 		}
@@ -342,6 +342,11 @@ class Moblog
 				$sizes[$matches[1]] = $matches[2];
 			}
 		}
+
+		if ($type == 'sizes') {
+			return $sizes;
+		}
+
 
 		return $emails;
 	}
@@ -390,122 +395,6 @@ class Moblog
 		];
 	}
 	
-
-//$this->email_sizes[$x['0']] = $x['1'];
-
-
-	//$data = fgets($this->connection, 1024);
-	//$data = $this->iso_clean($data);
-	
-	//if (empty($data)) {
-		
-	//	log_message('error', 'do itttt no data: ');
-	//	break;
-	//}
-	
-	/*
-	$email_data .= $data;
-} while (strncmp($data, ".\r\n", 3) != 0);
-
-// Robust header parsing
-$subject_parsed = false;
-list($headers_raw, $body_raw) = $this->splitHeadersBody($email_data);
-$headers_assoc = $this->parseRfc5322Headers($headers_raw);
-
-if (!empty($headers_assoc['subject'])) {
-	$this->post_data['subject'] = $headers_assoc['subject'];
-	$subject_parsed = true;
-}
-
-*/
-
-
-
-    public function get_valid_emails($total)
-    {
-		$valid_froms = explode("|", $this->moblog_array['moblog_valid_from']);
-		$valid_emails = array();
-		
-        for ($i = 1; $i <= $total; $i++) {
-			$response = $this->sendCommand("TOP {$i} 0");
-			
-			if (!str_starts_with($response, '+OK')) {
-				return FALSE;
-			}			
-
-            $valid_subject = 'n';
-			$subject_parsed = FALSE;
-			$from_parsed = FALSE;
-			$this->post_data['subject'] = FALSE;
-			
-            $valid_from = ($this->moblog_array['moblog_valid_from'] != '') ? 'n' : 'y';
-            $str = fgets($this->connection, 1024);
-
-            while (strncmp($str, ".\r\n", 3) != 0) {
-                $str = fgets($this->connection, 1024);
-                $str = $this->iso_clean($str);
-				
-
-                if (empty($str)) {
-                    break;
-                }
-				
-			   $email_data = $str;
-			   
-			   list($headers_raw, $body_raw) = $this->splitHeadersBody($email_data);
-			   $headers_assoc = $this->parseRfc5322Headers($headers_raw);
-
-                // ------------------------
-                // Does email contain correct prefix? (if prefix is set)
-                // Liberal interpretation of prefix location
-                // ------------------------
-
-
-				if (!empty($headers_assoc['subject'])) {
-					$this->post_data['subject'] = $headers_assoc['subject'];
-					$subject_parsed = true;
-				}
-
-                if ($this->moblog_array['moblog_subject_prefix'] == '') {
-                    $valid_subject = 'y';
-                } elseif ($this->post_data['subject']) {
-                    if (strpos(trim($this->post_data['subject']), $this->moblog_array['moblog_subject_prefix']) !== false) {
-                        $valid_subject = 'y';
-                    }
-                }
-
-                if ($this->moblog_array['moblog_valid_from'] != '') {
-                    if ($this->post_data['subject']) {
-                       $from_parsed = TRUE; 
-
-                        if (in_array(trim($this->post_data['subject']), $valid_froms)) {
-                            $valid_from = 'y';
-                        }
-                    }
-                }
-            }
-
-            if ($valid_subject == 'y' && $valid_from == 'y') {
-                $valid_emails[] = $i;
-            }
-        }
-
-        unset($subject);
-        unset($str);
-
-        if (count($valid_emails) == 0) {
-            $this->message_array[] = 'no_valid_emails';
-            $this->disconnect();
-
-            return array();
-        }
-		
-		return $valid_emails;
-	
-	
-    }
-
-
 	
 	/**
 	 * 	Check Pop3 Moblog
@@ -517,21 +406,10 @@ if (!empty($headers_assoc['subject'])) {
 		/** ------------------------------
 		/**  Email Login Check
 		/** ------------------------------*/
-		$port = 110;
 		$port = $this->moblog_array['moblog_email_port'];
 		
+		$ssl = ($this->moblog_array['moblog_email_ssl'] == 'n') ? FALSE : TRUE;
 
-		
-		$ssl = TRUE; //(substr($this->moblog_array['moblog_email_server'], 0, 6) == 'ssl://');
-
-		//if ($ssl or stripos($this->moblog_array['moblog_email_server'], 'gmail') !== false) {
-		//	if (! $ssl) {
-		//		$this->moblog_array['moblog_email_server'] = 'ssl://' . $this->moblog_array['moblog_email_server'];
-		//	}
-
-		//	$port = 995;
-		//}
-		
 		// Create SSL context
 		$context = stream_context_create([
 			'ssl' => [
@@ -599,7 +477,7 @@ if (!empty($headers_assoc['subject'])) {
 		if ($this->total_size > $this->max_size) {
 			
 			
-			$this->email_sizes = $this->listEmails();
+			$this->email_sizes = $this->listEmails('sizes');
 			
 		}
 		
@@ -609,16 +487,15 @@ if (!empty($headers_assoc['subject'])) {
 		/**  Find Valid Emails
 		/** ------------------------------*/
 		$valid_emails = array();
-		$valid_froms = explode("|", $this->moblog_array['moblog_valid_from']);
+
 		
-		//if ($this->moblog_array['moblog_subject_prefix'] == '' && $this->moblog_array['moblog_valid_from'] == '') {
-			for ($i = 1; $i <= $total; $i++) {
-				$valid_emails[] = $i;
-			}
-			//}	
-		//else {
-		//	$valid_emails = $this->get_valid_emails($total);			
-		//}		
+		$subject_prefix = ( ! empty($this->moblog_array['moblog_subject_prefix'])) ? $this->moblog_array['moblog_subject_prefix'] : FALSE; 
+		$allowed_from =  ( ! empty($this->moblog_array['moblog_valid_from'])) ? explode("|", $this->moblog_array['moblog_valid_from']) : FALSE; 
+
+		for ($i = 1; $i <= $total; $i++) {
+			$valid_emails[] = $i;
+		}
+		
 		
 		if (count($valid_emails) == 0) {
 			$this->message_array[] = 'no_valid_emails';
@@ -631,6 +508,7 @@ if (!empty($headers_assoc['subject'])) {
 		
 		
 		log_message('error', 'valid emails2: ' . count($valid_emails));
+
 
 		/** ------------------------------
 		/**  Process Valid Emails
@@ -655,35 +533,13 @@ if (!empty($headers_assoc['subject'])) {
 
 				$this->checked_size += $this->email_sizes[$email_id];
 			}
-
-			/** ---------------------------------------
-			/**  Failure does happen at times
-			/** ---------------------------------------*/
-		   // if (strncasecmp($this->pop_command("RETR {$email_id}"), '+OK', 3) != 0) {
-		   //     continue;
-		   // }
 			
-			/**
-			 * Fetch a specific email by ID
-			 */
-			//public function fetchEmail($emailId) {
-			//    if (!$this->isConnected) {
-			//        throw new Exception("Not connected to server");
-			//     }
-
-				$response = $this->sendCommand("RETR $email_id");
-				if (!str_starts_with($response, '+OK')) {
+			$response = $this->sendCommand("RETR $email_id");
+			if (!str_starts_with($response, '+OK')) {
 					
-					log_message('error', 'no retr: ' . $emailId);
-					throw new Exception("Failed to fetch email $emailId: $response");
-				}
-
-	//        return $this->parseEmail($response);
-	//    }
-	//			
-				
-				
-				
+				log_message('error', 'no retr: ' . $emailId);
+				throw new Exception("Failed to fetch email $emailId: $response");
+			}
 			
 			// Under redundant, see redundant
 			$this->post_data['subject'] = 'Moblog Entry';
@@ -693,8 +549,6 @@ if (!empty($headers_assoc['subject'])) {
 			/**  Retrieve Email data
 			/** ------------------------------*/
 			do {
-				
-				//log_message('error', 'do itttt: ');
 				
 				$data = fgets($this->connection, 1024);
 				$data = $this->iso_clean($data);
@@ -740,27 +594,18 @@ if (!empty($headers_assoc['subject'])) {
 				}
 			}
 
-			//echo $email_data."<br /><br />\n\n";
 
-			if (preg_match("/charset=(.*?)(\s|" . $this->newline . ")/is", $email_data, $match)) {
+			if (empty($this->charset) && preg_match("/charset=(.*?)(\s|" . $this->newline . ")/is", $email_data, $match)) {
 				$this->charset = trim(str_replace(array("'", '"', ';'), '', $match['1']));
 			}
 			
-			log_message('error', 'presubject email data: ' . $email_data);
 
 			/** --------------------------
 			/**  Set Subject, Remove Moblog Prefix
 			/** --------------------------*/
 			if (!$subject_parsed) {
 				if (preg_match("/Subject:(.*)/i", trim($email_data), $subject)) {
-					if ($this->moblog_array['moblog_subject_prefix'] == '') {
-						$this->post_data['subject'] = (trim($subject['1']) != '') ? trim($subject['1']) : 'Moblog Entry';
-						log_message('error', 'sub1: ' . $this->post_data['subject']);
-					} elseif (strpos(trim($subject['1']), $this->moblog_array['moblog_subject_prefix']) !== false) {
-						$str_subject = str_replace($this->moblog_array['moblog_subject_prefix'], '', $subject['1']);
-						$this->post_data['subject'] = (trim($str_subject) != '') ? trim($str_subject) : 'Moblog Entry';
-						log_message('error', 'sub2: ' . $this->post_data['subject']);
-					}
+					$this->post_data['subject'] = (trim($subject['1']) != '') ? trim($subject['1']) : 'Moblog Entry';
 
 					// If the subject header was read with imap_utf8() in the iso_clean() method, then
 					// we don't need to do anything further
@@ -769,31 +614,33 @@ if (!empty($headers_assoc['subject'])) {
 						// must be used to decode the subject, not the charset used by the email
 						if (function_exists('mb_convert_encoding')) {
 							$this->post_data['subject'] = mb_convert_encoding($this->post_data['subject'], strtoupper(ee()->config->item('charset')), mb_internal_encoding());
-							log_message('error', 'sub3: ' . $this->post_data['subject']);
 						} elseif (function_exists('iconv')) {
 							$this->post_data['subject'] = iconv(iconv_get_encoding('internal_encoding'), strtoupper(ee()->config->item('charset')), $this->post_data['subject']);
-							log_message('error', 'sub4: ' . $this->post_data['subject']);
 						} elseif (strtolower(ee()->config->item('charset')) == 'utf-8' && strtolower($this->charset) == 'iso-8859-1') {
 							$this->post_data['subject'] = utf8_encode($this->post_data['subject']);
-							log_message('error', 'sub5: ' . $this->post_data['subject']);
 						} elseif (strtolower(ee()->config->item('charset')) == 'iso-8859-1' && strtolower($this->charset) == 'utf-8') {
 							$this->post_data['subject'] = utf8_decode($this->post_data['subject']);
-							log_message('error', 'sub6: ' . $this->post_data['subject']);
 						}
 					}
 				}
 			}
 			
-			log_message('error', 'sub7: ' . $this->post_data['subject']);
-
-			/** --------------------------
-			/**  IP Address of Sender
-			/** --------------------------*/
-			if (preg_match("/Received:\s*from\s*(.*)\[+(.*)\]+/", $email_data, $subject)) {
-				if (isset($subject['2']) && ee()->input->valid_ip(trim($subject['2']))) {
-					$this->post_data['ip'] = trim($subject['2']);
+			// check subject
+			if ($allowed_prefix) {
+				if (strpos(trim($this->post_data['subject']), $allowed_prefix) === false) {
+					log_message('error', 'prefix not there so skip');
+					continue;
+				}
+				$this->post_data['subject'] = str_replace($allowed_prefix, '', $this->post_data['subject']);
+			}
+			
+			// check allowed from
+			if ($allowed_from) {
+				if (! in_array($this->sender_email, $allowed_from)) {
+					continue;
 				}
 			}
+
 
 			/** --------------------------
 			/**  Check if AT&T email
@@ -817,8 +664,6 @@ if (!empty($headers_assoc['subject'])) {
 			/**  Determine Boundary
 			/** -------------------------------------*/
 			if (! $this->find_boundary($email_data)) { // OR $this->moblog_array['moblog_upload_directory'] == '0')
-		 
-		 log_message('error', 'boundery 1 ' . $this->post_data['subject']);
 		 
 				// Figure out content type and subtype
 				$contents = $this->find_data($email_data, "Content-Type: ", $this->newline);
@@ -917,13 +762,13 @@ if (!empty($headers_assoc['subject'])) {
 			/** ---------------------------*/
 			if (! $this->check_login()) {
 				if ($this->moblog_array['moblog_auth_required'] == 'y') {
-					/** -----------------------------
-					/**  Delete email?
-					/** -----------------------------*/
-					if ($this->moblog_array['moblog_auth_delete'] == 'y' && strncasecmp($this->pop_command("DELE {$email_id}"), '+OK', 3) != 0) {
-						$this->message_array[] = 'undeletable_email'; //.$email_id;
+
+					if ($this->moblog_array['moblog_auth_delete'] == 'y') {
+						$this->sendCommand("DELE {$email_id}");
+						// if it fails need to send message and return false
+						//$this->message_array[] = 'undeletable_email'; //.$email_id;
+						//return false;
 						
-						return false;
 					}
 					
 					/** -----------------------------
@@ -1055,12 +900,11 @@ if (!empty($headers_assoc['subject'])) {
 			/** -------------------------
 			/**  Delete Email
 			/** -------------------------*/
-		 //  if (strncasecmp($this->pop_command("DELE {$email_id}"), '+OK', 3) != 0) {
-		  //      $this->message_array[] = 'undeletable_email'; //.$email_id;
-			//		log_message('error', 'delete email: ' . $this->post_data['subject']);
-			
-		 //       return false;
-		 //  }
+		    if ($this->sendCommand("DELE {$email_id}") == '') {
+		            $this->message_array[] = 'undeletable_email'; //.$email_id;
+					log_message('error', 'delete email: ' . $this->post_data['subject']);
+			         return false;
+		    }
 
 			$this->emails_done++;
 		}
