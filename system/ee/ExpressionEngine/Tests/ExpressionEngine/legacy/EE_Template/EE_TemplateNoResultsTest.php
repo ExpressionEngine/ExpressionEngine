@@ -185,3 +185,4 @@ class EE_TemplateNoResultsTest extends EE_TemplateAdvancedMethodsTestBase
         $this->template->no_results();
     }
 }
+

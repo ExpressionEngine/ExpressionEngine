@@ -873,6 +873,8 @@ class FakeDb
 }
 }
 
+// Mock global functions
+
 // Test environment class with proper method support
 if (!class_exists('TestEnvironment')) {
 class TestEnvironment

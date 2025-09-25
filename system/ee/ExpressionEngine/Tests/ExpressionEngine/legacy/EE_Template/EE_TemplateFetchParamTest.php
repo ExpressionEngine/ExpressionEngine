@@ -161,3 +161,4 @@ class EE_TemplateFetchParamTest extends EE_TemplateAdvancedMethodsTestBase
         $this->assertEquals([], $result);
     }
 }
+
