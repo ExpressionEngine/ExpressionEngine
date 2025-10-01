@@ -53265,6 +53265,10 @@ body[data-theme=light] .ee-sidebar__items .ee-sidebar__version.ee-sidebar__versi
   }
 }
 
+.member-delete-confirm {
+  margin-bottom: 0;
+}
+
 .hidden {
   display: none;
 }
