@@ -127,10 +127,15 @@ class CategoryGroup extends StructureModel
     {
         $sort_column = ($this->sort_order == 'a') ? 'cat_name' : 'cat_order';
 
-        return $tree->from_list(
-            $this->getCategories()->sortBy($sort_column),
-            array('id' => 'cat_id')
-        );
+        $categories = ee()->db
+            ->select('cat_id, parent_id, cat_name')
+            ->from('categories')
+            ->where('group_id', $this->getId())
+            ->order_by($sort_column, 'asc')
+            ->get()
+            ->result_object();
+
+        return $tree->from_list($categories, array('id' => 'cat_id'));
     }
 
     /**
