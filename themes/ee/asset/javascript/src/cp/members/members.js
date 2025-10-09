@@ -32,7 +32,7 @@ $(document).ready(function() {
 
     });
 
-    $('body').on('change', '.modal-confirm-delete .ajax .member-delete-confirm .toggle-btn', function(){
+    $('body').on('change', '.modal-confirm-delete .ajax .member-delete-confirm .toggle-btn, .modal-confirm-remove-member .ajax .member-delete-confirm .toggle-btn', function(){
         var toggle = $(this);
         if(toggle.hasClass('on')) {
 
