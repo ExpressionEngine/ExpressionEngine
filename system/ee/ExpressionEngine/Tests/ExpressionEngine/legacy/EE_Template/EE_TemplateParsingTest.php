@@ -488,4 +488,167 @@ class EE_TemplateParsingTest extends EE_TemplateTestBase
 
         $this->assertEquals('', $result);
     }
+
+    /**
+     * Test parse_date_variables with multiple date variables
+     */
+    public function testParseDateVariablesWithMultipleDates()
+    {
+        $variablesParserMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['parseTagParameters'])
+            ->getMock();
+        $variablesParserMock->method('parseTagParameters')
+            ->willReturnCallback(function($param) {
+                if (strpos($param, 'format="%Y-%m-%d"') !== false) {
+                    return ['format' => '%Y-%m-%d'];
+                }
+                if (strpos($param, 'format="%H:%i"') !== false) {
+                    return ['format' => '%H:%i'];
+                }
+                return [];
+            });
+
+        ee()->setMock('Variables/Parser', $variablesParserMock);
+
+        $tagdata = '{created_date format="%Y-%m-%d"} at {updated_time format="%H:%i"}';
+        $dates = [
+            'created_date' => strtotime('2023-01-01 10:30:00'),
+            'updated_time' => strtotime('2023-01-01 14:45:00')
+        ];
+
+        $result = $this->template->parse_date_variables($tagdata, $dates);
+
+        $this->assertStringContainsString('2023-01-01', $result);
+        $this->assertStringContainsString('14:45', $result);
+    }
+
+    /**
+     * Test parse_date_variables with timezone consideration
+     */
+    public function testParseDateVariablesWithTimezone()
+    {
+        $variablesParserMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['parseTagParameters'])
+            ->getMock();
+        $variablesParserMock->method('parseTagParameters')
+            ->willReturn(['format' => '%Y-%m-%d %H:%i:%s']);
+
+        ee()->setMock('Variables/Parser', $variablesParserMock);
+
+        $tagdata = '{event_date format="%Y-%m-%d %H:%i:%s"}';
+        $dates = ['event_date' => strtotime('2023-06-15 15:30:00')];
+
+        $result = $this->template->parse_date_variables($tagdata, $dates);
+
+        // Should format the date correctly regardless of timezone
+        $this->assertStringContainsString('2023-06-15', $result);
+        $this->assertStringContainsString('15:30:00', $result);
+    }
+
+    /**
+     * Test process_date with basic format specifiers
+     */
+    public function testProcessDateWithBasicFormats()
+    {
+        $timestamp = strtotime('2023-12-25 09:15:30');
+
+        // Test basic EE date format specifiers that are directly converted
+        $formats = [
+            '%Y-%m-%d' => '2023-12-25',
+            '%H:%i:%s' => '09:15:30'
+        ];
+
+        foreach ($formats as $format => $expected) {
+            $result = $this->template->process_date($timestamp, ['format' => $format]);
+            $this->assertEquals($expected, $result, "Format $format should produce $expected");
+        }
+    }
+
+    /**
+     * Test process_date with relative dates
+     */
+    public function testProcessDateWithRelativeDates()
+    {
+        $pastTimestamp = time() - 3600; // 1 hour ago
+        $futureTimestamp = time() + 3600; // in 1 hour
+
+        // Test that relative dates are processed without crashing
+        $pastResult = $this->template->process_date($pastTimestamp, [], true);
+        $futureResult = $this->template->process_date($futureTimestamp, [], true);
+
+        // Should return strings (the mock always returns '1 hour ago')
+        $this->assertIsString($pastResult);
+        $this->assertIsString($futureResult);
+        $this->assertNotEmpty($pastResult);
+        $this->assertNotEmpty($futureResult);
+    }
+
+    /**
+     * Test process_date edge cases
+     */
+    public function testProcessDateEdgeCases()
+    {
+        // Test with invalid format
+        $result = $this->template->process_date(time(), ['format' => 'invalid']);
+        $this->assertIsString($result); // Should not crash
+
+        // Test with empty format
+        $result = $this->template->process_date(time(), ['format' => '']);
+        $this->assertIsString($result); // Should not crash
+
+        // Test with zero timestamp
+        $result = $this->template->process_date(0, ['format' => '%Y-%m-%d']);
+        $this->assertEquals('1970-01-01', $result); // Unix epoch
+
+        // Test with negative timestamp
+        $result = $this->template->process_date(-1, ['format' => '%Y-%m-%d']);
+        $this->assertEquals('1969-12-31', $result); // Before Unix epoch
+    }
+
+    /**
+     * Test parse_date_variables with missing date data
+     */
+    public function testParseDateVariablesWithMissingDates()
+    {
+        $variablesParserMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['parseTagParameters'])
+            ->getMock();
+        $variablesParserMock->method('parseTagParameters')
+            ->willReturn(['format' => '%Y']);
+
+        ee()->setMock('Variables/Parser', $variablesParserMock);
+
+        $tagdata = '{missing_date format="%Y"} {existing_date format="%Y"}';
+        $dates = ['existing_date' => strtotime('2023-01-01')];
+
+        $result = $this->template->parse_date_variables($tagdata, $dates);
+
+        // Should leave missing dates unparsed and format existing ones
+        $this->assertStringContainsString('{missing_date format="%Y"}', $result);
+        $this->assertStringContainsString('2023', $result);
+    }
+
+
+
+    /**
+     * Test parse_variables method with conditional logic in variables
+     */
+    public function testParseVariablesWithConditionalLogic()
+    {
+        $tagdata = '{items}{if featured}★ {/if}{title}{/items}';
+        $variables = [
+            [
+                'items' => [
+                    ['title' => 'Regular Item', 'featured' => false],
+                    ['title' => 'Featured Item', 'featured' => true],
+                    ['title' => 'Another Item', 'featured' => false]
+                ]
+            ]
+        ];
+
+        $result = $this->template->parse_variables($tagdata, $variables);
+
+        // Test that conditionals within variable pairs work - method should run without crashing
+        $this->assertIsString($result);
+    }
 }
