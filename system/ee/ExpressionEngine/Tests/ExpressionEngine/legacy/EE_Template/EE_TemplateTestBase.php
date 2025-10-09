@@ -25,6 +25,22 @@ class EE_TemplateTestBase extends \PHPUnit\Framework\TestCase
             require_once $helperPath;
         }
 
+        // Define helper functions that legacy code expects
+        if (!function_exists('\bool_config_item')) {
+            eval('
+                function bool_config_item($item)
+                {
+                    if (function_exists("ee") && ee() !== null) {
+                        $value = ee()->config->item($item);
+                    } else {
+                        $value = false;
+                    }
+
+                    return $value === "y" || $value === true || $value === 1 || $value === "1";
+                }
+            ');
+        }
+
         // Include the EE_Template class
         $templatePath = BASEPATH . 'libraries/Template.php';
         if (!file_exists($templatePath)) {

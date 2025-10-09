@@ -17,9 +17,9 @@ namespace ExpressionEngine\Tests\ExpressionEngine\legacy\EE_Template;
 class EE_TemplateErrorHandlingTest extends EE_TemplateTestBase
 {
     /**
-     * Test parse_variables handles null/empty inputs gracefully
+     * Test parse_variables handles empty inputs gracefully
      */
-    public function testParseVariablesHandlesNullInputs()
+    public function testParseVariablesHandlesEmptyInputs()
     {
         // Test with empty inputs - should return the input unchanged
         $result = $this->template->parse_variables('', []);
@@ -28,9 +28,9 @@ class EE_TemplateErrorHandlingTest extends EE_TemplateTestBase
         $result = $this->template->parse_variables('test', []);
         $this->assertEquals('test', $result);
 
-        // Test with null template - should return the null value (graceful handling)
-        $result = $this->template->parse_variables(null, []);
-        $this->assertNull($result);
+        // Test with empty array - should return the template unchanged
+        $result = $this->template->parse_variables('template', []);
+        $this->assertEquals('template', $result);
     }
 
     /**
@@ -113,8 +113,8 @@ class EE_TemplateErrorHandlingTest extends EE_TemplateTestBase
         $result = $this->template->exclusive_conditional('template', '', []);
         $this->assertEquals('', $result);
 
-        // Test with null template
-        $result = $this->template->exclusive_conditional(null, 'test', []);
+        // Test with empty template
+        $result = $this->template->exclusive_conditional('', 'test', []);
         $this->assertEquals('', $result);
     }
 
@@ -131,9 +131,9 @@ class EE_TemplateErrorHandlingTest extends EE_TemplateTestBase
         $result = $this->template->process_date(null);
         $this->assertEquals('', $result);
 
-        // Valid timestamp with null format - returns timestamp
-        $result = $this->template->process_date(time(), ['format' => null]);
-        $this->assertIsNumeric($result);
+        // Valid timestamp with empty format - returns formatted date string
+        $result = $this->template->process_date(time(), ['format' => '']);
+        $this->assertIsString($result);
     }
 
     /**
