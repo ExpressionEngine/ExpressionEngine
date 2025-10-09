@@ -389,15 +389,18 @@ class EntryListing
      */
     private function createAuthorFilter($channel_id = null)
     {
-        $db = ee('db')->distinct()
-            ->select('t.author_id, m.screen_name, m.username')
-            ->from('channel_titles t')
-            ->join('members m', 'm.member_id = t.author_id', 'LEFT')
-            ->order_by('screen_name', 'asc');
+        // It is more performant to query the members table and filter by having at least one channel_title authored
+        // than to do a distinct query on author_id across a potentially very large channel_titles table.
+        $where = 'SELECT count(t.entry_id) FROM '. ee()->db->dbprefix('channel_titles').' t WHERE t.author_id = m.member_id';
 
         if ($channel_id) {
-            $db->where('channel_id', $channel_id->channel_id);
+            $where .= ' AND t.channel_id = '. (int) $channel_id->channel_id;
         }
+
+        $db = ee('db')->select('m.member_id as author_id, m.screen_name, m.username')
+                ->from('exp_members m')
+                ->where("($where) > 0")
+                ->order_by('screen_name', 'asc');
 
         $authors_query = $db->get();
 
