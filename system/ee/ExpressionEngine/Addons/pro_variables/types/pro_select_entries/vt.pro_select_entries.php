@@ -306,8 +306,9 @@ class Pro_select_entries extends Pro_variables_type
             );
         } else {
             if ($this->settings('multi_interface') == 'drag-list') {
+
                 $ids = str_replace('Array', '', $var_data);
-                $ids = array_map('intval', preg_split('/\s+/', trim($ids)));
+                $ids = array_map('intval', preg_split('/[|,\s]+/', trim($ids)));
 
                 $entries = ee('Model')
                     ->get('ChannelEntry')
