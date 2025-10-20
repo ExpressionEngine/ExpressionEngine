@@ -44,7 +44,7 @@ class ChannelFormLibSecurityTest extends ChannelFormLibTestBase
         // Use reflection to call protected method
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('entry_match_check');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $method->invoke($this->channelFormLib, $params);
     }
 
@@ -88,7 +88,7 @@ class ChannelFormLibSecurityTest extends ChannelFormLibTestBase
         // Use reflection to call protected method
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('entry_match_check');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $method->invoke($this->channelFormLib, $params);
     }
 
@@ -126,7 +126,7 @@ class ChannelFormLibSecurityTest extends ChannelFormLibTestBase
         // Should not throw exception
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('entry_match_check');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invoke($this->channelFormLib, $params);
 
         $this->assertNull($result);
@@ -182,7 +182,7 @@ class ChannelFormLibSecurityTest extends ChannelFormLibTestBase
         // Call the protected method
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_build_meta_array');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invoke($this->channelFormLib);
 
         // Verify the result is encrypted and contains expected structure
@@ -245,7 +245,7 @@ class ChannelFormLibSecurityTest extends ChannelFormLibTestBase
         // Call the protected method
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_build_meta_array');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invoke($this->channelFormLib);
 
         // Decrypt to verify url_title was converted to entry_id
@@ -289,7 +289,7 @@ class ChannelFormLibSecurityTest extends ChannelFormLibTestBase
         // Call the protected method
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_get_meta_vars');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $method->invoke($this->channelFormLib);
 
         // Verify the meta data was properly processed
@@ -335,7 +335,7 @@ class ChannelFormLibSecurityTest extends ChannelFormLibTestBase
         // Call the protected method
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_get_meta_vars');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $method->invoke($this->channelFormLib);
     }
 
@@ -397,7 +397,7 @@ class ChannelFormLibSecurityTest extends ChannelFormLibTestBase
         // Call the protected method
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_get_meta_vars');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $method->invoke($this->channelFormLib);
 
         // Verify sensitive POST parameters were unset

@@ -26,7 +26,7 @@ class ChannelConstructTest extends ChannelTestBase
         // Check that dynamic parameters are set using reflection
         $reflection = new ReflectionClass($channel);
         $property = $reflection->getProperty('_dynamic_parameters');
-        $property->setAccessible(true);
+        TestReflectionHelper::makePropertyAccessible($property);
 
         $expectedParams = array('channel', 'entry_id', 'category', 'orderby',
             'sort', 'sticky', 'show_future_entries', 'show_expired', 'entry_id_from',
@@ -42,7 +42,7 @@ class ChannelConstructTest extends ChannelTestBase
         $channel = new Channel();
 
         // Check that pagination is created
-        $this->assertObjectHasAttribute('pagination', $channel);
+        $this->assertObjectHasProperty('pagination', $channel);
         $this->assertNotNull($channel->pagination);
     }
 

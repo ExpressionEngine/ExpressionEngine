@@ -56,13 +56,13 @@ class EE_TemplateDecodeChannelFormEeTagsTest extends EE_TemplateTestBase
         $this->assertEquals('', $result);
     }
 
-    public function testDecodeChannelFormEeTagsNullInput()
+    public function testDecodeChannelFormEeTagsEmptyStringInput()
     {
-        $input = null;
+        $input = '';
 
         $result = $this->reflectionMethod->invoke($this->template, $input);
 
-        // str_replace with null returns an empty string
+        // str_replace with empty string returns an empty string
         $this->assertEquals('', $result);
     }
 

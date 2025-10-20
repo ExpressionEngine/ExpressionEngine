@@ -3,6 +3,7 @@ namespace ExpressionEngine\Tests\ExpressionEngine\legacy\EE_Template;
 
 require_once __DIR__ . '/EE_TemplateTestBase.php';
 require_once SYSPATH . 'ee/legacy/libraries/Template.php';
+require_once SYSPATH . 'ee/ExpressionEngine/Tests/TestReflectionHelper.php';
 
 class EE_TemplateGetModifiedVariablesTest extends EE_TemplateTestBase
 {
@@ -14,7 +15,7 @@ class EE_TemplateGetModifiedVariablesTest extends EE_TemplateTestBase
 
         // Get the private method using reflection
         $this->reflectionMethod = new \ReflectionMethod($this->template, 'getModifiedVariables');
-        $this->reflectionMethod->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($this->reflectionMethod);
 
         // Mock the Variables/Parser service
         $this->mockVariablesParser();
@@ -217,7 +218,7 @@ class EE_TemplateGetModifiedVariablesTest extends EE_TemplateTestBase
     private function setVarSingle(array $vars)
     {
         $reflection = new \ReflectionProperty($this->template, 'var_single');
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($reflection);
         $reflection->setValue($this->template, $vars);
     }
 

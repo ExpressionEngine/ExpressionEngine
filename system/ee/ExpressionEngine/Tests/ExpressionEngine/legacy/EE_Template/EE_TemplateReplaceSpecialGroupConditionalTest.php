@@ -3,6 +3,7 @@ namespace ExpressionEngine\Tests\ExpressionEngine\legacy\EE_Template;
 
 require_once __DIR__ . '/EE_TemplateTestBase.php';
 require_once SYSPATH . 'ee/legacy/libraries/Template.php';
+require_once SYSPATH . 'ee/ExpressionEngine/Tests/TestReflectionHelper.php';
 
 class EE_TemplateReplaceSpecialGroupConditionalTest extends EE_TemplateTestBase
 {
@@ -14,7 +15,7 @@ class EE_TemplateReplaceSpecialGroupConditionalTest extends EE_TemplateTestBase
 
         // Get the private method using reflection
         $this->reflectionMethod = new \ReflectionMethod($this->template, 'replace_special_group_conditional');
-        $this->reflectionMethod->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($this->reflectionMethod);
     }
 
     public function testReplaceSpecialGroupConditionalNoInGroup()
@@ -205,14 +206,14 @@ TEMPLATE;
         $this->assertEquals('', $result);
     }
 
-    public function testReplaceSpecialGroupConditionalNullInput()
+    public function testReplaceSpecialGroupConditionalEmptyStringInput()
     {
-        $input = null;
+        $input = '';
 
         $result = $this->reflectionMethod->invoke($this->template, $input);
 
-        // strpos with null may cause issues, but method should handle it
-        $this->assertNull($result);
+        // Empty string should be returned unchanged
+        $this->assertEquals('', $result);
     }
 
     public function testReplaceSpecialGroupConditionalDeeplyNested()

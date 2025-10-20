@@ -14,6 +14,8 @@ namespace ExpressionEngine\Tests\ExpressionEngine\legacy\EE_Template;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
+require_once SYSPATH . 'ee/ExpressionEngine/Tests/TestReflectionHelper.php';
+
 // Bootstrap minimal EE environment
 if (!defined('APP_VER')) {
     define('APP_VER', '7.5.14');
@@ -202,7 +204,7 @@ class EE_TemplateProcessingTest extends TestCase
     public function testChunkGlobalsArrayHandlesEmptyArray()
     {
         $reflection = new \ReflectionMethod($this->template, 'chunkGlobalsArray');
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($reflection);
 
         $result = $reflection->invoke($this->template, []);
 
@@ -215,7 +217,7 @@ class EE_TemplateProcessingTest extends TestCase
     public function testChunkGlobalsArrayHandlesSmallArray()
     {
         $reflection = new \ReflectionMethod($this->template, 'chunkGlobalsArray');
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($reflection);
 
         $globals = ['var1', 'var2', 'var3'];
         $result = $reflection->invoke($this->template, $globals);
@@ -234,7 +236,7 @@ class EE_TemplateProcessingTest extends TestCase
     public function testFindLayoutReturnsNullForNoLayout()
     {
         $reflection = new \ReflectionMethod($this->template, '_find_layout');
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($reflection);
 
         $result = $reflection->invoke($this->template);
 
@@ -247,7 +249,7 @@ class EE_TemplateProcessingTest extends TestCase
     public function testCleanupLayoutTagsRemovesUndeclaredLayoutVariables()
     {
         $reflection = new \ReflectionMethod($this->template, '_cleanup_layout_tags');
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($reflection);
 
         // Set up the final_template property with undeclared layout variable tags
         $this->template->final_template = 'Content{layout:variable}value{/layout:variable}{layout:contents}main{/layout:contents}';
@@ -261,7 +263,7 @@ class EE_TemplateProcessingTest extends TestCase
     public function testCleanupLayoutTagsHandlesNoTags()
     {
         $reflection = new \ReflectionMethod($this->template, '_cleanup_layout_tags');
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($reflection);
 
         $template = 'Simple content with no layout tags';
         $this->template->final_template = $template;
@@ -278,7 +280,7 @@ class EE_TemplateProcessingTest extends TestCase
     public function testProcessLayoutTemplateReturnsTemplateWhenNoLayout()
     {
         $reflection = new \ReflectionMethod($this->template, 'process_layout_template');
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($reflection);
 
         $template = 'Simple template content';
         $result = $reflection->invoke($this->template, $template, null);

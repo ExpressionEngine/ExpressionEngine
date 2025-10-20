@@ -470,6 +470,7 @@ if (!class_exists('FakeSuperModel')) {
 if (!class_exists('FakeFunctions')) {
     class FakeFunctions
     {
+        public $template_type = 'webpage'; // Prevent dynamic property deprecation warnings
         public function fetch_site_index($add_slash = false) {
             return 'https://example.com/';
         }

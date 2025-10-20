@@ -220,7 +220,7 @@ class EE_TemplateParseTagsTest extends EE_TemplateTestBase
         // Set up tag class aliases using reflection (property is protected)
         $reflection = new \ReflectionClass($this->template);
         $property = $reflection->getProperty('tag_class_aliases');
-        $property->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($property);
         $property->setValue($this->template, [
             'low_search' => 'pro_search'
         ]);

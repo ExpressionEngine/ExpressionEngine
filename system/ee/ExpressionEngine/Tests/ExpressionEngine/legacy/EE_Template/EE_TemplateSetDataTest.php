@@ -3,6 +3,7 @@ namespace ExpressionEngine\Tests\ExpressionEngine\legacy\EE_Template;
 
 require_once __DIR__ . '/EE_TemplateTestBase.php';
 require_once SYSPATH . 'ee/legacy/libraries/Template.php';
+require_once SYSPATH . 'ee/ExpressionEngine/Tests/TestReflectionHelper.php';
 
 class EE_TemplateSetDataTest extends EE_TemplateTestBase
 {
@@ -16,7 +17,7 @@ class EE_TemplateSetDataTest extends EE_TemplateTestBase
     private function setProtectedProperty($property, $value)
     {
         $reflection = new \ReflectionProperty($this->template, $property);
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($reflection);
         $reflection->setValue($this->template, $value);
     }
     public function testSetDataWhenProcessingEnabled()

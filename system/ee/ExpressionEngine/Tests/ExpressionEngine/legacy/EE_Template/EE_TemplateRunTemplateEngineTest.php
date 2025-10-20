@@ -11,6 +11,8 @@
 
 namespace ExpressionEngine\Tests\ExpressionEngine\legacy\EE_Template;
 
+require_once SYSPATH . 'ee/ExpressionEngine/Tests/TestReflectionHelper.php';
+
 /**
  * run_template_engine tests for EE_Template class
  */
@@ -42,7 +44,7 @@ class EE_TemplateRunTemplateEngineTest extends EE_TemplateTestBase
         // Test that the template_type property can be set
         $reflection = new \ReflectionClass($this->template);
         $typeProperty = $reflection->getProperty('template_type');
-        $typeProperty->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($typeProperty);
 
         $this->assertEquals('', $typeProperty->getValue($this->template));
 
@@ -88,7 +90,7 @@ class EE_TemplateRunTemplateEngineTest extends EE_TemplateTestBase
         // Test that static template type can be set on the template object
         $reflection = new \ReflectionClass($this->template);
         $templateTypeProperty = $reflection->getProperty('template_type');
-        $templateTypeProperty->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($templateTypeProperty);
 
         // Initially should be empty or default
         $initialType = $templateTypeProperty->getValue($this->template);
@@ -169,7 +171,7 @@ class EE_TemplateRunTemplateEngineTest extends EE_TemplateTestBase
         // Test that the final_template property can store content that would be decoded
         $reflection = new \ReflectionClass($this->template);
         $finalTemplateProperty = $reflection->getProperty('final_template');
-        $finalTemplateProperty->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($finalTemplateProperty);
 
         $testContent = 'template with {channel_form_ee_tags}';
         $finalTemplateProperty->setValue($this->template, $testContent);

@@ -72,6 +72,7 @@ if (!class_exists('FakeConfig')) {
 if (!class_exists('FakeFunctions')) {
     class FakeFunctions
     {
+        public $template_type = 'webpage'; // Prevent dynamic property deprecation warnings
         public function fetch_site_index($a = 0, $b = 0) { return '/'; }
         public function create_url($path = '') {
             if ($path) {

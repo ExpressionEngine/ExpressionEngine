@@ -219,14 +219,14 @@ class ApiChannelStructureReadTest extends ApiChannelStructureTestBase
         $channel = $result->row();
 
         // Verify key fields are present
-        $this->assertObjectHasAttribute('channel_id', $channel);
-        $this->assertObjectHasAttribute('channel_name', $channel);
-        $this->assertObjectHasAttribute('channel_title', $channel);
-        $this->assertObjectHasAttribute('site_id', $channel);
-        $this->assertObjectHasAttribute('field_group', $channel);
-        $this->assertObjectHasAttribute('cat_group', $channel);
-        $this->assertObjectHasAttribute('channel_url', $channel);
-        $this->assertObjectHasAttribute('comment_url', $channel);
+        $this->assertObjectHasProperty('channel_id', $channel);
+        $this->assertObjectHasProperty('channel_name', $channel);
+        $this->assertObjectHasProperty('channel_title', $channel);
+        $this->assertObjectHasProperty('site_id', $channel);
+        $this->assertObjectHasProperty('field_group', $channel);
+        $this->assertObjectHasProperty('cat_group', $channel);
+        $this->assertObjectHasProperty('channel_url', $channel);
+        $this->assertObjectHasProperty('comment_url', $channel);
     }
 
     /**
@@ -241,10 +241,10 @@ class ApiChannelStructureReadTest extends ApiChannelStructureTestBase
         $channel = $result->row();
 
         // Verify key fields are present
-        $this->assertObjectHasAttribute('channel_id', $channel);
-        $this->assertObjectHasAttribute('channel_name', $channel);
-        $this->assertObjectHasAttribute('channel_title', $channel);
-        $this->assertObjectHasAttribute('site_id', $channel);
+        $this->assertObjectHasProperty('channel_id', $channel);
+        $this->assertObjectHasProperty('channel_name', $channel);
+        $this->assertObjectHasProperty('channel_title', $channel);
+        $this->assertObjectHasProperty('site_id', $channel);
     }
 
     /**

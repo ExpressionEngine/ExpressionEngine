@@ -11,6 +11,8 @@
 
 namespace ExpressionEngine\Tests\ExpressionEngine\legacy\EE_Template;
 
+require_once SYSPATH . 'ee/ExpressionEngine/Tests/TestReflectionHelper.php';
+
 // Global function definitions needed by EE_Template
 if (!function_exists('trim_slashes')) {
     function trim_slashes($str) {
@@ -225,7 +227,7 @@ class EE_TemplateProcessSubTemplatesTest extends EE_TemplateAdvancedMethodsTestB
         // Mock sites array for site lookup
         $reflection = new \ReflectionClass($this->template);
         $sitesProperty = $reflection->getProperty('sites');
-        $sitesProperty->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($sitesProperty);
         $sitesProperty->setValue($this->template, [2 => 'site_two']);
 
         // Mock config for multiple sites

@@ -11,6 +11,8 @@
 
 namespace ExpressionEngine\Tests\ExpressionEngine\legacy\EE_Template;
 
+require_once SYSPATH . 'ee/ExpressionEngine/Tests/TestReflectionHelper.php';
+
 /**
  * Template retrieval and file operations tests for EE_Template class
  */
@@ -455,7 +457,7 @@ class EE_TemplateRetrievalTest extends EE_TemplateTestBase
     {
         // Test _get_fetch_data method exists and has correct signature
         $reflection = new \ReflectionMethod($this->template, '_get_fetch_data');
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($reflection);
 
         $parameters = $reflection->getParameters();
         $this->assertCount(1, $parameters);
@@ -471,7 +473,7 @@ class EE_TemplateRetrievalTest extends EE_TemplateTestBase
     public function testGetFetchDataHandlesSiteSpecificPaths()
     {
         $reflection = new \ReflectionMethod($this->template, '_get_fetch_data');
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($reflection);
 
         // Test site-specific path format: "site:group/template"
         // The method should extract site name and convert to site_id

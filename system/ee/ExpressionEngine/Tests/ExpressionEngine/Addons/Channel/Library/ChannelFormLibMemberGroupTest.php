@@ -21,7 +21,7 @@ class ChannelFormLibMemberGroupTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_member_group_override');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
 
         // Call without arguments (default $reset = false)
         $result = $method->invoke($this->channelFormLib);
@@ -54,7 +54,7 @@ class ChannelFormLibMemberGroupTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_member_group_override');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
 
         // Call without arguments (default $reset = false)
         $result = $method->invoke($this->channelFormLib);
@@ -87,7 +87,7 @@ class ChannelFormLibMemberGroupTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_member_group_override');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
 
         // Call with $reset = true
         $result = $method->invoke($this->channelFormLib, true);
@@ -118,7 +118,7 @@ class ChannelFormLibMemberGroupTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_member_group_override');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
 
         // Expect an exception or handle gracefully
         $this->expectException(\Error::class);
@@ -145,7 +145,7 @@ class ChannelFormLibMemberGroupTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_member_group_override');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
 
         // Expect an exception when trying to call getId on object without the method
         $this->expectException(\Error::class);
@@ -172,7 +172,7 @@ class ChannelFormLibMemberGroupTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_member_group_override');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
 
         // Call without arguments (default $reset = false)
         $result = $method->invoke($this->channelFormLib);
@@ -205,7 +205,7 @@ class ChannelFormLibMemberGroupTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_member_group_override');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
 
         // Call without arguments (default $reset = false)
         $result = $method->invoke($this->channelFormLib);
@@ -238,7 +238,7 @@ class ChannelFormLibMemberGroupTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_member_group_override');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
 
         // Call without arguments (default $reset = false)
         $result = $method->invoke($this->channelFormLib);
@@ -271,7 +271,7 @@ class ChannelFormLibMemberGroupTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_member_group_override');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
 
         // Call without arguments (default $reset = false)
         $result = $method->invoke($this->channelFormLib);
@@ -309,7 +309,7 @@ class ChannelFormLibMemberGroupTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_member_group_override');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
 
         // Should propagate the exception from getId()
         $this->expectException(\Exception::class);
@@ -332,7 +332,7 @@ class ChannelFormLibMemberGroupTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_member_group_override');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
 
         // Should throw an error when trying to access session
         $this->expectException(\Error::class);
@@ -357,7 +357,7 @@ class ChannelFormLibMemberGroupTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_member_group_override');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
 
         // Should throw an error when trying to call non-existent userdata method
         $this->expectException(\Error::class);
@@ -393,7 +393,7 @@ class ChannelFormLibMemberGroupTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_member_group_override');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
 
         // Call without arguments (default $reset = false)
         $result = $method->invoke($this->channelFormLib);
@@ -426,7 +426,7 @@ class ChannelFormLibMemberGroupTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_member_group_override');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
 
         // Call without arguments (default $reset = false)
         $result = $method->invoke($this->channelFormLib);
@@ -494,7 +494,7 @@ class ChannelFormLibMemberGroupTest extends ChannelFormLibTestBase
             // Call the private method using reflection
             $reflection = new ReflectionClass($this->channelFormLib);
             $method = $reflection->getMethod('_member_group_override');
-            $method->setAccessible(true);
+            TestReflectionHelper::makeMethodAccessible($method);
 
             $result = $method->invoke($this->channelFormLib);
 

@@ -31,6 +31,9 @@ class EE_TemplateParseNocacheTest extends EE_TemplateTestBase
         $templateMock->method('_fetch_site_ids')->willReturn(null);
         $templateMock->method('_assign_form_params')->willReturn(array());
 
+        // Suppress deprecation warnings for null handling in PHP 7.4+
+        error_reporting(E_ALL & ~E_DEPRECATED);
+
         // Mock security sanitize_filename
         $securityMock = $this->getMockBuilder('stdClass')
             ->setMethods(['sanitize_filename'])

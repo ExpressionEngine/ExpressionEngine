@@ -19,7 +19,7 @@ class ApiChannelEntriesInitializeTest extends ChannelApiTestBase
         // Call initialize using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('initialize');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $method->invoke($this->api, []);
 
         // Verify arrays are reset
@@ -41,7 +41,7 @@ class ApiChannelEntriesInitializeTest extends ChannelApiTestBase
         // Call initialize using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('initialize');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $method->invoke($this->api, []);
 
         // Verify orig_author_id is preserved but other keys are cleared
@@ -60,7 +60,7 @@ class ApiChannelEntriesInitializeTest extends ChannelApiTestBase
         // Call initialize using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('initialize');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $method->invoke($this->api, []);
 
         // Verify reset occurred
@@ -80,7 +80,7 @@ class ApiChannelEntriesInitializeTest extends ChannelApiTestBase
         // Call initialize using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('initialize');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $params = ['entry_id' => 456, 'channel_id' => 789];
         $method->invoke($this->api, [$params]);
 
@@ -110,7 +110,7 @@ class ApiChannelEntriesInitializeTest extends ChannelApiTestBase
         // Call initialize using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('initialize');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $method->invoke($this->api, []);
 
         // Only orig_author_id should remain
@@ -132,7 +132,7 @@ class ApiChannelEntriesInitializeTest extends ChannelApiTestBase
         // Call initialize using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('initialize');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $method->invoke($this->api, []);
 
         // Verify arrays remain empty
@@ -156,7 +156,7 @@ class ApiChannelEntriesInitializeTest extends ChannelApiTestBase
         // Call initialize using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('initialize');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $method->invoke($this->api, []);
 
         // Verify all preferences are cleared
@@ -179,7 +179,7 @@ class ApiChannelEntriesInitializeTest extends ChannelApiTestBase
         // Call initialize using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('initialize');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $method->invoke($this->api, [null]);
 
         // Verify reset occurred

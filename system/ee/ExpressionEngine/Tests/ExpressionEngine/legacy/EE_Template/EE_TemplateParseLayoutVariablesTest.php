@@ -13,6 +13,8 @@ namespace ExpressionEngine\Tests\ExpressionEngine\legacy\EE_Template;
 
 use ReflectionClass;
 
+require_once SYSPATH . 'ee/ExpressionEngine/Tests/TestReflectionHelper.php';
+
 /**
  * parseLayoutVariables tests for EE_Template class
  */
@@ -101,7 +103,7 @@ class EE_TemplateParseLayoutVariablesTest extends EE_TemplateTestBase
 
         $reflection = new ReflectionClass($this->template);
         $conditionalsProperty = $reflection->getProperty('layout_conditionals');
-        $conditionalsProperty->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($conditionalsProperty);
 
         $conditionals = $conditionalsProperty->getValue($this->template);
 
@@ -265,7 +267,7 @@ class EE_TemplateParseLayoutVariablesTest extends EE_TemplateTestBase
 
         $reflection = new ReflectionClass($this->template);
         $conditionalsProperty = $reflection->getProperty('layout_conditionals');
-        $conditionalsProperty->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($conditionalsProperty);
 
         $conditionals = $conditionalsProperty->getValue($this->template);
 

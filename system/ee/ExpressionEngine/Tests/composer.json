@@ -1,6 +1,6 @@
 {
     "require": {
-        "php": ">=7.3.0",
+        "php": ">=7.4.0",
         "phpunit/phpunit": "^9.5",
         "mockery/mockery": "^1.4.2",
         "hamcrest/hamcrest-php": "^2.0.1"

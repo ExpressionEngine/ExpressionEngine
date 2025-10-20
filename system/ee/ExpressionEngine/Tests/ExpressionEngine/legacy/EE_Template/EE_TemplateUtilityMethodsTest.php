@@ -11,6 +11,8 @@
 
 namespace ExpressionEngine\Tests\ExpressionEngine\legacy\EE_Template;
 
+require_once SYSPATH . 'ee/ExpressionEngine/Tests/TestReflectionHelper.php';
+
 /**
  * Utility methods tests for EE_Template class
  */
@@ -159,7 +161,7 @@ class EE_TemplateUtilityMethodsTest extends EE_TemplateTestBase
     public function testDecodeChannelFormEeTagsFunctionality()
     {
         $reflection = new \ReflectionMethod($this->template, 'decode_channel_form_ee_tags');
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($reflection);
 
         // Test basic decoding
         $encoded = 'Some content CFORM-ENCODE-LEFT-BRACKETexp:channel:entriesCFORM-ENCODE-RIGHT-BRACKET more content';
@@ -176,7 +178,7 @@ class EE_TemplateUtilityMethodsTest extends EE_TemplateTestBase
     public function testDecodeChannelFormEeTagsHandlesMultipleEncodedTags()
     {
         $reflection = new \ReflectionMethod($this->template, 'decode_channel_form_ee_tags');
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($reflection);
 
         $encoded = 'Start CFORM-ENCODE-LEFT-BRACKETif logged_inCFORM-ENCODE-RIGHT-BRACKET middle CFORM-ENCODE-LEFT-BRACKET/ifCFORM-ENCODE-RIGHT-BRACKET end';
         $result = $reflection->invoke($this->template, $encoded);
@@ -190,7 +192,7 @@ class EE_TemplateUtilityMethodsTest extends EE_TemplateTestBase
     public function testDecodeChannelFormEeTagsHandlesContentWithoutEncodedTags()
     {
         $reflection = new \ReflectionMethod($this->template, 'decode_channel_form_ee_tags');
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($reflection);
 
         $content = 'Regular template content with {normal} tags';
         $result = $reflection->invoke($this->template, $content);

@@ -3,6 +3,7 @@ namespace ExpressionEngine\Tests\ExpressionEngine\legacy\EE_Template;
 
 require_once __DIR__ . '/EE_TemplateTestBase.php';
 require_once SYSPATH . 'ee/legacy/libraries/Template.php';
+require_once SYSPATH . 'ee/ExpressionEngine/Tests/TestReflectionHelper.php';
 
 class EE_TemplateMarkContextTest extends EE_TemplateTestBase
 {
@@ -123,7 +124,7 @@ class EE_TemplateMarkContextTest extends EE_TemplateTestBase
     {
         // Test that annotations object is initialized on first use
         $reflection = new \ReflectionProperty(\EE_Template::class, 'annotations');
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($reflection);
 
         // Initially null
         $this->assertNull($reflection->getValue($this->template));
