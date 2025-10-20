@@ -52,7 +52,7 @@
     ],
     "config": {
         "platform": {
-            "php": "7.4.0"
+            "php": "7.2.5"
         },
         "allow-plugins": {
             "bamarni/composer-bin-plugin": true
