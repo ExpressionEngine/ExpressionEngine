@@ -14,7 +14,7 @@ class EE_TemplateGetGlobalsRegexTest extends EE_TemplateTestBase
 
         // Get the private method using reflection
         $this->reflectionMethod = new \ReflectionMethod($this->template, 'getGlobalsRegex');
-        $this->reflectionMethod->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($this->reflectionMethod);
     }
 
     public function testGetGlobalsRegexReturnsArray()
@@ -361,7 +361,7 @@ class EE_TemplateGetGlobalsRegexTest extends EE_TemplateTestBase
     {
         // Clear the cached regex by unsetting the property
         $reflection = new \ReflectionProperty($this->template, 'globals_regex');
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($reflection);
         $reflection->setValue($this->template, []);
     }
 }

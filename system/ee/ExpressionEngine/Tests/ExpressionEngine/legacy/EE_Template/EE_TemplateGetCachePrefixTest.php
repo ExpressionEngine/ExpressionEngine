@@ -14,7 +14,7 @@ class EE_TemplateGetCachePrefixTest extends EE_TemplateTestBase
 
         // Get the protected method using reflection
         $this->reflectionMethod = new \ReflectionMethod($this->template, '_get_cache_prefix');
-        $this->reflectionMethod->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($this->reflectionMethod);
     }
 
     public function testGetCachePrefixWithUriString()

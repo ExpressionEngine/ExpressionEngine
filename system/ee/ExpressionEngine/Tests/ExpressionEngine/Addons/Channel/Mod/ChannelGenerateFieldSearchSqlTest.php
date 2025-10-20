@@ -14,7 +14,7 @@ class ChannelGenerateFieldSearchSqlTest extends ChannelTestBase
         // Make private method accessible
         $ref = new ReflectionClass($this->channel);
         $this->method = $ref->getMethod('_generate_field_search_sql');
-        $this->method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($this->method);
 
         // Set up mocks after parent setup
         $this->setupMocks();

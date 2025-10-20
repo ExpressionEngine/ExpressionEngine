@@ -15,7 +15,7 @@ class ChannelIsLivePreviewEntryTest extends ChannelTestBase
 
         $ref = new ReflectionClass($this->channel);
         $m = $ref->getMethod('isLivePreviewEntry');
-        $m->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($m);
         $this->assertTrue($m->invoke($this->channel));
     }
 
@@ -30,7 +30,7 @@ class ChannelIsLivePreviewEntryTest extends ChannelTestBase
 
         $ref = new ReflectionClass($this->channel);
         $m = $ref->getMethod('isLivePreviewEntry');
-        $m->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($m);
         $this->assertFalse($m->invoke($this->channel));
     }
 }

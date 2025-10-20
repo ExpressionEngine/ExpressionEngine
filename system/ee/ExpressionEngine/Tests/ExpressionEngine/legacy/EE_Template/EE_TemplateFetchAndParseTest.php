@@ -109,7 +109,7 @@ class EE_TemplateFetchAndParseTest extends EE_TemplateTestBase
         // Test that the method tracks templates_sofar property
         $reflection = new \ReflectionClass($this->template);
         $templatesSoFarProperty = $reflection->getProperty('templates_sofar');
-        $templatesSoFarProperty->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($templatesSoFarProperty);
 
         // Initially should be empty or default value
         $initialValue = $templatesSoFarProperty->getValue($this->template);
@@ -127,7 +127,7 @@ class EE_TemplateFetchAndParseTest extends EE_TemplateTestBase
     {
         $reflection = new \ReflectionClass($this->template);
         $cacheStatusProperty = $reflection->getProperty('cache_status');
-        $cacheStatusProperty->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($cacheStatusProperty);
 
         // Initially should be set to NO_CACHE
         $cacheStatusProperty->setValue($this->template, 'NO_CACHE');
@@ -145,7 +145,7 @@ class EE_TemplateFetchAndParseTest extends EE_TemplateTestBase
     {
         $reflection = new \ReflectionClass($this->template);
         $cachePrefixProperty = $reflection->getProperty('cache_prefix');
-        $cachePrefixProperty->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($cachePrefixProperty);
 
         // For non-embeds, cache_prefix should be empty
         $cachePrefixProperty->setValue($this->template, '');
@@ -173,7 +173,7 @@ class EE_TemplateFetchAndParseTest extends EE_TemplateTestBase
     {
         $reflection = new \ReflectionClass($this->template);
         $templatesLoadedProperty = $reflection->getProperty('templates_loaded');
-        $templatesLoadedProperty->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($templatesLoadedProperty);
 
         // Initially should be empty array
         $templatesLoadedProperty->setValue($this->template, []);
@@ -205,19 +205,19 @@ class EE_TemplateFetchAndParseTest extends EE_TemplateTestBase
 
         // Test group_name property
         $groupNameProperty = $reflection->getProperty('group_name');
-        $groupNameProperty->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($groupNameProperty);
         $groupNameProperty->setValue($this->template, 'test_group');
         $this->assertEquals('test_group', $groupNameProperty->getValue($this->template));
 
         // Test template_name property
         $templateNameProperty = $reflection->getProperty('template_name');
-        $templateNameProperty->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($templateNameProperty);
         $templateNameProperty->setValue($this->template, 'test_template');
         $this->assertEquals('test_template', $templateNameProperty->getValue($this->template));
 
         // Test template property
         $templateProperty = $reflection->getProperty('template');
-        $templateProperty->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($templateProperty);
         $templateContent = '<html><body>Test template content</body></html>';
         $templateProperty->setValue($this->template, $templateContent);
         $this->assertEquals($templateContent, $templateProperty->getValue($this->template));

@@ -316,7 +316,7 @@ class EE_TemplateAdvancedMethodsTestBase extends TestCase
         // Use reflection to set protected ignore_fetch property
         $reflection = new \ReflectionClass($this->template);
         $ignoreFetchProperty = $reflection->getProperty('ignore_fetch');
-        $ignoreFetchProperty->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($ignoreFetchProperty);
         $ignoreFetchProperty->setValue($this->template, ['url_title']);
     }
 
@@ -328,7 +328,7 @@ class EE_TemplateAdvancedMethodsTestBase extends TestCase
         // Use reflection to set protected no_results property
         $reflection = new \ReflectionClass($this->template);
         $noResultsProperty = $reflection->getProperty('no_results');
-        $noResultsProperty->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($noResultsProperty);
         $noResultsProperty->setValue($this->template, $noResults);
     }
 

@@ -195,7 +195,7 @@ class ApiTemplateStructureEngineTest extends ApiTemplateStructureTestBase
         // Use reflection to check that template_engine_file_extensions was updated
         $reflection = new ReflectionClass($this->apiTemplateStructure);
         $property = $reflection->getProperty('template_engine_file_extensions');
-        $property->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($property);
 
         $extensions = $property->getValue($this->apiTemplateStructure);
 

@@ -33,7 +33,7 @@ class EE_TemplateConstructorTest extends EE_TemplateTestBase
     {
         $reflection = new ReflectionClass($this->template);
         $userVarsProperty = $reflection->getProperty('user_vars');
-        $userVarsProperty->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($userVarsProperty);
 
         $userVars = $userVarsProperty->getValue($this->template);
 
@@ -51,7 +51,7 @@ class EE_TemplateConstructorTest extends EE_TemplateTestBase
     {
         $reflection = new ReflectionClass($this->template);
         $markerProperty = $reflection->getProperty('marker');
-        $markerProperty->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($markerProperty);
 
         $marker = $markerProperty->getValue($this->template);
 
@@ -68,7 +68,7 @@ class EE_TemplateConstructorTest extends EE_TemplateTestBase
     {
         $reflection = new ReflectionClass($this->template);
         $mbProperty = $reflection->getProperty('mb_available');
-        $mbProperty->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($mbProperty);
 
         $mbAvailable = $mbProperty->getValue($this->template);
 
@@ -83,7 +83,7 @@ class EE_TemplateConstructorTest extends EE_TemplateTestBase
     {
         $reflection = new ReflectionClass($this->template);
         $aliasesProperty = $reflection->getProperty('tag_class_aliases');
-        $aliasesProperty->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($aliasesProperty);
 
         $aliases = $aliasesProperty->getValue($this->template);
 

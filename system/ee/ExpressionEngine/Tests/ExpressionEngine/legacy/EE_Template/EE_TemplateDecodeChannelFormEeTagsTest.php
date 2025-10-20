@@ -14,7 +14,7 @@ class EE_TemplateDecodeChannelFormEeTagsTest extends EE_TemplateTestBase
 
         // Get the private method using reflection
         $this->reflectionMethod = new \ReflectionMethod($this->template, 'decode_channel_form_ee_tags');
-        $this->reflectionMethod->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($this->reflectionMethod);
     }
 
     public function testDecodeChannelFormEeTagsBasicReplacement()

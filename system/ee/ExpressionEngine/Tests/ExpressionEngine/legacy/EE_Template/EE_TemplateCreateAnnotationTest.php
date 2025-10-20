@@ -14,7 +14,7 @@ class EE_TemplateCreateAnnotationTest extends EE_TemplateTestBase
 
         // Get the protected method using reflection
         $this->reflectionMethod = new \ReflectionMethod($this->template, 'createAnnotation');
-        $this->reflectionMethod->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($this->reflectionMethod);
     }
 
     public function testCreateAnnotationInitializesRuntimeObject()
@@ -27,7 +27,7 @@ class EE_TemplateCreateAnnotationTest extends EE_TemplateTestBase
 
         // Should initialize the annotations property
         $reflection = new \ReflectionProperty($this->template, 'annotations');
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($reflection);
         $annotations = $reflection->getValue($this->template);
 
         $this->assertInstanceOf(\ExpressionEngine\Library\Template\Annotation\Runtime::class, $annotations);
@@ -83,7 +83,7 @@ class EE_TemplateCreateAnnotationTest extends EE_TemplateTestBase
 
         // Verify the key is stored by reading it back
         $reflection = new \ReflectionProperty($this->template, 'annotations');
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($reflection);
         $annotations = $reflection->getValue($this->template);
         $storedData = $annotations->read($result);
         $this->assertEquals($data, (array) $storedData);
@@ -105,7 +105,7 @@ class EE_TemplateCreateAnnotationTest extends EE_TemplateTestBase
 
         // Verify unicode data is preserved
         $reflection = new \ReflectionProperty($this->template, 'annotations');
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($reflection);
         $annotations = $reflection->getValue($this->template);
         $storedData = $annotations->read($result);
         $this->assertEquals($data, (array) $storedData);
@@ -123,10 +123,10 @@ class EE_TemplateCreateAnnotationTest extends EE_TemplateTestBase
 
         // Should be the same Runtime instance
         $reflection = new \ReflectionProperty($this->template, 'annotations');
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($reflection);
         $annotations1 = $reflection->getValue($this->template);
         $reflection2 = new \ReflectionProperty($this->template, 'annotations');
-        $reflection2->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($reflection2);
         $annotations2 = $reflection2->getValue($this->template);
         $this->assertSame($annotations1, $annotations2);
 
@@ -155,7 +155,7 @@ class EE_TemplateCreateAnnotationTest extends EE_TemplateTestBase
 
         // Verify object data is preserved
         $reflection = new \ReflectionProperty($this->template, 'annotations');
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($reflection);
         $annotations = $reflection->getValue($this->template);
         $storedData = $annotations->read($result);
         $this->assertEquals($data, (array) $storedData);
@@ -180,7 +180,7 @@ class EE_TemplateCreateAnnotationTest extends EE_TemplateTestBase
 
         // Verify large data is stored correctly
         $reflection = new \ReflectionProperty($this->template, 'annotations');
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($reflection);
         $annotations = $reflection->getValue($this->template);
         $storedData = $annotations->read($result);
         $this->assertEquals($largeData, (array) $storedData);
@@ -204,7 +204,7 @@ class EE_TemplateCreateAnnotationTest extends EE_TemplateTestBase
 
         // Verify special characters are preserved
         $reflection = new \ReflectionProperty($this->template, 'annotations');
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($reflection);
         $annotations = $reflection->getValue($this->template);
         $storedData = $annotations->read($result);
         $this->assertEquals($data, (array) $storedData);
@@ -318,7 +318,7 @@ class EE_TemplateCreateAnnotationTest extends EE_TemplateTestBase
 
         // Set the mock as the annotations property
         $reflection = new \ReflectionProperty($this->template, 'annotations');
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($reflection);
         $reflection->setValue($this->template, $mockRuntime);
 
         $data = ['context' => 'test'];
@@ -333,7 +333,7 @@ class EE_TemplateCreateAnnotationTest extends EE_TemplateTestBase
     private function clearAnnotationProperty()
     {
         $reflection = new \ReflectionProperty($this->template, 'annotations');
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($reflection);
         $reflection->setValue($this->template, null);
     }
 }

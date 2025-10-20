@@ -14,7 +14,7 @@ class EE_TemplateGarbageCollectCacheTest extends EE_TemplateTestBase
 
         // Get the protected method using reflection
         $this->reflectionMethod = new \ReflectionMethod($this->template, '_garbage_collect_cache');
-        $this->reflectionMethod->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($this->reflectionMethod);
     }
 
     public function testGarbageCollectCacheWhenDisabled()

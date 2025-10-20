@@ -100,7 +100,7 @@ class EE_TemplateAdvancedConditionalsTest extends EE_TemplateAdvancedMethodsTest
         // Set up segment variables using reflection
         $reflection = new \ReflectionClass($this->template);
         $segmentVarsProperty = $reflection->getProperty('segment_vars');
-        $segmentVarsProperty->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($segmentVarsProperty);
         $segmentVarsProperty->setValue($this->template, [
             'segment_1' => 'news',
             'segment_2' => 'article'
@@ -122,7 +122,7 @@ class EE_TemplateAdvancedConditionalsTest extends EE_TemplateAdvancedMethodsTest
         // Set up template route variables using reflection
         $reflection = new \ReflectionClass($this->template);
         $routeVarsProperty = $reflection->getProperty('template_route_vars');
-        $routeVarsProperty->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($routeVarsProperty);
         $routeVarsProperty->setValue($this->template, [
             'route:id' => '123',
             'route:slug' => 'test-article'
@@ -144,7 +144,7 @@ class EE_TemplateAdvancedConditionalsTest extends EE_TemplateAdvancedMethodsTest
         // Set up layout conditionals using reflection
         $reflection = new \ReflectionClass($this->template);
         $layoutConditionalsProperty = $reflection->getProperty('layout_conditionals');
-        $layoutConditionalsProperty->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($layoutConditionalsProperty);
         $layoutConditionalsProperty->setValue($this->template, [
             'layout:title' => 'Page Title',
             'layout:content' => ''
@@ -249,7 +249,7 @@ class EE_TemplateAdvancedConditionalsTest extends EE_TemplateAdvancedMethodsTest
         // Set segment variable
         $reflection = new \ReflectionClass($this->template);
         $segmentVarsProperty = $reflection->getProperty('segment_vars');
-        $segmentVarsProperty->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($segmentVarsProperty);
         $segmentVarsProperty->setValue($this->template, ['segment_1' => 'test']);
 
         $result = $this->template->advanced_conditionals($template);

@@ -16,7 +16,7 @@ class EE_TemplateGetDataTest extends EE_TemplateTestBase
     private function setProtectedProperty($property, $value)
     {
         $reflection = new \ReflectionProperty($this->template, $property);
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($reflection);
         $reflection->setValue($this->template, $value);
     }
     public function testGetDataWhenProcessingEnabled()

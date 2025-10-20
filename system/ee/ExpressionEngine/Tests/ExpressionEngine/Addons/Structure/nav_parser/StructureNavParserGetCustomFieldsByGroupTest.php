@@ -19,7 +19,7 @@ class StructureNavParserGetCustomFieldsByGroupTest extends StructureTestBase
         $parser = new NavParser();
         $ref = new ReflectionClass($parser);
         $method = $ref->getMethod('get_custom_fields_by_group');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         $map = $method->invoke($parser, 5);
         $this->assertSame(['alpha' => 10, 'beta' => 11], $map);
