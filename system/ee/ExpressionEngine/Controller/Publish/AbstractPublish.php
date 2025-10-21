@@ -184,10 +184,10 @@ abstract class AbstractPublish extends CP_Controller
             if ($index === 0) {
                 $toolbar_items['current-revision'] = array(
                     'button' => false,
-                    'html_tag' => 'span',
+                    'href' => ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id),
                     'class' => 'st-open',
                     'content' => lang('current'),
-                    'style' => 'margin-left: 2px',
+                    'style' => 'margin-left: 4px',
                 );
             }
 

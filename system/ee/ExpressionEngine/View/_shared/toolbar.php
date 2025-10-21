@@ -68,13 +68,8 @@
                     if (isset($attributes['button']) && $attributes['button'] === false) {
                         $button_classes = '';
                     }
-
-                    $html_tag = 'a';
-                    if (isset($attributes['html_tag'])) {
-                        $html_tag = $attributes['html_tag'];
-                    }
                     ?>
-                    <<?=$html_tag?> class="<?=$class?> <?=$button_classes?>" <?=$attr?>><?=$content?></<?=$html_tag?>>
+                    <a class="<?=$class?> <?=$button_classes?>" <?=$attr?>><?=$content?></a>
                 <?php endforeach ?>
           </div>
         </div>
