@@ -19,9 +19,9 @@ class StructureGetSitePagesQueryTest extends StructureTestBase
 		ee()->setMock('db', new class($encoded) extends FakeDb {
 			private $encoded;
 			public function __construct($e){ $this->encoded = $e; }
-			public function select($field){ return $this; }
-			public function where($field, $val){ return $this; }
-			public function get($table)
+			public function select($fields = '*'){ return $this; }
+			public function where($field, $value = null){ return $this; }
+			public function get($table = null)
 			{
 				return new class($this->encoded) {
 					private $encoded;
@@ -49,9 +49,9 @@ class StructureGetSitePagesQueryTest extends StructureTestBase
 		ee()->setMock('db', new class($encoded) extends FakeDb {
 			private $encoded;
 			public function __construct($e){ $this->encoded = $e; }
-			public function select($field){ return $this; }
-			public function where($field, $val){ return $this; }
-			public function get($table)
+			public function select($fields = '*'){ return $this; }
+			public function where($field, $value = null){ return $this; }
+			public function get($table = null)
 			{
 				return new class($this->encoded) {
 					private $encoded;
@@ -72,8 +72,8 @@ class StructureGetSitePagesQueryTest extends StructureTestBase
 		$encoded = 'not-base64-or-serialize';
 		ee()->setMock('db', new class($encoded) extends FakeDb {
 			private $encoded; public function __construct($e){ $this->encoded = $e; }
-			public function select($f){ return $this; } public function where($f,$v){ return $this; }
-			public function get($t){ return new class($this->encoded){ private $e; public function __construct($e){$this->e=$e;} public function row($c){ return $this->e; } }; }
+			public function select($fields = '*'){ return $this; } public function where($field, $value = null){ return $this; }
+			public function get($table = null){ return new class($this->encoded){ private $e; public function __construct($e){$this->e=$e;} public function row($c){ return $this->e; } }; }
 		});
 		// Current implementation will attempt to base64_decode + unserialize, which returns false/null; then index by site_id may error.
 		// We assert that calling the method does not crash PHP (handled by test runner); behavior is implementation-defined.
@@ -92,8 +92,8 @@ class StructureGetSitePagesQueryTest extends StructureTestBase
 		$raw = serialize($pages);
 		ee()->setMock('db', new class($raw) extends FakeDb {
 			private $raw; public function __construct($r){ $this->raw = $r; }
-			public function select($f){ return $this; } public function where($f,$v){ return $this; }
-			public function get($t){ return new class($this->raw){ private $r; public function __construct($r){$this->r=$r;} public function row($c){ return $this->r; } }; }
+			public function select($fields = '*'){ return $this; } public function where($field, $value = null){ return $this; }
+			public function get($table = null){ return new class($this->raw){ private $r; public function __construct($r){$this->r=$r;} public function row($c){ return $this->r; } }; }
 		});
 		// Current implementation expects base64+serialize; this will likely fail. We simply assert it doesn't hard crash.
 		try {
@@ -111,8 +111,8 @@ class StructureGetSitePagesQueryTest extends StructureTestBase
 		$encoded = base64_encode(serialize($pages));
 		ee()->setMock('db', new class($encoded) extends FakeDb {
 			private $encoded; public function __construct($e){ $this->encoded = $e; }
-			public function select($f){ return $this; } public function where($f,$v){ return $this; }
-			public function get($t){ return new class($this->encoded){ private $e; public function __construct($e){$this->e=$e;} public function row($c){ return $this->e; } }; }
+			public function select($fields = '*'){ return $this; } public function where($field, $value = null){ return $this; }
+			public function get($table = null){ return new class($this->encoded){ private $e; public function __construct($e){$this->e=$e;} public function row($c){ return $this->e; } }; }
 		});
 		try {
 			$result = $this->structure->get_site_pages_query();
@@ -126,8 +126,8 @@ class StructureGetSitePagesQueryTest extends StructureTestBase
 	{
 		ee()->config->items['site_id'] = 1;
 		ee()->setMock('db', new class extends FakeDb {
-			public function select($f){ return $this; } public function where($f,$v){ return $this; }
-			public function get($t){ return new class { public function row($c){ return null; } }; }
+			public function select($fields = '*'){ return $this; } public function where($field, $value = null){ return $this; }
+			public function get($table = null){ return new class { public function row($c){ return null; } }; }
 		});
 		try {
 			$result = $this->structure->get_site_pages_query();

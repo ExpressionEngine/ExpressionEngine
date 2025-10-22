@@ -18,7 +18,7 @@ class StructureSetDataTest extends StructureTestBase
                 $this->cap->queries[] = $sql;
                 // Provide structure channels data when requested
                 if (stripos($sql, 'FROM exp_channels AS ec') !== false) {
-                    return new FakeDbResult([
+                    return new eeDbResultMock([
                         [
                             'channel_id' => 7,
                             'channel_title' => 'Pages',
@@ -28,7 +28,7 @@ class StructureSetDataTest extends StructureTestBase
                         ],
                     ]);
                 }
-                return new FakeDbResult([]);
+                return new eeDbResultMock([]);
             }
             public function update_string($table, $data, $where)
             {

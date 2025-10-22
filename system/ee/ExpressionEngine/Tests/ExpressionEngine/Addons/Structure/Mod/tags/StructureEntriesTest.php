@@ -92,7 +92,7 @@ class StructureEntriesTest extends StructureTestBase
             public function segment($i) { return null; }
         });
         // Ensure tagparams is initialized to avoid undefined property notices
-        ee()->TMPL->tagparams = [];
+        @ee()->TMPL->tagparams = [];
         // Provide site_ids required by Channel::entries()
         ee()->TMPL->site_ids = [1];
         // Provide localize with current timestamp

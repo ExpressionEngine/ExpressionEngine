@@ -74,8 +74,8 @@ class EE_Core
 
         // application constants
         define('APP_NAME', 'ExpressionEngine');
-        define('APP_BUILD', '20250820');
-        define('APP_VER', '7.5.15');
+        define('APP_BUILD', '20250909');
+        define('APP_VER', '7.5.16');
         define('APP_VER_ID', '');
         define('SLASH', '&#47;');
         define('LD', '{');
@@ -612,6 +612,17 @@ class EE_Core
 
         //show them post-update checks, again
         if (ee()->input->get('after') == 'update' || ee()->session->flashdata('update:completed')) {
+
+            // -------------------------------------------
+            // 'updater_complete' hook.
+            //  - added 7.5.16
+            //
+            if (ee()->extensions->active_hook('updater_complete') === true) {
+                ee()->extensions->call('updater_complete');
+            }
+            //
+            // -------------------------------------------
+
             $advisor = new \ExpressionEngine\Library\Advisor\Advisor();
             $messages = $advisor->postUpdateChecks();
             if (!empty($messages)) {

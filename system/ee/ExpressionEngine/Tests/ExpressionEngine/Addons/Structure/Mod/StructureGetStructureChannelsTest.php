@@ -21,7 +21,7 @@ class StructureGetStructureChannelsTest extends StructureTestBase
 
 		ee()->setMock('db', new class($rows) extends FakeDb {
 			public $rows; public function __construct($r){$this->rows=$r;}
-			public function query($sql) { return new FakeDbResult($this->rows); }
+			public function query($sql) { return new eeDbResultMock($this->rows); }
 		});
 
 		// Note: our FakeDb does not apply SQL filtering, so we only assert formatting and presence
@@ -46,7 +46,7 @@ class StructureGetStructureChannelsTest extends StructureTestBase
 		];
 		ee()->setMock('db', new class($rows) extends FakeDb {
 			public $rows; public function __construct($r){$this->rows=$r;}
-			public function query($sql) { return new FakeDbResult($this->rows); }
+			public function query($sql) { return new eeDbResultMock($this->rows); }
 		});
 
 		$result = $this->structure->get_structure_channels('page', 10, 'alpha', true);
@@ -67,7 +67,7 @@ class StructureGetStructureChannelsTest extends StructureTestBase
 		];
 		ee()->setMock('db', new class($rows) extends FakeDb {
 			public $rows; public function __construct($r){$this->rows=$r;}
-			public function query($sql) { return new FakeDbResult($this->rows); }
+			public function query($sql) { return new eeDbResultMock($this->rows); }
 		});
 
 		$result = $this->structure->get_structure_channels('', '', '', true);
@@ -86,7 +86,7 @@ class StructureGetStructureChannelsTest extends StructureTestBase
 		];
 		ee()->setMock('db', new class($rows) extends FakeDb {
 			public $rows; public function __construct($r){$this->rows=$r;}
-			public function query($sql) { return new FakeDbResult($this->rows); }
+			public function query($sql) { return new eeDbResultMock($this->rows); }
 		});
 		$result = $this->structure->get_structure_channels('', '', 'alpha', true);
 		$this->assertArrayHasKey(50, $result);
@@ -107,7 +107,7 @@ class StructureGetStructureChannelsTest extends StructureTestBase
 		];
 		ee()->setMock('db', new class($rows) extends FakeDb {
 			public $rows; public function __construct($r){$this->rows=$r;}
-			public function query($sql) { return new FakeDbResult($this->rows); }
+			public function query($sql) { return new eeDbResultMock($this->rows); }
 		});
 		$result = $this->structure->get_structure_channels('', '', '', true);
 		$this->assertNull($result);

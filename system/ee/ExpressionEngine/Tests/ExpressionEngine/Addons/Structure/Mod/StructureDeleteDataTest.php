@@ -106,7 +106,7 @@ class StructureDeleteDataTest extends StructureTestBase
 
 		$calls = (object) ['closed' => []];
 		ee()->setMock('Model', new class($calls) {
-			private $calls; public function __construct($c){ $this->calls=$c; }
+			private $calls; private $currentId; public function __construct($c){ $this->calls=$c; }
 			public function get($model, $id){ $this->currentId=$id; return $this; }
 			public function fields($field){ return $this; }
 			public function first(){ return $this; }

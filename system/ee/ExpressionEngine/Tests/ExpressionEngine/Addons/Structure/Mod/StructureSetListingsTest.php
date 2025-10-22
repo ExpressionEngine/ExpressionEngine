@@ -25,9 +25,9 @@ class StructureSetListingsTest extends StructureTestBase
                 $this->cap->get_where_calls[] = $where['entry_id'] ?? null;
                 // Return existing row for first entry, none for second
                 if ($this->callIndex++ === 0) {
-                    return new FakeDbResult([[ 'entry_id' => $where['entry_id'] ]]);
+                    return new eeDbResultMock([[ 'entry_id' => $where['entry_id'] ]]);
                 }
-                return new FakeDbResult([]);
+                return new eeDbResultMock([]);
             }
             public function update_string($table, $data, $where)
             {
@@ -39,7 +39,7 @@ class StructureSetListingsTest extends StructureTestBase
                 $this->cap->inserts++;
                 return 'INSERT';
             }
-            public function query($sql) { return new FakeDbResult([]); }
+            public function query($sql) { return new eeDbResultMock([]); }
         });
 
         $data = [

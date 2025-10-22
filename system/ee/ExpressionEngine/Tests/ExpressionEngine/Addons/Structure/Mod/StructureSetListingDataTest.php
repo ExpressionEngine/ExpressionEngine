@@ -25,12 +25,12 @@ class StructureSetListingDataTest extends StructureTestBase
             {
                 $this->cap->get_where_calls++;
                 // Simulate no existing row on first call
-                return new FakeDbResult([]);
+                return new eeDbResultMock([]);
             }
             public function query($sql)
             {
                 $this->cap->queries[] = $sql;
-                return new FakeDbResult([]);
+                return new eeDbResultMock([]);
             }
         });
 
