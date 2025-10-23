@@ -257,17 +257,22 @@ class CategoryGroup extends StructureModel
             $sort_column = (!empty($groupSort) && $groupSort[0]['sort_order'] == 'a') ? 'cat_name' : 'cat_order';
         }
 
-        ee()->db->query("SET SESSION group_concat_max_len = 1048576;");
-
-        $hierarchy = array_column(
-            ee()->db
-                ->select('parent_id, group_concat(cat_id ORDER BY '.$sort_column.' ASC, cat_id ASC) as children')
-                ->from('categories')
+        $hierarchy = array_reduce(
+            ee()->db->select('parent_id, cat_id')->from('categories')
                 ->where('group_id', $group_id)
-                ->group_by('parent_id')
-                ->get()->result_array(),
-            null,
-            'parent_id'
+                ->order_by($sort_column, 'asc')->order_by('cat_id', 'asc')
+                ->get()
+                ->result_array(),
+            function($carry, $row) {
+                if(!array_key_exists($row['parent_id'], $carry)) {
+                    $carry[$row['parent_id']] = [];
+                }
+
+                $carry[$row['parent_id']][] = $row['cat_id'];
+
+                return $carry;
+            },
+            []
         );
 
         $categories = array_column(
@@ -295,7 +300,7 @@ class CategoryGroup extends StructureModel
     protected function buildCategoryList($parent_id, $hierarchy, $categories)
     {
         $list = array();
-        $cat_ids = explode(',', $hierarchy[$parent_id]['children'] ?? '');
+        $cat_ids = $hierarchy[$parent_id];
 
         foreach ($cat_ids as $cat_id) {
             if(empty($cat_id)) {
