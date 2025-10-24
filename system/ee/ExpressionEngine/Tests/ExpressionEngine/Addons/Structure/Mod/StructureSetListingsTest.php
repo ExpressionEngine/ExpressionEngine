@@ -20,7 +20,7 @@ class StructureSetListingsTest extends StructureTestBase
             private $cap;
             private $callIndex = 0;
             public function __construct($cap) { $this->cap = $cap; }
-            public function get_where($table, $where)
+            public function get_where($table, $where = null, $limit = null, $offset = null)
             {
                 $this->cap->get_where_calls[] = $where['entry_id'] ?? null;
                 // Return existing row for first entry, none for second

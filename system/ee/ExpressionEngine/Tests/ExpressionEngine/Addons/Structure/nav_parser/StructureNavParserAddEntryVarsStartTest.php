@@ -66,11 +66,11 @@ class StructureNavParserAddEntryVarsStartTest extends StructureTestBase
         // Invoke
         $ref = new ReflectionClass($parser);
         $method = $ref->getMethod('add_entry_vars_start');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $method->invoke($parser);
 
         $rowsProp = $ref->getProperty('rows_by_entry');
-        $rowsProp->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($rowsProp);
         $rows = $rowsProp->getValue($parser);
         $this->assertArrayHasKey('300', $rows);
         unset($parser);

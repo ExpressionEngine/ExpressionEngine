@@ -357,7 +357,7 @@ class ChannelFormDataSorterTest extends ChannelFormDataSorterTestBase
         // Use reflection to access private property
         $reflection = new ReflectionClass($sorter);
         $property = $reflection->getProperty('valid_operators');
-        $property->setAccessible(true);
+        TestReflectionHelper::makePropertyAccessible($property);
         $validOperators = $property->getValue($sorter);
 
         $expectedOperators = ['==', '!=', '===', '!==', '>', '<', '>=', '<=', '<>', 'in_array'];

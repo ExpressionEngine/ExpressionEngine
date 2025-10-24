@@ -309,7 +309,7 @@ class ChannelFormLibIntegrationEdgeCasesTest extends ChannelFormLibTestBase
 
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_build_custom_field_variables');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         try {
             $result = $method->invoke($this->channelFormLib);

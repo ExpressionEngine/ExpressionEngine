@@ -13,7 +13,7 @@ class ChannelOverrideWithPreviewDataTest extends ChannelTestBase
         // Make the private method accessible
         $ref = new ReflectionClass($this->channel);
         $this->method = $ref->getMethod('overrideWithPreviewData');
-        $this->method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($this->method);
     }
 
     public function testReturnsOriginalArrayWhenNoSession()
@@ -353,7 +353,7 @@ class ChannelOverrideWithPreviewDataTest extends ChannelTestBase
     {
         $ref = new ReflectionClass($this->channel);
         $conditionMethod = $ref->getMethod('previewDataPassesCondition');
-        $conditionMethod->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($conditionMethod);
 
         $data = ['channel_name' => 'news', 'status' => 'open'];
 
@@ -383,7 +383,7 @@ class ChannelOverrideWithPreviewDataTest extends ChannelTestBase
     {
         $ref = new ReflectionClass($this->channel);
         $conditionMethod = $ref->getMethod('previewDataPassesCondition');
-        $conditionMethod->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($conditionMethod);
 
         $data = ['categories' => [1, 2, 3]];
 
@@ -399,7 +399,7 @@ class ChannelOverrideWithPreviewDataTest extends ChannelTestBase
     private function setPreviewConditions(array $conditions)
     {
         $previewConditionsProp = new ReflectionProperty($this->channel, 'preview_conditions');
-        $previewConditionsProp->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($previewConditionsProp);
         $previewConditionsProp->setValue($this->channel, $conditions);
     }
 }

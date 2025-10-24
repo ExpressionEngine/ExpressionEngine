@@ -17,7 +17,7 @@ class StructureNavParserAddEntryVarsTest extends StructureTestBase
         $parser = new NavParser();
         $ref = new ReflectionClass($parser);
         $method = $ref->getMethod('add_entry_vars');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         $row = [
             'entry_id' => 7,

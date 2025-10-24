@@ -29,7 +29,7 @@ class ActionButtonTest extends TestCase
     public function testFieldPrototypeAttribute(): ActionButton
     {
         $field = new _action_button('test-field');
-        $this->assertObjectHasAttribute('field_prototype', $field);
+        $this->assertObjectHasProperty('field_prototype', $field);
         $this->assertCount(2, $field->getFieldPrototype());
         return $field;
     }

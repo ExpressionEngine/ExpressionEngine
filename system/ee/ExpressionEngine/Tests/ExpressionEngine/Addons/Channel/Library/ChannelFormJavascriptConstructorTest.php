@@ -10,7 +10,7 @@ class ChannelFormJavascriptConstructorTest extends ChannelFormJavascriptTest
     public function testConstructorInitializesProperties()
     {
         // Test that constructor sets up js_path property
-        $this->assertObjectHasAttribute('js_path', $this->channelFormJavascript);
+        $this->assertObjectHasProperty('js_path', $this->channelFormJavascript);
 
         // Test that PATH_JQUERY constant is defined
         $this->assertTrue(defined('PATH_JQUERY'));
@@ -18,7 +18,7 @@ class ChannelFormJavascriptConstructorTest extends ChannelFormJavascriptTest
         // Test that js_path contains expected path structure
         $reflection = new ReflectionClass($this->channelFormJavascript);
         $jsPathProperty = $reflection->getProperty('js_path');
-        $jsPathProperty->setAccessible(true);
+        TestReflectionHelper::makePropertyAccessible($jsPathProperty);
         $jsPath = $jsPathProperty->getValue($this->channelFormJavascript);
 
         // The js_path should be constructed as themes/ee/asset/javascript/' . PATH_JS . '/'

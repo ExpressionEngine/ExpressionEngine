@@ -15,7 +15,7 @@ class ChannelFormLibFieldVariablesTest extends ChannelFormLibTestBase
 
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_build_custom_field_variables');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invoke($this->channelFormLib);
 
         $this->assertEquals([], $result);
@@ -156,7 +156,7 @@ class ChannelFormLibFieldVariablesTest extends ChannelFormLibTestBase
 
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_build_custom_field_variables');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invoke($this->channelFormLib);
 
 
@@ -286,7 +286,7 @@ class ChannelFormLibFieldVariablesTest extends ChannelFormLibTestBase
 
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_build_custom_field_variables');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invoke($this->channelFormLib);
 
         $this->assertArrayHasKey('paired_field', $result);
@@ -445,7 +445,7 @@ class ChannelFormLibFieldVariablesTest extends ChannelFormLibTestBase
 
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_build_custom_field_variables');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invoke($this->channelFormLib);
 
         $this->assertArrayHasKey('rel_field', $result);
@@ -576,7 +576,7 @@ class ChannelFormLibFieldVariablesTest extends ChannelFormLibTestBase
 
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_build_custom_field_variables');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invoke($this->channelFormLib);
 
         $this->assertArrayHasKey('date_field', $result);
@@ -694,7 +694,7 @@ class ChannelFormLibFieldVariablesTest extends ChannelFormLibTestBase
 
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_build_custom_field_variables');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invoke($this->channelFormLib);
 
 
@@ -882,7 +882,7 @@ class ChannelFormLibFieldVariablesTest extends ChannelFormLibTestBase
 
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_build_custom_field_variables');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invoke($this->channelFormLib);
 
 
@@ -936,7 +936,7 @@ class ChannelFormLibFieldVariablesTest extends ChannelFormLibTestBase
         try {
             $reflection = new ReflectionClass($this->channelFormLib);
             $method = $reflection->getMethod('_build_custom_field_variables');
-            $method->setAccessible(true);
+            TestReflectionHelper::makeMethodAccessible($method);
             $result = $method->invoke($this->channelFormLib);
 
             // If it returns a result, check the structure
