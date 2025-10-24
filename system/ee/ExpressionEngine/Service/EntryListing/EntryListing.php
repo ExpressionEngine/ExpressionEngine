@@ -398,7 +398,7 @@ class EntryListing
         }
 
         $db = ee('db')->select('m.member_id as author_id, m.screen_name, m.username')
-                ->from('exp_members m')
+                ->from('members m')
                 ->where("($where) > 0")
                 ->order_by('screen_name', 'asc');
 
