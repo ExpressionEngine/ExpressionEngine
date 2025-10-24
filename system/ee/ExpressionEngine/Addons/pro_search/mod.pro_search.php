@@ -905,7 +905,7 @@ class Pro_search
         //enable anew if needed
         if($enable_sql_caching != ee()->config->item('enable_sql_caching')) {
             ee()->config->config['enable_sql_caching'] = $enable_sql_caching;
-;        }
+        }
 
         // --------------------------------------
         // If not set by the extension, use native channel:entries
