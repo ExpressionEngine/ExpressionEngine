@@ -239,17 +239,17 @@ class CategoryGroup extends StructureModel
      * Get a nested array of category ids => names for a given category group
      *
      * @param int|null $group_id
-     * @return void
+     * @return array
      */
     protected function getCategoryListForGroup($group_id = null)
     {
         if(is_null($group_id)) {
             $group_id = $this->getId();
             $sort_column = $this->sort_order == 'a' ? 'cat_name' : 'cat_order';
-        }else{
+        } else {
             $groupSort = ee()->db->select('sort_order')
                 ->from('category_groups')
-                ->where('group_id', $group_id)
+                ->where('group_id', (int) $group_id)
                 ->get()
                 ->result_array();
 
@@ -300,11 +300,11 @@ class CategoryGroup extends StructureModel
     protected function buildCategoryList($parent_id, $hierarchy, $categories)
     {
         $list = array();
-        $cat_ids = $hierarchy[$parent_id];
+        $cat_ids = $hierarchy[$parent_id] ?? [];
 
         foreach ($cat_ids as $cat_id) {
             if(empty($cat_id)) {
-                throw new \Exception('Failed to build category list, missing category id.  Check database group_concat_max_len');
+                throw new \Exception('Failed to build category list, missing category data');
             }
 
             $category = $categories[$cat_id];
