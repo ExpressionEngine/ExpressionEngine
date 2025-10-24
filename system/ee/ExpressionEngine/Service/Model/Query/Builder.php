@@ -267,7 +267,7 @@ class Builder
             $char = $str[$i];
 
             if (($quoted == false && $char == ' ') || ($quoted == true && $char == $quote)) {
-                if (strlen($word) > 2) {
+                if (strlen($word) > 0) {
                     $words[] = $word;
                 }
 
@@ -288,7 +288,7 @@ class Builder
             $word .= $char;
         }
 
-        if (strlen($word) > 2) {
+        if (strlen($word) > 0) {
             $words[] = $word;
         }
 
