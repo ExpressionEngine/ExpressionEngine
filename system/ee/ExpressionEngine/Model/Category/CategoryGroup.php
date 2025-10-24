@@ -304,7 +304,7 @@ class CategoryGroup extends StructureModel
 
         foreach ($cat_ids as $cat_id) {
             if(empty($cat_id)) {
-                throw new \Exception('Failed to build category list, missing category data');
+                throw new \Exception('Failed to build category list, missing category id.  Check database group_concat_max_len');
             }
 
             $category = $categories[$cat_id];
