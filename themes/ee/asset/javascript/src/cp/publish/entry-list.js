@@ -157,7 +157,9 @@ $(document).ready(function () {
 
 		var search = $('input[name="filter_by_keyword"]').serialize();
 
-		searchEntries('GET', $(this).attr('href') + '&' + search)
+		if (typeof($(this).attr('href'))!='undefined' && $(this).attr('href')!='' && $(this).attr('href')!='#') {
+			searchEntries('GET', $(this).attr('href') + '&' + search)
+		}
 
 		event.preventDefault();
 	});

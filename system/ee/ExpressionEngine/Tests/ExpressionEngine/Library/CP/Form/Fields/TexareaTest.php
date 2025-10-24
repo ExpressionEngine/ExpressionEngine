@@ -29,7 +29,7 @@ class TexareaTest extends TestCase
     public function testFieldPrototypeAttribute(): Textarea
     {
         $field = new _textarea_field('test-field');
-        $this->assertObjectHasAttribute('field_prototype', $field);
+        $this->assertObjectHasProperty('field_prototype', $field);
         $this->assertCount(3, $field->getFieldPrototype());
         return $field;
     }

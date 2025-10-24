@@ -257,18 +257,34 @@ class ChannelEntry extends ContentModel
 
         //validate categories, if necessary
         $cat_groups = $this->Channel->CategoryGroups->pluck('group_id');
-        $categoryGroupsRequired = ee('Model')
+        $categoryGroups = ee('Model')
                 ->get('CategoryGroupSettings')
                 ->filter('channel_id', $this->Channel->getId())
-                ->filter('group_id', 'IN', $cat_groups)
-                ->filter('cat_required', 'y')
-                ->all()
-                ->pluck('group_id');
+                ->filter('group_id', 'IN', $cat_groups);
+        $categoryGroupsRequired = [];
+        $categoryGroupsSingleSelection = [];
+        foreach ($categoryGroups->all() as $categoryGroup) {
+            if ($categoryGroup->cat_required === true) {
+                $categoryGroupsRequired[] = $categoryGroup->group_id;
+            }
+            if ($categoryGroup->cat_allow_multiple === false) {
+                $categoryGroupsSingleSelection[] = $categoryGroup->group_id;
+            }
+        }
         if (!empty($categoryGroupsRequired)) {
             $requiredRule = new Rule\Required();
             foreach ($categoryGroupsRequired as $groupId) {
                 if (empty($this->getProperty('cat_group_id_' . $groupId))) {
                     $result->addFailed('categories[cat_group_id_' . $groupId . ']', $requiredRule);
+                }
+            }
+        }
+        if (!empty($categoryGroupsSingleSelection)) {
+            $singleSelectionRule = new Rule\SingleSelection();
+            foreach ($categoryGroupsSingleSelection as $groupId) {
+                $catsInGroup = explode('|', $this->getProperty('cat_group_id_' . $groupId));
+                if (count($catsInGroup) > 1) {
+                    $result->addFailed('categories[cat_group_id_' . $groupId . ']', $singleSelectionRule);
                 }
             }
         }
@@ -685,6 +701,10 @@ class ChannelEntry extends ContentModel
             $versions = $this->Versions->sortBy('version_date')->asArray();
             $versions = array_slice($versions, 0, $diff);
 
+            if (ee()->extensions->active_hook('before_channel_entry_version_delete') === true) {
+                $versions = ee()->extensions->call('before_channel_entry_version_delete', $this, $versions);
+            }
+
             foreach ($versions as $version) {
                 $version->delete();
             }
@@ -755,12 +775,13 @@ class ChannelEntry extends ContentModel
                 return;
             }
             //if the file data is in new format, add the counter immediately
-            if (strpos($item, '{file:') !== false && preg_match('/{file\:(\d+)\:url}/', $item, $matches)) {
-                $file_id = $matches[1];
-                if (! isset($usage[$file_id])) {
-                    $usage[$file_id] = 1;
-                } else {
-                    $usage[$file_id]++;
+            if (strpos($item, '{file:') !== false && preg_match_all('/{file\:(\d+)\:url}/', $item, $matches)) {
+                foreach ($matches[1] as $file_id) {
+                    if (! isset($usage[$file_id])) {
+                        $usage[$file_id] = 1;
+                    } else {
+                        $usage[$file_id]++;
+                    }
                 }
             }
             $dirUrlsMatches = [];
@@ -813,7 +834,7 @@ class ChannelEntry extends ContentModel
     /**
      * Modify the default layout for channels
      */
-    public function getDisplay(LayoutInterface $layout = null)
+    public function getDisplay(?LayoutInterface $layout = null)
     {
         $layout = $layout ?: new Display\DefaultChannelLayout($this->channel_id, $this->entry_id);
 
@@ -1281,18 +1302,15 @@ class ChannelEntry extends ContentModel
                     }
                     // can multiple categories from this group be selected? (default yes)
                     if (isset($cat_allow_multiple[$cat_group->getId()]) && $cat_allow_multiple[$cat_group->getId()] === false) {
-                        if ($this->Categories->filter('group_id', $cat_group->getId())->count() > 1) {
+                        if (!$this->isNew() && $this->Categories->filter('group_id', $cat_group->getId())->count() > 1) {
                             $metadata['alertText'] = lang('cat_selection_is_multiple_categories_assigned');
                         } elseif (ee()->config->item('auto_assign_cat_parents') == 'y') {
                             // we have to know if there are children in this group
                             $categoryChildrenCount = ee('Model')->get('Category')->filter('group_id', $cat_group->getId())->filter('parent_id', '!=', 0)->count();
-                            if ($categoryChildrenCount == 0) {
-                                $metadata['field_type'] = 'radio';
-                            } else {
+
+                            if ($categoryChildrenCount != 0) {
                                 $metadata['alertText'] = lang('cat_selection_is_multiple_auto_select_parent');
                             }
-                        } else {
-                            $metadata['field_type'] = 'radio';
                         }
                     }
 
@@ -1596,6 +1614,23 @@ class ChannelEntry extends ContentModel
         }
 
         return false;
+    }
+
+    public function getAutosaves()
+    {
+        if ($this->isNew()) {
+            return ee('Model')->get('ChannelEntryAutosave')
+                ->filter('original_entry_id', 0)
+                ->filter('site_id', $this->site_id)
+                ->filter('channel_id', $this->channel_id)
+                ->filterGroup()
+                    ->filter('author_id', $this->author_id)
+                    ->orFilter('author_id', ee()->session->userdata('member_id'))
+                ->endFilterGroup()
+                ->all();
+        }
+
+        return $this->Autosaves;
     }
 }
 

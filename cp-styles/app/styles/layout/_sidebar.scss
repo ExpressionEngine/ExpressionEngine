@@ -338,6 +338,8 @@
   -webkit-transition: color 0.15s ease-in-out;
   -moz-transition: color 0.15s ease-in-out;
   -o-transition: color 0.15s ease-in-out;
+  border-radius: 0;
+  margin-bottom: 0;
 
   &:hover {
     background-color: color(sidebar-version-bg-hover);
@@ -609,4 +611,20 @@
 .navigation-submenu::-webkit-scrollbar { /* WebKit */
   width: 0;
   height: 0;
+}
+
+
+body[data-theme="slate"], 
+body[data-theme="light"] {
+  .ee-sidebar__items {
+    .ee-sidebar__version {
+      &.ee-sidebar__version--update-vital,
+      &.ee-sidebar__version--update-vital i {
+        color: var(--ee-bg-blank) !important;
+        background: color(ee-update-vital);
+        border-radius: 0;
+        margin: 0;
+      }
+    }
+  }
 }
