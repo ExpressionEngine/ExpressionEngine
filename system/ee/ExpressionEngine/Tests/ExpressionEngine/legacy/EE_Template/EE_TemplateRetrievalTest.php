@@ -183,15 +183,15 @@ class EE_TemplateRetrievalTest extends EE_TemplateTestBase
         $reflection = new \ReflectionMethod($this->template, 'fetch_template');
         $parameters = $reflection->getParameters();
 
-        $this->assertCount(4, $parameters);
-        $this->assertEquals('template_group', $parameters[0]->getName());
-        // Note: getDefaultValue() can fail for complex defaults, so we check names only
+        $this->assertCount(5, $parameters);
         $this->assertEquals('template_group', $parameters[0]->getName());
         $this->assertEquals('template', $parameters[1]->getName());
         $this->assertEquals('show_default', $parameters[2]->getName());
         $this->assertTrue($parameters[2]->getDefaultValue());
         $this->assertEquals('site_id', $parameters[3]->getName());
         $this->assertEquals('', $parameters[3]->getDefaultValue());
+        $this->assertEquals('is_layout', $parameters[4]->getName());
+        $this->assertFalse($parameters[4]->getDefaultValue());
     }
 
     /**
