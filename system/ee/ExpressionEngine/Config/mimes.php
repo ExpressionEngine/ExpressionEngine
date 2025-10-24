@@ -30,6 +30,7 @@ return array(
         'image/tiff', // .tif, .tiff
         'image/x-png', // .png
         'image/webp', // .webp
+        'image/avif', // .avif
         'image/x-icon', // .ico
         'image/vnd.microsoft.icon', //.ico
     ),

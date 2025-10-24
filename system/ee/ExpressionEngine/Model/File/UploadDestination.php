@@ -343,12 +343,12 @@ class UploadDestination extends StructureModel
     {
         // Do we want to allow variable replacement in adapters that aren't local?
         $path = $this->parseConfigVars((string) $this->getProperty('server_path'));
-        $adapterName = $this->adapter ?? 'local';
+        $adapterName = $this->getProperty('adapter') ?? 'local';
         $adapterSettings = array_merge([
             'path' => $path,
             'server_path' => $this->server_path,
             'url' => $this->url
-        ], $this->adapter_settings ?? [], $overrides);
+        ], $this->getProperty('adapter_settings') ?? [], $overrides);
         $adapter = ee('Filesystem/Adapter')->make($adapterName, $adapterSettings);
 
         return $adapter;
@@ -909,7 +909,7 @@ class UploadDestination extends StructureModel
         }
 
         // Remove front-end manipulations
-        $manipulations = ['resize', 'crop', 'rotate', 'webp'];
+        $manipulations = ['resize', 'crop', 'rotate', 'webp', 'avif'];
         $renamer = strrchr($basename, '_');
         $basename = ($renamer === false) ? $basename : substr($basename, 0, -strlen($renamer));
 

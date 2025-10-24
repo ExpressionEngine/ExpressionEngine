@@ -251,6 +251,10 @@ class Filemanager
             return false;
         }
 
+        if ($mime == 'image/avif' && !defined('IMAGETYPE_AVIF')) {
+            return false;
+        }
+
         $imageMimes = [
             'image/gif', // .gif
             'image/jpeg', // .jpg, .jpe, .jpeg
@@ -1182,7 +1186,7 @@ class Filemanager
         $filesystem = $prefs['directory']->getFilesystem();
         $file_path = str_replace('\\', '/', $filesystem->absolute($file_path));
 
-        $img_path = ($prefs['directory']->adapter == 'local') ? rtrim(str_replace('\\', '/', $prefs['server_path']), '/') . '/' : '';
+        $img_path = ($prefs['directory']->getProperty('adapter') == 'local') ? rtrim(str_replace('\\', '/', $prefs['server_path']), '/') . '/' : '';
         $dirname = rtrim(str_replace('\\', '/', $filesystem->absolute($filesystem->subdirectory($file_path))), '/') . '/';
         if (empty($img_path) || strpos($dirname, $img_path) === 0) {
             $img_path = $dirname;
@@ -1837,7 +1841,7 @@ class Filemanager
 
                 // Permissions can only get more strict!
                 if (isset($settings['field_content_type']) && $settings['field_content_type'] == 'image') {
-                    $allowed_types = 'gif|jpg|jpeg|png|jpe|svg|webp';
+                    $allowed_types = 'gif|jpg|jpeg|png|jpe|svg|webp|avif';
                 }
             }
 
