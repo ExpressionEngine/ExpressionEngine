@@ -2433,16 +2433,17 @@ class EE_Template
     }
 
     /**
-     * Fetch Template Data
+     * Fetch template data from database or file.
      *
-     * Takes a Template Group, Template, and Site ID and will retrieve the Template and its metadata
-     * from the database (or file)
+     * Retrieves a template and its metadata by template group, template name, and site ID.
+     * Can optionally show default templates and handle layout templates.
      *
-     * @param   string
-     * @param   string
-     * @param   bool
-     * @param   int
-     * @return  string
+     * @param  string  $template_group  The template group name
+     * @param  string  $template        The template name
+     * @param  bool    $show_default    Whether to show default templates if not found (default: true)
+     * @param  int     $site_id         The site ID to fetch template from (default: '')
+     * @param  bool    $is_layout       Whether this is a layout template (default: false)
+     * @return string                   The template content
      */
     public function fetch_template($template_group, $template, $show_default = true, $site_id = '', $is_layout = false)
     {
