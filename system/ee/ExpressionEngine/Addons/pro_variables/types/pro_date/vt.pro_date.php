@@ -26,7 +26,7 @@ class Pro_date extends Pro_variables_type
     public $default_settings = array(
         'localization' => 'ask',
         'show_time' => 'y'
-    );	
+    );
     // Field type to use
     protected $ft = 'date';
     /**
@@ -44,15 +44,17 @@ class Pro_date extends Pro_variables_type
      */
     public function save_settings()
     {
-        $data = array();
-        // Get the keys
+        // Start with existing saved settings (if any)
+        $settings = $this->settings() ?: array();
+
+        // Ensure defaults are present and override with posted values if provided.
         foreach ($this->default_settings as $key => $default) {
-            $data[$key] = ee('Request')->post($key, $default);
+            $settings[$key] = ee('Request')->post($key, isset($settings[$key]) ? $settings[$key] : $default);
         }
 
         $this->setup_ft();
- 
-        return $this->call_ft(__FUNCTION__, $data);
+
+        return $this->call_ft(__FUNCTION__, $settings);
     }
 
     /**
@@ -68,7 +70,7 @@ class Pro_date extends Pro_variables_type
         $field = $this->call_ft(__FUNCTION__, $var_data);
         // Replace the entry_date back
         $this->name = $this->row('variable_name');
-		
+
         $field = str_replace('entry_date', $this->input_name(), $field);
 
         return $field;
