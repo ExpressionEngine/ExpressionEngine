@@ -385,19 +385,29 @@ class EntryListing
     }
 
     /**
-     * Creates an author filter
+     * Create an author filter for entry listings.
+     *
+     * Builds a filter of authors who have authored entries in the specified channel,
+     * or all authors if no channel is provided. The current user is placed at the top
+     * of the list for convenience.
+     *
+     * @param \ExpressionEngine\Model\Channel|null $channel Channel model to filter authors by, or null for all channels
+     * @return \ExpressionEngine\Library\CP\Filter Author filter object
      */
-    private function createAuthorFilter($channel_id = null)
+    private function createAuthorFilter($channel = null)
     {
-        $db = ee('db')->distinct()
-            ->select('t.author_id, m.screen_name, m.username')
-            ->from('channel_titles t')
-            ->join('members m', 'm.member_id = t.author_id', 'LEFT')
-            ->order_by('screen_name', 'asc');
+        // It is more performant to query the members table and filter by having at least one channel_title authored
+        // than to do a distinct query on author_id across a potentially very large channel_titles table.
+        $where = 'SELECT count(t.entry_id) FROM '. ee()->db->dbprefix('channel_titles').' t WHERE t.author_id = m.member_id';
 
-        if ($channel_id) {
-            $db->where('channel_id', $channel_id->channel_id);
+        if ($channel) {
+            $where .= ' AND t.channel_id = '. (int) $channel->channel_id;
         }
+
+        $db = ee('db')->select('m.member_id as author_id, m.screen_name, m.username')
+                ->from('members m')
+                ->where("($where) > 0")
+                ->order_by('screen_name', 'asc');
 
         $authors_query = $db->get();
 
@@ -472,7 +482,6 @@ class EntryListing
 
         if (is_null($channel)) {
             $category_groups = ee('Model')->get('CategoryGroup')
-                ->with('Categories')
                 ->filter('site_id', ee()->config->item('site_id'))
                 ->filter('exclude_group', '!=', 1)
                 ->order('group_name', 'asc')

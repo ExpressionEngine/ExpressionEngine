@@ -336,6 +336,17 @@ class EE_Image_lib
         return $this->$protocol('webp');
     }
 
+    public function avif()
+    {
+        $protocol = 'image_process_' . $this->image_library;
+
+        if (preg_match('/gd2$/i', $protocol)) {
+            $protocol = 'image_process_gd';
+        }
+
+        return $this->$protocol('avif');
+    }
+
     /**
      * Image Crop
      *
@@ -473,6 +484,9 @@ class EE_Image_lib
         //if we are converting, change image type
         if ($action == 'webp') {
             $this->image_type = 18; //IMAGETYPE_WEBP
+        }
+        if ($action == 'avif') {
+            $this->image_type = 19; //IMAGETYPE_AVIF
         }
 
         //  Show the image
@@ -1173,6 +1187,16 @@ class EE_Image_lib
                 return imagecreatefromwebp($path);
 
                 break;
+            case 19: //IMAGETYPE_AVIF
+                if (! function_exists('imagecreatefromavif')) {
+                    $this->set_error(array('imglib_unsupported_imagecreate', 'imglib_avif_not_supported'));
+
+                    return false;
+                }
+
+                return imagecreatefromavif($path);
+
+                break;
         }
 
         $this->set_error(array('imglib_unsupported_imagecreate'));
@@ -1257,6 +1281,19 @@ class EE_Image_lib
                 }
 
                 break;
+            case 19://IMAGETYPE_AVIF
+                if (! function_exists('imageavif')) {
+                    $this->set_error(array('imglib_unsupported_imagecreate', 'imglib_avif_not_supported'));
+
+                    return false;
+                }
+                if (! @imageavif($resource, $this->full_dst_path, $this->quality)) {
+                    $this->set_error('imglib_save_failed');
+
+                    return false;
+                }
+
+                break;
             default:
                 $this->set_error(array('imglib_unsupported_imagecreate'));
 
@@ -1297,6 +1334,10 @@ class EE_Image_lib
                 break;
             case 18: //IMAGETYPE_WEBP
                 imagewebp($resource);
+
+                break;
+            case 19: //IMAGETYPE_AVIF
+                imageavif($resource);
 
                 break;
             default:
@@ -1379,7 +1420,7 @@ class EE_Image_lib
             return false;
         }
 
-        $types = array(IMAGETYPE_GIF => 'gif', IMAGETYPE_JPEG => 'jpeg', IMAGETYPE_PNG => 'png', '18' => 'webp');
+        $types = array(IMAGETYPE_GIF => 'gif', IMAGETYPE_JPEG => 'jpeg', IMAGETYPE_PNG => 'png', '18' => 'webp', '19' => 'avif');
 
         $mime = (isset($types[$vals['2']])) ? 'image/' . $types[$vals['2']] : 'image/jpg';
 

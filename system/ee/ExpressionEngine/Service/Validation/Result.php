@@ -113,7 +113,7 @@ class Result
      *
      * @return array
      */
-    public function getErrors($field, View $view = null)
+    public function getErrors($field, ?View $view = null)
     {
         $out = array();
 
@@ -129,7 +129,7 @@ class Result
     /**
      * Get all error strings for all failed fields
      */
-    public function getAllErrors(View $view = null)
+    public function getAllErrors(?View $view = null)
     {
         $out = array();
 
@@ -146,7 +146,7 @@ class Result
      * @param View|null $view
      * @return array
      */
-    public function getFirstErrors(View $view = null)
+    public function getFirstErrors(?View $view = null)
     {
         return array_map('current', $this->getAllErrors());
     }
@@ -166,7 +166,7 @@ class Result
     /**
      * Render
      */
-    public function renderErrors(View $view = null)
+    public function renderErrors(?View $view = null)
     {
         $out = array();
 
@@ -180,7 +180,7 @@ class Result
     /**
      *
      */
-    public function renderError($field, View $view = null)
+    public function renderError($field, ?View $view = null)
     {
         if (! $this->hasErrors($field)) {
             return '';

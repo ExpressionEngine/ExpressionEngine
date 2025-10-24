@@ -140,7 +140,7 @@ class Updater
                     ]
                 ]
             );
-            ee()->dbforge->add_key(['condition_set_id', 'field_id']);
+            ee()->dbforge->add_key(['condition_set_id', 'field_id'], true);
             ee()->smartforge->create_table('field_condition_sets_channel_fields');
         }
 

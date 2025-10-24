@@ -97,7 +97,7 @@
                 $this->embed('_shared/form/fields/dropdown', $valueFieldDefault);
             elseif (!$hiddenTemplate && !($valueType['type'] == null)) :
         ?>
-            <input type="text" value="<?=$value?>" name="condition[<?=$setId?>][<?=$rowId?>][value]" aria-label="<?=lang('conditional_rule_value')?>">>
+            <input type="text" value="<?=$value?>" name="condition[<?=$setId?>][<?=$rowId?>][value]" aria-label="<?=lang('conditional_rule_value')?>">
         <?php endif; ?>
     </div>
 
