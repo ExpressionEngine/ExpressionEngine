@@ -21350,7 +21350,8 @@ body[data-theme=dark] .hljs .apache .hljs-attribute {
   content: "\f0cb";
 }
 
-.markItUp .html-underline a:before {
+.markItUp .html-underline a:before,
+.markItUp .html-ins a:before {
   content: "\f0cd";
 }
 
