@@ -2760,8 +2760,10 @@ class Channel
     }
 
     /**
-      *  Channel Categories
-      */
+     * Display channel categories.
+     *
+     * @return string The parsed category data for template display
+     */
     public function categories()
     {
         // -------------------------------------------
