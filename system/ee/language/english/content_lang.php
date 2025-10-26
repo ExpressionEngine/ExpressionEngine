@@ -783,6 +783,10 @@ $lang = array(
 
     'upload_to' => 'Upload to %s',
 
+    'update_url_title' => 'Update URL title',
+
+    'update_structure_url' => 'Update Structure URL',
+
     'url' => 'URL',
 
     'url_only' => 'URL Only',
