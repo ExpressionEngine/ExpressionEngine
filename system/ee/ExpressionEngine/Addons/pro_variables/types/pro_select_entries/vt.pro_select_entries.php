@@ -320,7 +320,8 @@ class Pro_select_entries extends Pro_variables_type
                     ->get('Channel')
                     ->filter('site_id', ee()->config->item('site_id'))
                     ->order('channel_title')
-                    ->all();
+                    ->all()
+                    ->indexBy('channel_id');
 
                 $selected = [];
                 $items = [];
@@ -333,7 +334,7 @@ class Pro_select_entries extends Pro_variables_type
                         $selected[] = [
                             'value'        => $entry->entry_id,
                             'label'        => $entry->title,
-                            'instructions' => $entry->Channel->channel_title,
+                            'instructions' => isset($channels[$entry->channel_id]) ? $channels[$entry->channel_id]->channel_title : '',
                             'channel_id'   => $entry->channel_id,
                             'can_edit'     => false,
                             'editable'     => false,
@@ -345,7 +346,7 @@ class Pro_select_entries extends Pro_variables_type
                         $items[] = [
                             'value'        => $entry->entry_id,
                             'label'        => $entry->title,
-                            'instructions' => $entry->Channel->channel_title,
+                            'instructions' => isset($channels[$entry->channel_id]) ? $channels[$entry->channel_id]->channel_title : '',
                             'channel_id'   => $entry->channel_id,
                             'can_edit'     => false,
                             'editable'     => false,
