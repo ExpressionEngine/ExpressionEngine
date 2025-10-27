@@ -31,7 +31,7 @@ class Pro_select_entries extends Pro_variables_type
         'sort'            => 'asc',
         'multiple'        => 'y',
         'separator'       => 'pipe',
-        'multi_interface' => 'select'
+        'multi_interface' => 'drag-list'
     );
 
     // --------------------------------------------------------------------
