@@ -881,8 +881,16 @@ JSC;
                         $content = preg_replace('/<\?xml.*?\?>/s', '', $content);
                     }
                     if (isset($params['width']) && isset($params['height'])) {
-                        $content = preg_replace('/(<svg.*? width=")(.*?)"/', '${1}' . $params['width'] . '"', $content);
-                        $content = preg_replace('/(<svg.*? height=")(.*?)"/', '${1}' . $params['height'] . '"', $content);
+                        if (strpos($content, 'width="') !== false) {
+                            $content = preg_replace('/(<svg.*? width=")(.*?)"/', '${1}' . $params['width'] . '"', $content);
+                        } else {
+                            $content = preg_replace('/<svg /', '<svg width="' . $params['width'] . '" ', $content);
+                        }
+                        if (strpos($content, 'height="') !== false) {
+                            $content = preg_replace('/(<svg.*? height=")(.*?)"/', '${1}' . $params['height'] . '"', $content);
+                        } else {
+                            $content = preg_replace('/<svg /', '<svg height="' . $params['height'] . '" ', $content);
+                        }
                         unset($params['width'], $params['height']);
                     }
                     if (!empty($params)) {
