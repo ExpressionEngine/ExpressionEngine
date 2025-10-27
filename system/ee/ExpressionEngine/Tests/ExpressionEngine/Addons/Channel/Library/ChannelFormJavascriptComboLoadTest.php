@@ -203,7 +203,7 @@ class ChannelFormJavascriptComboLoadTest extends ChannelFormJavascriptTest
         // Get js_path using reflection since it's private
         $reflection = new ReflectionClass($this->channelFormJavascript);
         $jsPathProperty = $reflection->getProperty('js_path');
-        $jsPathProperty->setAccessible(true);
+        TestReflectionHelper::makePropertyAccessible($jsPathProperty);
         $jsPath = $jsPathProperty->getValue($this->channelFormJavascript);
         $jqueryPath = $jsPath . 'jquery/jquery.js';
 
@@ -347,7 +347,7 @@ class ChannelFormJavascriptComboLoadTest extends ChannelFormJavascriptTest
         // Get js_path using reflection since it's private (no absolute paths)
         $reflection = new ReflectionClass($this->channelFormJavascript);
         $jsPathProperty = $reflection->getProperty('js_path');
-        $jsPathProperty->setAccessible(true);
+        TestReflectionHelper::makePropertyAccessible($jsPathProperty);
         $jsPath = $jsPathProperty->getValue($this->channelFormJavascript);
         $channelFormJsPath = $jsPath . 'channel_form.js';
 

@@ -115,7 +115,7 @@ class ApiTemplateStructureConstructorTest extends ApiTemplateStructureTestBase
         // Use reflection to access protected property
         $reflection = new ReflectionClass($this->apiTemplateStructure);
         $property = $reflection->getProperty('template_engine_file_extensions');
-        $property->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($property);
 
         $value = $property->getValue($this->apiTemplateStructure);
         $this->assertIsArray($value);

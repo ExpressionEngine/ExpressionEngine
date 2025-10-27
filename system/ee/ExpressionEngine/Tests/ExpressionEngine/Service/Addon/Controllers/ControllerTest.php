@@ -31,14 +31,14 @@ class ControllerTest extends TestCase
     public function testControllerHasRouteNamespaceProperty()
     {
         $controller = new _addon_controller_mock();
-        $this->assertObjectHasAttribute('route_namespace', $controller);
+        $this->assertObjectHasProperty('route_namespace', $controller);
         $this->assertEquals('', $controller->getRoutespaceProperty());
     }
 
     public function testControllerHasAddonNameProperty()
     {
         $controller = new _addon_controller_mock();
-        $this->assertObjectHasAttribute('addon_name', $controller);
+        $this->assertObjectHasProperty('addon_name', $controller);
         $this->assertEquals('', $controller->getAddonNameProperty());
     }
 

@@ -25,7 +25,7 @@ class StructureNavParserParseUlTest extends StructureTestBase
         $parser = new NavParser();
         $ref = new ReflectionClass($parser);
         $method = $ref->getMethod('parse_ul');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         $vars = $method->invoke($parser, $ul, 0);
         $this->assertCount(2, $vars);

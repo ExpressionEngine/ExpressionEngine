@@ -77,6 +77,10 @@ class Profile extends CP_Controller
             'lang.password_icon' => lang('password_icon')
         ]);
 
+        ee()->cp->add_js_script(array(
+            'file' => array('cp/confirm_remove', 'cp/members/members'),
+        ));
+
         $this->breadcrumbs = array(
             ee('CP/URL')->make('members')->compile() => lang('members'),
             ee('CP/URL')->make('members/profile', $qs)->compile() => $this->member->screen_name
@@ -272,6 +276,23 @@ class Profile extends CP_Controller
                                 'margin_left' => true
                             )
                         );
+
+                        $vars['fieldset'] = [
+                            'group' => 'delete-confirm',
+                            'setting' => [
+                                'title' => '',
+                                'desc' => lang('move_toggle_to_confirm'),
+                                'attrs' => [
+                                    'class' => 'member-delete-confirm',
+                                ],
+                                'fields' => [
+                                    'confirm' => [
+                                        'type' => 'toggle',
+                                        'value' => 0,
+                                    ]
+                                ]
+                            ]
+                        ];
 
                         $heirs_view = ee('View')->make('members/delete_confirm')->render($vars);
                     }

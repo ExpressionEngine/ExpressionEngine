@@ -49,14 +49,14 @@ class ApiChannelEntriesConstructTest extends ChannelApiTestBase
         $api = new Api_channel_entries();
 
         // Verify that the API has the expected properties
-        $this->assertObjectHasAttribute('entry_data', $api);
-        $this->assertObjectHasAttribute('channel_id', $api);
-        $this->assertObjectHasAttribute('entry_id', $api);
-        $this->assertObjectHasAttribute('autosave', $api);
-        $this->assertObjectHasAttribute('data', $api);
-        $this->assertObjectHasAttribute('meta', $api);
-        $this->assertObjectHasAttribute('c_prefs', $api);
-        $this->assertObjectHasAttribute('_cache', $api);
+        $this->assertObjectHasProperty('entry_data', $api);
+        $this->assertObjectHasProperty('channel_id', $api);
+        $this->assertObjectHasProperty('entry_id', $api);
+        $this->assertObjectHasProperty('autosave', $api);
+        $this->assertObjectHasProperty('data', $api);
+        $this->assertObjectHasProperty('meta', $api);
+        $this->assertObjectHasProperty('c_prefs', $api);
+        $this->assertObjectHasProperty('_cache', $api);
 
         // Verify initial values are set correctly
         $this->assertEquals([], $api->entry_data);
@@ -78,7 +78,7 @@ class ApiChannelEntriesConstructTest extends ChannelApiTestBase
         $api = new Api_channel_entries();
 
         // Verify autosave_entry_id is initialized
-        $this->assertObjectHasAttribute('autosave_entry_id', $api);
+        $this->assertObjectHasProperty('autosave_entry_id', $api);
         $this->assertEquals(0, $api->autosave_entry_id);
     }
 }

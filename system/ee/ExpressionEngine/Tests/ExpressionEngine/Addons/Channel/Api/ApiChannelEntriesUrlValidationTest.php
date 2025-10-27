@@ -50,7 +50,7 @@ class ApiChannelEntriesUrlValidationTest extends ChannelApiTestBase
         // Call _validate_url_title using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_validate_url_title');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         try {
             $result = $method->invokeArgs($this->api, [$urlTitle, $title, false]);
@@ -79,7 +79,7 @@ class ApiChannelEntriesUrlValidationTest extends ChannelApiTestBase
         // Call _validate_url_title using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_validate_url_title');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invokeArgs($this->api, [$urlTitle, $title, false]);
 
         // Verify result - should convert title to URL slug
@@ -105,7 +105,7 @@ class ApiChannelEntriesUrlValidationTest extends ChannelApiTestBase
             // Call _validate_url_title using reflection
             $reflection = new ReflectionClass($this->api);
             $method = $reflection->getMethod('_validate_url_title');
-            $method->setAccessible(true);
+            \TestReflectionHelper::makeMethodAccessible($method);
             $result = $method->invokeArgs($this->api, [$whitespaceInput, $title, false]);
 
             // Verify result - should use fallback title
@@ -129,7 +129,7 @@ class ApiChannelEntriesUrlValidationTest extends ChannelApiTestBase
         // Call _validate_url_title using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_validate_url_title');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invokeArgs($this->api, [$urlTitle, $title, false]);
 
         // Verify result - should return the processed URL but set error if it ends up numeric
@@ -156,7 +156,7 @@ class ApiChannelEntriesUrlValidationTest extends ChannelApiTestBase
         // Call _validate_url_title using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_validate_url_title');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invokeArgs($this->api, [$urlTitle, $title, false]);
 
         // Verify result - should return 'index' but set error
@@ -189,7 +189,7 @@ class ApiChannelEntriesUrlValidationTest extends ChannelApiTestBase
             // Call _validate_url_title using reflection
             $reflection = new ReflectionClass($this->api);
             $method = $reflection->getMethod('_validate_url_title');
-            $method->setAccessible(true);
+            \TestReflectionHelper::makeMethodAccessible($method);
             $result = $method->invokeArgs($this->api, [$xssInput, $title, false]);
 
             // Verify XSS is neutralized - no dangerous HTML tags should remain
@@ -233,7 +233,7 @@ class ApiChannelEntriesUrlValidationTest extends ChannelApiTestBase
             // Call _validate_url_title using reflection
             $reflection = new ReflectionClass($this->api);
             $method = $reflection->getMethod('_validate_url_title');
-            $method->setAccessible(true);
+            \TestReflectionHelper::makeMethodAccessible($method);
             $result = $method->invokeArgs($this->api, [$input, $title, false]);
 
             // Verify result
@@ -266,7 +266,7 @@ class ApiChannelEntriesUrlValidationTest extends ChannelApiTestBase
             // Call _validate_url_title using reflection
             $reflection = new ReflectionClass($this->api);
             $method = $reflection->getMethod('_validate_url_title');
-            $method->setAccessible(true);
+            \TestReflectionHelper::makeMethodAccessible($method);
             $result = $method->invokeArgs($this->api, [$input, $title, false]);
 
             // Verify result is processed (may be empty for unicode that gets stripped)
@@ -297,7 +297,7 @@ class ApiChannelEntriesUrlValidationTest extends ChannelApiTestBase
         // Call _validate_url_title using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_validate_url_title');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invokeArgs($this->api, [$longInput, $title, false]);
 
         // Verify result is processed (length may vary based on implementation)
@@ -318,11 +318,11 @@ class ApiChannelEntriesUrlValidationTest extends ChannelApiTestBase
         // Mock the _unique_url_title method to simulate uniqueness enforcement
         $reflection = new ReflectionClass($this->api);
         $uniqueMethod = $reflection->getMethod('_unique_url_title');
-        $uniqueMethod->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($uniqueMethod);
 
         // Replace the method temporarily to return a modified URL title
         $originalUniqueMethod = $uniqueMethod->getClosure($this->api);
-        $uniqueMethod->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($uniqueMethod);
 
         // Mock the method to return a modified version when duplicate is found
         $this->api = $this->getMockBuilder(Api_channel_entries::class)
@@ -339,7 +339,7 @@ class ApiChannelEntriesUrlValidationTest extends ChannelApiTestBase
 
         // Call _validate_url_title using reflection
         $method = $reflection->getMethod('_validate_url_title');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invokeArgs($this->api, [$urlTitle, $title, false]);
 
         // Verify uniqueness enforcement (method should call _unique_url_title)
@@ -371,7 +371,7 @@ class ApiChannelEntriesUrlValidationTest extends ChannelApiTestBase
         // Call _validate_url_title using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_validate_url_title');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invokeArgs($this->api, [$urlTitle, $title, true]); // Update mode
 
         // Verify result - should allow the change since it's an update
@@ -393,7 +393,7 @@ class ApiChannelEntriesUrlValidationTest extends ChannelApiTestBase
         // Call _validate_url_title using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_validate_url_title');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         // Should handle gracefully without throwing errors
         $result = $method->invokeArgs($this->api, [$urlTitle, $title, false]);
@@ -418,7 +418,7 @@ class ApiChannelEntriesUrlValidationTest extends ChannelApiTestBase
         // Call _validate_url_title using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_validate_url_title');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invokeArgs($this->api, [$urlTitle, $longTitle, false]);
 
         // Verify result is processed and not empty

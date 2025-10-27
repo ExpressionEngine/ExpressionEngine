@@ -36,7 +36,7 @@ class FormTest extends TestCase
     public function testSignatureAttributeExists(): Form
     {
         $form = new _form;
-        $this->assertObjectHasAttribute('prototype', $form);
+        $this->assertObjectHasProperty('prototype', $form);
         $this->assertCount(15, $form->getPrototype());
         return $form;
     }
@@ -96,7 +96,7 @@ class FormTest extends TestCase
     public function testStructureAttributeExists(): Form
     {
         $form = new _form;
-        $this->assertObjectHasAttribute('structure', $form);
+        $this->assertObjectHasProperty('structure', $form);
         $this->assertIsArray($form->getStructure());
         $this->assertCount(0, $form->getStructure());
         return $form;
@@ -108,7 +108,7 @@ class FormTest extends TestCase
     public function testHiddenFieldsAttributeExists(): Form
     {
         $form = new _form;
-        $this->assertObjectHasAttribute('hidden_fields', $form);
+        $this->assertObjectHasProperty('hidden_fields', $form);
         $this->assertIsArray($form->getHidden());
         $this->assertCount(0, $form->getHidden());
         return $form;
@@ -120,7 +120,7 @@ class FormTest extends TestCase
     public function testButtonsAttributeExists(): Form
     {
         $form = new _form;
-        $this->assertObjectHasAttribute('buttons', $form);
+        $this->assertObjectHasProperty('buttons', $form);
         $this->assertIsArray($form->geButtons());
         $this->assertCount(0, $form->geButtons());
         return $form;
@@ -132,7 +132,7 @@ class FormTest extends TestCase
     public function testTabAttributeExists(): Form
     {
         $form = new Form;
-        $this->assertObjectHasAttribute('tab', $form);
+        $this->assertObjectHasProperty('tab', $form);
         $this->assertFalse($form->isTab());
         $this->assertInstanceOf('ExpressionEngine\Library\CP\Form', $form->asTab());
         $this->assertTrue($form->isTab());

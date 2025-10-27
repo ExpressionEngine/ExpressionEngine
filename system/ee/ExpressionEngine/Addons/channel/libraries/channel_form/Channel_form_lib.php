@@ -1056,7 +1056,7 @@ GRID_FALLBACK;
                 'text_direction' => $field->getSetting('field_text_direction'),
                 'field_data' => $this->entry($field->getName()),
                 'rows' => $field->getSetting('field_ta_rows'),
-                'maxlength' => $field->getSetting('field_maxl'),
+                'maxlength' => $field->getSetting('field_maxl') ?: '',
                 'formatting_buttons' => '',
                 'field_show_formatting_btns' => ($field->getSetting('field_show_formatting_btns') == 'y') ? 1 : 0,
                 'textinput' => 0,

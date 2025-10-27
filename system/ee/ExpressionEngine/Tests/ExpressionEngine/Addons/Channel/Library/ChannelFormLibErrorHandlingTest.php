@@ -13,7 +13,7 @@ class ChannelFormLibErrorHandlingTest extends ChannelFormLibTestBase
 
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_add_errors');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invoke($this->channelFormLib);
 
         $this->assertArrayHasKey('global_errors', $result);
@@ -36,7 +36,7 @@ class ChannelFormLibErrorHandlingTest extends ChannelFormLibTestBase
 
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_add_errors');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invoke($this->channelFormLib);
 
         $this->assertEquals(2, $result['global_errors:count']);
@@ -76,7 +76,7 @@ class ChannelFormLibErrorHandlingTest extends ChannelFormLibTestBase
 
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_add_errors');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invoke($this->channelFormLib);
 
         $this->assertEquals(3, $result['field_errors:count']);
@@ -120,7 +120,7 @@ class ChannelFormLibErrorHandlingTest extends ChannelFormLibTestBase
 
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_add_errors');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invoke($this->channelFormLib);
 
         // Check that error conditionals are created
@@ -146,7 +146,7 @@ class ChannelFormLibErrorHandlingTest extends ChannelFormLibTestBase
 
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_add_errors');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invoke($this->channelFormLib);
 
         // Check global errors
