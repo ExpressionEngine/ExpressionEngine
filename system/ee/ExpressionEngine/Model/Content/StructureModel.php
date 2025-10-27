@@ -17,6 +17,15 @@ use ExpressionEngine\Service\Model\Model;
  */
 abstract class StructureModel extends Model implements Structure
 {
+    public function onAfterInsert()
+    {
+        // placeholder to make logging work everywhere
+    }
+
+    public function onAfterDelete()
+    {
+        // placeholder to make logging work everywhere
+    }
 }
 
 // EOF

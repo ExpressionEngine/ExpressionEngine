@@ -1774,7 +1774,7 @@ class EE_Schema
 			`name` varchar(128) NOT NULL DEFAULT '',
 			`columns` text NOT NULL,
 			PRIMARY KEY (`view_id`),
-			KEY `role_id_member_id` (`role_id`, `member_id`)
+			KEY `member_id_channel` (`member_id`, `channel`)
 		);";
 
         // Default menu set
