@@ -24,7 +24,7 @@ class Pro_select_categories extends Pro_variables_type
         'multiple'        => 'y',
         'category_groups' => array(),
         'separator'       => 'pipe',
-        'multi_interface' => 'drag-list'
+        'multi_interface' => 'select'
     );
 
     // --------------------------------------------------------------------

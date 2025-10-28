@@ -24,7 +24,7 @@ class Pro_select_channels extends Pro_variables_type
         'multiple'        => 'y',
         'channel_ids'     => array(),
         'separator'       => 'pipe',
-        'multi_interface' => 'drag-list'
+        'multi_interface' => 'select'
     );
 
     // --------------------------------------------------------------------

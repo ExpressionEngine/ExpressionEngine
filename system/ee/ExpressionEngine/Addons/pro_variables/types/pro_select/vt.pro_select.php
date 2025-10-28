@@ -24,7 +24,7 @@ class Pro_select extends Pro_variables_type
         'multiple'  => 'n',
         'options'   => '',
         'separator' => 'newline',
-        'multi_interface' => 'drag-list'
+        'multi_interface' => 'select'
     );
 
     // --------------------------------------------------------------------

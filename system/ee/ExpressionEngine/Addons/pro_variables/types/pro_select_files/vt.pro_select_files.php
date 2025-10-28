@@ -26,7 +26,7 @@ class Pro_select_files extends Pro_variables_type
         //'overwrite' => 'n',
         'multiple'        => 'n',
         'separator'       => 'newline',
-        'multi_interface' => 'drag-list'
+        'multi_interface' => 'select'
     );
 
     // --------------------------------------------------------------------
