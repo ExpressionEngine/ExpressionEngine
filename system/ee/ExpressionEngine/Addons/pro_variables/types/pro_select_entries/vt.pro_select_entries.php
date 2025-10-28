@@ -173,6 +173,7 @@ class Pro_select_entries extends Pro_variables_type
                 $this->setting_name('sort') => array(
                     'type' => 'select',
                     'value' => $this->settings('sort'),
+                    'class' => 'sort-select',
                     'choices' => array(
                         'asc'  => lang('order_asc'),
                         'desc' => lang('order_desc')
