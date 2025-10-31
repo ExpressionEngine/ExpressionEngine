@@ -21,6 +21,13 @@ class EE_Cache_database extends CI_Driver
     protected $_cache_table = 'cache';
 
     /**
+     * Local memory cache to avoid queries for repeated lookups
+     *
+     * @var array
+     */
+    protected $_local_cache = [];
+
+    /**
      * Initialize database-based cache
      *
      * @return	void
@@ -44,23 +51,35 @@ class EE_Cache_database extends CI_Driver
     {
         $key = $this->_namespaced_key($key, $scope);
 
-        ee()->db->select('data, ttl, created_at');
-        ee()->db->from($this->_cache_table);
-        ee()->db->where('cache_key', $key);
-        $query = ee()->db->get();
+        if(array_key_exists($key, $this->_local_cache)) {
+            $row = $this->_local_cache[$key];
 
-        if ($query->num_rows() == 0) {
-            return false;
+            if($row === false) {
+                return false;
+            }
+        }else{
+            ee()->db->select('data, ttl, created_at');
+            ee()->db->from($this->_cache_table);
+            ee()->db->where('cache_key', $key);
+            $query = ee()->db->get();
+
+            if ($query->num_rows() == 0) {
+                $this->_local_cache[$key] = false;
+                return false;
+            }
+
+            $row = $query->row();
         }
-
-        $row = $query->row();
-        $data = unserialize($row->data);
 
         // Check if cache has expired
         if ($row->ttl > 0 && ee()->localize->now > $row->created_at + $row->ttl) {
             $this->delete($key, $scope);
             return false;
         }
+
+        $this->_local_cache[$key] = $row;
+
+        $data = unserialize($row->data);
 
         return $data;
     }
@@ -87,22 +106,17 @@ class EE_Cache_database extends CI_Driver
         ee()->db->where('cache_key', $key);
         $query = ee()->db->get();
 
+        $row = array('data' => $serialized_data, 'ttl' => $ttl, 'created_at' => $created_at);
+        $this->_local_cache[$key] = (object) $row;
+
         if ($query->num_rows() > 0) {
             // Update existing record
             ee()->db->where('cache_key', $key);
-            return ee()->db->update($this->_cache_table, array(
-                'data' => $serialized_data,
-                'ttl' => $ttl,
-                'created_at' => $created_at
-            ));
+            return ee()->db->update($this->_cache_table, $row);
         } else {
             // Insert new record
-            return ee()->db->insert($this->_cache_table, array(
-                'cache_key' => $key,
-                'data' => $serialized_data,
-                'ttl' => $ttl,
-                'created_at' => $created_at
-            ));
+            $row['cache_key'] = $key;
+            return ee()->db->insert($this->_cache_table, $row);
         }
     }
 
@@ -124,12 +138,18 @@ class EE_Cache_database extends CI_Driver
         // If we are deleting contents of a namespace
         if (strrpos($key, Cache::NAMESPACE_SEPARATOR, strlen($key) - 1) !== false) {
             $namespace = $this->_namespaced_key($key, $scope);
+            $this->removeNamespaceFromLocalCache($namespace);
+
             ee()->db->like('cache_key', $namespace, 'right');
             return ee()->db->delete($this->_cache_table);
         }
 
         // Delete specific key
         $key = $this->_namespaced_key($key, $scope);
+
+        if(array_key_exists($key, $this->_local_cache)) {
+            unset($this->_local_cache[$key]);
+        }
         ee()->db->where('cache_key', $key);
         return ee()->db->delete($this->_cache_table);
     }
@@ -144,15 +164,9 @@ class EE_Cache_database extends CI_Driver
     public function clean($scope = Cache::LOCAL_SCOPE)
     {
         $namespace = $this->_namespaced_key('', $scope);
+        $this->removeNamespaceFromLocalCache($namespace);
 
-        if ($scope == Cache::LOCAL_SCOPE) {
-            // For local scope, delete all keys that start with the site prefix
-            ee()->db->like('cache_key', $namespace, 'right');
-        } else {
-            // For global scope, delete all keys that start with the global prefix
-            ee()->db->like('cache_key', $namespace, 'right');
-        }
-
+        ee()->db->like('cache_key', $namespace, 'right');
         return ee()->db->delete($this->_cache_table);
     }
 
@@ -305,6 +319,24 @@ class EE_Cache_database extends CI_Driver
         }
 
         return $key;
+    }
+
+
+    /**
+     * Remove all keys from the local cache that begin with the specified namespace
+     *
+     * @param string $namespace
+     * @return void
+     */
+    protected function removeNamespaceFromLocalCache($namespace)
+    {
+        $localKeys = array_filter(array_keys($this->_local_cache), function($key) use($namespace) {
+            return strpos($key, $namespace) === 0;
+        });
+
+        foreach($localKeys as $localKey) {
+            unset($this->_local_cache[$localKey]);
+        }
     }
 }
 
