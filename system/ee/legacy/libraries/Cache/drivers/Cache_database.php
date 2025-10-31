@@ -113,11 +113,11 @@ class EE_Cache_database extends CI_Driver
             // Update existing record
             ee()->db->where('cache_key', $key);
             return ee()->db->update($this->_cache_table, $row);
-        } else {
-            // Insert new record
-            $row['cache_key'] = $key;
-            return ee()->db->insert($this->_cache_table, $row);
         }
+
+        // Insert new record
+        $row['cache_key'] = $key;
+        return ee()->db->insert($this->_cache_table, $row);
     }
 
     /**
@@ -237,14 +237,11 @@ class EE_Cache_database extends CI_Driver
         }
 
         // Check if cache table exists
-        if (!ee()->db->table_exists($this->_cache_table)) {
-            // Try to create the cache table
-            if (!$this->_create_cache_table()) {
-                return false;
-            }
+        if (ee()->db->table_exists($this->_cache_table)) {
+            return true;
         }
 
-        return true;
+        return $this->_create_cache_table();
     }
 
     /**
