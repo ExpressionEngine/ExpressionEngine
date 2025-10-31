@@ -223,7 +223,7 @@ class EE_Cache_database extends CI_Driver
         }
 
         // Check if cache table exists
-        if (!$this->_table_exists()) {
+        if (!ee()->db->table_exists($this->_cache_table)) {
             // Try to create the cache table
             if (!$this->_create_cache_table()) {
                 return false;
@@ -231,17 +231,6 @@ class EE_Cache_database extends CI_Driver
         }
 
         return true;
-    }
-
-    /**
-     * Check if the cache table exists
-     *
-     * @return	bool	TRUE if table exists, FALSE otherwise
-     */
-    protected function _table_exists()
-    {
-        $tables = ee()->db->list_tables();
-        return in_array(ee()->db->dbprefix . $this->_cache_table, $tables);
     }
 
     /**
