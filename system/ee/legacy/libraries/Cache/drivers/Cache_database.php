@@ -150,6 +150,7 @@ class EE_Cache_database extends CI_Driver
         if(array_key_exists($key, $this->_local_cache)) {
             unset($this->_local_cache[$key]);
         }
+        
         ee()->db->where('cache_key', $key);
         return ee()->db->delete($this->_cache_table);
     }
