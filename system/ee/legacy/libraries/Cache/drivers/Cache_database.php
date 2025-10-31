@@ -57,7 +57,7 @@ class EE_Cache_database extends CI_Driver
             if($row === false) {
                 return false;
             }
-        }else{
+        } else {
             ee()->db->select('data, ttl, created_at');
             ee()->db->from($this->_cache_table);
             ee()->db->where('cache_key', $key);
