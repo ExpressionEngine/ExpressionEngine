@@ -88,10 +88,15 @@ class MemcacheStub
 }
 }
 
-// Create global classes when real extensions don't exist
+// Create test classes that will be used regardless of real extensions
+class MemcachedTestStub extends MemcachedStub {}
+class MemcacheTestStub extends MemcacheStub {}
+
+// Create wrapper classes with the expected names for testing
+// These will be used in place of real extensions for consistent testing
 if (!class_exists('Memcached', false)) {
-    class Memcached extends MemcachedStub {}
+    class Memcached extends MemcachedTestStub {}
 }
 if (!class_exists('Memcache', false)) {
-    class Memcache extends MemcacheStub {}
+    class Memcache extends MemcacheTestStub {}
 }
