@@ -133,6 +133,11 @@ class FileDriverCleanInfoTest extends CacheTestBase
      */
     public function testIsSupportedReturnsFalseForNonWritableDir()
     {
+        // Skip on Windows as chmod permissions don't work the same way
+        if (DIRECTORY_SEPARATOR === '\\') {
+            $this->markTestSkipped('This test is not reliable on Windows due to different permission handling');
+        }
+
         // Create a non-writable directory
         $nonWritableDir = $this->tempDir . DIRECTORY_SEPARATOR . 'non_writable';
         mkdir($nonWritableDir, 0444); // Read-only
