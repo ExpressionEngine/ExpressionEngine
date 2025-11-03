@@ -149,8 +149,15 @@ class CacheTestBase extends \PHPUnit\Framework\TestCase
         if (!defined('APPPATH')) {
             define('APPPATH', realpath(__DIR__ . '/../../../../../../system/user/') . DIRECTORY_SEPARATOR);
         }
+        // Use a writable temp directory for cache tests
         if (!defined('PATH_CACHE')) {
-            define('PATH_CACHE', realpath(__DIR__ . '/../../../../../../images/') . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR);
+            $testCacheDir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'ee_test_cache_' . uniqid();
+            if (!is_dir($testCacheDir)) {
+                mkdir($testCacheDir, 0777, true);
+            }
+            // Ensure it's writable
+            chmod($testCacheDir, 0777);
+            define('PATH_CACHE', $testCacheDir . DIRECTORY_SEPARATOR);
         }
         if (!defined('FILE_WRITE_MODE')) {
             define('FILE_WRITE_MODE', 0666);
