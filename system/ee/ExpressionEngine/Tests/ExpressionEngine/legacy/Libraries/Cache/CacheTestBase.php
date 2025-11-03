@@ -199,6 +199,12 @@ class CacheTestBase extends \PHPUnit\Framework\TestCase
             require_once $helperPath;
         }
 
+        // Load memcached stubs for testing
+        $stubsPath = __DIR__ . '/memcached_stubs.php';
+        if (file_exists($stubsPath)) {
+            require_once $stubsPath;
+        }
+
         // Load the main Cache library
         $cachePath = BASEPATH . 'libraries/Cache/Cache.php';
         if (file_exists($cachePath)) {

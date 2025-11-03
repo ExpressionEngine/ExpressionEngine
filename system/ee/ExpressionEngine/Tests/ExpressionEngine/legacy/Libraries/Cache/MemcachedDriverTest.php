@@ -34,37 +34,8 @@ class MemcachedDriverTest extends CacheTestBase
     {
         parent::setUp();
 
-        // Create a mock Memcached object that returns correct class name
-        $this->memcachedStub = $this->getMockBuilder('stdClass')
-            ->setMockClassName('Memcached')
-            ->setMethods(['addServer', 'set', 'get', 'delete', 'getStats'])
-            ->getMock();
-
-        // Set up the mock data storage
-        $this->memcachedStub->data = [];
-
-        $this->memcachedStub->method('addServer')->willReturn(null);
-        $this->memcachedStub->method('set')->willReturnCallback(function($key, $value, $ttl = 0) {
-            $this->memcachedStub->data[$key] = $value;
-            return true;
-        });
-        $this->memcachedStub->method('get')->willReturnCallback(function($key) {
-            return isset($this->memcachedStub->data[$key]) ? $this->memcachedStub->data[$key] : false;
-        });
-        $this->memcachedStub->method('delete')->willReturnCallback(function($key) {
-            if (isset($this->memcachedStub->data[$key])) {
-                unset($this->memcachedStub->data[$key]);
-                return true;
-            }
-            return false;
-        });
-        $this->memcachedStub->method('getStats')->willReturn([
-            'localhost:11211' => [
-                'time' => time(),
-                'uptime' => 3600,
-                'version' => '1.6.9'
-            ]
-        ]);
+        // Use our test class in global namespace
+        $this->memcachedStub = new \Memcached();
 
         // Create a mock Cache parent with required methods
         $cacheMock = $this->createMock(\Cache::class);
@@ -76,7 +47,7 @@ class MemcachedDriverTest extends CacheTestBase
                 return $prefix . $key;
             });
 
-        // Create driver and inject stub
+        // Create driver and inject stub directly
         $this->driver = new \EE_Cache_memcached();
         $this->setProtectedProperty($this->driver, '_memcached', $this->memcachedStub);
 
@@ -216,37 +187,8 @@ class MemcachedDriverTest extends CacheTestBase
     {
         parent::setUp();
 
-        // Create a mock Memcache object that returns correct class name
-        $this->memcacheStub = $this->getMockBuilder('stdClass')
-            ->setMockClassName('Memcache')
-            ->setMethods(['addServer', 'set', 'get', 'delete', 'getExtendedStats'])
-            ->getMock();
-
-        // Set up the mock data storage
-        $this->memcacheStub->data = [];
-
-        $this->memcacheStub->method('addServer')->willReturn(null);
-        $this->memcacheStub->method('set')->willReturnCallback(function($key, $value, $flags = 0, $ttl = 0) {
-            $this->memcacheStub->data[$key] = $value;
-            return true;
-        });
-        $this->memcacheStub->method('get')->willReturnCallback(function($key) {
-            return isset($this->memcacheStub->data[$key]) ? $this->memcacheStub->data[$key] : false;
-        });
-        $this->memcacheStub->method('delete')->willReturnCallback(function($key) {
-            if (isset($this->memcacheStub->data[$key])) {
-                unset($this->memcacheStub->data[$key]);
-                return true;
-            }
-            return false;
-        });
-        $this->memcacheStub->method('getExtendedStats')->willReturn([
-            'localhost:11211' => [
-                'time' => time(),
-                'uptime' => 3600,
-                'version' => '3.0.8'
-            ]
-        ]);
+        // Use our test class in global namespace
+        $this->memcacheStub = new \Memcache();
 
         // Create a mock Cache parent with required methods
         $cacheMock = $this->createMock(\Cache::class);
@@ -479,5 +421,91 @@ class MemcachedDriverTest extends CacheTestBase
         $this->assertFalse($result);
     }
 }
+
+// Mock classes for testing cache drivers
+
+class MemcachedMock
+{
+    public $data = [];
+
+    public function addServer($host, $port, $weight = 0)
+    {
+        // No-op for testing
+    }
+
+    public function set($key, $value, $ttl = 0)
+    {
+        $this->data[$key] = $value;
+        return true;
+    }
+
+    public function get($key)
+    {
+        return isset($this->data[$key]) ? $this->data[$key] : false;
+    }
+
+    public function delete($key)
+    {
+        if (isset($this->data[$key])) {
+            unset($this->data[$key]);
+            return true;
+        }
+        return false;
+    }
+
+    public function getStats()
+    {
+        return [
+            'localhost:11211' => [
+                'time' => time(),
+                'uptime' => 3600,
+                'version' => '1.6.9'
+            ]
+        ];
+    }
+}
+
+class MemcacheMock
+{
+    public $data = [];
+
+    public function addServer($host, $port, $persistent = true, $weight = 1)
+    {
+        // No-op for testing
+    }
+
+    public function set($key, $value, $flags = 0, $ttl = 0)
+    {
+        $this->data[$key] = $value;
+        return true;
+    }
+
+    public function get($key)
+    {
+        return isset($this->data[$key]) ? $this->data[$key] : false;
+    }
+
+    public function delete($key)
+    {
+        if (isset($this->data[$key])) {
+            unset($this->data[$key]);
+            return true;
+        }
+        return false;
+    }
+
+    public function getExtendedStats()
+    {
+        return [
+            'localhost:11211' => [
+                'time' => time(),
+                'uptime' => 3600,
+                'version' => '3.0.8'
+            ]
+        ];
+    }
+}
+
+// memcached_stubs.php is loaded by CacheTestBase
 
 // EOF
