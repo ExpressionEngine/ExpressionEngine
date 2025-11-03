@@ -193,6 +193,12 @@ class CacheTestBase extends \PHPUnit\Framework\TestCase
             require_once $driverPath;
         }
 
+        // Load array helper that's needed by memcached driver
+        $helperPath = BASEPATH . 'helpers/array_helper.php';
+        if (file_exists($helperPath)) {
+            require_once $helperPath;
+        }
+
         // Load the main Cache library
         $cachePath = BASEPATH . 'libraries/Cache/Cache.php';
         if (file_exists($cachePath)) {
