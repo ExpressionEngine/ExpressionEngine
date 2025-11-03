@@ -16,7 +16,8 @@ class SimpleTestDriver
         $className = get_class($this->_memcached);
         if ($className !== 'Memcached' && $className !== 'Memcache' &&
             $className !== 'ExpressionEngine\\Tests\\ExpressionEngine\\legacy\\Libraries\\Cache\\Memcached' &&
-            $className !== 'ExpressionEngine\\Tests\\ExpressionEngine\\legacy\\Libraries\\Cache\\Memcache') {
+            $className !== 'ExpressionEngine\\Tests\\ExpressionEngine\\legacy\\Libraries\\Cache\\Memcache' &&
+            $className !== 'MemcachedTestStub' && $className !== 'MemcacheTestStub') {
             return false;
         }
 
@@ -125,7 +126,8 @@ class SimpleMemcacheDriver
         $className = get_class($this->_memcached);
         if ($className !== 'Memcached' && $className !== 'Memcache' &&
             $className !== 'ExpressionEngine\\Tests\\ExpressionEngine\\legacy\\Libraries\\Cache\\Memcached' &&
-            $className !== 'ExpressionEngine\\Tests\\ExpressionEngine\\legacy\\Libraries\\Cache\\Memcache') {
+            $className !== 'ExpressionEngine\\Tests\\ExpressionEngine\\legacy\\Libraries\\Cache\\Memcache' &&
+            $className !== 'MemcachedTestStub' && $className !== 'MemcacheTestStub') {
             return false;
         }
 
@@ -258,7 +260,7 @@ class MemcachedDriverTest extends CacheTestBase
         }
 
         // Always use our test wrapper class for consistent behavior
-        $this->memcachedStub = new \Memcached();
+        $this->memcachedStub = new \MemcachedTestStub();
 
         // Create a mock Cache parent with required methods
         $cacheMock = $this->createMock(\Cache::class);
@@ -416,7 +418,7 @@ class MemcachedDriverTest extends CacheTestBase
         }
 
         // Always use our test wrapper class for consistent behavior
-        $this->memcacheStub = new \Memcache();
+        $this->memcacheStub = new \MemcacheTestStub();
 
         // Create a mock Cache parent with required methods
         $cacheMock = $this->createMock(\Cache::class);
