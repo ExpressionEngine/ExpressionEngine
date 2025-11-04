@@ -8,14 +8,16 @@
  *
  * Usage:
  *   php make_version.php [--version=<version>] [--date=<YYYY-MM-DD>] [--skip-update-file] [--root=<path>]
+ *   php make_version.php --update-build-date --date=<YYYY-MM-DD> [other options]
  *
  * Options:
- *   -v, --version       Version to set (e.g., 7.5.18)
- *   -d, --date          Release date in YYYY-MM-DD format (used for build number)
- *   --skip-update-file  Skip creating installer update file
- *   --dry-run           Show what would be changed without making changes
- *   --root              Repository root path (defaults to script dir/../)
- *   -h, --help          Show this help
+ *   -v, --version           Version to set (e.g., 7.5.18)
+ *   -d, --date              Release date in YYYY-MM-DD format (used for build number)
+ *   --update-build-date     Update only the build number for current version (reads version from files)
+ *   --skip-update-file      Skip creating installer update file
+ *   --dry-run               Show what would be changed without making changes
+ *   --root                  Repository root path (defaults to script dir/../)
+ *   -h, --help              Show this help
  */
 
 class VersionBumper
@@ -27,6 +29,7 @@ class VersionBumper
     private $repoRoot = '';
     private $skipUpdateFile = false;
     private $dryRun = false;
+    private $updateBuildDateOnly = false;
 
     private $filesToUpdate = [
         'system/ee/legacy/libraries/Core.php',
@@ -37,12 +40,13 @@ class VersionBumper
 
     public function __construct()
     {
-        $this->checkSecurity();
+        $this->checkBasicSecurity();
         $this->parseArguments();
+        $this->checkRepositorySecurity();
         $this->validateInputs();
     }
 
-    private function checkSecurity()
+    private function checkBasicSecurity()
     {
         // Prevent running as root or with elevated privileges
         if (function_exists('posix_getuid') && posix_getuid() === 0) {
@@ -55,6 +59,19 @@ class VersionBumper
         }
     }
 
+    private function checkRepositorySecurity()
+    {
+        // Ensure we're in a git repository for safety
+        if (!is_dir($this->repoRoot . '/.git')) {
+            throw new Exception("This script must be run from within a git repository");
+        }
+
+        // Check that we have write permissions to the repository
+        if (!is_writable($this->repoRoot)) {
+            throw new Exception("No write permissions to repository directory: {$this->repoRoot}");
+        }
+    }
+
     private function parseArguments()
     {
         $options = getopt('v:d:r:h', [
@@ -62,6 +79,7 @@ class VersionBumper
             'date:',
             'root:',
             'skip-update-file',
+            'update-build-date',
             'dry-run',
             'help'
         ]);
@@ -96,6 +114,15 @@ class VersionBumper
         // Dry run flag
         $this->dryRun = isset($options['dry-run']);
 
+        // Update build date only flag
+        $this->updateBuildDateOnly = isset($options['update-build-date']);
+
+        // If updating build date only, read current version from files
+        if ($this->updateBuildDateOnly) {
+            $this->readCurrentVersion();
+            $this->skipUpdateFile = true; // Don't create update file for build-only updates
+        }
+
         // Prompt for missing inputs
         if (empty($this->version)) {
             $this->version = $this->prompt('Enter version (e.g., 7.5.18): ');
@@ -106,7 +133,9 @@ class VersionBumper
         }
 
         // Parse version and date
-        $this->parseVersion($this->version);
+        if (!$this->updateBuildDateOnly) {
+            $this->parseVersion($this->version);
+        }
         $this->parseDate($date);
         $this->generateUpdateFileName();
     }
@@ -134,6 +163,41 @@ class VersionBumper
 
         $this->version = $matches[1] . '.' . $matches[2] . '.' . $matches[3];
         $this->identifier = isset($matches[4]) ? $matches[4] : '';
+    }
+
+    private function readCurrentVersion()
+    {
+        $coreFile = $this->repoRoot . 'system/ee/legacy/libraries/Core.php';
+
+        if (!file_exists($coreFile)) {
+            throw new Exception("Cannot read current version: Core.php not found at {$coreFile}");
+        }
+
+        $content = file_get_contents($coreFile);
+
+        // Read current APP_VER
+        if (preg_match("/define\('APP_VER',\s+'([^']*)'\);/", $content, $matches)) {
+            $this->version = $matches[1];
+        } else {
+            throw new Exception("Could not find APP_VER in Core.php");
+        }
+
+        // Read current APP_VER_ID
+        if (preg_match("/define\('APP_VER_ID',\s+'([^']*)'\);/", $content, $matches)) {
+            $this->identifier = $matches[1];
+        } else {
+            $this->identifier = '';
+        }
+
+        // Parse the version to extract components
+        if (!preg_match('/^(\d+)\.(\d+)\.(\d+)$/', $this->version, $matches)) {
+            throw new Exception("Invalid current version format in Core.php: {$this->version}");
+        }
+
+        // Validate version components are reasonable
+        if ($matches[1] > 99 || $matches[2] > 99 || $matches[3] > 99) {
+            throw new Exception("Version numbers in Core.php exceed reasonable range");
+        }
     }
 
     private function parseDate($date)
@@ -223,11 +287,15 @@ class VersionBumper
         echo "Version: {$this->version}\n";
         echo "Build: {$this->build}\n";
         echo "Identifier: " . (empty($this->identifier) ? '(none)' : $this->identifier) . "\n";
-        echo "Update file: {$this->updateFile}\n";
+        if (!$this->updateBuildDateOnly) {
+            echo "Update file: {$this->updateFile}\n";
+        }
         echo "Repository root: {$this->repoRoot}\n";
-        echo "Mode: " . ($this->dryRun ? 'DRY RUN (no changes will be made)' : 'LIVE') . "\n\n";
+        echo "Mode: " . ($this->dryRun ? 'DRY RUN (no changes will be made)' : 'LIVE') . "\n";
+        echo "Operation: " . ($this->updateBuildDateOnly ? 'Build date update only' : 'Full version bump') . "\n\n";
 
-        if (!$this->confirm("Proceed with version bump?")) {
+        $action = $this->updateBuildDateOnly ? "build date update" : "version bump";
+        if (!$this->confirm("Proceed with {$action}?")) {
             echo "Aborted.\n";
             exit(0);
         }
@@ -235,7 +303,8 @@ class VersionBumper
         $this->updateFiles();
         $this->createUpdateFile();
 
-        echo "\n" . ($this->dryRun ? "Dry run completed. No changes were made." : "Version bump completed successfully!") . "\n";
+        $action = $this->updateBuildDateOnly ? "build date update" : "version bump";
+        echo "\n" . ($this->dryRun ? "Dry run completed. No changes were made." : "{$action} completed successfully!") . "\n";
     }
 
     private function updateFiles()
@@ -250,30 +319,59 @@ class VersionBumper
                 continue;
             }
 
+            // Security check: ensure we can write to the file
+            if (!$this->dryRun && !is_writable($fullPath)) {
+                echo "Error: No write permission for {$file}\n";
+                continue;
+            }
+
             echo ($this->dryRun ? "Checking {$file}... " : "Updating {$file}... ");
             $updated = false;
             $changes = [];
 
             $content = file_get_contents($fullPath);
 
-            // Check/Update APP_VER
-            if (strpos($content, "define('APP_VER'") !== false) {
-                if (preg_match("/define\('APP_VER',\s+'([^']*)'\);/", $content, $matches)) {
-                    if ($matches[1] !== $this->version) {
-                        $changes[] = "APP_VER: '{$matches[1]}' → '{$this->version}'";
-                        if (!$this->dryRun) {
-                            $content = preg_replace(
-                                "/define\('APP_VER',(\s+)'[^']*'\);/",
-                                "define('APP_VER',$1'{$this->version}');",
-                                $content
-                            );
+            // Store original checksum for integrity checking
+            $originalChecksum = md5($content);
+
+            // Skip version updates in build-date-only mode
+            if (!$this->updateBuildDateOnly) {
+                // Check/Update APP_VER
+                if (strpos($content, "define('APP_VER'") !== false) {
+                    if (preg_match("/define\('APP_VER',\s+'([^']*)'\);/", $content, $matches)) {
+                        if ($matches[1] !== $this->version) {
+                            $changes[] = "APP_VER: '{$matches[1]}' → '{$this->version}'";
+                            if (!$this->dryRun) {
+                                $content = preg_replace(
+                                    "/define\('APP_VER',(\s+)'[^']*'\);/",
+                                    "define('APP_VER',$1'{$this->version}');",
+                                    $content
+                                );
+                            }
+                            $updated = true;
                         }
-                        $updated = true;
+                    }
+                }
+
+                // Check/Update APP_VER_ID
+                if (strpos($content, "define('APP_VER_ID'") !== false) {
+                    if (preg_match("/define\('APP_VER_ID',\s+'([^']*)'\);/", $content, $matches)) {
+                        if ($matches[1] !== $this->identifier) {
+                            $changes[] = "APP_VER_ID: '{$matches[1]}' → '{$this->identifier}'";
+                            if (!$this->dryRun) {
+                                $content = preg_replace(
+                                    "/define\('APP_VER_ID',(\s+)'[^']*'\);/",
+                                    "define('APP_VER_ID',$1'{$this->identifier}');",
+                                    $content
+                                );
+                            }
+                            $updated = true;
+                        }
                     }
                 }
             }
 
-            // Check/Update APP_BUILD
+            // Always update APP_BUILD (this is what build-only mode does)
             if (strpos($content, "define('APP_BUILD'") !== false) {
                 if (preg_match("/define\('APP_BUILD',\s+'([^']*)'\);/", $content, $matches)) {
                     if ($matches[1] !== $this->build) {
@@ -290,53 +388,39 @@ class VersionBumper
                 }
             }
 
-            // Check/Update APP_VER_ID
-            if (strpos($content, "define('APP_VER_ID'") !== false) {
-                if (preg_match("/define\('APP_VER_ID',\s+'([^']*)'\);/", $content, $matches)) {
-                    if ($matches[1] !== $this->identifier) {
-                        $changes[] = "APP_VER_ID: '{$matches[1]}' → '{$this->identifier}'";
-                        if (!$this->dryRun) {
-                            $content = preg_replace(
-                                "/define\('APP_VER_ID',(\s+)'[^']*'\);/",
-                                "define('APP_VER_ID',$1'{$this->identifier}');",
-                                $content
-                            );
+            // Skip version-related updates in build-date-only mode
+            if (!$this->updateBuildDateOnly) {
+                // Check/Update wizard version
+                if (strpos($file, 'wizard.php') !== false) {
+                    if (preg_match("/(public\s+)?\$version\s*=\s*'([^']*)';/", $content, $matches)) {
+                        if ($matches[2] !== $this->version) {
+                            $changes[] = "\$version: '{$matches[2]}' → '{$this->version}'";
+                            if (!$this->dryRun) {
+                                $content = preg_replace(
+                                    "/(public\s+)?\$version\s*=\s*'[^']*';/",
+                                    "\$version = '{$this->version}';",
+                                    $content
+                                );
+                            }
+                            $updated = true;
                         }
-                        $updated = true;
                     }
                 }
-            }
 
-            // Check/Update wizard version
-            if (strpos($file, 'wizard.php') !== false) {
-                if (preg_match("/(public\s+)?\$version\s*=\s*'([^']*)';/", $content, $matches)) {
-                    if ($matches[2] !== $this->version) {
-                        $changes[] = "\$version: '{$matches[2]}' → '{$this->version}'";
-                        if (!$this->dryRun) {
-                            $content = preg_replace(
-                                "/(public\s+)?\$version\s*=\s*'[^']*';/",
-                                "\$version = '{$this->version}';",
-                                $content
-                            );
+                // Check/Update Cypress config
+                if (strpos($file, 'config.php') !== false && strpos($file, 'cypress') !== false) {
+                    if (preg_match("/\$config\['app_version'\]\s*=\s*'([^']*)';/", $content, $matches)) {
+                        if ($matches[1] !== $this->version) {
+                            $changes[] = "\$config['app_version']: '{$matches[1]}' → '{$this->version}'";
+                            if (!$this->dryRun) {
+                                $content = preg_replace(
+                                    "/\$config\['app_version'\]\s*=\s*'[^']*';/",
+                                    "\$config['app_version'] = '{$this->version}';",
+                                    $content
+                                );
+                            }
+                            $updated = true;
                         }
-                        $updated = true;
-                    }
-                }
-            }
-
-            // Check/Update Cypress config
-            if (strpos($file, 'config.php') !== false && strpos($file, 'cypress') !== false) {
-                if (preg_match("/\$config\['app_version'\]\s*=\s*'([^']*)';/", $content, $matches)) {
-                    if ($matches[1] !== $this->version) {
-                        $changes[] = "\$config['app_version']: '{$matches[1]}' → '{$this->version}'";
-                        if (!$this->dryRun) {
-                            $content = preg_replace(
-                                "/\$config\['app_version'\]\s*=\s*'[^']*';/",
-                                "\$config['app_version'] = '{$this->version}';",
-                                $content
-                            );
-                        }
-                        $updated = true;
                     }
                 }
             }
@@ -348,13 +432,69 @@ class VersionBumper
                         echo "  - {$change}\n";
                     }
                 } else {
-                    file_put_contents($fullPath, $content);
+                    // Atomic file operation: write to temp file then rename
+                    $this->writeFileAtomically($fullPath, $content, $originalChecksum);
                     echo "✓\n";
                 }
             } else {
                 echo "No changes needed\n";
             }
         }
+    }
+
+
+    private function writeFileAtomically($filePath, $content, $originalChecksum)
+    {
+        // Create backup of original file (only if it exists)
+        $fileExists = file_exists($filePath);
+        if ($fileExists) {
+            $backupPath = $filePath . '.backup.' . date('Y-m-d_H-i-s');
+            if (!copy($filePath, $backupPath)) {
+                throw new Exception("Failed to create backup of {$filePath}");
+            }
+        }
+
+        // Write to temporary file first (atomic operation)
+        $tempFile = $filePath . '.tmp.' . uniqid();
+        $bytesWritten = file_put_contents($tempFile, $content);
+
+        if ($bytesWritten === false) {
+            unlink($tempFile); // Clean up temp file
+            throw new Exception("Failed to write temporary file for {$filePath}");
+        }
+
+        // Verify the written content
+        $writtenContent = file_get_contents($tempFile);
+        $writtenChecksum = md5($writtenContent);
+
+        if ($writtenChecksum !== md5($content)) {
+            unlink($tempFile);
+            throw new Exception("File integrity check failed for {$filePath}");
+        }
+
+        // Atomic rename (this is atomic on POSIX filesystems)
+        if (!rename($tempFile, $filePath)) {
+            unlink($tempFile);
+            throw new Exception("Failed to rename temporary file to {$filePath}");
+        }
+
+        // Verify final file integrity
+        $finalContent = file_get_contents($filePath);
+        $finalChecksum = md5($finalContent);
+
+        if ($finalChecksum !== md5($content)) {
+            // Try to restore from backup (only if backup exists)
+            if ($fileExists && isset($backupPath) && file_exists($backupPath)) {
+                rename($backupPath, $filePath);
+                throw new Exception("Final file integrity check failed for {$filePath}. Backup restored.");
+            } else {
+                // For new files, just remove the corrupted file
+                unlink($filePath);
+                throw new Exception("Final file integrity check failed for {$filePath}. File removed.");
+            }
+        }
+
+        // Note: Backup file is kept for safety - can be cleaned up manually if needed
     }
 
     private function createUpdateFile()
@@ -380,6 +520,13 @@ class VersionBumper
         echo ($this->dryRun ? "Would create update file: {$this->updateFile}\n" : "Creating update file: {$this->updateFile}... ");
 
         if (!$this->dryRun) {
+            // Security check: ensure destination directory is writable
+            $destDir = dirname($destFile);
+            if (!is_writable($destDir)) {
+                echo "Error: No write permission for update file directory\n";
+                return;
+            }
+
             $content = file_get_contents($sourceFile);
 
             // Replace version references
@@ -387,7 +534,8 @@ class VersionBumper
             $underscoreVersion = implode('_', $versionParts);
             $content = str_replace('6_2_3', $underscoreVersion, $content);
 
-            file_put_contents($destFile, $content);
+            // Use atomic write for update file too (no original checksum for new files)
+            $this->writeFileAtomically($destFile, $content, null);
             echo "✓\n";
         } else {
             echo "\n";
@@ -424,17 +572,20 @@ class VersionBumper
         echo "Usage:\n";
         echo "  php make_version.php [options]\n\n";
         echo "Options:\n";
-        echo "  -v, --version <version>     Version to set (e.g., 7.5.18)\n";
-        echo "  -d, --date <YYYY-MM-DD>     Release date (used for build number)\n";
-        echo "  --skip-update-file          Skip creating installer update file\n";
-        echo "  --dry-run                   Show what would be changed without making changes\n";
-        echo "  --root <path>               Repository root path (defaults to script dir/../)\n";
-        echo "  -h, --help                  Show this help\n\n";
+        echo "  -v, --version <version>         Version to set (e.g., 7.5.18)\n";
+        echo "  -d, --date <YYYY-MM-DD>         Release date (used for build number)\n";
+        echo "  --update-build-date             Update only the build number for current version\n";
+        echo "  --skip-update-file              Skip creating installer update file\n";
+        echo "  --dry-run                       Show what would be changed without making changes\n";
+        echo "  --root <path>                   Repository root path (defaults to script dir/../)\n";
+        echo "  -h, --help                      Show this help\n\n";
         echo "Examples:\n";
         echo "  php make_version.php\n";
         echo "  php make_version.php -v 7.5.18 -d 2025-11-05\n";
         echo "  php make_version.php --version=7.5.18 --date=2025-11-05 --skip-update-file\n";
         echo "  php make_version.php --dry-run -v 7.5.18 -d 2025-11-05\n";
+        echo "  php make_version.php --update-build-date -d 2025-12-25\n";
+        echo "  php make_version.php --update-build-date --dry-run -d 2025-12-25\n";
     }
 }
 

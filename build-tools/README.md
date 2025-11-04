@@ -35,6 +35,7 @@ It also creates installer update files by copying `ud_6_02_03.php` with the new 
 |--------|-------|-------------|
 | `--version=<version>` | `-v` | Version to set (e.g., 7.5.19) |
 | `--date=<YYYY-MM-DD>` | `-d` | Release date (used for build number) |
+| `--update-build-date` | | Update only the build number for current version (reads version from files) |
 | `--skip-update-file` | | Skip creating installer update file |
 | `--dry-run` | | Show what would change without making changes |
 | `--root=<path>` | | Repository root path (defaults to script dir/../) |
@@ -54,6 +55,12 @@ php make_version.php --dry-run -v 7.5.20 -d 2025-12-15
 
 # Skip update file creation
 php make_version.php -v 7.5.19 -d 2025-12-01 --skip-update-file
+
+# Update only the build number for current version
+php make_version.php --update-build-date -d 2025-12-25
+
+# Dry run build update
+php make_version.php --update-build-date --dry-run -d 2025-12-25
 
 # Use different repository root
 php make_version.php -v 7.5.19 -d 2025-12-01 --root=/path/to/repo
