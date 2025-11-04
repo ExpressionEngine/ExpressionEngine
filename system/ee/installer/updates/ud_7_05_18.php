@@ -25,6 +25,25 @@ class Updater
      */
     public function do_update()
     {
+        $steps = new \ProgressIterator([
+            'addFilesIndexes',
+        ]);
+
+        foreach ($steps as $k => $v) {
+            $this->$v();
+        }
+
+        return true;
+    }
+
+    public function addFilesIndexes()
+    {
+        // Add index for files.file_name
+        ee()->smartforge->add_key('files', 'file_name', 'file_name');
+
+        // Add index for files.title
+        ee()->smartforge->add_key('files', 'title', 'title');
+
         return true;
     }
 }
