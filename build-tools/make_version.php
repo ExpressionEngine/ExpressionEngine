@@ -307,9 +307,63 @@ class VersionBumper
         echo "\n" . ($this->dryRun ? "Dry run completed. No changes were made." : "{$action} completed successfully!") . "\n";
     }
 
+    private function updateBuildJson()
+    {
+        $buildJsonPath = $this->repoRoot . 'build-tools/build.json';
+
+        if (!file_exists($buildJsonPath)) {
+            echo "Warning: build.json not found at {$buildJsonPath}\n";
+            return;
+        }
+
+        // Check write permissions
+        if (!$this->dryRun && !is_writable($buildJsonPath)) {
+            echo "Error: No write permission for build.json\n";
+            return;
+        }
+
+        $content = file_get_contents($buildJsonPath);
+        $json = json_decode($content, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            echo "Error: Invalid JSON in build.json\n";
+            return;
+        }
+
+        // Determine the new tag value
+        $newTag = $this->version;
+        if (!empty($this->identifier)) {
+            $newTag .= '-' . $this->identifier;
+        }
+
+        $needsUpdate = !isset($json['tag']) || $json['tag'] !== $newTag;
+
+        if ($needsUpdate) {
+            echo ($this->dryRun ? "Would update build.json: tag '{$json['tag']}' → '{$newTag}'\n" : "Updating build.json... ");
+
+            if (!$this->dryRun) {
+                $json['tag'] = $newTag;
+
+                // Pretty-print JSON to maintain formatting
+                $newContent = json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n";
+
+                // Use atomic write
+                $this->writeFileAtomically($buildJsonPath, $newContent, md5($content));
+                echo "✓\n";
+            } else {
+                echo "\n";
+            }
+        }
+    }
+
     private function updateFiles()
     {
         echo ($this->dryRun ? "Checking files (dry run)...\n" : "Updating files...\n");
+
+        // Update build.json for full version bumps (not build-date-only)
+        if (!$this->updateBuildDateOnly) {
+            $this->updateBuildJson();
+        }
 
         foreach ($this->filesToUpdate as $file) {
             $fullPath = $this->repoRoot . $file;
@@ -392,34 +446,55 @@ class VersionBumper
             if (!$this->updateBuildDateOnly) {
                 // Check/Update wizard version
                 if (strpos($file, 'wizard.php') !== false) {
-                    if (preg_match("/(public\s+)?\$version\s*=\s*'([^']*)';/", $content, $matches)) {
-                        if ($matches[2] !== $this->version) {
-                            $changes[] = "\$version: '{$matches[2]}' → '{$this->version}'";
-                            if (!$this->dryRun) {
-                                $content = preg_replace(
-                                    "/(public\s+)?\$version\s*=\s*'[^']*';/",
-                                    "\$version = '{$this->version}';",
-                                    $content
-                                );
+                    // Find the version line manually
+                    $lines = explode("\n", $content);
+                    foreach ($lines as $line) {
+                        if (strpos($line, '$version =') !== false && strpos($line, 'public') !== false) {
+                            // Extract version from line like: public $version = '7.5.17';
+                            if (preg_match("/'([^']*)'/", $line, $matches)) {
+                                $currentVersion = $matches[1];
+                                if ($currentVersion !== $this->version) {
+                                    $changes[] = "\$version: '{$currentVersion}' → '{$this->version}'";
+                                    if (!$this->dryRun) {
+                                        // Replace just the version part
+                                        $newLine = str_replace("'{$currentVersion}'", "'{$this->version}'", $line);
+                                        $content = str_replace($line, $newLine, $content);
+                                    }
+                                    $updated = true;
+                                }
                             }
-                            $updated = true;
+                            break; // Found the line, stop looking
                         }
                     }
                 }
 
                 // Check/Update Cypress config
                 if (strpos($file, 'config.php') !== false && strpos($file, 'cypress') !== false) {
-                    if (preg_match("/\$config\['app_version'\]\s*=\s*'([^']*)';/", $content, $matches)) {
-                        if ($matches[1] !== $this->version) {
-                            $changes[] = "\$config['app_version']: '{$matches[1]}' → '{$this->version}'";
-                            if (!$this->dryRun) {
-                                $content = preg_replace(
-                                    "/\$config\['app_version'\]\s*=\s*'[^']*';/",
-                                    "\$config['app_version'] = '{$this->version}';",
-                                    $content
-                                );
+                    // Find the app_version line manually
+                    $lines = explode("\n", $content);
+                    foreach ($lines as $line) {
+                        if (strpos($line, '$config[\'app_version\']') !== false) {
+                            // Extract version from line like: $config['app_version'] = '7.5.17';
+                            // Find the second single-quoted string (the value, not the key)
+                            if (preg_match_all("/'([^']*)'/", $line, $matches)) {
+                                if (count($matches[1]) >= 2) {
+                                    $currentVersion = $matches[1][1]; // Second match is the value
+                                    if ($currentVersion !== $this->version) {
+                                        $changes[] = "\$config['app_version']: '{$currentVersion}' → '{$this->version}'";
+                                        if (!$this->dryRun) {
+                                            // Replace just the version part (second occurrence of single quotes)
+                                            $parts = explode("'", $line);
+                                            if (count($parts) >= 5) { // $config[, app_version, ] = , version, ;
+                                                $parts[3] = $this->version; // Replace the version part
+                                                $newLine = implode("'", $parts);
+                                                $content = str_replace($line, $newLine, $content);
+                                            }
+                                        }
+                                        $updated = true;
+                                    }
+                                }
                             }
-                            $updated = true;
+                            break; // Found the line, stop looking
                         }
                     }
                 }
@@ -445,14 +520,8 @@ class VersionBumper
 
     private function writeFileAtomically($filePath, $content, $originalChecksum)
     {
-        // Create backup of original file (only if it exists)
+        // Skip backup creation since we're in git
         $fileExists = file_exists($filePath);
-        if ($fileExists) {
-            $backupPath = $filePath . '.backup.' . date('Y-m-d_H-i-s');
-            if (!copy($filePath, $backupPath)) {
-                throw new Exception("Failed to create backup of {$filePath}");
-            }
-        }
 
         // Write to temporary file first (atomic operation)
         $tempFile = $filePath . '.tmp.' . uniqid();
@@ -483,18 +552,15 @@ class VersionBumper
         $finalChecksum = md5($finalContent);
 
         if ($finalChecksum !== md5($content)) {
-            // Try to restore from backup (only if backup exists)
-            if ($fileExists && isset($backupPath) && file_exists($backupPath)) {
-                rename($backupPath, $filePath);
-                throw new Exception("Final file integrity check failed for {$filePath}. Backup restored.");
+            // Since we're in git, suggest using git to restore
+            if ($fileExists) {
+                throw new Exception("Final file integrity check failed for {$filePath}. Use 'git checkout {$filePath}' to restore.");
             } else {
                 // For new files, just remove the corrupted file
                 unlink($filePath);
                 throw new Exception("Final file integrity check failed for {$filePath}. File removed.");
             }
         }
-
-        // Note: Backup file is kept for safety - can be cleaned up manually if needed
     }
 
     private function createUpdateFile()
