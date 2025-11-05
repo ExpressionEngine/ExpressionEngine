@@ -34,9 +34,8 @@ class FileSystemEntity extends ContentModel
         'beforeInsert',
         'beforeSave'
     );
-    protected static $_binary_comparisons = array(
-        'file_name'
-    );
+
+    protected static $_binary_comparisons = array();
 
     protected static $_hook_id = 'file';
 
@@ -119,6 +118,16 @@ class FileSystemEntity extends ContentModel
     protected $_baseServerPath;
     protected $_subfolderPath;
     protected $_exists;
+
+    public function __construct() {
+        parent::__construct();
+
+        // If this is a case-sensitive filesystem mark the file_name column
+        // to be filtered with a binary cast to enforce case-sensitive comparison
+        if(ee()->config->item('filesystem_case_sensitive') === 'y') {
+            static::$_binary_comparisons[] = 'file_name';
+        }
+    }
 
     /**
      * A link back to the owning group object.
