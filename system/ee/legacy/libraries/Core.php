@@ -323,7 +323,7 @@ class EE_Core
             'block_and_allow', 'channel', 'comment', 'commerce', 'email',
             'file', 'filepicker', 'forum', 'member',
             'metaweblog_api', 'moblog', 'pages', 'query', 'relationship', 'rss',
-            'rte', 'search', 'simple_commerce', 'spam', 'stats'
+            'rte', 'search', 'spam', 'stats'
         );
 
         // Is this a asset request?  If so, we're done.
