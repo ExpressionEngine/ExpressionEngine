@@ -242,6 +242,8 @@ $lang = array(
 
     'done' => 'Done',
 
+    'hide_settings' => 'Hide settings',
+
     'preview' => 'Preview',
 
     'save' => 'Save',
@@ -255,6 +257,8 @@ $lang = array(
     'save_changes' => 'Save changes',
 
     'submit' => 'Submit',
+
+    'show_all_settings' => 'Show all settings',
 
     'sync' => 'Synchronize',
 

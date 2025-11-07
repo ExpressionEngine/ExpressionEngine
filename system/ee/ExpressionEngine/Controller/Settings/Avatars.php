@@ -30,41 +30,80 @@ class Avatars extends Settings
     {
         $vars['sections'] = array(
             'url_path_settings_title' => array(
-                array(
-                    'title' => 'avatar_url',
-                    'desc' => 'avatar_url_desc',
-                    'fields' => array(
-                        'avatar_url' => array('type' => 'text')
-                    )
-                ),
-                array(
-                    'title' => 'avatar_path',
-                    'desc' => 'avatar_path_desc',
-                    'fields' => array(
-                        'avatar_path' => array('type' => 'text')
+                'group' => '',
+                'settings' => array(
+                    array(
+                        'title' => 'avatar_url',
+                        'desc' => 'avatar_url_desc',
+                        'fields' => array(
+                            'avatar_url' => array('type' => 'text')
+                        )
+                    ),
+                    array(
+                        'title' => 'avatar_path',
+                        'desc' => 'avatar_path_desc',
+                        'fields' => array(
+                            'avatar_path' => array('type' => 'text')
+                        )
                     )
                 )
             ),
             'avatar_file_restrictions' => array(
-                array(
-                    'title' => 'avatar_max_width',
-                    'fields' => array(
-                        'avatar_max_width' => array('type' => 'text')
-                    )
-                ),
-                array(
-                    'title' => 'avatar_max_height',
-                    'fields' => array(
-                        'avatar_max_height' => array('type' => 'text')
-                    )
-                ),
-                array(
-                    'title' => 'avatar_max_kb',
-                    'fields' => array(
-                        'avatar_max_kb' => array('type' => 'text')
+                'group' => '',
+                'settings' => array(
+                    array(
+                        'title' => 'avatar_max_width',
+                        'fields' => array(
+                            'avatar_max_width' => array('type' => 'text')
+                        )
+                    ),
+                    array(
+                        'title' => 'avatar_max_height',
+                        'fields' => array(
+                            'avatar_max_height' => array('type' => 'text')
+                        )
+                    ),
+                    array(
+                        'title' => 'avatar_max_kb',
+                        'fields' => array(
+                            'avatar_max_kb' => array('type' => 'text')
+                        )
                     )
                 )
-            )
+            ),
+            // settings for Show all settings button + toggle
+            '' => array(
+                array(
+                    'title' => '',
+                    'desc' => '',
+                    'attrs' => array(
+                        'class' => 'show_all_settings',
+                    ),
+                    'fields' => array(
+                        'show_all' => array(
+                            'type' => 'html',
+                            'content' => '<button class="button button--primary show_all_settings_button js-show_all_settings_button">' . lang('show_all_settings') . '</button>'
+                        )
+                    )
+                ),
+                array(
+                    'title' => '',
+                    'desc' => 'This toggle controls the visibility of all settings.',
+                    'attrs' => array(
+                        'class' => 'js-hidden-toggle-for-show-all-settings hidden',
+                    ),
+                    'fields' => array(
+                        'show_all' => array(
+                            'type' => 'yes_no',
+                            'group_toggle' => array(
+                                'y' => 'show_all_settings_group',
+                            ),
+                            'value' => 'n'
+                        )
+                    )
+                ),
+            ),
+            // End of settings for Show all settings button + toggle
         );
 
         ee()->form_validation->set_rules(array(

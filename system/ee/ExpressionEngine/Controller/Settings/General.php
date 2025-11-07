@@ -104,6 +104,7 @@ class General extends Settings
                 array(
                     'title' => 'show_ee_news',
                     'desc' => 'show_ee_news_desc',
+                    'group' => 'show_all_settings_group',
                     'fields' => array(
                         'show_ee_news' => array(
                             'type' => 'yes_no',
@@ -112,68 +113,111 @@ class General extends Settings
                 ),
             ),
             'defaults' => array(
-                array(
-                    'title' => 'language',
-                    'desc' => 'used_in_cp_only',
-                    'fields' => array(
-                        'deft_lang' => array(
-                            'type' => 'radio',
-                            'choices' => ee()->lang->language_pack_names(),
-                            'value' => ee()->config->item('deft_lang') ?: 'english'
+                'group' => '',
+                'settings' => array(
+                    array(
+                        'title' => 'language',
+                        'desc' => 'used_in_cp_only',
+                        'fields' => array(
+                            'deft_lang' => array(
+                                'type' => 'radio',
+                                'choices' => ee()->lang->language_pack_names(),
+                                'value' => ee()->config->item('deft_lang') ?: 'english'
+                            )
                         )
                     )
                 )
             ),
             'date_time_settings' => array(
+                'group' => 'show_all_settings_group',
+                'settings' => array(
+                    array(
+                        'title' => 'timezone',
+                        'group' => 'show_all_settings_group',
+                        'fields' => array(
+                            'default_site_timezone' => array(
+                                'type' => 'html',
+                                'content' => ee()->localize->timezone_menu(set_value('default_site_timezone') ?: ee()->config->item('default_site_timezone'))
+                            )
+                        )
+                    ),
+                    array(
+                        'title' => 'date_time_fmt',
+                        'desc' => 'used_in_cp_only',
+                        'group' => 'show_all_settings_group',
+                        'fields' => array(
+                            'date_format' => array(
+                                'type' => 'radio',
+                                'choices' => $localization_fields['fields']['date_format']['value']
+                            ),
+                            'time_format' => array(
+                                'type' => 'radio',
+                                'choices' => array(
+                                    '24' => lang('24_hour'),
+                                    '12' => lang('12_hour')
+                                )
+                            )
+                        )
+                    ),
+                    array(
+                        'title' => 'week_start',
+                        'desc' => 'week_start_desc',
+                        'group' => 'show_all_settings_group',
+                        'fields' => array(
+                            'week_start' => array(
+                                'type' => 'radio',
+                                'choices' => array(
+                                    'friday' => lang('cal_friday'),
+                                    'saturday' => lang('cal_saturday'),
+                                    'sunday' => lang('cal_sunday'),
+                                    'monday' => lang('cal_monday')
+                                )
+                            )
+                        )
+                    ),
+                    array(
+                        'title' => 'include_seconds',
+                        'desc' => 'include_seconds_desc',
+                        'group' => 'show_all_settings_group',
+                        'fields' => array(
+                            'include_seconds' => array('type' => 'yes_no')
+                        )
+                    ),
+                ),
+            ),
+            // settings for Show all settings button + toggle
+            '' => array(
                 array(
-                    'title' => 'timezone',
+                    'title' => '',
+                    'desc' => '',
+                    'attrs' => array(
+                        'class' => 'show_all_settings',
+                    ),
                     'fields' => array(
-                        'default_site_timezone' => array(
+                        'show_all' => array(
                             'type' => 'html',
-                            'content' => ee()->localize->timezone_menu(set_value('default_site_timezone') ?: ee()->config->item('default_site_timezone'))
+                            'content' => '<button class="button button--primary show_all_settings_button js-show_all_settings_button">' . lang('show_all_settings') . '</button>'
                         )
                     )
                 ),
                 array(
-                    'title' => 'date_time_fmt',
-                    'desc' => 'used_in_cp_only',
+                    'title' => '',
+                    'desc' => 'This toggle controls the visibility of all settings.',
+                    'attrs' => array(
+                        'class' => 'js-hidden-toggle-for-show-all-settings hidden',
+                    ),
                     'fields' => array(
-                        'date_format' => array(
-                            'type' => 'radio',
-                            'choices' => $localization_fields['fields']['date_format']['value']
-                        ),
-                        'time_format' => array(
-                            'type' => 'radio',
-                            'choices' => array(
-                                '24' => lang('24_hour'),
-                                '12' => lang('12_hour')
-                            )
+                        'show_all' => array(
+                            'type' => 'yes_no',
+                            'group_toggle' => array(
+                                'y' => 'show_all_settings_group',
+                            ),
+                            'value' => 'n'
                         )
-                    )
-                ),
-                array(
-                    'title' => 'week_start',
-                    'desc' => 'week_start_desc',
-                    'fields' => array(
-                        'week_start' => array(
-                            'type' => 'radio',
-                            'choices' => array(
-                                'friday' => lang('cal_friday'),
-                                'saturday' => lang('cal_saturday'),
-                                'sunday' => lang('cal_sunday'),
-                                'monday' => lang('cal_monday')
-                            )
-                        )
-                    )
-                ),
-                array(
-                    'title' => 'include_seconds',
-                    'desc' => 'include_seconds_desc',
-                    'fields' => array(
-                        'include_seconds' => array('type' => 'yes_no')
                     )
                 ),
             ),
+            // End of settings for Show all settings button + toggle
         );
 
         if (bool_config_item('multiple_sites_enabled')) {

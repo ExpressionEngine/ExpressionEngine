@@ -1312,4 +1312,51 @@ $(document).ready(function(){
             });
 		})
 
+		// Change the ‘Show All Settings’ toggle on button click
+		$('body').on('click', '.js-show_all_settings_button', function () {
+			const $btn = $(this);
+			const $toggle = $('.js-hidden-toggle-for-show-all-settings .toggle-btn');
+
+			if ($toggle.length) {
+				$toggle.trigger('click');
+			} else {
+				console.warn('Toggle button not found.');
+			}
+
+			if ($btn.text().trim() === EE.lang.show_all_settings) {
+				$btn.text(EE.lang.hide_settings);
+			} else {
+				$btn.text(EE.lang.show_all_settings);
+			}
+			return false;
+		});
+
+		// Auto-click "Show all settings" if needed and scroll to the fieldset from the URL hash (when page is comming from the jump menu)
+
+		function scrollToHiddenElement() {
+			const targetHash = window.location.hash;
+
+			if (targetHash) {
+				var $target = $(targetHash);
+				var $showAllBtn = $('.js-show_all_settings_button');
+
+				if ($target.length) {
+					if ($showAllBtn.length && $target.is(':hidden')) {
+						$showAllBtn.trigger('click');
+
+						setTimeout(() => {
+							$('html, body').animate({
+								scrollTop: $target.offset().top - 100
+							}, 500);
+						}, 600);
+					} else {
+						$('html, body').animate({
+							scrollTop: $target.offset().top - 100
+						}, 500);
+					}
+				}
+			}
+		}
+
+		scrollToHiddenElement();
 }); // close (document).ready

@@ -64,50 +64,89 @@ class Messages extends Settings
                 ),
             ),
             'url_path_settings_title' => array(
+                'group' => '',
+                'settings' => array(
+                    array(
+                        'title' => 'prv_msg_upload_url',
+                        'desc' => 'prv_msg_upload_url_desc',
+                        'fields' => array(
+                            'prv_msg_upload_url' => array(
+                                'type' => 'text',
+                                'value' => ($directory) ? $directory->url : str_replace('avatars', 'pm_attachments', ee()->config->item('avatar_url', '', true)),
+                                'required' => true
+                            )
+                        )
+                    ),
+                    array(
+                        'title' => 'prv_msg_upload_path',
+                        'desc' => 'prv_msg_upload_path_desc',
+                        'fields' => array(
+                            'prv_msg_upload_path' => array(
+                                'type' => 'text',
+                                'required' => true
+                            )
+                        )
+                    ),
+                )
+            ),
+            'attachment_settings' => array(
+                'group' => '',
+                'settings' => array(
+                    array(
+                        'title' => 'prv_msg_max_attachments',
+                        'fields' => array(
+                            'prv_msg_max_attachments' => array('type' => 'text')
+                        )
+                    ),
+                    array(
+                        'title' => 'prv_msg_attach_maxsize',
+                        'desc' => 'prv_msg_attach_maxsize_desc',
+                        'fields' => array(
+                            'prv_msg_attach_maxsize' => array('type' => 'text')
+                        )
+                    ),
+                    array(
+                        'title' => 'prv_msg_attach_total',
+                        'desc' => 'prv_msg_attach_total_desc',
+                        'fields' => array(
+                            'prv_msg_attach_total' => array('type' => 'text')
+                        )
+                    ),
+                )
+            ),
+            // settings for Show all settings button + toggle
+            '' => array(
                 array(
-                    'title' => 'prv_msg_upload_url',
-                    'desc' => 'prv_msg_upload_url_desc',
+                    'title' => '',
+                    'desc' => '',
+                    'attrs' => array(
+                        'class' => 'show_all_settings',
+                    ),
                     'fields' => array(
-                        'prv_msg_upload_url' => array(
-                            'type' => 'text',
-                            'value' => ($directory) ? $directory->url : str_replace('avatars', 'pm_attachments', ee()->config->item('avatar_url', '', true)),
-                            'required' => true
+                        'show_all' => array(
+                            'type' => 'html',
+                            'content' => '<button class="button button--primary show_all_settings_button js-show_all_settings_button">' . lang('show_all_settings') . '</button>'
                         )
                     )
                 ),
                 array(
-                    'title' => 'prv_msg_upload_path',
-                    'desc' => 'prv_msg_upload_path_desc',
+                    'title' => '',
+                    'desc' => 'This toggle controls the visibility of all settings.',
+                    'attrs' => array(
+                        'class' => 'js-hidden-toggle-for-show-all-settings hidden',
+                    ),
                     'fields' => array(
-                        'prv_msg_upload_path' => array(
-                            'type' => 'text',
-                            'required' => true
+                        'show_all' => array(
+                            'type' => 'yes_no',
+                            'group_toggle' => array(
+                                'y' => 'show_all_settings_group',
+                            ),
+                            'value' => 'n'
                         )
                     )
                 ),
             ),
-            'attachment_settings' => array(
-                array(
-                    'title' => 'prv_msg_max_attachments',
-                    'fields' => array(
-                        'prv_msg_max_attachments' => array('type' => 'text')
-                    )
-                ),
-                array(
-                    'title' => 'prv_msg_attach_maxsize',
-                    'desc' => 'prv_msg_attach_maxsize_desc',
-                    'fields' => array(
-                        'prv_msg_attach_maxsize' => array('type' => 'text')
-                    )
-                ),
-                array(
-                    'title' => 'prv_msg_attach_total',
-                    'desc' => 'prv_msg_attach_total_desc',
-                    'fields' => array(
-                        'prv_msg_attach_total' => array('type' => 'text')
-                    )
-                ),
-            )
+            // End of settings for Show all settings button + toggle
         );
 
         ee()->form_validation->set_rules(array(

@@ -60,63 +60,108 @@ class ContentDesign extends Settings
                 ],
             ),
             'categories_section' => array(
-                array(
-                    'title' => 'auto_assign_cat_parents',
-                    'desc' => 'auto_assign_cat_parents_desc',
-                    'fields' => array(
-                        'auto_assign_cat_parents' => array('type' => 'yes_no')
+                'group' => '',
+                'settings' => array(
+                    array(
+                        'title' => 'auto_assign_cat_parents',
+                        'desc' => 'auto_assign_cat_parents_desc',
+                        'fields' => array(
+                            'auto_assign_cat_parents' => array('type' => 'yes_no')
+                        )
                     )
                 )
             ),
             'file_manager' => array(
-                array(
-                    'title' => 'file_manager_compatibility_mode',
-                    'desc' => 'file_manager_compatibility_mode_desc',
-                    'fields' => array(
-                        'file_manager_compatibility_mode' => array('type' => 'yes_no')
+                'group' => '',
+                'settings' => array(
+                    array(
+                        'title' => 'file_manager_compatibility_mode',
+                        'desc' => 'file_manager_compatibility_mode_desc',
+                        'fields' => array(
+                            'file_manager_compatibility_mode' => array('type' => 'yes_no')
+                        )
                     )
                 )
             ),
             'image_resizing' => array(
-                array(
-                    'title' => 'image_resize_protocol',
-                    'desc' => 'image_resize_protocol_desc',
-                    'fields' => array(
-                        'image_resize_protocol' => array(
-                            'type' => 'radio',
-                            'choices' => array(
-                                'gd' => lang('gd'),
-                                'gd2' => lang('gd2'),
-                                'imagemagick' => lang('imagemagick'),
-                                'netpbm' => lang('netpbm')
+                'group' => '',
+                'settings' => array(
+                    array(
+                        'title' => 'image_resize_protocol',
+                        'desc' => 'image_resize_protocol_desc',
+                        'fields' => array(
+                            'image_resize_protocol' => array(
+                                'type' => 'radio',
+                                'choices' => array(
+                                    'gd' => lang('gd'),
+                                    'gd2' => lang('gd2'),
+                                    'imagemagick' => lang('imagemagick'),
+                                    'netpbm' => lang('netpbm')
+                                )
                             )
+                        )
+                    ),
+                    array(
+                        'title' => 'image_library_path',
+                        'desc' => 'image_library_path_desc',
+                        'fields' => array(
+                            'image_library_path' => array('type' => 'text')
+                        )
+                    ),
+                )
+            ),
+            'emoticons' => array(
+                'group' => '',
+                'settings' => array(
+                    array(
+                        'title' => 'enable_emoticons',
+                        'desc' => 'enable_emoticons_desc',
+                        'fields' => array(
+                            'enable_emoticons' => array('type' => 'yes_no')
+                        )
+                    ),
+                    array(
+                        'title' => 'emoticon_url',
+                        'desc' => 'emoticon_url_desc',
+                        'fields' => array(
+                            'emoticon_url' => array('type' => 'text')
+                        )
+                    )
+                )
+            ),
+            // settings for Show all settings button + toggle
+            '' => array(
+                array(
+                    'title' => '',
+                    'desc' => '',
+                    'attrs' => array(
+                        'class' => 'show_all_settings',
+                    ),
+                    'fields' => array(
+                        'show_all' => array(
+                            'type' => 'html',
+                            'content' => '<button class="button button--primary show_all_settings_button js-show_all_settings_button">' . lang('show_all_settings') . '</button>'
                         )
                     )
                 ),
                 array(
-                    'title' => 'image_library_path',
-                    'desc' => 'image_library_path_desc',
+                    'title' => '',
+                    'desc' => 'This toggle controls the visibility of all settings.',
+                    'attrs' => array(
+                        'class' => 'js-hidden-toggle-for-show-all-settings hidden',
+                    ),
                     'fields' => array(
-                        'image_library_path' => array('type' => 'text')
+                        'show_all' => array(
+                            'type' => 'yes_no',
+                            'group_toggle' => array(
+                                'y' => 'show_all_settings_group',
+                            ),
+                            'value' => 'n'
+                        )
                     )
                 ),
             ),
-            'emoticons' => array(
-                array(
-                    'title' => 'enable_emoticons',
-                    'desc' => 'enable_emoticons_desc',
-                    'fields' => array(
-                        'enable_emoticons' => array('type' => 'yes_no')
-                    )
-                ),
-                array(
-                    'title' => 'emoticon_url',
-                    'desc' => 'emoticon_url_desc',
-                    'fields' => array(
-                        'emoticon_url' => array('type' => 'text')
-                    )
-                )
-            )
+            // End of settings for Show all settings button + toggle
         );
 
         ee()->form_validation->set_rules(array(

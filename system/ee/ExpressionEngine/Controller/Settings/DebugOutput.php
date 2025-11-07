@@ -58,55 +58,91 @@ class DebugOutput extends Settings
                 )
             ),
             'output_options' => array(
-                array(
-                    'title' => 'gzip_output',
-                    'desc' => 'gzip_output_desc',
-                    'fields' => array(
-                        'gzip_output' => array('type' => 'yes_no')
-                    )
-                ),
-                array(
-                    'title' => 'force_query_string',
-                    'desc' => 'force_query_string_desc',
-                    'fields' => array(
-                        'force_query_string' => array('type' => 'yes_no')
-                    )
-                ),
-                array(
-                    'title' => 'send_headers',
-                    'desc' => 'send_headers_desc',
-                    'fields' => array(
-                        'send_headers' => array('type' => 'yes_no')
-                    )
-                ),
-                array(
-                    'title' => 'redirect_method',
-                    'desc' => 'redirect_method_desc',
-                    'fields' => array(
-                        'redirect_method' => array(
-                            'type' => 'radio',
-                            'choices' => array(
-                                'redirect' => lang('redirect_method_opt_location'),
-                                'refresh' => lang('redirect_method_opt_refresh')
+                'group' => '',
+                'settings' => array(
+                    array(
+                        'title' => 'gzip_output',
+                        'desc' => 'gzip_output_desc',
+                        'fields' => array(
+                            'gzip_output' => array('type' => 'yes_no')
+                        )
+                    ),
+                    array(
+                        'title' => 'force_query_string',
+                        'desc' => 'force_query_string_desc',
+                        'fields' => array(
+                            'force_query_string' => array('type' => 'yes_no')
+                        )
+                    ),
+                    array(
+                        'title' => 'send_headers',
+                        'desc' => 'send_headers_desc',
+                        'fields' => array(
+                            'send_headers' => array('type' => 'yes_no')
+                        )
+                    ),
+                    array(
+                        'title' => 'redirect_method',
+                        'desc' => 'redirect_method_desc',
+                        'fields' => array(
+                            'redirect_method' => array(
+                                'type' => 'radio',
+                                'choices' => array(
+                                    'redirect' => lang('redirect_method_opt_location'),
+                                    'refresh' => lang('redirect_method_opt_refresh')
+                                )
                             )
+                        )
+                    ),
+                    array(
+                        'title' => 'caching_driver',
+                        'desc' => 'caching_driver_desc',
+                        'fields' => array(
+                            'cache_driver' => ee()->cache->admin_setting()
+                        )
+                    ),
+                    array(
+                        'title' => 'max_caches',
+                        'desc' => 'max_caches_desc',
+                        'fields' => array(
+                            'max_caches' => array('type' => 'text')
+                        )
+                    ),
+                ),
+            ),
+            // settings for Show all settings button + toggle
+            '' => array(
+                array(
+                    'title' => '',
+                    'desc' => '',
+                    'attrs' => array(
+                        'class' => 'show_all_settings',
+                    ),
+                    'fields' => array(
+                        'show_all' => array(
+                            'type' => 'html',
+                            'content' => '<button class="button button--primary show_all_settings_button js-show_all_settings_button">' . lang('show_all_settings') . '</button>'
                         )
                     )
                 ),
                 array(
-                    'title' => 'caching_driver',
-                    'desc' => 'caching_driver_desc',
+                    'title' => '',
+                    'desc' => 'This toggle controls the visibility of all settings.',
+                    'attrs' => array(
+                        'class' => 'js-hidden-toggle-for-show-all-settings hidden',
+                    ),
                     'fields' => array(
-                        'cache_driver' => ee()->cache->admin_setting()
+                        'show_all' => array(
+                            'type' => 'yes_no',
+                            'group_toggle' => array(
+                                'y' => 'show_all_settings_group',
+                            ),
+                            'value' => 'n'
+                        )
                     )
                 ),
-                array(
-                    'title' => 'max_caches',
-                    'desc' => 'max_caches_desc',
-                    'fields' => array(
-                        'max_caches' => array('type' => 'text')
-                    )
-                ),
-            )
+            ),
+            // End of settings for Show all settings button + toggle
         );
 
         if (extension_loaded('newrelic')) {

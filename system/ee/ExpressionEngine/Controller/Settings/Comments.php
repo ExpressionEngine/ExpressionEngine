@@ -42,28 +42,64 @@ class Comments extends Settings
                 )
             ),
             'options' => array(
-                array(
-                    'title' => 'comment_word_censoring',
-                    'desc' => sprintf(lang('comment_word_censoring_desc'), ee('CP/URL')->make('settings/word-censor')),
-                    'fields' => array(
-                        'comment_word_censoring' => array('type' => 'yes_no')
+                'group' => '',
+                'settings' => array(
+                    array(
+                        'title' => 'comment_word_censoring',
+                        'desc' => sprintf(lang('comment_word_censoring_desc'), ee('CP/URL')->make('settings/word-censor')),
+                        'fields' => array(
+                            'comment_word_censoring' => array('type' => 'yes_no')
+                        ),
                     ),
-                ),
-                array(
-                    'title' => 'comment_moderation_override',
-                    'desc' => 'comment_moderation_override_desc',
-                    'fields' => array(
-                        'comment_moderation_override' => array('type' => 'yes_no')
+                    array(
+                        'title' => 'comment_moderation_override',
+                        'desc' => 'comment_moderation_override_desc',
+                        'fields' => array(
+                            'comment_moderation_override' => array('type' => 'yes_no')
+                        ),
                     ),
-                ),
-                array(
-                    'title' => 'comment_edit_time_limit',
-                    'desc' => 'comment_edit_time_limit_desc',
-                    'fields' => array(
-                        'comment_edit_time_limit' => array('type' => 'text')
+                    array(
+                        'title' => 'comment_edit_time_limit',
+                        'desc' => 'comment_edit_time_limit_desc',
+                        'fields' => array(
+                            'comment_edit_time_limit' => array('type' => 'text')
+                        )
                     )
                 )
-            )
+            ),
+            // settings for Show all settings button + toggle
+            '' => array(
+                array(
+                    'title' => '',
+                    'desc' => '',
+                    'attrs' => array(
+                        'class' => 'show_all_settings',
+                    ),
+                    'fields' => array(
+                        'show_all' => array(
+                            'type' => 'html',
+                            'content' => '<button class="button button--primary show_all_settings_button js-show_all_settings_button">' . lang('show_all_settings') . '</button>'
+                        )
+                    )
+                ),
+                array(
+                    'title' => '',
+                    'desc' => 'This toggle controls the visibility of all settings.',
+                    'attrs' => array(
+                        'class' => 'js-hidden-toggle-for-show-all-settings hidden',
+                    ),
+                    'fields' => array(
+                        'show_all' => array(
+                            'type' => 'yes_no',
+                            'group_toggle' => array(
+                                'y' => 'show_all_settings_group',
+                            ),
+                            'value' => 'n'
+                        )
+                    )
+                ),
+            ),
+            // End of settings for Show all settings button + toggle
         );
 
         ee()->form_validation->set_rules(array(

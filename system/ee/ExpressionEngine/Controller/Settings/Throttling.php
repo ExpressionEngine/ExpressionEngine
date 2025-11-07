@@ -46,54 +46,90 @@ class Throttling extends Settings
                 )
             ),
             'throttling_limit_settings' => array(
-                array(
-                    'title' => 'max_page_loads',
-                    'desc' => 'max_page_loads_desc',
-                    'fields' => array(
-                        'max_page_loads' => array('type' => 'text')
-                    )
-                ),
-                array(
-                    'title' => 'time_interval',
-                    'desc' => 'time_interval_desc',
-                    'fields' => array(
-                        'time_interval' => array('type' => 'text')
-                    )
-                ),
-                array(
-                    'title' => 'lockout_time',
-                    'desc' => 'lockout_time_desc',
-                    'fields' => array(
-                        'lockout_time' => array('type' => 'text')
-                    )
-                ),
-                array(
-                    'title' => 'banishment_type',
-                    'fields' => array(
-                        'banishment_type' => array(
-                            'type' => 'radio',
-                            'choices' => array(
-                                '404' => lang('banish_404'),
-                                'redirect' => lang('banish_redirect'),
-                                'message' => lang('banish_message')
+                'group' => '',
+                'settings' => array(
+                    array(
+                        'title' => 'max_page_loads',
+                        'desc' => 'max_page_loads_desc',
+                        'fields' => array(
+                            'max_page_loads' => array('type' => 'text')
+                        )
+                    ),
+                    array(
+                        'title' => 'time_interval',
+                        'desc' => 'time_interval_desc',
+                        'fields' => array(
+                            'time_interval' => array('type' => 'text')
+                        )
+                    ),
+                    array(
+                        'title' => 'lockout_time',
+                        'desc' => 'lockout_time_desc',
+                        'fields' => array(
+                            'lockout_time' => array('type' => 'text')
+                        )
+                    ),
+                    array(
+                        'title' => 'banishment_type',
+                        'fields' => array(
+                            'banishment_type' => array(
+                                'type' => 'radio',
+                                'choices' => array(
+                                    '404' => lang('banish_404'),
+                                    'redirect' => lang('banish_redirect'),
+                                    'message' => lang('banish_message')
+                                )
                             )
+                        )
+                    ),
+                    array(
+                        'title' => 'banishment_url',
+                        'desc' => 'banishment_url_desc',
+                        'fields' => array(
+                            'banishment_url' => array('type' => 'text')
+                        )
+                    ),
+                    array(
+                        'title' => 'banishment_message',
+                        'fields' => array(
+                            'banishment_message' => array('type' => 'textarea')
+                        )
+                    )
+                )
+            ),
+            // settings for Show all settings button + toggle
+            '' => array(
+                array(
+                    'title' => '',
+                    'desc' => '',
+                    'attrs' => array(
+                        'class' => 'show_all_settings',
+                    ),
+                    'fields' => array(
+                        'show_all' => array(
+                            'type' => 'html',
+                            'content' => '<button class="button button--primary show_all_settings_button js-show_all_settings_button">' . lang('show_all_settings') . '</button>'
                         )
                     )
                 ),
                 array(
-                    'title' => 'banishment_url',
-                    'desc' => 'banishment_url_desc',
+                    'title' => '',
+                    'desc' => 'This toggle controls the visibility of all settings.',
+                    'attrs' => array(
+                        'class' => 'js-hidden-toggle-for-show-all-settings hidden',
+                    ),
                     'fields' => array(
-                        'banishment_url' => array('type' => 'text')
+                        'show_all' => array(
+                            'type' => 'yes_no',
+                            'group_toggle' => array(
+                                'y' => 'show_all_settings_group',
+                            ),
+                            'value' => 'n'
+                        )
                     )
                 ),
-                array(
-                    'title' => 'banishment_message',
-                    'fields' => array(
-                        'banishment_message' => array('type' => 'textarea')
-                    )
-                )
-            )
+            ),
+            // End of settings for Show all settings button + toggle
         );
 
         ee()->form_validation->set_rules(array(

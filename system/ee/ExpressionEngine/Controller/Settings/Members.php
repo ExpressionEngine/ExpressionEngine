@@ -157,63 +157,102 @@ class Members extends Settings
                 )
             ),
             'member_listing_settings' => array(
-                array(
-                    'title' => 'memberlist_order_by',
-                    'desc' => 'memberlist_order_by_desc',
-                    'fields' => array(
-                        'memberlist_order_by' => array(
-                            'type' => 'radio',
-                            'choices' => array(
-                                'member_id' => lang('id'),
-                                'username' => lang('username'),
-                                'dates' => lang('join_date'),
-                                'role' => lang('role')
+                'group' => '',
+                'settings' => array(
+                    array(
+                        'title' => 'memberlist_order_by',
+                        'desc' => 'memberlist_order_by_desc',
+                        'fields' => array(
+                            'memberlist_order_by' => array(
+                                'type' => 'radio',
+                                'choices' => array(
+                                    'member_id' => lang('id'),
+                                    'username' => lang('username'),
+                                    'dates' => lang('join_date'),
+                                    'role' => lang('role')
+                                )
                             )
                         )
-                    )
-                ),
-                array(
-                    'title' => 'memberlist_sort_order',
-                    'desc' => 'memberlist_sort_order_desc',
-                    'fields' => array(
-                        'memberlist_sort_order' => array(
-                            'type' => 'radio',
-                            'choices' => array(
-                                'asc' => lang('memberlist_sort_order_opt_asc'),
-                                'desc' => lang('memberlist_sort_order_opt_desc')
+                    ),
+                    array(
+                        'title' => 'memberlist_sort_order',
+                        'desc' => 'memberlist_sort_order_desc',
+                        'fields' => array(
+                            'memberlist_sort_order' => array(
+                                'type' => 'radio',
+                                'choices' => array(
+                                    'asc' => lang('memberlist_sort_order_opt_asc'),
+                                    'desc' => lang('memberlist_sort_order_opt_desc')
+                                )
                             )
                         )
-                    )
-                ),
-                array(
-                    'title' => 'memberlist_row_limit',
-                    'desc' => 'memberlist_row_limit_desc',
-                    'fields' => array(
-                        'memberlist_row_limit' => array(
-                            'type' => 'radio',
-                            'choices' => array('10' => '10', '20' => '20',
-                                '30' => '30', '40' => '40', '50' => '50',
-                                '75' => '75', '100' => '100')
+                    ),
+                    array(
+                        'title' => 'memberlist_row_limit',
+                        'desc' => 'memberlist_row_limit_desc',
+                        'fields' => array(
+                            'memberlist_row_limit' => array(
+                                'type' => 'radio',
+                                'choices' => array('10' => '10', '20' => '20',
+                                    '30' => '30', '40' => '40', '50' => '50',
+                                    '75' => '75', '100' => '100')
+                            )
                         )
                     )
                 )
             ),
             'registration_notify_settings' => array(
+                'group' => '',
+                'settings' => array(
+                    array(
+                        'title' => 'new_member_notification',
+                        'desc' => 'new_member_notification_desc',
+                        'fields' => array(
+                            'new_member_notification' => array('type' => 'yes_no')
+                        )
+                    ),
+                    array(
+                        'title' => 'mbr_notification_emails',
+                        'desc' => 'mbr_notification_emails_desc',
+                        'fields' => array(
+                            'mbr_notification_emails' => array('type' => 'text')
+                        )
+                    )
+                )
+            ),
+            // settings for Show all settings button + toggle
+            '' => array(
                 array(
-                    'title' => 'new_member_notification',
-                    'desc' => 'new_member_notification_desc',
+                    'title' => '',
+                    'desc' => '',
+                    'attrs' => array(
+                        'class' => 'show_all_settings',
+                    ),
                     'fields' => array(
-                        'new_member_notification' => array('type' => 'yes_no')
+                        'show_all' => array(
+                            'type' => 'html',
+                            'content' => '<button class="button button--primary show_all_settings_button js-show_all_settings_button">' . lang('show_all_settings') . '</button>'
+                        )
                     )
                 ),
                 array(
-                    'title' => 'mbr_notification_emails',
-                    'desc' => 'mbr_notification_emails_desc',
+                    'title' => '',
+                    'desc' => 'This toggle controls the visibility of all settings.',
+                    'attrs' => array(
+                        'class' => 'js-hidden-toggle-for-show-all-settings hidden',
+                    ),
                     'fields' => array(
-                        'mbr_notification_emails' => array('type' => 'text')
+                        'show_all' => array(
+                            'type' => 'yes_no',
+                            'group_toggle' => array(
+                                'y' => 'show_all_settings_group',
+                            ),
+                            'value' => 'n'
+                        )
                     )
-                )
-            )
+                ),
+            ),
+            // End of settings for Show all settings button + toggle
         );
 
         $base_url = ee('CP/URL')->make('settings/members');

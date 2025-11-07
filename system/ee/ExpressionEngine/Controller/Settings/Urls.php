@@ -84,6 +84,7 @@ class Urls extends Settings
                 array(
                     'title' => 'category_segment_trigger',
                     'desc' => 'category_segment_trigger_desc',
+                    'group' => 'show_all_settings_group',
                     'fields' => array(
                         'reserved_category_word' => array('type' => 'text')
                     )
@@ -91,6 +92,7 @@ class Urls extends Settings
                 array(
                     'title' => 'category_url',
                     'desc' => 'category_url_desc',
+                    'group' => 'show_all_settings_group',
                     'fields' => array(
                         'use_category_name' => array(
                             'type' => 'inline_radio',
@@ -104,6 +106,7 @@ class Urls extends Settings
                 array(
                     'title' => 'url_title_separator',
                     'desc' => 'url_title_separator_desc',
+                    'group' => 'show_all_settings_group',
                     'fields' => array(
                         'word_separator' => array(
                             'type' => 'radio',
@@ -114,7 +117,40 @@ class Urls extends Settings
                         )
                     )
                 ),
-            )
+            ),
+            // settings for Show all settings button + toggle
+            '' => array(
+                array(
+                    'title' => '',
+                    'desc' => '',
+                    'attrs' => array(
+                        'class' => 'show_all_settings',
+                    ),
+                    'fields' => array(
+                        'show_all' => array(
+                            'type' => 'html',
+                            'content' => '<button class="button button--primary show_all_settings_button js-show_all_settings_button">' . lang('show_all_settings') . '</button>'
+                        )
+                    )
+                ),
+                array(
+                    'title' => '',
+                    'desc' => 'This toggle controls the visibility of all settings.',
+                    'attrs' => array(
+                        'class' => 'js-hidden-toggle-for-show-all-settings hidden',
+                    ),
+                    'fields' => array(
+                        'show_all' => array(
+                            'type' => 'yes_no',
+                            'group_toggle' => array(
+                                'y' => 'show_all_settings_group',
+                            ),
+                            'value' => 'n'
+                        )
+                    )
+                ),
+            ),
+            // End of settings for Show all settings button + toggle
         );
 
         ee()->form_validation->set_rules(array(

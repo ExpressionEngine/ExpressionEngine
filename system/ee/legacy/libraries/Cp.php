@@ -153,7 +153,9 @@ class Cp
             'slate_theme' => lang('slate_theme'),
             'snow_theme' => lang('snow_theme'),
             'many_jump_results' => lang('many_jump_results'),
-            'password_icon' => lang('password_icon')
+            'password_icon' => lang('password_icon'),
+            'show_all_settings' => lang('show_all_settings'),
+            'hide_settings' => lang('hide_settings')
         );
 
         $lastUpdateCheck = false;

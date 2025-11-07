@@ -78,194 +78,236 @@ class SecurityPrivacy extends Settings
                 ),
             ),
             'cookie_settings' => array(
-                array(
-                    'title' => 'cookie_domain',
-                    'desc' => 'cookie_domain_desc',
-                    'fields' => array(
-                        'cookie_domain' => array('type' => 'text')
-                    )
-                ),
-                array(
-                    'title' => 'cookie_path',
-                    'desc' => sprintf(lang('cookie_path_desc'), ee()->cp->masked_url(DOC_URL . 'control-panel/settings/security-privacy.html#path')),
-                    'fields' => array(
-                        'cookie_path' => array('type' => 'text')
-                    )
-                ),
-                array(
-                    'title' => 'cookie_prefix',
-                    'desc' => lang('cookie_prefix_desc'),
-                    'fields' => array(
-                        'cookie_prefix' => array('type' => 'text')
-                    )
-                ),
-                array(
-                    'title' => 'cookie_httponly',
-                    'desc' => 'cookie_httponly_desc',
-                    'security' => true,
-                    'fields' => array(
-                        'cookie_httponly' => array('type' => 'yes_no')
-                    )
-                ),
-                array(
-                    'title' => 'cookie_secure',
-                    'desc' => 'cookie_secure_desc',
-                    'security' => true,
-                    'fields' => array(
-                        'cookie_secure' => array('type' => 'yes_no')
-                    )
-                ),
-                array(
-                    'title' => 'require_cookie_consent',
-                    'desc' => 'require_cookie_consent_desc',
-                    'security' => true,
-                    'fields' => array(
-                        'require_cookie_consent' => array('type' => 'yes_no')
+                'group' => '',
+                'settings' => array(
+                    array(
+                        'title' => 'cookie_domain',
+                        'desc' => 'cookie_domain_desc',
+                        'fields' => array(
+                            'cookie_domain' => array('type' => 'text')
+                        )
+                    ),
+                    array(
+                        'title' => 'cookie_path',
+                        'desc' => sprintf(lang('cookie_path_desc'), ee()->cp->masked_url(DOC_URL . 'control-panel/settings/security-privacy.html#path')),
+                        'fields' => array(
+                            'cookie_path' => array('type' => 'text')
+                        )
+                    ),
+                    array(
+                        'title' => 'cookie_prefix',
+                        'desc' => lang('cookie_prefix_desc'),
+                        'fields' => array(
+                            'cookie_prefix' => array('type' => 'text')
+                        )
+                    ),
+                    array(
+                        'title' => 'cookie_httponly',
+                        'desc' => 'cookie_httponly_desc',
+                        'security' => true,
+                        'fields' => array(
+                            'cookie_httponly' => array('type' => 'yes_no')
+                        )
+                    ),
+                    array(
+                        'title' => 'cookie_secure',
+                        'desc' => 'cookie_secure_desc',
+                        'security' => true,
+                        'fields' => array(
+                            'cookie_secure' => array('type' => 'yes_no')
+                        )
+                    ),
+                    array(
+                        'title' => 'require_cookie_consent',
+                        'desc' => 'require_cookie_consent_desc',
+                        'security' => true,
+                        'fields' => array(
+                            'require_cookie_consent' => array('type' => 'yes_no')
+                        )
                     )
                 )
             ),
             'member_security_settings' => array(
-                array(
-                    'title' => 'allow_username_change',
-                    'desc' => 'allow_username_change_desc',
-                    'fields' => array(
-                        'allow_username_change' => array('type' => 'yes_no')
-                    )
-                ),
-                array(
-                    'title' => 'un_min_len',
-                    'desc' => lang('un_min_len_desc'),
-                    'fields' => array(
-                        'un_min_len' => array('type' => 'text')
-                    )
-                ),
-                array(
-                    'title' => 'allow_multi_logins',
-                    'desc' => 'allow_multi_logins_desc',
-                    'fields' => array(
-                        'allow_multi_logins' => array('type' => 'yes_no')
-                    )
-                ),
-                array(
-                    'title' => 'require_ip_for_login',
-                    'desc' => 'require_ip_for_login_desc',
-                    'fields' => array(
-                        'require_ip_for_login' => array('type' => 'yes_no')
-                    )
-                ),
-                array(
-                    'title' => 'password_lockout',
-                    'desc' => 'password_lockout_desc',
-                    'fields' => array(
-                        'password_lockout' => array('type' => 'yes_no')
-                    )
-                ),
-                array(
-                    'title' => 'password_lockout_interval',
-                    'desc' => lang('password_lockout_interval_desc'),
-                    'fields' => array(
-                        'password_lockout_interval' => array('type' => 'text')
-                    )
-                ),
-                array(
-                    'title' => 'password_security_policy',
-                    'desc' => 'password_security_policy_desc',
-                    'fields' => array(
-                        'password_security_policy' => array(
-                            'type' => 'radio',
-                            'choices' => array(
-                                'none' => lang('password_security_none'),
-                                'basic' => lang('password_security_basic'),
-                                'good' => lang('password_security_good'),
-                                'strong' => lang('password_security_strong')
+                'group' => '',
+                'settings' => array(
+                    array(
+                        'title' => 'allow_username_change',
+                        'desc' => 'allow_username_change_desc',
+                        'fields' => array(
+                            'allow_username_change' => array('type' => 'yes_no')
+                        )
+                    ),
+                    array(
+                        'title' => 'un_min_len',
+                        'desc' => lang('un_min_len_desc'),
+                        'fields' => array(
+                            'un_min_len' => array('type' => 'text')
+                        )
+                    ),
+                    array(
+                        'title' => 'allow_multi_logins',
+                        'desc' => 'allow_multi_logins_desc',
+                        'fields' => array(
+                            'allow_multi_logins' => array('type' => 'yes_no')
+                        )
+                    ),
+                    array(
+                        'title' => 'require_ip_for_login',
+                        'desc' => 'require_ip_for_login_desc',
+                        'fields' => array(
+                            'require_ip_for_login' => array('type' => 'yes_no')
+                        )
+                    ),
+                    array(
+                        'title' => 'password_lockout',
+                        'desc' => 'password_lockout_desc',
+                        'fields' => array(
+                            'password_lockout' => array('type' => 'yes_no')
+                        )
+                    ),
+                    array(
+                        'title' => 'password_lockout_interval',
+                        'desc' => lang('password_lockout_interval_desc'),
+                        'fields' => array(
+                            'password_lockout_interval' => array('type' => 'text')
+                        )
+                    ),
+                    array(
+                        'title' => 'password_security_policy',
+                        'desc' => 'password_security_policy_desc',
+                        'fields' => array(
+                            'password_security_policy' => array(
+                                'type' => 'radio',
+                                'choices' => array(
+                                    'none' => lang('password_security_none'),
+                                    'basic' => lang('password_security_basic'),
+                                    'good' => lang('password_security_good'),
+                                    'strong' => lang('password_security_strong')
+                                )
                             )
                         )
-                    )
-                ),
-                array(
-                    'title' => 'pw_min_len',
-                    'desc' => 'pw_min_len_desc',
-                    'fields' => array(
-                        'pw_min_len' => array('type' => 'text')
-                    )
-                ),
-                array(
-                    'title' => 'allow_dictionary_pw',
-                    'desc' => 'allow_dictionary_pw_desc',
-                    'fields' => array(
-                        'allow_dictionary_pw' => array(
-                            'type' => 'yes_no',
-                            'group_toggle' => array(
-                                'n' => 'dictionary_file'
-                            )
-                        ),
-                    )
-                ),
-                array(
-                    'title' => 'name_of_dictionary_file',
-                    'desc' => 'name_of_dictionary_file_desc',
-                    'group' => 'dictionary_file',
-                    'fields' => array(
-                        'name_of_dictionary_file' => array(
-                            'type' => 'text',
-                            'placeholder' => 'dictionary.txt'
-                        ),
+                    ),
+                    array(
+                        'title' => 'pw_min_len',
+                        'desc' => 'pw_min_len_desc',
+                        'fields' => array(
+                            'pw_min_len' => array('type' => 'text')
+                        )
+                    ),
+                    array(
+                        'title' => 'allow_dictionary_pw',
+                        'desc' => 'allow_dictionary_pw_desc',
+                        'fields' => array(
+                            'allow_dictionary_pw' => array(
+                                'type' => 'yes_no',
+                                'group_toggle' => array(
+                                    'n' => 'dictionary_file'
+                                )
+                            ),
+                        )
+                    ),
+                    array(
+                        'title' => 'name_of_dictionary_file',
+                        'desc' => 'name_of_dictionary_file_desc',
+                        'group' => 'dictionary_file',
+                        'fields' => array(
+                            'name_of_dictionary_file' => array(
+                                'type' => 'text',
+                                'placeholder' => 'dictionary.txt'
+                            ),
+                        )
                     )
                 )
             ),
             'form_security_settings' => array(
-                array(
-                    'title' => 'deny_duplicate_data',
-                    'desc' => 'deny_duplicate_data_desc',
-                    'fields' => array(
-                        'deny_duplicate_data' => array('type' => 'yes_no')
-                    )
-                ),
-                array(
-                    'title' => 'require_ip_for_posting',
-                    'desc' => 'require_ip_for_posting_desc',
-                    'fields' => array(
-                        'require_ip_for_posting' => array('type' => 'yes_no')
-                    )
-                ),
-                array(
-                    'title' => 'xss_clean_uploads',
-                    'desc' => 'xss_clean_uploads_desc',
-                    'fields' => array(
-                        'xss_clean_uploads' => array('type' => 'yes_no')
-                    )
-                ),
-                array(
-                    'title' => 'strip_image_metadata',
-                    'desc' => sprintf(lang('strip_image_metadata_desc'), 'https://www.php.net/manual/en/book.imagick.php', extension_loaded('imagick') ? 'enabled' : 'disabled'),
-                    'fields' => array(
-                        'strip_image_metadata' => [
-                            'type' => 'yes_no',
-                            'disabled' => ! extension_loaded('imagick'),
+                'group' => '',
+                'settings' => array(
+                    array(
+                        'title' => 'deny_duplicate_data',
+                        'desc' => 'deny_duplicate_data_desc',
+                        'fields' => array(
+                            'deny_duplicate_data' => array('type' => 'yes_no')
+                        )
+                    ),
+                    array(
+                        'title' => 'require_ip_for_posting',
+                        'desc' => 'require_ip_for_posting_desc',
+                        'fields' => array(
+                            'require_ip_for_posting' => array('type' => 'yes_no')
+                        )
+                    ),
+                    array(
+                        'title' => 'xss_clean_uploads',
+                        'desc' => 'xss_clean_uploads_desc',
+                        'fields' => array(
+                            'xss_clean_uploads' => array('type' => 'yes_no')
+                        )
+                    ),
+                    array(
+                        'title' => 'strip_image_metadata',
+                        'desc' => sprintf(lang('strip_image_metadata_desc'), 'https://www.php.net/manual/en/book.imagick.php', extension_loaded('imagick') ? 'enabled' : 'disabled'),
+                        'fields' => array(
+                            'strip_image_metadata' => [
+                                'type' => 'yes_no',
+                                'disabled' => ! extension_loaded('imagick'),
+                            ]
+                        )
+                    ),
+                    array(
+                        'title' => 'enable_rank_denial',
+                        'desc' => sprintf(lang('enable_rank_denial_desc'), 'https://support.google.com/webmasters/answer/96569?hl=en'),
+                        'fields' => array(
+                            'redirect_submitted_links' => [
+                                'type' => 'yes_no',
+                                'group_toggle' => array(
+                                    'y' => 'force_interstitial'
+                                )
+                            ]
+                        )
+                    ),
+                    [
+                        'title' => 'force_interstitial',
+                        'desc' => 'force_interstitial_desc',
+                        'group' => 'force_interstitial',
+                        'fields' => [
+                            'force_redirect' => ['type' => 'yes_no']
                         ]
+                    ]
+                )
+            ),
+            // settings for Show all settings button + toggle
+            '' => array(
+                array(
+                    'title' => '',
+                    'desc' => '',
+                    'attrs' => array(
+                        'class' => 'show_all_settings',
+                    ),
+                    'fields' => array(
+                        'show_all' => array(
+                            'type' => 'html',
+                            'content' => '<button class="button button--primary show_all_settings_button js-show_all_settings_button">' . lang('show_all_settings') . '</button>'
+                        )
                     )
                 ),
                 array(
-                    'title' => 'enable_rank_denial',
-                    'desc' => sprintf(lang('enable_rank_denial_desc'), 'https://support.google.com/webmasters/answer/96569?hl=en'),
+                    'title' => '',
+                    'desc' => 'This toggle controls the visibility of all settings.',
+                    'attrs' => array(
+                        'class' => 'js-hidden-toggle-for-show-all-settings hidden',
+                    ),
                     'fields' => array(
-                        'redirect_submitted_links' => [
+                        'show_all' => array(
                             'type' => 'yes_no',
                             'group_toggle' => array(
-                                'y' => 'force_interstitial'
-                            )
-                        ]
+                                'y' => 'show_all_settings_group',
+                            ),
+                            'value' => 'n'
+                        )
                     )
                 ),
-                [
-                    'title' => 'force_interstitial',
-                    'desc' => 'force_interstitial_desc',
-                    'group' => 'force_interstitial',
-                    'fields' => [
-                        'force_redirect' => ['type' => 'yes_no']
-                    ]
-                ]
-            )
+            ),
+            // End of settings for Show all settings button + toggle
         );
 
         ee()->form_validation->set_rules(array(
