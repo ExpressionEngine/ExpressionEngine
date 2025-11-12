@@ -195,7 +195,7 @@ class RteHelper
                         $url = '/';
                     }
                     if ($buildFullUrls) {
-                        $url = ee()->functions->create_url($url);
+                        $url = reduce_double_slashes(ee()->functions->fetch_site_index(0, 0) . $url);
                     }
                     // ensure trailing slash - TODO need to make this an option
                     // $url = rtrim($url, '/') . '/';

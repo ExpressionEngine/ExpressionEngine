@@ -20,6 +20,7 @@ class Api_template_structure extends Api
     public $template_info = array();				// cache of previously fetched template info
     public $group_info = array();				// cache of previously fetched group info
     public $reserved_names = array('act', 'css');	// array of reserved template group names
+    public $config;
 
     // file extensions used when saving templates as files
     public $file_extensions = array(
@@ -66,8 +67,9 @@ class Api_template_structure extends Api
         }
 
         // return cached query object if available
-        if (isset($this->group_info[$group_id])) {
-            return $this->group_info[$group_id];
+        $group_id_int = (int) $group_id;
+        if (isset($this->group_info[$group_id_int])) {
+            return $this->group_info[$group_id_int];
         }
 
         $query = ee()->template_model->get_group_info($group_id);
@@ -78,7 +80,7 @@ class Api_template_structure extends Api
             return false;
         }
 
-        $this->group_info[$group_id] = $query;
+        $this->group_info[$group_id_int] = $query;
 
         return $query;
     }
@@ -103,12 +105,12 @@ class Api_template_structure extends Api
         // turn our array into variables
         extract($data);
 
-        if ($site_id === null or ! is_numeric($site_id)) {
+        if (!isset($site_id) || $site_id === null || !is_numeric($site_id)) {
             $site_id = $this->config->item('site_id');
         }
 
         // validate group name
-        if ($group_name == '') {
+        if (!isset($group_name) || $group_name == '') {
             $this->_set_error('group_required');
         }
 
@@ -176,7 +178,7 @@ class Api_template_structure extends Api
                     'refresh' => $row->refresh,
                     'no_auth_bounce' => $row->no_auth_bounce,
                     'php_parse_location' => $row->php_parse_location,
-                    'allow_php' => (ee('Config')->getFile()->getBoolean('allow_php') && ee('Permission')->isSuperAdmin()) ? $row->allow_php : 'n',
+                    'allow_php' => (ee('Config') && ee('Config')->getFile() && ee('Config')->getFile()->getBoolean('allow_php') && ee('Permission') && ee('Permission')->isSuperAdmin()) ? $row->allow_php : 'n',
                     'protect_javascript' => $row->protect_javascript,
                     'template_type' => $row->template_type,
                     'template_data' => $row->template_data,
@@ -233,6 +235,11 @@ class Api_template_structure extends Api
         // Check our standard template types for a file extension
         $engine = ($engine && array_key_exists($engine, $this->template_engines)) ? ".$engine" : null;
 
+        // Handle array template_type (take first element)
+        if (is_array($template_type)) {
+            $template_type = reset($template_type);
+        }
+
         if (isset($this->file_extensions[$template_type])) {
             return implode('', array_filter([$this->file_extensions[$template_type], $engine]));
         } else {
@@ -241,7 +248,8 @@ class Api_template_structure extends Api
             // 'template_types' hook.
             //  - Provide information for custom template types.
             //
-            if (isset(ee()->extensions)) {
+            $template_types = [];
+            if (isset(ee()->extensions) && method_exists(ee()->extensions, 'call')) {
                 $template_types = ee()->extensions->call('template_types', array());
             }
             //
@@ -318,6 +326,10 @@ class Api_template_structure extends Api
      */
     public function register_template_engine($engines = array())
     {
+        if (!is_array($engines)) {
+            return;
+        }
+
         foreach ($engines as $key => $value) {
             if (!array_key_exists($key, $this->template_engines)) {
                 $this->template_engines[$key] = $value;
@@ -361,13 +373,37 @@ class Api_template_structure extends Api
      */
     public function get_template_file_info($template)
     {
+        // Handle non-string inputs
+        if (!is_string($template)) {
+            // Handle array template (take first element)
+            if (is_array($template)) {
+                $template = reset($template);
+            } else {
+                return null;
+            }
+        }
+
         foreach ($this->all_file_extensions() as $extension => $info) {
             // If template ends with extension we are done.  This finds the most specific extension first
             // because all_file_extensions returns a sorted list with longest extensions first
             $extensionLength = strlen($extension);
-            if (substr_compare($template, $extension, -$extensionLength) === 0) {
+            if (substr_compare($template, $extension, -$extensionLength, $extensionLength, true) === 0) {
+                $name = substr($template, 0, -$extensionLength);
+                // Sanitize the name to prevent path traversal attacks
+                // First normalize path separators
+                $name = str_replace('\\', '/', $name);
+                // Extract just the filename part
+                $name = basename($name);
+                // If basename didn't work (e.g., with backslashes), try manual extraction
+                if (strpos($name, '/') !== false) {
+                    $parts = explode('/', $name);
+                    $name = end($parts);
+                }
+                // Remove any remaining path traversal characters
+                $name = preg_replace('/\.\.+/', '', $name);
+                $name = preg_replace('/[^a-zA-Z0-9_\-\.]/', '', $name);
                 return [
-                    'name' => substr($template, 0, -$extensionLength),
+                    'name' => $name,
                     'type' => $info['type'],
                     'engine' => $info['engine'],
                     'extension' => $extension

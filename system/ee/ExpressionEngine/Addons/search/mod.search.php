@@ -254,7 +254,7 @@ class Search
             'keywords' => ($original_keywords != '') ? $original_keywords : $mbr,
             'ip_address' => ee()->input->ip_address(),
             'total_results' => $this->num_rows,
-            'per_page' => (isset($_POST['RES']) and is_numeric($_POST['RES']) and $_POST['RES'] < 999) ? $_POST['RES'] : 50,
+            'per_page' => (isset($_POST['RES']) and is_numeric($_POST['RES']) and $_POST['RES'] < 255) ? $_POST['RES'] : 50,
             'query' => serialize($query_parts),
             'custom_fields' => addslashes(serialize($this->fields)),
             'result_page' => $this->_meta['result_page'],
@@ -392,7 +392,7 @@ class Search
                                     $channelSearchableFields[$field->getId()] = $field;
                                 }
                             }
-                            $custom_fields = array_merge($custom_fields, $channelSearchableFields);
+                            $custom_fields = array_replace($custom_fields, $channelSearchableFields);
                         }
                     }
                     if (count($custom_fields) > 50) {
@@ -1310,7 +1310,7 @@ class Search
         $row['comment_url'] = parse_config_variables($row['comment_url'], $overrides);
         $row['search_results_url'] = parse_config_variables($row['search_results_url'], $overrides);
 
-        if (isset($row['field_id_' . $row['search_excerpt']]) and $row['field_id_' . $row['search_excerpt']]) {
+        if (isset($row['field_id_' . $row['search_excerpt']]) and $row['field_id_' . $row['search_excerpt']] and !is_array($row['field_id_' . $row['search_excerpt']])) {
             $format = (! isset($row['field_ft_' . $row['search_excerpt']])) ? 'xhtml' : $row['field_ft_' . $row['search_excerpt']];
 
             // Replace block HTML tags with spaces so words don't run together in case
