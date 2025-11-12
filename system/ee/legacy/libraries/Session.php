@@ -395,14 +395,14 @@ class EE_Session
         $this->sdata['sess_start'] = $this->sdata['last_activity'];
         $this->sdata['fingerprint'] = $this->_create_fingerprint((string) $crypt_key);
         $this->sdata['can_debug'] = ($can_debug) ? 'y' : 'n';
-        $this->sdata['mfa_flag'] = ($this->member_model->enable_mfa === true) ? 'show' : 'skip';
+        $this->sdata['mfa_flag'] = ((ee()->config->item('enable_mfa') === false || ee()->config->item('enable_mfa') === 'y') && $this->member_model->enable_mfa === true) ? 'show' : 'skip';
 
         $this->userdata['member_id'] = (int) $member_id;
         $this->userdata['role_id'] = (int) $this->member_model->role_id;
         $this->userdata['session_id'] = $this->sdata['session_id'];
         $this->userdata['fingerprint'] = $this->sdata['fingerprint'];
         $this->userdata['site_id'] = ee()->config->item('site_id');
-        $this->userdata['mfa_enabled'] = $this->member_model->enable_mfa;
+        $this->userdata['mfa_enabled'] = (ee()->config->item('enable_mfa') === false || ee()->config->item('enable_mfa') === 'y') ? $this->member_model->enable_mfa : false;
 
         // Set the session cookie, ONLY if this method is not called from the context of the constructor, i.e. a login action
         if (isset(ee()->session)) {
