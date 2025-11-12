@@ -33,7 +33,7 @@ class SetTest extends TestCase
     public function testPrototypeAttribute(): Set
     {
         $field_set = new _set('test-set');
-        $this->assertObjectHasAttribute('prototype', $field_set);
+        $this->assertObjectHasProperty('prototype', $field_set);
         $this->assertCount(7, $field_set->getPrototype());
         return $field_set;
     }
@@ -45,7 +45,7 @@ class SetTest extends TestCase
      */
     public function testStructureAttribute(Set $field_set)
     {
-        $this->assertObjectHasAttribute('structure', $field_set);
+        $this->assertObjectHasProperty('structure', $field_set);
         $this->assertCount(0, $field_set->getStructure());
     }
 

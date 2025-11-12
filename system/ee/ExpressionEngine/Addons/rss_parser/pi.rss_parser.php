@@ -43,6 +43,7 @@ class Rss_parser
         // Make sure there's at least one item
         if ($feed->get_item_quantity() <= 0) {
             $this->return_data = ee()->TMPL->no_results();
+            return;
         }
 
         $content = array(

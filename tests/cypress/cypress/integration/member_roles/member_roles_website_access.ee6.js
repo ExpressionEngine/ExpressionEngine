@@ -13,7 +13,9 @@ context('Member Roles / Frontend access ', () => {
 
 		//Let Test Role access CP
 		cy.authVisit('admin.php?/cp/members/roles')
+		cy.hasNoErrors()
 	   cy.get('div[class="list-item__title"]').contains('Test').click()
+	   cy.hasNoErrors()
 	   cy.get('button').contains('CP Access').click()
 	   cy.get('#fieldset-can_access_cp .toggle-btn').click(); //access CP
 	   cy.get('button').contains('Save').first().click()

@@ -233,6 +233,8 @@ class CI_DB_mysqli_driver extends CI_DB
         // escape LIKE condition wildcards
         if ($like === true) {
             $str = str_replace(array('%', '_'), array('\\%', '\\_'), $str);
+            // fancy quotes can cause confusion on both sides, make them match any character
+            $str = str_replace(['“', '”', '‘', '’'], '_', $str);
         }
 
         return $str;

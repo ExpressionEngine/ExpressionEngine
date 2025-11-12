@@ -177,7 +177,7 @@ class Uploads extends AbstractFilesController
         $settingsValues = array_merge([
             'url' => $upload_destination->getConfigOverriddenProperty('url'),
             'server_path' => $upload_destination->getConfigOverriddenProperty('server_path'),
-        ], $upload_destination->adapter_settings ?? []);
+        ], $upload_destination->getProperty('adapter_settings') ?? []);
 
         $adapter_groups = [];
         $adapter_choices = [];
@@ -185,7 +185,7 @@ class Uploads extends AbstractFilesController
         foreach ($adapters as $key => $adapter) {
             $adapter_choices[$key] = lang('adapter_' . $key);
             $adapter_groups[$key] = "adapter_{$key}";
-            $adapterFields = ee('Filesystem/Adapter')->createSettingsFields($key, ($upload_destination->adapter == $key) ? $settingsValues : []);
+            $adapterFields = ee('Filesystem/Adapter')->createSettingsFields($key, ($upload_destination->getProperty('adapter') == $key) ? $settingsValues : []);
             if (!empty($adapterFields)) {
                 foreach ($adapterFields as $field) {
                     // Prefix all field names for the adapter
@@ -224,7 +224,7 @@ class Uploads extends AbstractFilesController
                             'required' => true,
                             'choices' => $adapter_choices,
                             'group_toggle' => $adapter_groups,
-                            'value' => $upload_destination->adapter
+                            'value' => $upload_destination->getProperty('adapter')
                         )
                     )
                 ),
@@ -669,16 +669,16 @@ class Uploads extends AbstractFilesController
 
         $result = $upload_destination->validate();
 
-        if (!empty($upload_destination->adapter)) {
+        if (!empty($upload_destination->getProperty('adapter'))) {
             //validate adapter settings
             $adapter = $upload_destination->getFilesystemAdapter(['allow_missing' => true]);
             $adapterValidation = ee('Validation')->make()->validate($adapter);
 
             foreach ($adapterValidation->getFailed() as $field_name => $rules) {
                 if (property_exists($upload_destination, $field_name)) {
-                    $field = '_for_adapter[' . $upload_destination->adapter . '][' . $field_name . ']';
+                    $field = '_for_adapter[' . $upload_destination->getProperty('adapter') . '][' . $field_name . ']';
                 } else {
-                    $field = '_for_adapter[' . $upload_destination->adapter . '][adapter_settings][' . $field_name . ']';
+                    $field = '_for_adapter[' . $upload_destination->getProperty('adapter') . '][adapter_settings][' . $field_name . ']';
                 }
                 $result->addFailed($field, $rules[0]);
             }
@@ -694,9 +694,9 @@ class Uploads extends AbstractFilesController
                 $localAdapterValidation = ee('Validation')->make(['server_path' => 'required|fileExists|writable'])->validate(['server_path' => $parsedServerPath]);
                 foreach ($localAdapterValidation->getFailed() as $field_name => $rules) {
                     if (property_exists($upload_destination, $field_name)) {
-                        $field = '_for_adapter[' . $upload_destination->adapter . '][' . $field_name . ']';
+                        $field = '_for_adapter[' . $upload_destination->getProperty('adapter') . '][' . $field_name . ']';
                     } else {
-                        $field = '_for_adapter[' . $upload_destination->adapter . '][adapter_settings][' . $field_name . ']';
+                        $field = '_for_adapter[' . $upload_destination->getProperty('adapter') . '][adapter_settings][' . $field_name . ']';
                     }
                     $result->addFailed($field, $rules[0]);
                 }
@@ -971,7 +971,7 @@ class Uploads extends AbstractFilesController
                 ));
             }
 
-            
+
         }
     }
 }

@@ -231,6 +231,12 @@ class Structure_core_nav_parser
                     $variable_row[$prefix . $field_name] = $channelEntry->$field_name;
                 }
 
+                // edit date is special in getModChannelResultsArray, so also special here
+                // not sure why is that though...
+                if (isset($variable_row[$prefix . 'edit_date'])) {
+                    $variable_row[$prefix . 'edit_date'] = $variable_row[$prefix . 'edit_date']->format('U');
+                }
+
                 foreach ($fields[$channelEntry->Channel->getId()] as $field) {
                     // echo 'CFN: ', $prefix.$field->field_name, '<br />', "\n";
                     $property = 'field_id_' . $field->getId();

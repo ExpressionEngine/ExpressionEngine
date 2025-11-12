@@ -150,7 +150,7 @@ class FluidField extends Model
         return $field_data;
     }
 
-    public function getField(FieldData $field_data = null)
+    public function getField(?FieldData $field_data = null)
     {
         $field = $this->ChannelField->getField();
         $field->setContentId($this->entry_id);
