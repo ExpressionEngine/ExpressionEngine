@@ -80,6 +80,8 @@
 			'html-link',
 			'html-upload',
 			'html-quote',
+			'html-strike',
+			'html-ins'
 		];
 
 		options = {	id:						'',

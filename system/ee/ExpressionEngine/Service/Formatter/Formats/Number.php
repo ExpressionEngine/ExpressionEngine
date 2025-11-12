@@ -62,7 +62,7 @@ class Number extends Formatter
             $memory = round($memory / 1073741824, $precision);
             $unit = lang('formatter_gigabytes' . $lang_suffix);
         } elseif ($memory >= 1000000) {
-            $precision = 1;
+            $precision = 2;
             $memory = round($memory / 1048576, $precision);
             $unit = lang('formatter_megabytes' . $lang_suffix);
         } elseif ($memory >= 1000) {

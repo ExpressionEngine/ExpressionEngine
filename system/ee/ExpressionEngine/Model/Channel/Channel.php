@@ -636,6 +636,20 @@ class Channel extends StructureModel
         return new Collection($fields);
     }
 
+    protected function set__channel_notify_emails($value)
+    {
+        $value = trim($value);
+        $value = str_replace(' ', '', $value);
+        $this->setRawProperty('channel_notify_emails', $value);
+    }
+
+    protected function set__comment_notify_emails($value)
+    {
+        $value = trim($value);
+        $value = str_replace(' ', '', $value);
+        $this->setRawProperty('comment_notify_emails', $value);
+    }
+
     public function maxEntriesLimitReached()
     {
         return ($this->max_entries != 0 && $this->total_records >= $this->max_entries);
