@@ -165,7 +165,7 @@ class EE_Exceptions
         }
 
         // if this is CP request and they are logged in, throw special kind of Exception
-        if (defined('REQ') && constant('REQ') == 'CP' && isset(ee()->session) && ee()->session->userdata('admin_sess') != 0) {
+        if (defined('REQ') && constant('REQ') == 'CP' && ee() && isset(ee()->session) && ee()->session->userdata('admin_sess') != 0) {
             throw new \ExpressionEngine\Error\CPException($message, $status_code);
         }
 
@@ -245,9 +245,13 @@ class EE_Exceptions
         // Replace system path
         $filepath = str_replace($syspath, '', $filepath);
         $message = str_replace($syspath, '', $message);
-		
+
         if (strpos($message, 'SQLSTATE') !== false) {
-			log_message('error', 'MySQL Error: ' . $message);
+            log_message('error', 'MySQL Error: ' . $message);
+        }
+
+        if (preg_match('/getaddrinfo for (.*) failed/', $message, $matches)) {
+            $message = str_replace($matches[1], '<i>{configured hostname}</i>', $message);
         }
 
         $message = htmlentities($message, ENT_QUOTES, 'UTF-8', false);
@@ -281,6 +285,10 @@ class EE_Exceptions
             }
 
             $line = str_replace($partial_path, '', $line);
+
+            if (strpos($line, 'PDO->__construct') !== false) {
+                $line = str_replace(substr($line, strpos($line, 'PDO->__construct')), 'Database Connection', $line);
+            }
             $line = htmlentities($line, ENT_QUOTES, 'UTF-8');
         }
 
@@ -342,6 +350,9 @@ class EE_Exceptions
      */
     private function lookupSeverity($severity)
     {
+        if (PHP_VERSION_ID < 80000 && $severity === E_STRICT) {
+            return array('E_STRICT', 'Notice');
+        }
         switch ($severity) {
             case E_ERROR:
                 return array('E_ERROR', 'Error');
@@ -365,8 +376,6 @@ class EE_Exceptions
                 return array('E_USER_WARNING', 'Warning');
             case E_USER_NOTICE:
                 return array('E_USER_NOTICE', 'Notice');
-            case E_STRICT:
-                return array('E_STRICT', 'Notice');
             case E_RECOVERABLE_ERROR:
                 return array('E_RECOVERABLE_ERROR', 'Error');
             case E_DEPRECATED:

@@ -87,6 +87,17 @@ class CommandUpdate extends Cli
 
         $this->runUpgrade();
         $this->postFlightCheck();
+
+        // -------------------------------------------
+        // 'updater_complete' hook.
+        //  - added 7.5.16
+        //
+        if (ee()->extensions->active_hook('updater_complete') === true) {
+            ee()->extensions->call('updater_complete');
+        }
+        //
+        // -------------------------------------------
+
         $this->complete('command_update_success');
     }
 
@@ -317,7 +328,12 @@ class CommandUpdate extends Cli
         $this->info('command_update_getting_info_from_ee_com');
         ee()->load->library('el_pings');
         $version_file = ee()->el_pings->get_version_info(true);
-        $this->updateType == 'curl';
+
+        if (!$version_file || !isset($version_file['latest_version'])) {
+            $this->fail('command_update_unable_to_get_version_info');
+        }
+
+        $this->updateType = 'curl';
         $this->updateVersion = $version_file['latest_version'];
     }
 
@@ -339,7 +355,7 @@ class CommandUpdate extends Cli
     protected function upgradeFromLocalVersion()
     {
         if (file_exists(FCPATH . '../../.env.php') && (require FCPATH . '../../.env.php') == true) {
-            if (getenv('EE_INSTALL_MODE') !== 'TRUE') {
+            if (($_ENV['EE_INSTALL_MODE'] ?? false) !== 'TRUE') {
                 throw new \Exception("EE_INSTALL_MODE needs to be set to TRUE in .env.php to run update command");
             }
         }

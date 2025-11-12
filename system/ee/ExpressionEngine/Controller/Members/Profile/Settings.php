@@ -108,7 +108,7 @@ class Settings extends Profile
                             'type' => 'image',
                             'id' => 'avatar',
                             'edit' => false,
-                            'image' => $avatar_exists ? $avatar_directory->url . $this->member->avatar_filename : '',
+                            'image' => $avatar_exists ? rtrim($avatar_directory->url, '/') . '/' . ltrim($this->member->avatar_filename, '/') : '',
                             'value' => $this->member->avatar_filename
                         )
                     )

@@ -305,19 +305,120 @@ class Pro_select_entries extends Pro_variables_type
                 )
             );
         } else {
-            //  Multiple choice
-            $data = array(
-                'name' => $this->input_name(),
-                'choices' => $choices,
-                'value' => PVUI::explode($this->settings('separator'), $var_data),
-                'multiple' => true
-            );
+            if ($this->settings('multi_interface') == 'drag-list') {
+
+                $ids = str_replace('Array', '', $var_data);
+                $ids = array_map('intval', preg_split('/[|,\s]+/', trim($ids)));
+
+                $entries = ee('Model')
+                    ->get('ChannelEntry')
+                    ->filter('entry_id', 'IN', $ids)
+                    ->all()
+                    ->indexBy('entry_id');
+
+                $channels = ee('Model')
+                    ->get('Channel')
+                    ->filter('site_id', ee()->config->item('site_id'))
+                    ->order('channel_title')
+                    ->all()
+                    ->indexBy('channel_id');
+
+                $selected = [];
+                $items = [];
+                $channels_arr = [];
+                $allowed_channels = array_filter($this->settings('channels'));
+
+                foreach ($ids as $id) {
+                    if (isset($entries[$id])) {
+                        $entry = $entries[$id];
+                        $selected[] = [
+                            'value'        => $entry->entry_id,
+                            'label'        => $entry->title,
+                            'instructions' => isset($channels[$entry->channel_id]) ? $channels[$entry->channel_id]->channel_title : '',
+                            'channel_id'   => $entry->channel_id,
+                            'can_edit'     => false,
+                            'editable'     => false,
+                        ];
+                    }
+                }
+                foreach ($query as $entry) {
+                    if (in_array($entry->channel_id, $allowed_channels)) {
+                        $items[] = [
+                            'value'        => $entry->entry_id,
+                            'label'        => $entry->title,
+                            'instructions' => isset($channels[$entry->channel_id]) ? $channels[$entry->channel_id]->channel_title : '',
+                            'channel_id'   => $entry->channel_id,
+                            'can_edit'     => false,
+                            'editable'     => false,
+                        ];
+                    }
+                }
+
+                foreach ($channels as $channel) {
+                    if (in_array($channel->channel_id, $allowed_channels)) {
+                        $channels_arr[] = [
+                            'title' => $channel->channel_title,
+                            'id'    => $channel->channel_id,
+                        ];
+                    }
+                }
+
+                $lang = [
+                    'relateEntry' => lang('relate_entry'),
+                    'search' => lang('search'),
+                    'channel' => lang('channel'),
+                    'remove' => lang('remove'),
+                ];
+
+                $settings = array(
+                    'channels' => $this->settings['channels'],
+                    'categories' => $this->settings['categories'],
+                    'statuses' => $this->settings['statuses'],
+                    'limit' => $this->settings['limit'] ? $this->settings['limit'] : 100,
+                    'order_field' => $this->settings['orderby'],
+                    'order_dir' => $this->settings['sort'],
+                    'authors' => [],
+                    'expired' => '',
+                    'future' => '',
+                    'entry_id' => '',
+                );
+                $settings = json_encode($settings);
+                $settings = ee('Encrypt')->encode(
+                    $settings,
+                    ee()->config->item('session_crypt_key')
+                );
+
+                //  Multiple choice Relationship field
+                $data = array(
+                    'var_type' => $this->info['name'],
+                    'name' => $this->input_name(),
+                    'value' => $selected,
+                    'multiple' => true,
+                    'limit' => $this->settings('limit'),
+                    'channels' => $channels_arr,
+                    'items' => $items,
+                    'lang' => $lang,
+                    'filter_url' => ee('CP/URL')->make('publish/relationship-filter', [
+                        'settings' => $settings
+                    ])->compile(),
+                );
+            } else {
+
+                //  Multiple choice Select
+                $data = array(
+                    'name' => $this->input_name(),
+                    'choices' => $choices,
+                    'value' => PVUI::explode($this->settings('separator'), $var_data),
+                    'multiple' => true
+                );
+            }
 
             return array(array(
                 'type' => 'html',
                 'content' => PVUI::view_field($this->settings('multi_interface'), $data)
             ));
         }
+
     }
 
     // --------------------------------------------------------------------
