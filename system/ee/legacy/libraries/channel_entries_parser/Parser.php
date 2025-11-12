@@ -203,11 +203,13 @@ class EE_Channel_data_parser
 
             $this->_count = $count;
 
+            $row['index'] = $count;
             $row['count'] = $count + 1;
             $row['reverse_count'] = $total_results - $row['count'] + 1;
             $row['page_uri'] = '';
             $row['page_url'] = '';
             $row['total_results'] = $total_results;
+            $row['absolute_index'] = $absolute_offset + $row['index'];
             $row['absolute_count'] = $absolute_offset + $row['count'];
             $row['absolute_results'] = ($absolute_results === null) ? $total_results : $absolute_results;
             $row['absolute_reverse_count'] = $row['absolute_results'] - $row['absolute_count'] + 1;

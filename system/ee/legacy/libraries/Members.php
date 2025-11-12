@@ -247,6 +247,10 @@ class Members
             $types[] = '.webp';
         }
 
+        if (defined('IMAGETYPE_AVIF')) {
+            $types[] = '.avif';
+        }
+
         if (! in_array(strtolower($extension), $types)) {
             if (REQ == 'CP') {
                 show_error(lang('invalid_image_type'));

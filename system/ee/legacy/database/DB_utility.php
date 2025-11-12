@@ -184,6 +184,9 @@ class CI_DB_utility extends CI_DB_forge
         // Next blast through the result array and build out the rows
         foreach ($query->result_array() as $row) {
             foreach ($row as $item) {
+                if (is_null($item)) {
+                    $item = '';
+                }
                 $out .= $enclosure . str_replace($enclosure, $enclosure . $enclosure, $item) . $enclosure . $delim;
             }
             $out = rtrim($out);

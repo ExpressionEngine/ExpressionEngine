@@ -169,7 +169,8 @@
     content: fa-content($fa-var-list-ol);
   }
 }
-.markItUp .html-underline a {
+.markItUp .html-underline a,
+.markItUp .html-ins a {
   &:before{
     content: fa-content($fa-var-underline);
   }

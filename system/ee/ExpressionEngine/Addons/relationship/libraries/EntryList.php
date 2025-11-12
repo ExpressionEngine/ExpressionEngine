@@ -221,6 +221,7 @@ class EntryList
                 'label' => $entry->title,
                 'instructions' => $entry->Channel->channel_title,
                 'channel_id' => $entry->Channel->channel_id,
+                'can_edit' => ($entry->author_id == ee()->session->userdata('member_id')) ? ee('Permission')->has('can_edit_self_entries_channel_id_' . $entry->channel_id) : ee('Permission')->has('can_edit_other_entries_channel_id_' . $entry->channel_id),
                 'editable' => (ee('Permission')->isSuperAdmin() || array_key_exists($entry->Channel->getId(), ee()->session->userdata('assigned_channels'))),
                 'status' => $entry->status
             ];

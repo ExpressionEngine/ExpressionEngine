@@ -24,7 +24,7 @@
 				<div class="list-item__content">
 					<div style="margin-bottom: 20px;">
 						<b><?=lang('date_logged')?>:</b> <?=$localize->human_time($log->log_date->getTimestamp())?>,
-						<b><?=lang('username')?>:</b> <?php if (!empty($log->member_id)) : ?><a href="<?=ee('CP/URL')->make('myaccount', array('id' => $log->member_id))?>"><?=$log->Member->username?></a><?php else: echo lang('anonymous'); endif; ?><?php if ($log->ip_address) : ?>,
+						<b><?=lang('username')?>:</b> <?php if (!empty($log->member_id)) : ?><a href="<?=ee('CP/URL')->make('members/profile', array('id' => $log->member_id))?>"><?=$log->Member->username?></a><?php else: echo lang('anonymous'); endif; ?><?php if ($log->ip_address) : ?>,
 						<b><?=lang('ip_address')?>:</b> <?=$log->ip_address?>
 						<br />
 						<b><?=lang('user_agent')?>:</b> <?=$log->user_agent?><?php endif; ?>
