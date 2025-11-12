@@ -440,7 +440,13 @@ class Channel_form_lib
 
                     $this->parse_variables[$match[0]] = (array_key_exists($match[1], $this->custom_fields)) ? $this->encode_ee_tags($this->display_field($match[1])) : '';
                 } elseif (preg_match('/^label:(.*)$/', $key, $match)) {
-                    $this->parse_variables[$match[0]] = (array_key_exists($match[1], $this->custom_fields)) ? $this->custom_fields[$match[1]]->field_label : '';
+                    if ($match[1] == 'title') {
+                        $this->parse_variables[$match[0]] = $this->channel('title_field_label');
+                    } elseif (array_key_exists($match[1], $this->custom_fields)) {
+                        $this->parse_variables[$match[0]] = $this->custom_fields[$match[1]]->field_label;
+                    } else {
+                        $this->parse_variables[$match[0]] = '';
+                    }
                 } elseif (
                     preg_match('/^selected_option:(.*?)(:label)?$/', $key, $match) &&
                     ($field_type_match = $this->get_field_type($match[1])) &&
@@ -462,7 +468,14 @@ class Channel_form_lib
 
                     $this->parse_variables[$match[0]] = $selected_option;
                 } elseif (preg_match('/^instructions:(.*)$/', $key, $match)) {
-                    $this->parse_variables[$match[0]] = (array_key_exists($match[1], $this->custom_fields)) ? $this->custom_fields[$match[1]]->field_instructions : '';
+                    if ($match[1] == 'title') {
+                        $this->parse_variables[$match[0]] = $this->channel('title_field_instructions');
+                    } elseif (array_key_exists($match[1], $this->custom_fields)) {
+                        // use fieldtype instructions
+                        $this->parse_variables[$match[0]] = $this->custom_fields[$match[1]]->field_instructions;
+                    } else {
+                        $this->parse_variables[$match[0]] = '';
+                    }
                 } elseif (preg_match('/^error:(.*)$/', $key, $match)) {
                     $this->parse_variables[$match[0]] = (! empty($this->field_errors[$match[1]])) ? $this->field_errors[$match[1]] : '';
                 } else {
@@ -557,6 +570,9 @@ class Channel_form_lib
                 $this->parse_variables['expiration_timestamp'] = '';
                 $this->parse_variables['comment_expiration_timestamp'] = '';
             }
+
+            $this->parse_variables['label:title'] = $this->channel('title_field_label');
+            $this->parse_variables['instructions:title'] = $this->channel('title_field_instructions');
 
             foreach ($this->custom_fields as $field) {
                 foreach (ee()->TMPL->var_pair as $tag_pair_open => $tagparams) {
@@ -1040,7 +1056,7 @@ GRID_FALLBACK;
                 'text_direction' => $field->getSetting('field_text_direction'),
                 'field_data' => $this->entry($field->getName()),
                 'rows' => $field->getSetting('field_ta_rows'),
-                'maxlength' => $field->getSetting('field_maxl'),
+                'maxlength' => $field->getSetting('field_maxl') ?: '',
                 'formatting_buttons' => '',
                 'field_show_formatting_btns' => ($field->getSetting('field_show_formatting_btns') == 'y') ? 1 : 0,
                 'textinput' => 0,
@@ -1130,8 +1146,17 @@ GRID_FALLBACK;
             $conditional_errors['field_errors'] = array();
 
             foreach ($this->field_errors as $field => $error) {
-                $conditional_errors['field_errors'][] = array('field' => $field, 'error' => $error);
+                if (strpos($field, 'field_id_') === 0) {
+                    $fieldId = str_replace('field_id_', '', $field);
+                    $fieldName = array_key_exists($fieldId, $this->custom_field_names) ? $this->custom_field_names[$fieldId] : $field;
+                } else {
+                    $fieldName = $field;
+                }
+                $label = array_key_exists($fieldName, $this->custom_fields) ? $this->custom_fields[$fieldName]->field_label : lang($field);
+
+                $conditional_errors['field_errors'][$fieldName] = array('field' => $label, 'error' => $error);
             }
+            $conditional_errors['field_errors'] = array_values($conditional_errors['field_errors']);
         }
 
         $conditional_errors['field_errors:count'] = count($this->field_errors);
@@ -1704,11 +1729,11 @@ GRID_FALLBACK;
      */
     public function bool_string($string, $default = false)
     {
-        if (preg_match('/true|t|yes|y|on|1/i', $string)) {
+        if (preg_match('/true|t|yes|y|on|1/i', (string) $string)) {
             return true;
         }
 
-        if (preg_match('/false|f|no|n|off|0/i', $string)) {
+        if (preg_match('/false|f|no|n|off|0/i', (string) $string)) {
             return false;
         }
 
@@ -2971,7 +2996,7 @@ GRID_FALLBACK;
     public function unserialize($data, $base64_decode = false)
     {
         if ($base64_decode) {
-            $data = base64_decode($data);
+            $data = base64_decode((string) $data);
         }
 
         $data = @unserialize($data);

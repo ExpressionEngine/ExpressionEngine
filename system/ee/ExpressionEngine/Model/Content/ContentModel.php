@@ -156,7 +156,7 @@ abstract class ContentModel extends VariableColumnModel
     /**
      * Get the layout for this content.
      */
-    public function getDisplay(LayoutInterface $layout = null)
+    public function getDisplay(?LayoutInterface $layout = null)
     {
         $this->usesCustomFields();
 

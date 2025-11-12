@@ -28,7 +28,7 @@ Read [Installing ExpressionEngine](https://docs.expressionengine.com/latest/inst
 ### If you're installing from the repository:
 1. Create a database
 2. Clone repo into your site's root directory or clone locally and upload files.
-3. Run `composer install`
+3. Run `composer install` (PHP 8.2+ required to install dependencies)
 4. Verify file permissions
 5. add an empty config file, e.g. `touch system/user/config/config.php`
 6. route requests to the installer app instead of the main app by changing `EE_INSTALL_MODE` to `TRUE` in [.env.php](.env.php). You can change this back when you're done.

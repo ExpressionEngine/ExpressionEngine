@@ -720,7 +720,7 @@ class Fields extends AbstractFieldsController
         return $field;
     }
 
-    private function form(ChannelField $field = null)
+    private function form(?ChannelField $field = null)
     {
         ee()->lang->load('pro');
         if (! $field) {

@@ -262,6 +262,11 @@ else: ?>
                     <th class="grid-field__column-remove"></th>
                 <?php endif;
 
+                if(isset($row_counter) && $row_counter): ?>
+                    <th class="row-counter-column"></th>
+                <?php
+                endif;
+
                 if (isset($vertical_layout)): ?>
                     <th class="hidden"></th>
                 <?php endif;
@@ -344,6 +349,11 @@ else: ?>
                 </p>
             </td></tr>
             <?php $i = 1;
+            $dataRowCounter = '';
+            $rowCounterNumber = '';
+            if (isset($row_counter) && $row_counter){
+                $row_count = 0;
+            }
             foreach ($data as $heading => $rows): ?>
                 <?php if (! $subheadings) {
                 $rows = array($rows);
@@ -358,8 +368,23 @@ else: ?>
                         $row_class = $row['attrs']['class'];
                         unset($row['attrs']['class']);
                     }
+
+                    if (isset($row_counter) && $row_counter){
+                        if (empty($row_class)) {
+                            $row_count++;
+                            $dataRowCounter = 'data-row-counter="' . $row_count . '"';
+                            $rowCounterNumber = $row_count;
+                        }
+                    }
+
                 ?>
-                    <tr class="<?=$row_class?>" <?php foreach ($row['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
+
+                    <tr class="<?=$row_class?>" <?php foreach ($row['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?> <?=$dataRowCounter?>>
+
+                        <?php if (isset($row_counter) && $row_counter): ?>
+                            <td class="row-counter-column body-row-counter-column js-row-counter-column"><span><?=$rowCounterNumber?></span></td>
+                        <?php endif; ?>
+
                         <?php if (isset($vertical_layout)): ?>
                             <td class="grid-field__column--tools">
                                 <div class="grid-field__column-tools">

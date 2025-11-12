@@ -13,7 +13,7 @@
  */
 class Wizard extends CI_Controller
 {
-    public $version = '7.5.7'; // The version being installed
+    public $version = '7.5.17'; // The version being installed
     public $installed_version = '';  // The version the user is currently running (assuming they are running EE)
     public $schema = null; // This will contain the schema object with our queries
     public $languages = array(); // Available languages the installer supports (set dynamically based on what is in the "languages" folder)
@@ -231,7 +231,12 @@ class Wizard extends CI_Controller
         $this->load->add_theme_cascade(APPPATH . 'views/');
 
         // First try the current directory, if they are running the system with an admin.php file
-        $this->base_path = substr($_SERVER['SCRIPT_FILENAME'], 0, -strlen(EESELF));
+        if (strpos($_SERVER['SCRIPT_FILENAME'], EESELF) !== false) {
+            $this->base_path = substr($_SERVER['SCRIPT_FILENAME'], 0, -strlen(EESELF));
+        } else {
+            $this->base_path = realpath(SYSPATH . '/../');
+        }
+        $this->base_path = rtrim($this->base_path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 
         if (is_dir($this->base_path . 'themes')) {
             $this->theme_path = $this->base_path . 'themes/';

@@ -708,7 +708,7 @@ class Member extends ContentModel
     /**
      * Modify the default layout for member fields
      */
-    public function getDisplay(LayoutInterface $layout = null)
+    public function getDisplay(?LayoutInterface $layout = null)
     {
         $layout = $layout ?: new MemberFieldLayout();
 
