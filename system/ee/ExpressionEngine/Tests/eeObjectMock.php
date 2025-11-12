@@ -129,6 +129,12 @@ class eeSingletonLoadMock
     {
         return;
     }
+
+    public function get_package_paths($include_base = true)
+    {
+        // Return empty array for testing - no additional package paths needed
+        return [];
+    }
 }
 
 class eeSingletonConfigMock
