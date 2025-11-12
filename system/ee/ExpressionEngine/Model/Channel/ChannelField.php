@@ -95,8 +95,8 @@ class ChannelField extends FieldModel
 
     protected static $_validation_rules = array(
         'site_id' => 'required|integer',
-        'field_name' => 'required|alphaDash|unique|validateNameIsNotReserved|maxLength[32]',
-        'field_label' => 'required|maxLength[50]',
+        'field_name' => 'required|alphaDash|unique|validateNameIsNotReserved|maxLength[32]|validateUniqueAmongFieldGroups',
+        'field_label' => 'required|xss|noHtml|maxLength[50]',
         'field_type' => 'validateIsCompatibleWithPreviousValue',
         //	'field_list_items'     => 'required',
         'field_pre_populate' => 'enum[y,n,v]',
@@ -184,6 +184,24 @@ class ChannelField extends FieldModel
         $this->setProperty('field_settings', $field->saveSettingsForm($data));
 
         return $this;
+    }
+
+    /**
+     * Overridable setter for unserialization
+     *
+     * @param Mixed $data Data returned from `getSerializedData`
+     * @return void
+     */
+    public function setSerializeData($data)
+    {
+        // Make sure that field_settings are set back on the root $data array that gets set() on this model and
+        // ultimately goes to a fieldtype's save_settings($data) method.  The fieldtype is not expecting the
+        // settings to be nested under a 'field_settings' key at this point
+        if (array_key_exists('field_settings', $data['values'] ?? []) && is_array($data['values']['field_settings'])) {
+            $data['values'] = array_merge($data['values']['field_settings'], $data['values']);
+        }
+
+        parent::setSerializeData($data);
     }
 
     public function onBeforeInsert()
@@ -315,12 +333,37 @@ class ChannelField extends FieldModel
     }
 
     /**
-     * Validate the field name to avoid variable name collisions
+     * The field name must not intersect witch Field Group short names
+     *
      */
-    public function validateNameIsNotReserved($key, $value, $params, $rule)
+    public function validateUniqueAmongFieldGroups($key, $value, array $params = array())
     {
-        if (in_array($value, ee()->cp->invalid_custom_field_names())) {
-            return lang('reserved_word');
+        // Check to see if we can find a channel field that matches the short name
+        $channelFieldGroups = $this->getModelFacade()
+            ->get('ChannelFieldGroup')
+            ->filter('short_name', $value);
+
+        // Make sure group short name is unique among channel fields
+        foreach ($params as $field) {
+            $channelFieldGroups->filter($field, $this->getProperty($field));
+        }
+
+        // If there are any matches, return the lang key of the error
+        if ($channelFieldGroups->count() > 0) {
+            return 'unique_among_field_groups';
+        }
+
+        // check member fields
+        $unique = $this->getModelFacade()
+            ->get('MemberField')
+            ->filter('m_' . $key, $value);
+
+        foreach ($params as $field) {
+            $unique->filter('m_' . $field, $this->getProperty($field));
+        }
+
+        if ($unique->count() > 0) {
+            return 'unique_among_member_fields'; // lang key
         }
 
         return true;

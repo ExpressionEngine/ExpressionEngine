@@ -19,16 +19,35 @@
     },
     "require": {
         "php": "^7.2 || ^8.0",
-        "league/flysystem": "^1.0",
-        "vlucas/phpdotenv": "4.*",
+        "expressionengine/flysystem": "1.x-dev",
+        "vlucas/phpdotenv": "5.*",
         "sabberworm/php-css-parser": "^8.4",
         "bamarni/composer-bin-plugin": "^1.5",
-        "expressionengine/flysystem-cached-adapter": "^1.1"
+        "expressionengine/flysystem-cached-adapter": "dev-master",
+        "mlocati/ip-lib": "^1.18",
+        "expressionengine/bacon-qr-code": "dev-main",
+        "expressionengine/otphp": "11.4.x-dev"
     },
     "repositories": [
         {
             "type": "vcs",
+            "url": "https://github.com/ExpressionEngine/flysystem"
+        },
+        {
+            "type": "vcs",
             "url": "https://github.com/ExpressionEngine/flysystem-cached-adapter"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/ExpressionEngine/mime-type-detection"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/ExpressionEngine/otphp"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/ExpressionEngine/BaconQrCode"
         }
     ],
     "config": {
@@ -50,7 +69,8 @@
         ],
         "prefix-dependencies": [
             "vendor/bin/php-scoper add-prefix --output-dir=./system/ee/vendor-build --force --quiet",
-            "COMPOSER_VENDOR_DIR=system/ee/vendor-build composer dump-autoload"
+            "COMPOSER_VENDOR_DIR=system/ee/vendor-build composer dump-autoload",
+            "php scoper.fix.php"
         ]
     }
 }

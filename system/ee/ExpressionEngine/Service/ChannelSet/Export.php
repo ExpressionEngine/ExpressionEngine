@@ -43,10 +43,16 @@ class Export
      * @param Array $channels List of channel instances
      * @return String Path to the generated zip file
      */
-    public function zip($channels)
+    public function zip($channels, $file_name = null)
     {
         $this->zip = new ZipArchive();
-        $location = PATH_CACHE . "cset/{$channels[0]->channel_name}.zip";
+
+        if(empty($file_name)) {
+            $location = PATH_CACHE . "cset/{$channels[0]->channel_name}.zip";
+        }
+        else {
+            $location = PATH_CACHE . "cset/$file_name.zip";
+        }
 
         if (! is_dir(PATH_CACHE . 'cset/')) {
             ee('Filesystem')->mkdir(PATH_CACHE . 'cset/');
@@ -344,8 +350,15 @@ class Export
     {
         $dir = ee('Model')->get('UploadDestination', $id)->first();
 
+        if (is_null($dir)) {
+            return 'all';
+        }
+
         $result = new StdClass();
         $result->name = $dir->name;
+        $result->adapter = $dir->adapter;
+        $result->server_path = $dir->server_path;
+        $result->url = $dir->url;
 
         $this->upload_destinations[$dir->name] = $result;
 
@@ -478,8 +491,10 @@ class Export
             $result->channels = array();
 
             foreach ($settings['channels'] as $id) {
-                $channel = $this->channels[$id];
-                $result->channels[] = $channel->channel_title;
+                if (array_key_exists($id, $this->channels)) {
+                    $channel = $this->channels[$id];
+                    $result->channels[] = $channel->channel_title;
+                }
             }
         }
 

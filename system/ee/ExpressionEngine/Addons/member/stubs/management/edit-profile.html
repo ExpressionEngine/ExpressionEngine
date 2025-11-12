@@ -1,0 +1,107 @@
+{layout="<?=$template_group?>/_layout"}
+{layout:set name="title"}Edit Profile{/layout:set}
+
+{if logged_out}
+    {redirect="<?=$template_group?>/login"}
+{/if}
+
+<a href="{cp_url}?/cp/design/template/edit/{template_id}" target="_blank">View Template</a>
+
+{if last_segment == "success"}
+    <h4>Edited successfully!</h4>
+{/if}
+
+<div class="result">
+    <p>
+    {exp:member:mfa_links}
+        <h4>MFA</h4>
+        {if mfa_enabled}
+            <a href="{disable_mfa_link}">Disable MFA</a>
+        {if:else}
+            <a href="{enable_mfa_link}">Enable MFA</a>
+        {/if}
+    {/exp:member:mfa_links}
+    </p>
+    {exp:member:edit_profile
+            return="<?=$template_group?>/edit-profile/success"
+            include_assets="yes"
+            inline_errors="yes"
+            datepicker="yes"
+        }
+        {!-- You can display all errors at the top of the page or use the individual field {error:} tags shown later --}
+        {!--
+        {if errors}
+            <fieldset class="error">
+                <legend>Errors</legend>
+                {errors}
+                    <p>{error_key}: {error}</p>
+                {/errors}
+            </fieldset>
+        {/if}
+        --}
+        <p>* Required fields</p>
+        <fieldset>
+            <h4>Profile</h4>
+            <p>
+                <label for="username">Username*:</label><br />
+                <input type="text" name="username" id="username" value="{if old:username}{old:username}{if:else}{username}{/if}" /><br />
+                {if error:username}
+                    <span class="error">{error:username}</span>
+                {/if}
+            </p>
+
+            <p>
+                <label for="email">Email:</label><br />
+                <input type="text" name="email" id="email" value="{if old:email}{old:email}{if:else}{email}{/if}" /><br />
+                {if error:email}
+                    <span class="error">{error:email}</span>
+                {/if}
+            </p>
+
+            <p>
+                <label for="password">Password:</label><br />
+                <input type="password" name="password" id="password" value="" />
+                {if error:password}
+                    <span class="error">{error:password}</span>
+                {/if}
+            </p>
+
+            <p>
+                <label for="password_confirm">Confirm password*:</label><br />
+                <input type="password" name="password_confirm" id="password_confirm" value="" />
+                {if error:password_confirm}
+                    <span class="error">{error:password_confirm}</span>
+                {/if}
+            </p>
+
+            <p>
+                <label for="current_password">Current password*:</label><br />
+                <em>You <b>must</b> enter your current password to change your password, username or email.</em>
+                <input type="password" name="current_password" id="current_password" value="" />
+                {if error:current_password}
+                    <span class="error">{error:current_password}</span>
+                {/if}
+            </p>
+
+
+            {custom_profile_fields}
+            <p>
+                <label>{lang:profile_field}</label><br>
+                {if lang:profile_field_description}
+                    <small>{lang:profile_field_description}</small><br>
+                {/if}
+
+                {form:custom_profile_field}
+                {if has_error}
+                    <span class="error">{error}</span>
+                {/if}
+
+            </p>
+            {/custom_profile_fields}
+
+            <input type="submit" value="Save" class="btn btn-primary" />
+
+        </fieldset>
+    {/exp:member:edit_profile}
+</div>
+

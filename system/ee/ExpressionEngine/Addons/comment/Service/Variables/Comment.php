@@ -386,7 +386,7 @@ class Comment extends Variables
                 return true;
             }
 
-            $time_limit_sec = 60 * ee()->config->item('comment_edit_time_limit');
+            $time_limit_sec = 60 * (int) ee()->config->item('comment_edit_time_limit');
 
             return $this->comment->comment_date > (ee()->localize->now - $time_limit_sec);
         }

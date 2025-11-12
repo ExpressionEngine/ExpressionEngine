@@ -108,6 +108,11 @@ class EntryListing
     protected $channels;
 
     /**
+     * @var array $category_options Category options for the category filter
+     */
+    protected $category_options = array();
+
+    /**
      * Constructor
      * @param int $site_id Current site ID
      * @param boolean $is_admin Whether or not a Super Admin is making this
@@ -175,10 +180,14 @@ class EntryListing
     {
         static $channel = null;
 
-        if (is_null($channel)
+        if (
+            is_null($channel)
             && $this->channel_filter
-            && $this->channel_filter->value()) {
+            && $this->channel_filter->value()
+        ) {
             $channel = ee('Model')->get('Channel', $this->channel_filter->value())
+                ->with('CategoryGroups')
+                ->all()
                 ->first();
         }
 
@@ -285,10 +294,9 @@ class EntryListing
             } else {
                 show_error(lang('unauthorized_access'), 403);
             }
-        }
-        // If we have no selected channel filter, and we are not an admin, we
-        // need to filter via WHERE IN
-        else {
+        } else {
+            // If we have no selected channel filter, and we are not an admin, we
+            // need to filter via WHERE IN
             if (! $this->is_admin) {
                 if (empty($this->allowed_channels)) {
                     show_error(lang('no_channels'));
@@ -307,48 +315,58 @@ class EntryListing
             $entries->filter('status', $this->status_filter->value());
         }
 
-        if (! empty($this->author_filter) && $this->author_filter->value()) {
+        // if the user has no 'other entries' permissions at all
+        // or if they are viewing a channel where they have "own" permissions only
+        // then restrict to their own entries
+        if (
+            (!empty($channel_id) && !ee('Permission')->has('can_edit_other_entries_channel_id_' . $channel_id)) ||
+            !ee('Permission')->hasAny('can_edit_other_entries')
+        ) {
+            $entries->filter('author_id', ee()->session->userdata('member_id'));
+        } elseif (! empty($this->author_filter) && $this->author_filter->value()) {
             $entries->filter('author_id', $this->author_filter->value());
         }
 
         if (! empty($this->search_value)) {
-            // setup content fields to use in search
-            $content_fields = [];
-            if (isset($channel)) {
-                $custom_fields = $channel->getAllCustomFields();
-            } else {
-                $custom_fields = array();
-
-                foreach ($this->getChannels() as $channel) {
-                    $custom_fields = array_merge($custom_fields, $channel->getAllCustomFields()->asArray());
-                }
-            }
-
-            foreach ($custom_fields as $cf) {
-                $content_fields[] = 'field_id_' . $cf->getId();
-            }
-
-            $search_fields = [];
-
-            switch ($this->search_in) {
-                case 'titles_and_content':
-                    $search_fields = array_merge(['title', 'url_title', 'entry_id'], $content_fields);
-
-                    break;
-                case 'content':
-                    $search_fields = $content_fields;
-
-                    break;
-                case 'titles':
-                    $search_fields = ['title', 'url_title', 'entry_id'];
-
-                    break;
-            }
-
             if (is_numeric($this->search_value) && strlen($this->search_value) < 3) {
                 $entries->filter('entry_id', $this->search_value);
             } else {
-                $entries->search($search_fields, $this->search_value);
+                // setup content fields to use in search
+                $content_fields = [];
+                if ($this->search_in == 'titles_and_content' || $this->search_in == 'content') {
+                    if (!empty($channel)) {
+                        $custom_fields = $channel->getAllCustomFields();
+                    } else {
+                        $custom_fields = array();
+
+                        foreach ($this->getChannels() as $channel) {
+                            $custom_fields = array_merge($custom_fields, $channel->getAllCustomFields()->asArray());
+                        }
+                    }
+
+                    foreach ($custom_fields as $cf) {
+                        $content_fields[] = 'field_id_' . $cf->getId();
+                    }
+                }
+
+                $search_fields = [];
+
+                switch ($this->search_in) {
+                    case 'titles_and_content':
+                        $search_fields = array_merge(['title', 'url_title', 'entry_id'], $content_fields);
+
+                        break;
+                    case 'content':
+                        $search_fields = $content_fields;
+
+                        break;
+                    case 'titles':
+                        $search_fields = ['title', 'url_title', 'entry_id'];
+
+                        break;
+                }
+
+                $entries->search(array_unique($search_fields), $this->search_value);
             }
         }
 
@@ -367,19 +385,29 @@ class EntryListing
     }
 
     /**
-     * Creates an author filter
+     * Create an author filter for entry listings.
+     *
+     * Builds a filter of authors who have authored entries in the specified channel,
+     * or all authors if no channel is provided. The current user is placed at the top
+     * of the list for convenience.
+     *
+     * @param \ExpressionEngine\Model\Channel|null $channel Channel model to filter authors by, or null for all channels
+     * @return \ExpressionEngine\Library\CP\Filter Author filter object
      */
-    private function createAuthorFilter($channel_id = null)
+    private function createAuthorFilter($channel = null)
     {
-        $db = ee('db')->distinct()
-            ->select('t.author_id, m.screen_name, m.username')
-            ->from('channel_titles t')
-            ->join('members m', 'm.member_id = t.author_id', 'LEFT')
-            ->order_by('screen_name', 'asc');
+        // It is more performant to query the members table and filter by having at least one channel_title authored
+        // than to do a distinct query on author_id across a potentially very large channel_titles table.
+        $where = 'SELECT count(t.entry_id) FROM '. ee()->db->dbprefix('channel_titles').' t WHERE t.author_id = m.member_id';
 
-        if ($channel_id) {
-            $db->where('channel_id', $channel_id->channel_id);
+        if ($channel) {
+            $where .= ' AND t.channel_id = '. (int) $channel->channel_id;
         }
+
+        $db = ee('db')->select('m.member_id as author_id, m.screen_name, m.username')
+                ->from('members m')
+                ->where("($where) > 0")
+                ->order_by('screen_name', 'asc');
 
         $authors_query = $db->get();
 
@@ -433,7 +461,7 @@ class EntryListing
      */
     protected function getChannels()
     {
-        if (! isset($this->channels)) {
+        if (empty($this->channels)) {
             $allowed_channel_ids = ($this->is_admin) ? null : $this->allowed_channels;
             $this->channels = ee('Model')->get('Channel', $allowed_channel_ids)
                 ->fields('channel_id', 'channel_title')
@@ -450,28 +478,48 @@ class EntryListing
      */
     private function createCategoryFilter($channel = null)
     {
-        $cat_id = ($channel) ? explode('|', (string) $channel->cat_group) : null;
+        ee()->load->library('datastructures/tree');
 
-        $category_groups = ee('Model')->get('CategoryGroup', $cat_id)
-            ->with('Categories')
-            ->filter('site_id', ee()->config->item('site_id'))
-            ->filter('exclude_group', '!=', 1)
-            ->all();
+        if (is_null($channel)) {
+            $category_groups = ee('Model')->get('CategoryGroup')
+                ->filter('site_id', ee()->config->item('site_id'))
+                ->filter('exclude_group', '!=', 1)
+                ->order('group_name', 'asc')
+                ->all();
+        } else {
+            $category_groups = $channel->CategoryGroups;
+        }
 
-        $category_options = array();
         foreach ($category_groups as $group) {
-            $sort_column = ($group->sort_order == 'a') ? 'cat_name' : 'cat_order';
-            foreach ($group->Categories->sortBy($sort_column) as $category) {
-                $category_options[$category->cat_id] = $category->cat_name;
+            $tree = $group->getCategoryTree(ee()->tree);
+            // If there are multiple categories add the Category Group name as a header to the filter options
+            if ($category_groups->count() > 1) {
+                $this->category_options['group_' . $group->group_id] = ['type'  => 'header', 'label' => $group->group_name];
+            }
+            foreach ($tree->children() as $category) {
+                $this->setCategoryOptions($category);
             }
         }
 
-        $categories = ee('CP/Filter')->make('filter_by_category', 'filter_by_category', $category_options);
+        $categories = ee('CP/Filter')->make('filter_by_category', 'filter_by_category', $this->category_options);
         $categories->setPlaceholder(lang('filter_categories'));
         $categories->setLabel(lang('category'));
         $categories->useListFilter(); // disables custom values
 
         return $categories;
+    }
+
+    /**
+     * Recursively sets category options for the category filter
+     */
+    private function setCategoryOptions($category)
+    {
+        $this->category_options[$category->data->cat_id] = str_repeat('-- ', $category->depth() - 1) . $category->data->cat_name;
+        if (count($category->children())) {
+            foreach ($category->children() as $subcategory) {
+                $this->setCategoryOptions($subcategory);
+            }
+        }
     }
 
     /**

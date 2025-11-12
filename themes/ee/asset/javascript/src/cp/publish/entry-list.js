@@ -157,7 +157,9 @@ $(document).ready(function () {
 
 		var search = $('input[name="filter_by_keyword"]').serialize();
 
-		searchEntries('GET', $(this).attr('href') + '&' + search)
+		if (typeof($(this).attr('href'))!='undefined' && $(this).attr('href')!='' && $(this).attr('href')!='#') {
+			searchEntries('GET', $(this).attr('href') + '&' + search)
+		}
 
 		event.preventDefault();
 	});
@@ -470,6 +472,15 @@ $(document).ready(function () {
 					'transform': 'none',
 					'background-color': 'transparent'
 				});
+			}
+		});
+	}
+
+	if ( $('.member_manager-wrapper tbody').length) {
+		// deselect row when clicking on toolbar
+		$('body').on('click', '.member_manager-wrapper tbody tr td.app-listing__cell .button-toolbar', function(e) {
+			if ($(this).parents('tr').hasClass('selected')) {
+				$(this).parents('tr').children('td:last-child').children('input[type=checkbox]').click();
 			}
 		});
 	}

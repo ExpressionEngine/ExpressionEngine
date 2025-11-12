@@ -42,6 +42,7 @@ class Channel extends StructureModel
         'enable_versioning' => 'boolString',
         'search_excerpt' => 'int',
         'conditional_sync_required' => 'boolString',
+        'enforce_auto_url_title' => 'boolString',
     );
 
     protected static $_relationships = array(
@@ -60,6 +61,18 @@ class Channel extends StructureModel
                 'table' => 'channels_statuses'
             ),
             'weak' => true,
+        ),
+        'CategoryGroups' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'CategoryGroup',
+            'pivot' => array(
+                'table' => 'channel_category_groups',
+                'left' => 'channel_id',
+                'right' => 'group_id'
+            )
+        ),
+        'CategoryGroupSettings' => array(
+            'type' => 'hasMany'
         ),
         'CustomFields' => array(
             'type' => 'hasAndBelongsToMany',
@@ -142,6 +155,7 @@ class Channel extends StructureModel
         'search_results_url' => 'xss',
         'rss_url' => 'xss',
         'default_entry_title' => 'xss',
+        'enforce_auto_url_title' => 'enum[y,n]',
         'url_title_prefix' => 'alphaDash|xss',
         'channel_notify_emails' => 'validateEmails',
         'comment_notify_emails' => 'validateEmails',
@@ -212,10 +226,16 @@ class Channel extends StructureModel
     protected $title_field_label;
     protected $title_field_instructions;
     protected $url_title_prefix;
+    protected $enforce_auto_url_title;
     protected $max_entries;
     protected $preview_url;
     protected $allow_preview = true;
     protected $conditional_sync_required = false;
+
+    public function get__channel_title()
+    {
+        return ee('Security/XSS')->clean($this->getRawProperty('channel_title'));
+    }
 
     /**
      * Custom validation callback to validate a comma-separated list of email
@@ -266,11 +286,6 @@ class Channel extends StructureModel
      */
     public function __get($name)
     {
-        // Fake the CategoryGroups relationship since it's stored weird
-        if ($name == 'CategoryGroups') {
-            return $this->getCategoryGroups();
-        }
-
         $value = parent::__get($name);
 
         if (in_array($name, array('channel_url', 'comment_url', 'search_results_url', 'rss_url'))) {
@@ -335,7 +350,7 @@ class Channel extends StructureModel
 
                     break;
                 case 'deft_category':
-                    if (! isset($this->cat_group) or count(array_diff(explode('|', (string) $this->cat_group), explode('|', (string) $channel->cat_group))) == 0) {
+                    if (empty($this->CategoryGroups) or count(array_diff($this->CategoryGroups->pluck('group_id'), $channel->CategoryGroups->pluck('group_id'))) == 0) {
                         $this->setRawProperty($property, $channel->{$property});
                     }
 
@@ -347,7 +362,7 @@ class Channel extends StructureModel
             }
         }
 
-        foreach (['FieldGroups', 'CustomFields', 'Statuses', 'ChannelFormSettings'] as $rel) {
+        foreach (['FieldGroups', 'CustomFields', 'Statuses', 'ChannelFormSettings', 'CategoryGroups'] as $rel) {
             if ($channel->$rel) {
                 $this->$rel = clone $channel->$rel;
             }
@@ -409,7 +424,7 @@ class Channel extends StructureModel
     {
         $cat_groups = array();
 
-        foreach (explode('|', (string) $this->cat_group) as $group_id) {
+        foreach ($this->CategoryGroups->pluck('group_id') as $group_id) {
             $cat_groups['categories[cat_group_id_' . $group_id . ']'] = true;
         }
 
@@ -430,10 +445,8 @@ class Channel extends StructureModel
                         // Is it already accounted for?
                         if (in_array($field_name, array_keys($cat_groups))) {
                             unset($cat_groups[$field_name]);
-                        }
-
-                        // If not, it was removed and needs to be deleted
-                        else {
+                        } else {
+                            // If not, it was removed and needs to be deleted
                             unset($field_layout[$i]['fields'][$j]);
 
                             // Re-index to ensure flat, zero-indexed array
@@ -535,9 +548,7 @@ class Channel extends StructureModel
 
     public function getCategoryGroups()
     {
-        $groups = explode('|', (string) $this->cat_group);
-
-        return $this->getModelFacade()->get('CategoryGroup', $groups)->all();
+        return $this->CategoryGroups;
     }
 
     /**
@@ -581,7 +592,7 @@ class Channel extends StructureModel
     public function getAllCustomFields()
     {
         $cache_key = "ChannelCustomFields/{$this->getId()}/";
-        if (($fields = ee()->session->cache(__CLASS__, $cache_key, false)) === false) {
+        if (!isset(ee()->session) || ($fields = ee()->session->cache(__CLASS__, $cache_key, false)) === false) {
             $fields = $this->CustomFields->indexBy('field_name');
             $field_groups = $this->FieldGroups;
 
@@ -593,7 +604,9 @@ class Channel extends StructureModel
 
             $fields = new Collection($fields);
 
-            ee()->session->set_cache(__CLASS__, $cache_key, $fields);
+            if (isset(ee()->session)) {
+                ee()->session->set_cache(__CLASS__, $cache_key, $fields);
+            }
         }
         return $fields;
     }
@@ -621,6 +634,20 @@ class Channel extends StructureModel
         ee()->session->set_cache(__CLASS__, $cache_key, $field_groups);
 
         return new Collection($fields);
+    }
+
+    protected function set__channel_notify_emails($value)
+    {
+        $value = trim($value);
+        $value = str_replace(' ', '', $value);
+        $this->setRawProperty('channel_notify_emails', $value);
+    }
+
+    protected function set__comment_notify_emails($value)
+    {
+        $value = trim($value);
+        $value = str_replace(' ', '', $value);
+        $this->setRawProperty('comment_notify_emails', $value);
     }
 
     public function maxEntriesLimitReached()

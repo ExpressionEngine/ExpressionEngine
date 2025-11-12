@@ -74,6 +74,11 @@
 		border-top: 1px solid var(--ee-border);
 	}
 
+	&.active-link {
+		background-color: color(bg-dropdown-hover);
+		color: color(text-primary);
+	}
+
 	a {
 		color: color(text-primary);
 	}
@@ -149,6 +154,19 @@
 	color: var(--ee-text-secondary);
 	font-size: 80%;
 	margin-left: 3px;
+}
+
+.dropdown__link-status-indicator {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 5px;
+    text-transform: capitalize;
+    font-size: 70%;
+    border: 1px solid transparent;
+    background: var(--ee-bg-blank);
+    padding: 0 5px;
+    border-radius: 1000px;
 }
 
 .dropdown__link-right {

@@ -24,7 +24,7 @@ class EE_Logger
     private function logger_db()
     {
         if (! isset($this->db)) {
-             // do we have the db loaded?
+            // do we have the db loaded?
             if (! isset(ee()->db)) {
                 ee()->load->database();
             }
@@ -59,8 +59,8 @@ class EE_Logger
             $this->logger_db()->insert_string(
                 'exp_cp_log',
                 array(
-                    'member_id' => ee()->session->userdata('member_id'),
-                    'username' => ee()->session->userdata['username'],
+                    'member_id' => $this->getMemberId(),
+                    'username' => $this->getUsername(),
                     'ip_address' => ee()->input->ip_address(),
                     'act_date' => ee()->localize->now,
                     'action' => $action,
@@ -548,6 +548,27 @@ class EE_Logger
             ee()->dbforge->create_table($table);
         }
     }
+
+    protected function getUsername()
+    {
+        // Do not use the session library if running from the CLI
+        if (defined('REQ') && REQ === 'CLI') {
+            return 'CLI Command';
+        } else {
+            return ee()->session->userdata['username'];
+        }
+    }
+
+    protected function getMemberId()
+    {
+        // Do not use the session library if running from the CLI
+        if (defined('REQ') && REQ === 'CLI') {
+            return 0;
+        } else {
+            return ee()->session->userdata('member_id');
+        }
+    }
+
 }
 // END CLASS
 

@@ -15,6 +15,16 @@ use ExpressionEngine\Library\CP\FileManager\ColumnFactory;
 
 trait FileManagerTrait
 {
+    protected $searchableFields = [
+        'credit',
+        'description',
+        'file_id',
+        'file_name',
+        'location',
+        'mime_type',
+        'title',
+    ];
+
     protected function listingsPage($uploadLocation = null, $view_type = 'list', $filepickerMode = false)
     {
         $vars = array();
@@ -57,10 +67,10 @@ trait FileManagerTrait
 
         $files = ee('Model')->get($model)
             // ->fields($model . '.*', 'UploadDestination.server_path', 'UploadDestination.url');
-            ->with('UploadDestination');
+            ->with('UploadDestination')
+            ->filter('site_id', 'IN', [0, ee()->config->item('site_id')]);
         if (empty($upload_location_id)) {
-            $files->filter('UploadDestination.module_id', 0)
-                ->filter('site_id', ee()->config->item('site_id'));
+            $files->filter('UploadDestination.module_id', 0);
             if (! ee('Permission')->isSuperAdmin()) {
                 $assigned_dirs = $member->getAssignedUploadDestinations()->pluck('id');
                 $files->filter('upload_location_id', 'IN', $assigned_dirs);
@@ -70,11 +80,10 @@ trait FileManagerTrait
         }
 
         //limit to subfolder, show breadcrumbs
+        $breadcrumbs = [];
         if (! empty($uploadLocation)) {
             $directory_id = (int) ee('Request')->get('directory_id');
-            $files->filter('directory_id', $directory_id);
             if (! empty(ee('Request')->get('directory_id'))) {
-                $breadcrumbs = [];
                 do {
                     $directory = ee('Model')->get('Directory', $directory_id)->fields('file_id', 'directory_id', 'title')->first();
                     $directory_id = $directory->directory_id;
@@ -85,9 +94,9 @@ trait FileManagerTrait
                         }
                         $params['field_upload_locations'] = $field_upload_locations;
                     }
-                    $breadcrumbs[ee('CP/URL')->make($controller, $params)->compile()] = $directory->title;
+                    $breadcrumbs[] = [ee('CP/URL')->make($controller, $params), $directory->title];
                 } while ($directory->directory_id != 0);
-                $vars['breadcrumbs'] = array_merge([$base_url->compile() => $uploadLocation->name], array_reverse($breadcrumbs));
+                $breadcrumbs[] = [clone $base_url, $uploadLocation->name];
                 $base_url->setQueryStringVariable('directory_id', (int) ee('Request')->get('directory_id'));
             }
         } elseif (bool_config_item('file_manager_compatibility_mode')) {
@@ -122,25 +131,35 @@ trait FileManagerTrait
         }
 
         $filters->add('FileManagerColumns', $this->createColumnFilter($uploadLocation), $uploadLocation, $view_type);
+        $needToFilterFiles = false;
 
         $search_terms = ee()->input->get_post('filter_by_keyword');
 
         if ($search_terms) {
-            $files->search(['title', 'file_name', 'mime_type'], $search_terms);
+            if (is_numeric($search_terms) && strlen($search_terms) < 3) {
+                $files->filter('file_id', $search_terms);
+            } else {
+                $files->search($this->searchableFields, $search_terms);
+            }
+
             $vars['search_terms'] = htmlentities($search_terms, ENT_QUOTES, 'UTF-8');
+            $needToFilterFiles = true;
         }
 
         if (! empty($type_filter) && $type_filter->value()) {
             $files->filter('file_type', $type_filter->value());
+            $needToFilterFiles = true;
         }
 
         if ($category_filter->value()) {
             $files->with('Categories')
                 ->filter('Categories.cat_id', $category_filter->value());
+            $needToFilterFiles = true;
         }
 
         if (! empty($author_filter) && $author_filter->value()) {
             $files->filter('uploaded_by_member_id', $author_filter->value());
+            $needToFilterFiles = true;
         }
 
         $filter_values = $filters->values();
@@ -151,12 +170,39 @@ trait FileManagerTrait
             } else {
                 $files->filter('upload_date', '>=', ee()->localize->now - $filter_values['filter_by_date']);
             }
+            $needToFilterFiles = true;
+        }
+
+        if (! empty($uploadLocation) && ! bool_config_item('file_manager_compatibility_mode')) {
+            $directory_id = (int) ee('Request')->get('directory_id');
+            if ($needToFilterFiles) {
+                // if searching in root directory, just return everything from subfolders
+                // not ideal, but that's what we also do when searching without selecting upload location
+                if ($directory_id !== 0) {
+                    // filters applied, we need to get tricky and also search what's in subfolders
+                    $directories = $subfolders = [$directory_id];
+                    do {
+                        $subfolders = ee('Model')
+                            ->get('Directory')
+                            ->fields('file_id', 'upload_location_id', 'directory_id')
+                            ->filter('upload_location_id', $uploadLocation->getId())
+                            ->filter('directory_id', 'IN', $subfolders)
+                            ->all()
+                            ->pluck('file_id');
+                        $directories = array_merge($directories, $subfolders);
+                    } while (!empty($subfolders));
+                    $files->filter('directory_id', 'IN', $directories);
+                }
+            } else {
+                // no filters applied, just get everything that's in the current directory
+                $files->filter('directory_id', $directory_id);
+            }
         }
 
         $total_files = $files->count();
         $vars['total_files'] = $total_files;
 
-        $filters->add('Perpage', $total_files, 'show_all_files');
+        $perpageFilter = $filters->add('Perpage', $total_files, 'show_all_files');
 
         $filter_values = $filters->values();
 
@@ -164,15 +210,16 @@ trait FileManagerTrait
         $page = ((int) ee()->input->get('page')) ?: 1;
         $offset = ($page - 1) * $perpage;
 
-        $base_url->addQueryStringVariables(
-            array_filter(
-                $filter_values,
-                function ($key) {
-                    return (!in_array($key, ['columns', 'sort']));
-                },
-                ARRAY_FILTER_USE_KEY
-            )
+        $queryStringVariables = array_filter(
+            $filter_values,
+            function ($key) {
+                return (!in_array($key, ['columns', 'sort']));
+            },
+            ARRAY_FILTER_USE_KEY
         );
+        if (! $perpageFilter->canReset()) {
+            unset($queryStringVariables['perpage']);
+        }
 
         $table = ee('CP/Table', array(
             'sort_col' => 'date_added',
@@ -211,7 +258,7 @@ trait FileManagerTrait
                         }
                     }
                 }
-                if (!empty($column->getEntryManagerColumnFields())) {
+                /*if (!empty($column->getEntryManagerColumnFields())) {
                     foreach ($column->getEntryManagerColumnFields() as $field) {
                         if (!empty($field)) {
                             // $files->fields($field);
@@ -219,7 +266,7 @@ trait FileManagerTrait
                     }
                 } else {
                     // $files->fields($column->getTableColumnIdentifier());
-                }
+                }*/
             }
         }
 
@@ -238,7 +285,8 @@ trait FileManagerTrait
             'createNewDirectory' => false,
             'ignoreChild' => false,
             'addInput' => false,
-            'imitationButton' => true
+            'imitationButton' => true,
+            'allowMultipleFiles' => false,
         ];
 
         if (!$filepickerMode || ee('Request')->get('hasUpload') == 1) {
@@ -272,18 +320,28 @@ trait FileManagerTrait
         }
 
         if (! ($table->sort_dir == 'desc' && $table->sort_col == 'date_added')) {
-            $base_url->addQueryStringVariables(
-                array(
+            $queryStringVariables = array_merge($queryStringVariables, array(
                     'sort_dir' => $table->sort_dir,
                     'sort_col' => $table->sort_col
                 )
             );
         }
+        $base_url->addQueryStringVariables($queryStringVariables);
+        unset($queryStringVariables['viewtype']); // is managed by cookie
 
         $vars['pagination'] = ee('CP/Pagination', $total_files)
             ->perPage($perpage)
             ->currentPage($page)
             ->render($base_url);
+
+        if (!empty($breadcrumbs)) {
+            foreach (array_reverse($breadcrumbs) as $crumb) {
+                $url = $crumb[0];
+                $title = $crumb[1];
+                $url->addQueryStringVariables($queryStringVariables);
+                $vars['breadcrumbs'][$url->compile()] = $title;
+            }
+        }
 
         $files = $files->order($sort_field, $table->sort_dir)
             ->limit($perpage)
@@ -303,7 +361,7 @@ trait FileManagerTrait
             // We only need to eager load contents for destinations that are displaying
             // files in this current page of the listing
             if (! in_array($file->upload_location_id, $destinationsToEagerLoad)) {
-                if ($file->UploadDestination->adapter != 'local' && $file->UploadDestination->exists()) {
+                if ($file->UploadDestination->getProperty('adapter') != 'local' && $file->UploadDestination->exists()) {
                     $file->UploadDestination->eagerLoadContents();
                 }
                 $destinationsToEagerLoad[$file->upload_location_id] = $file->upload_location_id;
@@ -330,7 +388,7 @@ trait FileManagerTrait
 
             if ($view_type != 'list') {
                 if ($file->isDirectory()) {
-                    $attrs['href'] = ee('CP/URL')->make('files/directory/' . $file->upload_location_id, ['directory_id' => $file->file_id]);
+                    $attrs['href'] = ee('CP/URL')->make('files/directory/' . $file->upload_location_id, array_merge($queryStringVariables, ['directory_id' => $file->file_id]));
                 } elseif (ee('Permission')->can('edit_files')) {
                     $attrs['href'] = ee('CP/URL')->make('files/file/view/' . $file->file_id);
                 }
@@ -361,7 +419,7 @@ trait FileManagerTrait
 
             $data[] = array(
                 'attrs' => $attrs,
-                'columns' => $column_renderer->getRenderedTableRowForEntry($file, $view_type, $filepickerMode)
+                'columns' => $column_renderer->getRenderedTableRowForEntry($file, $view_type, $filepickerMode, $queryStringVariables)
             );
         }
 
@@ -409,7 +467,7 @@ trait FileManagerTrait
     private function createUploadLocationFilter($uploadLocation = null)
     {
         $upload_destinations = ee('Model')->get('UploadDestination')
-            ->filter('site_id', ee()->config->item('site_id'))
+            ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
             ->filter('module_id', 0)
             ->order('name', 'asc');
 
@@ -436,7 +494,7 @@ trait FileManagerTrait
         if (! empty($uploadLocation)) {
             $typesQuery->where('upload_location_id', $uploadLocation->getId());
         } else {
-            $typesQuery->where('file_type != "directory"');
+            $typesQuery->where('file_type !=', 'directory');
         }
         $types = $typesQuery->get();
 
@@ -494,7 +552,7 @@ trait FileManagerTrait
      */
     private function createCategoryFilter($uploadLocation = null)
     {
-        $cat_id = ($uploadLocation) ? explode('|', (string) $uploadLocation->cat_group) : null;
+        $cat_id = ($uploadLocation) ? $uploadLocation->CategoryGroups->pluck('group_id') : null;
 
         $category_groups = ee('Model')->get('CategoryGroup', $cat_id)
             ->with('Categories')
@@ -548,7 +606,7 @@ trait FileManagerTrait
         if (ee('Permission')->can('upload_new_files')) {
             $upload_destinations = ee('Model')->get('UploadDestination')
                 ->fields('id', 'name', 'adapter')
-                ->filter('site_id', ee()->config->item('site_id'))
+                ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
                 ->filter('module_id', 0)
                 ->order('name', 'asc')
                 ->all();
@@ -564,10 +622,10 @@ trait FileManagerTrait
                 $uploadLocationsAndDirectoriesDropdownChoices[$upload_pref->getId() . '.0'] = [
                     'label' => '<i class="fal fa-hdd"></i>' . $upload_pref->name,
                     'upload_location_id' => $upload_pref->id,
-                    'adapter' => $upload_pref->adapter,
+                    'adapter' => $upload_pref->getProperty('adapter'),
                     'directory_id' => 0,
                     'path' => '',
-                    'children' => !bool_config_item('file_manager_compatibility_mode') ? $upload_pref->buildDirectoriesDropdown($upload_pref->getId(), true) : []
+                    'children' => !bool_config_item('file_manager_compatibility_mode') ? $upload_pref->getDirectoriesDropdown(true) : []
                 ];
             }
         }

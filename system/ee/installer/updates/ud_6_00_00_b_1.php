@@ -266,6 +266,12 @@ class Updater
                     'constraint' => 1,
                     'null' => false,
                     'default' => 'n'
+                ],
+                'highlight' => [
+                    'type' => 'varchar',
+                    'constraint' => 6,
+                    'default' => '',
+                    'null' => false
                 ]
             ]
         );

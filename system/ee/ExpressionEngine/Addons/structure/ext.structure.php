@@ -583,6 +583,7 @@ class Structure_ext
 
             if ($entry_id) {
                 $template_id = $this->site_pages['templates'][$entry_id];
+                ee()->uri->page_query_string = $entry_id;
 
                 // TODO:: I think we only need to select the template name and the group name.
                 // This could be a large speed increase -- Matt
@@ -594,7 +595,6 @@ class Structure_ext
                 $result = ee()->db->get();
                 if ($result->num_rows() > 0) {
                     $row = $result->row();
-                    ee()->uri->page_query_string = $entry_id;
 
                     return array($row->group_name, $row->template_name);
                 }

@@ -1,0 +1,1290 @@
+cypress/integration/addons/addon_manager.ee6.js
+└─ Add-On Manager
+  ├─ Check that Add-On Manager page opens and has no errors
+  ├─ Can install a single add-on
+  ├─ Can navigate to add-on settings page
+  ├─ Install plugin and navigate to a manual page
+  └─ Can uninstall single add-on
+
+cypress/integration/addons/addon_rte_settings.ee6.js
+└─ Rich Text Editor
+  ├─ RTE Settings
+  │ ├─ Shows the RTE Settings page
+  │ ├⊙ can navigate back to the add-on manager via the breadcrumb
+  │ ├─ Cannot set a default tool set to an nonexistent tool set
+  │ ├─ Displays an itemized modal when trying to remove 5 or less tool sets
+  │ ├─ Displays a bulk confirmation modal when trying to remove more than 5 tool sets
+  │ ├─ Cannot remove the default tool set
+  │ ├─ Can reverse sort tool sets by name
+  │ ├─ Can change the default tool set
+  │ ├─ Can edit a tool set
+  │ ├─ Can remove a tool set
+  │ └─ Can bulk remove tool sets
+  └─ RTE Toolsets
+    ├⊙ can navigate back to settings from tool set
+    ├─ Can create a new tool set
+    ├─ Ensures tool set names are unique
+    ├─ Requires a tool set name
+    ├─ Disallows XSS strings as a tool set name
+    └─ Persists tool checkboxes on validation errors
+
+cypress/integration/addons/block_and_allow.ee6.js
+└─ Block and Allow
+  ├─ Should save Blocked list
+  ├─ Should download blocked list
+  ├─ Should save Allowed list
+  ├─ Should download allowed list
+  └─ Should save to .htaccess
+
+cypress/integration/addons/pages.ee6.js
+└─ Pages Add-on
+  ├─ should show the Pages Settings screen
+  └─ should save new Pages settings
+
+cypress/integration/addons/query.ee6.js
+└─ Query add-on
+  └─ Select with exp:query tag
+    ├─ File path are not parsed by default
+    ├─ File path is parsed when parameter passed
+    └─ {base} variables are parsed
+
+cypress/integration/addons/request.ee6.js
+└─ Request add-on
+  ├─ XSS filtering is applied
+  └─ Check template tags
+    ├─ exp:request:get
+    ├─ exp:request:get_post
+    ├─ exp:request:cookie
+    ├─ exp:request:ip
+    ├─ exp:request:user_agent
+    └─ exp:request:request_header
+
+cypress/integration/addons/search.ee6.js
+└─ Search add-on
+  ├─ Search with simple form and get results
+  ├─ Search with simple form and get no results
+  ├─ Search with simple form and get no results (on same page)
+  ├─ Search "everywhere"
+  └─ Search using channel parameter
+    ├─ restrict to channel
+    ├─ restrict to multiple channels
+    ├─ exclude channel
+    └─ exclude multiple channels
+
+cypress/integration/addons/structure.ee6.js
+└─ ❌Structure Add-on
+  ├─ ❌show the Structure Settings screen
+  └─ ❌save new Structure settings
+  └─ ❌add new Structure page and check that it displays
+  └─ ❌set up Structure listing and check it displays
+  └─ ❌check Structure nav tag
+
+cypress/integration/addons/pro_variables.ee6.js
+└─ ❌Pro Variables Add-on
+  ├─ ❌show the Pro Variables Settings screen
+  └─ ❌create new variable (of different types)
+  └─ ❌list variables in CP
+  └─ ❌display variables in frontend
+  └─ ❌check variables in templates
+
+cypress/integration/addons/pro_search.ee6.js
+└─ ❌Pro Search Add-on
+  ├─ ❌show the Pro Search Settings screen
+  └─ ❌build search index
+  └─ ❌search on front-end
+
+cypress/integration/addons/structure.ee6.js
+└─ ❌Structure Add-on
+  ├─ ❌show the Structure Settings screen
+  └─ ❌save new Structure settings
+  └─ ❌add new Structure page and check that it displays
+  └─ ❌set up Structure listing and check it displays
+  └─ ❌check Structure nav tag
+
+
+cypress/integration/channel/categories.ee6.js
+└─ Categories
+  ├─ create custom category fields
+  ├─ add category with all fields
+  ├─ add category from entry page
+  ├─ check categories list on frontend
+  ├─ check categories on entry page on frontend
+  ├─ check category heading on frontend
+  ├─ check category archive on frontend
+  ├─ check category archive (nested) on frontend
+  ├─ reorder categories, check categories list
+  ├─ check sorted category archive on frontend
+  ├─ check which categories have children
+  └─ static usage of category heading tag
+    ├─ category heading is correct when using category_id
+    └─ category heading is correct when using category_url_title
+
+cypress/integration/channel/category_groups.ee6.js
+└─ Category Groups
+  ├─ shows the Category Groups page
+  ├─ List category groups, ensure number of categories is correct
+  └─ Can delete a category group
+
+cypress/integration/channel/channel_fields.ee6.js
+└─ Channel Fields
+  ├─ Delete a field
+  └─ Creating & editing fields
+    ├─ Creates new text field
+    ├─ Saves existing field without changes
+    └─ Cannot use reserved words in field_name
+
+cypress/integration/channel/create.ee6.js
+└─ Channel Create/Edit
+  ├─ shows the Channel Create/Edit page
+  ├─ Validates channel title and name
+  ├─ Rejects XSS in channel title
+  ├─ Repopulates the form on validation error
+  ├─ Save new channel and load edit form for it
+  ├─ Edit name for existing channel
+  ├─ should allow setting field to None
+  └─ Duplicate existing channel
+
+cypress/integration/channel/field_groups.ee6.js
+└─ Field Groups
+  ├─ In test install, two field groups present
+  ├─ Create new field group
+  ├─ Change field group name
+  └─ deletes a field group
+
+cypress/integration/channel/fluid_fields.ee6.js
+└─ Fluid Fields
+  ├─ creates a fluid field
+  ├─ can add a new field to the fluid field
+  ├─ can remove a field from the fluid field
+  └─ deletes a fluid field
+
+cypress/integration/channel/layout_form.ee6.js
+└─ Channel Layouts: Create/Edit
+  ├─ display the Create Layout view
+  ├─ can move a field out of the Options tab
+  ├─ can add a new tab
+  ├─ can move a field to a new tab
+  ├─ cannot remove a tab with fields in it
+  ├─ cannot hide a tab with a required field
+  ├─ makes a hidden tab visible when a required field is moved into it
+  ├─ can create two layouts for the same channel
+  ├─ can move Entry Date to a new tab and retain the "required" class
+  ├─ Hiding the Options Tab
+  │ ├─ should still be hidden with an invalid form
+  │ └─ should be hidden when saved
+  ├─ Hiding fields in the Options Tab
+  │ ├─ should still be hidden with an invalid form
+  │ └─ should be hidden when saved
+  └─ (Bug #21191) Channel has no Categories
+    ├─ Hiding the Options Tab
+    │ ├─ should still be hidden with an invalid form
+    │ └─ should be hidden when saved
+    └─ Hiding fields in the Options Tab
+      ├─ should still be hidden with an invalid form
+      └─ should be hidden when saved
+
+cypress/integration/channel/manager.ee6.js
+└─ Channels
+  ├─ Show the Channels page
+  ├─ List the channels
+  ├─ Delete a channel
+  └─ Bulk delete channels
+
+cypress/integration/channel/settings.ee6.js
+└─ Channel Settings
+  ├─ Shows the Channel Settings page
+  ├─ Validate channel setting form and reject XSS
+  ├─ Save and load channel settings
+  └─ Enabling versions
+    ├─ saves the versioning setting
+    └─ updates existing entries when versioning setting changed
+
+cypress/integration/channel/statuses.ee6.js
+└─ Statuses
+  ├─ List the statuses for channel
+  └─ Delete a status
+
+cypress/integration/channel/status_create.ee6.js
+└─ Status Create/Edit
+  ├─ Show Status Create/Edit form
+  ├─ Validate status fields
+  ├─ Reject XSS in status name and color
+  ├─ Repopulate the form on validation error
+  ├─ Save new status and load edit form
+  └─ Do not allow open and closed status names to be edited
+
+cypress/integration/cli/cli.ee6.js
+└─ CLI
+  ├─ list all commands
+  ├─ display help
+  ├─ clear caches
+  │ └─ clear caches
+  └─ create add-on
+    └─ create add-on
+
+cypress/integration/content/default_theme.ee6.js
+└─ Install with default theme
+  ├─ pages in default theme have no errors
+  │ ├─ file manager is not in compatibility mode
+  │ ├─ there are no missing files in filemanager
+  │ ├─ homepage
+  │ ├─ Entry with BandCamp audio
+  │ ├─ Entry with SoundCloud audio
+  │ ├─ Entry with YouTube video
+  │ ├─ member
+  │ ├─ blog
+  │ ├─ about
+  │ └─ category
+  └─ adding the files to entries
+    └─ add files and display them on frontend
+
+cypress/integration/cookies/consents.ee6.js
+└─ Cookie Consents
+  ├─ tracker cookie not set if consent not granted
+  ├─ require consents in CP
+  ├─ tracker cookie set if consent granted
+  ├─ tracker cookie not updated if consent not granted
+  ├─ tracker cookie updated if consent granted
+  ├─ withdraw consent on FE
+  ├─ grant consent on FE
+  ├─ revoke the consent if request has been updated
+  └─ consents when logged out
+    ├─ grant consent on FE
+    └─ edit consents
+
+cypress/integration/cp/homepage.ee6.js
+└─ CP Homepage
+  ├─ when spam module is not installed
+  │ └─ does not show flagged comments
+  └─ when spam module is installed
+    └─ shows flagged comments
+
+cypress/integration/cp/login.ee6.js
+└─ Login Page
+  ├─ show modal when cp session is idle
+  │ ├─ user is logged out when trying to access CP
+  │ ├─ user is logged out when entering an invalid password
+  │ └─ user is logged in when entering a valid password
+  ├─ basic login sanity checks
+  │ ├─ shows the login page content
+  │ ├─ logs out when session cookies are cleared
+  │ ├─ rejects when submitting no credentials
+  │ ├─ rejects when submitting no password
+  │ ├─ logs in when submitting valid credentials
+  │ ├─ rejects when submitting invalid credentials
+  │ └─ locks the user out after four login attempts
+  ├─ advanced login routines
+  │ ├─ logs in after logout
+  │ ├─ logs in and then uses "login as user" in CP
+  │ ├─ redirects to login page
+  │ └─ shows the reset password form when link is clicked
+  └─ when cookie domain is wrong
+    └─ rejects when cookie domain is wrong
+
+cypress/integration/design/system_templates.ee6.js
+└─ System Templates
+  ├─ Messages
+  │ └─ displays
+  ├─ Email
+  │ └─ displays
+  ├─ Members without Templates
+  │ └─ displays a helpful error when user templates are missing
+  ├─ Members with Templates
+  │ └─ displays when user templates are present
+  ├─ Members with Templates in themes/users
+  │ └─ displays when user templates are present
+  └⊙ Forums
+    ├─ Forums without Templates
+    │ └─ displays a helpful error when user templates are missing
+    ├─ Forums with Templates
+    │ └─ displays when user templates are present
+    └─ Forums with Templates in themes/users
+      ├─ displays when user templates are present
+      └─ displays the edit form
+
+cypress/integration/design/templates.ee6.js
+└─ Templates
+  ├─ Creating a template
+  │ ├─ displays the create form
+  │ ├─ can create a new template
+  │ ├─ can show the edit form after save
+  │ ├─ new templates have sensible defaults
+  │ ├─ can duplicate an existing template
+  │ └─ validate template form
+  └─ Editing a template
+    ├─ displays the edit form
+    ├─ should validate the form
+    ├─ Change template settings
+    ├─ stays on the edit page with the "save" button
+    ├─ returns to the template manager with the "save & close" button
+    └─ can not enable PHP if not enabled globally
+
+cypress/integration/design/template_manager.ee6.js
+└─ Template Manager
+  ├─ Lists the templates
+  ├─ can search templates
+  ├─ Template Groups
+  │ ├─ can add a template group
+  │ ├─ can duplicate an existing template group
+  │ ├─ can edit a template group
+  │ ├─ validates template group form
+  │ ├─ removes template group
+  │ ├─ changes the template group view
+  │ └─ change the default group
+  └─ Templates
+    ├─ can view a template
+    ├─ can change the settings for a template
+    ├─ shows PHP toggle when enabled
+    ├─ should validate template settings form
+    └─ remove a template
+
+cypress/integration/design/template_of_resources.ee6.js
+└─ JS and CSS templates
+  ├─ loading of resources from templates
+  │ ├─ loads stylesheet resource template from the current site
+  │ ├─ loads script resource template from the current site
+  │ ├─ loads stylesheet resource template from a different MSM site
+  │ ├─ loads script resource template from a different MSM site
+  │ └─ loads stylesheet using `/css/` on path
+  ├─ loading of resources from updated templates
+  │ ├─ loads stylesheet resource template from the current site
+  │ ├─ loads script resource template from the current site
+  │ └─ loads stylesheet resource template from a different MSM site
+  └─ loading of resources on a cached HTML template
+    ├─ respects the saved styles
+    └─ serves new styles
+
+cypress/integration/design/template_partials.ee6.js
+└─ Template Partials
+  ├─ List template partials
+  ├─ Filter template partials by keyword
+  ├─ Find templates that use a partial
+  ├─ Navigate to partials edit form
+  ├─ Validate the form
+  ├─ Create a new partial
+  └─ Remove a partial
+  └─ ❌Display partial on front-end
+
+cypress/integration/design/template_routes.ee6.js
+└─ Template Routes
+  ├─ Load routes form with no routes yet
+  ├─ Add a new route
+  ├─ Edit a route
+  ├─ Reorder routes
+  └─ Remove a route
+  └─ ❌Check that pages on front-end are properly routes
+
+cypress/integration/design/template_variables.ee6.js
+└─ Template Variables
+  ├─ List template variables
+  ├─ Filter template variables by keyword
+  ├─ Find templates that use a variable
+  ├─ Navigate to variable edit form
+  ├─ Validate variable form
+  ├─ Create new variable
+  └─ Remove a variable
+  └─ ❌Display variable on front-end
+
+cypress/integration/entry_filters/filter.ee6.js
+└─ Entry Manager
+  ├─ Sort and filter entries by channel
+  ├─ Sort entries by status and combine this sort with channel
+  ├─ Search by titles
+  ├─ Change columns displayed in entry manager
+  ├─ Displays default view when all columns are turned off
+  ├─ Search and filter by author
+  ├─ Combine all search fields
+  └─ Search in Content
+
+cypress/integration/field/conditional_fields.ee6.js
+└─ Conditional Fields
+  ├─ can be used in a textarea field
+  ├─ can be used in a file field
+  ├─ can be used in a grid field
+  ├─ can be used in a relationship field
+  ├─ can be used in a fluid field
+  └─ different combinations of rules
+    ├─ evaluates multiple condition sets
+    ├─ evaluates a set with ANY conditions being met
+    └─ evaluates a set with ALL conditions being met
+
+cypress/integration/field/field_combinations.ee6.js
+└─ Fields of different types
+  ├─ Checkboxes field
+  ├─ Date field
+  ├─ Duration field
+  ├─ Email Address field
+  ├─ File field
+  ├─ Relationships field
+  ├⊙ Rich Text Editor field
+  ├─ Select dropdown field
+  ├─ Textarea field
+  ├─ Toggle field
+  ├─ URL field
+  ├─ Selectable Buttons field
+  ├─ Notes fieldtype
+  │ ├─ saves note to fieldtype settings
+  │ ├─ renders markdown in publish edit screen
+  │ ├─ can be moved in publish layout
+  │ └─ has moved to top of field list on entry edit page
+  ├─ Number Input field
+  │ ├─ edit number input
+  │ └─ Number input in entry
+  └─ Value / Range Slider field
+    ├─ Value Slider field
+    ├─ Range Slider field
+    └─ Switch between slider types
+
+cypress/integration/field/modifiers.ee6.js
+└─ Variable Modifiers
+  ├─ :trim modifier in templates
+  ├─ check the variables in templates
+  ├─ :url_encode modifier in templates
+  ├─ :url_decode modifier in templates
+  ├─ :url modifier in templates
+  ├─ :spellout modifier in templates
+  ├─ :currency modifier in templates
+  ├─ :limit modifier in templates
+  ├─ :modifiers inside relationships
+  ├─ multiple modifiers on title
+  └─ :url_slug modifier in templates
+    ├─ without parameters
+    └─ using stopwords
+
+cypress/integration/files/crop.ee6.js
+└─ File Manager / Crop File
+  ├─ shows the crop form by default
+  ├─ requires crop width when cropping
+  ├─ requires crop height when cropping
+  ├─ requires crop x when cropping
+  ├─ requires crop y when cropping
+  ├─ validates that crop width is a number
+  ├─ validates that crop height is a number
+  ├─ validates that crop x is a number
+  ├─ validates that crop y is a number
+  ├─ validates that crop width is greater than zero
+  ├─ validates that crop height is greater than zero
+  ├─ can crop an image
+  ├─ can display the rotate form
+  ├─ can rotate right
+  ├─ can rotate left
+  ├─ can flip vertically
+  ├─ can flip horizontally
+  ├─ can display the resize form
+  ├─ width is optional when resizing
+  ├─ height is optional when resizing
+  ├─ validates that resize width is a number
+  ├─ validates that resize height is a number
+  ├─ can resize an image
+  ├─ can navigate back to the filemanger
+  ├─ shows an error if the file has no write permissions
+  ├─ shows an error if the file does not exist
+  └─ shows an error if the directory does not exist
+
+cypress/integration/files/edit_file.ee6.js
+└─ File Manager / Edit File
+  ├─ editing image
+  │ ├─ has the correct meta info
+  │ ├─ can edit the title
+  │ ├─ can edit the description
+  │ ├─ can edit the credit
+  │ └─ can edit the location
+  └─ editing non-image
+    ├─ has the correct meta info
+    └─ can edit the title
+
+cypress/integration/files/file_manager.ee6.js
+└─ File Manager
+  ├─ shows the "All Files" File Manager page
+  ├─ Change the page size using the menu
+  ├─ Change the page size manually
+  ├─ navigate pages
+  ├─ Reverse sort by title/name
+  ├─ Sorting is kept when paginating
+  ├─ Sort by file type
+  ├─ Sort by date added
+  ├─ Edit file page has no errors
+  ├─ Crop an image
+  ├─ displays an itemized modal when attempting to remove 5 or less files
+  ├─ displays a bulk confirmation modal when attempting to remove more than 5 files
+  ├─ Remove a single file
+  ├─ Remove multiple files
+  ├─ Add new uplaod directory
+  ├─ View a single directory
+  ├─ displays an itemized modal when attempting to remove a directory
+  ├─ Remove a directory
+  ├─ Remove the directory you are viewing
+  ├─ Must choose where to upload a new file when viewing All Files
+  ├─ Synchronize directory page exists
+  ├─ Marks all missing files in index view
+  ├─ Marks all missing files in directory view
+  ├─ File management dropdown options
+  │ ├─ goes to Edit page
+  │ ├⊙ downloads individual file
+  │ ├⊙ copy the link to clipboard
+  │ └─ deletes a file
+  ├─ File Manager filters
+  │ ├─ filter by type
+  │ ├─ searches by file name
+  │ ├─ filters by date
+  │ ├─ filters by custom date
+  │ └─ combination of filters
+  └─ Manage files in thumb view
+    ├─ sorting order stays the same
+    └─ can sort in thumb view
+
+cypress/integration/files/shared_upload_dir.ee6.js
+└─ Shared Upload Directories
+  ├─ should save shared upload directory on site 2
+  ├─ upload files on site 1 and check they are visible on site 2
+  └─ add files and display them on frontend
+
+cypress/integration/files/subfolders.ee6.js
+└─ Upload Destination Subfolders
+  ├─ Enable Subfolder support
+  ├─ Can create a new folder
+  ├─ Cannot create a folder that already exists
+  ├─ Cannot create a folder with special characters
+  ├─ Can create a nested folder
+  ├─ Cannot move a folder into current parent
+  ├─ Can move a folder
+  ├─ Cannot rename a folder to an existing folder name
+  ├─ Can rename a folder
+  ├─ Can upload a file to a folder
+  ├─ Can move a file to a folder
+  ├─ Can move file between folders
+  ├─ Cannot move file if it already exists
+  ├─ Can delete a folder
+  └─ Sync the subfolders
+    └─ Added subfolder on filesystem, after sync shows in CP
+
+cypress/integration/files/upload_edit.ee6.js
+└─ Upload Destination Create/Edit
+  ├─ Shows the Upload Destination Create/Edit page
+  ├─ validate server path
+  ├─ Validate not writable path
+  ├─ Validate regular fields
+  ├─ Validate image manipulation data
+  ├─ Repopulate the form on validation error, and save
+  ├─ Save a new upload directory
+  ├─ Edit an existing upload directory
+  ├─ Reject XSS in name
+  └─ Bug #21157 - File Size Between 0 and 1
+    ├─ should allow a file size of .1
+    ├─ should not allow a file size of 0
+    └─ should not allow a file size of -.1
+
+cypress/integration/files/upload_file.ee6.js
+└─ File Manager / Upload File
+  ├─ Can upload a Markdown file
+  ├─ Asked to resolve when uploading file with the same name
+  ├─ Cannot upload a file when mime type is not registered
+  ├─ Uploads the file correctly after error
+  ├─ Upload a file when mime type is whitelisted in config
+  ├─ Upload a SQL file and get some response
+  ├─ Cannot upload a shell script
+  ├─ Upload an image when the directory is restricted to images
+  ├─ Cannot upload a non-image when the directory is restricted to images
+  ├─ File uploaded only once in case of previous error
+  ├─ Cannot upload a PHP script masquerading as an image
+  ├─ Show error if the directory upload path has no write permissions
+  └─ Show error if the directory upload path does not exist
+
+cypress/integration/files/upload_sync.ee6.js
+└─ Upload Sync
+  ├─ shows the Upload Directory Sync page
+  ├─ should sync the directory
+  ├─ should not sync non-images if directory does not allow it
+  ├─ should sync non-images if directory allows it
+  ├─ should not sync invalid mimes
+  └─ Upload Sync with manipulations
+    ├─ should apply image manipulations to new files
+    ├─ should not overwrite existing manipulations if not told to
+    └─ should overwrite existing manipulations if told to
+
+cypress/integration/files/usage_tab.ee6.js
+└─ File Manager / Usage Tab
+  ├─ Check if usage tab is on
+  ├─ Add image to 3 entries, image usage tab has include 3 items
+  └─ Add image to category, usage tab have 4 items
+
+cypress/integration/files/watermark_edit.ee6.js
+└─ Watermark Create/Edit
+  ├─ shows the Watermark Create/Edit page
+  ├─ validate watermark fields
+  ├─ save and load a text watermark
+  ├─ save and load an image watermark
+  └─ reject XSS in name
+
+cypress/integration/heavyload/many_members.ee6.js
+└─ Operate the site with many members
+  ├─ 500 members
+  │ ├─ preserves default author in channel settings
+  │ └─ preserves author in entry
+  └─ 50k members
+    ├─ loads the Roles page and has correct data
+    └─ no warnings if override is not set
+
+cypress/integration/jumps/jump_menu.ee6.js
+└─ Jump Menu
+  └─ entry edit jumps
+    ├─ create entry
+    └─ edit entry
+
+cypress/integration/logs/cp_log.ee6.js
+└─ CP Log
+  ├─ shows the Control Panel Access Logs page
+  ├─ searches log by phrases
+  ├─ shows no results on a failed log search
+  ├─ Let Test Role access CP
+  ├─ can remove all logs
+  ├─ filter log records by username
+  ├─ search log by username
+  ├─ filter log by date
+  ├─ change page size
+  ├─ set custom page size
+  ├─ combines username and page size
+  ├─ combines search and page size
+  ├─ remove a single log entry
+  ├─ has a next page and paginates correctly
+  └─ does not lose filter when paginating
+
+cypress/integration/logs/developer_log.ee6.js
+└─ Developer Log
+  ├─ shows the Developer Logs page
+  ├─ searches by phrases
+  ├─ shows no results on a failed search
+  ├─ filters by date
+  ├─ can change page size
+  ├─ can set custom page size
+  ├─ can combine date and page size filters
+  ├─ can combine search with filters
+  ├─ can remove a single entry
+  ├─ can remove all
+  └─ can paginate with filters
+
+cypress/integration/logs/email_log.ee6.js
+└─ Email Log
+  ├─ shows the Email Logs page
+  ├─ searches by phrases 
+  ├─ shows no results on a failed search
+  ├─ filters by username
+  ├─ filters by custom username
+  ├─ can change page size
+  ├─ can set a custom limit
+  ├─ can combine username and page size filters
+  ├─ can combine phrase search with filters
+  ├─ can display a single email
+  ├─ does not lose a filter value when paginating
+  └─ will paginate phrase search results
+
+cypress/integration/logs/search_log.ee6.js
+└─ Search Log
+  ├─ shows the Control Panel Access Logs page
+  ├─ searches by phrases
+  ├─ shows no results on a failed search
+  ├─ filters by username
+  ├─ filters by date
+  ├─ can set a custom page size
+  ├─ can combine username and show filters
+  ├─ can remove a single entry
+  ├─ can remove all
+  └─ does not lose filter when paginating
+
+cypress/integration/logs/throttle_log.ee6.js
+└─ Throttle Logging
+  ├─ turns throttling on
+  ├─ shows the throttling log page
+  ├─ can search by phrase
+  ├─ shows no result on a failed search
+  ├─ can set a custom page size limit
+  ├─ can combine phrase search with filters
+  ├─ can delete a single log
+  ├─ can remove all entries
+  ├─ doesnt lose filter when paginating
+  └─ Throttling will show message if someone tries to reload too much
+
+cypress/integration/members/login.ee6.js
+└─ Front-end login
+  └─ login on front-end
+
+cypress/integration/members/member_bans.ee6.js
+└─ Ban Settings
+  ├─ Show current ban settings form
+  ├─ should reject XSS
+  └─ Save and load ban settings
+
+cypress/integration/members/member_create.ee6.js
+└─ Member Registration in CP
+  ├─ prevents duplicate gmail email addresses
+  └─ cannot create with password that is too weak
+
+cypress/integration/members/member_fields_list.ee6.js
+└─ Member Field List
+  └─ (empty)
+
+cypress/integration/members/member_list.ee6.js
+├─ Member List in CP
+│ ├─ shows the Member List page
+│ ├─ search members by keyword
+│ ├─ shows no results on a failed search
+│ └─ displays an itemized modal when attempting to remove 1 member
+└─ Member List frontend
+  ├─ check access memberlist permissions
+  ├─ respects the options
+  └─ the paths are correct
+
+cypress/integration/members/member_pending.ee6.js
+└─ Pending Member List
+  ├─ shows the Pending Member List page
+  ├─ searches by phrases
+  ├─ shows no results on a failed search
+  ├─ displays an itemzied modal when attempting to decline 1 member
+  └─ can decline a single pending member
+
+cypress/integration/members/member_roles_page.ee6.js
+└─ Member Roles List
+  ├─ Shows the Member Group Roles page
+  ├─ searches by phrases
+  ├─ shows no results on a failed search
+  ├─ cannot delete built-in roles
+  ├─ creates a role
+  ├─ can delete new member role
+  ├─ editing member role
+  └⊙ when using MSM
+    ├─ creates member groups for other sites
+    ├─ edits the preferences for specific sites
+    └─ deletes all member group records when deleting a member group
+
+cypress/integration/members/personal_settings.ee6.js
+└─ Profile - Personal Settings
+  ├─ should load
+  └─ can upload avatar in CP
+
+cypress/integration/members/register.ee6.js
+└─ Member Registration on Front-end
+  ├─ checks
+  │ ├─ password rank shown
+  │ └─ validates username
+  ├─ regular signup
+  │ ├─ registers normally
+  │ ├─ registers into unlocked default group
+  │ ├─ cannot register into locked default group
+  │ ├─ registers into selected unlocked group
+  │ ├─ cannot register into selected locked group
+  │ ├─ cannot register into non-existing group
+  │ ├─ cannot register with weak password
+  │ ├─ cannot register if passwords do not match
+  │ └─ can register with good password
+  ├─ manual activation
+  │ ├─ registers normally
+  │ ├─ registers into unlocked default group
+  │ ├─ cannot register into locked default group
+  │ ├─ registers into selected unlocked group
+  │ ├─ cannot register into selected locked group
+  │ ├─ cannot register into non-existing group
+  │ ├─ approving moves into the group that existed when they registered
+  │ ├─ approving old members moves into the default group
+  │ └─ unable to approve old members if default group is locked
+  └─ email activation
+    ├─ registers normally
+    ├─ registers into unlocked default group
+    ├─ cannot register into locked default group
+    ├─ registers into selected unlocked group
+    ├─ cannot register into selected locked group
+    ├─ cannot register into non-existing group
+    └─ approving moves into the group that existed when they registered
+
+cypress/integration/members/username_password.ee6.js
+└─ Profile - Username and Password
+  ├─ should submit with no changes
+  ├─ should submit with a password change
+  └─ should not submit with a password that is too long
+
+cypress/integration/member_roles/member_roles_addons.ee6.js
+└─ Member Roles / Add-ons Permissions
+  ├─ Add-on Manager can not login because cp access has not been given yet
+  ├─ Let Add-on Role access Add-ons and CP
+  ├─ Can see the Addons now but nothing else
+  └─ Can Access all Addons and has the option to Uninstall them
+
+cypress/integration/member_roles/member_roles_channel.ee6.js
+└─ Member Roles / Channel Permissions 
+  ├─ Channel Manager can not login because cp access has not been given yet
+  ├─ Let Channel Role access Categories
+  └─ Ensure Channel Manager can add and view channels
+
+cypress/integration/member_roles/member_roles_default.ee6.js
+└─ Member Roles / Default Permissions
+  ├─ Default Guests cannot access the control pannel
+  ├─ Default Banned cannot access the control pannel
+  ├─ Default Members cannot access the control pannel
+  └─ Super Admins have access to all ee-sidebar options
+
+cypress/integration/member_roles/member_roles_files.ee6.js
+└─ Member Roles / File Permissions 
+  ├─ File Manager can not login because cp access has not been given yet
+  ├─ Let File Role access Files and CP
+  ├─ can login now and can view files but nothing else
+  └─ Can navigate to the files section
+
+cypress/integration/member_roles/member_roles_logs.ee6.js
+└─ Member Roles / Logs Permissions 
+  ├─ Log Manager can not login because cp access has not been given yet
+  ├─ Let Add-on Role access Utils and CP
+  ├─ Can get to Logs now
+  └─ Loses access
+
+cypress/integration/member_roles/member_roles_members.ee6.js
+└─ Member Roles / Members Permissions
+  ├─ Check locked/unlocked status
+  ├─ Cannot add members to "locked" groups (Super admins only)
+  ├─ Cannot add members to "locked" groups using additional permissions
+  ├─ Cannot access member roles before it is assigned to that
+  └─ Can accecss member roles after it is assigned
+
+cypress/integration/member_roles/member_roles_settings.ee6.js
+└─ Member Roles / Settings Permissions
+  ├─ Setting Manager can not login because cp access has not been given yet
+  ├─ Let Add-on Role access Settings and CP
+  ├─ Can see the Settings now but nothing else
+  ├─ Can Access all Settings and no errors when accessed
+  └─ Loses Acccess to Content
+
+cypress/integration/member_roles/member_roles_templates.ee6.js
+└─ Member Roles / Template Permissions
+  ├─ Can see CP and Temp
+  ├─ Can turn on groups
+  ├─ can turn on partials
+  └─ can turn on variables
+
+cypress/integration/member_roles/member_roles_utilities.ee6.js
+└─ Member Roles / Utilities Permissions
+  ├─ Can get to Utils now
+  ├─ Loses Communication
+  ├─ Loses Translations
+  ├─ loses Import
+  └─ loses SQL Manager
+
+cypress/integration/member_roles/member_roles_website_access.ee6.js
+└─ Member Roles / Frontend access 
+  ├─ Turns website offline --> Members cannot view Site but Super Admin can
+  └─ Super Admins can allow roles to access offline site
+
+cypress/integration/pro/cloning.ee6.js
+└─ Entry Cloning
+  ├─ clone entry with Fluid
+  ├─ clones the entry with regular fields
+  └─ clones the entry and creates Pages record
+
+cypress/integration/pro/cookies.ee6.js
+└─ Pro Cookie Features
+  └─ {exp:consent:cookies}
+    ├─ lists all cookies but forum
+    ├─ lists not necessary EE cookies
+    ├─ lists all cookies that are not CP
+    └─ lists cookies just for add-ons
+
+cypress/integration/pro/pro_backend.ee6.js
+└─ Front-end editing
+  ├─ the license is valid
+  ├─ {if frontedit} conditional works
+  ├─ disable frontedit with outside comment
+  ├─ can disable Dock
+  ├─ can edit entry title from frontend
+  ├─ front-end edit links work in conditionals
+  ├─ can edit image on frontend
+  ├─ can edit grid on frontend
+  ├─ switch the frontedit off with a toggle
+  ├─ switch the frontedit off with a setting
+  ├─ turn automatic edit links off
+  ├─ can set branded CP
+  ├─ encode tag does not break front-end editing
+  ├⊙ can uninstall Pro
+  └─ front-end editing fluid fields
+    ├─ Fluid field has front-end edit link
+    ├─ Relationships fields have front-end editing links
+    ├⊙ test reverse relationships
+    └─ Fluid in relationships has front-end editing links
+
+cypress/integration/pro/two-fa.ee6.js
+└─ Multi-Factor Authentication
+  ├─ Shows MFA links in template
+  ├─ Set up MFA on front-end
+  ├─ MFA is required when set up
+  ├─ Can reset MFA
+  ├─ Enabling MFA in and having it required everywhere
+  │ ├─ Enable MFA in CP
+  │ ├─ MFA is now required on frontend
+  │ ├─ MFA is still required on frontend
+  │ └─ Can disable MFA
+  └─ set MFA as required
+    ├─ let Members log in to CP
+    ├─ MFA setup dialog in CP
+    └─ MFA setup dialog on frontend
+
+cypress/integration/publish/bulk_edit.ee6.js
+└─ Bulk Edit
+  ├─ Load the bulk edit modal
+  ├─ should not make categories or comment settings available if entries do not share them
+  ├─ Filter and manage the selected entries on bulk edit
+  ├─ Manage the fields dropdown based on chosen fields and filter
+  ├─ Change the status on the selected entries
+  ├─ should change all the things on the selected entries
+  └─ Allow setting sticky on enabled channels
+
+cypress/integration/publish/edit.ee6.js
+└─ Publish Page - Edit
+  ├─ shows a 404 with no given entry_id
+  ├─ Save relationship field
+  └─ Autosaving
+    ├─ Autosaves the changes
+    └─ Prevent navigating away with unsaved changes
+
+cypress/integration/publish/entry_manager.ee6.js
+└─ Entry Manager
+  ├─ Does not allow creating entry if channel limit is reached
+  ├─ Offers a create option for channels with max_entries not yet reached
+  ├─ Create menu does not include channels when max_entries is hit
+  ├─ Edit menu goes straight to publish for max_entries 1 = 1
+  ├─ Create entries
+  ├─ Load a page with 100 entries
+  ├─ Deletes a single entry
+  ├─ Deletes all entries
+  └─ Deletes 100 entries
+
+cypress/integration/publish/publish.ee6.js
+└─ Publish Entry
+  ├─ shows a 404 if there is no channel id
+  ├─ shows comment fields when comments are enabled by system and channel allows comments
+  ├─ does not show comment fields when comments are disabled by system
+  ├─ does not shows comment fields when comments are disabled by system and channel allows comments
+  ├─ selects default categories for new entries
+  ├─ Create entry with file fields
+  │ ├─ the file field properly assigns image data when using the filepicker modal in a channel with two file fields
+  │ ├─ if the file field is limited to directory, it is only available
+  │ ├─ the file field restricts you to the chosen directory
+  │ └─ uploads the file into field with drag & drop
+  ├─ Create entry with file grid
+  │ └─ uploads several files into same field
+  ├─ Create entry with fluid fields
+  │ ├─ adds field groups
+  │ ├─ adds a field to Fluid
+  │ ├─ adds repeat fields to Fluid
+  │ ├─ removes fields from Fluid
+  │ └─ keeps data in Fluid when the entry is invalid
+  └─ Create entry with various Grids
+    └─ Grid with Buttons
+
+cypress/integration/publish/relationship.ee6.js
+└─ Edit entry with Relationship field
+  ├─ shows a 404 with no given entry_id
+  ├─ Entry with stand-alone relationship field
+  │ ├─ saves relationship field
+  │ ├─ add button is not visible when rel max is reached
+  │ ├─ add button is visible when rel max is empty
+  │ ├─ saves relationship field with display entry id
+  │ ├─ saves relationship field without display entry id
+  │ ├─ defer field initialization off
+  │ └─ defer field initialization on
+  └─ Entry with relationship field in Grid
+    ├─ create new grid field with Relationship
+    ├─ Save entry and check relationship field in grid
+    ├─ add button is not visible when rel max is reached for grid
+    ├─ add button is not visible when rel max is empty for grid
+    ├─ check relationship field with display entry id in grid
+    ├─ check relationship field with display entry id in grid
+    ├─ check relationship field with defer on in grid
+    └─ check relationship field with defer off in grid
+
+cypress/integration/publish/secondary-sidebar-collapsed.ee6.js
+└─ Secondary Sidebar - Collapsed
+  ├─ check that secondary sidebar is open on different pages
+  ├─ close sidebar on one page, but left open on other
+  ├─ close sidebar on one page, and check subpages
+  └─ close sidbar for two pages
+
+cypress/integration/settings/avatars.ee6.js
+└─ Avatar Settings
+  ├─ should load Avatar Settings into form fields
+  ├─ Validate Avatar Settings form
+  ├─ should reject XSS
+  └─ should save and load Avatar Settings
+
+cypress/integration/settings/captcha.ee6.js
+└─ CAPTCHA Settings
+  ├─ should load current CAPTCHA Settings into form fields
+  ├─ Validate CAPTCHA Settings form
+  ├─ should reject XSS
+  └─ should save and load CAPTCHA Settings settings
+
+cypress/integration/settings/comments.ee6.js
+└─ Comment Settings
+  ├─ Load current Comment Settings into form fields
+  ├─ Validate Comment Settings form
+  └─ Save and load Comment Settings settings
+
+cypress/integration/settings/content_design.ee6.js
+└─ Content & Design Settings
+  ├─ Load current Content & Design Settings into form fields
+  ├─ should reject XSS
+  ├─ Save and load Content & Design Settings
+  └─ Validating Content & Design Settings
+    ├─ validates image resize protocol when using ImageMagick
+    ├─ validates image resize protocol when using NetPBM
+    ├─ validates a nonsense image library path
+    └─ validates a valid set of library and path
+
+cypress/integration/settings/debug_output.ee6.js
+└─ Debugging & Output Settings
+  ├─ Load current Debugging & Output Settings into form fields
+  ├─ Validate Debugging & Output Settings form
+  └─ Save and load Debugging & Output Settings
+
+cypress/integration/settings/email.ee6.js
+└─ Outgoing Email Settings
+  ├─ validating Email Settings with page loads
+  │ ├─ should load current email settings into form fields
+  │ ├─ validates SMTP server when that is the selected protocol
+  │ └─ should save and load the settings
+  └─ validating Email Settings using Ajax
+    ├─ validates mail protocol
+    ├─ validates webmaster email when using an empty string
+    ├─ validates webmaster name using a xss vector
+    ├─ validates webmaster email when using nonsense
+    ├─ validates mail protocol when using PHP mail
+    └─ validates SMTP port
+
+cypress/integration/settings/general.ee6.js
+└─ General Settings
+  ├─ Load and save General Settings
+  ├─ Check for new versions of EE manually
+  └─ General Settings form validation
+    ├─ should validate with submit
+    └─ should validate with ajax
+
+cypress/integration/settings/hit_tracking.ee6.js
+└─ Tracking Settings
+  ├─ validates the suspend threshold field
+  └─ Saves Tracking settings on page load
+
+cypress/integration/settings/members.ee6.js
+└─ Member Settings
+  ├─ Load current Member Settings into form fields
+  ├─ Validate Member Settings form
+  ├─ AJAX Member Settings form validation
+  └─ Save and load Member Settings
+
+cypress/integration/settings/messages.ee6.js
+└─ Messaging Settings
+  ├─ Load current Messaging Settings into form fields
+  ├─ Validate Messaging Settings form
+  ├─ should reject XSS
+  └─ Save and load Messaging Settings
+
+cypress/integration/settings/security.ee6.js
+└─ Security & Privacy Settings
+  ├─ Load current Security & Privacy Settings into form fields
+  ├─ Validate Security & Privacy Settings form
+  └─ Save and load Security & Privacy Settings
+
+cypress/integration/settings/template.ee6.js
+└─ Template Settings
+  ├─ Load current Template Settings into form fields
+  ├─ Validate Template Settings form
+  └─ Save and load Template Settings
+
+cypress/integration/settings/throttling.ee6.js
+└─ Access Throttling Settings
+  ├─ Load current Access Throttling Settings into form fields
+  ├─ Validate Access Throttling Settings form
+  ├─ should reject XSS
+  └─ Save and load Access Throttling Settings
+
+cypress/integration/settings/urls.ee6.js
+└─ URL and Path Settings
+  ├─ Load current URL and Path Settings into form fields
+  ├─ should only show member trigger if enabled
+  ├─ Validate URL and Path Settings form
+  ├─ Validate URL and Path Settings form, part 2
+  ├─ should reject XSS
+  └─ Save and load URL and Path Settings
+
+cypress/integration/settings/word_censor.ee6.js
+└─ Word Censorship Settings
+  ├─ Load current Word Censorship Settings into form fields
+  ├─ should reject XSS
+  └─ Save and load Word Censorship Settings
+
+cypress/integration/site/site_manager.ee6.js
+└─ Site Manager
+  └─ with multiple sites
+    ├─ can add a site
+    ├─ can delete a site
+    ├─ can switch sites
+    └─ color code a site
+
+cypress/integration/spam/spam_trap.ee6.js
+└─ Spam Module
+  ├─ can install Spam Module from add-on manager
+  └─ Spam Trap Table
+    ├─ can search by phrases
+    └─ can mark as spam
+
+cypress/integration/updater/test_z_one_click.ee6.js
+└─ One-Click Updater
+  ├─ Fail preflight check when file permissions are incorrect
+  ├⊙ should continue update when permissions are fixed
+  └⊙ should update if there are no impediments
+
+cypress/integration/utilities/cache_manager.ee6.js
+└─ Cache Manager
+  ├─ shows the Cache Manager page
+  └─ Submits form to clear cache
+
+cypress/integration/utilities/communicate_sent.ee6.js
+└⊙ Communicate Sent
+  ├─ shows the sent Emails page (with no results)
+  ├─ sorts by subject (asc) and (desc)
+  ├─ sorts by total sent (asc) and (desc)
+  ├─ can search by subject
+  ├─ can search by message
+  ├─ can search by from name
+  ├─ can search by from email
+  ├─ can search by recipient
+  ├─ can search by cc
+  ├─ can search by bcc
+  ├─ displays "no results" when searching returns nothing
+  ├─ will paginate at over 26 emails
+  ├─ will show the Prev button when on page 2
+  ├─ will not show Next on the last page
+  ├─ maintains sort while paging
+  ├─ maintains sort and search while paging
+  ├─ resets the page on a new sort
+  ├─ resets the page on a new search
+  ├─ can view an email
+  └─ can remove emails in bulk
+
+cypress/integration/utilities/debug_extensions.ee6.js
+└─ Debug Extensions
+  ├─ shows the Manage Add-on Extensions page
+  └─ can disable and enable an extension
+
+cypress/integration/utilities/import_converter.ee6.js
+└─ Import File Converter
+  ├─ Testing around
+  ├─ shows the Import File Converter page
+  ├─ Validation Pt 1: Must Provide Delimiter
+  ├─ Validation Pt 2: Must Provide Delimiter
+  ├─ Validation Pt 3: No File Attached
+  ├─ Validation Pt 4: Select wrong delimiter
+  ├─ Validates the way files are delimited: Comma
+  ├─ Validates the way files are delimited: Tab
+  ├─ Validates the way files are delimited: Pipe
+  ├─ Validate Assigned Fields
+  └─ Converts correctly
+
+cypress/integration/utilities/member_import.ee6.js
+└─ Member Import
+  ├─ shows the Member Import page
+  ├─ can import basic xml
+  ├─ dont allow duplicate data
+  └─ does not import invalid XML data
+
+cypress/integration/utilities/query_form.ee6.js
+└─ SQL Query Form
+  ├─ shows the Query Form
+  ├─ Validate Query form
+  ├─ Does not allow certain query types
+  ├─ Shows MySQL errors
+  ├─ Shows query results
+  ├─ Sort query results by columns
+  ├─ Search query results
+  ├─ Show no results when there are no results
+  └─ Show the number of affected rows on write queries
+
+cypress/integration/utilities/search_and_replace.ee6.js
+└─ Search and Replace Utility
+  ├─ shows the Search and Replace page
+  ├─ Validates Search and Replace form
+  ├─ should fail validation without AJAX too
+  └─ should search and replace data
+
+cypress/integration/utilities/sql_manager.ee6.js
+└─ SQL manager
+  ├─ shows the SQL Manager
+  ├─ List tables present in the install
+  ├─ Sort the table
+  ├─ Search the table names
+  ├─ Sort search results
+  ├─ Validate the table operations submission
+  ├─ Repair the tables and sort and search the results
+  ├─ Optimize the tables and sort and search the results
+  └─ View table contents
+
+cypress/integration/utilities/stats.ee6.js
+└─ Statistics
+  ├─ shows the Manage Statistics page
+  ├─ Sort stats by source
+  ├─ Sort stats by count
+  ├⊙ reports accurate record count after adding a member
+  ├─ Sync one source
+  └─ Sync multiple sources
+
+cypress/integration/z_installer/installer.ee6.js
+└─ Installer
+  ├─ loads
+  └─ when installing
+    ├─ installs successfully using 127.0.0.1 as the database host
+    ├─ installs successfully using localhost as the database host
+    ├─ installs successfully with the default theme
+    ├─ has all require modules installed after installation
+    └─ uses {base_url} and {base_path}
+
+cypress/integration/z_installer/installer_fail.ee6.js
+└─ Installer (should fail)
+  ├─ when using invalid database credentials
+  │ ├─ shows an error with no database credentials
+  │ ├─ shows an inline error when using an incorrect database host
+  │ ├─ shows an inline error when using an incorrect database name
+  │ └─ shows an error when using an incorrect database user
+  ├─ when using an invalid database prefix
+  │ ├─ shows an error when the database prefix is too long
+  │ ├─ shows an error when using invalid characters in the database prefix
+  │ └─ shows an error when using exp_ in the database prefix
+  ├─ when using an invalid username
+  │ ├─ shows an error when using invalid characters
+  │ ├─ shows an error when using a too-short username
+  │ └─ shows an error when using a too-long username
+  ├─ when using an invalid email address
+  │ ├─ shows an error when no domain is supplied
+  │ ├─ shows an error when no tld is supplied
+  │ └─ shows an error when no username is supplied
+  ├─ when using an invalid password
+  │ ├─ shows an error when the password is too short
+  │ ├─ shows an error when the password is too long
+  │ └─ shows an error when the username and password are the same
+  └─ when not agreeing to the license agreement
+    └─ will not install without the license agreement checked
+
+cypress/integration/z_installer/updater.ee6.js
+└─ Updater
+  ├─ appears when using a database.php file
+  ├─ shows an error when no database information exists at all
+  ├─ turns system off if system was off before updating
+  ├─ turns system on if system was on before updating
+  ├─ updates and creates a mailing list export when updating from 2.x to 6.x with the mailing list module
+  ├─ ❌check that content from 2.x stays the same in 7.x
+  ├─ updates successfully when updating from 2.1.3 to 6.x
+  ├─ updates a core installation successfully and installs the member module
+  ├─ updates without notices going straight to login page
+  ├─ shows post-upgrade notice
+  └─ when updating from 2.x to 6.x
+    ├─ updates using mysql as the dbdriver
+    ├─ updates using localhost as the database host
+    ├─ updates using 127.0.0.1 as the database host
+    ├─ updates with the old tmpl_file_basepath
+    ├─ updates with invalid tmpl_file_basepath
+    ├─ updates using new template basepath
+    ├─ has all required modules installed after the update
+    └─ has all required modules installed after CLI update

@@ -1,0 +1,30 @@
+{layout="cypress/layout"}
+{exp:channel:entries entry_id="1"}
+<h1>{title}</h1>
+
+<section class=" w-12">
+    {news_body}
+</section>
+
+<figure class="left">
+    <img src="{news_image:cropped}">
+</figure>
+
+<figure class="right">
+    <img src="{news_image}{url}{/news_image}">
+</figure>
+
+{news_image}
+<div class="file_variables">
+    <p class="file_name">{file_name}</p>
+    <p class="title">{title}</p>
+    <p class="model_type">{model_type}</p>
+    <p class="file_type">{file_type}</p>
+    <p class="mime_type">{mime_type}</p>
+    <p class="upload_location_id">{upload_location_id}</p>
+    <p class="directory_id">{directory_id}</p>
+    <p class="folder_id">{folder_id}</p>
+</div>
+{/news_image}
+
+{/exp:channel:entries}

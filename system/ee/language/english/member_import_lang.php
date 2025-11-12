@@ -74,7 +74,7 @@ $lang = array(
 
     'file_loc_blurb' => 'The location of the file must be relative to your site\'s control panel folder. e.g.: ../members.txt, if placed at the site root.',
 
-    'group_id' => 'Default Member Group',
+    'group_id' => 'Default Primary Role',
 
     'import' => 'Import!',
 

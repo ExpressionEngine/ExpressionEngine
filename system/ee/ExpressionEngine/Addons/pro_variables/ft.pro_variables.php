@@ -43,6 +43,8 @@ class Pro_variables_ft extends EE_Fieldtype
      */
     public $has_array_data = true;
 
+    public $can_be_cloned = true;
+
     public $entry_manager_compatible = true;
 
     // --------------------------------------------------------------------
@@ -66,6 +68,13 @@ class Pro_variables_ft extends EE_Fieldtype
     // --------------------------------------------------------------------
     //  METHODS
     // --------------------------------------------------------------------
+
+    public function __construct()
+    {
+        parent::__construct();
+        ee()->load->helper($this->package);
+        ee()->load->model(array('pro_variables_group_model', 'pro_variables_variable_model'));
+    }
 
     /**
      * Display field settings
@@ -250,10 +259,13 @@ class Pro_variables_ft extends EE_Fieldtype
         // -------------------------------------
 
         if (@$this->settings['lv_ft_multiple'] == 'y') {
+            if (! is_array($value)) {
+                $value = explode("\n", (string) $value);
+            }
             $field = array(
                 'type'    => 'checkbox',
                 'choices' => $choices,
-                'value'   => explode("\n", (string) $value),
+                'value'   => $value,
                 'wrap'    => true
             );
         } else {

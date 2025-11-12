@@ -42,10 +42,12 @@ class CI_DB_driver
     public $trans_strict = true;
     public $_trans_depth = 0;
     public $_trans_status = true; // Used with transactions to determine if a rollback should occur
+    public $_trans_failure = false;
     public $cache_on = false;
     public $cachedir = '';
     public $cache_autodel = false;
     public $CACHE; // The cache class object
+    public $dbcollat_default; // true if the collation is not in the config or is default
 
     // Private variables
     public $_protect_identifiers = true;

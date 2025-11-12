@@ -34,6 +34,8 @@ $lang = array(
 
     'is_natural_no_zero' => 'This field must contain a number greater than zero.',
 
+    'is_not_numeric' => 'This field can not be a number.',
+
     'is_numeric' => 'This field must contain only numeric characters.',
 
     'less_than' => 'This field must be less than: %s',
@@ -56,11 +58,19 @@ $lang = array(
 
     'required' => 'This field is required.',
 
+    'multiple_selection_not_allowed' => 'Only one selection is allowed',
+
     'starts_with' => 'This field should start with <code>%s</code>.',
 
     'not_starts_with' => 'This field should not start with <code>%s</code>.',
 
     'unique' => 'This field must be unique.',
+
+    'unique_among_channel_fields' => 'This field must be unique and can not match a channel field short name.',
+
+    'unique_among_member_fields' => 'This field must be unique and can not match a member field short name.',
+
+    'unique_among_field_groups' => 'This field must be unique and can not match a field group short name.',
 
     'unique_email' => 'This field must contain a unique email address.',
 

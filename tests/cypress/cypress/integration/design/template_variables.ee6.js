@@ -18,11 +18,11 @@ context('Template Variables', () => {
         cy.authVisit(page.url);
     })
 
-    it('displays', function() {
+    it('List template variables', function() {
         page.get('variables').its('length').should('eq', 14)
     })
 
-    it('can filter by keyword', function() {
+    it('Filter template variables by keyword', function() {
         page.get('keyword_search').first().type('html').type('{enter}')
 
         cy.hasNoErrors()
@@ -30,7 +30,7 @@ context('Template Variables', () => {
         page.get('variables').its('length').should('eq', 4) // This also searches data...
     })
 
-    it('can find templates that use a variable', function() {
+    it('Find templates that use a variable', function() {
         page.get('variables').eq(6).find('a[title="find"]').click()
 
         cy.hasNoErrors()
@@ -40,13 +40,13 @@ context('Template Variables', () => {
         page.get('variables').its('length').should('eq', 9) // Yeah, not technically 'variables' but the selectors work
     })
 
-    it('can navigate to edit form', function() {
+    it('Navigate to variable edit form', function() {
         page.get('variables').eq(6).find('a[title="Edit"]').click()
 
         cy.hasNoErrors()
     })
 
-    it('should validate the form', function() {
+    it('Validate variable form', function() {
         cy.get('a').contains('Template Variable').first().click()
         //page.get('create_new_button').click()
         cy.get('a').contains('Create New').first().click()
@@ -56,7 +56,7 @@ context('Template Variables', () => {
         page.hasError(form.get('name'), 'The name you submitted may only contain alpha-numeric characters, underscores, and dashes')
     })
 
-    it('can create a new variable', function() {
+    it('Create new variable', function() {
         // 'Cannot figure out how to populate a codemirror form element'
         cy.get('a').contains('Template Variable').first().click()
 
@@ -83,7 +83,7 @@ context('Template Variables', () => {
         page.get('alert').contains('rspec-test')
     })
 
-    it('can remove a variable', function() {
+    it('Remove a variable', function() {
         page.get('variables').its('length').then((length) => {
             page.get('variables').eq(0).find('td:last-child input').click()
 

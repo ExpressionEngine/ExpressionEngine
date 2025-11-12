@@ -31,17 +31,17 @@ class Thumbnail extends EntryManager\Columns\Column
         ];
     }
 
-    public function renderTableCell($data, $field_id, $file, $viewtype = 'list')
+    public function renderTableCell($data, $field_id, $file, $viewtype = 'list', $pickerMode = false, $addQueryString = [])
     {
         $thumb = ee('Thumbnail')->get($file);
         $file_thumbnail = $thumb->tag;
 
         if ($viewtype == 'list') {
             if ($file->isDirectory()) {
-                $url = ee('CP/URL')->make('files/directory/' . $file->upload_location_id, ['directory_id' => $file->file_id]);
+                $url = ee('CP/URL')->make('files/directory/' . $file->upload_location_id, array_merge($addQueryString, ['directory_id' => $file->file_id]));
                 $file_thumbnail = '<a href="' . $url . '">' . $thumb->tag . '</a>';
             } elseif (ee('Permission')->can('edit_files')) {
-                $file_thumbnail = '<a href="' . ee('CP/URL')->make('files/file/view/' . $file->file_id) . ($file->isImage() ? '" class="imgpreview" data-url="' . $thumb->url : '') . '">' . $thumb->tag . '</a>'; 
+                $file_thumbnail = '<a href="' . ee('CP/URL')->make('files/file/view/' . $file->file_id) . ($file->isImage() ? '" class="imgpreview" data-url="' . $thumb->url : '') . '" alt="' . $file->title . '">' . $thumb->tag . '</a>'; 
             }
         }
 

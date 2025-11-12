@@ -14,7 +14,7 @@ context('Search Log', () => {
 		//cy.auth()
 		cy.visit('admin.php?/cp/members')
 		cy.get("tr[class='app-listing__row']:contains('johndoe1')").find('td').eq(0).then(($span) =>{
-			JoeId = $span.text().substring(2)
+			JoeId = $span.text().substring(2).replace('#', '').toString()
 		})
 	})
 
@@ -63,7 +63,7 @@ context('Search Log', () => {
 
 		var i = 0;
         for (i = 0; i < 15; i++) {
-			cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`, `search_type`) VALUES ('1', " + JoeId.toString() + ", 'johndoe1', UNIX_TIMESTAMP(), 'I am Joe', 'site')")
+			cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`, `search_type`) VALUES ('1', " + JoeId + ", 'johndoe1', UNIX_TIMESTAMP(), 'I am Joe', 'site')")
 		}
 
 		cy.visit('/admin.php?/cp/logs/search')
@@ -135,7 +135,7 @@ context('Search Log', () => {
 
 		var i = 0;
         for (i = 0; i < 15; i++) {
-			cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`, `search_type`) VALUES ('1', " + JoeId.toString() + ", 'johndoe1', UNIX_TIMESTAMP(), 'I am Joe', 'site')")
+			cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`, `search_type`) VALUES ('1', " + JoeId + ", 'johndoe1', UNIX_TIMESTAMP(), 'I am Joe', 'site')")
 		}
 
 		cy.visit('/admin.php?/cp/logs/search')
@@ -178,7 +178,7 @@ context('Search Log', () => {
 
 		var i = 0;
         for (i = 0; i < 30; i++) {
-			cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`, `search_type`) VALUES ('1', " + JoeId.toString() + ", 'johndoe1', UNIX_TIMESTAMP(), 'I am Joe', 'site')")
+			cy.task('db:query',"INSERT INTO `exp_search_log` (`site_id`, `member_id`, `screen_name`,  `search_date`, `search_terms`, `search_type`) VALUES ('1', " + JoeId + ", 'johndoe1', UNIX_TIMESTAMP(), 'I am Joe', 'site')")
 		}
 
 		cy.visit('/admin.php?/cp/logs/search')

@@ -143,7 +143,7 @@ class Comment extends Model
                 ->order('comment_date', 'desc')
                 ->first();
 
-            // There are times, espcially when deleting a ChannelEntry, that
+            // There are times, especially when deleting a ChannelEntry, that
             // the related entry object isn't fully loaded, so we'll need
             // to reload it before working on it.
             if (is_null($this->Entry->Channel)) {

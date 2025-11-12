@@ -69,7 +69,7 @@ class CommandMakeModel extends Cli
 
             $service->build();
         } catch (\Exception $e) {
-            $this->fail($e->getMessage());
+            $this->fail(addslashes($e->getMessage()));
         }
 
         $this->info('command_make_model_created_successfully');

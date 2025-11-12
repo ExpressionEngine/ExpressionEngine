@@ -187,6 +187,10 @@
 					return 'createEntriesModalFromDock'
 				}
 
+				if(this.method == 'channelpopupupmodal') {
+					return 'createChannelModalFromDock'
+				}
+
 				if(this.method == 'popup') {
 					return 'createModalFromDock'
 				}

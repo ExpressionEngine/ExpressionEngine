@@ -9,10 +9,10 @@
 // ***********************************************
 //
 //
-// require('@4tw/cypress-drag-drop')
-import 'cypress-file-upload';
+
 import 'cypress-maildev';
 import 'cypress-audit/commands';
+import 'cypress-real-events';
 
 //https://github.com/cypress-io/cypress/issues/249
 const COMMAND_DELAY = Cypress.env('COMMAND_DELAY') || 0;
@@ -158,6 +158,7 @@ Cypress.Commands.add("hasNoErrors", () => {
     cy.contains('Exception Caught').should('not.exist')
     cy.contains('Warning Caught').should('not.exist')
     cy.contains('Error Caught').should('not.exist')
+    cy.contains('Deprecated').should('not.exist')
 })
 
 Cypress.Commands.add("dismissLicenseAlert", () => {
@@ -285,6 +286,15 @@ Cypress.Commands.add("createMembers", ({ n }) => {
     ].join(' ')
 
     cy.exec(command)
+})
+
+// Alternative approach for overcoming CKEditor bug with Cypress .type() command
+// https://github.com/ckeditor/ckeditor5/issues/12802
+// https://github.com/cypress-io/cypress/issues/26155
+Cypress.Commands.add('ckType', {prevSubject: true}, (subject, content) => {
+    const editor = subject[0].ckeditorInstance;
+    editor.setData(content);
+    return subject;
 })
 
 // -- This is a child command --

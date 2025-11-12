@@ -13,7 +13,7 @@
     <div class="main-nav__toolbar">
         <?php if (isset($header['toolbar_items']) && $header['toolbar_items']): ?>
             <?php foreach ($header['toolbar_items'] as $name => $item): ?>
-                <a class="button button--secondary icon--<?=$name?>" href="<?=$item['href']?>" title="<?=$item['title']?>"><span class="hidden"><?=$item['title']?></span></a>
+                <a class="button button--secondary icon--<?=$name?>" href="<?=$item['href']?>" title="<?=$item['title']?> <?=lang('button')?>"><span class="hidden"><?=$item['title']?></span></a>
             <?php endforeach; ?>
         <?php endif ?>
 
@@ -23,12 +23,12 @@
                     <?php if (isset($header['search_button_value'])): ?>
             <div class="field-control with-icon-start">
               <i class="fal fa-search icon-start"></i>
-              <input class="main-nav__toolbar-input" placeholder="<?=$header['search_button_value']?>" type="text" name="search" value="<?=form_prep(ee()->input->get_post('search'))?>">
+              <input class="main-nav__toolbar-input" placeholder="<?=$header['search_button_value']?>" type="text" name="search" value="<?=form_prep(ee()->input->get_post('search'))?>" aria-label="<?=$header['search_button_value']?>">
             </div>
                     <?php else: ?>
           <div class="field-control with-icon-start">
             <i class="fal fa-search icon-start"></i>
-            <input class="main-nav__toolbar-input" placeholder="<?=lang('search')?>" type="text" name="search" value="<?=form_prep(ee()->input->get_post('search'))?>">
+            <input class="main-nav__toolbar-input" placeholder="<?=lang('search')?>" type="text" name="search" value="<?=form_prep(ee()->input->get_post('search'))?>" aria-label="<?=lang('search')?>">
           </div>
                     <?php endif; ?>
                 </form>

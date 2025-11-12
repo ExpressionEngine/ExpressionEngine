@@ -72,6 +72,11 @@ class DBConfig extends ConfigWithDefaults
         );
 
         if (is_array($result)) {
+            if (!isset($result['dbcollat'])) {
+                $result['dbcollat_default'] = true;
+            } elseif ($result['dbcollat'] == 'utf8mb4_unicode_ci' && $result['char_set'] == 'utf8mb4') {
+                $result['dbcollat_default'] = true;
+            }
             return array_merge($default, $result);
         }
 

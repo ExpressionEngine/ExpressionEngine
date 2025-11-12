@@ -64,7 +64,7 @@ fieldset {
 
 .field-instruct {
     label {
-      display: block;
+      display: inline-block;
       color: color(text-normal);
 		  // margin-bottom: $s-s;
 		  margin-bottom: 5px;
@@ -205,6 +205,10 @@ fieldset {
 		> em {
 			color: color(error);
 			font-style: normal;
+		}
+
+		.fields-select {
+			padding: 0 8px;
 		}
 	}
 

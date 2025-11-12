@@ -13,6 +13,7 @@
 			<?=form_open(ee('CP/URL')->make('login/authenticate'))?>
 				<input type="hidden" name="username" value="<?=form_prep(ee()->session->userdata('username'))?>">
 				<fieldset class="fieldset-required dialog-input-wrap">
+					<legend class="sr-only"><?=sprintf(lang('log_into'), ee()->config->item('site_name'))?> form</legend>
 					<div class="field-instruct">
 						<label for="logout-confirm-password"><?=sprintf(lang('password_for'), form_prep(ee()->session->userdata('username')));?></label>
 					</div>

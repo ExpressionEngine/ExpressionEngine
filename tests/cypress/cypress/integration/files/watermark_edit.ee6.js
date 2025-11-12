@@ -8,7 +8,7 @@ context('Watermark Create/Edit', () => {
   before(function() {
     cy.task('db:seed')
   })
-  
+
   beforeEach(function() {
     cy.auth();
     page.load()
@@ -19,7 +19,7 @@ context('Watermark Create/Edit', () => {
     page.get('wrap').contains('Create Watermark')
   })
 
-  it('should validate fields', () => {
+  it('validate watermark fields', () => {
     page.submit()
 
     cy.hasNoErrors()
@@ -108,7 +108,7 @@ context('Watermark Create/Edit', () => {
     cy.hasNoErrors()
   })
 
-  it('should save and load a text watermark', () => {
+  it('save and load a text watermark', () => {
     page.get('wm_name').clear().type('Test')
     page.get('wm_vrt_alignment').check('middle')
     page.get('wm_hor_alignment').check('right')
@@ -132,15 +132,15 @@ context('Watermark Create/Edit', () => {
     cy.hasNoErrors()
 
     page.get('wm_name').invoke('val').then((val) => { expect(val).to.be.equal('Test') })
-    page.get('wm_type').filter('[value=text]').should('be.checked')
-    page.get('wm_vrt_alignment').filter('[value=middle]').should('be.checked')
-    page.get('wm_hor_alignment').filter('[value=right]').should('be.checked')
+    page.get('wm_type').filter('[value="text"]').should('be.checked')
+    page.get('wm_vrt_alignment').filter('[value="middle"]').should('be.checked')
+    page.get('wm_hor_alignment').filter('[value="right"]').should('be.checked')
     page.get('wm_padding').invoke('val').then((val) => { expect(val).to.be.equal('10') })
     page.get('wm_hor_offset').invoke('val').then((val) => { expect(val).to.be.equal('20') })
     page.get('wm_vrt_offset').invoke('val').then((val) => { expect(val).to.be.equal('30') })
     page.get('wm_use_font').should('have.class', "on")
     page.get('wm_text').invoke('val').then((val) => { expect(val).to.be.equal('Test text') })
-    page.get('wm_font').filter('[value=texb.ttf]').should('be.checked')
+    page.get('wm_font').filter('[value="texb.ttf"]').should('be.checked')
     page.get('wm_font_size').invoke('val').then((val) => { expect(val).to.be.equal('18') })
     page.get('wm_font_color').invoke('val').then((val) => { expect(val).to.be.equal('#CCCCCC') })
     page.get('wm_use_drop_shadow').should('have.class', "on")
@@ -148,7 +148,7 @@ context('Watermark Create/Edit', () => {
     page.get('wm_shadow_color').invoke('val').then((val) => { expect(val).to.be.equal('#000000') })
   })
 
-  it('should save and load an image watermark', () => {
+  it('save and load an image watermark', () => {
     page.get('wm_name').clear().type('WM2')
     page.get('wm_type').check('image')
 
@@ -191,7 +191,7 @@ context('Watermark Create/Edit', () => {
     })
   })
 
-  it('should reject XSS', () => {
+  it('reject XSS in name', () => {
     page.get('wm_name').clear().type(page.messages.xss_vector)
     page.get('wm_name').blur()
     page.hasErrorsCount(1)

@@ -74,7 +74,7 @@ abstract class AbstractChannels extends CP_Controller
             'title' => lang('channel_manager'),
         );
 
-        if (ee('Permission')->hasAll('access_sys_prefs', 'can_admin_channels')) {
+        if (ee('Permission')->hasAll('can_access_sys_prefs', 'can_admin_channels')) {
             $header['toolbar_items'] = [
                 'settings' => [
                     'href' => ee('CP/URL')->make('settings/content-design'),
@@ -103,6 +103,11 @@ abstract class AbstractChannels extends CP_Controller
             'sets.importUrl',
             ee('CP/URL', 'channels/sets')->compile()
         );
+
+        ee()->javascript->set_global(array(
+            'lang.edit_element' => lang('edit_element'),
+            'lang.remove_btn' => lang('remove_btn'),
+        ));
 
         ee()->cp->add_js_script(array(
             'file' => array('cp/channel/menu'),

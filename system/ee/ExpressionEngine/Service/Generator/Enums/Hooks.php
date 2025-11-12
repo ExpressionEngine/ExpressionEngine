@@ -16,6 +16,18 @@ class Hooks
 {
     use EnumTrait;
 
+    public const CLI_BOOT = [
+        'name' => 'cli_boot',
+        'params' => '$cli',
+        'library' => 'CLI',
+    ];
+
+    public const CLI_BEFORE_HANDLE = [
+        'name' => 'cli_before_handle',
+        'params' => '$cli, $commandObject, $commandClassName',
+        'library' => 'CLI',
+    ];
+
     public const CORE_BOOT = [
         'name' => 'core_boot',
         'params' => '',
@@ -150,7 +162,7 @@ class Hooks
 
     public const RELATIONSHIPS_QUERY = [
         'name' => 'relationships_query',
-        'params' => '$field_name, $entry',
+        'params' => '$field_name, $entry_ids, $depths, $sql',
         'library' => 'Relationships Fieldtype Extension Hooks_ids, $depths, $sql',
     ];
 
@@ -1958,5 +1970,23 @@ class Hooks
         'name' => 'edit_wiki_article_form_end',
         'params' => '$obj, $query',
         'library' => 'Wiki Module',
+    ];
+
+    public const UPDATER_START = [
+        'name' => 'updater_start',
+        'params' => '$runner',
+        'library' => 'Updater',
+    ];
+
+    public const UPDATER_ERROR = [
+        'name' => 'updater_error',
+        'params' => '$runner, $exception',
+        'library' => 'Updater',
+    ];
+
+    public const UPDATER_COMPLETE = [
+        'name' => 'updater_complete',
+        'params' => '',
+        'library' => 'Updater',
     ];
 }

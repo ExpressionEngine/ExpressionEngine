@@ -8,12 +8,13 @@
 
 namespace ExpressionEngine\Addons\Pro\Service\Mfa;
 
-use OTPHP\TOTP;
-use ParagonIE\ConstantTime\Base32;
-use BaconQrCode\Renderer\ImageRenderer;
-use BaconQrCode\Renderer\Image\SvgImageBackEnd;
-use BaconQrCode\Renderer\RendererStyle\RendererStyle;
-use BaconQrCode\Writer;
+use ExpressionEngine\Dependency\OTPHP\TOTP;
+use ExpressionEngine\Dependency\OTPHP\InternalClock;
+use ExpressionEngine\Dependency\ParagonIE\ConstantTime\Base32;
+use ExpressionEngine\Dependency\BaconQrCode\Renderer\ImageRenderer;
+use ExpressionEngine\Dependency\BaconQrCode\Renderer\Image\SvgImageBackEnd;
+use ExpressionEngine\Dependency\BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use ExpressionEngine\Dependency\BaconQrCode\Writer;
 
 /**
  * MultiFactorAuth Service
@@ -21,34 +22,7 @@ use BaconQrCode\Writer;
 class Mfa
 {
     protected static $backupCode;
-    protected static $initialized;
     protected static $formReturn;
-
-    /**
-     * Initialize for the OTP/QR stuff
-     */
-    private function _init()
-    {
-        \ExpressionEngine\Core\Autoloader::getInstance()
-            ->addPrefix('OTPHP', SYSPATH . 'ee/ExpressionEngine/Addons/pro/lib/spomky-labs/otphp')
-            ->addPrefix('ParagonIE\ConstantTime', SYSPATH . 'ee/ExpressionEngine/Addons/pro/lib/paragonie/constant_time_encoding')
-            ->addPrefix('BaconQrCode', SYSPATH . 'ee/ExpressionEngine/Addons/pro/lib/bacon/bacon-qr-code')
-            ->addPrefix('DASPRiD\Enum', SYSPATH . 'ee/ExpressionEngine/Addons/pro/lib/dasprid/enum')
-            ->addPrefix('Assert', SYSPATH . 'ee/ExpressionEngine/Addons/pro/lib/beberlei/assert/lib/Assert')
-            ->addPrefix('Safe', SYSPATH . 'ee/ExpressionEngine/Addons/pro/lib/thecodingmachine/safe/generated')
-            ->addPrefix('Safe', SYSPATH . 'ee/ExpressionEngine/Addons/pro/lib/thecodingmachine/safe/lib')
-            ->register();
-
-        $extraFiles = [
-            '/thecodingmachine/safe/generated/strings.php',
-            '/thecodingmachine/safe/generated/array.php',
-            '/thecodingmachine/safe/generated/url.php',
-        ];
-        foreach ($extraFiles as $file) {
-            include_once(SYSPATH . 'ee/ExpressionEngine/Addons/pro/lib' . $file);
-        }
-        self::$initialized = true;
-    }
 
     /**
      * Generate backup code used to restore access
@@ -76,10 +50,7 @@ class Mfa
      */
     public function generateQrCode($secret, $size = 400)
     {
-        if (empty(self::$initialized)) {
-            $this->_init();
-        }
-        $totp = TOTP::create(Base32::encodeUpper($secret));
+        $totp = TOTP::createFromSecret(Base32::encodeUpper($secret), new InternalClock());
         $totp->setIssuer(ee()->config->item('site_name'));
         $totp->setLabel(ee()->session->userdata('username'));
 
@@ -102,10 +73,7 @@ class Mfa
      */
     public function validateOtp($input, $secret)
     {
-        if (empty(self::$initialized)) {
-            $this->_init();
-        }
-        $totp = TOTP::create(Base32::encodeUpper($secret));
+        $totp = TOTP::createFromSecret(Base32::encodeUpper($secret), new InternalClock());
         return $totp->verify($input);
     }
 
@@ -123,6 +91,16 @@ class Mfa
 
         // If MFA not setup, show setup screen
         if (ee()->session->getMember()->enable_mfa !== true) {
+            $sessions = ee('Model')
+                ->get('Session')
+                ->filter('member_id', ee()->session->userdata('member_id'))
+                ->filter('fingerprint', ee()->session->userdata('fingerprint'))
+                ->all();
+            foreach ($sessions as $session) {
+                $session->mfa_flag = 'required';
+                $session->save();
+            }
+
             return $this->formEnableMfa();
         }
         // If user has MFA enabled, show the dialog screen
@@ -156,16 +134,6 @@ class Mfa
 
     public function formEnableMfa()
     {
-        $sessions = ee('Model')
-            ->get('Session')
-            ->filter('member_id', ee()->session->userdata('member_id'))
-            ->filter('fingerprint', ee()->session->userdata('fingerprint'))
-            ->all();
-        foreach ($sessions as $session) {
-            $session->mfa_flag = 'required';
-            $session->save();
-        }
-
         ee()->lang->load('login');
         ee()->lang->load('pro');
         $formVars = [

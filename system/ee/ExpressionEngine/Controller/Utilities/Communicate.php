@@ -39,7 +39,7 @@ class Communicate extends Utilities
      * @param	obj	$email	An EmailCache object for use in re-populating the form (see: resend())
      * @return string
      */
-    public function index(EmailCache $email = null)
+    public function index(?EmailCache $email = null)
     {
         $default = array(
             'from' => ee()->session->userdata('email'),
@@ -294,7 +294,7 @@ class Communicate extends Utilities
                 // filter empty inputs, like a hidden no-value input from React
                 $roles = array_filter(ee()->input->post($key));
             } elseif (in_array($key, $form_fields)) {
-                $$key = ee()->input->post($key);
+                $$key = ee('Request')->post($key);
             }
         }
 
@@ -753,13 +753,13 @@ class Communicate extends Utilities
         $search = ee()->input->get_post('filter_by_keyword');
         if (! empty($search)) {
             $emails = $emails->filterGroup()
-                ->filter('subject', 'LIKE', '%' . $search . '%')
-                ->orFilter('message', 'LIKE', '%' . $search . '%')
-                ->orFilter('from_name', 'LIKE', '%' . $search . '%')
-                ->orFilter('from_email', 'LIKE', '%' . $search . '%')
-                ->orFilter('recipient', 'LIKE', '%' . $search . '%')
-                ->orFilter('cc', 'LIKE', '%' . $search . '%')
-                ->orFilter('bcc', 'LIKE', '%' . $search . '%')
+                ->filter('subject', 'LIKE', '%' . ee()->db->escape_like_str($search) . '%')
+                ->orFilter('message', 'LIKE', '%' . ee()->db->escape_like_str($search) . '%')
+                ->orFilter('from_name', 'LIKE', '%' . ee()->db->escape_like_str($search) . '%')
+                ->orFilter('from_email', 'LIKE', '%' . ee()->db->escape_like_str($search) . '%')
+                ->orFilter('recipient', 'LIKE', '%' . ee()->db->escape_like_str($search) . '%')
+                ->orFilter('cc', 'LIKE', '%' . ee()->db->escape_like_str($search) . '%')
+                ->orFilter('bcc', 'LIKE', '%' . ee()->db->escape_like_str($search) . '%')
                 ->endFilterGroup();
         }
 
@@ -907,7 +907,7 @@ class Communicate extends Utilities
         ));
 
         if (! ee()->upload->do_upload('attachment')) {
-            ee()->form_validation->set_message('_attachment_handler', lang('attachment_problem'));
+            ee()->form_validation->set_message('_attachment_handler', ee()->upload->display_errors());
 
             return false;
         }

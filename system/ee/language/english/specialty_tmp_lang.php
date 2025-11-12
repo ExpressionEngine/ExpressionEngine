@@ -22,7 +22,7 @@ $lang = array(
 
     'comment_notification' => 'User &ndash; Comment(s) notification',
 
-    'comment_notification_desc' => 'This template defines the message that a user receives when someone has responded to their commment',
+    'comment_notification_desc' => 'This template defines the message that a user receives when someone has responded to their comment',
 
     'comments_opened_notification' => 'User &ndash; Comment(s) added notification',
 

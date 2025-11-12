@@ -189,11 +189,11 @@ class Structure extends Channel
         }
 
         $css_class = ee()->TMPL->fetch_param('css_class');
-        $css_class = $css_class ? strtolower($css_class) : '';
+        $css_class = $css_class ? strtolower((string) $css_class) : '';
 
         // DEPRECIATED SUPPORT for exclude_status and include_status
-        $include_status = strtolower(ee()->TMPL->fetch_param('include_status'));
-        $exclude_status = strtolower(ee()->TMPL->fetch_param('exclude_status'));
+        $include_status = strtolower((string) ee()->TMPL->fetch_param('include_status'));
+        $exclude_status = strtolower((string) ee()->TMPL->fetch_param('exclude_status'));
 
         // New, native EE status mode
         $status = ee()->TMPL->fetch_param('status', 'open');
@@ -211,9 +211,9 @@ class Structure extends Channel
         $include_status_list = explode('|', $include_status);
         $exclude_status_list = explode('|', $exclude_status);
 
-        // Remove the default "open" status if explicitely set
+        // Remove the default "open" status if explicitly set
         if (in_array('open', $exclude_status_list)) {
-            $status = array_filter($status, create_function('$v', 'return $v != "open";'));
+            $status = array_filter($status, function($v) { return $v != "open"; });
         }
 
         if ($status_state == 'positive') {
@@ -223,10 +223,10 @@ class Structure extends Channel
         }
 
         // Retrieve entry_ids to exclude
-        $exclude = explode("|", ee()->TMPL->fetch_param('exclude'));
+        $exclude = explode("|", (string) ee()->TMPL->fetch_param('exclude'));
 
         // Sitemap mode -- Completely alternate output
-        $mode = strtolower(ee()->TMPL->fetch_param('mode'));
+        $mode = strtolower((string) ee()->TMPL->fetch_param('mode'));
         if ($mode == "") {
             $mode = "html";
         }
@@ -1145,6 +1145,7 @@ class Structure extends Channel
         $name = 'structure_' . $type . '_id';
 
         $data = array();
+        $selected = 0;
 
         if ($type == 'template') {
             $templates = $this->sql->get_templates();
@@ -1238,7 +1239,8 @@ class Structure extends Channel
                 );
 
                 // create new node
-                $this->nset->newLastChild($parentNode['right'], $extra);
+                $newRight = !empty($parentNode) ? $parentNode['right'] : 0;
+                $this->nset->newLastChild($newRight, $extra);
 
                 // fetch newly created node to keep working with
                 $node = $this->nset->getNode($entry_id);
@@ -1246,7 +1248,9 @@ class Structure extends Channel
 
             // set uri entries
             $node['uri'] = (!empty($site_pages['uris'][$entry_id]) ? $site_pages['uris'][$entry_id] : $uri);
-            $parentNode['uri'] = (!empty($parent_id) && !empty($site_pages['uris'][$parent_id]) ? $site_pages['uris'][$parent_id] : '');
+            if (!empty($parentNode)) {
+                $parentNode['uri'] = (!empty($parent_id) && !empty($site_pages['uris'][$parent_id]) ? $site_pages['uris'][$parent_id] : '');
+            }
 
             // existing node
             $changed = $this->has_changed($node, $data);
@@ -1408,7 +1412,7 @@ class Structure extends Channel
                         }
                     }
 
-                    if ($changed === 'parent') {
+                    if ($changed === 'parent' && !empty($parentNode)) {
                         $this->nset->moveToLastChild($node, $parentNode);
                     }
 
@@ -1644,8 +1648,11 @@ class Structure extends Channel
         // ensure beginning and ending slash
         $uri = '/' . trim($uri, '/');
 
-        // if double slash, reduce to one
-        return str_replace('//', '/', $uri);
+        // collapse multiple slashes to a single slash without regex
+        while (strpos($uri, '//') !== false) {
+            $uri = str_replace('//', '/', $uri);
+        }
+        return $uri;
     }
 
     /*
@@ -1707,7 +1714,7 @@ class Structure extends Channel
 
         ee()->load->helper('string');
 
-        $site_pages = unserialize(base64_decode($query->row('site_pages')));
+        $site_pages = unserialize(base64_decode((string) $query->row('site_pages')));
 
         return $site_pages[ee()->config->item('site_id')];
 
@@ -1829,8 +1836,26 @@ class Structure extends Channel
         return $changed;
     }
 
+    /**
+     * Delete all Structure data for a specific channel
+     *
+     * @param int $channel_id The channel ID to delete data for
+     * @return bool Returns true on success, false on failure or invalid input
+     */
     public function delete_data_by_channel($channel_id)
     {
+        
+        // Check if channel_id is numeric
+        if (!is_numeric($channel_id)) {
+            return false;
+        }
+
+        // Check if user has admin permission
+        $settings = $this->sql->get_settings();
+        if (!$this->sql->user_access('perm_delete', $settings)) {
+            return false;
+        }
+
         // add structure nav history before deleting data by channel
         // add_structure_nav_revision($site_id, 'Pre deleting data by channel');
 
@@ -1958,7 +1983,7 @@ class Structure extends Channel
                 unset($site_pages['templates'][$entry_id]);
 
                 if (! in_array($entry_id, $l_ids)) {
-                    $this->set_status($entry_id, 'closed');
+                    ee('Model')->get('ChannelEntry', $entry_id)->fields('status')->first()->setProperty('status', 'closed')->save();
                 }
             }
             // Delete from exp_structure

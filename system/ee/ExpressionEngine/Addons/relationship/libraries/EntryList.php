@@ -57,8 +57,9 @@ class EntryList
 
         $entries = ee('Model')->get('ChannelEntry')
             ->with('Channel')
-            ->fields('Channel.channel_title', 'title', 'status')
-            ->order($order_field, $order_dir);
+            ->fields('Channel.channel_title', 'title', 'status', 'entry_date')
+            ->order($order_field, $order_dir)
+            ->order('entry_id', $order_dir);
 
         if ($related == 'related') {
             $entries->filter('entry_id', 'IN', $show_selected);
@@ -67,7 +68,11 @@ class EntryList
         }
 
         if (! empty($search)) {
-            $entries->search('title', '"' . $search . '"');
+            if (is_numeric($search) && strlen($search) < 3) {
+                $entries->filter('entry_id', $search);
+            } else {
+                $entries->search(['title', 'url_title', 'entry_id'], $search);
+            }
         }
 
         if (! empty($channel_id) && is_numeric($channel_id)) {
@@ -209,8 +214,6 @@ class EntryList
             show_error(lang('unauthorized_access'), 403);
         }
 
-        $statuses = ee('Model')->get('Status')->all('true')->indexBy('status');
-
         $response = array();
         foreach ($this->query($settings) as $entry) {
             $response[] = [
@@ -218,7 +221,9 @@ class EntryList
                 'label' => $entry->title,
                 'instructions' => $entry->Channel->channel_title,
                 'channel_id' => $entry->Channel->channel_id,
-                'highlight' => isset($statuses[$entry->status]) ? $statuses[$entry->status]->highlight : ''
+                'can_edit' => ($entry->author_id == ee()->session->userdata('member_id')) ? ee('Permission')->has('can_edit_self_entries_channel_id_' . $entry->channel_id) : ee('Permission')->has('can_edit_other_entries_channel_id_' . $entry->channel_id),
+                'editable' => (ee('Permission')->isSuperAdmin() || array_key_exists($entry->Channel->getId(), ee()->session->userdata('assigned_channels'))),
+                'status' => $entry->status
             ];
         }
 

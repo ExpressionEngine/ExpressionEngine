@@ -5,7 +5,7 @@ const page = new QueryForm
 const results = new QueryResults
 const cp_log = new CpLogs
 
-context('Cache Manager', () => {
+context('SQL Query Form', () => {
 
   before(function(){
     cy.task('db:seed')
@@ -29,7 +29,7 @@ context('Cache Manager', () => {
 
     })
 
-    it('should validate the form', () =>{
+    it('Validate Query form', () =>{
 
     	cy.get('button').contains('Run Query').click()
     	page.get('wrap').contains("Attention: Query not run")
@@ -46,7 +46,7 @@ context('Cache Manager', () => {
     	page.get('wrap').contains("Syntax error")
 	})
 
-	it('should not allow certain query types', () =>{
+	it('Does not allow certain query types', () =>{
 		let not_allowed = 'Query type not allowed';
 		page.get('query_form').type("FLUSH TABLES")
 		cy.get('button').contains('Run Query').click()
@@ -79,7 +79,7 @@ context('Cache Manager', () => {
 
 	})
 
-	it('should show MySQL errors', () =>{
+	it('Shows MySQL errors', () =>{
 		let error_text = 'You have an error in your SQL syntax';
 
 		page.get('query_form').type("SELECT FROM exp_channels")
@@ -88,7 +88,7 @@ context('Cache Manager', () => {
 	})
 
 
-	it('should show query results', () =>{
+	it('Shows query results', () =>{
 		page.get('query_form').type("SELECT * FROM exp_channels")
 		cy.get('button').contains('Run Query').click()
 		cy.hasNoErrors()
@@ -102,7 +102,7 @@ context('Cache Manager', () => {
 	 })
 
 
-	it('should sort query results by columns', () =>{
+	it('Sort query results by columns', () =>{
 		page.get('query_form').type("SELECT * FROM exp_channels")
 		cy.get('button').contains('Run Query').click()
 		cy.hasNoErrors()
@@ -111,7 +111,7 @@ context('Cache Manager', () => {
 		results.get('table').find('tbody tr:nth-child(2) td:nth-child(1)').contains('1')
 	})
 
-	it('should search query results', () =>{
+	it('Search query results', () =>{
 		page.get('query_form').type("select * from exp_channels")
 		cy.get('button').contains('Run Query').click()
 		cy.hasNoErrors()
@@ -124,7 +124,7 @@ context('Cache Manager', () => {
 
 
 
-	it('should show no results when there are no results', () =>{
+	it('Show no results when there are no results', () =>{
 		page.get('query_form').type("select * from exp_channels where channel_id = 1000")
 		cy.get('button').contains('Run Query').click()
 		page.get('wrap').contains('Total Results: 0')
@@ -132,7 +132,7 @@ context('Cache Manager', () => {
 
 	})
 
-	it('should show the number of affected rows on write queries', () =>{
+	it('Show the number of affected rows on write queries', () =>{
     page.get('query_form').type("UPDATE exp_channel_titles SET title = 'Kevin' WHERE title = 'Josh'")
     cy.get('button').contains('Run Query').click()
     page.get('wrap').contains('Affected Rows:')

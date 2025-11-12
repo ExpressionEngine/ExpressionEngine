@@ -8,10 +8,10 @@ const returnPage = new EditFile;
 const filePage = new EditFile;
 const { _, $ } = Cypress
 
-const md_file = '../../support/file/README.md'
-const script_file = '../../support/file/script.sh'
-const image_file = '../../support/file/programming.gif'
-const php_file = '../../support/file/clever.php.png'
+const md_file = 'support/file/README.md'
+const script_file = 'support/file/script.sh'
+const image_file = 'support/file/programming.gif'
+const php_file = 'support/file/clever.php.png'
 
 const upload_dir = '../../images/uploads'
 
@@ -57,7 +57,7 @@ context('File Manager / Upload File', () => {
   })
 
   
-  it('can upload a Markdown file', () => {
+  it('Can upload a Markdown file', () => {
     page.dragAndDropUpload(md_file)
     cy.get('.file-upload-widget').should('not.be.visible')
     cy.wait('@table')
@@ -68,7 +68,7 @@ context('File Manager / Upload File', () => {
     returnPage.get('selected_file').should('contain', 'Document')
   })
 
-  it('asked to resolve when uploading file with the same name', () => {
+  it('Asked to resolve when uploading file with the same name', () => {
     page.dragAndDropUpload(md_file)
 
     cy.get('.file-upload-widget').should('be.visible')
@@ -79,8 +79,8 @@ context('File Manager / Upload File', () => {
     returnPage.get('selected_file').should('not.exist')
   })
 
-  it('cannot upload a file when mime type is not registered', () => {
-    page.dragAndDropUpload('../../support/file/ubuntu-22.04-live-server-amd64-iso.torrent')
+  it('Cannot upload a file when mime type is not registered', () => {
+    page.dragAndDropUpload('support/file/ubuntu-22.04-live-server-amd64-iso.torrent')
 
     cy.get('.file-upload-widget').should('be.visible')
     cy.get('.file-upload-widget').should('contain', 'File not allowed')
@@ -95,16 +95,17 @@ context('File Manager / Upload File', () => {
 
   })
 
-  it('uploads the file correctly after error', () => {
-    page.dragAndDropUpload('../../support/file/ubuntu-22.04-live-server-amd64-iso.torrent')
+  it('Uploads the file correctly after error', () => {
+    page.dragAndDropUpload('support/file/ubuntu-22.04-live-server-amd64-iso.torrent')
 
     cy.get('.file-upload-widget').should('be.visible')
     cy.get('.file-upload-widget').should('contain', 'File not allowed')
     cy.get('.file-upload-widget a').should('contain', 'Dismiss')
     cy.get('.file-upload-widget a').contains('Dismiss').click()
+    cy.wait('@table')
     cy.hasNoErrors()
 
-    page.dragAndDropUpload('../../../../LICENSE.txt')
+    page.dragAndDropUpload('../../LICENSE.txt')
     returnPage.get('selected_file').should('exist')
     returnPage.get('selected_file').contains("LICENSE.txt")
     returnPage.get('selected_file').should('contain', 'Document')
@@ -113,9 +114,9 @@ context('File Manager / Upload File', () => {
 
   })
 
-  it('can upload a file when mime type is whitelisted in config', () => {
+  it('Upload a file when mime type is whitelisted in config', () => {
     cy.task('filesystem:copy', { from: 'support/config/mimes.php', to: '../../system/user/config/' })
-    page.dragAndDropUpload('../../support/file/ubuntu-22.04-live-server-amd64-iso.torrent')
+    page.dragAndDropUpload('support/file/ubuntu-22.04-live-server-amd64-iso.torrent')
     cy.get('.file-upload-widget').should('not.be.visible')
     cy.wait('@table')
     cy.hasNoErrors()
@@ -125,13 +126,13 @@ context('File Manager / Upload File', () => {
     returnPage.get('selected_file').should('contain', 'Other')
   })
 
-  it('can upload a SQL file and get some response', () => {
+  it('Upload a SQL file and get some response', () => {
     cy.get('.file-upload-widget').then(function(widget) {
       $(widget).removeClass('hidden')
     })
     cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
     cy.intercept('/admin.php?/cp/files/directory/*').as('table')
-    page.get('file_input').find('.file-field__dropzone').attachFile('../../support/sql/database_7.0.0.sql', { subjectType: 'drag-n-drop' })
+    page.get('file_input').find('.file-field__dropzone').selectFile('support/sql/database_7.0.0.sql', { action: 'drag-drop' })
     cy.wait('@upload')
     cy.wait('@table')
     cy.hasNoErrors()
@@ -140,12 +141,12 @@ context('File Manager / Upload File', () => {
     returnPage.get('selected_file').contains("database_7.0.0.sql")
   })
 
-  it('cannot upload a shell script', () => {
+  it('Cannot upload a shell script', () => {
     cy.get('.file-upload-widget').then(function(widget) {
       $(widget).removeClass('hidden')
     })
     cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
-    page.get('file_input').find('.file-field__dropzone').attachFile(script_file, { subjectType: 'drag-n-drop' })
+    page.get('file_input').find('.file-field__dropzone').selectFile(script_file, { action: 'drag-drop' })
     cy.wait('@upload')
     cy.hasNoErrors()
 
@@ -153,7 +154,7 @@ context('File Manager / Upload File', () => {
     page.get('file_input').contains("File not allowed.")
   })
 
-  it('can upload a image when the directory is restricted to images', () => {
+  it('Upload an image when the directory is restricted to images', () => {
     cy.get('.sidebar').contains('About').click()
 
     cy.get('.file-upload-widget').then(function(widget) {
@@ -161,7 +162,7 @@ context('File Manager / Upload File', () => {
     })
     cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
     cy.intercept('/admin.php?/cp/files/directory/*').as('table')
-    page.get('file_input').find('.file-field__dropzone').attachFile(image_file, { subjectType: 'drag-n-drop' })
+    page.get('file_input').find('.file-field__dropzone').selectFile(image_file, { action: 'drag-drop' })
     cy.wait('@upload')
     cy.wait('@table')
     cy.hasNoErrors()
@@ -174,7 +175,7 @@ context('File Manager / Upload File', () => {
     cy.task('filesystem:delete', '../../images/about/_thumbs/programming.gif')
   })
 
-  it('cannot upload a non-image when the directory is restricted to images', () => {
+  it('Cannot upload a non-image when the directory is restricted to images', () => {
     cy.get('.sidebar').contains('About').click()
 
     page.dragAndDropUpload(md_file)
@@ -184,25 +185,25 @@ context('File Manager / Upload File', () => {
     page.get('file_input').contains("File not allowed.")
   })
 
-  it('file uploaded only once in case of previous error', () => {
+  it('File uploaded only once in case of previous error', () => {
     cy.get('.sidebar').contains('About').click()
 
     page.dragAndDropUpload(md_file)
 
     page.get('file_input').find('.file-field__dropzone').invoke('show')
-    page.dragAndDropUpload('../../../../themes/ee/asset/fonts/fontawesome-webfont.eot')
+    page.dragAndDropUpload('../../themes/ee/asset/fonts/fontawesome-webfont.eot')
 
     cy.get('.file-upload-widget:contains(fontawesome-webfont.eot)').its('length').should('eq', 1)
   })
 
-  it('cannot upload a PHP script masquerading as an image', () => {
+  it('Cannot upload a PHP script masquerading as an image', () => {
     cy.get('.sidebar').contains('About').click()
 
     cy.get('.file-upload-widget').then(function(widget) {
       $(widget).removeClass('hidden')
     })
     cy.intercept('/admin.php?/cp/addons/settings/filepicker/ajax-upload').as('upload')
-    page.get('file_input').find('.file-field__dropzone').attachFile(php_file, { subjectType: 'drag-n-drop' })
+    page.get('file_input').find('.file-field__dropzone').selectFile(php_file, { action: 'drag-drop' })
     cy.wait('@upload')
     cy.hasNoErrors()
 
@@ -210,7 +211,7 @@ context('File Manager / Upload File', () => {
     page.get('file_input').contains("File not allowed.")
   })
 
-  it('shows an error if the directory upload path has no write permissions', () => {
+  it('Show error if the directory upload path has no write permissions', () => {
     if (Cypress.platform === 'win32')
     {
         cy.log('skipped because of Windows platform')
@@ -230,7 +231,7 @@ context('File Manager / Upload File', () => {
     }
   })
 
-  it('shows an error if the directory upload path does not exist', () => {
+  it('Show error if the directory upload path does not exist', () => {
     cy.task('filesystem:rename', {from: upload_dir, to: upload_dir + '.rspec'}).then(() => {
       page.load()
       cy.hasNoErrors()

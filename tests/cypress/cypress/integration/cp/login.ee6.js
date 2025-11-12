@@ -15,10 +15,10 @@ context('Login Page', () => {
     })
 
     
-    context('when cp session is idle', () => {
+    context('show modal when cp session is idle', () => {
         beforeEach(function() {
             // Log in
-            cy.login({ email: 'admin', password: 'password' });
+            cy.auth();
 
             // User is logged in
             cy.get('h2').contains("Members");
@@ -60,8 +60,10 @@ context('Login Page', () => {
 
         it('user is logged out when entering an invalid password', function() {
             // Type the password in and click submit
+            cy.intercept('**/authenticate').as('authenticate')
             cy.get('#idle-modal input[name=password]').type('not-the-password');
             cy.get('#idle-modal input[name=submit]').click();
+            cy.wait('@authenticate');
             cy.wait(1000);
 
             // Click the Overview link in the sidebar, which will go to a new page
@@ -76,14 +78,19 @@ context('Login Page', () => {
             cy.intercept('**/authenticate').as('authenticate')
             cy.get('#idle-modal input[name=password]').type('password');
             cy.get('#idle-modal input[name=submit]').click();
-
             cy.wait('@authenticate');
 
+            cy.get('#idle-modal').should('not.be.visible');
+            cy.wait(5000);
             // Click the Overview link in the sidebar, which will go to a new page
-            cy.get('.ee-sidebar').contains('Overview').click({force: true});
+            cy.get(".ee-sidebar a:contains('Overview')").invoke('attr', 'href').then((href) => {
+                expect(href).to.be.equal('admin.php?/cp/homepage')
+                cy.visit(href)
 
-            // Make sure user is still logged in
-            cy.get('h2').contains("Members");
+                // Make sure user is still logged in
+                cy.get('h2').contains("Members");
+            })
+            
         })
     })
 
@@ -172,6 +179,15 @@ context('Login Page', () => {
     })
 
     context('advanced login routines', () => {
+        it('logs in using email', function() {
+            // Log in
+            cy.login({ email: 'cypress@expressionengine.com', password: 'password' });
+
+            // User is logged in
+            cy.get('h2').contains("Members");
+
+        })
+        
         it('logs in after logout', function() {
             // Log in
             cy.login({ email: 'admin', password: 'password' });

@@ -325,6 +325,18 @@ export default new Vuex.Store({
 						});
 					}
 
+					if (typeof pro.prolets['channel--Channel_pro'] !== 'undefined') {
+						staticData.dockItems.push({
+							id: 'channel--Channel_pro',
+							image: pro.prolets['channel--Channel_pro'].icon.replace('&amp;', '&'),
+							method: 'channelpopupupmodal',
+							methodData: pro.prolets['channel--Channel_pro'],
+							title: pro.prolets['channel--Channel_pro'].name,
+							type: pro.prolets['channel--Channel_pro'].type || 'button',
+							modalStyle: pro.prolets['channel--Channel_pro'].modalStyle || pro.prolets['channel--Channel_pro'].size,
+						});
+					}
+
 
 					staticData.dockItems.push(
 						{
@@ -364,7 +376,7 @@ export default new Vuex.Store({
 					let prolets = pro.prolets,
 							customDockItems = []
 					for(const prolet in prolets) {
-						if(!prolets[prolet].error && prolet !== 'pro--Entries_pro') {
+						if(!prolets[prolet].error && prolet !== 'pro--Entries_pro' && prolet !== 'channel--Channel_pro') {
 							let buttonData = prolets[prolet].buttons || prolets[prolet].footer || []
 							let buttons = buttonData.map(b => {
 								if(b.text) {
@@ -375,6 +387,7 @@ export default new Vuex.Store({
 
 								return b
 							})
+
 							let item = {
 								id: prolet,
 								// icon: prolets[prolet].icon.replace('&amp;', '&'),
@@ -420,6 +433,21 @@ export default new Vuex.Store({
 			data.asProlet = true
 			data.shouldShow = true
 			data.size = 'xl'
+			data.footer = [{
+				type: 'button',
+				text: context.state.lang.login || 'Login',
+				buttonStyle: 'default',
+				isLogin: true,
+				callbackName: 'login'
+			}]
+			context.dispatch('createModalFromDock', data)
+		},
+		createChannelModalFromDock(context, data) {
+			data.x = 100
+			data.y = 100
+			data.asProlet = true
+			data.shouldShow = true
+			data.size = data.size
 			data.footer = [{
 				type: 'button',
 				text: context.state.lang.login || 'Login',

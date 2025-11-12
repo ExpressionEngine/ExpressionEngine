@@ -107,7 +107,7 @@ class CommandMakeAddon extends Cli
 
             return $service->build();
         } catch (\Exception $e) {
-            $this->fail($e->getMessage());
+            $this->fail(addslashes($e->getMessage()));
         }
     }
 

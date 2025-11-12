@@ -21,8 +21,9 @@ $(document).ready(function() {
 		dragClass: 'list-group--dragging',
 		handleClass: 'list-item__handle',
 		placeElement: $('<li><div class="tbl-row drag-placeholder"><div class="none"></div></div></li>'),
-		expandBtnHTML: '',
-		collapseBtnHTML: '',
+		expandBtnHTML: '<button class="expand-btn" data-action="expand">Expand</button>',
+		collapseBtnHTML: '<button class="expand-btn collapse-btn" data-action="collapse">Collapse</button>',
+		collapsedClass: 'dd-collapsed',
 		maxDepth: 10
 	}).on('change', function() {
 

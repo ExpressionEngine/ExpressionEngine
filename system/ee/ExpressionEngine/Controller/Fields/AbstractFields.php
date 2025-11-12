@@ -156,6 +156,10 @@ abstract class AbstractFields extends CP_Controller
         $conditions = [];
         $set_index = 0;
         foreach (ee('Request')->post('condition_set') as $condition_set_id => $condition_set_data) {
+            $orig_condition_set_id = $condition_set_id;
+            if (defined('CLONING_MODE') && CLONING_MODE === true) {
+                $condition_set_id = 'new_set_' . $condition_set_id;
+            }
             if (!is_numeric($condition_set_id)) {
                 $fieldConditionSet = ee('Model')->make('FieldConditionSet');
             } else {
@@ -180,8 +184,11 @@ abstract class AbstractFields extends CP_Controller
 
             $rule_index = 0;
             $postedConditions = ee('Request')->post('condition');
-            if (!empty($postedConditions) && isset($postedConditions[$condition_set_id])) {
-                foreach ($postedConditions[$condition_set_id] as $condition_id => $condition_data) {
+            if (!empty($postedConditions) && isset($postedConditions[$orig_condition_set_id])) {
+                foreach ($postedConditions[$orig_condition_set_id] as $condition_id => $condition_data) {
+                    if (defined('CLONING_MODE') && CLONING_MODE === true) {
+                        $condition_id = 'new_row_' . $condition_id;
+                    }
                     if (!is_numeric($condition_id)) {
                         $fieldCondition = ee('Model')->make('FieldCondition');
                     } else {
@@ -199,7 +206,7 @@ abstract class AbstractFields extends CP_Controller
                         $errors = $fieldConditionValidation->getFailed();
                         foreach ($errors as $piece => $rules) {
                             foreach ($rules as $rule) {
-                                $errorName = 'condition[' . $condition_set_id . '][' . $condition_id . '][' . $piece . ']';
+                                $errorName = 'condition[' . $orig_condition_set_id . '][' . $condition_id . '][' . $piece . ']';
                                 $this->validationResult->addFailed($errorName, $rule);
                             }
                         }

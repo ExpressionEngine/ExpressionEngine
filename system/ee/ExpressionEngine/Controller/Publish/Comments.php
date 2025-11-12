@@ -11,7 +11,6 @@
 namespace ExpressionEngine\Controller\Publish;
 
 use ExpressionEngine\Library\CP\Table;
-
 use ExpressionEngine\Controller\Publish\AbstractPublish as AbstractPublishController;
 use ExpressionEngine\Service\Model\Query\Builder;
 
@@ -24,13 +23,15 @@ class Comments extends AbstractPublishController
     {
         parent::__construct();
 
-        if (! ee('Permission')->hasAny(
-            'can_moderate_comments',
-            'can_edit_own_comments',
-            'can_delete_own_comments',
-            'can_edit_all_comments',
-            'can_delete_all_comments'
-        )) {
+        if (
+            ! ee('Permission')->hasAny(
+                'can_moderate_comments',
+                'can_edit_own_comments',
+                'can_delete_own_comments',
+                'can_edit_all_comments',
+                'can_delete_all_comments'
+            )
+        ) {
             show_error(lang('unauthorized_access'), 403);
         }
     }
@@ -70,12 +71,14 @@ class Comments extends AbstractPublishController
         }
 
         // never show Spam here, that needs to be dealt with in the Spam module
-        $comments->filter('status', '!=', 's');
+        if (ee('Addon')->get('spam') && ee('Addon')->get('spam')->isInstalled()) {
+            $comments->filter('status', '!=', 's');
+        }
 
         $search_value = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
         if (! empty($search_value)) {
             $base_url->setQueryStringVariable('filter_by_keyword', $search_value);
-            $comments->filter('comment', 'LIKE', '%' . $search_value . '%');
+            $comments->filter('comment', 'LIKE', '%' . ee()->db->escape_like_str($search_value) . '%');
         }
 
         if (ee('Request')->get('comment_id')) {
@@ -213,10 +216,15 @@ class Comments extends AbstractPublishController
             $comments->filter('status', $status_filter->value());
         }
 
+        // never show Spam here, that needs to be dealt with in the Spam module
+        if (ee('Addon')->get('spam') && ee('Addon')->get('spam')->isInstalled()) {
+            $comments->filter('status', '!=', 's');
+        }
+
         $search_value = htmlentities(ee()->input->get_post('filter_by_keyword'), ENT_QUOTES, 'UTF-8');
         if (! empty($search_value)) {
             $base_url->setQueryStringVariable('filter_by_keyword', $search_value);
-            $comments->filter('comment', 'LIKE', '%' . $search_value . '%');
+            $comments->filter('comment', 'LIKE', '%' . ee()->db->escape_like_str($search_value) . '%');
         }
 
         $filters = ee('CP/Filter')
@@ -268,6 +276,25 @@ class Comments extends AbstractPublishController
             ),
         ));
 
+        // if there are Spam comments for this entry, and the user can access them, give them a link
+        if (ee('Permission')->can('moderate_spam') && ee('Addon')->get('spam') && ee('Addon')->get('spam')->isInstalled()) {
+            $spam_total = ee('Model')->get('Comment')
+                ->filter('site_id', ee()->config->item('site_id'))
+                ->filter('status', 's')
+                ->filter('entry_id', $entry_id)
+                ->count();
+
+            if ($spam_total > 0) {
+                $spam_link = ee('CP/URL')->make('addons/settings/spam', array('content_type' => 'comment'));
+
+                ee('CP/Alert')->makeInline('comments-form')
+                    ->asWarning()
+                    ->withTitle(lang('spam_comments_header'))
+                    ->addToBody(sprintf(lang('spam_comments'), $spam_total, $spam_link))
+                    ->now();
+            }
+        }
+
         ee()->view->cp_breadcrumbs = array(
             ee('CP/URL')->make('publish/comments')->compile() => lang('comments'),
             ee('CP/URL')->make('publish/comments/entry/' . $entry->entry_id)->compile() => lang('entry')
@@ -296,9 +323,11 @@ class Comments extends AbstractPublishController
 
     public function edit($comment_id)
     {
-        if (! ee('Permission')->can('edit_all_comments')
-          && ! ee('Permission')->can('edit_own_comments')
-          && ! ee('Permission')->can('moderate_comments')) {
+        if (
+            ! ee('Permission')->can('edit_all_comments') &&
+            ! ee('Permission')->can('edit_own_comments') &&
+            ! ee('Permission')->can('moderate_comments')
+        ) {
             show_error(lang('unauthorized_access'), 403);
         }
 
@@ -315,10 +344,10 @@ class Comments extends AbstractPublishController
         $can_edit = false;
         $can_moderate = ee('Permission')->can('moderate_comments');
 
-        if (ee('Permission')->can('edit_all_comments') or
-            ($comment->author_id == ee()->session->userdata('member_id')
-                && ee('Permission')->can('edit_own_comments')
-            )) {
+        if (
+            ee('Permission')->can('edit_all_comments') or
+            ($comment->author_id == ee()->session->userdata('member_id') && ee('Permission')->can('edit_own_comments'))
+        ) {
             $can_edit = true;
         }
 
@@ -454,10 +483,17 @@ class Comments extends AbstractPublishController
             }
 
             if ($can_moderate) {
+                $origStatus = $comment->status;
+
                 $comment->status = ee()->input->post('status');
 
                 if (ee()->input->post('move')) {
                     $comment->entry_id = ee()->input->post('move');
+                }
+
+                //changing status to spam?
+                if ($origStatus != ee()->input->post('status') && ee()->input->post('status') == 's') {
+                    ee('Spam')->moderate('comment', $comment, $comment->comment, [], $comment->author_id);
                 }
             }
 
@@ -551,9 +587,10 @@ class Comments extends AbstractPublishController
 
             // You get an edit button if you can edit all comments or you can
             // edit your own comments and this comment is one of yours
-            if (ee('Permission')->can('edit_all_comments')
-                || (ee('Permission')->can('edit_own_comments')
-                    && $comment->author_id == ee()->session->userdata('member_id'))) {
+            if (
+                ee('Permission')->can('edit_all_comments')
+                || (ee('Permission')->can('edit_own_comments') && $comment->author_id == ee()->session->userdata('member_id'))
+            ) {
                 $toolbar = array(
                     'edit' => array(
                         'href' => ee('CP/URL')->make('publish/comments/edit/' . $comment->comment_id),
@@ -633,8 +670,10 @@ class Comments extends AbstractPublishController
     private function remove($comment_ids)
     {
         // Cannot remove if you cannot edit
-        if (! ee('Permission')->can('delete_all_comments')
-          && ! ee('Permission')->can('delete_own_comments')) {
+        if (
+            ! ee('Permission')->can('delete_all_comments')
+            && ! ee('Permission')->can('delete_own_comments')
+        ) {
             show_error(lang('unauthorized_access'), 403);
         }
 
@@ -645,8 +684,10 @@ class Comments extends AbstractPublishController
         $comments = ee('Model')->get('Comment', $comment_ids)
             ->filter('site_id', ee()->config->item('site_id'));
 
-        if (! ee('Permission')->can('delete_all_comments')
-          && ee('Permission')->can('delete_own_comments')) {
+        if (
+            ! ee('Permission')->can('delete_all_comments')
+            && ee('Permission')->can('delete_own_comments')
+        ) {
             $comments->filter('author_id', ee()->session->userdata('member_id'));
         }
 

@@ -2,7 +2,7 @@
 
 <div class="panel">
 <div class="form-standard has-tabs publish" data-publish>
-	<?=form_open($form_url, 'class="ajax-validate"')?>
+	<?=form_open($form_url, 'class="ajax-validate" id="layout-form"')?>
   <div class="panel-heading">
     <div class="form-btns form-btns-top">
 		<div class="title-bar title-bar--large">

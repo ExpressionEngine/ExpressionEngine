@@ -97,7 +97,7 @@ context('File Manager', () => {
 
     // General Tests
 
-    it('can change the page size using the menu', () => {
+    it('Change the page size using the menu', () => {
         beforeEach_all_files();
         cy.visit(page.url + '&perpage=1')
         cy.intercept('/admin.php?/cp/files*').as('fileRequest')
@@ -111,7 +111,7 @@ context('File Manager', () => {
         page.get('files').should('have.length', 10)
     });
 
-    it('can change the page size manually', () => {
+    it('Change the page size manually', () => {
         beforeEach_all_files();
         cy.visit(page.url + '&perpage=1')
         page.get('perpage_filter').click()
@@ -133,7 +133,7 @@ context('File Manager', () => {
         page.get('files').should('have.length', 5)
     });
 
-    it('can change pages', () => {
+    it('navigate pages', () => {
         beforeEach_all_files();
         cy.visit(page.url + '&perpage=1')
         page.get('perpage_filter').click()
@@ -157,7 +157,7 @@ context('File Manager', () => {
         page.get('files').should('have.length', 5)
     });
 
-    it('can reverse sort by title/name', () => {
+    it('Reverse sort by title/name', () => {
         beforeEach_all_files();
         // beforeEach_perpage_50();
         
@@ -188,7 +188,7 @@ context('File Manager', () => {
 
     });
 
-    it('sorting is kept when paginating', () => {
+    it('Sorting is kept when paginating', () => {
         cy.visit(page.url + '&perpage=1')
         cy.log('set to 5 files per page')
         cy.intercept('/admin.php?/cp/files*').as('fileRequest')
@@ -218,7 +218,7 @@ context('File Manager', () => {
         })
     });
 
-    it('can sort by file type', () => {
+    it('Sort by file type', () => {
         beforeEach_all_files();
         // beforeEach_perpage_50();
         cy.intercept('/admin.php?/cp/files*').as('fileRequest')
@@ -261,7 +261,7 @@ context('File Manager', () => {
     });
 
 
-    it('can sort by date added', () => {
+    it('Sort by date added', () => {
         beforeEach_all_files();
         // beforeEach_perpage_50();
         cy.intercept('/admin.php?/cp/files*').as('fileRequest')
@@ -303,22 +303,7 @@ context('File Manager', () => {
         })
     });
 
-    /*it('can view an image', () => {
-        beforeEach_all_files();
-        page.get('manage_actions').eq(0).find('li.view a').click()
-        //page.wait_until_view_modal_visible
-        //page.wait_for_view_modal_header(5)
-        let filename = '';
-        page.get('title_names').eq(0).find('em').invoke('text').then((text) => {
-            filename = text.trim()
-            page.get('view_modal_header').invoke('text').then((text) => {
-                expect(text).contains(filename)
-            })
-        })
-
-    });*/
-
-    it('can edit file', () => {
+    it('Edit file page has no errors', () => {
         beforeEach_all_files();
 
         //page.get('manage_actions').eq(0).find('li.edit a').click()
@@ -330,7 +315,7 @@ context('File Manager', () => {
 
     });
 
-    it('can crop an image', () => {
+    it('Crop an image', () => {
         beforeEach_all_files();
         //page.get('manage_actions').eq(0).find('li.crop a').click()
         cy.get('tr[file_id="1"] .toolbar-wrap .js-dropdown-toggle').click()
@@ -381,7 +366,7 @@ context('File Manager', () => {
         })
     });
 
-    it('can remove a single file', () => {
+    it('Remove a single file', () => {
         beforeEach_all_files();
         let filename = '';
         page.get('title_names').eq(0).invoke('text').then((text) => {
@@ -402,7 +387,7 @@ context('File Manager', () => {
         })
     });
 
-    it('can remove multiple files', () => {
+    it('Remove multiple files', () => {
         beforeEach_all_files();
         // beforeEach_perpage_50();
         page.get('checkbox_header').click()
@@ -418,7 +403,7 @@ context('File Manager', () => {
     });
 
 
-    it('can add a new directory', () => {
+    it('Add new uplaod directory', () => {
         beforeEach_all_files();
         //page.get('new_directory_button').click()
         cy.get('a[href="admin.php?/cp/files/uploads/create"]').first().click()
@@ -427,7 +412,7 @@ context('File Manager', () => {
         cy.url().should('match', /files\/uploads\/create/)
     });
 
-    it('can view a single directory', () => {
+    it('View a single directory', () => {
         beforeEach_all_files();
         page.get('sidebar').contains('Main Upload Directory').click()
         cy.hasNoErrors()
@@ -453,7 +438,7 @@ context('File Manager', () => {
         page.get('modal').find('ul[class="checklist"]').should('have.length', 1)
     });
 
-    it('can remove a directory', () => {
+    it('Remove a directory', () => {
         beforeEach_all_files();
         page.get('sidebar').find('.folder-list > div:first-child').trigger('mouseover')
 
@@ -478,7 +463,7 @@ context('File Manager', () => {
 
     });
 
-    it('can remove the directory you are viewing', () => {
+    it('Remove the directory you are viewing', () => {
 
         beforeEach_all_files();
         page.get('sidebar').contains("About").click()
@@ -511,7 +496,7 @@ context('File Manager', () => {
 
     // Tests specific to the "All Files" view
 
-    it('must choose where to upload a new file when viewing All Files', () => {
+    it('Must choose where to upload a new file when viewing All Files', () => {
 
         // cy.wait(10000)
 
@@ -544,13 +529,9 @@ context('File Manager', () => {
 
     });
 
-    it('can filter the Upload New File menu', () => {
-        beforeEach_all_files();
-    });
-
     // Tests specific to a directory view
 
-    it('can synchronize a directory', () => {
+    it('Synchronize directory page exists', () => {
         beforeEach_not_all_files();
         page.get('sync_button').click()
         cy.hasNoErrors()
@@ -559,7 +540,7 @@ context('File Manager', () => {
 
     });
 
-    it('marks all missing files in index view', () => {
+    it('Marks all missing files in index view', () => {
         beforeEach_all_files();
         cy.task('filesystem:delete', '../../images/about/*.jpg')
         page.load();
@@ -579,7 +560,7 @@ context('File Manager', () => {
 
     });
 
-    it('marks all missing files in directory view', () => {
+    it('Marks all missing files in directory view', () => {
 
         beforeEach_not_all_files();
 
@@ -597,7 +578,7 @@ context('File Manager', () => {
         page.get('wrap').find('tr.missing').should('exist')
     });
 
-    context('file management dropdown options', function() {
+    context('File management dropdown options', function() {
 
         let filename = '';
 
@@ -642,7 +623,7 @@ context('File Manager', () => {
         })
     })
 
-    context('work with filters', function() {
+    context('File Manager filters', function() {
         before(function() {
             cy.task('filesystem:delete', '../../images/uploads/*.zip')
             cy.task('filesystem:delete', '../../images/uploads/*.torrent')
@@ -658,7 +639,7 @@ context('File Manager', () => {
             cy.get('.file-upload-widget').then(function(widget) {
                 $(widget).removeClass('hidden')
             })
-            cy.get('div[data-input-value="files_field"] .file-field__dropzone').attachFile('../../support/file/ubuntu-22.04-live-server-amd64-iso.torrent', { subjectType: 'drag-n-drop' })
+            cy.get('div[data-input-value="files_field"] .file-field__dropzone').selectFile('support/file/ubuntu-22.04-live-server-amd64-iso.torrent', { action: 'drag-drop' })
             cy.wait('@upload')
             cy.wait('@table')
             cy.get('.ee-main__content form .table-responsive table tr:contains(torrent)').its('length').should('eq', 1)
@@ -667,7 +648,7 @@ context('File Manager', () => {
             cy.get('.file-upload-widget').then(function(widget) {
                 $(widget).removeClass('hidden')
             })
-            cy.get('div[data-input-value="files_field"] .file-field__dropzone').attachFile('../../support/file/archive.zip', { subjectType: 'drag-n-drop' })
+            cy.get('div[data-input-value="files_field"] .file-field__dropzone').selectFile('support/file/archive.zip', { action: 'drag-drop' })
             cy.wait('@upload')
             cy.wait('@table')
             cy.get('.ee-main__content form .table-responsive table tr:contains(archive.zip)').its('length').should('eq', 1)
@@ -676,7 +657,7 @@ context('File Manager', () => {
             cy.get('.file-upload-widget').then(function(widget) {
                 $(widget).removeClass('hidden')
             })
-            cy.get('div[data-input-value="files_field"] .file-field__dropzone').attachFile('../../support/file/data.csv', { subjectType: 'drag-n-drop' })
+            cy.get('div[data-input-value="files_field"] .file-field__dropzone').selectFile('support/file/data.csv', { action: 'drag-drop' })
             cy.wait('@upload')
             cy.wait('@table')
             cy.get('.ee-main__content form .table-responsive table tr:contains(data.csv)').its('length').should('eq', 1)
@@ -685,7 +666,7 @@ context('File Manager', () => {
             cy.get('.file-upload-widget').then(function(widget) {
                 $(widget).removeClass('hidden')
             })
-            cy.get('div[data-input-value="files_field"] .file-field__dropzone').attachFile('../../support/file/ee-sample-video.mp4', { subjectType: 'drag-n-drop' })
+            cy.get('div[data-input-value="files_field"] .file-field__dropzone').selectFile('support/file/ee-sample-video.mp4', { action: 'drag-drop' })
             cy.wait('@upload')
             cy.wait('@table')
             cy.get('.ee-main__content form .table-responsive table tr:contains(ee-sample-video.mp4)').its('length').should('eq', 1)
@@ -694,7 +675,7 @@ context('File Manager', () => {
             cy.get('.file-upload-widget').then(function(widget) {
                 $(widget).removeClass('hidden')
             })
-            cy.get('div[data-input-value="files_field"] .file-field__dropzone').attachFile('../../support/file/mixkit-arcade-retro-game-over-213.wav', { subjectType: 'drag-n-drop' })
+            cy.get('div[data-input-value="files_field"] .file-field__dropzone').selectFile('support/file/mixkit-arcade-retro-game-over-213.wav', { action: 'drag-drop' })
             cy.wait('@upload')
             cy.wait('@table')
             cy.get('.ee-main__content form .table-responsive table tr:contains(mixkit-arcade-retro-game-over-213.wav)').its('length').should('eq', 1)
@@ -817,7 +798,7 @@ context('File Manager', () => {
 
     })
 
-    context('manage files in thumb view', () => {
+    context('Manage files in thumb view', () => {
         before(function() {
             
         })

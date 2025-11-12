@@ -1,0 +1,23 @@
+{layout="cypress/layout"}
+{exp:channel:entries dynamic="no" entry_id="2"}
+<div>
+    <h4>limit, prefixed and unprefixed</h4>
+    <span>{title:limit limit:characters="10" end_char=""}</span>
+    <hr />
+</div>
+<div>
+    <h4>limit + urlencode</h4>
+    <span>{title:limit:url_encode end_char="" characters="10" plus_encoded_spaces="yes"}</span>
+    <hr />
+</div>
+<div>
+    <h4>urlencode, prefixed only</h4>
+    <span>{title:url_encode url_encode:plus_encoded_spaces="yes"}</span>
+    <hr />
+</div>
+<div>
+    <h4>limit + urlencode, mixed params</h4>
+    <span>{title:limit:url_encode end_char="@" characters="10" limit:end_char="" plus_encoded_spaces="yes"}</span>
+    <hr />
+</div>
+{/exp:channel:entries}

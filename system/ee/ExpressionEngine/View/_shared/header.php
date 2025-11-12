@@ -66,7 +66,27 @@ $current_page = ee()->uri->segment(2);
             <?php if (!isset($hide_sidebar) || $hide_sidebar != true) :
                 $this->embed('ee:_shared/sidebar/navigation/navigation');
             endif; ?>
-            <div class="ee-main">
+            <div class="ee-main" role="main">
+
+            <section class="lv-banner">
+                <?php if(ee('pro:Access')->requiresValidLicense() && ee('pro:Access')->hasProNotice('expired')): ?>
+                    <div class="lv-banner__inner alert <?= ee('pro:Access')->canManageLicenses() ? 'alert--error' : 'alert--warning'; ?>">
+                        <div class="lv-banner__info alert__content">
+                            <p class="alert__title">Software License Notice.</p>
+                            <?php if(ee('pro:Access')->canManageLicenses()): ?>
+                                <p>Your ExpressionEngine license has expired. <a href="https://expressionengine.com/store/purchase-pro?utm_source=cp&utm_medium=cp-link&utm_campaign=cp-cta&utm_content=cp-banner#renew" target="_blank">Please renew ExpressionEngine Pro today</a>.
+                                <p>We recommend keeping licenses current to ensure smooth site operation, access to updates, and security fixes.</p>
+                            <?php else: ?>
+                                <p>Please contact the site administrator and ask them to log in to resolve any license notices.</p>
+                                <p>Note: This will not impact the operation of the site.</p>
+                            <?php endif; ?>
+                        </div>
+                        <a class="js-lv-banner__close-btn alert__close">
+                            <i class="fal fa-times alert__close-icon"></i>
+                        </a>
+                    </div>
+                <?php endif; ?>
+            </section>
 
         <?php if (!isset($hide_topbar) || $hide_topbar != true) : ?>
         <div class="ee-main-header <?php if (!empty($head['class']) ): echo $head['class']; endif ?>">
@@ -80,7 +100,7 @@ $current_page = ee()->uri->segment(2);
           <?php if (count($cp_breadcrumbs)): ?>
             <div class="breadcrumb-wrapper">
               <ul class="breadcrumb">
-                    <li><a href="<?=ee('CP/URL')->make('/')->compile()?>"><i class="fal fa-home"></i></a></li>
+                    <li><a href="<?=ee('CP/URL')->make('/')->compile()?>"><span class="sr-only"><?=ee()->config->item('site_name')?></span><i class="fal fa-home"></i></a></li>
                         <?php
                         $i = 0;
                         foreach ($cp_breadcrumbs as $link => $title):
@@ -107,7 +127,9 @@ $current_page = ee()->uri->segment(2);
 
           <div class="main-header__account">
             <button type="button" data-dropdown-offset="0px, 4px" data-dropdown-pos="bottom-end" class="main-nav__account-icon main-header__account-icon js-dropdown-toggle">
+                    <?php if (isset($cp_avatar_path)) : ?>
                     <img src="<?= $cp_avatar_path ?>" alt="<?=$cp_screen_name?>">
+                    <?php endif; ?>
                 </button>
             <div class="dropdown dropdown--accent account-menu">
                     <div class="account-menu__header">

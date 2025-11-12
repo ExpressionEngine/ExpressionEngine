@@ -26,7 +26,7 @@
 				<div<?php foreach ($row['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach ?>>
 					<?php if ($reorder): ?>
 						<ul class="toolbar">
-							<li class="reorder"><a href="#" title="reorder row"></a></li>
+							<li class="reorder"><a href="#" title="reorder row"><span class="sr-only"><?=lang('reorder_row')?></span></a></li>
 						</ul>
 					<?php endif ?>
 					<?php foreach ($row['columns'] as $column): ?>
@@ -35,7 +35,7 @@
 						</div>
 					<?php endforeach ?>
 					<ul class="toolbar">
-						<li class="remove"><a href="#" rel="remove_row" title="remove row"></a></li>
+						<li class="remove"><a href="#" rel="remove_row" title="remove row"><span class="sr-only"><?=lang('remove_row')?></span></a></li>
 					</ul>
 				</div>
 			<?php endforeach ?>

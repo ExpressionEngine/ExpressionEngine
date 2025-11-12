@@ -21,11 +21,7 @@ context('CAPTCHA Settings', () => {
     cy.hasNoErrors()
   })
 
-  it('shows the CAPTCHA Settings page', () => {
-    //page.all_there?.should == true
-  })
-
-  it('should load current settings into form fields', () => {
+  it('should load current CAPTCHA Settings into form fields', () => {
 
     cy.eeConfig({item: 'require_captcha'}) .then((config) => {
       page.get('require_captcha').invoke('val').then((val) => {
@@ -59,14 +55,13 @@ context('CAPTCHA Settings', () => {
     })
   })
 
-  it('should validate the form', () => {
+  it('Validate CAPTCHA Settings form', () => {
     page.get('captcha_path').clear().type('sdfsdfsd')
     //page.submit()
     cy.get('button').contains('Save Settings').first().click()
 
     cy.hasNoErrors()
 
-//should_have_form_errors(page)
     page.get('wrap').contains('Attention: Settings not saved')
     page.hasError(page.get('captcha_path'), page.messages.validation.invalid_path)
 
@@ -77,8 +72,6 @@ context('CAPTCHA Settings', () => {
 
     page.hasError(page.get('captcha_path'), page.messages.validation.invalid_path)
 
-//should_have_form_errors(page)
-
     page.get('captcha_path').clear().type(upload_path)
     page.get('captcha_path').blur()
 
@@ -88,25 +81,20 @@ context('CAPTCHA Settings', () => {
 
     page.hasError(page.get('captcha_path'), page.messages.validation.not_writable)
 
-//should_have_form_errors(page)
   })
 
   it('should reject XSS', () => {
     page.get('captcha_url').clear().type(page.messages.xss_vector)
     page.get('captcha_url').blur()
     page.hasError(page.get('captcha_url'), page.messages.xss_error)
-    //page.hasErrors()AJ
-//should_have_form_errors(page)
 
     page.get('captcha_path').clear().type(page.messages.xss_vector)
     page.get('captcha_path').blur()
     page.hasError(page.get('captcha_url'), page.messages.xss_error)
     page.hasError(page.get('captcha_path'), page.messages.xss_error)
-    //page.hasErrors()AJ
-//should_have_form_errors(page)
   })
 
-  it('should save and load the settings', () => {
+  it('should save and load CAPTCHA Settings settings', () => {
 
     let require_captcha, captcha_font, captcha_rand, captcha_require_members
     cy.eeConfig({item: 'require_captcha'}) .then((config) => {

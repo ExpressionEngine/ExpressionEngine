@@ -580,7 +580,7 @@ $lang = array(
     'Select Variable Managers',
 
     'can_manage_help' =>
-    'Select member groups allowed to manage the variables.',
+    'Select roles allowed to manage the variables.',
 
     'clear_cache' =>
     'Clear cache',
@@ -644,6 +644,17 @@ $lang = array(
 
     'settings_saved' =>
     'Settings saved',
+
+    //----------------------------------------
+    // Lang for new Relationship field 
+    // for drag nad drops view
+    //----------------------------------------
+
+    'relate_entry' => 'Relate Entry',
+
+    'channel' => 'Channel',
+
+    'no_entries_found' => 'No Entries Found',
 
     //----------------------------------------
     // Required for FIELDTYPE page

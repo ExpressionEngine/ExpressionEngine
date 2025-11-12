@@ -521,9 +521,6 @@ of these words.",
     "filters_help" =>
     "Available filters. Uncheck to disable a filter.",
 
-    "member_group" =>
-    "Member group",
-
     "can_manage" =>
     "Can manage collections",
 
@@ -541,6 +538,10 @@ of these words.",
 
     "can_view_replace_log" =>
     "Can view replace log",
+
+    'permission_roles' => 'Allowed Roles',
+
+    'permission_roles_desc' => 'Members in these roles can perform each selected action.',
 
     //----------------------------------------
     // Feedback messages

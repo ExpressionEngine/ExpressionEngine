@@ -70,6 +70,9 @@ class ViewHelpers
             if (isset($label['upload_location_id'])) {
                 $choice['upload_location_id'] = $label['upload_location_id'];
             }
+            if (isset($label['toggles'])) {
+                $choice['toggles'] = $label['toggles'];
+            }
 
             if (isset($label['children'])) {
                 $choice['children'] = $this->normalizedChoices($label['children'], $disable_headings);

@@ -30,11 +30,15 @@ $lang = array(
 
     'imglib_webp_not_supported' => 'WebP images are not supported',
 
+    'imglib_avif_not_supported' => 'AVIF images are not supported',
+
     'imglib_rotate_unsupported' => 'Image rotation does not appear to be supported by your server.',
 
     'imglib_rotation_angle_required' => 'An angle of rotation is required to rotate the image.',
 
     'imglib_save_failed' => 'Unable to save the image. Please make sure the image and file directory are writable.',
+
+    'imglib_properties_failed' => 'Unable to gather properties of the image. Please make sure the image is valid and readable.',
 
     'imglib_source_image_required' => 'You must specify a source image in your preferences.',
 

@@ -5,6 +5,8 @@ on:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:
       - '*.dev'
+      - '[0-9]+.[0-9]+.[0-9]+'
+      - 'release/[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
     check:
@@ -14,7 +16,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
           - name: Checkout code
-            uses: actions/checkout@v3
+            uses: actions/checkout@v4
             with:
               ref: ${{ github.event.pull_request.head.sha }}
 
@@ -27,7 +29,7 @@ jobs:
           - name: Setup PHP
             uses: shivammathur/setup-php@v2
             with:
-                php-version: '8.1'
+                php-version: '8.2'
                 extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
                 coverage: none
                 tools: phpcs, cs2pr

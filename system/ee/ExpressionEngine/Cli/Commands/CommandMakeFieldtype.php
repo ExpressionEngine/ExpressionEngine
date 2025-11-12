@@ -64,7 +64,7 @@ class CommandMakeFieldtype extends Cli
             $service = ee('FieldtypeGenerator', $this->data);
             $service->build();
         } catch (\Exception $e) {
-            $this->fail($e->getMessage());
+            $this->fail(addslashes($e->getMessage()));
         }
 
         $this->info('command_make_fieldtype_created_successfully');

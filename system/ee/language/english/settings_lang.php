@@ -68,11 +68,15 @@ $lang = array(
 
     'date_time_settings' => 'Date &amp; Time Settings',
 
+    'week_start' => 'Week start',
+
+    'week_start_desc' => 'The day on which the new week starts',
+
     'defaults' => 'Defaults',
 
     'enable_msm' => 'Enable Site Manager (MSM)?',
 
-    'enable_msm_desc' => 'When enabled, Super Admins and member groups with permissions will be able to manage additional websites from the <abbr title="Control Panel">CP</abbr>.',
+    'enable_msm_desc' => 'When enabled, Super Admins and members with roles that have proper permissions will be able to manage additional websites from the <abbr title="Control Panel">CP</abbr>.',
 
     'error_getting_version' => 'You are using ExpressionEngine %s. Unable to determine if a newer version is available at this time.',
 
@@ -98,7 +102,11 @@ $lang = array(
 
     'site_online' => 'Website online?',
 
-    'site_online_desc' => 'When disabled, only Super Admins and member groups with permissions will be able to browse your website.',
+    'site_online_desc' => 'When disabled, only Super Admins and members with roles that have proper permissions will be able to browse this website.',
+
+    'system_online' => 'System online?',
+
+    'system_online_desc' => 'When turned off, only Super Admins and members with roles that have proper permissions will be able to browse the websites on this ExpressionEngine installation. <br>Individual <code>Website online?</code> settings for MSM sites can be managed under <a href="%s">Sites</a> section of Control Panel',
 
     'site_short_name' => 'Short name',
 
@@ -184,6 +192,10 @@ $lang = array(
 
     'email_smtp_crypto_desc' => 'Refer to your SMTP provider for instructions.',
 
+    'tls_version' => 'TLS version',
+
+    'tls_version_desc' => 'When using TLS, select the version used by your SMTP provider.',
+
     'empty_stmp_fields' => 'This field is required for SMTP.',
 
     'html' => 'HTML',
@@ -232,6 +244,16 @@ $lang = array(
 
     'word_wrap_desc' => 'When enabled, the system will wrap long lines of text to a more readable width.',
 
+    'send_test_email' => 'Test email',
+
+    'test_email_subject' => 'Test message from %s',
+
+    'test_email_message' => '<p>This is a test email message sent using following settings:</p>',
+
+    'test_email_sent' => 'Test Email sent',
+
+    'email_settings_verified' => 'Email settings verified by sending a test message to %s',
+
     /* Debugging & Output */
     'caching_driver' => 'Caching Driver',
 
@@ -265,7 +287,7 @@ $lang = array(
 
     'gzip_output_desc' => 'When enabled, your website will be compressed using GZIP compression, this will decrease page load times.',
 
-    'max_caches' => 'Cachable <abbr title="Uniform Resource Identifier">URI</abbr>s',
+    'max_caches' => 'Cacheable <abbr title="Uniform Resource Identifier">URI</abbr>s',
 
     'max_caches_desc' => 'If you cache your pages or database, this limits the number of cache instances. We recommend 150 for small sites and 300 for large sites. The allowed maximum is 1000.',
 
@@ -392,7 +414,7 @@ $lang = array(
 
     'strict_urls' => 'Enable strict <abbr title="Uniform Resource Location">URL</abbr>s?',
 
-    'strict_urls_desc' => 'When enabled, ExpressioneEngine will apply stricter rules to <abbr title="Uniform Resource Location">URL</abbr> handling.',
+    'strict_urls_desc' => 'When enabled, ExpressionEngine will apply stricter rules to <abbr title="Uniform Resource Location">URL</abbr> handling.',
 
     'template_manager' => 'Template Manager',
 
@@ -501,9 +523,23 @@ $lang = array(
 
     'req_mbr_activation_opt_none' => 'No activation required',
 
+    'registration_auto_login' => 'Auto-login upon registration?',
+
+    'registration_auto_login_desc' => 'Automatically log a member in after account registration.',
+
+    'activation_auto_login' => 'Auto-login upon activation?',
+
+    'activation_auto_login_desc' => 'Automatically log a member in after account activation.',
+
+    'activation_redirect' => 'Activation redirect URL',
+
+    'activation_redirect_desc' => 'Template path or route to redirect members to after clicking activation link in email message. When omitted, system message will be shown instead',
+
     'require_terms_of_service' => 'Require terms of service?',
 
     'require_terms_of_service_desc' => 'When enabled, users must agree to terms of service during registration.',
+
+    'manage_bans' => 'Ban Settings',
 
     /* Menu Manager */
     'add_menu_item' => 'Add Menu Item',
@@ -526,9 +562,9 @@ $lang = array(
 
     'menu_dropdown' => 'Dropdown',
 
-    'menu_items' => 'Menu Items',
+    'menu_items' => 'Menu items',
 
-    'menu_items_desc' => 'Manage this menu sets contents',
+    'menu_items_desc' => 'Manage this menu set\'s contents',
 
     'menu_label' => 'Name',
 
@@ -542,7 +578,7 @@ $lang = array(
 
     'menu_set_created' => 'Menu Set Created',
 
-    'menu_set_created_desc' => 'The menu set <b>%s</b> has been updated.',
+    'menu_set_created_desc' => 'The menu set <b>%s</b> has been created.',
 
     'menu_set_updated' => 'Menu Set Updated',
 
@@ -566,9 +602,9 @@ $lang = array(
 
     'set_assigned' => 'Assigned',
 
-    'set_roles' => 'Member role(s)?',
+    'set_roles' => 'Member role(s)',
 
-    'set_roles_desc' => 'Choose the role(s) to apply this menu to.',
+    'set_roles_desc' => 'Choose the role(s) to apply this menu to',
 
     'set_name' => 'Name',
 
@@ -725,6 +761,10 @@ $lang = array(
     'deny_duplicate_data' => 'Deny duplicate data?',
 
     'deny_duplicate_data_desc' => 'When enabled, forms will disregard any submission that is an exact duplicate of existing data.',
+
+    'strip_image_metadata' => 'Strip image metadata?',
+
+    'strip_image_metadata_desc' => 'Note: This setting will remove all metadata from uploaded images, including GPS data. This requires the <a href="%s" rel="external">Imagick PHP extension</a>. Imagick is currently %s.',
 
     'enable_rank_denial' => 'Enable Rank Denial to submitted links?',
 

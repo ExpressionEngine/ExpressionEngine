@@ -219,7 +219,18 @@ class Moblog
             return false;
         }
 
-        if (strncasecmp(fgets($this->fp, 1024), '+OK', 3) != 0) {
+        // Set the socket to non-blocking mode
+        stream_set_blocking($this->fp, false);
+
+        // Set a timeout for the socket
+        stream_set_timeout($this->fp, 10); // 10 seconds timeout
+
+        // Attempt to read from the socket
+        $response = fgets($this->fp, 1024);
+
+        // Check if the response is from a POP3 server
+        if ($response === false || strncasecmp($response, '+OK', 3) != 0) {
+            // Handle the case where the response is not from a POP3 server
             $this->message_array[] = 'invalid_server_response';
             @fclose($this->fp);
 
@@ -816,7 +827,7 @@ class Moblog
             'title' => (ee()->config->item('auto_convert_high_ascii') == 'y') ? ascii_to_entities($this->post_data['subject']) : $this->post_data['subject'],
             'ip_address' => $this->post_data['ip'],
             'entry_date' => $entry_date,
-            'edit_date' => gmdate("YmdHis", $entry_date),
+            'edit_date' => $entry_date,
             'year' => gmdate('Y', $entry_date),
             'month' => gmdate('m', $entry_date),
             'day' => gmdate('d', $entry_date),
@@ -959,16 +970,10 @@ class Moblog
         $data['category'] = array();
 
         if ($this->post_data['categories'] == 'all') {
-            $cat_groups = explode('|', $query->row('cat_group'));
-            ee()->load->model('category_model');
-
-            foreach ($cat_groups as $cat_group_id) {
-                $cats_q = ee()->category_model->get_channel_categories($cat_group_id);
-
-                if ($cats_q->num_rows() > 0) {
-                    foreach ($cats_q->result() as $row) {
-                        $data['category'][] = $row->cat_id;
-                    }
+            $channel = ee('Model')->get('Channel', $channel_id)->with('CategoryGroups')->first();
+            if (!empty($channel)) {
+                foreach ($channel->CategoryGroups as $cat_group) {
+                    $data['category'] = array_merge($data['category'], $cat_group->Categories->pluck('cat_id'));
                 }
             }
 
@@ -978,7 +983,9 @@ class Moblog
             $data['category'] = array_unique($data['category']);
         }
 
-        $entry->Categories->set($data['category']);
+        if (!empty($data['category'])) {
+            $entry->Categories = ee('Model')->get('Category')->filter('cat_id', 'IN', $data['category'])->all();
+        }
 
         // forgive me, please.
 
@@ -1571,11 +1578,11 @@ class Moblog
         $is_image = false; // This is needed for XSS cleaning
 
         if (in_array(strtolower($ext), $this->movie)) { // Movies
-            $this->post_data['movie'][] = $filename;
+            $this->post_data['movie'][$filename] = $filename;
         } elseif (in_array(strtolower($ext), $this->audio)) { // Audio
-            $this->post_data['audio'][] = $filename;
+            $this->post_data['audio'][$filename] = $filename;
         } elseif (in_array(strtolower($ext), $this->image)) { // Images
-            $this->post_data['images'][] = $filename;
+            $this->post_data['images'][$filename] = $filename;
 
             $key = count($this->post_data['images']) - 1;
 
@@ -1583,7 +1590,7 @@ class Moblog
 
             $is_image = true;
         } elseif (in_array(strtolower($ext), $this->files)) { // Files
-            $this->post_data['files'][] = $filename;
+            $this->post_data['files'][$filename] = $filename;
         } else {
             return true;
         }
@@ -1635,6 +1642,14 @@ class Moblog
             $this->message_array[] = 'error_writing_attachment';
 
             return false;
+        } else {
+            foreach (['files', 'movie', 'audio', 'images'] as $type) {
+                if (isset($this->post_data[$type][$filename])) {
+                    $this->post_data[$type][$filename] = ee()->upload->file_name;
+                }
+            }
+            $filename = ee()->upload->file_name;
+            $file_path = ee()->upload->upload_path . $filename;
         }
 
         // Disable xss cleaning in the filemanager

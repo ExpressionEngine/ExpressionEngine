@@ -13,6 +13,7 @@
 	<testsuites>
 		<testsuite name="ExpressionEngine Test Suite">
 			<directory suffix=".php">./ExpressionEngine/</directory>
+			<directory suffix=".php">./ExpressionEngine/Addons/</directory>
 		</testsuite>
 	</testsuites>
 

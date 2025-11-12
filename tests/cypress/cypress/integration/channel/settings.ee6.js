@@ -14,12 +14,12 @@ context('Channel Settings', () => {
         cy.authVisit(page.url);
     })
 
-    it('shows the Channel Settings page', function() {
+    it('Shows the Channel Settings page', function() {
         page.load_edit_for_channel(1)
         cy.hasNoErrors()
     })
 
-    it('should validate the form and reject XSS', function() {
+    it('Validate channel setting form and reject XSS', function() {
         page.load_edit_for_channel(2)
         cy.hasNoErrors()
 
@@ -155,7 +155,7 @@ context('Channel Settings', () => {
         cy.contains('Channel Updated')
     })
 
-    it('should save and load the settings', function() {
+    it('Save and load channel settings', function() {
         page.load_edit_for_channel(2)
         cy.hasNoErrors()
 
@@ -260,7 +260,86 @@ context('Channel Settings', () => {
         page.get('comment_auto_link_urls').should('have.class', "off")
     })
 
-    context('enabling versions', function() {
+    context('Category group settings', function() {
+        it('Set the category group as required', function() {
+            cy.visit('admin.php?/cp/channels/edit/2')
+            page.get('categories_tab').click()
+            cy.get('[data-input-value="cat_group"]').should('be.visible')
+            cy.get('[data-input-value="cat_group"] input[type=checkbox][value=2]').should('be.checked')
+            cy.get('[data-input-value="cat_group"] input[type=checkbox][value=2]').parent().find('.flyout-cat_allow_multiple').should('have.class', 'active')
+            cy.get('[data-input-value="cat_group"] input[type=checkbox][value=2]').parent().find('.flyout-cat_required').should('not.have.class', 'active')
+            cy.get('[data-input-value="cat_group"] input[type=checkbox][value=1]').should('not.be.checked')
+            cy.get('[data-input-value="cat_group"] input[type=checkbox][value=1]').parent().find('.flyout-cat_allow_multiple').should('have.class', 'active')
+            cy.get('[data-input-value="cat_group"] input[type=checkbox][value=1]').parent().find('.flyout-cat_required').should('not.have.class', 'active')
+            cy.get('input[type="hidden"][name="cat_allow_multiple[]"][value="2"]').should('exist')
+            cy.get('input[type="hidden"][name="cat_required[]"][value="2"]').should('not.exist')
+            cy.get('input[type="hidden"][name="cat_allow_multiple[]"][value="1"]').should('not.exist')
+            cy.get('input[type="hidden"][name="cat_required[]"][value="1"]').should('not.exist')
+
+            cy.get('[data-input-value="cat_group"] input[type=checkbox][value=2]').parent().find('.flyout-cat_required').click()
+            cy.get('[data-input-value="cat_group"] input[type=checkbox][value=2]').parent().find('.flyout-cat_required').should('have.class', 'active')
+            cy.get('input[type="hidden"][name="cat_required[]"][value="2"]').should('exist')
+            cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+            page.get('categories_tab').click()
+            cy.get('[data-input-value="cat_group"] input[type=checkbox][value=2]').parent().find('.flyout-cat_required').should('have.class', 'active')
+            cy.get('input[type="hidden"][name="cat_required[]"][value="2"]').should('exist')
+
+            // create new entry and see that category is required
+            cy.visit('admin.php?/cp/publish/create/2')
+            cy.get('[name="title"]').type('Test Entry 1')
+            cy.get('.tab-bar__tab[rel=t-2]').click()
+            cy.get('fieldset[data-field_id="categories[cat_group_id_2]"]').should('have.class', 'fieldset-required')
+            cy.get('body').type('{ctrl}', {release: false}).type('s')
+            page.get('alert').contains('Cannot Create Entry')
+            cy.get('.tab-bar__tab[rel=t-2]').click()
+            page.hasError(cy.get('[data-input-value="categories[cat_group_id_2]"]'), page.messages.required)
+            cy.get('fieldset[data-field_id="categories[cat_group_id_2]"] input[type="checkbox"]').first().check()
+            cy.get('body').click()
+            page.hasNoError(cy.get('[data-input-value="categories[cat_group_id_2]"]'));
+            cy.get('body').type('{ctrl}', {release: false}).type('s')
+            page.hasNoErrors()
+            page.get('alert').contains('Entry Created')
+
+            // use two category groups, one single selection and one multiple selection
+            cy.visit('admin.php?/cp/channels/edit/2')
+            page.get('categories_tab').click()
+            cy.get('[data-input-value="cat_group"] input[type=checkbox][value=1]').check()
+            cy.get('[data-input-value="cat_group"] input[type=checkbox][value=1]').parent().find('.flyout-cat_allow_multiple').click()
+            cy.get('[data-input-value="cat_group"] input[type=checkbox][value=1]').parent().find('.flyout-cat_allow_multiple').should('not.have.class', 'active')
+            cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+            cy.visit('admin.php?/cp/publish/create/2')
+            cy.get('[name="title"]').type('Test Entry 2')
+            cy.get('.tab-bar__tab[rel=t-2]').click()
+            cy.get('fieldset[data-field_id="categories[cat_group_id_2]"] input[type="checkbox"]').first().check()
+            cy.get('fieldset[data-field_id="categories[cat_group_id_2]"] input[type="checkbox"]').last().check()
+            cy.get('fieldset[data-field_id="categories[cat_group_id_1]"] input[type="checkbox"]').first().check()
+            cy.get('body').type('{ctrl}', {release: false}).type('s')
+            page.hasNoErrors()
+            page.get('alert').contains('Entry Created')
+            cy.url().then(edit_url => {
+                // switch radios to checkboxes and vice versa and make sure the data are in place
+                cy.visit('admin.php?/cp/channels/edit/2')
+                page.get('categories_tab').click()
+                cy.get('[data-input-value="cat_group"] input[type=checkbox][value=2]').parent().find('.flyout-cat_allow_multiple').click()
+                cy.get('[data-input-value="cat_group"] input[type=checkbox][value=2]').parent().find('.flyout-cat_allow_multiple').should('not.have.class', 'active')
+                cy.get('[data-input-value="cat_group"] input[type=checkbox][value=1]').parent().find('.flyout-cat_allow_multiple').click()
+                cy.get('[data-input-value="cat_group"] input[type=checkbox][value=1]').parent().find('.flyout-cat_allow_multiple').should('have.class', 'active')
+                cy.get('body').type('{ctrl}', {release: false}).type('s')
+
+                cy.visit(edit_url)
+                cy.get('.tab-bar__tab[rel=t-2]').click()
+                cy.get('fieldset[data-field_id="categories[cat_group_id_2]"] input[type="radio"]').should('not.exist')
+                cy.get('fieldset[data-field_id="categories[cat_group_id_1]"] input[type="radio"]').should('not.exist')
+                cy.get('fieldset[data-field_id="categories[cat_group_id_2]"] input[type="checkbox"]').first().should('be.checked')
+                cy.get('fieldset[data-field_id="categories[cat_group_id_2]"] input[type="checkbox"]').last().should('be.checked')
+                cy.get('fieldset[data-field_id="categories[cat_group_id_2]"] input[type="checkbox"]').first().should('be.checked')
+            })
+        })
+    })
+
+    context('Enabling versions', function() {
         it('saves the versioning setting', function() {
             cy.visit('admin.php?/cp/channels/edit/2')
             cy.hasNoErrors()

@@ -108,7 +108,7 @@ class Cp
             'cp_current_site_label' => ee()->config->item('site_name'),
             'cp_screen_name' => ee('Format')->make('Text', $member->screen_name)->attributeSafe(),
             'cp_member_primary_role_title' => $member->PrimaryRole ? $member->PrimaryRole->name : '',
-            'cp_avatar_path' => ($member->avatar_filename) ? ee()->config->slash_item('avatar_url') . $member->avatar_filename : (URL_THEMES . 'asset/img/default-avatar.png'),
+            'cp_avatar_path' => ($member->avatar_filename) ? rtrim(ee()->config->slash_item('avatar_url'), '/') . '/' . ltrim($member->avatar_filename, '/') : (URL_THEMES . 'asset/img/default-avatar.png'),
             'cp_avatar_width' => ($member->avatar_filename) ? $member->avatar_width : '',
             'cp_avatar_height' => ($member->avatar_filename) ? $member->avatar_height : '',
             'cp_quicklinks' => $this->_get_quicklinks($member->getQuicklinks()),
@@ -153,6 +153,7 @@ class Cp
             'slate_theme' => lang('slate_theme'),
             'snow_theme' => lang('snow_theme'),
             'many_jump_results' => lang('many_jump_results'),
+            'password_icon' => lang('password_icon')
         );
 
         $lastUpdateCheck = false;
@@ -174,12 +175,21 @@ class Cp
             'hasRememberMe' => (bool) ee()->remember->exists(),
             'cp.updateCheckURL' => ee('CP/URL', 'settings/general/version-check')->compile(),
             'cp.accessResponseURL' => ee('CP/URL', 'license/handleAccessResponse')->compile(),
+            'cp.exampleTemplateUrls' => [
+                'default' => ee('CP/URL', 'design/copy/fields/{id}')->compile(),
+                'fields' => ee('CP/URL', 'design/copy/fields/{id}')->compile(),
+                'field_groups' => ee('CP/URL', 'design/copy/fieldgroups/{id}')->compile(),
+                'channels' => ee('CP/URL', 'design/copy/channels/{id}')->compile(),
+                'fluid_field' => ee('CP/URL', 'design/copy/fluid/{fluid_id}/field/{id}')->compile(),
+                'fluid_fieldgroup' => ee('CP/URL', 'design/copy/fluid/{fluid_id}/group/{id}')->compile(),
+            ],
             'cp.lastUpdateCheck' => $lastUpdateCheck,
             'site_id' => ee()->config->item('site_id'),
             'site_name' => ee()->config->item('site_name'),
             'site_url' => ee()->config->item('site_url'),
             'cp.collapseNavURL' => ee('CP/URL', 'homepage/toggle-sidebar-nav')->compile(),
             'cp.dismissBannerURL' => ee('CP/URL', 'homepage/dismiss-banner')->compile(),
+            'cp.acknowledgeLicenseNoticeURL' => ee('CP/URL', 'homepage/acknowledge-license-notice')->compile(),
             'cp.collapseSecondaryNavURL' => ee('CP/URL', 'homepage/toggle-secondary-sidebar-nav')->compile(),
             'fileManagerCompatibilityMode' => bool_config_item('file_manager_compatibility_mode'),
         ));
@@ -302,21 +312,21 @@ class Cp
 
         $pro_status = !ee('pro:Access')->requiresValidLicense() ? 'skip' : (string) ee('Addon')->get('pro')->checkCachedLicenseResponse();
         switch ($pro_status) {
-                case 'update_available':
-                    ee()->view->pro_license_status = 'valid';
+            case 'update_available':
+                ee()->view->pro_license_status = 'valid';
 
-                    break;
+                break;
 
-                case '':
-                    ee()->view->pro_license_status = 'na';
+            case '':
+                ee()->view->pro_license_status = 'na';
 
-                    break;
+                break;
 
-                default:
-                    ee()->view->pro_license_status = $pro_status;
+            default:
+                ee()->view->pro_license_status = $pro_status;
 
-                    break;
-            }
+                break;
+        }
 
         $this->_notices();
 
@@ -734,7 +744,7 @@ class Cp
                     return $templateModel->edit_date;
                 }
 
-                break;
+                return 0;
 
             default:
                 return 0;
@@ -1088,7 +1098,7 @@ class Cp
             'if', 'else', 'elseif'
         );
 
-        return array_unique(array_merge(
+        return $invalid_fields = array_unique(array_merge(
             $channel_vars,
             $global_vars,
             $orderby_vars,

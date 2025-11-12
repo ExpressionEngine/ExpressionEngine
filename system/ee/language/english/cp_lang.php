@@ -260,6 +260,10 @@ $lang = array(
 
     'update' => 'Update',
 
+    'clone_to_new' => 'Clone to New %s',
+
+    'copy_of' => 'Copy of',
+
     /* Log */
     'action' => 'Action',
 
@@ -279,7 +283,7 @@ $lang = array(
 
     'member_changed_email' => 'Changed email for "%s" (%d) from "%s" to "%s"',
 
-    'member_changed_member_group' => 'Changed member group to "%s" for "%s" (%d)',
+    'member_changed_member_group' => 'Changed primary role to "%s" for "%s" (%d)',
 
     'member_changed_password' => 'Changed password for "%s" (%d)',
 
@@ -364,6 +368,8 @@ $lang = array(
 
     'search_titles_only' => 'Search Titles Only',
 
+    'names_and_email_only' => 'Names & email only',
+
     'columns_filter' => 'Columns',
 
     'perpage_filter' => 'show',
@@ -373,6 +379,8 @@ $lang = array(
     'group_filter' => 'group',
 
     'type_filter' => 'type',
+
+    'channel_filter' => 'channel',
 
     'site' => 'Site',
 
@@ -503,6 +511,24 @@ $lang = array(
     '404_does_not_exist' => '404: Item does not exist',
 
     '404_does_not_exist_desc' => 'Sorry, we could not find the item you are trying to access in the system.',
+
+    'http_code_400' => 'Bad Request',
+
+    'http_code_401' => 'Unauthorized',
+
+    'http_code_403' => 'Forbidden',
+
+    'http_code_404' => 'Not Found',
+
+    'http_code_405' => 'Method Not Allowed',
+
+    'http_code_500' => 'Internal Server Error',
+
+    'http_code_501' => 'Not Implemented',
+
+    'http_code_502' => 'Bad Gateway',
+
+    'http_code_503' => 'Service Unavailable',
 
     /* Common */
     'alphadash_desc' => 'No spaces. Underscores and dashes are allowed.',
@@ -641,7 +667,7 @@ $lang = array(
 
     'new_member' => 'New Member',
 
-    'all_members' => 'All Members',
+    'all_members' => 'Members',
 
     'pending_members' => 'Pending Members',
 
@@ -786,17 +812,17 @@ $lang = array(
 
     'html_button_ajax_reorder_fail_desc' => 'We failed to save your new html buttons order. Refresh the page and make sure you\'re logged in.',
 
-    /* Search Reindex tip */
+    /* Content Reindex tip */
 
-    'search_reindex_tip' => 'Search Reindex',
+    'search_reindex_tip' => 'Content Reindex',
 
-    'search_reindex_tip_desc' => "Please <a href='%s'>run the search reindex tool</a> tool to keep your searchable data up-to-date.",
+    'search_reindex_tip_desc' => "Please <a href='%s'>run the content reindex tool</a> tool to keep your searchable data up-to-date.",
 
     'reindex_not_needed' => 'Reindexing Not Necessary',
 
     'reindex_not_needed_desc' => 'Your search index is up-to-date!',
 
-    'reindex_explained_desc' => 'The search index can become stale if you have recently changed whether or not certain fieldtypes are searchable.<br>Please see the <a href="' . DOC_URL . '/control-panel/utilities.html#search-reindex">user guide</a> for more details.',
+    'reindex_explained_desc' => 'The searchable content might become stale if you have recently changed properties of some fields. <br>Reindexing will re-populate the data used by complex fields in search and Entry Manager. <br>Please see the <a href="' . DOC_URL . '/control-panel/utilities.html#content-reindex">user guide</a> for more details.',
 
     /* Permissions */
 
@@ -836,6 +862,75 @@ $lang = array(
 
     'unexpected_error' => 'Unexpected error',
 
+    /* Accessibility */
+
+    'color_picker_file' => 'Color picker file',
+
+    'colorpicker_input' => 'Colorpicker input',
+
+    'close_modal' => 'Close modal window',
+
+    'close_banner' => 'Close banner icon',
+
+    'image_alt' => 'Image for',
+
+    'file_icon' => 'File icon',
+
+    'pdf_file_icon' => 'PDF file icon',
+
+    'spreadsheet_file_icon' => 'Spreadsheet file icon',
+
+    'word_icon' => 'Word text file icon',
+
+    'powerpoint_icon' => 'Powerpoint file icon',
+
+    'archive_icon' => 'Archive file icon',
+
+    'audio_icon' => 'Audio file icon',
+
+    'video_icon' => 'Video file icon',
+
+    'text_icon' => 'Text file iconn',
+
+    'clear_filter' => 'Clear filter button',
+
+    'search_for' => 'Search for',
+
+    'save_btn' => 'Button that opens options for saving the page',
+
+    'condition_rule_operator' => 'Select to choice of condition',
+
+    'conditional_rule_value' => 'Conditional rule value input',
+
+    'remove_set' => 'Remove set button',
+
+    'toggle_buton' => 'toggle button',
+
+    'reorder_row' => 'Reorder row button',
+
+    'remove_row' => 'Remove row button',
+
+    'thumbnail_column' => 'Thumbnail Column',
+
+    'toolbar_column' => 'Toolbar Column',
+
+    'textarea_label' => 'Textarea for email body',
+
+    'textarea_query' => 'Query textarea',
+
+    'search_input' => 'Search input',
+
+    'edit_element' => 'Edit element button',
+
+    'remove_btn' => 'Remove button',
+
+    'password_icon' => 'Show or hide password icon',
+
+    'hidden_input' => 'Hidden input for file upload',
+
+    'button' => 'button',
+
+    'checkbox' => 'checkbox'
 );
 
 // EOF

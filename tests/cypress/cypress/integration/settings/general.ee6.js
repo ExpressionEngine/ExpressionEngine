@@ -23,12 +23,9 @@ context('General Settings', () => {
     cy.eeConfig({item: 'is_system_on', value: 'y'})
   })
 
-  it('shows the General Settings page', () => {
+  it('Load and save General Settings', () => {
     page.get('wrap').contains('General Settings')
-    //page.all_there?.should == true
-  })
-
-  it('should load and save the settings', () => {
+  
     // Save new settings
     page.get('site_name').clear().type('My sweet site')
     page.get('site_short_name').clear().type('my_sweet_site')
@@ -56,7 +53,7 @@ context('General Settings', () => {
     page.get('include_seconds').invoke('val').then((val) => { expect(val).to.be.equal('y')})
   })
 
-  it('should check for new versions of EE manually', () => {
+  it('Check for new versions of EE manually', () => {
     page.get('new_version_check').filter('[value=n]').check()
     page.get('check_version_btn').should('exist')
     page.get('check_version_btn').click()
@@ -75,7 +72,7 @@ context('General Settings', () => {
     })
   })
 
-  context('form validation', () => {
+  context('General Settings form validation', () => {
 
     it('should validate with submit', () => {
 

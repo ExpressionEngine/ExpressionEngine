@@ -47,4 +47,14 @@ class ColumnFactory extends EntryManager\ColumnFactory
     {
         return [];
     }
+
+    /**
+     * Module tabs not supported
+     *
+     * @return array
+     */
+    protected static function getTabColumns()
+    {
+        return [];
+    }
 }

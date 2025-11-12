@@ -32,7 +32,7 @@ context('Statistics', () => {
 
 
 	  //Works
-	  it('can show by source', () =>{
+	  it('Sort stats by source', () =>{
 	  	//cy.get('all').find('a.column-sort').eq(0).click()
 	  	cy.get('table').find('thead').find('tr').find('th').eq(0).find('a').click()
 
@@ -50,7 +50,7 @@ context('Statistics', () => {
 	     page.get('content_table').find('th.column-sort-header--active').contains('Source')
 	  })
 
-	  it('can show by count', () =>{
+	  it('Sort stats by count', () =>{
 	  	//cy.get('all').find('a.column-sort').eq(0).click()
 	  	cy.get('table').find('thead').find('tr').find('th').eq(1).find('a').click()
 
@@ -84,13 +84,13 @@ context('Statistics', () => {
 
 
 
-	  it('can sync one source', () =>{
+	  it('Sync one source', () =>{
 	  	page.get('content_table').find('tr').eq(2).find('a').click()
 	  	page.hasAlert('success')
 	  })
 
 
-	  it('can sync multiple sources', () =>{
+	  it('Sync multiple sources', () =>{
 	  	page.get('rows').find('input[type="checkbox"]').eq(0).check()
 	  	page.get('bulk_action').select("Sync")
 	  	page.get('action_submit_button').click()

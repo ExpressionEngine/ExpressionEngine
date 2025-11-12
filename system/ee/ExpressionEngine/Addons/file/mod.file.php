@@ -15,10 +15,14 @@ class File
 {
     public $reserved_cat_segment = '';
     public $use_category_names = false;
+    public $enable = array();
     public $categories = array();
     public $catfields = array();
     public $valid_thumbs = array();
+    public $query;
     public $return_data = '';
+    public $temp_array = array();
+    public $cat_array= array();
 
     /**
       * Constructor
@@ -136,12 +140,27 @@ class File
         }
 
         // Specify directory ID(s) if supplied
-        if (($directory_ids = ee()->TMPL->fetch_param('directory_id')) != false) {
+        if (($directory_ids = ee()->TMPL->fetch_param('directory_id')) !== false) {
             ee()->functions->ar_andor_string($directory_ids, 'upload_location_id');
         }
         // If no directory_id is set, restrict files to current site
         else {
             ee()->db->where_in('exp_files.site_id', ee()->TMPL->site_ids);
+        }
+
+        // Specify subfolder if supplied
+        if (($folder_id = ee()->TMPL->fetch_param('folder_id')) !== false) {
+            ee()->functions->ar_andor_string($folder_id, 'directory_id');
+        }
+
+        // File type
+        if (($file_type = ee()->TMPL->fetch_param('file_type')) !== false) {
+            ee()->functions->ar_andor_string($file_type, 'file_type');
+        }
+
+        // Mime type
+        if (($mime_type = ee()->TMPL->fetch_param('mime_type')) !== false) {
+            ee()->functions->ar_andor_string($mime_type, 'mime_type');
         }
 
         // Specify category and category group ID(s) if supplied
@@ -370,11 +389,6 @@ class File
 
             //  More Variables, Mostly for Conditionals
             $row['absolute_count'] = (int) $offset + $count + 1;
-            $row['logged_in'] = (ee()->session->userdata('member_id') == 0) ? false : true;
-            $row['logged_out'] = (ee()->session->userdata('member_id') != 0) ? false : true;
-            $row['folder_id'] = $row['directory_id'];
-            $row['directory_id'] = $row['id'];
-            $row['directory_title'] = $row['name'];
             $row['entry_id'] = $row['file_id'];
 
             $row['viewable_image'] = $this->is_viewable_image($row['file_name']);

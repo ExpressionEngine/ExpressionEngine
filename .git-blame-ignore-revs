@@ -1,0 +1,5 @@
+# Run this command to always ignore formatting commits in `git blame`
+# git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# Ran PSR-12 formatter to core
+ebd354783cdcb7444afe8445e20b0de31729e37c

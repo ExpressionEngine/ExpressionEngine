@@ -14,7 +14,7 @@ const replaceColors = {
 	'yellow': 'blue',
 }
 
-context('Design', () => {
+context('JS and CSS templates', () => {
 	before(function () {
 		cy.task('db:seed')
 		cy.eeConfig({ item: 'save_tmpl_files', value: 'y' })
@@ -150,6 +150,8 @@ context('Design', () => {
 					cy.writeFile(file, data);
 				})
 			})
+
+            cy.visit('index.php/resources/index')
 
 			cy.get("#first").should('have.css', 'background-color', 'rgb(0, 255, 255)')
 

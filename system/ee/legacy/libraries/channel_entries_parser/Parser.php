@@ -203,22 +203,24 @@ class EE_Channel_data_parser
 
             $this->_count = $count;
 
+            $row['index'] = $count;
             $row['count'] = $count + 1;
             $row['reverse_count'] = $total_results - $row['count'] + 1;
             $row['page_uri'] = '';
             $row['page_url'] = '';
             $row['total_results'] = $total_results;
+            $row['absolute_index'] = $absolute_offset + $row['index'];
             $row['absolute_count'] = $absolute_offset + $row['count'];
             $row['absolute_results'] = ($absolute_results === null) ? $total_results : $absolute_results;
             $row['absolute_reverse_count'] = $row['absolute_results'] - $row['absolute_count'] + 1;
             $row['comment_subscriber_total'] = (isset($subscriber_totals[$row['entry_id']])) ? $subscriber_totals[$row['entry_id']] : 0;
             $row['has_categories'] = ! empty($data['categories'][$row['entry_id']]);
-            $row['cp_edit_entry_url'] = ee('CP/URL')
+            $row['cp_edit_entry_url'] = isset(ee()->session) ? ee('CP/URL')
                 ->make(
                     'publish/edit/entry/' . $row['entry_id'],
                     array('site_id' => $row['site_id']),
                     ee()->config->item('cp_url')
-                );
+                ) : '';
 
             if ($site_pages !== false && isset($site_pages[$row['site_id']]['uris'][$row['entry_id']])) {
                 $row['page_uri'] = $site_pages[$row['site_id']]['uris'][$row['entry_id']];
@@ -473,8 +475,8 @@ class EE_Channel_data_parser
         $pre = $this->_preparser;
 
         $cond = $row;
-        $cond['logged_in'] = (ee()->session->userdata('member_id') == 0) ? false : true;
-        $cond['logged_out'] = (ee()->session->userdata('member_id') != 0) ? false : true;
+        $cond['logged_in'] = (isset(ee()->session) && ee()->session->userdata('member_id') == 0) ? false : true;
+        $cond['logged_out'] = (isset(ee()->session) && ee()->session->userdata('member_id') != 0) ? false : true;
 
         foreach (array('avatar_filename', 'photo_filename', 'sig_img_filename') as $pv) {
             if (! isset($row[$pv])) {
@@ -502,7 +504,7 @@ class EE_Channel_data_parser
         $cond['signature_image_url'] = ee()->config->slash_item('sig_img_url') . $row['sig_img_filename'];
         $cond['signature_image_width'] = $row['sig_img_width'];
         $cond['signature_image_height'] = $row['sig_img_height'];
-        $cond['relative_date'] = timespan($row['entry_date']);
+        $cond['relative_date'] = !is_null($row['entry_date']) ? timespan($row['entry_date']) : '';
 
         //-- we need to prep the default dates
 

@@ -49,6 +49,10 @@ class Filemanager
     }
 
     /**
+     * A compatibility version of the `clean_subdir_and_filename` function
+     * Does not include server path (but may include subdirectories)
+     * Safe to use in EE7 for compatibility with subdirs and cloud storages
+     *
      * Cleans the filename to prep it for the system, mostly removing spaces
      * sanitizing the file name and checking for duplicates.
      *
@@ -58,10 +62,9 @@ class Filemanager
      *   'convert_spaces' (Default: TRUE) Setting this to FALSE will not remove spaces
      *   'ignore_dupes' (Default: TRUE) Setting this to FALSE will check for duplicates
      *
-     * @return string Full path and filename of the file, use basepath() to just
-     *   get the filename
+     * @return string Subdirectory path and filename of the file
      */
-    public function clean_filename($filename, $dir_id, $parameters = array())
+    public function clean_subdir_and_filename($filename, $dir_id, $parameters = array())
     {
         // at one time the third parameter was (bool) $dupe_check
         if (! is_array($parameters)) {
@@ -83,6 +86,9 @@ class Filemanager
         $basename = $filesystem->basename($filename);
         $dirname = ($filesystem->dirname($filename) !== '.') ? $filesystem->dirname($filename) . '/' : '';
 
+        // Remove invisible control characters
+        $basename = preg_replace('#\\p{C}+#u', '', $basename);
+
         // clean up the filename
         if ($parameters['convert_spaces'] === true) {
             $basename = preg_replace("/\s+/", "_", $basename);
@@ -93,6 +99,32 @@ class Filemanager
 
         if ($parameters['ignore_dupes'] === false) {
             $filename = $prefs['directory']->getFilesystem()->getUniqueFilename($filename);
+        }
+
+        return $filename;
+    }
+
+    /**
+     * Cleans the filename to prep it for the system, mostly removing spaces
+     * sanitizing the file name and checking for duplicates.
+     *
+     * @param string $filename The filename to clean the name of
+     * @param integer $dir_id The ID of the directory in which we'll check for duplicates
+     * @param array $parameters Associative array containing optional parameters
+     *   'convert_spaces' (Default: TRUE) Setting this to FALSE will not remove spaces
+     *   'ignore_dupes' (Default: TRUE) Setting this to FALSE will check for duplicates
+     *
+     * @return string Full path and filename of the file, use `clean_subdir_and_filename` instead to just
+     *   get the filename and subdirectory
+     */
+    public function clean_filename($filename, $dir_id, $parameters = array())
+    {
+        $filename = $this->clean_subdir_and_filename($filename, $dir_id, $parameters);
+
+        $prefs = $this->fetch_upload_dir_prefs($dir_id, true);
+
+        if ($prefs['adapter'] == 'local') {
+            $filename = $prefs['server_path'] . $filename;
         }
 
         return $filename;
@@ -143,7 +175,7 @@ class Filemanager
         $dir = ee('Model')->get('UploadDestination', $dir_id);
 
         if (! $ignore_site_id) {
-            $dir->filter('site_id', ee()->config->item('site_id'));
+            $dir->filter('site_id', 'IN', [0, ee()->config->item('site_id')]);
         }
 
         if ($dir->count() < 1) {
@@ -201,6 +233,10 @@ class Filemanager
      */
     public function is_editable_image($file_path, $mime)
     {
+        if (!file_exists($file_path)) {
+            return false;
+        }
+
         if (! $this->is_image($mime)) {
             return false;
         }
@@ -212,6 +248,10 @@ class Filemanager
         }
 
         if ($mime == 'image/webp' && !defined('IMAGETYPE_WEBP')) {
+            return false;
+        }
+
+        if ($mime == 'image/avif' && !defined('IMAGETYPE_AVIF')) {
             return false;
         }
 
@@ -368,20 +408,27 @@ class Filemanager
                 return $this->_save_file_response(false, lang('gd_not_installed'));
             }
 
-            // Check and fix orientation
-            $orientation = $this->orientation_check($image_path, $prefs);
+            if(!($prefs['image_processed'] ?? false)) {
+                // Check and fix orientation
+                $orientation = $this->orientation_check($image_path, $prefs);
 
-            if (! empty($orientation)) {
-                $prefs = $orientation;
+                if (! empty($orientation)) {
+                    $prefs = $orientation;
+                }
+
+                $prefs = $this->max_hw_check($image_path, array_merge($prefs, [
+                    // If we're using a temp image we need to pass along a null filesystem in some cases
+                    'filesystem' => isset($prefs['temp_file']) && !empty($prefs['temp_file']) ? null : $directory['upload_destination']->getFilesystem()
+                ]));
             }
-
-            $prefs = $this->max_hw_check($image_path, array_merge($prefs, [
-                // If we're using a temp image we need to pass along a null filesystem in some cases
-                'filesystem' => isset($prefs['temp_file']) && !empty($prefs['temp_file']) ? null : $directory['upload_destination']->getFilesystem()
-            ]));
 
             if (! $prefs) {
                 return $this->_save_file_response(false, lang('image_exceeds_max_size'));
+            }
+
+            // Write $image_path to $file_path
+            if($image_path !== $file_path) {
+                $directory['upload_destination']->getFilesystem()->write($file_path, file_get_contents($image_path), true);
             }
 
             // It is important to use the same upload destination object because of filesystem caching
@@ -1139,7 +1186,7 @@ class Filemanager
         $filesystem = $prefs['directory']->getFilesystem();
         $file_path = str_replace('\\', '/', $filesystem->absolute($file_path));
 
-        $img_path = ($prefs['directory']->adapter == 'local') ? rtrim(str_replace('\\', '/', $prefs['server_path']), '/') . '/' : '';
+        $img_path = ($prefs['directory']->getProperty('adapter') == 'local') ? rtrim(str_replace('\\', '/', $prefs['server_path']), '/') . '/' : '';
         $dirname = rtrim(str_replace('\\', '/', $filesystem->absolute($filesystem->subdirectory($file_path))), '/') . '/';
         if (empty($img_path) || strpos($dirname, $img_path) === 0) {
             $img_path = $dirname;
@@ -1610,7 +1657,7 @@ class Filemanager
         $directories = ee('Model')->get('UploadDestination');
 
         if (!$ignore_site_id) {
-            $directories->filter('site_id', ee()->config->item('site_id'));
+            $directories->filter('site_id', 'IN', [0, ee()->config->item('site_id')]);
         }
 
         $dirs = $directories->all()->indexBy('id');
@@ -1705,35 +1752,6 @@ class Filemanager
     }
 
     /**
-     * Build a dropdown list of categories
-     *
-     * @access private
-     * @param $dir Directory array, containing at least the id
-     * @return array Array with the category group name as the key and the
-     *  categories as the values (see above)
-     */
-    private function _get_category_dropdown($dir)
-    {
-        ee()->load->helper('form');
-
-        $raw_categories = $this->_get_categories($dir);
-        $category_dropdown_array = array('all' => lang('all_categories'));
-
-        // Build the array of categories
-        foreach ($raw_categories as $category_group) {
-            $categories = array();
-
-            foreach ($category_group['categories'] as $category) {
-                $categories[$category['cat_id']] = $category['cat_name'];
-            }
-
-            $category_dropdown_array[$category_group['group_name']] = $categories;
-        }
-
-        return form_dropdown('category', $category_dropdown_array);
-    }
-
-    /**
      * Validate Post Data
      *
      * Validates that the POST data did not get dropped, this happens when
@@ -1748,35 +1766,6 @@ class Filemanager
         $post_limit = get_bytes(ini_get('post_max_size'));
 
         return $_SERVER['CONTENT_LENGTH'] <= $post_limit;
-    }
-
-    /**
-     * Get the categories for the directory
-     *
-     * This function retrieves the categories for a particular directory
-     *
-     * @access private
-     * @return array category list
-     */
-    private function _get_categories($dir)
-    {
-        $categories = array();
-
-        ee()->load->model(array('file_upload_preferences_model', 'category_model'));
-
-        $category_group_ids = ee()->file_upload_preferences_model->get_file_upload_preferences(null, $dir['id']);
-        $category_group_ids = explode('|', $category_group_ids['cat_group']);
-
-        if (count($category_group_ids) > 0 and $category_group_ids[0] != '') {
-            foreach ($category_group_ids as $category_group_id) {
-                $category_group_info = ee()->category_model->get_category_groups($category_group_id);
-                $categories[$category_group_id] = $category_group_info->row_array();
-                $categories_for_group = ee()->category_model->get_channel_categories($category_group_id);
-                $categories[$category_group_id]['categories'] = $categories_for_group->result_array();
-            }
-        }
-
-        return $categories;
     }
 
     /**
@@ -1852,7 +1841,7 @@ class Filemanager
 
                 // Permissions can only get more strict!
                 if (isset($settings['field_content_type']) && $settings['field_content_type'] == 'image') {
-                    $allowed_types = 'gif|jpg|jpeg|png|jpe|svg|webp';
+                    $allowed_types = 'gif|jpg|jpeg|png|jpe|svg|webp|avif';
                 }
             }
 
@@ -1864,7 +1853,7 @@ class Filemanager
 
         $field = ($field_name) ? $field_name : 'userfile';
         $original_filename = $_FILES[$field]['name'];
-        $clean_filename = basename($this->clean_filename(
+        $clean_filename = basename($this->clean_subdir_and_filename(
             $_FILES[$field]['name'],
             $dir['id'],
             array('ignore_dupes' => true)
@@ -2009,6 +1998,8 @@ class Filemanager
                     )
                 );
             }
+
+            $file_data['image_processed'] = true;
         }
 
         // Save file to database
@@ -2232,7 +2223,7 @@ class Filemanager
     public function _rename_raw_file($old_file_name, $new_file_name, $directory_id)
     {
         // Make sure the filename is clean
-        $new_file_name = $this->clean_filename($new_file_name, $directory_id);
+        $new_file_name = $this->clean_subdir_and_filename($new_file_name, $directory_id);
 
         // Check they have permission for this directory and get directory info
         $upload_directory = $this->fetch_upload_dir_prefs($directory_id);
