@@ -51,6 +51,19 @@ class Runner
         $this->logger->log('Maximum execution time: ' . @ini_get('max_execution_time'));
         $this->logger->log('Memory limit: ' . @ini_get('memory_limit'));
 
+        // -------------------------------------------
+        // 'updater_start' hook.
+        //  - added 7.5.16
+        //
+        if (ee()->extensions->active_hook('updater_start') === true) {
+            ee()->extensions->call('updater_start', $this);
+            if (ee()->extensions->end_script === true) {
+                return;
+            }
+        }
+        //
+        // -------------------------------------------
+
         $preflight = ee('Updater/Preflight');
         $preflight->checkPermissions();
         $preflight->cleanUpOldUpgrades();
@@ -103,6 +116,16 @@ class Runner
         } catch (\Exception $e) {
             $this->logger->log($e->getMessage());
             $this->logger->log($e->getTraceAsString());
+
+            // -------------------------------------------
+            // 'updater_error' hook.
+            //  - added 7.5.16
+            //
+            if (ee()->extensions->active_hook('updater_error') === true) {
+                ee()->extensions->call('updater_error', $this, $e);
+            }
+            //
+            // -------------------------------------------
 
             // Send it up the chain
             throw $e;

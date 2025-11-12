@@ -154,7 +154,7 @@ class Factory
         return ($instance instanceof AbstractFieldTemplateGenerator) ? $instance : null;
     }
 
-    public function getFieldVariables($fieldInfo, $channelContext = null): array
+    public function getFieldVariables($fieldInfo, $channelContext = null): ?array
     {
         $fieldtypeGenerator = $this->getFieldtype($fieldInfo->field_type);
 

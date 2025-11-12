@@ -29,7 +29,7 @@ class SliderTest extends TestCase
     public function testFieldPrototypeAttribute(): Slider
     {
         $field = new _slider_field('test-field');
-        $this->assertObjectHasAttribute('field_prototype', $field);
+        $this->assertObjectHasProperty('field_prototype', $field);
         $this->assertCount(4, $field->getFieldPrototype());
         return $field;
     }
