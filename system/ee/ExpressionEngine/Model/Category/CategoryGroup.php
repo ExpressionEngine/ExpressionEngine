@@ -127,10 +127,15 @@ class CategoryGroup extends StructureModel
     {
         $sort_column = ($this->sort_order == 'a') ? 'cat_name' : 'cat_order';
 
-        return $tree->from_list(
-            $this->getCategories()->sortBy($sort_column),
-            array('id' => 'cat_id')
-        );
+        $categories = ee()->db
+            ->select('cat_id, parent_id, group_id, cat_name, cat_url_title')
+            ->from('categories')
+            ->where('group_id', $this->getId())
+            ->order_by($sort_column, 'asc')
+            ->get()
+            ->result_object();
+
+        return $tree->from_list($categories, array('id' => 'cat_id'));
     }
 
     /**
@@ -209,28 +214,7 @@ class CategoryGroup extends StructureModel
      */
     public function populateCategories($field)
     {
-        $categories = $this->getModelFacade()->get('Category')
-            ->with(
-                ['Children as C0' =>
-                    ['Children as C1' =>
-                        ['Children as C2' => 'Children as C3']
-                    ]
-                ]
-            )
-            ->with('CategoryGroup')
-            ->filter('CategoryGroup.group_id', $field->getItem('group_id'))
-            ->filter('Category.parent_id', 0)
-            ->all();
-
-        // Sorting alphabetically or custom?
-        $sort_column = 'cat_order';
-        if ($categories->count() && $categories->first()->CategoryGroup->sort_order == 'a') {
-            $sort_column = 'cat_name';
-        }
-
-        $category_list = $this->buildCategoryList($categories->sortBy($sort_column), $sort_column);
-        $field->setItem('field_list_items', $category_list);
-
+        $field->setItem('field_list_items',  $this->getCategoryListForGroup($field->getItem('group_id')));
         $object = $field->getItem('categorized_object');
 
         // isset() and empty() don't work here on $object->Channel because it hasn't been dynamically fetched yet,
@@ -253,41 +237,94 @@ class CategoryGroup extends StructureModel
      */
     public function buildCategoryOptionsTree()
     {
-        $sort_column = 'cat_order';
-        if ($this->sort_order == 'a') {
-            $sort_column = 'cat_name';
+        return $this->getCategoryListForGroup();
+    }
+
+    /**
+     * Get a nested array of category ids => names for a given category group
+     *
+     * @param int|null $group_id
+     * @return array
+     */
+    protected function getCategoryListForGroup($group_id = null)
+    {
+        if(is_null($group_id)) {
+            $group_id = $this->getId();
+            $sort_column = $this->sort_order == 'a' ? 'cat_name' : 'cat_order';
+        } else {
+            $groupSort = ee()->db->select('sort_order')
+                ->from('category_groups')
+                ->where('group_id', (int) $group_id)
+                ->get()
+                ->result_array();
+
+            // Sorting alphabetically or custom?
+            $sort_column = (!empty($groupSort) && $groupSort[0]['sort_order'] == 'a') ? 'cat_name' : 'cat_order';
         }
 
-        return $this->buildCategoryList(
-            $this->Categories->filter('parent_id', 0),
-            $sort_column
+        $hierarchy = array_reduce(
+            ee()->db->select('parent_id, cat_id')->from('categories')
+                ->where('group_id', $group_id)
+                ->order_by($sort_column, 'asc')->order_by('cat_id', 'asc')
+                ->get()
+                ->result_array(),
+            function($carry, $row) {
+                if(!array_key_exists($row['parent_id'], $carry)) {
+                    $carry[$row['parent_id']] = [];
+                }
+
+                $carry[$row['parent_id']][] = $row['cat_id'];
+
+                return $carry;
+            },
+            []
         );
+
+        $categories = array_column(
+            ee()->db
+                ->select('cat_id, cat_name, cat_order')
+                ->from('categories')
+                ->where('group_id', $group_id)
+                ->order_by('cat_id', 'asc')
+                ->get()->result_array(),
+                null,
+                'cat_id'
+        );
+
+        return $this->buildCategoryList(0, $hierarchy, $categories);
     }
 
     /**
      * Turn the categories collection into a nested array of ids => names
      *
-     * @param   Collection  $categories Top level categories to construct tree out of
-     * @param   string      $sort_column    Either 'cat_name' or 'cat_order', sorts the
-     *                      categories by the given column
+     * @param   int    $parent_id The parent id to start traversing children on
+     * @param   array  $hierarchy A map of parent ids and their children
+     * @param   array  $categories A list of category data for display
+     *
      */
-    protected function buildCategoryList($categories, $sort_column)
+    protected function buildCategoryList($parent_id, $hierarchy, $categories)
     {
         $list = array();
+        $cat_ids = $hierarchy[$parent_id] ?? [];
 
-        foreach ($categories as $category) {
-            $children = $category->Children->sortBy($sort_column);
+        foreach ($cat_ids as $cat_id) {
+            if(empty($cat_id)) {
+                throw new \Exception('Failed to build category list, missing category id.  Check database group_concat_max_len');
+            }
+
+            $category = $categories[$cat_id];
+            $children = $hierarchy[$cat_id] ?? [];
 
             if (count($children)) {
-                $list[$category->cat_id] = array(
-                    'name' => $category->cat_name,
-                    'children' => $this->buildCategoryList($children, $sort_column)
+                $list[$cat_id] = array(
+                    'name' => $category['cat_name'],
+                    'children' => $this->buildCategoryList($cat_id, $hierarchy, $categories)
                 );
 
                 continue;
             }
 
-            $list[$category->cat_id] = $category->cat_name;
+            $list[$cat_id] = $category['cat_name'] ?? '';
         }
 
         return $list;

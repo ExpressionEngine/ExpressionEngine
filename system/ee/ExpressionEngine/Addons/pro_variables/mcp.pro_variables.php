@@ -594,6 +594,7 @@ class Pro_variables_mcp
         // --------------------------------------
 
         ee()->cp->add_js_script('file', 'cp/confirm_remove');
+
         ee()->javascript->set_global('lang.remove_confirm', '### ' . lang('variables'));
 
         // -------------------------------------
@@ -2238,9 +2239,19 @@ class Pro_variables_mcp
         // -------------------------------------
 
         $version = '&amp;lv=' . (static::DEBUG ? time() : $this->version);
-
+        ee()->lang->loadfile('fieldtypes');
         ee()->cp->add_js_script('plugin', 'ui.touch.punch');
         ee()->cp->add_js_script('ui', 'sortable');
+        ee()->cp->add_js_script(array(
+            'file' => [
+                'fields/relationship/settings',
+                'vendor/react/react.min',
+                'vendor/react/react-dom.min',
+                'components/relationship',
+                'components/dropdown_button',
+                'components/select_list'
+            ],
+        ));
 
         ee()->cp->load_package_css($this->package . $version);
         ee()->cp->load_package_js($this->package . $version);

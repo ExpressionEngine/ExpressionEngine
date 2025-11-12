@@ -353,6 +353,7 @@ class EE_Config
 
         $config['email_newline_form_safe'] = $config['email_newline'];
         $config['email_newline'] = $this->setEmailNewline($config['email_newline']);
+        $config['email_crlf'] = $this->setEmailNewline($config['email_crlf'] ?? '');
 
         if ($mutating) {
             $this->config = $config;
@@ -1002,8 +1003,8 @@ class EE_Config
 
                     $prefs[$value] = $site_prefs[$value];
 
-                    // exception for email_newline, which uses backslashes, and is not a path variable
-                    if ($value != 'email_newline') {
+                    // exception for email_newline and email_crlf, which uses backslashes, and is not a path variable
+                    if (!in_array($value, ['email_newline', 'email_crlf'])) {
                         $prefs[$value] = str_replace('\\', '/', $prefs[$value]);
                     }
 

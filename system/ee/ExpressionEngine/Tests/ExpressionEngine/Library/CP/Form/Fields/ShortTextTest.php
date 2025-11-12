@@ -29,7 +29,7 @@ class ShortTextTest extends TestCase
     public function testFieldPrototypeAttribute(): ShortText
     {
         $field = new _short_text('test-field');
-        $this->assertObjectHasAttribute('field_prototype', $field);
+        $this->assertObjectHasProperty('field_prototype', $field);
         $this->assertCount(1, $field->getFieldPrototype());
         return $field;
     }

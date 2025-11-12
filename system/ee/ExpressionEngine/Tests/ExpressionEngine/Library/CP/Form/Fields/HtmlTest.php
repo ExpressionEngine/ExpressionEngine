@@ -29,7 +29,7 @@ class HtmlTest extends TestCase
     public function testFieldPrototypeAttribute(): Html
     {
         $field = new _html('test-field');
-        $this->assertObjectHasAttribute('field_prototype', $field);
+        $this->assertObjectHasProperty('field_prototype', $field);
         $this->assertCount(1, $field->getFieldPrototype());
         return $field;
     }

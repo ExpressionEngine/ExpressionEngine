@@ -36,7 +36,7 @@ class EE_Tree
      *
      * @return Object<ImmutableTree>
      */
-    public function from_list($data, array $conf = null)
+    public function from_list($data, ?array $conf = null)
     {
         $conf = array_merge(
             array(

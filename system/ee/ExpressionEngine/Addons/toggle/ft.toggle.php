@@ -163,7 +163,6 @@ class Toggle_ft extends EE_Fieldtype
         );
 
         $html = '';
-        $class = 'choice mr';
 
         foreach ($field_options as $key => $value) {
             $selected = ($value == $data);
