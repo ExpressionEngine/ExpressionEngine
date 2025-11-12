@@ -64,7 +64,7 @@
             $dotenv = ExpressionEngine\Dependency\Dotenv\Dotenv::createImmutable(SYSPATH .'../', '.env.php');
             $dotenv->load();
             // force the installer/updater?
-            defined('INSTALL_MODE') || define('INSTALL_MODE', getenv('EE_INSTALL_MODE') === 'TRUE');
+            defined('INSTALL_MODE') || define('INSTALL_MODE', ($_ENV['EE_INSTALL_MODE'] ?? false) === 'TRUE');
         }
     } catch (\Exception $e) {
 

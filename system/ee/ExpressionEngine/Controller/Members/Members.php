@@ -355,6 +355,23 @@ class Members extends CP_Controller
                     'margin_left' => true
                 )
             );
+
+            $vars['fieldset'] = [
+                'group' => 'delete-confirm',
+                'setting' => [
+                    'title' => '',
+                    'desc' => lang('move_toggle_to_confirm'),
+                    'attrs' => [
+                        'class' => 'member-delete-confirm',
+                    ],
+                    'fields' => [
+                        'confirm' => [
+                            'type' => 'toggle',
+                            'value' => 0,
+                        ]
+                    ]
+                ]
+            ];
         }
 
         ee()->view->cp_page_title = lang('delete_member') ;

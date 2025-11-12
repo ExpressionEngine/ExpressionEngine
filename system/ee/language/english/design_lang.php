@@ -178,9 +178,9 @@ $lang = array(
 
     'name_desc' => 'No spaces. Underscores and dashes are allowed.',
 
-    'no_access_redirect' => 'No access redirect',
+    'no_access_redirect' => 'No access template',
 
-    'no_access_redirect_desc' => 'Page to redirect unauthorized users to.',
+    'no_access_redirect_desc' => 'Template to display for unauthorized users.',
 
     'no_revisions' => 'No revisions',
 

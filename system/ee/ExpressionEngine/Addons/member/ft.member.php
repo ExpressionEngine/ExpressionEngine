@@ -50,6 +50,8 @@ class Member_ft extends Relationship_ft implements ColumnInterface
 
     protected $entityNamePlural = 'members';
 
+    private $pre_processed = [];
+
     /**
      * Display the field on the publish page
      *
@@ -333,6 +335,10 @@ class Member_ft extends Relationship_ft implements ColumnInterface
             $wheres['grid_row_id'] = $this->settings['grid_row_id'];
         }
 
+        if (isset($this->pre_processed[$cache_key = md5(serialize($wheres))])) {
+            return $this->pre_processed[$cache_key];
+        }
+
         ee()->db
             ->select('child_id, order')
             ->from($this->_table)
@@ -345,7 +351,7 @@ class Member_ft extends Relationship_ft implements ColumnInterface
             $data[$row['child_id']] = $row['order'];
         }
 
-        return $data;
+        return $this->pre_processed[$cache_key] = $data;
     }
 
     /**
@@ -357,7 +363,7 @@ class Member_ft extends Relationship_ft implements ColumnInterface
             'entries' => []
         ];
         foreach ($data as $member_id => $order) {
-            $memberQuery = ee('Model')->get('Member', $member_id)->with('PrimaryRole')->first();
+            $memberQuery = ee('Model')->get('Member', $member_id)->with('PrimaryRole')->first(true);
             if (!empty($memberQuery)) {
                 $memberData = array_merge(
                     $memberQuery->toArray(),

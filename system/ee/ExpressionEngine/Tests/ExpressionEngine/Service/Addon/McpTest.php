@@ -60,7 +60,7 @@ class McpTest extends TestCase
      */
     public function testMcpHasActionProperty(Mcp $controller): Mcp
     {
-        $this->assertObjectHasAttribute('action', $controller);
+        $this->assertObjectHasProperty('action', $controller);
         return $controller;
     }
 
@@ -71,7 +71,7 @@ class McpTest extends TestCase
      */
     public function testMcpHasIdProperty(Mcp $controller): Mcp
     {
-        $this->assertObjectHasAttribute('id', $controller);
+        $this->assertObjectHasProperty('id', $controller);
         return $controller;
     }
 

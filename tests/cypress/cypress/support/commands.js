@@ -158,6 +158,7 @@ Cypress.Commands.add("hasNoErrors", () => {
     cy.contains('Exception Caught').should('not.exist')
     cy.contains('Warning Caught').should('not.exist')
     cy.contains('Error Caught').should('not.exist')
+    cy.contains('Deprecated').should('not.exist')
 })
 
 Cypress.Commands.add("dismissLicenseAlert", () => {

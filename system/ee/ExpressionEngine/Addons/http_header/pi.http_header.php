@@ -46,6 +46,7 @@ class Http_header
             'refresh' => 'Refresh',
             'retry_after' => 'Retry-After',
             'status' => 'Status',
+            'strict_transport_security' => 'Strict-Transport-Security',
             'tk' => 'Tk',
             'vary' => 'Vary',
             'via' => 'Via',
@@ -295,6 +296,12 @@ class Http_header
         }
 
         return $value;
+    }
+
+    private function set_strict_transport_security($value)
+    {
+        ee('Response')->setHeader('Strict-Transport-Security', $value);
+        return true;
     }
 }
 // END CLASS

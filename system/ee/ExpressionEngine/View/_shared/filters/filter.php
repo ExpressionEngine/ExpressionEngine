@@ -31,7 +31,7 @@
             <?php if (is_array($label) && ($label['type'] ?? '' == 'header')): ?>
                 <div class="dropdown__header"><?=$label['label']?></div>
             <?php else: ?>
-			    <a class="dropdown__link" href="<?=$url?>"><?=$label?></a>
+			    <a class="dropdown__link <?=($value == $label ? 'active-link' : '')?>" href="<?=$url?>"><?=$label?></a>
             <?php endif; ?>
 		<?php endforeach; ?>
 		</div>

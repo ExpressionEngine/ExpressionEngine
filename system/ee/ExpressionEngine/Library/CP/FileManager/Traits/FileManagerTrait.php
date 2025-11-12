@@ -15,6 +15,16 @@ use ExpressionEngine\Library\CP\FileManager\ColumnFactory;
 
 trait FileManagerTrait
 {
+    protected $searchableFields = [
+        'credit',
+        'description',
+        'file_id',
+        'file_name',
+        'location',
+        'mime_type',
+        'title',
+    ];
+
     protected function listingsPage($uploadLocation = null, $view_type = 'list', $filepickerMode = false)
     {
         $vars = array();
@@ -126,7 +136,12 @@ trait FileManagerTrait
         $search_terms = ee()->input->get_post('filter_by_keyword');
 
         if ($search_terms) {
-            $files->search(['title', 'file_name', 'mime_type'], $search_terms);
+            if (is_numeric($search_terms) && strlen($search_terms) < 3) {
+                $files->filter('file_id', $search_terms);
+            } else {
+                $files->search($this->searchableFields, $search_terms);
+            }
+
             $vars['search_terms'] = htmlentities($search_terms, ENT_QUOTES, 'UTF-8');
             $needToFilterFiles = true;
         }
@@ -346,7 +361,7 @@ trait FileManagerTrait
             // We only need to eager load contents for destinations that are displaying
             // files in this current page of the listing
             if (! in_array($file->upload_location_id, $destinationsToEagerLoad)) {
-                if ($file->UploadDestination->adapter != 'local' && $file->UploadDestination->exists()) {
+                if ($file->UploadDestination->getProperty('adapter') != 'local' && $file->UploadDestination->exists()) {
                     $file->UploadDestination->eagerLoadContents();
                 }
                 $destinationsToEagerLoad[$file->upload_location_id] = $file->upload_location_id;
@@ -479,7 +494,7 @@ trait FileManagerTrait
         if (! empty($uploadLocation)) {
             $typesQuery->where('upload_location_id', $uploadLocation->getId());
         } else {
-            $typesQuery->where('file_type != "directory"');
+            $typesQuery->where('file_type !=', 'directory');
         }
         $types = $typesQuery->get();
 
@@ -607,7 +622,7 @@ trait FileManagerTrait
                 $uploadLocationsAndDirectoriesDropdownChoices[$upload_pref->getId() . '.0'] = [
                     'label' => '<i class="fal fa-hdd"></i>' . $upload_pref->name,
                     'upload_location_id' => $upload_pref->id,
-                    'adapter' => $upload_pref->adapter,
+                    'adapter' => $upload_pref->getProperty('adapter'),
                     'directory_id' => 0,
                     'path' => '',
                     'children' => !bool_config_item('file_manager_compatibility_mode') ? $upload_pref->getDirectoriesDropdown(true) : []

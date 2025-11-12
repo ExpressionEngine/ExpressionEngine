@@ -55,7 +55,7 @@ class Thumbnail
      * @param File $file (optional) A File entity from which we'll calculate the
      *   thumbnail url and path.
      */
-    public function __construct(File\FileSystemEntity $file = null)
+    public function __construct(?File\FileSystemEntity $file = null)
     {
         $this->setDefault();
 

@@ -323,7 +323,7 @@ class Rte_ft extends EE_Fieldtype
     public function save($data)
     {
         // Trim out any whitespace/empty tags
-        $data = preg_replace('/^(\s|<(\w+)>(&nbsp;|\s)*<\/\2>|<br \/>)*/', '', $data);
+        $data = preg_replace('/^(\s|<(\w+)>(&nbsp;|\s)*<\/\2>|<br \/>)*/', '', (string) $data);
         $data = preg_replace('/(\s|<(\w+)>(&nbsp;|\s)*<\/\2>|<br \/>)*$/', '', $data);
 
         // Remove any ?cachebuster:X query strings

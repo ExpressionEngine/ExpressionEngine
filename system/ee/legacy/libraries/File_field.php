@@ -543,7 +543,15 @@ class File_field
 
         // Query for files based on file ID
         if (! empty($file_ids)) {
-            $file_ids = ee()->file_model->get_files_by_id($data)->result_array();
+            $files = ee('Model')->get('File')
+                ->with('UploadDestination')
+                ->filter('file_id', 'IN', $file_ids)
+                ->all();
+            $files_as_array = array();
+            foreach ($files as $file) {
+                $files_as_array[] = array_merge($file->toArray(), array('model_object' => $file));
+            }
+            $file_ids = $files_as_array;
         }
 
         // Merge our results into our cached array
