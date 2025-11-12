@@ -177,7 +177,7 @@ class Uploads extends AbstractFilesController
         $settingsValues = array_merge([
             'url' => $upload_destination->getConfigOverriddenProperty('url'),
             'server_path' => $upload_destination->getConfigOverriddenProperty('server_path'),
-        ], $upload_destination->adapter_settings ?? []);
+        ], $upload_destination->getProperty('adapter_settings') ?? []);
 
         $adapter_groups = [];
         $adapter_choices = [];
@@ -185,7 +185,7 @@ class Uploads extends AbstractFilesController
         foreach ($adapters as $key => $adapter) {
             $adapter_choices[$key] = lang('adapter_' . $key);
             $adapter_groups[$key] = "adapter_{$key}";
-            $adapterFields = ee('Filesystem/Adapter')->createSettingsFields($key, ($upload_destination->adapter == $key) ? $settingsValues : []);
+            $adapterFields = ee('Filesystem/Adapter')->createSettingsFields($key, ($upload_destination->getProperty('adapter') == $key) ? $settingsValues : []);
             if (!empty($adapterFields)) {
                 foreach ($adapterFields as $field) {
                     // Prefix all field names for the adapter
@@ -224,7 +224,7 @@ class Uploads extends AbstractFilesController
                             'required' => true,
                             'choices' => $adapter_choices,
                             'group_toggle' => $adapter_groups,
-                            'value' => $upload_destination->adapter
+                            'value' => $upload_destination->getProperty('adapter')
                         )
                     )
                 ),
@@ -389,22 +389,17 @@ class Uploads extends AbstractFilesController
             )
         );
 
-
-
         // Grid validation results
         ee()->view->image_sizes_errors = isset($this->upload_errors['image_sizes'])
             ? $this->upload_errors['image_sizes'] : array();
 
         // Category group assignment
-        ee()->load->model('category_model');
-        $query = ee()->category_model->get_category_groups('', false, 1);
-
-        $cat_group_options = array();
-        if ($query->num_rows() > 0) {
-            foreach ($query->result() as $row) {
-                $cat_group_options[$row->group_id] = $row->group_name;
-            }
-        }
+        $cat_group_options = ee('Model')
+            ->get('CategoryGroup')
+            ->filter('site_id', ee()->config->item('site_id'))
+            ->filter('exclude_group', '!=', '2')
+            ->all()
+            ->getDictionary('group_id', 'group_name');
 
         $vars['sections']['upload_privileges'][] = array(
             'title' => 'upload_category_groups',
@@ -413,7 +408,7 @@ class Uploads extends AbstractFilesController
                 'cat_group' => array(
                     'type' => 'checkbox',
                     'choices' => $cat_group_options,
-                    'value' => ($upload_destination) ? explode('|', (string) $upload_destination->cat_group) : array(),
+                    'value' => ($upload_destination) ? $upload_destination->CategoryGroups->pluck('group_id') : array(),
                     'no_results' => [
                         'text' => sprintf(lang('no_found'), lang('category_groups'))
                     ]
@@ -654,9 +649,9 @@ class Uploads extends AbstractFilesController
                 unset($_POST['cat_group'][0]);
             }
 
-            $upload_destination->cat_group = implode('|', ee()->input->post('cat_group'));
+            $upload_destination->CategoryGroups = ee('Model')->get('CategoryGroup', ee('Request')->post('cat_group'))->all();
         } else {
-            $upload_destination->cat_group = '';
+            $upload_destination->CategoryGroups = null;
         }
 
         $access = ee()->input->post('upload_roles') ?: array();
@@ -674,16 +669,16 @@ class Uploads extends AbstractFilesController
 
         $result = $upload_destination->validate();
 
-        if (!empty($upload_destination->adapter)) {
+        if (!empty($upload_destination->getProperty('adapter'))) {
             //validate adapter settings
             $adapter = $upload_destination->getFilesystemAdapter(['allow_missing' => true]);
             $adapterValidation = ee('Validation')->make()->validate($adapter);
 
             foreach ($adapterValidation->getFailed() as $field_name => $rules) {
                 if (property_exists($upload_destination, $field_name)) {
-                    $field = '_for_adapter[' . $upload_destination->adapter . '][' . $field_name . ']';
+                    $field = '_for_adapter[' . $upload_destination->getProperty('adapter') . '][' . $field_name . ']';
                 } else {
-                    $field = '_for_adapter[' . $upload_destination->adapter . '][adapter_settings][' . $field_name . ']';
+                    $field = '_for_adapter[' . $upload_destination->getProperty('adapter') . '][adapter_settings][' . $field_name . ']';
                 }
                 $result->addFailed($field, $rules[0]);
             }
@@ -699,9 +694,9 @@ class Uploads extends AbstractFilesController
                 $localAdapterValidation = ee('Validation')->make(['server_path' => 'required|fileExists|writable'])->validate(['server_path' => $parsedServerPath]);
                 foreach ($localAdapterValidation->getFailed() as $field_name => $rules) {
                     if (property_exists($upload_destination, $field_name)) {
-                        $field = '_for_adapter[' . $upload_destination->adapter . '][' . $field_name . ']';
+                        $field = '_for_adapter[' . $upload_destination->getProperty('adapter') . '][' . $field_name . ']';
                     } else {
-                        $field = '_for_adapter[' . $upload_destination->adapter . '][adapter_settings][' . $field_name . ']';
+                        $field = '_for_adapter[' . $upload_destination->getProperty('adapter') . '][adapter_settings][' . $field_name . ']';
                     }
                     $result->addFailed($field, $rules[0]);
                 }
@@ -976,7 +971,7 @@ class Uploads extends AbstractFilesController
                 ));
             }
 
-            
+
         }
     }
 }

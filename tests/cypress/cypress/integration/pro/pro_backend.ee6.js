@@ -73,10 +73,10 @@ context('Front-end editing', () => {
         cy.wait(2000)
         cy.eeConfig({ item: 'automatic_frontedit_links', value: 'y' })
         cy.wait(2000)
-        
+
         cy.visit('index.php/pro/index')
         cy.get('#ee-pro-ee-44E4F0E59DFA295EB450397CA40D1169').should('exist')
-        
+
         cy.visit('/admin.php?/cp/settings/pro/general', {failOnStatusCode: false});
         cy.get('[data-toggle-for=enable_dock]').click();
         cy.get('.button--primary').first().click()
@@ -92,7 +92,7 @@ context('Front-end editing', () => {
         cy.wait(2000)
         cy.eeConfig({ item: 'automatic_frontedit_links', value: 'y' })
         cy.wait(2000)
-        
+
         cy.visit('index.php/pro/index')
 
         cy.wait(15000)
@@ -122,7 +122,7 @@ context('Front-end editing', () => {
         cy.wait(2000)
         cy.eeConfig({ item: 'automatic_frontedit_links', value: 'y' })
         cy.wait(2000)
-        
+
         cy.visit('index.php/pro/conditionals')
 
         cy.wait(15000)
@@ -146,7 +146,7 @@ context('Front-end editing', () => {
         cy.wait(2000)
         cy.eeConfig({ item: 'automatic_frontedit_links', value: 'y' })
         cy.wait(2000)
-        
+
         cy.visit('index.php/pro/image')
 
         cy.wait(15000)
@@ -184,7 +184,7 @@ context('Front-end editing', () => {
         cy.wait(2000)
         cy.eeConfig({ item: 'automatic_frontedit_links', value: 'y' })
         cy.wait(2000)
-        
+
         cy.visit('index.php/pro/grid')
 
         cy.wait(15000)
@@ -213,18 +213,18 @@ context('Front-end editing', () => {
 
     })
 
-    it('switch the frontedit off with a toggle', function(){ 
+    it('switch the frontedit off with a toggle', function(){
         cy.eeConfig({ item: 'enable_dock', value: 'y' })
         cy.wait(2000)
         cy.eeConfig({ item: 'enable_frontedit', value: 'y' })
         cy.wait(2000)
         cy.eeConfig({ item: 'automatic_frontedit_links', value: 'y' })
         cy.wait(2000)
-        
+
         cy.visit('index.php/pro/index')
         cy.get('#ee-pro-ee-44E4F0E59DFA295EB450397CA40D1169 .v-toggle').should('have.class', 'on')
         cy.get('.eeFrontEdit').should('exist');
-        
+
         cy.get('#ee-pro-ee-44E4F0E59DFA295EB450397CA40D1169 .v-toggle').click()
         cy.wait(15000)
 
@@ -236,18 +236,18 @@ context('Front-end editing', () => {
         cy.wait(15000)
     })
 
-    it('switch the frontedit off with a setting', function(){ 
+    it('switch the frontedit off with a setting', function(){
         cy.eeConfig({ item: 'enable_dock', value: 'y' })
         cy.wait(2000)
         cy.eeConfig({ item: 'enable_frontedit', value: 'y' })
         cy.wait(2000)
         cy.eeConfig({ item: 'automatic_frontedit_links', value: 'y' })
         cy.wait(2000)
-        
+
         cy.visit('/admin.php?/cp/settings/pro/general', {failOnStatusCode: false});
         cy.get('[data-toggle-for=enable_frontedit]').click();
         cy.get('.button--primary').first().click()
-        
+
         cy.visit('index.php/pro/index')
         cy.get('#ee-pro-ee-44E4F0E59DFA295EB450397CA40D1169 .v-toggle').should('not.exist')
         cy.get('.eeFrontEdit').should('not.exist');
@@ -257,18 +257,18 @@ context('Front-end editing', () => {
         cy.get('.eeFrontEdit').should('not.exist');
     })
 
-    it('turn automatic edit links off', function(){ 
+    it('turn automatic edit links off', function(){
         cy.eeConfig({ item: 'enable_dock', value: 'y' })
         cy.wait(2000)
         cy.eeConfig({ item: 'enable_frontedit', value: 'y' })
         cy.wait(2000)
         cy.eeConfig({ item: 'automatic_frontedit_links', value: 'y' })
         cy.wait(2000)
-        
+
         cy.visit('/admin.php?/cp/settings/pro/general', {failOnStatusCode: false});
         cy.get('[data-toggle-for=automatic_frontedit_links]').click();
         cy.get('.button--primary').first().click()
-        
+
         cy.visit('index.php/pro/index')
         cy.get('#ee-pro-ee-44E4F0E59DFA295EB450397CA40D1169 .v-toggle').should('have.class', 'on')
         cy.get('.eeFrontEdit').should('not.exist');
@@ -286,7 +286,7 @@ context('Front-end editing', () => {
         cy.wait(2000)
         cy.eeConfig({ item: 'automatic_frontedit_links', value: 'y' })
         cy.wait(2000)
-        
+
         cy.visit('/admin.php?/cp/settings/pro/branding', {failOnStatusCode: false});
 
         cy.get("#fieldset-login_logo div[data-file-field-react] button:contains('Choose Existing')").click()
@@ -319,13 +319,13 @@ context('Front-end editing', () => {
       publish.get('save').click()
 
       cy.visit('index.php/pro/encode')
-    
+
       cy.get('.eeFrontEdit').should('have.length', 1);
 
       cy.get('p').contains('support@expressionengine.com')
       cy.get('body').should('not.contain', 'frontedit_link');
       cy.hasNoErrors();
-      
+
     })
 
     context('front-end editing fluid fields', () => {
@@ -347,42 +347,42 @@ context('Front-end editing', () => {
           "Truth or Dare?",
           "YouTube URL"
         ];
-  
+
         before(function(){
           cy.task('db:load', '../../channel_sets/channel-with-fluid-field.sql')
           cy.authVisit(Cypress._.replace(publish.url, '{channel_id}', 3))
-  
+
           publish.get('title').type("Fluid Field Test the First")
           publish.get('url_title').clear().type("fluid-field-test-first")
-  
+
           fluid_field.get('actions_menu.fields').then(function($li) {
             let existing_fields = Cypress._.map($li, function(el) {
                 return Cypress.$(el).text().replace('Add ', '').trim();
             })
-  
+
             expect(existing_fields).to.deep.equal(available_fields)
           })
-  
+
           // Make sure the fields stuck around after save
           available_fields.forEach(function(field, index) {
             fluid_field.get('actions_menu.fields').eq(index).click()
             fluid_field.get('items').eq(index).find('label').contains(field)
             add_content(index)
           })
-  
+
           publish.get('save').click()
 
-  
+
           publish.get('alert').contains('Entry Created')
-  
+
         })
-  
+
         function add_content(index, skew = 0) {
-  
+
           fluid_field.get('items').eq(index).invoke('attr', 'data-field-type').then(data => {
             const field_type = data;
             const field = fluid_field.get('items').eq(index).find('.fluid__item-field')
-  
+
             switch (field_type) {
               case 'date':
                 field.find('input[type=text][rel=date-picker]').type((9 + skew).toString() + '/14/2017 2:56 PM')
@@ -417,7 +417,7 @@ context('Front-end editing', () => {
                 publish.get('title').click()
                 break;
               case 'rte':
-                field.find('.ck-content').type('Lorem ipsum dolor sit amet');
+                field.find('.ck-content').ckType('Lorem ipsum dolor sit amet');
                 break;
               case 'multi_select':
                 field.find('input[type=checkbox]').eq(0 + skew).check()
@@ -450,24 +450,24 @@ context('Front-end editing', () => {
           })
         }
 
-  
+
         it('Fluid field has front-end edit link', () => {
-  
+
             cy.visit('index.php/pro/fluid')
 
             cy.wait(15000)
-    
+
             cy.get('.eeFrontEdit').should('have.length', 1);
 
             cy.logFrontendPerformance()
         })
 
         it('Relationships fields have front-end editing links', () => {
-  
+
             cy.visit('index.php/pro/relationships')
 
             cy.wait(15000)
-    
+
             cy.get('#with-tag .eeFrontEdit').should('have.length', 2);
             cy.get('#no-tag .eeFrontEdit').should('have.length', 2);
             cy.get('#disabled-with-comment .eeFrontEdit').should('not.exist');
@@ -477,11 +477,11 @@ context('Front-end editing', () => {
         })
 
         it.skip('test reverse relationships', () => {
-  
+
           cy.visit('index.php/pro/reverse-relationships')
 
           cy.wait(15000)
-  
+
           cy.get('#with-tag .eeFrontEdit').should('have.length', 2);
           cy.get('#no-tag .eeFrontEdit').should('have.length', 2);
           cy.get('#disabled-with-comment .eeFrontEdit').should('not.exist');
@@ -489,11 +489,11 @@ context('Front-end editing', () => {
       })
 
         it('Fluid in relationships has front-end editing links', () => {
-  
+
           cy.visit('index.php/pro/relationships-fluid')
 
           cy.wait(15000)
-  
+
           cy.get('#with-tag .eeFrontEdit').should('have.length', 3);
           cy.get('#no-tag .eeFrontEdit').should('have.length', 3);
           cy.get('#disabled-with-comment .eeFrontEdit').should('not.exist');
@@ -501,10 +501,10 @@ context('Front-end editing', () => {
 
           cy.logFrontendPerformance()
       })
-  
-  
+
+
     })
-  
+
 
     it.skip('can uninstall Pro', function() {
         cy.authVisit(page.url);

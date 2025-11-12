@@ -40,9 +40,10 @@ class Member_register extends Member
         // Fetch the registration form
         $tagdata = trim(ee()->TMPL->tagdata);
 
+        $reg_form = '';
         if (! empty($tagdata)) {
             $reg_form = ee()->TMPL->tagdata;
-        } else {
+        } elseif (ee('Config')->getFile()->getBoolean('legacy_member_templates')) {
             $reg_form = $this->_load_element('registration_form');
         }
 
@@ -50,6 +51,13 @@ class Member_register extends Member
         $query = ee()->db->where('m_field_reg', 'y')
             ->order_by('m_field_order')
             ->get('member_fields');
+
+        ee()->router->set_class('cp');
+        ee()->load->library('cp');
+        ee()->load->library('javascript');
+        ee()->load->helper('form');
+
+        $fields = [];
 
         // If not, we'll kill the custom field variables from the template
         if ($query->num_rows() == 0) {
@@ -79,54 +87,79 @@ class Member_register extends Member
                 ->all()
                 ->indexBy('m_field_id');
 
-            ee()->router->set_class('cp');
-            ee()->load->library('cp');
-            ee()->load->library('javascript');
+            if (!empty($field_chunk) || !is_null(ee()->TMPL->template_engine)) {
+                foreach ($query->result_array() as $row) {
+                    $field = '';
+                    $temp = $field_chunk;
 
-            foreach ($query->result_array() as $row) {
-                $field = '';
-                $temp = $field_chunk;
+                    // Replace {required} pair
+                    if ($row['m_field_required'] == 'y') {
+                        $temp = preg_replace("/" . LD . "required" . RD . ".*?" . LD . "\/required" . RD . "/s", $req_chunk, $temp);
+                    } else {
+                        $temp = preg_replace("/" . LD . "required" . RD . ".*?" . LD . "\/required" . RD . "/s", '', $temp);
+                    }
 
-                // Replace {field_name}
-                $temp = str_replace("{field_name}", $row['m_field_label'], $temp);
+                    // Parse input fields
+                    $field = $member_fields[$row['m_field_id']]->getField();
+                    $field->setName('m_field_id_' . $row['m_field_id']);
+                    $fieldShortname = $field->getShortName();
+                    $field = $field->getForm();
 
-                if ($row['m_field_description'] == '') {
-                    $temp = preg_replace("/{if field_description}.+?{\/if}/s", "", $temp);
-                } else {
-                    $temp = preg_replace("/{if field_description}(.+?){\/if}/s", "\\1", $temp);
+                    $temp = ee()->functions->prep_conditionals($temp, [
+                        'has_error' => !empty($field) && !empty(ee()->session->flashdata('errors')['error:'. $fieldShortname] ?? '')
+                    ]);
+
+                    if (! empty($tagdata)) {
+                        $field_vars = [
+                            'field_name' => $row['m_field_label'],
+                            'lang:profile_field' => $row['m_field_label'],
+                            'field_description' => $row['m_field_description'],
+                            'lang:profile_field_description' => $row['m_field_description'],
+                            'required' => get_bool_from_string($row['m_field_required']),
+                            'field' => $field,
+                            'form:custom_profile_field' => $field,
+                            'error' => ee()->session->flashdata('errors')['error:'. $fieldShortname] ?? '',
+                        ];
+
+                        $fields[$fieldShortname] = $field_vars;
+                        $str .= ee()->TMPL->parse_variables_row($temp, $field_vars);
+
+                        continue;
+                    }
+
+                    $temp = str_replace("{field}", $field, $temp);
+
+                    // Replace {field_name}
+                    $temp = str_replace("{field_name}", $row['m_field_label'], $temp);
+
+                    if ($row['m_field_description'] == '') {
+                        $temp = preg_replace("/{if field_description}.+?{\/if}/s", "", $temp);
+                    } else {
+                        $temp = preg_replace("/{if field_description}(.+?){\/if}/s", "\\1", $temp);
+                    }
+
+                    $temp = str_replace("{field_description}", $row['m_field_description'], $temp);
+
+                    $str .= $temp;
                 }
 
-                $temp = str_replace("{field_description}", $row['m_field_description'], $temp);
-
-                // Replace {required} pair
-                if ($row['m_field_required'] == 'y') {
-                    $temp = preg_replace("/" . LD . "required" . RD . ".*?" . LD . "\/required" . RD . "/s", $req_chunk, $temp);
-                } else {
-                    $temp = preg_replace("/" . LD . "required" . RD . ".*?" . LD . "\/required" . RD . "/s", '', $temp);
+                // since $str may have sequences that look like PCRE backreferences,
+                // the two choices are to escape them and use preg_replace() or to
+                // match the pattern and use str_replace().  This way happens
+                // to be faster in this case.
+                if (preg_match("/" . LD . "custom_fields" . RD . ".*?" . LD . "\/custom_fields" . RD . "/s", $reg_form, $match)) {
+                    $reg_form = str_replace($match[0], $str, $reg_form);
                 }
-
-                // Parse input fields
-
-                ee()->load->helper('form');
-                $field = $member_fields[$row['m_field_id']]->getField();
-                $field->setName('m_field_id_' . $row['m_field_id']);
-                $field = $field->getForm();
-
-                $temp = str_replace("{field}", $field, $temp);
-
-                $str .= $temp;
             }
 
-            // since $str may have sequences that look like PCRE backreferences,
-            // the two choices are to escape them and use preg_replace() or to
-            // match the pattern and use str_replace().  This way happens
-            // to be faster in this case.
-            if (preg_match(
-                "/" . LD . "custom_fields" . RD . ".*?" . LD . "\/custom_fields" . RD . "/s",
-                $reg_form,
-                $match
-            )) {
-                $reg_form = str_replace($match[0], $str, $reg_form);
+            if (strpos($reg_form, LD . 'field:') !== false) {
+                foreach ($member_fields as $field) {
+                    if ($field->m_field_reg === 'y') {
+                        $formField = $field->getField();
+                        $formField->setName('m_field_id_' . $field->m_field_id);
+                        $reg_form = str_replace(LD . 'field:' . $field->m_field_name . RD, $formField->getForm(), $reg_form);
+                    }
+                }
             }
         }
 
@@ -149,6 +182,8 @@ class Member_register extends Member
                 $reg_form = preg_replace("/{if captcha}.+?{\/if}/s", "", $reg_form);
             }
         }
+
+        $reg_form = ee()->TMPL->parse_inline_errors($reg_form);
 
         // if we had errors and are redirecting back, populate them
         $field_values = ee()->session->flashdata('field_values');
@@ -175,7 +210,7 @@ class Member_register extends Member
 
         $config_fields = ee()->config->prep_view_vars('localization_cfg');
 
-        // Parse languge lines
+        // Parse language lines
         $reg_form = $this->_var_swap(
             $reg_form,
             array(
@@ -189,18 +224,9 @@ class Member_register extends Member
             )
         );
 
-        $inline_errors = 'no';
-
+        // Convert to standard inline_errors parameter
         if(ee()->TMPL->fetch_param('error_handling') == 'inline') {
-            // determine_error_return function looks for yes.
-            $inline_errors = 'yes';
-
-            // parse the errors
-            $error_tags = ee()->session->flashdata('error_tags');
-
-            if (!empty($error_tags)) {
-                $reg_form = ee()->TMPL->parse_variables($reg_form, array($error_tags));
-            }
+            ee()->TMPL->tagparams['inline_errors'] = 'yes';
         }
 
         // Generate Form declaration
@@ -210,13 +236,12 @@ class Member_register extends Member
             'FROM' => ($this->in_forum == true) ? 'forum' : '',
             'P' => ee()->functions->get_protected_form_params([
                 'primary_role' => ee()->TMPL->fetch_param('primary_role'),
-                'inline_errors' => $inline_errors,
+                'inline_errors' => ee()->TMPL->fetch_param('inline_errors'),
             ]),
         );
 
-        if(!empty(ee()->TMPL->form_class)) {
-            $data['class'] = ee()->TMPL->form_class;
-        }
+        $data['class'] = (get_bool_from_string(ee()->TMPL->fetch_param('include_assets', 'n') || strpos($reg_form, LD . 'form_assets' . RD) !== false) ? 'ee-cform ' : '');
+        $data['class'] .= ee()->TMPL->form_class;
 
         if ($this->in_forum === true) {
             $data['hidden_fields']['board_id'] = $this->board_id;
@@ -224,8 +249,31 @@ class Member_register extends Member
 
         $data['id'] = 'register_member_form';
 
+        ee()->load->add_package_path(PATH_ADDONS . 'channel');
+        ee()->load->library('channel_form/channel_form_lib');
+        ee()->channel_form_lib->datepicker = get_bool_from_string(ee()->TMPL->fetch_param('datepicker', 'y'));
+        ee()->channel_form_lib->compile_js();
+
+        $open = ee()->functions->form_declaration($data);
+        $close = '</form>';
+
+        //make head appear by default
+        if (strpos($reg_form, LD . 'form_assets' . RD) !== false) {
+            $reg_form = ee()->TMPL->swap_var_single('form_assets', ee()->channel_form_lib->head, $reg_form);
+        } elseif (get_bool_from_string(ee()->TMPL->fetch_param('include_assets'), 'n')) {
+            // Head should only be there if the param is there
+            $close .= ee()->channel_form_lib->head;
+        }
+        ee()->load->remove_package_path(PATH_ADDONS . 'channel');
+
+        ee()->TMPL->set_data([
+            'open' => $open,
+            'fields' => $fields,
+            'close' => $close,
+        ]);
+
         // Return the final rendered form
-        return ee()->functions->form_declaration($data) . $reg_form . "\n" . "</form>";
+        return $open . $reg_form . "\n" . $close;
     }
 
     /**
@@ -254,8 +302,10 @@ class Member_register extends Member
         }
 
         // Blocked/Allowed List Check
-        if (ee()->blockedlist->blocked == 'y' &&
-            ee()->blockedlist->allowed == 'n') {
+        if (
+            ee()->blockedlist->blocked == 'y' &&
+            ee()->blockedlist->allowed == 'n'
+        ) {
             return ee()->output->show_user_error(
                 'general',
                 array(lang('not_authorized'))
@@ -297,65 +347,15 @@ class Member_register extends Member
             ->where('m_field_reg', 'y')
             ->get('member_fields');
 
-        $cust_errors = array();
-        $custom_data = array();
-
-        if ($query->num_rows() > 0) {
-            $member_field_ids = array();
-            foreach ($query->result_array() as $row) {
-                $member_field_ids[] = $row['m_field_id'];
+        // Setup Custom Member Field Data
+        $fields = ee('Model')->get('MemberField')->filter('m_field_reg', 'y')->all()->indexBy('m_field_id');
+        $custom_data = array_reduce($fields, function($carry, $field) {
+            $field_name = 'm_field_id_' . $field->m_field_id;
+            if(isset($_POST[$field_name]) && $_POST[$field_name] != '') {
+                $carry[$field_name] = ee('Security/XSS')->clean(ee('Request')->post($field_name));
             }
-
-            $member_fields = ee('Model')->get('MemberField', $member_field_ids)
-                ->all()
-                ->indexBy('m_field_id');
-
-            foreach ($query->result_array() as $row) {
-                $field_name = 'm_field_id_' . $row['m_field_id'];
-
-                // Assume we're going to save this data, unless it's empty to begin with
-                $valid = isset($_POST[$field_name]) && $_POST[$field_name] != '';
-
-                // Basic validations
-                if ($row['m_field_type'] == 'select' && $valid) {
-                    $field_model = $member_fields[$row['m_field_id']];
-                    $field_settings = $field_model->getField()->getItem('field_settings');
-
-                    // Get field options
-                    if (isset($field_settings['value_label_pairs']) && ! empty($field_settings['value_label_pairs'])) {
-                        $options = array_keys($field_settings['value_label_pairs']);
-                    } else {
-                        $options = explode("\n", $row['m_field_list_items']);
-                    }
-
-                    // Ensure their selection is actually a valid choice
-                    if (! in_array(htmlentities($_POST[$field_name]), $options)) {
-                        $valid = false;
-                        $cust_errors['error:'.$field_name] = lang('mbr_field_invalid') . '&nbsp;' . $row['m_field_label'];
-                    }
-                }
-
-                if ($valid) {
-                    $custom_data[$field_name] = ee('Security/XSS')->clean($_POST[$field_name]);
-                }
-            }
-        }
-
-        if (isset($_POST['email_confirm']) && $_POST['email'] != $_POST['email_confirm']) {
-            $cust_errors['error:email'] = lang('mbr_emails_not_match');
-        }
-
-        if (ee('Captcha')->shouldRequireCaptcha()) {
-            if (! isset($_POST['captcha']) or $_POST['captcha'] == '') {
-                $cust_errors['error:captcha'] = ee()->config->item('use_recaptcha') == 'y' ? ee()->lang->line('recaptcha_required') : ee()->lang->line('captcha_required');
-            }
-        }
-
-        if (ee()->config->item('require_terms_of_service') == 'y') {
-            if (! isset($_POST['accept_terms'])) {
-                $cust_errors['error:accept_terms'] = lang('mbr_terms_of_service_required');
-            }
-        }
+            return $carry;
+        }, []);
 
         // -------------------------------------------
         // 'member_member_register_errors' hook.
@@ -394,19 +394,21 @@ class Member_register extends Member
             if (!empty($pendingRole)) {
                 $roleId = $pendingRole->role_id;
             } else {
-                ee()->output->show_user_error('submission', lang('mbr_cannot_register_role_not_exists'));
+                ee()->output->show_form_error(['general' => lang('mbr_cannot_register_role_not_exists')]);
             }
         }
         $role = ee('Model')->get('Role', $roleId)->fields('role_id', 'is_locked')->first();
         if (empty($role)) {
-            ee()->output->show_user_error('submission', lang('mbr_cannot_register_role_not_exists'));
+            ee()->output->show_form_error(['general' => lang('mbr_cannot_register_role_not_exists')]);
         }
         if ($role->is_locked == 'y') {
-            ee()->output->show_user_error('submission', lang('mbr_cannot_register_role_is_locked'));
+            ee()->output->show_form_error(['general' => lang('mbr_cannot_register_role_is_locked')]);
         }
 
-        if (ee()->config->item('req_mbr_activation') == 'manual' or
-            ee()->config->item('req_mbr_activation') == 'email') {
+        if (
+            ee()->config->item('req_mbr_activation') == 'manual' or
+            ee()->config->item('req_mbr_activation') == 'email'
+        ) {
             $data['role_id'] = Mbr::PENDING;
             $data['pending_role_id'] = $roleId;
         } else {
@@ -443,78 +445,75 @@ class Member_register extends Member
         $member = ee('Model')->make('Member', $data);
         $result = $member->validate();
 
-        // Validate password
+        // Additional Validation not handled by Member Model
         $validator = ee('Validation')->make();
         $validator->setRule('password', 'validPassword');
         $validator->setRule('password_confirm', 'matches[password]');
-        $passwordValidation = $validator->validate($_POST);
+        $validator->setRule('email_confirm', 'matches[email]');
 
-        // Add password confirmation failure to main result object
-        if ($passwordValidation->isNotValid()) {
-            foreach ($passwordValidation->getAllErrors() as $errors) {
-                foreach ($errors as $key => $error) {
-                    if ($key == 'matches') {
-                        $error = lang('missmatched_passwords');
-                    }
-                    $cust_errors['error:password'] = $error;
+        // Validate Captcha
+        if (ee('Captcha')->shouldRequireCaptcha()) {
+            $validator->defineRule('requireTermsOfService', function ($key, $value, $params, $rule) {
+                if(empty($value)) {
+                    $rule->stop();
+                    return ee()->config->item('use_recaptcha') == 'y' ? 'recaptcha_required' : 'captcha_required';
                 }
+                return true;
+            });
+            $validator->setRule('captcha', 'requireTermsOfService');
+        }
+
+        // Validate Terms of Service
+        if(ee()->config->item('require_terms_of_service') == 'y') {
+            $validator->defineRule('requireTermsOfService', function ($key, $value, $params, $rule) {
+                if(empty($value)) {
+                    $rule->stop();
+                    return 'mbr_terms_of_service_required';
+                }
+                return true;
+            });
+            $validator->setRule('accept_terms', 'requireTermsOfService');
+        }
+
+        // Custom Member field validation
+        foreach($fields as $field) {
+            $field_name = 'm_field_id_' . $field->m_field_id;
+            if(array_key_exists($field_name, $custom_data)) {
+                $validator->defineRule("validate_$field_name", function ($key, $value, $params, $rule) use($field, $custom_data, $field_name) {
+                    return $field->getField()->validate($custom_data[$field_name]);
+                });
+                $validator->setRule($field_name, "validate_$field_name");
             }
         }
 
-        $field_labels = array();
+        $validatorResult = $validator->validate($_POST);
 
-        foreach ($member->getDisplay()->getFields() as $field) {
-            $field_labels[$field->getName()] = $field->getLabel();
+        // Extra validation is sometimes required outside of the Member model validation
+        // Add any failures from this validation to the Member model result object
+        if ($validatorResult->failed()) {
+            $rules = $validatorResult->getFailed();
+            foreach ($rules as $field => $rule) {
+                $result->addFailed($field, $rule[0]);
+            }
         }
-
-        $field_errors = array();
-        $error_tags = array();
 
         if ($result->failed()) {
-            $e = $result->getAllErrors();
-            $errors = array_map('current', $e);
+            $aliases = array_reduce($member->getDisplay()->getFields(), function($carry, $field) {
+                return array_merge($carry, [
+                    $field->getName() => [
+                        'field' => $field->getShortName(),
+                        'label' => $field->getLabel()
+                    ]
+                ]);
+            }, []);
 
-            foreach ($errors as $field => $error) {
-                // build out auto error page data
-                $label = lang($field);
-
-                if (isset($field_labels[$field])) {
-                    $label = $field_labels[$field];
-                }
-
-                $field_errors[] = "<b>{$label}: </b>{$error}";
-
-                // add data for inline errors
-                $error_tags['error:'.$field] = $error;
-            }
-        }
-
-
-        // if we don't have a link we'll give them errors for core ee error screen
-        if(empty($return_error_link)) {
-            $errors = array_merge($field_errors, $cust_errors, $this->errors);
-        }
-
-        // do we have a link?  If so we're giving them the inline errors
-        if(!empty($return_error_link)) {
-            $errors = array_merge($error_tags, $cust_errors);
-
-            // populate flash data for custom error tags
-            ee()->session->set_flashdata('error_tags', $errors);
-        }
-
-        // Display error if there are any
-        if (count($errors) > 0) {
-            ee()->session->set_flashdata('errors', $errors);
-
-            // Save the POSTed variables to refill the form, except for sensitive or dynamically created ones.
             $field_values = array_filter($_POST, function ($key) {
                 return ! (in_array($key, array('ACT', 'RET', 'FROM', 'P', 'site_id', 'password', 'password_confirm')));
             }, ARRAY_FILTER_USE_KEY);
 
             ee()->session->set_flashdata('field_values', $field_values);
 
-            return ee()->output->show_user_error('submission', $errors, '', $return_error_link);
+            return ee()->output->show_form_error_aliases($result, $aliases);
         }
 
         $member->hashAndUpdatePassword($member->password);
@@ -541,8 +540,10 @@ class Member_register extends Member
         $member_id = $member->member_id;
 
         // Send admin notifications
-        if (ee()->config->item('new_member_notification') == 'y' &&
-            ee()->config->item('mbr_notification_emails') != '') {
+        if (
+            ee()->config->item('new_member_notification') == 'y' &&
+            ee()->config->item('mbr_notification_emails') != ''
+        ) {
             $name = ($data['screen_name'] != '') ? $data['screen_name'] : $data['username'];
 
             $swap = array(
@@ -623,15 +624,8 @@ class Member_register extends Member
             $message = lang('mbr_membership_instructions_email');
         } elseif (ee()->config->item('req_mbr_activation') == 'manual') {
             $message = lang('mbr_admin_will_activate');
-        } else {
-            // Log user in (the extra query is a little annoying)
-            ee()->load->library('auth');
-            $member_data_q = ee()->db->get_where('members', array('member_id' => $member_id));
-
-            $incoming = new Auth_result($member_data_q->row());
-            $incoming->remember_me();
-            $incoming->start_session();
-
+        } elseif (ee()->config->item('registration_auto_login') === 'y' || ee()->config->item('registration_auto_login') === false) {
+            $this->startMemberSession($member_id);
             $message = lang('mbr_your_are_logged_in');
         }
 
@@ -659,8 +653,10 @@ class Member_register extends Member
 
     private function _do_form_query()
     {
-        if (ee()->input->get_post('board_id') !== false &&
-            is_numeric(ee()->input->get_post('board_id'))) {
+        if (
+            ee()->input->get_post('board_id') !== false &&
+            is_numeric(ee()->input->get_post('board_id'))
+        ) {
             return ee()->db->select('board_forum_url, board_id, board_label')
                 ->where('board_id', (int) ee()->input->get_post('board_id'))
                 ->get('forum_boards');
@@ -760,18 +756,45 @@ class Member_register extends Member
         //
         // -------------------------------------------
 
-        // Upate Stats
+        $loginStateMessage = lang('mbr_may_now_log_in');
 
+        if (bool_config_item('activation_auto_login')) {
+            $this->startMemberSession($member->getId());
+            $loginStateMessage = lang('mbr_your_are_logged_in');
+        }
+
+        if (!empty(ee()->config->item('activation_redirect'))) {
+            return ee()->functions->redirect(ee()->functions->create_url(ee()->config->item('activation_redirect')));
+        }
+
+        // Upate Stats
         ee()->stats->update_member_stats();
 
         // Show success message
         $data = array('title' => lang('mbr_activation'),
             'heading' => lang('thank_you'),
-            'content' => lang('mbr_activation_success') . "\n\n" . lang('mbr_may_now_log_in'),
+            'content' => lang('mbr_activation_success') . "\n\n" . $loginStateMessage,
             'link' => array($return, $site_name)
         );
 
         ee()->output->show_message($data);
+    }
+
+    /**
+     * Helper function to authenticate and start a session for a newly activated Member
+     *
+     * @param int $member_id
+     * @return void
+     */
+    private function startMemberSession($member_id)
+    {
+        // Log user in (the extra query is a little annoying)
+        ee()->load->library('auth');
+        $member_data_q = ee()->db->get_where('members', array('member_id' => $member_id));
+
+        $incoming = new Auth_result($member_data_q->row());
+        $incoming->remember_me();
+        $incoming->start_session();
     }
 }
 // END CLASS

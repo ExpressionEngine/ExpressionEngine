@@ -395,14 +395,14 @@ class EE_Session
         $this->sdata['sess_start'] = $this->sdata['last_activity'];
         $this->sdata['fingerprint'] = $this->_create_fingerprint((string) $crypt_key);
         $this->sdata['can_debug'] = ($can_debug) ? 'y' : 'n';
-        $this->sdata['mfa_flag'] = ($this->member_model->enable_mfa === true) ? 'show' : 'skip';
+        $this->sdata['mfa_flag'] = ((ee()->config->item('enable_mfa') === false || ee()->config->item('enable_mfa') === 'y') && $this->member_model->enable_mfa === true) ? 'show' : 'skip';
 
         $this->userdata['member_id'] = (int) $member_id;
         $this->userdata['role_id'] = (int) $this->member_model->role_id;
         $this->userdata['session_id'] = $this->sdata['session_id'];
         $this->userdata['fingerprint'] = $this->sdata['fingerprint'];
         $this->userdata['site_id'] = ee()->config->item('site_id');
-        $this->userdata['mfa_enabled'] = $this->member_model->enable_mfa;
+        $this->userdata['mfa_enabled'] = (ee()->config->item('enable_mfa') === false || ee()->config->item('enable_mfa') === 'y') ? $this->member_model->enable_mfa : false;
 
         // Set the session cookie, ONLY if this method is not called from the context of the constructor, i.e. a login action
         if (isset(ee()->session)) {
@@ -946,7 +946,8 @@ class EE_Session
 
             if (! isset($tracker['0'])) {
                 $tracker[] = $uri;
-            } else {
+            // Do not track requests inside the themes folder
+            } else if(strpos($uri, 'themes/') !== 0) {
                 if (count($tracker) == 5) {
                     array_pop($tracker);
                 }
@@ -971,7 +972,7 @@ class EE_Session
         if (ee()->config->item('enable_tracking_cookie') === 'n') {
             return true;
         }
-        
+
         if (is_null($tracker)) {
             $tracker = $this->tracker;
         }
@@ -1265,6 +1266,9 @@ class EE_Session
             'email' => ee('Cookie')->getSignedCookie('my_email', true),
             'url' => ee('Cookie')->getSignedCookie('my_url', true),
             'location' => ee('Cookie')->getSignedCookie('my_location', true),
+            'avatar_filename' => '',
+            'avatar_width' => '',
+            'avatar_height' => '',
             'language' => '',
             'timezone' => ee()->config->item('default_site_timezone'),
             'date_format' => ee()->config->item('date_format') ? ee()->config->item('date_format') : '%n/%j/%Y',

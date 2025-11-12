@@ -29,7 +29,7 @@
 						<?php if ($log->member_id == 0): ?>
 							--
 						<?php else: ?>
-							<a href="<?=ee('CP/URL')->make('myaccount', array('id' => $log->member_id))?>"><?=$log->screen_name?></a>,
+							<a href="<?=ee('CP/URL')->make('members/profile', array('id' => $log->member_id))?>"><?=$log->screen_name?></a>,
 						<?php endif; ?>
 						<b><abbr title="<?=lang('internet_protocol')?>"><?=lang('ip')?></abbr>:</b> <?=$log->ip_address?>
 					</div>

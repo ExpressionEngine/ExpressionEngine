@@ -89,7 +89,7 @@ class CommandBackupDatabase extends Cli
         $this->info(sprintf(lang('command_backup_database_backup_path'), $file_path));
 
         // Make sure the directory exists
-        if (! ee('Filesystem')->exists($path)) {
+        if (!ee('Filesystem')->exists($path)) {
             $this->fail('Directory does not exist: ' . $path);
         }
 
@@ -118,7 +118,7 @@ class CommandBackupDatabase extends Cli
         do {
             try {
                 $returned = $backup->writeTableInsertsConservatively($table_name, $offset);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $this->error('command_backup_database_failed_with_error');
                 $this->fail($e->getMessage());
             }

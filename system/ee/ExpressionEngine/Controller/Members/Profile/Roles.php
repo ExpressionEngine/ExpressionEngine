@@ -19,16 +19,6 @@ class Roles extends Profile
 {
     private $base_url = 'members/profile/roles';
 
-    public function __construct()
-    {
-        parent::__construct();
-
-        if ($this->member->member_id == ee()->session->userdata('member_id')
-            && $this->member->isSuperAdmin()) {
-            show_error(lang('cannot_change_your_group'));
-        }
-    }
-
     /**
      * Role assignment
      */
@@ -38,7 +28,10 @@ class Roles extends Profile
         $roles = ee('Model')->get('Role')->order('name', 'asc');
 
         if (! ee('Permission')->isSuperAdmin()) {
-            $roles = $roles->filter('is_locked', 'n');
+            $roles = $roles->filterGroup()
+                ->filter('is_locked', 'n')
+                ->orFilter('role_id', $this->member->role_id)
+                ->endFilterGroup();
         }
 
         $roles = $roles->all()
@@ -105,6 +98,7 @@ class Roles extends Profile
                             'type' => 'radio',
                             'required' => true,
                             'choices' => $roles,
+                            'disabled' => $this->member->member_id == ee()->session->userdata('member_id') && ee('Permission')->isSuperAdmin(),
                             'value' => $this->member->role_id,
                             'no_results' => [
                                 'text' => sprintf(lang('no_found'), lang('roles'))
@@ -120,7 +114,7 @@ class Roles extends Profile
             [
                 'field' => 'role_id',
                 'label' => 'lang:role',
-                'rules' => 'callback__valid_role'
+                'rules' => 'callback__valid_role|callback__sa_editing_self'
             ],
             [
                 'field' => 'roles',
@@ -153,11 +147,14 @@ class Roles extends Profile
 
         ee()->form_validation->set_rules($rules);
 
-        if (AJAX_REQUEST) {
+        if (AJAX_REQUEST && ee()->input->post('ee_fv_field') !== false) {
             ee()->form_validation->run_ajax();
             exit;
         } elseif (ee()->form_validation->run() !== false) {
             $this->member->role_id = (int) ee('Request')->post('role_id');
+            if (empty($this->member->role_id) && $this->member->member_id == ee()->session->userdata('member_id') && ee('Permission')->isSuperAdmin()) {
+                $this->member->role_id = 1; // ensure superadmins keep their role when editing self (field disabled)
+            }
 
             if (ee('Permission')->isSuperAdmin()) {
                 $groups = ee('Request')->post('role_groups');
@@ -166,11 +163,23 @@ class Roles extends Profile
 
             $roles = array_filter(ee('Request')->post('roles'));
             if (empty($roles)) {
-                $roles = [(int) ee('Request')->post('role_id')];
+                $roles = [$this->member->role_id];
             }
             $this->member->Roles = ($roles) ? ee('Model')->get('Role', $roles)->all() : null;
 
             $this->member->save();
+
+            if (ee('Request')->get('modal_form') == 'y') {
+                $result = [
+                    'saveId' => $this->member->getId(),
+                    'item' => [
+                        'value' => $this->member->getId(),
+                        'label' => $this->member->screen_name,
+                        'instructions' => $this->member->username
+                    ]
+                ];
+                return $result;
+            }
 
             ee('CP/Alert')->makeInline('shared-form')
                 ->asSuccess()
@@ -186,11 +195,20 @@ class Roles extends Profile
                 ->now();
         }
 
-        ee()->view->base_url = $this->base_url;
-        ee()->view->ajax_validate = true;
-        ee()->view->cp_page_title = lang('member_role_assignment');
-        ee()->view->save_btn_text = 'btn_authenticate_and_save';
-        ee()->view->save_btn_text_working = 'btn_saving';
+        $vars['base_url'] = $this->base_url;
+        $vars['ajax_validate'] = true;
+        $vars['cp_page_title'] = lang('member_role_assignment');
+        $vars['save_btn_text'] = 'btn_authenticate_and_save';
+        $vars['save_btn_text_working'] = 'btn_saving';
+
+        if (ee('Request')->get('modal_form') == 'y') {
+            $sidebar = ee('CP/Sidebar')->render();
+            if (! empty($sidebar)) {
+                $vars['left_nav'] = $sidebar;
+                $vars['left_nav_collapsed'] = ee('CP/Sidebar')->collapsedState;
+            }
+            return ee('View')->make('settings/modal-form')->render($vars);
+        }
         ee()->cp->render('settings/form', $vars);
     }
 
@@ -199,13 +217,26 @@ class Roles extends Profile
         $roles = ee('Model')->get('Role', $role);
 
         if (! ee('Permission')->isSuperAdmin()) {
-            $roles = $roles->filter('is_locked', 'n');
+            $roles = $roles->filterGroup()
+                ->filter('is_locked', 'n')
+                ->orFilter('role_id', $this->member->role_id)
+                ->endFilterGroup();
         }
 
         $num_roles = $roles->count();
 
         if ($num_roles == 0) {
             ee()->form_validation->set_message('_valid_role', lang('invalid_role_id'));
+            return false;
+        }
+
+        return true;
+    }
+
+    public function _sa_editing_self($role)
+    {
+        if ($this->member->member_id == ee()->session->userdata('member_id') && ee('Permission')->isSuperAdmin() && $role != 1) {
+            ee()->form_validation->set_message('_sa_editing_self', lang('cannot_change_your_group'));
             return false;
         }
 

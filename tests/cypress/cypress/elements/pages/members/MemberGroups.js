@@ -152,8 +152,7 @@ class MemberGroups extends ControlPanel {
   }
 
   load() {
-    this.get('members_btn').click()
-    this.get('wrap').find('a:contains("Member Roles")').click()
+    cy.get('.ee-sidebar__item:contains("Roles")').click()
   }
 }
 export default MemberGroups;

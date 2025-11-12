@@ -291,7 +291,7 @@
         width: 100%;
         white-space: nowrap;
         overflow: hidden;
-        text-overflow: ellipsis;
+        // text-overflow: ellipsis;
         position: relative;
 
         &.has-sub {
@@ -299,9 +299,14 @@
         }
 
         &.has-sub::after {
-          right: 15px;
-          top: 14px;
+          right: 0;
+          top: 0;
           position: absolute;
+          width: 30px;
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
         }
       }
 
@@ -380,3 +385,14 @@
 	  }
 	}
 }
+
+@media only screen and (max-width: $tablet-width) {
+	.filter-bar__item.publisher-save-as {
+          position: static;
+        }
+
+        .filter-bar__item.publisher-save-as > button {
+		  margin-top: 2em;
+          position: relative;
+        }
+  }

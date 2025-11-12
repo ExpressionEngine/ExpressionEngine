@@ -2,6 +2,7 @@ const { defineConfig } = require('cypress')
 
 
 module.exports = defineConfig({
+  projectId: 'a8u2xo',
     "e2e": {
         "baseUrl": "http://localhost:8888/",
         "specPattern": "cypress/integration/!(updater)/**.ee6.js",
@@ -43,7 +44,7 @@ module.exports = defineConfig({
 
             const child_process = require('child_process');
 
-            const consoleLog = require('cypress-log-to-output');
+            /*const consoleLog = require('cypress-log-to-output');
             consoleLog.install(on, (type, event) => {
                 if (event.level === 'error' || event.type === 'error') {
                 return true
@@ -55,7 +56,7 @@ module.exports = defineConfig({
                 'console:getLogs': () => {
                     return consoleLog.getLogs()
                 }
-            })
+            })*/
 
             /*on('after:spec', (spec, results) => {
                 var filename = spec.name.split('/');
@@ -327,10 +328,10 @@ module.exports = defineConfig({
 
 
             on('before:browser:launch', (browser, launchOptions) => {
-                launchOptions.args = consoleLog.browserLaunchHandler(
+                /*launchOptions.args = consoleLog.browserLaunchHandler(
                     browser,
                     launchOptions.args
-                )
+                )*/
 
                 if (browser.name === 'chrome') {
                     prepareAudit(launchOptions);
@@ -375,13 +376,13 @@ module.exports = defineConfig({
         }
     },
     "video": true,
-    "videoUploadOnPasses": false,
     "trashAssetsBeforeRuns": false,
     "taskTimeout": 120000,
     "execTimeout": 120000,
     "defaultCommandTimeout": 6000,
     "animationDistanceThreshold": 40,
     "requestTimeout": 20000,
+    "numTestsKeptInMemory": 5,
     "watchForFileChanges": false,
     "chromeWebSecurity": false,
     "failOnStatusCode": false,

@@ -6,6 +6,8 @@ $lang = array(
 
     'all_roles' => 'All Roles',
 
+    'all_role_members' => 'All %s Members',
+
     'alpha' => 'Alphabetical Ascending',
 
     'alpha_desc' => 'Alphabetical Descending',
@@ -174,11 +176,13 @@ $lang = array(
 
     'locked' => 'Locked',
 
+    'login_as' => 'Login as %s',
+
+    'login_as_member' => 'Login as Member',
+
     'login_as_member_description' => 'When you click submit, you will be logged in as the member "%screen_name%" and redirected to the page below.',
 
     'login_as_user' => 'SuperAdmin Logging In as User',
-
-    'manage_bans' => 'Ban Settings',
 
     'maximum_members_reached' => 'You have reached the maximum number of Members allowed.',
 
@@ -267,6 +271,10 @@ $lang = array(
 
     'role_desc' => 'Assign this user access permissions.',
 
+    'role_highlight_color' => 'Highlight color',
+
+    'role_highlight_color_desc' => 'Color for this role badge. Accepts HEX codes.',
+
     'role_updated_desc' => 'Role has been saved successfully.',
 
     'role_deleted_desc' => 'Role has been deleted successfully.',
@@ -333,7 +341,7 @@ $lang = array(
 
     'no_members_found' => 'No <b>Members</b> found.',
 
-    'no_pending_members_found' => 'No <b>Pending members</b> found.',
+    'no_role_members_found' => 'No <b>%s members</b> found.',
 
     'not_writable_path' => 'The path you submitted is not writeable. Please make sure the file permissions are set to 777.',
 
@@ -699,6 +707,10 @@ $lang = array(
 
     'include_members_in_desc' => 'Users with this role will be included in all of the selected list types.',
 
+    'show_field_names' => 'Show field names on Publish',
+
+    'show_field_names_desc' => 'When enabled, copy-able names of fields will be included on Entry Publish & Edit pages',
+
     'mbr_account_privs' => 'Member Account Privileges',
 
     'mbr_delete_notify_emails' => 'Recipient(s) for delete notifications',
@@ -858,6 +870,8 @@ $lang = array(
 
     'edit_channel_fields' => 'Edit channel fields',
 
+    'edit_member_fields' => 'Edit member fields',
+
     'edit_files' => 'Edit files',
 
     'edit_member_field' => 'Edit Field',
@@ -1010,6 +1024,10 @@ $lang = array(
 
     'upload_new_toolsets' => 'Upload new toolsets',
 
+    'column_member_id' => 'ID#',
+
+    'column_username' => 'Name',
+
     /* Roles */
 
     'roles_manager' => 'Member Roles',
@@ -1157,6 +1175,8 @@ $lang = array(
     'access_overview_can_create_channel_fields' => 'Create fields',
 
     'access_overview_can_edit_channel_fields' => 'Edit fields',
+
+    'access_overview_can_edit_member_fields' => 'Edit member fields',
 
     'access_overview_can_delete_channel_fields' => 'Delete fields',
 

@@ -55,7 +55,7 @@ class Thumbnail
      * @param File $file (optional) A File entity from which we'll calculate the
      *   thumbnail url and path.
      */
-    public function __construct(File\FileSystemEntity $file = null)
+    public function __construct(?File\FileSystemEntity $file = null)
     {
         $this->setDefault();
 
@@ -66,7 +66,7 @@ class Thumbnail
             } elseif ($file->isDirectory()) {
                 $this->tag = '<i class="fal fa-folder fa-3x"></i>';
             } elseif ($file->isEditableImage() || $file->isSVG()) {
-                $this->url = $file->getAbsoluteThumbnailURL();
+                $this->url = $file->getAbsoluteThumbnailURL() . "?v={$file->modified_date}";
                 $this->path = $file->getAbsoluteThumbnailPath();
                 $this->tag = '<img src="' . $this->url . '" alt="' . $file->title . '" title="' . $file->title .'" class="thumbnail_img" />';
             } else {

@@ -51,6 +51,7 @@ use ExpressionEngine\Service\URL;
 use ExpressionEngine\Service\Updater;
 use ExpressionEngine\Service\Validation;
 use ExpressionEngine\Service\Template;
+use ExpressionEngine\Service\TemplateGenerator;
 use ExpressionEngine\Service\View;
 use ExpressionEngine\Addons\Spam\Service\Spam;
 use ExpressionEngine\Addons\FilePicker\Service\FilePicker;
@@ -68,6 +69,7 @@ use ExpressionEngine\Service\Generator\SidebarGenerator;
 use ExpressionEngine\Service\Generator\TemplateTagGenerator;
 use ExpressionEngine\Service\Generator\WidgetGenerator;
 use ExpressionEngine\Model\Channel\ChannelEntry;
+use ExpressionEngine\Model\Channel\Reindex;
 
 // TODO should put the version in here at some point ...
 $setup = [
@@ -223,6 +225,10 @@ $setup = [
 
         'View' => function ($ee) {
             return new View\ViewFactory($ee);
+        },
+
+        'View/Stub' => function ($ee) {
+            return new View\StubFactory($ee);
         },
 
         'Memory' => function ($ee) {
@@ -484,6 +490,10 @@ $setup = [
             return new Channel\ChannelEntry();
         },
 
+        'Channel/Reindex' => function ($ee) {
+            return new Channel\Reindex();
+        },
+
         'ChannelSet' => function ($ee) {
             return new ChannelSet\Factory(
                 ee()->config->item('site_id')
@@ -657,6 +667,10 @@ $setup = [
             return new Session\Session($session);
         },
 
+        'TemplateGenerator' => function ($ee) {
+            return new TemplateGenerator\Factory();
+        },
+
         'Validation' => function ($ee) {
             return new Validation\Factory();
         },
@@ -685,6 +699,7 @@ $setup = [
         // ..\Category
         'Category' => 'Model\Category\Category',
         'CategoryGroup' => 'Model\Category\CategoryGroup',
+        'CategoryGroupSettings' => 'Model\Category\CategoryGroupSettings',
         'CategoryField' => 'Model\Category\CategoryField',
 
         // ..\File
@@ -804,6 +819,9 @@ $setup = [
 
         // ..\FileManager
         'FileManagerView' => 'Model\File\FileManagerView',
+
+        // ..\FileManager
+        'MemberManagerView' => 'Model\Member\MemberManagerView',
     ),
 
     'cookies.necessary' => [

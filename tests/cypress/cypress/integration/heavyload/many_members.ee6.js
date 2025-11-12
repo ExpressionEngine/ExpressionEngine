@@ -96,7 +96,7 @@ context('Operate the site with many members', () => {
 
         cy.visit('admin.php?/cp/members/roles')
         cy.hasNoErrors()
-        cy.get('.panel-body .list-item__content:contains("Members")').find('.faded').contains('50002')
+        cy.get('.panel-body .list-item__content:contains("Members")').parent().find('.list-item__content-right').contains('50002')
         page.hasAlert('important')
         page.get('alert').contains("The number of members for each role might be inaccurate")
       })

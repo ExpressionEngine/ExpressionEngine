@@ -8,6 +8,7 @@ $lang = array(
     'cli_error_is_required'                        => 'Field is required.',
     'cli_error_is_required_field'                  => 'Field is required. Field: ',
     'cli_option_help'                              => 'See help menu for given command',
+    'cli_option_help_json'                         => 'See help menu for given command in JSON format',
     'cli_error_the_specified_addon_does_not_exist' => 'The specified add-on does not exist',
     'cli_error_cli_disabled'                       => 'The ExpressionEngine CLI is currently disabled. To use the CLI, you must enable it in the settings.',
     'cli_no_addons'                                => 'There are no add-ons available',
@@ -423,6 +424,10 @@ $lang = array(
     'command_sync_file_usage'                 => 'Updating file usage.',
     'command_sync_file_usage_done'            => 'File usage updated successfully.',
 
+    // Lang entries for command sync:reindex
+    'command_reindex_description'                               => 'Content Reindex',
+    'command_reindex_summary'                                   => 'The searchable content might become stale if you have recently changed properties of some fields. Reindexing will re-populate the data used by complex fields in search and Entry Manager.',
+    'command_reindex_option_site_id'                            => 'Site ID. Skip this parameter to reindex content on all sites',
     // Lang entries for command sync:upload-directory
     'command_sync_upload_directory_description'     => 'Synchronize upload directory',
     'command_sync_upload_directory_summary'         => '',
@@ -431,6 +436,7 @@ $lang = array(
     'command_sync_upload_directory_ask_id'          => 'Enter Upload Directory ID',
     'command_sync_upload_directory_option_regenerate_manipulations' => 'Image manipulations to regenerate. Comma separated list of manipulation IDs. \'all\' to regenerate all manipulations, empty value to skip.',
     'command_sync_upload_directory_ask_regenerate_manipulations' => 'Enter comma-separated IDs of manipulations to regenerate. Enter \'all\' to regenerate all manipulations, empty to skip.',
+    'cli_error_sync_upload_directory_base_path_is_empty' => '{base_path} is being used in Upload Directory path, but it is empty.',
 
     // Lang entries for command update:prepare
     'command_update_prepare_description'                        => 'Prepare a site to be upgraded using these files',
@@ -498,6 +504,89 @@ $lang = array(
     'command_sync_conditional_fields_sync_complete'     => "Sync complete: %d entries\t%s\t%s",
     'command_sync_conditional_fields_cleared_all_hidden_fields' => "Cleared all hidden fields",
     'command_sync_conditional_fields_database_info'             => "Database: %d queries in %f seconds",
+
+    // generate:templates
+    'command_generate_templates_summary' => 'Creates templates based on the existing data structure',
+    'command_generate_templates_description' => 'Using pre-defined stubs provided by ExpressionEngine or the add-ons, the template generator will generate ready-to-use templates for your site.',
+    'command_generate_templates_list_generators' => 'List available template generators',
+    'command_generate_templates_list_themes' => 'List available themes',
+    'command_generate_templates_show_template_content' => 'Show template content without saving',
+    'command_generate_templates_show_template_code' => 'Output only generated template code (suppresses all other output)',
+    'command_generate_templates_listing_generators' => 'Available template generators:',
+    'command_generate_templates_listing_themes' => 'Available themes:',
+    'command_generate_templates_ask_generator' => 'What is the generator that you want to use?',
+    'command_generate_templates_invalid_generator' => 'An invalid generator was supplied.',
+    'separate_choices_commas' => 'Separate multiple options with commas',
+    'command_generate_templates_building_templates' => 'Building templates...',
+
+    // channels:list
+    'command_channels_list_description' => 'Lists all channels in the system',
+    'command_channels_list_summary' => 'Displays all channels with their details in various formats',
+    'command_channels_list_header' => 'Channels:',
+    'command_channels_list_no_channels_found' => 'No channels found.',
+    'command_channels_list_total' => 'Total channels: %d',
+    'command_channels_list_id' => 'ID',
+    'command_channels_list_name' => 'Name',
+    'command_channels_list_title' => 'Title',
+    'command_channels_list_entries' => 'Entries',
+    'command_channels_list_last_entry' => 'Last Entry',
+    'command_channels_list_never' => 'Never',
+    'command_channels_list_ask_site' => 'Which site ID?',
+    'command_channels_list_ask_format' => 'Output format (table, json, csv)?',
+    'command_channels_list_option_site' => 'Site ID to list channels for',
+    'command_channels_list_option_format' => 'Output format: table, json, or csv',
+    'command_channels_list_option_channel_id' => 'Filter by specific channel ID',
+
+    // version
+    'command_version_description' => 'Displays ExpressionEngine version information',
+    'command_version_summary' => 'Shows the current ExpressionEngine version and system information',
+    'command_version_header' => 'ExpressionEngine Version Information',
+    'command_version_expressionengine' => 'ExpressionEngine Version: %s',
+    'command_version_build' => 'Build: %s',
+    'command_version_php' => 'PHP Version: %s',
+    'command_version_option_format' => 'Output format: simple, or json',
+    'command_version_option_field' => 'Output only a specific field: version, build, or php_version',
+    'command_version_invalid_field' => 'Invalid field: %s. Available fields: version, build, php_version',
+
+    // fields:list
+    'command_fields_list_description' => 'Lists all channel fields in the system',
+    'command_fields_list_summary' => 'Displays all channel fields with their details in various formats',
+    'command_fields_list_header' => 'Channel Fields:',
+    'command_fields_list_no_fields_found' => 'No fields found.',
+    'command_fields_list_total' => 'Total fields: %d',
+    'command_fields_list_id' => 'ID',
+    'command_fields_list_name' => 'Name',
+    'command_fields_list_label' => 'Label',
+    'command_fields_list_type' => 'Type',
+    'command_fields_list_required' => 'Required',
+    'command_fields_list_search' => 'Search',
+    'command_fields_list_hidden' => 'Hidden',
+    'command_fields_list_ask_site' => 'Which site ID?',
+    'command_fields_list_ask_format' => 'Output format (table, json, csv)?',
+    'command_fields_list_ask_type' => 'Filter by fieldtype?',
+    'command_fields_list_ask_group' => 'Filter by field group name?',
+    'command_fields_list_ask_channel_id' => 'Filter by channel ID?',
+    'command_fields_list_option_site' => 'Site ID to list fields for',
+    'command_fields_list_option_format' => 'Output format: table, json, or csv',
+    'command_fields_list_option_type' => 'Filter by field type (e.g., text, textarea, select)',
+    'command_fields_list_option_group' => 'Filter by field group name or short name',
+    'command_fields_list_option_channel_id' => 'Filter by channel ID',
+    'command_fields_list_option_field_id' => 'Filter by specific field ID',
+
+    // fieldtypes:list
+    'command_fieldtypes_list_description' => 'Lists all available fieldtypes in the system',
+    'command_fieldtypes_list_summary' => 'Displays all fieldtypes provided by installed and bundled add-ons',
+    'command_fieldtypes_list_header' => 'Fieldtypes:',
+    'command_fieldtypes_list_no_fieldtypes_found' => 'No fieldtypes found.',
+    'command_fieldtypes_list_total' => 'Total fieldtypes: %d',
+    'command_fieldtypes_list_shortname' => 'Shortname',
+    'command_fieldtypes_list_name' => 'Name',
+    'command_fieldtypes_list_addon' => 'Addon',
+    'command_fieldtypes_list_option_format' => 'Output format: table, json, or csv',
+    'command_fieldtypes_list_option_installed' => 'Show only fieldtypes from installed add-ons',
+    'command_fieldtypes_list_option_addon' => 'Filter by add-on short name(s), comma-separated',
+    'command_fieldtypes_list_option_short' => 'Filter by fieldtype short name(s), comma-separated',
+
 );
 
 // EOF

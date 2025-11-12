@@ -28,7 +28,7 @@ class GroupTest extends TestCase
     public function testPrototypeAttribute(): Group
     {
         $group = new _group('test-group');
-        $this->assertObjectHasAttribute('prototype', $group);
+        $this->assertObjectHasProperty('prototype', $group);
         $this->assertCount(0, $group->getPrototype());
         return $group;
     }
@@ -40,7 +40,7 @@ class GroupTest extends TestCase
      */
     public function testStructureAttribute(Group $group): Group
     {
-        $this->assertObjectHasAttribute('structure', $group);
+        $this->assertObjectHasProperty('structure', $group);
         $this->assertCount(0, $group->getStructure());
         return $group;
     }

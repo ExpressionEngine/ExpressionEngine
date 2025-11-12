@@ -23,7 +23,7 @@ class EE_Typography
     public $skip_elements = 'figure|p|pre|ol|ul|dl|object|table|h\d';
 
     // Tags we want the parser to completely ignore when splitting the string.
-    public $inline_elements = 'a|abbr|acronym|b|bdo|big|br|button|cite|code|del|dfn|em|figcaption|i|img|ins|input|kbd|label|map|mark|q|samp|select|small|span|strong|sub|sup|textarea|tt|var';
+    public $inline_elements = 'a|abbr|acronym|b|bdo|big|br|button|cite|code|del|dfn|em|figcaption|i|img|ins|input|kbd|label|map|mark|q|samp|select|small|span|strong|sub|sup|textarea|tt|var|wbr';
 
     // array of block level elements that require inner content to be within another block level element
     public $inner_block_required = array('blockquote');
@@ -581,7 +581,7 @@ class EE_Typography
      */
     public function parse_type($str, $prefs = '')
     {
-        if ($str == '') {
+        if ($str == '' || is_null($str)) {
             return $str;
         }
 
@@ -988,7 +988,7 @@ class EE_Typography
             $str = preg_replace("#<img(.*?)src=\s*[\"'](.+?)[\"'](.*?)\s*\>#si", "[img]\${2}{$this->safe_img_src_end}\\3\\1[/img]", $str);
         }
 
-        if (stristr($str, '://') !== false) {
+        if (stristr($str, '://') !== false && $this->text_format !== 'none') {
             $str = preg_replace("#(^|\s|\()((http(s?)://)|(www\.))(\w+[^\s\)\<]+)\.(jpg|jpeg|gif|png)#i", "\\1[img]http\\4://\\5\\6.\\7[/img]", $str);
         }
 
@@ -2251,7 +2251,7 @@ var out = '',
 	j = el.length;
 
 while (--i >= 0)
-	out += unescape(l[i].replace(/^\s\s*/, '&#'));
+	out += decodeURIComponent(l[i].replace(/^\s\s*/, '&#'));
 
 while (--j >= 0)
 	if (el[j].getAttribute('<?php echo $span_marker ?>'))

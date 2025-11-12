@@ -163,10 +163,9 @@ abstract class EE_Fieldtype
     }
 
     /**
-     * Row accessor
+     * Grab a row element
      *
-     * Provides access to the row variable for an entry. Since not all
-     * content types provide a concrete row, and most don't agree on what
+     * Since the row data is not always available and the default
      * fields are always available, this method is useful to provide defaults
      * to row data.
      *
@@ -176,7 +175,25 @@ abstract class EE_Fieldtype
      */
     public function row($key, $default = null)
     {
-        return (isset($this->row) && array_key_exists($key, $this->row)) ? $this->row[$key] : $default;
+        if (!isset($this->row)) {
+            return $default;
+        }
+
+        // Handle both array and object types
+        if (is_array($this->row)) {
+            return array_key_exists($key, $this->row) ? $this->row[$key] : $default;
+        }
+
+        if (is_object($this->row)) {
+            // For objects, try to get the property using getProperty method if available
+            if (method_exists($this->row, 'getProperty')) {
+                return $this->row->getProperty($key) ?: $default;
+            }
+            // Fallback to direct property access
+            return isset($this->row->$key) ? $this->row->$key : $default;
+        }
+
+        return $default;
     }
 
     /**
@@ -828,7 +845,7 @@ abstract class EE_Fieldtype
 
         $pairs = $this->get_setting('value_label_pairs');
         if (! empty($pairs) or $this->get_setting('field_pre_populate') === null) {
-            return $pairs;
+            $field_options = $pairs;
         } elseif ($this->get_setting('field_pre_populate') === false) {
             if (! is_array($this->settings['field_list_items'])) {
                 foreach (explode("\n", $this->settings['field_list_items']) as $v) {
@@ -841,7 +858,7 @@ abstract class EE_Fieldtype
         } elseif ($this->get_setting('field_pre_channel_id') !== 0) {
             $field = 'field_id_' . $this->settings['field_pre_field_id'];
 
-            $data = ee('Model')->get('ChannelEntry')
+            $entriesData = ee('Model')->get('ChannelEntry')
                 ->filter('channel_id', $this->settings['field_pre_channel_id'])
                 ->order($field, 'asc')
                 ->all()
@@ -851,7 +868,7 @@ abstract class EE_Fieldtype
                 $field_options[''] = $show_empty;
             }
 
-            foreach ($data as $datum) {
+            foreach ($entriesData as $datum) {
                 if (trim($datum) == '') {
                     continue;
                 }
@@ -860,6 +877,49 @@ abstract class EE_Fieldtype
                 $pretitle = str_replace(array("\r\n", "\r", "\n", "\t"), " ", $pretitle);
 
                 $field_options[trim($datum)] = $pretitle;
+            }
+        }
+
+        return $field_options;
+    }
+
+    protected function _get_historic_field_options($data, $show_empty = '')
+    {
+        $field_options = $this->_get_field_options($data, $show_empty);
+        // if there are saved options that are not available anymore
+        // show them at the beginning of field options
+        if (!empty($data)) {
+            ee()->load->helper('custom_field');
+            $data = decode_multi_field($data);
+            $firstEmptyValue = null;
+            if (array_key_first($field_options) === '') {
+                $firstEmptyValue = array_shift($field_options);
+            }
+
+            // Get keys from a multidimensional array recursively
+            $arrayKeysRecursive = function($array) use(&$arrayKeysRecursive) {
+                $keys = array_keys($array);
+
+                foreach ($array as $value) {
+                    if (is_array($value)) {
+                        $keys = array_merge($keys, $arrayKeysRecursive($value));
+                    }
+                }
+
+                return $keys;
+            };
+
+            $fieldOptionKeys = $arrayKeysRecursive($field_options);
+
+            $data = array_reverse($data);
+            foreach ($data as $key) {
+                // Loop through saved keys in $data that might have a value in $field_options, if not we will add them.
+                if (($key === 0 || !empty($key)) && !in_array($key, $fieldOptionKeys)) {
+                    $field_options = [$key => $key] + $field_options;
+                }
+            }
+            if (!is_null($firstEmptyValue)) {
+                $field_options = ['' => $firstEmptyValue] + $field_options;
             }
         }
 

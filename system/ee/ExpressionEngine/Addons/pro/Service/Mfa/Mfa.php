@@ -9,6 +9,7 @@
 namespace ExpressionEngine\Addons\Pro\Service\Mfa;
 
 use ExpressionEngine\Dependency\OTPHP\TOTP;
+use ExpressionEngine\Dependency\OTPHP\InternalClock;
 use ExpressionEngine\Dependency\ParagonIE\ConstantTime\Base32;
 use ExpressionEngine\Dependency\BaconQrCode\Renderer\ImageRenderer;
 use ExpressionEngine\Dependency\BaconQrCode\Renderer\Image\SvgImageBackEnd;
@@ -49,7 +50,7 @@ class Mfa
      */
     public function generateQrCode($secret, $size = 400)
     {
-        $totp = TOTP::create(Base32::encodeUpper($secret));
+        $totp = TOTP::createFromSecret(Base32::encodeUpper($secret), new InternalClock());
         $totp->setIssuer(ee()->config->item('site_name'));
         $totp->setLabel(ee()->session->userdata('username'));
 
@@ -72,7 +73,7 @@ class Mfa
      */
     public function validateOtp($input, $secret)
     {
-        $totp = TOTP::create(Base32::encodeUpper($secret));
+        $totp = TOTP::createFromSecret(Base32::encodeUpper($secret), new InternalClock());
         return $totp->verify($input);
     }
 
@@ -90,6 +91,16 @@ class Mfa
 
         // If MFA not setup, show setup screen
         if (ee()->session->getMember()->enable_mfa !== true) {
+            $sessions = ee('Model')
+                ->get('Session')
+                ->filter('member_id', ee()->session->userdata('member_id'))
+                ->filter('fingerprint', ee()->session->userdata('fingerprint'))
+                ->all();
+            foreach ($sessions as $session) {
+                $session->mfa_flag = 'required';
+                $session->save();
+            }
+
             return $this->formEnableMfa();
         }
         // If user has MFA enabled, show the dialog screen
@@ -123,16 +134,6 @@ class Mfa
 
     public function formEnableMfa()
     {
-        $sessions = ee('Model')
-            ->get('Session')
-            ->filter('member_id', ee()->session->userdata('member_id'))
-            ->filter('fingerprint', ee()->session->userdata('fingerprint'))
-            ->all();
-        foreach ($sessions as $session) {
-            $session->mfa_flag = 'required';
-            $session->save();
-        }
-
         ee()->lang->load('login');
         ee()->lang->load('pro');
         $formVars = [

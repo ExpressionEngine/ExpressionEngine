@@ -440,7 +440,13 @@ class Channel_form_lib
 
                     $this->parse_variables[$match[0]] = (array_key_exists($match[1], $this->custom_fields)) ? $this->encode_ee_tags($this->display_field($match[1])) : '';
                 } elseif (preg_match('/^label:(.*)$/', $key, $match)) {
-                    $this->parse_variables[$match[0]] = (array_key_exists($match[1], $this->custom_fields)) ? $this->custom_fields[$match[1]]->field_label : '';
+                    if ($match[1] == 'title') {
+                        $this->parse_variables[$match[0]] = $this->channel('title_field_label');
+                    } elseif (array_key_exists($match[1], $this->custom_fields)) {
+                        $this->parse_variables[$match[0]] = $this->custom_fields[$match[1]]->field_label;
+                    } else {
+                        $this->parse_variables[$match[0]] = '';
+                    }
                 } elseif (
                     preg_match('/^selected_option:(.*?)(:label)?$/', $key, $match) &&
                     ($field_type_match = $this->get_field_type($match[1])) &&
@@ -462,7 +468,14 @@ class Channel_form_lib
 
                     $this->parse_variables[$match[0]] = $selected_option;
                 } elseif (preg_match('/^instructions:(.*)$/', $key, $match)) {
-                    $this->parse_variables[$match[0]] = (array_key_exists($match[1], $this->custom_fields)) ? $this->custom_fields[$match[1]]->field_instructions : '';
+                    if ($match[1] == 'title') {
+                        $this->parse_variables[$match[0]] = $this->channel('title_field_instructions');
+                    } elseif (array_key_exists($match[1], $this->custom_fields)) {
+                        // use fieldtype instructions
+                        $this->parse_variables[$match[0]] = $this->custom_fields[$match[1]]->field_instructions;
+                    } else {
+                        $this->parse_variables[$match[0]] = '';
+                    }
                 } elseif (preg_match('/^error:(.*)$/', $key, $match)) {
                     $this->parse_variables[$match[0]] = (! empty($this->field_errors[$match[1]])) ? $this->field_errors[$match[1]] : '';
                 } else {
@@ -497,9 +510,16 @@ class Channel_form_lib
                         $checkbox_fields[] = $key;
                         $this->parse_variables[$key] = ($this->entry($name) == 'y') ? 'checked="checked"' : '';
                     } elseif (property_exists($this->entry, $name) or $this->entry->hasCustomField($name)) {
-                        $this->parse_variables[$key] = $this->encode_ee_tags(
-                            form_prep($this->entry($name), $name)
-                        );
+                        // override with POST, if there was validation error
+                        if (isset($_POST[$name])) {
+                            $this->parse_variables[$key] = $this->encode_ee_tags(
+                                form_prep(ee()->input->post($name, true), $name)
+                            );
+                        } else {
+                            $this->parse_variables[$key] = $this->encode_ee_tags(
+                                form_prep($this->entry($name), $name)
+                            );
+                        }
                     }
                 }
             }
@@ -550,6 +570,9 @@ class Channel_form_lib
                 $this->parse_variables['expiration_timestamp'] = '';
                 $this->parse_variables['comment_expiration_timestamp'] = '';
             }
+
+            $this->parse_variables['label:title'] = $this->channel('title_field_label');
+            $this->parse_variables['instructions:title'] = $this->channel('title_field_instructions');
 
             foreach ($this->custom_fields as $field) {
                 foreach (ee()->TMPL->var_pair as $tag_pair_open => $tagparams) {
@@ -709,6 +732,17 @@ class Channel_form_lib
         $return .= ee()->TMPL->tagdata;
         $return .= "</form>";
 
+        // If we have a non-native template engine we must populate the custom field
+        // inputs now because they may add javascript that needs to be built
+        if(!empty(ee()->TMPL->template_engine)) {
+            foreach($custom_field_variables as $field => $fieldVariables) {
+                $custom_field_variables[$field] = [
+                    'settings' => $fieldVariables,
+                    'input' => $this->display_field($field),
+                ];
+            }
+        }
+
         $this->_build_javascript();
 
         $this->switch_site($current_site_id);
@@ -740,6 +774,12 @@ class Channel_form_lib
                 return;
             }
         }
+
+        ee()->TMPL->set_data(array_merge($this->entry->toArray(), [
+            'open' => $return,
+            'fields' => $custom_field_variables,
+            'errors' => array_merge($this->errors, $this->field_errors),
+        ]));
 
         return $return;
     }
@@ -784,43 +824,47 @@ class Channel_form_lib
     public function compile_js($addt_js = [], $markItUp = [])
     {
         if ($this->datepicker) {
+            ee()->lang->loadfile('calendar');
+            $week_start = ee()->session->userdata('week_start', (ee()->config->item('week_start') ?: 'sunday'));
+            $addt_js['date']['week_start'] = $week_start;
             $addt_js['date']['date_format'] = ee()->localize->get_date_format();
+            $addt_js['lang']['date']['today'] = lang('cal_today');
             $addt_js['lang']['date']['months']['full'] = array(
-                lang('january'),
-                lang('february'),
-                lang('march'),
-                lang('april'),
-                lang('may'),
-                lang('june'),
-                lang('july'),
-                lang('august'),
-                lang('september'),
-                lang('october'),
-                lang('november'),
-                lang('december')
+                lang('cal_january'),
+                lang('cal_february'),
+                lang('cal_march'),
+                lang('cal_april'),
+                lang('cal_may'),
+                lang('cal_june'),
+                lang('cal_july'),
+                lang('cal_august'),
+                lang('cal_september'),
+                lang('cal_october'),
+                lang('cal_november'),
+                lang('cal_december')
             );
             $addt_js['lang']['date']['months']['abbreviated'] = array(
-                lang('jan'),
-                lang('feb'),
-                lang('mar'),
-                lang('apr'),
-                lang('may'),
-                lang('june'),
-                lang('july'),
-                lang('aug'),
-                lang('sept'),
-                lang('oct'),
-                lang('nov'),
-                lang('dec')
+                lang('cal_jan'),
+                lang('cal_feb'),
+                lang('cal_mar'),
+                lang('cal_apr'),
+                lang('cal_may'),
+                lang('cal_june'),
+                lang('cal_july'),
+                lang('cal_aug'),
+                lang('cal_sept'),
+                lang('cal_oct'),
+                lang('cal_nov'),
+                lang('cal_dec')
             );
             $addt_js['lang']['date']['days'] = array(
-                lang('su'),
-                lang('mo'),
-                lang('tu'),
-                lang('we'),
-                lang('th'),
-                lang('fr'),
-                lang('sa'),
+                lang('cal_su'),
+                lang('cal_mo'),
+                lang('cal_tu'),
+                lang('cal_we'),
+                lang('cal_th'),
+                lang('cal_fr'),
+                lang('cal_sa'),
             );
         }
 
@@ -1012,7 +1056,7 @@ GRID_FALLBACK;
                 'text_direction' => $field->getSetting('field_text_direction'),
                 'field_data' => $this->entry($field->getName()),
                 'rows' => $field->getSetting('field_ta_rows'),
-                'maxlength' => $field->getSetting('field_maxl'),
+                'maxlength' => $field->getSetting('field_maxl') ?: '',
                 'formatting_buttons' => '',
                 'field_show_formatting_btns' => ($field->getSetting('field_show_formatting_btns') == 'y') ? 1 : 0,
                 'textinput' => 0,
@@ -1102,8 +1146,17 @@ GRID_FALLBACK;
             $conditional_errors['field_errors'] = array();
 
             foreach ($this->field_errors as $field => $error) {
-                $conditional_errors['field_errors'][] = array('field' => $field, 'error' => $error);
+                if (strpos($field, 'field_id_') === 0) {
+                    $fieldId = str_replace('field_id_', '', $field);
+                    $fieldName = array_key_exists($fieldId, $this->custom_field_names) ? $this->custom_field_names[$fieldId] : $field;
+                } else {
+                    $fieldName = $field;
+                }
+                $label = array_key_exists($fieldName, $this->custom_fields) ? $this->custom_fields[$fieldName]->field_label : lang($field);
+
+                $conditional_errors['field_errors'][$fieldName] = array('field' => $label, 'error' => $error);
             }
+            $conditional_errors['field_errors'] = array_values($conditional_errors['field_errors']);
         }
 
         $conditional_errors['field_errors:count'] = count($this->field_errors);
@@ -1494,7 +1547,7 @@ GRID_FALLBACK;
         $this->switch_site($this->site_id);
 
         // Structure category data the way the ChannelEntry model expects it
-        $cat_groups = explode('|', (string) $this->entry->Channel->cat_group);
+        $cat_groups = $this->entry->Channel->CategoryGroups->pluck('group_id');
         if (! empty($cat_groups) && isset($_POST['category'])) {
             $_POST['categories'] = array('cat_group_id_' . $cat_groups[0] => (is_array($_POST['category'])) ? $_POST['category'] : [$_POST['category']]);
         }
@@ -1676,11 +1729,11 @@ GRID_FALLBACK;
      */
     public function bool_string($string, $default = false)
     {
-        if (preg_match('/true|t|yes|y|on|1/i', $string)) {
+        if (preg_match('/true|t|yes|y|on|1/i', (string) $string)) {
             return true;
         }
 
-        if (preg_match('/false|f|no|n|off|0/i', $string)) {
+        if (preg_match('/false|f|no|n|off|0/i', (string) $string)) {
             return false;
         }
 
@@ -1851,7 +1904,7 @@ GRID_FALLBACK;
     public function fetch_categories()
     {
         //exit if already loaded, or if there is no category group
-        if ($this->categories || ! $this->channel('cat_group')) {
+        if ($this->categories || $this->channel->CategoryGroups->count() == 0) {
             return;
         }
 
@@ -1861,7 +1914,7 @@ GRID_FALLBACK;
         ee()->load->library(array('api', 'file_field'));
         ee()->legacy_api->instantiate('channel_categories');
         $category_list = ee()->api_channel_categories->category_tree(
-            $this->channel('cat_group'),
+            $this->channel->CategoryGroups->pluck('group_id'),
             $selected
         );
 
@@ -1910,7 +1963,7 @@ GRID_FALLBACK;
         //If two forms are on the same template, $this->channel needs to be redefined
 
         $query = ee('Model')->get('Channel')
-            ->with('ChannelFormSettings');
+            ->with('ChannelFormSettings', 'CategoryGroups');
 
         if ($channel_id) {
             $query->filter('channel_id', $channel_id);
@@ -1923,7 +1976,7 @@ GRID_FALLBACK;
         //get field group and limit
         $query->filter('Channel.site_id', $this->site_id);
 
-        $channel = $query->first();
+        $channel = $query->all()->first();
 
         if (! isset($channel)) {
             throw new Channel_form_exception(lang('channel_form_unknown_channel'));
@@ -2943,7 +2996,7 @@ GRID_FALLBACK;
     public function unserialize($data, $base64_decode = false)
     {
         if ($base64_decode) {
-            $data = base64_decode($data);
+            $data = base64_decode((string) $data);
         }
 
         $data = @unserialize($data);

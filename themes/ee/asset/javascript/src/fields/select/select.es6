@@ -13,6 +13,11 @@ class SelectField extends React.Component {
   constructor (props) {
     super(props)
 
+    // This code is for the page channels->edit->Category
+    if (this.props.name == 'cat_group') {
+      props.selected = this.categorySelected(props.selected, props.items)
+    }
+
     this.props.items = SelectList.formatItems(props.items)
     this.state = {
       selected: SelectList.formatItems(props.selected, null, props.multi),
@@ -28,9 +33,29 @@ class SelectField extends React.Component {
     })
   }
 
+  // Check and update selected items to get toggles elements
+  // we are using toggles on the select_list.js
+  categorySelected(selected, items) {
+    var catArr = [];
+    items.filter(item => {
+      selected.map(el => {
+        if (el == item.value) {
+          catArr.push(item);
+        }
+      })
+    })
+    return catArr;
+  }
+
   selectionChanged = (selected) => {
     this.setState({
       selected: selected
+    })
+  }
+
+  toggleChanged = (items) => {
+    this.setState({
+      toggles: items
     })
   }
 
@@ -55,6 +80,7 @@ class SelectField extends React.Component {
       removable={this.props.removable || this.state.editing}
       handleRemove={(e, item) => this.handleRemove(e, item)}
       editable={this.props.editable || this.state.editing}
+      toggleChanged={this.toggleChanged}
     />
 
     if (this.props.manageable) {
