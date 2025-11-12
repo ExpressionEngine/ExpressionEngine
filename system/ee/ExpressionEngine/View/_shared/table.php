@@ -257,6 +257,10 @@ else: ?>
                 // Don't do reordering logic if the table is empty
                 $reorder = $reorder && ! empty($data);
                 $colspan = ($reorder_header || $reorder) ? count($columns) + 1 : count($columns);
+                if(isset($row_counter) && $row_counter): ?>
+                    <th class="row-counter-column"></th>
+                <?php
+                endif;
                 if (isset($vertical_layout)): ?>
                     <th class="hidden"></th>
                 <?php endif;
@@ -339,6 +343,11 @@ else: ?>
                 </p>
             </td></tr>
             <?php $i = 1;
+            $dataRowCounter = '';
+            $rowCounterNumber = '';
+            if (isset($row_counter) && $row_counter){
+                $row_count = 0;
+            }
             foreach ($data as $heading => $rows): ?>
                 <?php if (! $subheadings) {
                 $rows = array($rows);
@@ -353,8 +362,17 @@ else: ?>
                         $row_class = $row['attrs']['class'];
                         unset($row['attrs']['class']);
                     }
+
+                    if (isset($row_counter) && $row_counter){
+                        if (empty($row_class)) {
+                            $row_count++;
+                            $dataRowCounter = 'data-row-counter="' . $row_count . '"';
+                            $rowCounterNumber = $row_count;
+                        }
+                    }
+
                 ?>
-                    <tr class="<?=$row_class?>" <?php foreach ($row['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
+                    <tr class="<?=$row_class?>" <?php foreach ($row['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?> <?=$dataRowCounter?>>
                         <?php if (REQ == 'CP' && isset($vertical_layout) && ($vertical_layout !== 'horizontal')):?>
                         <td class="grid-field__item-fieldset" style="display: none;">
                             <div class="grid-field__item-tools grid-field__item-tools--item-open">
@@ -383,6 +401,10 @@ else: ?>
                                 </label>
                             </div>
                         </td>
+                        <?php endif; ?>
+
+                        <?php if (isset($row_counter) && $row_counter): ?>
+                            <td class="row-counter-column body-row-counter-column js-row-counter-column"><span><?=$rowCounterNumber?></span></td>
                         <?php endif; ?>
 
                         <?php foreach ($row['columns'] as $key => $column):

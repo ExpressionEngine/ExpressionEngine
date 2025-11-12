@@ -1119,6 +1119,10 @@ class Member
         // Check to see whether we're in the forum or not.
         $in_forum = isset($_GET['r']) && $_GET['r'] == 'f';
 
+        if (ee()->TMPL->fetch_param('inline_errors') == 'yes' && ee()->TMPL->fetch_param('return_error') == '') {
+            ee()->TMPL->tagparams['return_error'] = ee()->functions->fetch_current_uri() . '?id=' . $resetcode;
+        }
+
         // Create form
         $data['hidden_fields'] = array(
             'ACT' => ee()->functions->fetch_action_id('Member', 'process_reset_password'),

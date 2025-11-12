@@ -225,7 +225,7 @@ class EE_Template
         }
 
         $this->template = ($template_group != '' and $template != '') ?
-            $this->fetch_template($template_group, $template, false, $site_id) :
+            $this->fetch_template($template_group, $template, false, $site_id, $is_layout) :
             $this->parse_template_uri();
 
         // Add the template to our list of templates loaded
@@ -691,10 +691,11 @@ class EE_Template
      * @param  array $layout_vars Layout variables to parser, 'variable_name' => 'content'
      * @return string The parsed template/string
      */
-    private function parseLayoutVariables($str, $layout_vars)
+    public function parseLayoutVariables($str, $layout_vars)
     {
         $this->log_item("Layout Variables:", $layout_vars);
         $this->layout_conditionals = [];
+        $layout_conditionals = [];
 
         // get all the declared layout variables (excluding layout:contents)
         if (preg_match_all('/' . LD . 'layout:(?!\bset|contents\b)([^!]+?)(' . RD . '|\s|:)/', $str, $matches)) {
@@ -930,7 +931,7 @@ class EE_Template
      * @param   array   $layout    {layout tag match information from ``_find_layout``
      * @return  string  Layout with embeded template string
      */
-    protected function process_layout_template($template, array $layout = null)
+    protected function process_layout_template($template, $layout = null)
     {
         if (!isset($layout)) {
             return $template;
@@ -2433,18 +2434,19 @@ class EE_Template
     }
 
     /**
-     * Fetch Template Data
+     * Fetch template data from database or file.
      *
-     * Takes a Template Group, Template, and Site ID and will retrieve the Template and its metadata
-     * from the database (or file)
+     * Retrieves a template and its metadata by template group, template name, and site ID.
+     * Can optionally show default templates and handle layout templates.
      *
-     * @param   string
-     * @param   string
-     * @param   bool
-     * @param   int
-     * @return  string
+     * @param  string  $template_group  The template group name
+     * @param  string  $template        The template name
+     * @param  bool    $show_default    Whether to show default templates if not found (default: true)
+     * @param  int     $site_id         The site ID to fetch template from (default: '')
+     * @param  bool    $is_layout       Whether this is a layout template (default: false)
+     * @return string                   The template content
      */
-    public function fetch_template($template_group, $template, $show_default = true, $site_id = '')
+    public function fetch_template($template_group, $template, $show_default = true, $site_id = '', $is_layout = false)
     {
         if ($site_id == '' or !is_numeric($site_id)) {
             $site_id = ee()->config->item('site_id');
@@ -2634,7 +2636,7 @@ class EE_Template
             if (!array_intersect($templates_roles, $currentMemberRoles)) {
                 $this->log_item("No Template Access Privileges");
 
-                if ($this->depth > 0) {
+                if ($this->depth > 0 && !$is_layout) {
                     return '';
                 }
 
@@ -3369,7 +3371,11 @@ class EE_Template
             for ($i = 0, $s = count($match[0]); $i < $s; $i++) {
                 $class = ee()->security->sanitize_filename(strtolower($match[1][$i]));
 
-                $fqcn = ee('Addon')->get($class)->getModuleClass();
+                $addon = ee('Addon')->get($class);
+                if (!$addon) {
+                    continue; // Skip if addon not found
+                }
+                $fqcn = $addon->getModuleClass();
 
                 $this->tagdata = $match[3][$i];
 
@@ -3465,10 +3471,6 @@ class EE_Template
         // it natively, causing it to be unavailable as a global
 
         $data['member_group'] = $data['logged_in_member_group'] = ee()->session->userdata['role_id'];
-
-        // Logged in and logged out variables
-        $data['logged_in'] = (ee()->session->userdata['member_id'] != 0);
-        $data['logged_out'] = (ee()->session->userdata['member_id'] == 0);
 
         // current time
         $data['current_time'] = ee()->localize->now;
@@ -4545,7 +4547,10 @@ class EE_Template
 
         if (!isset(ee()->session)) {
             //early parsing, e.g. called from code and not web request
-            return [];
+            return [
+                'logged_out' => true,
+                'logged_in' => false,
+            ];
         }
 
         if (empty($vars)) {
@@ -4554,14 +4559,13 @@ class EE_Template
             }
 
             if (!ee()->session->getMember()) {
-                $role = ee('Model')->get('Role', 3)->fields('role_id', 'short_name')->first();
-                $roles = array($role);
-                $assigned_role_ids = array(3);
-            } else {
-                $member = ee()->session->getMember();
-                $assigned_role_ids = $member->getAllRoles()->pluck('role_id');
-                $roles = ee('Model')->get('Role')->fields('role_id', 'short_name')->all();
+                $vars['has_role_' . ee()->session->userdata('primary_role_short_name')] = true; // has_role_guest
+                return $vars;
             }
+
+            $member = ee()->session->getMember();
+            $assigned_role_ids = $member->getAllRoles()->pluck('role_id');
+            $roles = ee('Model')->get('Role')->fields('role_id', 'short_name')->all();
 
             foreach ($roles as $role) {
                 $value = in_array($role->getId(), $assigned_role_ids);
@@ -4569,6 +4573,10 @@ class EE_Template
                 $vars['has_role_' . $role->short_name] = $value;
             }
         }
+
+        // Logged in and logged out variables
+        $vars['logged_in'] = (ee()->session->userdata['member_id'] != 0);
+        $vars['logged_out'] = (ee()->session->userdata['member_id'] == 0);
 
         return $vars;
     }

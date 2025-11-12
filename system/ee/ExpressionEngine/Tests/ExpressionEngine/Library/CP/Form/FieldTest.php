@@ -51,7 +51,7 @@ class FieldTest extends TestCase
     public function testPrototypeAttribute(): Field
     {
         $field = new _field_empty('test-field');
-        $this->assertObjectHasAttribute('prototype', $field);
+        $this->assertObjectHasProperty('prototype', $field);
         $this->assertCount(0, $field->getPrototype());
         return $field;
     }
@@ -63,7 +63,7 @@ class FieldTest extends TestCase
      */
     public function testFieldPrototypeAttribute(Field $field): Field
     {
-        $this->assertObjectHasAttribute('field_prototype', $field);
+        $this->assertObjectHasProperty('field_prototype', $field);
         $this->assertCount(0, $field->getFieldPrototype());
         return $field;
     }
@@ -75,7 +75,7 @@ class FieldTest extends TestCase
      */
     public function testDefaultPrototypeAttribute(Field $field): Field
     {
-        $this->assertObjectHasAttribute('default_prototype', $field);
+        $this->assertObjectHasProperty('default_prototype', $field);
         $this->assertCount(12, $field->getDefaultPrototype());
         return $field;
     }

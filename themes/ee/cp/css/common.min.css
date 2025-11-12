@@ -21350,7 +21350,8 @@ body[data-theme=dark] .hljs .apache .hljs-attribute {
   content: "\f0cb";
 }
 
-.markItUp .html-underline a:before {
+.markItUp .html-underline a:before,
+.markItUp .html-ins a:before {
   content: "\f0cd";
 }
 
@@ -24273,6 +24274,11 @@ dialog {
 .selectable_buttons .field-no-results a.active,
 .field-no-results .selectable_buttons a.active, .selectable_buttons .active.select-popup, .selectable_buttons select.active, .selectable_buttons .active.select__button, .selectable_buttons .active.license-status-badge, .selectable_buttons .active.filter-bar__button, .selectable_buttons .markItUpHeader ul a.active, .markItUpHeader ul .selectable_buttons a.active {
   background: var(--ee-accent-light);
+}
+
+.button-group .not-click {
+  pointer-events: none;
+  opacity: 0.5;
 }
 
 /*
@@ -27546,6 +27552,13 @@ input[type=button].btn-block {
 .modal-file {
   max-width: 100%;
   width: 98%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: fixed;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
 }
 
 .modal-confirm-delete-file,
@@ -31965,7 +31978,7 @@ fieldset .field-control #eye {
   position: relative;
   top: 0;
   line-height: 0.7;
-  display: inline-block;
+  display: none;
 }
 
 .grid-field__table th {
@@ -32030,6 +32043,21 @@ fieldset .field-control #eye {
 }
 .grid-field__table input[type=email], .grid-field__table input[type=number], .grid-field__table input[type=password], .grid-field__table input[type=text], .grid-field__table input[type=url], .grid-field__table textarea {
   min-width: 150px;
+}
+.grid-field__table .row-counter-column {
+  width: 0.01% !important;
+  padding: 7px !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  font-size: 0.9em;
+  background: var(--ee-bg-0);
+  color: var(--ee-text-secondary);
+  font-weight: 500;
+}
+@media (max-width: 767px) {
+  .grid-field__table .row-counter-column {
+    width: 100% !important;
+  }
 }
 
 .grid-relate .dropdown__link, .grid-relate .select__dropdown-item, .grid-relate .button__within-dropdown, .grid-multi-relate .dropdown__link, .grid-multi-relate .select__dropdown-item, .grid-multi-relate .button__within-dropdown {
@@ -32234,6 +32262,9 @@ fieldset .field-control #eye {
 .grid-field.vertical-layout .grid-field__table > tbody td.required .grid-field__column-label {
   margin-bottom: 15px;
 }
+.grid-field.vertical-layout .grid-field__table .row-counter-column {
+  width: 100% !important;
+}
 .grid-field.vertical-layout .grid-field__item-fieldset {
   padding: 10px 15px 5px 15px;
   border-bottom: 1px solid var(--ee-border) !important;
@@ -32321,6 +32352,9 @@ fieldset .field-control #eye {
   .grid-field:not(.horizontal-layout) .grid-field__table > tbody tr.grid__item--collapsed td.grid-field__item-fieldset .grid-field__item-tool {
     transform: rotate(180deg);
   }
+  .grid-field:not(.horizontal-layout) .grid-field__table .row-counter-column {
+    width: 100% !important;
+  }
 
   .grid-field:not(.horizontal-layout) .grid-field__column--tools {
     text-align: left;
@@ -32354,6 +32388,11 @@ fieldset .field-control #eye {
   }
   .grid-field.horizontal-layout tbody td.grid-field__column--tools {
     min-width: 80px !important;
+  }
+  .grid-field.horizontal-layout .row-counter-column {
+    width: 0.01% !important;
+    max-width: none !important;
+    min-width: 0 !important;
   }
 }
 .live-preview__form-content .grid-field .grid-field__table,
@@ -32495,6 +32534,10 @@ fieldset .field-control #eye {
 .grid-field.overwidth .grid-field__table > tbody td.required .grid-field__column-label {
   margin-bottom: 15px !important;
 }
+.live-preview__form-content .grid-field .grid-field__table .row-counter-column,
+.grid-field.overwidth .grid-field__table .row-counter-column {
+  width: 100% !important;
+}
 
 .grid-field.overwidth {
   padding: 10px;
@@ -32514,6 +32557,9 @@ fieldset .field-control #eye {
 }
 .grid-field.overwidth .grid-field__table > tbody > tr:not(.hidden) > td.grid-field__item-fieldset .grid-field__item-tools {
   width: auto !important;
+}
+.grid-field.overwidth .grid-field__table .row-counter-column {
+  width: 100% !important;
 }
 
 .select {
@@ -47884,6 +47930,7 @@ a.ck.ck-button.ck-on {
   font-size: 16px;
   margin-top: 0;
   margin-bottom: 1em;
+  color: var(--ee-text-normal);
 }
 .field-control .redactor-styles a,
 .field-control .rx-content a,
@@ -47924,6 +47971,45 @@ a.ck.ck-button.ck-on {
   overflow: none;
   white-space: pre-wrap;
   padding: 1rem;
+}
+
+.ck-content ul {
+  list-style: none !important;
+}
+.ck-content ul li {
+  position: relative;
+  padding-left: 15px !important;
+}
+.ck-content ul li:before {
+  position: absolute;
+  width: 4px;
+  display: inline-block;
+  content: "";
+  height: 4px;
+  background: var(--ee-input-color);
+  border-radius: 50%;
+  left: 0;
+  top: 10px;
+}
+
+.ck-content ol {
+  counter-reset: item;
+  list-style: none !important;
+}
+.ck-content ol li {
+  counter-increment: item;
+  position: relative;
+  padding-left: 20px !important;
+}
+.ck-content ol li::marker {
+  content: none;
+}
+.ck-content ol li:before {
+  content: counter(item) ".";
+  position: absolute;
+  display: inline-block;
+  left: 0;
+  top: 0;
 }
 
 .color-drop-container {
@@ -53178,6 +53264,10 @@ body[data-theme=light] .ee-sidebar__items .ee-sidebar__version.ee-sidebar__versi
     margin-bottom: 5px;
     margin-right: 0;
   }
+}
+
+.member-delete-confirm {
+  margin-bottom: 0;
 }
 
 .hidden {
