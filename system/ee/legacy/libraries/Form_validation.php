@@ -163,7 +163,8 @@ class EE_Form_validation
             if (is_array($setting)) {
                 foreach ($setting['fields'] as $field_name => $field) {
                     // For ajaxified fields with options not currently showing, we skip
-                    if (isset($field['filter_url']) && isset($field['choices']) && count($field['choices']) == 100) {
+                    $choicesLimit = isset($field['limit']) ? $field['limit'] : 100;
+                    if (isset($field['filter_url']) && isset($field['choices']) && count($field['choices']) >= $choicesLimit) {
                         continue;
                     }
 
@@ -622,16 +623,16 @@ class EE_Form_validation
      */
     public function writable($path)
     {
-        
+
         $parsed = rtrim(parse_config_variables($path, $_POST), '\\/');
-        
+
         try {
             $filesystem = ee('File')->getPath($parsed);
             return $filesystem->isWritable($parsed) || $filesystem->isWritable($parsed . DIRECTORY_SEPARATOR);
         } catch (\Exception $e) {
             return false;
         }
-        
+
     }
 
     /**
@@ -1151,11 +1152,9 @@ class EE_Form_validation
             // Depending on whether the field name is an array or a string will determine where we get it from.
 
             if ($row['is_array'] == true) {
-                $this->_field_data[$field]['postdata'] = $this->_reduce_array($_POST, $row['keys']);
-            } else {
-                if (isset($_POST[$field]) and $_POST[$field] != "") {
-                    $this->_field_data[$field]['postdata'] = $_POST[$field];
-                }
+                $this->_field_data[$field]['postdata'] = $this->_reduce_array(ee('Request')->post(), $row['keys']);
+            } else if(ee('Request')->post($field) != "") {
+                $this->_field_data[$field]['postdata'] = ee('Request')->post($field);
             }
 
             $this->_execute($row, explode('|', $row['rules']), $this->_field_data[$field]['postdata']);

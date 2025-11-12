@@ -20,7 +20,7 @@ use ExpressionEngine\Model\Content\StructureModel;
 class MemberManagerColumns extends Columns
 {
     //view_id might hold view type here
-    public function __construct(array $columns = array(), StructureModel $primaryRole = null, $view_id_or_type = null)
+    public function __construct(array $columns = array(), ?StructureModel $primaryRole = null, $view_id_or_type = null)
     {
         parent::__construct($columns, $primaryRole, $view_id_or_type);
 

@@ -167,6 +167,7 @@ class Api_channel_structure extends Api
         $channel_title = '';
         $channel_name = '';
         $url_title_prefix = '';
+        $site_id = '';
 
         // turn our array into variables
         extract($data);
@@ -412,6 +413,7 @@ class Api_channel_structure extends Api
         $channel_title = '';
         $channel_name = '';
         $url_title_prefix = '';
+        $channel_id = '';
 
         // turn our array into variables
         extract($data);

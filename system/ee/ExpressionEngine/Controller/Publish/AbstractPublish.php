@@ -497,7 +497,9 @@ abstract class AbstractPublish extends CP_Controller
                 'item' => [
                     'value' => $entry->getId(),
                     'label' => $entry->title,
-                    'instructions' => $entry->Channel->channel_title
+                    'instructions' => $entry->Channel->channel_title,
+                    'can_edit' => ($entry->author_id == ee()->session->userdata('member_id')) ? ee('Permission')->has('can_edit_self_entries_channel_id_' . $entry->channel_id) : ee('Permission')->has('can_edit_other_entries_channel_id_' . $entry->channel_id),
+                    'editable' => (ee('Permission')->isSuperAdmin() || array_key_exists($entry->Channel->getId(), ee()->session->userdata('assigned_channels'))),
                 ]
             ];
 

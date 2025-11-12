@@ -701,6 +701,10 @@ class ChannelEntry extends ContentModel
             $versions = $this->Versions->sortBy('version_date')->asArray();
             $versions = array_slice($versions, 0, $diff);
 
+            if (ee()->extensions->active_hook('before_channel_entry_version_delete') === true) {
+                $versions = ee()->extensions->call('before_channel_entry_version_delete', $this, $versions);
+            }
+
             foreach ($versions as $version) {
                 $version->delete();
             }
@@ -771,12 +775,13 @@ class ChannelEntry extends ContentModel
                 return;
             }
             //if the file data is in new format, add the counter immediately
-            if (strpos($item, '{file:') !== false && preg_match('/{file\:(\d+)\:url}/', $item, $matches)) {
-                $file_id = $matches[1];
-                if (! isset($usage[$file_id])) {
-                    $usage[$file_id] = 1;
-                } else {
-                    $usage[$file_id]++;
+            if (strpos($item, '{file:') !== false && preg_match_all('/{file\:(\d+)\:url}/', $item, $matches)) {
+                foreach ($matches[1] as $file_id) {
+                    if (! isset($usage[$file_id])) {
+                        $usage[$file_id] = 1;
+                    } else {
+                        $usage[$file_id]++;
+                    }
                 }
             }
             $dirUrlsMatches = [];
@@ -829,7 +834,7 @@ class ChannelEntry extends ContentModel
     /**
      * Modify the default layout for channels
      */
-    public function getDisplay(LayoutInterface $layout = null)
+    public function getDisplay(?LayoutInterface $layout = null)
     {
         $layout = $layout ?: new Display\DefaultChannelLayout($this->channel_id, $this->entry_id);
 
@@ -1609,6 +1614,23 @@ class ChannelEntry extends ContentModel
         }
 
         return false;
+    }
+
+    public function getAutosaves()
+    {
+        if ($this->isNew()) {
+            return ee('Model')->get('ChannelEntryAutosave')
+                ->filter('original_entry_id', 0)
+                ->filter('site_id', $this->site_id)
+                ->filter('channel_id', $this->channel_id)
+                ->filterGroup()
+                    ->filter('author_id', $this->author_id)
+                    ->orFilter('author_id', ee()->session->userdata('member_id'))
+                ->endFilterGroup()
+                ->all();
+        }
+
+        return $this->Autosaves;
     }
 }
 
