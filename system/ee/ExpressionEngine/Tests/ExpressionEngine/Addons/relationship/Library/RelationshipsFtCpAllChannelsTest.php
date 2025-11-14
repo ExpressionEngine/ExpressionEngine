@@ -166,13 +166,14 @@ class RelationshipsFtCpAllChannelsTest extends RelationshipTestBase
      */
     private function createMockChannel($id, $title, $siteId, $siteLabel)
     {
-        $mockChannel = m::mock();
+        $mockChannel = m::mock('stdClass');
+        $mockChannel->shouldReceive('getId')->andReturn($id);
+
         $mockChannel->channel_id = $id;
         $mockChannel->channel_title = $title;
         $mockChannel->site_id = $siteId;
-        $mockChannel->shouldReceive('getId')->andReturn($id);
 
-        $mockSite = m::mock();
+        $mockSite = m::mock('stdClass');
         $mockSite->site_label = $siteLabel;
         $mockChannel->Site = $mockSite;
 

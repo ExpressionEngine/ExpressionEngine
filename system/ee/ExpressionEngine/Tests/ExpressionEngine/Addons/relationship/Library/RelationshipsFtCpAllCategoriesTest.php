@@ -260,7 +260,7 @@ class RelationshipsFtCpAllCategoriesTest extends RelationshipTestBase
      */
     private function createMockCategory($id, $name, $parentId)
     {
-        $mockCategory = m::mock();
+        $mockCategory = m::mock('stdClass');
         $mockCategory->cat_id = $id;
         $mockCategory->cat_name = $name;
         $mockCategory->parent_id = $parentId;

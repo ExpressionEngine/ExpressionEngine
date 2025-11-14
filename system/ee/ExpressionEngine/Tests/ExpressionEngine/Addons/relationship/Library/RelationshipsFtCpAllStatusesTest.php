@@ -217,7 +217,7 @@ class RelationshipsFtCpAllStatusesTest extends RelationshipTestBase
      */
     private function createMockStatus($id, $status)
     {
-        $mockStatus = m::mock();
+        $mockStatus = m::mock('stdClass');
         $mockStatus->status_id = $id;
         $mockStatus->status = $status;
 

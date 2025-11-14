@@ -194,10 +194,10 @@ abstract class RelationshipTestBase extends TestCase
                     public function all() {
                         return $this->items;
                     }
-                    public function getIterator() {
+                    public function getIterator(): Traversable {
                         return new ArrayIterator($this->items);
                     }
-                    public function count() {
+                    public function count(): int {
                         return count($this->items);
                     }
                     public function getDictionary($key, $value) {

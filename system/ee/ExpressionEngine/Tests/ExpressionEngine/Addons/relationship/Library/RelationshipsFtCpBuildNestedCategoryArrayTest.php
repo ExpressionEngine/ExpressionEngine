@@ -174,7 +174,7 @@ class RelationshipsFtCpBuildNestedCategoryArrayTest extends RelationshipTestBase
      */
     private function createMockCategory($id, $name, $parentId, $children = [])
     {
-        $mockCategory = m::mock();
+        $mockCategory = m::mock('stdClass');
         $mockCategory->cat_id = $id;
         $mockCategory->cat_name = $name;
         $mockCategory->parent_id = $parentId;

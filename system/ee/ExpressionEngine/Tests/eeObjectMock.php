@@ -324,6 +324,7 @@ class eeLangMock
 class eeDbArMock
 {
     public $rows = [];
+    public $dbprefix = '';
     private $whereConditions = [];
     private $limitValue = null;
     public $whereInConditions = [];
