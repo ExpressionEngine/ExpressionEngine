@@ -10,8 +10,6 @@
 
 require_once __DIR__ . '/RelationshipTestBase.php';
 
-use Mockery as m;
-
 /**
  * Test Relationships_ft_cp::all_categories() method
  */
@@ -23,23 +21,27 @@ class RelationshipsFtCpAllCategoriesTest extends RelationshipTestBase
      */
     public function testAllCategoriesReturnsCachedResult()
     {
-        // Create mock categories
-        $mockCategories = $this->createMockCategories();
-        $mockCollection = $this->createMockCategoryCollection($mockCategories);
+        // Mock database to return category data
+        $categoryData = [
+            [
+                'parent_id' => 0,
+                'cat_id' => 1,
+                'group_id' => 1,
+                'site_id' => 1,
+                'cat_name' => 'Category 1',
+                'cat_order' => 1
+            ],
+            [
+                'parent_id' => 0,
+                'cat_id' => 2,
+                'group_id' => 1,
+                'site_id' => 1,
+                'cat_name' => 'Category 2',
+                'cat_order' => 2
+            ]
+        ];
 
-        // Mock ee('Model')
-        $this->setMock('Model', new class($mockCollection) {
-            private $collection;
-            public function __construct($collection) {
-                $this->collection = $collection;
-            }
-            public function get($model) {
-                if ($model === 'Category as C0') {
-                    return $this->collection;
-                }
-                return null;
-            }
-        });
+        ee()->db->setRows($categoryData);
 
         // First call - should query database
         $result1 = $this->relationships_ft_cp->all_categories();
@@ -63,23 +65,27 @@ class RelationshipsFtCpAllCategoriesTest extends RelationshipTestBase
     {
         $this->disableMultiSite();
 
-        // Create mock categories with hierarchy
-        $mockCategories = $this->createMockCategoriesWithHierarchy();
-        $mockCollection = $this->createMockCategoryCollection($mockCategories);
+        // Mock database to return category data
+        $categoryData = [
+            [
+                'parent_id' => 0,
+                'cat_id' => 1,
+                'group_id' => 1,
+                'site_id' => 1,
+                'cat_name' => 'Root Category 1',
+                'cat_order' => 1
+            ],
+            [
+                'parent_id' => 1,
+                'cat_id' => 2,
+                'group_id' => 1,
+                'site_id' => 1,
+                'cat_name' => 'Child Category 1',
+                'cat_order' => 2
+            ]
+        ];
 
-        // Mock ee('Model')
-        $this->setMock('Model', new class($mockCollection) {
-            private $collection;
-            public function __construct($collection) {
-                $this->collection = $collection;
-            }
-            public function get($model) {
-                if ($model === 'Category as C0') {
-                    return $this->collection;
-                }
-                return null;
-            }
-        });
+        ee()->db->setRows($categoryData);
 
         $result = $this->relationships_ft_cp->all_categories();
 
@@ -90,13 +96,20 @@ class RelationshipsFtCpAllCategoriesTest extends RelationshipTestBase
 
         $children = $result['--']['children'];
 
-        // Should have root categories with nested structure
-        $this->assertArrayHasKey(1, $children); // Root category 1
-        $this->assertEquals('Root Category 1', $children[1]['name']);
-        $this->assertArrayHasKey('children', $children[1]);
+        // Find the root category in the children array
+        $rootData = null;
+        foreach ($children as $value) {
+            if (is_array($value) && isset($value['name']) && $value['name'] === 'Root Category 1') {
+                $rootData = $value;
+                break;
+            }
+        }
+
+        $this->assertNotNull($rootData, 'Root category not found in children');
+        $this->assertArrayHasKey('children', $rootData);
 
         // Check nested children
-        $nestedChildren = $children[1]['children'];
+        $nestedChildren = $rootData['children'];
         $this->assertArrayHasKey(2, $nestedChildren); // Child category
         $this->assertEquals('Child Category 1', $nestedChildren[2]);
     }
@@ -108,23 +121,27 @@ class RelationshipsFtCpAllCategoriesTest extends RelationshipTestBase
     {
         $this->enableMultiSite();
 
-        // Create mock categories
-        $mockCategories = $this->createMockCategories();
-        $mockCollection = $this->createMockCategoryCollection($mockCategories);
+        // Mock database to return category data
+        $categoryData = [
+            [
+                'parent_id' => 0,
+                'cat_id' => 1,
+                'group_id' => 1,
+                'site_id' => 1,
+                'cat_name' => 'Category 1',
+                'cat_order' => 1
+            ],
+            [
+                'parent_id' => 0,
+                'cat_id' => 2,
+                'group_id' => 1,
+                'site_id' => 2,
+                'cat_name' => 'Category 2',
+                'cat_order' => 2
+            ]
+        ];
 
-        // Mock ee('Model')
-        $this->setMock('Model', new class($mockCollection) {
-            private $collection;
-            public function __construct($collection) {
-                $this->collection = $collection;
-            }
-            public function get($model) {
-                if ($model === 'Category as C0') {
-                    return $this->collection;
-                }
-                return null;
-            }
-        });
+        ee()->db->setRows($categoryData);
 
         $result = $this->relationships_ft_cp->all_categories();
 
@@ -138,35 +155,35 @@ class RelationshipsFtCpAllCategoriesTest extends RelationshipTestBase
      */
     public function testAllCategoriesWithFlatStructure()
     {
-        // Create mock categories with no children
-        $mockCategories = [
-            $this->createMockCategory(1, 'Category 1', 0),
-            $this->createMockCategory(2, 'Category 2', 0),
+        // Mock database to return flat category data
+        $categoryData = [
+            [
+                'parent_id' => 0,
+                'cat_id' => 1,
+                'group_id' => 1,
+                'site_id' => 1,
+                'cat_name' => 'Category 1',
+                'cat_order' => 1
+            ],
+            [
+                'parent_id' => 0,
+                'cat_id' => 2,
+                'group_id' => 1,
+                'site_id' => 1,
+                'cat_name' => 'Category 2',
+                'cat_order' => 2
+            ]
         ];
 
-        $mockCollection = $this->createMockCategoryCollection($mockCategories);
-
-        // Mock ee('Model')
-        $this->setMock('Model', new class($mockCollection) {
-            private $collection;
-            public function __construct($collection) {
-                $this->collection = $collection;
-            }
-            public function get($model) {
-                if ($model === 'Category as C0') {
-                    return $this->collection;
-                }
-                return null;
-            }
-        });
+        ee()->db->setRows($categoryData);
 
         $result = $this->relationships_ft_cp->all_categories();
 
         $children = $result['--']['children'];
 
-        // Should be flat structure (no nested arrays)
-        $this->assertEquals('Category 1', $children[1]);
-        $this->assertEquals('Category 2', $children[2]);
+        // Should be flat structure (numeric indices, not cat_id keys)
+        $this->assertContains('Category 1', $children);
+        $this->assertContains('Category 2', $children);
     }
 
     /**
@@ -183,43 +200,63 @@ class RelationshipsFtCpAllCategoriesTest extends RelationshipTestBase
      */
     public function testAllCategoriesWithDeepNesting()
     {
-        // Create deeply nested category structure
-        $child3 = $this->createMockCategory(4, 'Level 3 Category', 3);
-        $child2 = $this->createMockCategory(3, 'Level 2 Category', 2);
-        $child2->Children = collect([$child3]);
+        // Mock database to return deeply nested category data
+        $categoryData = [
+            [
+                'parent_id' => 0,
+                'cat_id' => 1,
+                'group_id' => 1,
+                'site_id' => 1,
+                'cat_name' => 'Root Category',
+                'cat_order' => 1
+            ],
+            [
+                'parent_id' => 1,
+                'cat_id' => 2,
+                'group_id' => 1,
+                'site_id' => 1,
+                'cat_name' => 'Level 1 Category',
+                'cat_order' => 2
+            ],
+            [
+                'parent_id' => 2,
+                'cat_id' => 3,
+                'group_id' => 1,
+                'site_id' => 1,
+                'cat_name' => 'Level 2 Category',
+                'cat_order' => 3
+            ],
+            [
+                'parent_id' => 3,
+                'cat_id' => 4,
+                'group_id' => 1,
+                'site_id' => 1,
+                'cat_name' => 'Level 3 Category',
+                'cat_order' => 4
+            ]
+        ];
 
-        $child1 = $this->createMockCategory(2, 'Level 1 Category', 1);
-        $child1->Children = collect([$child2]);
-
-        $root = $this->createMockCategory(1, 'Root Category', 0);
-        $root->Children = collect([$child1]);
-
-        $mockCategories = [$root];
-        $mockCollection = $this->createMockCategoryCollection($mockCategories);
-
-        // Mock ee('Model')
-        $this->setMock('Model', new class($mockCollection) {
-            private $collection;
-            public function __construct($collection) {
-                $this->collection = $collection;
-            }
-            public function get($model) {
-                if ($model === 'Category as C0') {
-                    return $this->collection;
-                }
-                return null;
-            }
-        });
+        ee()->db->setRows($categoryData);
 
         $result = $this->relationships_ft_cp->all_categories();
 
         $children = $result['--']['children'];
 
-        // Verify 3-level nesting
-        $this->assertArrayHasKey(1, $children);
-        $this->assertEquals('Root Category', $children[1]['name']);
+        // Find the root category in the children array
+        $rootData = null;
+        foreach ($children as $value) {
+            if (is_array($value) && isset($value['name']) && $value['name'] === 'Root Category') {
+                $rootData = $value;
+                break;
+            }
+        }
 
-        $level1 = $children[1]['children'];
+        $this->assertNotNull($rootData, 'Root category not found in children');
+
+        // Verify 3-level nesting
+        $this->assertArrayHasKey('children', $rootData);
+
+        $level1 = $rootData['children'];
         $this->assertArrayHasKey(2, $level1);
         $this->assertEquals('Level 1 Category', $level1[2]['name']);
 
@@ -232,40 +269,4 @@ class RelationshipsFtCpAllCategoriesTest extends RelationshipTestBase
         $this->assertEquals('Level 3 Category', $level3[4]);
     }
 
-    /**
-     * Helper to create mock categories
-     */
-    private function createMockCategories()
-    {
-        return [
-            $this->createMockCategory(1, 'Category 1', 0),
-            $this->createMockCategory(2, 'Category 2', 0),
-        ];
-    }
-
-    /**
-     * Helper to create mock categories with hierarchy
-     */
-    private function createMockCategoriesWithHierarchy()
-    {
-        $child = $this->createMockCategory(2, 'Child Category 1', 1);
-        $root = $this->createMockCategory(1, 'Root Category 1', 0);
-        $root->Children = collect([$child]);
-
-        return [$root];
-    }
-
-    /**
-     * Helper to create a single mock category
-     */
-    private function createMockCategory($id, $name, $parentId)
-    {
-        $mockCategory = m::mock('stdClass');
-        $mockCategory->cat_id = $id;
-        $mockCategory->cat_name = $name;
-        $mockCategory->parent_id = $parentId;
-        $mockCategory->Children = collect([]); // Empty collection by default
-
-        return $mockCategory;
-    }
 }

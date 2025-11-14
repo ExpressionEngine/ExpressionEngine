@@ -13,18 +13,20 @@ require_once __DIR__ . '/RelationshipTestBase.php';
 use Mockery as m;
 
 /**
- * Test Relationships_ft_cp::buildNestedCategoryArray() private method
+ * Test Relationships_ft_cp::buildCategoryList() private method
  */
 class RelationshipsFtCpBuildNestedCategoryArrayTest extends RelationshipTestBase
 {
     /**
-     * Test buildNestedCategoryArray() with categories that have children
+     * Test buildCategoryList() with categories that have children
      */
     public function testBuildNestedCategoryArrayWithChildren()
     {
-        $categories = $this->createMockCategoriesWithChildren();
+        // Create test data - categories array and hierarchy
+        $categories = $this->createCategoriesArray();
+        $hierarchy = $this->createHierarchyFromCategories($categories);
 
-        $result = $this->invokeBuildNestedCategoryArray($categories);
+        $result = $this->invokeBuildCategoryList(0, $hierarchy, $categories);
 
         // Should return nested structure
         $this->assertArrayHasKey(1, $result);
@@ -38,16 +40,20 @@ class RelationshipsFtCpBuildNestedCategoryArrayTest extends RelationshipTestBase
     }
 
     /**
-     * Test buildNestedCategoryArray() with categories that have no children
+     * Test buildCategoryList() with categories that have no children
      */
     public function testBuildNestedCategoryArrayWithNoChildren()
     {
+        // Create test data for flat categories
         $categories = [
-            $this->createMockCategory(1, 'Category 1', 0),
-            $this->createMockCategory(2, 'Category 2', 0),
+            1 => ['cat_id' => 1, 'cat_name' => 'Category 1', 'parent_id' => 0],
+            2 => ['cat_id' => 2, 'cat_name' => 'Category 2', 'parent_id' => 0],
+        ];
+        $hierarchy = [
+            0 => [1, 2] // parent_id 0 has children 1 and 2
         ];
 
-        $result = $this->invokeBuildNestedCategoryArray($categories);
+        $result = $this->invokeBuildCategoryList(0, $hierarchy, $categories);
 
         // Should return flat structure
         $this->assertArrayHasKey(1, $result);
@@ -57,30 +63,33 @@ class RelationshipsFtCpBuildNestedCategoryArrayTest extends RelationshipTestBase
     }
 
     /**
-     * Test buildNestedCategoryArray() with empty array
+     * Test buildCategoryList() with empty array
      */
     public function testBuildNestedCategoryArrayWithEmptyArray()
     {
-        $result = $this->invokeBuildNestedCategoryArray([]);
+        $result = $this->invokeBuildCategoryList(0, [], []);
 
         $this->assertEmpty($result);
         $this->assertIsArray($result);
     }
 
     /**
-     * Test buildNestedCategoryArray() with mixed hierarchy (some with children, some without)
+     * Test buildCategoryList() with mixed hierarchy (some with children, some without)
      */
     public function testBuildNestedCategoryArrayWithMixedHierarchy()
     {
         // Create mixed structure: one parent with child, one standalone category
-        $child = $this->createMockCategory(2, 'Child Category', 1);
-        $parent = $this->createMockCategory(1, 'Parent Category', 0, [$child]);
+        $categories = [
+            1 => ['cat_id' => 1, 'cat_name' => 'Parent Category', 'parent_id' => 0],
+            2 => ['cat_id' => 2, 'cat_name' => 'Child Category', 'parent_id' => 1],
+            3 => ['cat_id' => 3, 'cat_name' => 'Standalone Category', 'parent_id' => 0],
+        ];
+        $hierarchy = [
+            0 => [1, 3], // parent_id 0 has children 1 and 3
+            1 => [2]     // parent_id 1 has child 2
+        ];
 
-        $standalone = $this->createMockCategory(3, 'Standalone Category', 0);
-
-        $categories = [$parent, $standalone];
-
-        $result = $this->invokeBuildNestedCategoryArray($categories);
+        $result = $this->invokeBuildCategoryList(0, $hierarchy, $categories);
 
         // Should have both nested and flat entries
         $this->assertArrayHasKey(1, $result);
@@ -97,18 +106,23 @@ class RelationshipsFtCpBuildNestedCategoryArrayTest extends RelationshipTestBase
     }
 
     /**
-     * Test buildNestedCategoryArray() with deeply nested categories
+     * Test buildCategoryList() with deeply nested categories
      */
     public function testBuildNestedCategoryArrayWithDeepNesting()
     {
         // Create 3-level nesting
-        $grandchild = $this->createMockCategory(3, 'Grandchild Category', 2);
-        $child = $this->createMockCategory(2, 'Child Category', 1, [$grandchild]);
-        $parent = $this->createMockCategory(1, 'Parent Category', 0, [$child]);
+        $categories = [
+            1 => ['cat_id' => 1, 'cat_name' => 'Parent Category', 'parent_id' => 0],
+            2 => ['cat_id' => 2, 'cat_name' => 'Child Category', 'parent_id' => 1],
+            3 => ['cat_id' => 3, 'cat_name' => 'Grandchild Category', 'parent_id' => 2],
+        ];
+        $hierarchy = [
+            0 => [1],     // parent_id 0 has child 1
+            1 => [2],     // parent_id 1 has child 2
+            2 => [3]      // parent_id 2 has child 3
+        ];
 
-        $categories = [$parent];
-
-        $result = $this->invokeBuildNestedCategoryArray($categories);
+        $result = $this->invokeBuildCategoryList(0, $hierarchy, $categories);
 
         // Verify 3-level nesting
         $this->assertArrayHasKey(1, $result);
@@ -124,18 +138,22 @@ class RelationshipsFtCpBuildNestedCategoryArrayTest extends RelationshipTestBase
     }
 
     /**
-     * Test buildNestedCategoryArray() with multiple children per parent
+     * Test buildCategoryList() with multiple children per parent
      */
     public function testBuildNestedCategoryArrayWithMultipleChildren()
     {
         // Create parent with multiple children
-        $child1 = $this->createMockCategory(2, 'Child 1', 1);
-        $child2 = $this->createMockCategory(3, 'Child 2', 1);
-        $parent = $this->createMockCategory(1, 'Parent Category', 0, [$child1, $child2]);
+        $categories = [
+            1 => ['cat_id' => 1, 'cat_name' => 'Parent Category', 'parent_id' => 0],
+            2 => ['cat_id' => 2, 'cat_name' => 'Child 1', 'parent_id' => 1],
+            3 => ['cat_id' => 3, 'cat_name' => 'Child 2', 'parent_id' => 1],
+        ];
+        $hierarchy = [
+            0 => [1],     // parent_id 0 has child 1
+            1 => [2, 3]   // parent_id 1 has children 2 and 3
+        ];
 
-        $categories = [$parent];
-
-        $result = $this->invokeBuildNestedCategoryArray($categories);
+        $result = $this->invokeBuildCategoryList(0, $hierarchy, $categories);
 
         $children = $result[1]['children'];
 
@@ -147,39 +165,41 @@ class RelationshipsFtCpBuildNestedCategoryArrayTest extends RelationshipTestBase
     }
 
     /**
-     * Helper to invoke the private buildNestedCategoryArray method
+     * Helper to invoke the private buildCategoryList method
      */
-    private function invokeBuildNestedCategoryArray($categories)
+    private function invokeBuildCategoryList($parentId, $hierarchy, $categories)
     {
         $reflection = new ReflectionClass($this->relationships_ft_cp);
-        $method = $reflection->getMethod('buildNestedCategoryArray');
+        $method = $reflection->getMethod('buildCategoryList');
         $method->setAccessible(true);
 
-        return $method->invoke($this->relationships_ft_cp, $categories);
+        return $method->invoke($this->relationships_ft_cp, $parentId, $hierarchy, $categories);
     }
 
     /**
-     * Helper to create mock categories with children
+     * Helper to create test categories array
      */
-    private function createMockCategoriesWithChildren()
+    private function createCategoriesArray()
     {
-        $child = $this->createMockCategory(2, 'Child Category', 1);
-        $parent = $this->createMockCategory(1, 'Parent Category', 0, [$child]);
-
-        return [$parent];
+        return [
+            1 => ['cat_id' => 1, 'cat_name' => 'Parent Category', 'parent_id' => 0],
+            2 => ['cat_id' => 2, 'cat_name' => 'Child Category', 'parent_id' => 1],
+        ];
     }
 
     /**
-     * Helper to create a mock category
+     * Helper to create hierarchy from categories
      */
-    private function createMockCategory($id, $name, $parentId, $children = [])
+    private function createHierarchyFromCategories($categories)
     {
-        $mockCategory = m::mock('stdClass');
-        $mockCategory->cat_id = $id;
-        $mockCategory->cat_name = $name;
-        $mockCategory->parent_id = $parentId;
-        $mockCategory->Children = $children; // Array of children
-
-        return $mockCategory;
+        $hierarchy = [];
+        foreach ($categories as $category) {
+            $parentId = $category['parent_id'];
+            if (!isset($hierarchy[$parentId])) {
+                $hierarchy[$parentId] = [];
+            }
+            $hierarchy[$parentId][] = $category['cat_id'];
+        }
+        return $hierarchy;
     }
 }
