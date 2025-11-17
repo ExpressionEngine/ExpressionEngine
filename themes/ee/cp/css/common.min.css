@@ -32717,6 +32717,9 @@ fieldset .field-control #eye {
   background-size: 8px 12px;
   background-position: right 12px center;
 }
+.select-popup.sort-select, select.sort-select {
+  margin-top: 0;
+}
 .select-popup.select-popup--large, select.select-popup--large {
   height: initial;
   line-height: initial;
