@@ -321,9 +321,9 @@ class EE_Core
         $this->native_plugins = array('markdown', 'rss_parser', 'xml_encode');
         $this->native_modules = array(
             'block_and_allow', 'channel', 'comment', 'commerce', 'email',
-            'file', 'filepicker', 'forum', 'ip_to_nation', 'member',
+            'file', 'filepicker', 'forum', 'member',
             'metaweblog_api', 'moblog', 'pages', 'query', 'relationship', 'rss',
-            'rte', 'search', 'simple_commerce', 'spam', 'stats'
+            'rte', 'search', 'spam', 'stats'
         );
 
         // Is this a asset request?  If so, we're done.
