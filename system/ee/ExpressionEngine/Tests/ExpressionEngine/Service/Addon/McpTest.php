@@ -130,7 +130,7 @@ class McpTest extends TestCase
         $controller = new __stub_mcp;
         $controller->setRouteNamespace('TestAddon');
         $controller->forceParseParams(['my-action']);
-        $this->assertEquals('\\TestAddon\\Mcp\\TestDomain', $controller->forceBuildObject('test-domain'));
+        $this->assertEquals('\\TestAddon\\ControlPanel\\Routes\\TestDomain', $controller->forceBuildObject('test-domain'));
         return $controller;
     }
 
@@ -138,7 +138,7 @@ class McpTest extends TestCase
     {
         $controller = new __stub_mcp;
         $controller->setRouteNamespace('TestAddon');
-        $this->assertEquals('\\TestAddon\\Mcp\\TestDomain', $controller->forceBuildObject('test-domain'));
+        $this->assertEquals('\\TestAddon\\ControlPanel\\Routes\\TestDomain', $controller->forceBuildObject('test-domain'));
         return $controller;
     }
 
