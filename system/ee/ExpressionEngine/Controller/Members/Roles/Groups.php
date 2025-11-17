@@ -83,7 +83,7 @@ class Groups extends AbstractRolesController
                 if (ee('Request')->post('submit') == 'save_and_new') {
                     ee()->functions->redirect(ee('CP/URL')->make('members/roles/groups/create'));
                 } elseif (ee('Request')->post('submit') == 'save_and_close') {
-                    ee()->functions->redirect(ee('CP/URL')->make('members/roles/groups'));
+                    ee()->functions->redirect(ee('CP/URL')->make('members/roles'));
                 } else {
                     ee()->functions->redirect(ee('CP/URL')->make('members/roles/groups/edit/' . $role_group->getId()));
                 }
