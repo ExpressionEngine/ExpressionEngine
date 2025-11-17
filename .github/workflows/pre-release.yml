@@ -15,19 +15,19 @@ jobs:
       version: ${{ steps.build_json.outputs.BUILD_VERSION }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           token: ${{ secrets.ORG_ACCESS_TOKEN }}
 
       - name: Checkout Pro
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: EllisLab/ExpressionEngine-Pro
           token: ${{ secrets.ORG_ACCESS_TOKEN }}
           path: __pro
 
       - name: Setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '10'
 
@@ -60,7 +60,7 @@ jobs:
           gulp app --local --nogit --head --skip-lint --jira-collector --version=${{ steps.build_json.outputs.BUILD_VERSION }}
 
       - name: Archive Build files
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: EE${{ steps.build_json.outputs.BUILD_VERSION }}
           path: build-tools/builds
@@ -136,7 +136,7 @@ jobs:
       steps:
 
             - name: Checkout repo
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
               with:
                 repository: ExpressionEngine/ExpressionEngine
                 path: __repo
@@ -209,14 +209,14 @@ jobs:
                 config-file: updater.cypress.json
 
             - name: Archive screenshots
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               if: failure()
               with:
                 name: cypress-tests-updater
                 path: tests/cypress/cypress/screenshots/
 
             - name: Archive server errors
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               if: failure()
               with:
                 name: updater.error.log
