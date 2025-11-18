@@ -88,47 +88,78 @@ class Relationships_ft_cp
 
         $from_all_sites = (ee()->config->item('multiple_sites_enabled') == 'y');
 
-        $categories = ee('Model')->get('Category as C0')
-            ->with(array('Children as C1' => array('Children as C2' => 'Children as C3')))
-            ->fields('C0.cat_id', 'C0.cat_name')
-            ->fields('C1.cat_id', 'C1.cat_name')
-            ->fields('C2.cat_id', 'C2.cat_name')
-            ->fields('C3.cat_id', 'C3.cat_name')
-            ->filter('parent_id', 0)
-            ->order('group_id', 'asc')
-            ->order('parent_id', 'asc')
-            ->order('cat_name', 'asc');
+        $query = ee()->db->select('parent_id, cat_id, group_id, site_id, cat_name, cat_order')
+            ->from('categories')
+            ->order_by('cat_id', 'asc')
+            ->order_by('group_id', 'asc')
+            ->order_by('parent_id', 'asc')
+            ->order_by('cat_name', 'asc');
 
         if (! $from_all_sites) {
-            $categories->filter('site_id', 1);
+            $query->where('site_id', 1);
         }
+
+        $results = $query->get()->result_array();
+
+        $hierarchyGroups = array_reduce($results, function($carry, $row) {
+            // $key = "{$row['group_id']}_{$row['parent_id']}";
+            if(!array_key_exists($row['group_id'], $carry)) {
+                $carry[$row['group_id']] = [];
+            }
+
+            if(!array_key_exists($row['parent_id'], $carry[$row['group_id']])) {
+                $carry[$row['group_id']][$row['parent_id']] = [];
+            }
+
+            $carry[$row['group_id']][$row['parent_id']][] = $row['cat_id'];
+
+            return $carry;
+        }, []);
+
+        $categories = array_column($results, null, 'cat_id');
 
         $this->all_categories = array(
             '--' => array(
                 'name' => lang('any_category'),
-                'children' => $this->buildNestedCategoryArray($categories->all())
+                'children' => array_merge(...array_map(function($hierarchy) use($categories) {
+                    return $this->buildCategoryList(0, $hierarchy, $categories);
+                }, $hierarchyGroups))
             )
         );
 
         return $this->all_categories;
     }
 
-    private function buildNestedCategoryArray($categories)
+    /**
+     * Turn the categories collection into a nested array of ids => names
+     *
+     * @param   int    $parent_id The parent id to start traversing children on
+     * @param   array  $hierarchy A map of parent ids and their children
+     * @param   array  $categories A list of category data for display
+     *
+     */
+    protected function buildCategoryList($parent_id, $hierarchy, $categories)
     {
-        $choices = array();
+        $list = array();
+        $cat_ids = $hierarchy[$parent_id] ?? [];
 
-        foreach ($categories as $category) {
-            if (count($category->Children)) {
-                $choices[$category->cat_id] = array(
-                    'name' => $category->cat_name,
-                    'children' => $this->buildNestedCategoryArray($category->Children)
+        foreach ($cat_ids as $cat_id) {
+            $category = $categories[$cat_id];
+            $children = $hierarchy[$cat_id] ?? [];
+
+            if (count($children)) {
+                $list[$cat_id] = array(
+                    'name' => $category['cat_name'],
+                    'children' => $this->buildCategoryList($cat_id, $hierarchy, $categories)
                 );
-            } else {
-                $choices[$category->cat_id] = $category->cat_name;
+
+                continue;
             }
+
+            $list[$cat_id] = $category['cat_name'] ?? '';
         }
 
-        return $choices;
+        return $list;
     }
 
     /**

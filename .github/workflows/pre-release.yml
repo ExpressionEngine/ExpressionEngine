@@ -83,7 +83,7 @@ jobs:
           APP_REPO_PATH: ${{ github.workspace }}
           REDACTORX_REPO_PATH: ${{ github.workspace }}/__redactorx
         run: |
-          gulp app --local --nogit --head --skip-lint --jira-collector --skip-pro --version=${{ steps.build_json.outputs.BUILD_VERSION }}-dp.${{ env.dp_ver }}
+          gulp app --local --nogit --head --skip-lint --skip-pro --version=${{ steps.build_json.outputs.BUILD_VERSION }}-dp.${{ env.dp_ver }}
 
       - name: Archive Build files
         uses: actions/upload-artifact@v4
