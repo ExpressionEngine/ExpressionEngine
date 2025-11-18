@@ -348,7 +348,7 @@ class VersionBumper
                 $newContent = json_encode($json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n";
 
                 // Use atomic write
-                $this->writeFileAtomically($buildJsonPath, $newContent, md5($content));
+                $this->writeFileAtomically($buildJsonPath, $newContent);
                 echo "✓\n";
             } else {
                 echo "\n";
@@ -384,9 +384,6 @@ class VersionBumper
             $changes = [];
 
             $content = file_get_contents($fullPath);
-
-            // Store original checksum for integrity checking
-            $originalChecksum = md5($content);
 
             // Skip version updates in build-date-only mode
             if (!$this->updateBuildDateOnly) {
@@ -508,7 +505,7 @@ class VersionBumper
                     }
                 } else {
                     // Atomic file operation: write to temp file then rename
-                    $this->writeFileAtomically($fullPath, $content, $originalChecksum);
+                    $this->writeFileAtomically($fullPath, $content);
                     echo "✓\n";
                 }
             } else {
@@ -518,7 +515,7 @@ class VersionBumper
     }
 
 
-    private function writeFileAtomically($filePath, $content, $originalChecksum)
+    private function writeFileAtomically($filePath, $content)
     {
         // Skip backup creation since we're in git
         $fileExists = file_exists($filePath);
@@ -600,8 +597,8 @@ class VersionBumper
             $underscoreVersion = implode('_', $versionParts);
             $content = str_replace('6_2_3', $underscoreVersion, $content);
 
-            // Use atomic write for update file too (no original checksum for new files)
-            $this->writeFileAtomically($destFile, $content, null);
+            // Use atomic write for update file too
+            $this->writeFileAtomically($destFile, $content);
             echo "✓\n";
         } else {
             echo "\n";

@@ -68,7 +68,7 @@ class eeSingletonMock
         $this->mock = $mock;
 
         // Override with static mocks if set
-        $overridable = ['db', 'config', 'functions', 'TMPL', 'session', 'load', 'logger', 'dbforge', 'input', 'lang', 'typography', 'extensions', 'core', 'uri'];
+        $overridable = ['db', 'config', 'functions', 'TMPL', 'session', 'load', 'logger', 'dbforge', 'input', 'lang', 'typography', 'extensions', 'core', 'uri', 'Model'];
         foreach ($overridable as $prop) {
             if (array_key_exists($prop, self::$mocks)) {
                 @$this->$prop = self::$mocks[$prop];
@@ -128,6 +128,12 @@ class eeSingletonLoadMock
     public function dbforge()
     {
         return;
+    }
+
+    public function get_package_paths($include_base = true)
+    {
+        // Return empty array for testing - no additional package paths needed
+        return [];
     }
 }
 
@@ -318,6 +324,7 @@ class eeLangMock
 class eeDbArMock
 {
     public $rows = [];
+    public $dbprefix = '';
     private $whereConditions = [];
     private $limitValue = null;
     public $whereInConditions = [];
