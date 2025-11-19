@@ -803,8 +803,8 @@ class EE_Image_lib
      */
     public function image_preserve_alpha($new_img, $src_img)
     {
-        // Preserve transparancies for GIFs and PNGs
-        if ($this->image_type == IMAGETYPE_GIF || $this->image_type == IMAGETYPE_PNG) {
+        // Preserve transparancies for GIFs, PNGs, and WebPs
+        if ($this->image_type == IMAGETYPE_GIF || $this->image_type == IMAGETYPE_PNG || $this->image_type == 18) {
             $src_alpha_index = imagecolortransparent($src_img);
 
             if ($src_alpha_index >= 0
@@ -823,7 +823,7 @@ class EE_Image_lib
                 // Set alpha color as background color and make it transparent
                 imagefill($new_img, 0, 0, $alpha_index);
                 imagecolortransparent($new_img, $alpha_index);
-            } elseif ($this->image_type == IMAGETYPE_PNG) {
+            } elseif ($this->image_type == IMAGETYPE_PNG || $this->image_type == 18) {
                 imagealphablending($new_img, false);
 
                 // Create a new transparent color for image
