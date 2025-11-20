@@ -202,7 +202,7 @@ jobs:
               run: php -S localhost:8888 &
 
             - name: Run Cypress Tests
-              uses: cypress-io/github-action@v5
+              uses: cypress-io/github-action@v6
               with:
                 browser: chrome
                 working-directory: tests/cypress

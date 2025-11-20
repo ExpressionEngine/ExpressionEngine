@@ -64,7 +64,7 @@ jobs:
                 ls -lar tests/cypress/support/templates/
 
             - name: Run Cypress Tests
-              uses: cypress-io/github-action@v5
+              uses: cypress-io/github-action@v6
               with:
                 browser: chrome
                 working-directory: tests/cypress
