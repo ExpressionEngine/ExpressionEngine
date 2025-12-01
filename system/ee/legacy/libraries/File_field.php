@@ -838,7 +838,7 @@ class File_field
         }
 
         if (strpos((string) $data, 'file:') !== false) {
-            if (preg_match_all('/{file\:(\d+)\:/', (string) $data, $matches, PREG_SET_ORDER)) {
+            if (preg_match_all('/{file\:(\d+)\:([_a-z]+)}/', (string) $data, $matches, PREG_SET_ORDER)) {
                 $file_ids = [];
                 foreach ($matches as $match) {
                     $file_ids[] = $match[1];
@@ -847,8 +847,10 @@ class File_field
                 $fields = null;
                 foreach ($files as $file) {
                     if (empty($fields)) {
-                        $fields = $file->getFields();
+                        // Get a list of fields from the model including width and height available through accessors
+                        $fields = array_merge(['width', 'height'], $file->getFields());
                     }
+
                     foreach ($fields as $field) {
                         $data = str_replace('{file:' . $file->file_id . ':' . $field . '}', (string) $file->$field, $data);
                     }
