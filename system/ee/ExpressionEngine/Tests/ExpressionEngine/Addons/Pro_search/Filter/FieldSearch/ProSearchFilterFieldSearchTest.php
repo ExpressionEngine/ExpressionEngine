@@ -25,13 +25,14 @@ class ProSearchFilterFieldSearchTest extends ProSearchTestBase
     {
         parent::setUp();
         
-        // Mock Params
-        $params = $this->createMock('Pro_search_params');
+        // Mock Params - use test class to avoid dynamic property deprecation
+        $params = $this->getMockBuilder('Pro_search_params_test')
+            ->onlyMethods(['get_prefixed', 'site_ids', 'prep', 'get'])
+            ->getMock();
         $params->method('get_prefixed')->willReturn([]); // No search params by default
         $params->method('site_ids')->willReturn([1]);
         $params->method('prep')->willReturnArgument(1);
         $params->method('get')->willReturn('no'); // smart_field_search
-        $params->forget = [];
         
         $this->setMock('pro_search_params', $params);
         
@@ -66,13 +67,14 @@ class ProSearchFilterFieldSearchTest extends ProSearchTestBase
     
     public function testFilterWithNativeField()
     {
-        // Setup Params with search:title
-        $params = $this->createMock('Pro_search_params');
+        // Setup Params with search:title - use test class to avoid dynamic property deprecation
+        $params = $this->getMockBuilder('Pro_search_params_test')
+            ->onlyMethods(['get_prefixed', 'site_ids', 'prep', 'get'])
+            ->getMock();
         $params->method('get_prefixed')->willReturn(['search:title' => 'test']);
         $params->method('site_ids')->willReturn([1]);
         $params->method('prep')->willReturn('test');
         $params->method('get')->willReturn('no');
-        $params->forget = [];
         
         $this->setMock('pro_search_params', $params);
         

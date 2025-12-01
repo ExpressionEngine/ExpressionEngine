@@ -25,12 +25,13 @@ class ProSearchFilterDistanceTest extends ProSearchTestBase
     {
         parent::setUp();
         
-        // Mock Params
-        $params = $this->createMock('Pro_search_params');
+        // Mock Params - use test class to avoid dynamic property deprecation
+        $params = $this->getMockBuilder('Pro_search_params_test')
+            ->onlyMethods(['get_prefixed', 'site_ids', 'get'])
+            ->getMock();
         $params->method('get_prefixed')->willReturn([]); // No distance params by default
         $params->method('site_ids')->willReturn([1]);
         $params->method('get')->willReturn('pro_search_distance'); // orderby
-        $params->forget = [];
         
         $this->setMock('pro_search_params', $params);
         
@@ -64,10 +65,11 @@ class ProSearchFilterDistanceTest extends ProSearchTestBase
     public function testFilterMissingRequiredParams()
     {
         // Missing 'to' param
-        $params = $this->createMock('Pro_search_params');
+        $params = $this->getMockBuilder('Pro_search_params_test')
+            ->onlyMethods(['get_prefixed', 'site_ids'])
+            ->getMock();
         $params->method('get_prefixed')->willReturn(['distance:from' => '40.7128|-74.0060']);
         $params->method('site_ids')->willReturn([1]);
-        $params->forget = [];
         
         $this->setMock('pro_search_params', $params);
         
@@ -81,7 +83,9 @@ class ProSearchFilterDistanceTest extends ProSearchTestBase
     public function testFilterWithSingleField()
     {
         // Setup Params with distance:from and distance:to
-        $params = $this->createMock('Pro_search_params');
+        $params = $this->getMockBuilder('Pro_search_params_test')
+            ->onlyMethods(['get_prefixed', 'site_ids', 'get'])
+            ->getMock();
         $params->method('get_prefixed')->willReturn([
             'distance:from' => '40.7128|-74.0060',
             'distance:to' => 'location_field',
@@ -90,7 +94,6 @@ class ProSearchFilterDistanceTest extends ProSearchTestBase
         ]);
         $params->method('site_ids')->willReturn([1]);
         $params->method('get')->willReturn('pro_search_distance');
-        $params->forget = [];
         
         $this->setMock('pro_search_params', $params);
         
@@ -161,8 +164,10 @@ class ProSearchFilterDistanceTest extends ProSearchTestBase
     
     public function testFilterWithTwoFields()
     {
-        // Setup Params with two separate lat/long fields
-        $params = $this->createMock('Pro_search_params');
+        // Setup Params with two separate lat/long fields - use test class to avoid dynamic property deprecation
+        $params = $this->getMockBuilder('Pro_search_params_test')
+            ->onlyMethods(['get_prefixed', 'site_ids', 'get'])
+            ->getMock();
         $params->method('get_prefixed')->willReturn([
             'distance:from' => '40.7128|-74.0060',
             'distance:to' => 'lat_field|long_field',
@@ -170,7 +175,6 @@ class ProSearchFilterDistanceTest extends ProSearchTestBase
         ]);
         $params->method('site_ids')->willReturn([1]);
         $params->method('get')->willReturn('pro_search_distance');
-        $params->forget = [];
         
         $this->setMock('pro_search_params', $params);
         
@@ -231,8 +235,10 @@ class ProSearchFilterDistanceTest extends ProSearchTestBase
     
     public function testFixedOrder()
     {
-        // Test fixed_order when results exist
-        $params = $this->createMock('Pro_search_params');
+        // Test fixed_order when results exist - use test class to avoid dynamic property deprecation
+        $params = $this->getMockBuilder('Pro_search_params_test')
+            ->onlyMethods(['get_prefixed', 'site_ids', 'get'])
+            ->getMock();
         $params->method('get_prefixed')->willReturn([
             'distance:from' => '40.7128|-74.0060',
             'distance:to' => 'location_field'
@@ -300,8 +306,10 @@ class ProSearchFilterDistanceTest extends ProSearchTestBase
     
     public function testResults()
     {
-        // First run filter to populate _results
-        $params = $this->createMock('Pro_search_params');
+        // First run filter to populate _results - use test class to avoid dynamic property deprecation
+        $params = $this->getMockBuilder('Pro_search_params_test')
+            ->onlyMethods(['get_prefixed', 'site_ids', 'get'])
+            ->getMock();
         $params->method('get_prefixed')->willReturn([
             'distance:from' => '40.7128|-74.0060',
             'distance:to' => 'location_field'
@@ -322,11 +330,11 @@ class ProSearchFilterDistanceTest extends ProSearchTestBase
         
         $this->setMock('pro_search_fields', $fields);
         
-        // Mock Settings for prefix
-        $settings = $this->getMockBuilder('stdClass')
-            ->addMethods(['get'])
+        // Mock Settings for prefix - use test class to avoid dynamic property deprecation
+        $settings = $this->getMockBuilder('Pro_search_settings_test')
+            ->onlyMethods(['get'])
             ->getMock();
-        $settings->prefix = 'pro_search_';
+        $settings->method('get')->willReturn('');
         ee()->setMock('pro_search_settings', $settings);
         
         // Setup DB

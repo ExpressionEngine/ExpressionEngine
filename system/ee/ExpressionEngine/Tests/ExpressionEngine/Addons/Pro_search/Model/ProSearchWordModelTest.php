@@ -23,7 +23,7 @@ class ProSearchWordModelTest extends ProSearchTestBase
         // Mock Multibyte (used in constructor/methods)
         $mb = new class {
             public function strlen($str) { return strlen($str); }
-            public function substr($str, $start, $len = null) { return substr($str, $start, $len); }
+            public function substr($str, $start, ?int $len = null) { return substr($str, $start, $len); }
         };
         $this->setMock('pro_multibyte', $mb);
         
@@ -142,6 +142,121 @@ class ProSearchWordModelTest extends ProSearchTestBase
         $this->setMock('db', $db);
         
         $this->model->replace_batch([['col' => 'val']]);
+    }
+    
+    public function testFind()
+    {
+        // Mock DB for find() - exact match
+        $rows = [
+            ['language' => 'en', 'word' => 'test'],
+            ['language' => 'en', 'word' => 'testing']
+        ];
+        
+        $db = $this->createMock('ProSearchDbMock');
+        $db->method('select')->willReturnSelf();
+        $db->method('from')->willReturnSelf();
+        $db->method('where')->willReturnSelf();
+        $db->method('order_by')->willReturnSelf();
+        $db->method('get')->willReturn(new eeDbResultMock($rows));
+        
+        $this->setMock('db', $db);
+        
+        $result = $this->model->find('test', 'en');
+        $this->assertIsArray($result);
+        $this->assertCount(2, $result);
+        $this->assertEquals('test', $result[0]['word']);
+    }
+    
+    public function testFindWithWildcard()
+    {
+        // Mock DB for find() - LIKE match (with %)
+        $rows = [
+            ['language' => 'en', 'word' => 'test'],
+            ['language' => 'en', 'word' => 'testing']
+        ];
+        
+        $db = $this->createMock('ProSearchDbMock');
+        $db->method('select')->willReturnSelf();
+        $db->method('from')->willReturnSelf();
+        $db->method('where')->willReturnSelf();
+        $db->method('order_by')->willReturnSelf();
+        $db->method('get')->willReturn(new eeDbResultMock($rows));
+        
+        $this->setMock('db', $db);
+        
+        $result = $this->model->find('test%', 'en');
+        $this->assertIsArray($result);
+    }
+    
+    public function testDelete()
+    {
+        // Mock DB for delete()
+        $db = $this->createMock('ProSearchDbMock');
+        // where() is called 3 times in order: site_id, language, word
+        $db->expects($this->exactly(3))->method('where')->willReturnSelf();
+        $db->expects($this->once())->method('delete')->with($this->stringContains('pro_search_words'));
+        
+        $this->setMock('db', $db);
+        
+        $this->model->delete('test', 'en');
+    }
+    
+    public function testDeleteWithoutLang()
+    {
+        // Mock DB for delete() without language (should use false)
+        $db = $this->createMock('ProSearchDbMock');
+        // where() is called 3 times: site_id, language (false), word
+        $db->expects($this->exactly(3))->method('where')->willReturnSelf();
+        $db->expects($this->once())->method('delete')->with($this->stringContains('pro_search_words'));
+        
+        $this->setMock('db', $db);
+        
+        $this->model->delete('test', false);
+    }
+    
+    public function testLangCount()
+    {
+        // Mock DB for get_lang_count()
+        $rows = [
+            ['language' => 'en', 'num' => 100],
+            ['language' => 'fr', 'num' => 50],
+            ['language' => 'de', 'num' => 25]
+        ];
+        
+        $db = $this->createMock('ProSearchDbMock');
+        $db->method('select')->willReturnSelf();
+        $db->method('from')->willReturnSelf();
+        $db->method('where')->willReturnSelf();
+        $db->method('group_by')->willReturnSelf();
+        $db->method('order_by')->willReturnSelf();
+        $db->method('get')->willReturn(new eeDbResultMock($rows));
+        
+        $this->setMock('db', $db);
+        
+        $result = $this->model->get_lang_count();
+        $this->assertIsArray($result);
+        $this->assertEquals(100, $result['en']);
+        $this->assertEquals(50, $result['fr']);
+        $this->assertEquals(25, $result['de']);
+    }
+    
+    public function testInsertIgnore()
+    {
+        // Mock DB for insert_ignore()
+        $data = [
+            'site_id' => 1,
+            'language' => 'en',
+            'word' => 'test',
+            'length' => 4
+        ];
+        
+        $db = $this->createMock('ProSearchDbMock');
+        $db->method('insert_string')->willReturn("INSERT INTO exp_pro_search_words (site_id, language, word, length) VALUES (1, 'en', 'test', 4)");
+        $db->expects($this->once())->method('query')->with($this->stringContains('INSERT IGNORE'));
+        
+        $this->setMock('db', $db);
+        
+        $this->model->insert_ignore($data);
     }
 }
 

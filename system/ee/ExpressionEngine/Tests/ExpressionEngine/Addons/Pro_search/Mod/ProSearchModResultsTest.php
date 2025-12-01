@@ -76,9 +76,9 @@ class ProSearchModResultsTest extends ProSearchTestBase
         $functions->method('create_url')->willReturn('http://example.com');
         ee()->setMock('functions', $functions);
         
-        // Mock URI (needed by Channel module)
-        $uri = $this->getMockBuilder('stdClass')
-            ->addMethods(['uri_string'])
+        // Mock URI (needed by Channel module) - use test class to avoid dynamic property deprecation
+        $uri = $this->getMockBuilder('Uri_test')
+            ->onlyMethods(['uri_string'])
             ->getMock();
         $uri->method('uri_string')->willReturn('/search/results');
         $uri->uri_string = '/search/results'; // Property version (used by Channel module)
@@ -86,17 +86,17 @@ class ProSearchModResultsTest extends ProSearchTestBase
         $uri->query_string = '';
         ee()->setMock('uri', $uri);
         
-        // Mock Pagination (needed by Channel module)
+        // Mock Pagination (needed by Channel module) - use test class to avoid dynamic property deprecation
         $pagination = $this->getMockBuilder('stdClass')
             ->addMethods(['create', 'prepare'])
             ->getMock();
-        $paginationObj = $this->getMockBuilder('stdClass')
-            ->addMethods(['prepare'])
+        $paginationObj = $this->getMockBuilder('Pagination_test')
+            ->onlyMethods(['prepare'])
             ->getMock();
         $paginationObj->method('prepare')->will($this->returnArgument(0));
         $paginationObj->uri_string = '/search/results';
         $paginationObj->paginate = false; // Property needed by Channel module
-        $paginationObj->field_pagination = false;
+        // Properties are already declared in Pagination_test class
         $pagination->method('create')->willReturn($paginationObj);
         $pagination->method('prepare')->will($this->returnArgument(0));
         ee()->setMock('pagination', $pagination);

@@ -40,9 +40,8 @@ class ProSearchModDisplayTest extends ProSearchTestBase
         $params->method('get_vars')->willReturn([]);
         ee()->setMock('pro_search_params', $params);
         
-        // Mock Settings
-        $settings = ee()->pro_search_settings;
-        $settings->prefix = 'pro_search_';
+        // Mock Settings - already set in parent setUp(), but ensure it uses test class
+        // The parent setUp() already sets pro_search_settings with Pro_search_settings_test
         
         // Mock Functions
         $functions = $this->getMockBuilder('stdClass')

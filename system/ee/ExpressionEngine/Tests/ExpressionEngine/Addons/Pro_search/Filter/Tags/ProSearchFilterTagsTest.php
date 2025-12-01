@@ -35,25 +35,14 @@ class ProSearchFilterTagsTest extends ProSearchTestBase
         }
         ee()->setMock('load', $load);
         
-        // Mock Params
-        $params = $this->createMock('stdClass');
-        if (!class_exists('Pro_search_params')) {
-             eval('class Pro_search_params { 
-                 public $forget = [];
-                 public function get($key=null, $default=null){ return $default; } 
-                 public function set($key, $val){} 
-                 public function explode($str){ return [[$str], true]; } 
-                 public function site_ids(){ return [1]; } 
-                 public function get_prefixed($p, $s=false){ return []; } 
-                 public function prep($key, $val){ return $val; }
-             }');
-        }
-        $params = $this->createMock('Pro_search_params');
-        $params->forget = [];
-        
+        // Mock Params - use test class to avoid dynamic property deprecation
+        $params = $this->getMockBuilder('Pro_search_params_test')
+            ->onlyMethods(['get_prefixed', 'get', 'set', 'explode', 'site_ids', 'prep'])
+            ->getMock();
         // Default behavior for get_prefixed (no tags)
         $params->method('get_prefixed')->willReturn([]);
         $params->method('get')->willReturn(null);
+        $params->method('set')->willReturn(null);
         $params->method('explode')->willReturn([[], true]);
         $params->method('site_ids')->willReturn([1]);
         $params->method('prep')->willReturnArgument(1);
@@ -111,8 +100,10 @@ class ProSearchFilterTagsTest extends ProSearchTestBase
         $load->method('library')->willReturn(null);
         ee()->setMock('load', $load);
         
-        // Setup Params to return tag_id
-        $params = $this->createMock('Pro_search_params');
+        // Setup Params to return tag_id - use test class to avoid dynamic property deprecation
+        $params = $this->getMockBuilder('Pro_search_params_test')
+            ->onlyMethods(['get_prefixed', 'prep', 'explode', 'site_ids'])
+            ->getMock();
         $params->method('get_prefixed')->will($this->returnCallback(function($prefix) {
             if ($prefix === 'tag_id') {
                 return ['tag_id:1' => '10|20']; // Two tag IDs
@@ -122,7 +113,6 @@ class ProSearchFilterTagsTest extends ProSearchTestBase
         $params->method('prep')->willReturn('10|20');
         $params->method('explode')->willReturn([['10', '20'], true]); // IDs, in=true
         $params->method('site_ids')->willReturn([1]);
-        $params->forget = [];
         
         $this->setMock('pro_search_params', $params);
         
@@ -167,8 +157,10 @@ class ProSearchFilterTagsTest extends ProSearchTestBase
         $load->method('library')->willReturn(null);
         ee()->setMock('load', $load);
         
-        // Setup Params to return tag_name
-        $params = $this->createMock('Pro_search_params');
+        // Setup Params to return tag_name - use test class to avoid dynamic property deprecation
+        $params = $this->getMockBuilder('Pro_search_params_test')
+            ->onlyMethods(['get_prefixed', 'get', 'explode', 'site_ids', 'prep'])
+            ->getMock();
         $params->method('get_prefixed')->will($this->returnCallback(function($prefix) {
             if ($prefix === 'tag_name') {
                 return ['tag_name:1' => 'news|blog']; // Two tag names
@@ -184,7 +176,6 @@ class ProSearchFilterTagsTest extends ProSearchTestBase
         }));
         $params->method('site_ids')->willReturn([1]);
         $params->method('prep')->willReturnArgument(1);
-        $params->forget = [];
         
         $this->setMock('pro_search_params', $params);
         
@@ -252,8 +243,10 @@ class ProSearchFilterTagsTest extends ProSearchTestBase
         $load->method('library')->willReturn(null);
         ee()->setMock('load', $load);
         
-        // Setup Params to return tag_id
-        $params = $this->createMock('Pro_search_params');
+        // Setup Params to return tag_id - use test class to avoid dynamic property deprecation
+        $params = $this->getMockBuilder('Pro_search_params_test')
+            ->onlyMethods(['get_prefixed', 'prep', 'explode', 'site_ids'])
+            ->getMock();
         $params->method('get_prefixed')->will($this->returnCallback(function($prefix) {
             if ($prefix === 'tag_id') {
                 return ['tag_id:1' => '10'];
@@ -263,7 +256,6 @@ class ProSearchFilterTagsTest extends ProSearchTestBase
         $params->method('prep')->willReturn('10');
         $params->method('explode')->willReturn([['10'], true]);
         $params->method('site_ids')->willReturn([1]);
-        $params->forget = [];
         
         $this->setMock('pro_search_params', $params);
         

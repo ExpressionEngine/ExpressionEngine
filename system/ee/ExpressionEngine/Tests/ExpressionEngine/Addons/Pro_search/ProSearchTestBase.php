@@ -58,7 +58,7 @@ if (!class_exists('eeDbResultMock')) {
         {
             return $this->rows;
         }
-        public function row($column = null)
+        public function row(?string $column = null)
         {
             if (empty($this->rows)) {
                 return null;
@@ -88,6 +88,57 @@ if (!class_exists('eeDbResultMock')) {
 
 // Include the EE mock object
 require_once __DIR__ . '/../../../eeObjectMock.php';
+
+// Helper classes to avoid dynamic property deprecations in PHP 8.2+
+if (!class_exists('Pro_search_params_test')) {
+    class Pro_search_params_test
+    {
+        public $forget = [];
+        public function get(?string $key = null, $default = null) { return $default; }
+        public function set($key, $val) {}
+        public function explode($str) { return [[$str], true]; }
+        public function site_ids() { return [1]; }
+        public function get_prefixed($p, $s = false) { return []; }
+        public function prep($key, $val) { return $val; }
+        public function implode($arr) { return implode('|', $arr); }
+        public function merge($arr) { return []; }
+        public function overwrite($arr) {}
+        public function reset() {}
+    }
+}
+
+if (!class_exists('Pro_search_settings_test')) {
+    class Pro_search_settings_test
+    {
+        public $prefix = 'pro_search_';
+        public function get($key) { return ''; }
+        public function stop_words() { return []; }
+        public function ignore_words() { return []; }
+    }
+}
+
+if (!class_exists('Uri_test')) {
+    class Uri_test
+    {
+        public $page_query_string = '';
+        public $query_string = '';
+        public $uri_string = '';
+        public function uri_string() { return $this->uri_string; }
+    }
+}
+
+if (!class_exists('Pagination_test')) {
+    class Pagination_test
+    {
+        public $paginate = false;
+        public $uri_string = '';
+        public $field_pagination = false;
+        public $per_page = 10;
+        public $offset = 0;
+        public function create() { return $this; }
+        public function prepare($str) { return $str; }
+    }
+}
 
 // Custom FakeDb to return result with num_rows property
 class ProSearchFakeDb extends FakeDb
@@ -130,8 +181,8 @@ if (!class_exists('ProSearchDbMock')) {
         
         public function like($field, $match = '', $side = 'both') { return $this; }
         public function or_like($field, $match = '', $side = 'both') { return $this; }
-        public function where_in($field = null, $values = null, $escape = null) { return $this; }
-        public function where_not_in($field = null, $values = null, $escape = null) { return $this; }
+        public function where_in(?string $field = null, $values = null, $escape = null) { return $this; }
+        public function where_not_in(?string $field = null, $values = null, $escape = null) { return $this; }
         public function distinct($val = true) { return $this; }
         public function group_by($by) { return $this; }
         public function insert_string($table, $data) { return "INSERT INTO $table ..."; }
@@ -202,10 +253,10 @@ class ProSearchTestBase extends TestCase
 
         // Mock Input with additional methods
         $input = new class extends eeSingletonInputMock {
-            public function server($index = '', $xss_clean = false) {
+            public function server(string $index = '', bool $xss_clean = false) {
                 return '';
             }
-            public function post($index = '', $xss_clean = false) {
+            public function post(string $index = '', bool $xss_clean = false) {
                 return null;
             }
         };
@@ -227,11 +278,14 @@ class ProSearchTestBase extends TestCase
         ee()->setMock('extensions', $extensions);
 
         // Mock Pro Search Settings (often used)
-        $settings = $this->getMockBuilder('stdClass')
-            ->addMethods(['get'])
+        // Ensure stop_words() and ignore_words() return arrays for PHP 7.4 compatibility
+        // Use test class with prefix property to avoid dynamic property deprecation in PHP 8.2+
+        $settings = $this->getMockBuilder('Pro_search_settings_test')
+            ->onlyMethods(['get', 'stop_words', 'ignore_words'])
             ->getMock();
         $settings->method('get')->willReturn('');
-        $settings->prefix = 'pro_search_';
+        $settings->method('stop_words')->willReturn([]); // Return empty array for PHP 7.4 compatibility
+        $settings->method('ignore_words')->willReturn([]); // Return empty array for PHP 7.4 compatibility
         ee()->setMock('pro_search_settings', $settings);
 
         // Mock Pro Multibyte (often used)

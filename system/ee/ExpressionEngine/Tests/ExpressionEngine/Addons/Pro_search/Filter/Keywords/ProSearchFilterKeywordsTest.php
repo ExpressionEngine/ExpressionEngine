@@ -61,14 +61,22 @@ class ProSearchFilterKeywordsTest extends ProSearchTestBase
         $idxModel->method('table')->willReturn('exp_pro_search_indexes');
         $this->setMock('pro_search_index_model', $idxModel);
         
-        // Mock Settings
-        $settings = $this->createMock('stdClass');
-        if (!class_exists('Pro_search_settings')) {
-             eval('class Pro_search_settings { public function get($key){} public $prefix = "pro_search_"; }');
+        // Mock Settings - need to ensure stop_words() returns an array for PHP 7.4 compatibility
+        // Create a test class with prefix property to avoid dynamic property deprecation in PHP 8.2+
+        if (!class_exists('Pro_search_settings_test')) {
+            eval('class Pro_search_settings_test {
+                public $prefix = "pro_search_";
+                public function get($key) { return "n"; }
+                public function stop_words() { return []; }
+                public function ignore_words() { return []; }
+            }');
         }
-        $settings = $this->createMock('Pro_search_settings');
+        $settings = $this->getMockBuilder('Pro_search_settings_test')
+            ->onlyMethods(['get', 'stop_words', 'ignore_words'])
+            ->getMock();
         $settings->method('get')->willReturn('n');
-        $settings->prefix = 'pro_search_';
+        $settings->method('stop_words')->willReturn([]); // Return empty array instead of null for PHP 7.4
+        $settings->method('ignore_words')->willReturn([]); // Return empty array instead of null
         $this->setMock('pro_search_settings', $settings);
         
         // Mock Words
@@ -109,11 +117,13 @@ class ProSearchFilterKeywordsTest extends ProSearchTestBase
         $db->method('where')->willReturnSelf();
         $db->method('having')->willReturnSelf();
         
-        $result = $this->createMock('eeDbResultMock');
-        $result->num_rows = 1;
-        $result->method('result_array')->willReturn([
-            ['entry_id' => 10, 'collection_id' => 1, 'score' => 5]
-        ]);
+        // Use ProSearchDbResult with mocked result() method to avoid dynamic property deprecation
+        $result = $this->getMockBuilder('ProSearchDbResult')
+            ->setConstructorArgs([[
+                ['entry_id' => 10, 'collection_id' => 1, 'score' => 5]
+            ]])
+            ->onlyMethods(['result'])
+            ->getMock();
         $result->method('result')->willReturn([
             (object)['entry_id' => 10, 'collection_id' => 1, 'score' => 5, 'index_text' => 'test content']
         ]);
@@ -136,9 +146,8 @@ class ProSearchFilterKeywordsTest extends ProSearchTestBase
         $db->method('where_in')->willReturnSelf();
         $db->method('where')->willReturnSelf();
         
-        $result = $this->createMock('eeDbResultMock');
-        $result->num_rows = 0; // No results
-        $result->method('result_array')->willReturn([]);
+        // Use ProSearchDbResult to avoid dynamic property deprecation
+        $result = new ProSearchDbResult([]); // No results
         
         $db->method('get')->willReturn($result);
         

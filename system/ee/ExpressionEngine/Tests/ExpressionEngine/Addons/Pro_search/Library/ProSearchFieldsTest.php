@@ -336,6 +336,82 @@ class ProSearchFieldsTest extends ProSearchTestBase
         $this->assertEquals(20, $colId);
     }
     
+    public function testGridColType()
+    {
+        // Mock DB for grid columns
+        $db = $this->createMock('ProSearchDbMock');
+        $db->method('select')->willReturnSelf();
+        $db->method('from')->willReturnSelf();
+        $db->method('where')->willReturnSelf();
+        
+        $result = $this->createMock('eeDbResultMock');
+        $result->method('result')->willReturn([
+            (object)['col_id' => 10, 'col_name' => 'test_col', 'col_type' => 'text']
+        ]);
+        
+        $db->method('get')->willReturn($result);
+        ee()->setMock('db', $db);
+        
+        $colType = $this->fields->grid_col_type(5, 'test_col');
+        $this->assertEquals('text', $colType);
+    }
+    
+    public function testGridColTypeNotFound()
+    {
+        // Mock DB for grid columns - return empty result
+        $db = $this->createMock('ProSearchDbMock');
+        $db->method('select')->willReturnSelf();
+        $db->method('from')->willReturnSelf();
+        $db->method('where')->willReturnSelf();
+        
+        $result = $this->createMock('eeDbResultMock');
+        $result->method('result')->willReturn([]);
+        
+        $db->method('get')->willReturn($result);
+        ee()->setMock('db', $db);
+        
+        $colType = $this->fields->grid_col_type(5, 'nonexistent_col');
+        $this->assertFalse($colType);
+    }
+    
+    public function testMatrixColType()
+    {
+        // Mock DB for matrix columns
+        $db = $this->createMock('ProSearchDbMock');
+        $db->method('select')->willReturnSelf();
+        $db->method('from')->willReturnSelf();
+        $db->method('where')->willReturnSelf();
+        
+        $result = $this->createMock('eeDbResultMock');
+        $result->method('result')->willReturn([
+            (object)['col_id' => 20, 'col_name' => 'matrix_col', 'col_type' => 'textarea']
+        ]);
+        
+        $db->method('get')->willReturn($result);
+        ee()->setMock('db', $db);
+        
+        $colType = $this->fields->matrix_col_type(5, 'matrix_col');
+        $this->assertEquals('textarea', $colType);
+    }
+    
+    public function testMatrixColTypeNotFound()
+    {
+        // Mock DB for matrix columns - return empty result
+        $db = $this->createMock('ProSearchDbMock');
+        $db->method('select')->willReturnSelf();
+        $db->method('from')->willReturnSelf();
+        $db->method('where')->willReturnSelf();
+        
+        $result = $this->createMock('eeDbResultMock');
+        $result->method('result')->willReturn([]);
+        
+        $db->method('get')->willReturn($result);
+        ee()->setMock('db', $db);
+        
+        $colType = $this->fields->matrix_col_type(5, 'nonexistent_col');
+        $this->assertFalse($colType);
+    }
+    
     public function testSqlExactMatch()
     {
         $sql = $this->fields->sql('field_id_5', '=exact');

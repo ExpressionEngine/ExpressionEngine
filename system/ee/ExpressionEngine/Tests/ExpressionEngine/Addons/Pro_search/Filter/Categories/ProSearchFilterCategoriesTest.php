@@ -20,24 +20,17 @@ class ProSearchFilterCategoriesTest extends ProSearchTestBase
     {
         parent::setUp();
         
-        // Mock Params
-        $params = $this->createMock('stdClass');
-        if (!class_exists('Pro_search_params')) {
-             eval('class Pro_search_params { 
-                 public $forget = [];
-                 public function get($key=null, $default=null){} 
-                 public function set($key, $val){} 
-                 public function explode($str){ return [[$str], true]; } 
-                 public function site_ids(){ return [1]; } 
-                 public function get_prefixed($p, $s=false){ return []; } 
-                 public function prep($key, $val){ return $val; }
-             }');
-        }
-        $params = $this->createMock('Pro_search_params');
-        $params->forget = [];
-        
+        // Mock Params - use test class to avoid dynamic property deprecation
+        $params = $this->getMockBuilder('Pro_search_params_test')
+            ->onlyMethods(['get_prefixed', 'get', 'set', 'explode', 'site_ids', 'prep'])
+            ->getMock();
         // Default behavior for get_prefixed (no categories)
         $params->method('get_prefixed')->willReturn([]);
+        $params->method('get')->willReturn(null);
+        $params->method('set')->willReturn(null);
+        $params->method('explode')->willReturn([[], true]);
+        $params->method('site_ids')->willReturn([1]);
+        $params->method('prep')->willReturnArgument(1);
         
         $this->setMock('pro_search_params', $params);
         
@@ -61,13 +54,14 @@ class ProSearchFilterCategoriesTest extends ProSearchTestBase
     
     public function testFilterWithCategory()
     {
-        // Setup Params to return category
-        $params = $this->createMock('Pro_search_params');
+        // Setup Params to return category - use test class to avoid dynamic property deprecation
+        $params = $this->getMockBuilder('Pro_search_params_test')
+            ->onlyMethods(['get_prefixed', 'prep', 'explode', 'site_ids'])
+            ->getMock();
         $params->method('get_prefixed')->willReturn(['category:1' => '10']); // group 1, cat id 10
         $params->method('prep')->willReturn('10');
         $params->method('explode')->willReturn([['10'], true]); // IDs, in=true
         $params->method('site_ids')->willReturn([1]);
-        $params->forget = [];
         
         $this->setMock('pro_search_params', $params);
         

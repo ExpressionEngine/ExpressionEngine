@@ -25,12 +25,13 @@ class ProSearchFilterRelationshipsTest extends ProSearchTestBase
     {
         parent::setUp();
         
-        // Mock Params
-        $params = $this->createMock('Pro_search_params');
+        // Mock Params - use test class to avoid dynamic property deprecation
+        $params = $this->getMockBuilder('Pro_search_params_test')
+            ->onlyMethods(['get_prefixed', 'site_ids', 'explode'])
+            ->getMock();
         $params->method('get_prefixed')->willReturn([]); // No relationship params by default
         $params->method('site_ids')->willReturn([1]);
         $params->method('explode')->willReturn([[], true]);
-        $params->forget = [];
         
         $this->setMock('pro_search_params', $params);
         
