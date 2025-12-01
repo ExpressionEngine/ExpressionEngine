@@ -838,13 +838,22 @@ class File_field
         }
 
         if (strpos((string) $data, 'file:') !== false) {
-            if (preg_match_all('/{file\:(\d+)\:url}/', (string) $data, $matches, PREG_SET_ORDER)) {
+            if (preg_match_all('/{file\:(\d+)\:([_a-z]+)}/', (string) $data, $matches, PREG_SET_ORDER)) {
                 $file_ids = [];
                 foreach ($matches as $match) {
                     $file_ids[] = $match[1];
                 }
                 $files = ee('Model')->get('File', $file_ids)->with('UploadDestination')->all();
+                $fields = null;
                 foreach ($files as $file) {
+                    if (empty($fields)) {
+                        // Get a list of fields from the model including width and height available through accessors
+                        $fields = array_merge(['width', 'height'], $file->getFields());
+                    }
+
+                    foreach ($fields as $field) {
+                        $data = str_replace('{file:' . $file->file_id . ':' . $field . '}', (string) $file->$field, $data);
+                    }
                     $data = str_replace('{file:' . $file->file_id . ':url}', (string) $file->getAbsoluteURL(), $data);
                 }
             }
