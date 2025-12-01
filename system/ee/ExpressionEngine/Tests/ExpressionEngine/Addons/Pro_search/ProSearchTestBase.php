@@ -105,6 +105,11 @@ class ProSearchFakeDb extends FakeDb
         $result = parent::query($sql);
         return new ProSearchDbResult($result->result_array());
     }
+    
+    public function escape_like_str($str)
+    {
+        return addcslashes($str, '%_');
+    }
 }
 
 class ProSearchDbResult extends eeDbResultMock
@@ -130,8 +135,9 @@ if (!class_exists('ProSearchDbMock')) {
         public function distinct($val = true) { return $this; }
         public function group_by($by) { return $this; }
         public function insert_string($table, $data) { return "INSERT INTO $table ..."; }
-        public function escape_str($str, $like = false) { return $str; }
-        public function join($table, $cond, $type = '') { return $this; }
+            public function escape_str($str, $like = false) { return $str; }
+            public function escape_like_str($str) { return addcslashes($str, '%_'); }
+            public function join($table, $cond, $type = '') { return $this; }
         public function having($key, $val = '', $escape = true) { return $this; }
         public function field_exists($field, $table) { return true; }
         
