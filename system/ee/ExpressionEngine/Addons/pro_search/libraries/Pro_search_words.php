@@ -211,7 +211,7 @@ class Pro_search_words
      */
     public function plural($word)
     {
-        return $this->inflect($word, 'plural');
+        return $this->_inflect($word, 'plural');
     }
 
     /**
@@ -219,7 +219,7 @@ class Pro_search_words
      */
     public function singular($word)
     {
-        return $this->inflect($word, 'singular');
+        return $this->_inflect($word, 'singular');
     }
 
     /**
