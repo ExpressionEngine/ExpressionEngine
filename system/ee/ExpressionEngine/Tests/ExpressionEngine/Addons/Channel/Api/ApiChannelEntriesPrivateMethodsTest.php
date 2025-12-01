@@ -106,7 +106,7 @@ class ApiChannelEntriesPrivateMethodsTest extends ChannelApiTestBase
         // Call _prepare_data using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_prepare_data');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invokeArgs($this->api, [&$data, &$mod_data, false]);
 
         // Verify category processing
@@ -189,7 +189,7 @@ class ApiChannelEntriesPrivateMethodsTest extends ChannelApiTestBase
         // Call _prepare_data using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_prepare_data');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $method->invokeArgs($this->api, [&$data, &$mod_data, false]);
 
         // Verify versioning is enabled when channel has it disabled
@@ -259,7 +259,7 @@ class ApiChannelEntriesPrivateMethodsTest extends ChannelApiTestBase
         // Call _prepare_data using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_prepare_data');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $method->invokeArgs($this->api, [&$data, &$mod_data, false]);
 
         // Verify invisible characters are removed
@@ -286,7 +286,7 @@ class ApiChannelEntriesPrivateMethodsTest extends ChannelApiTestBase
         // Call _recursive_ascii_to_entities using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_recursive_ascii_to_entities');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invokeArgs($this->api, [&$testArray]);
 
         // Verify HTML entities are converted
@@ -318,7 +318,7 @@ class ApiChannelEntriesPrivateMethodsTest extends ChannelApiTestBase
         // Call _recursive_ascii_to_entities using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_recursive_ascii_to_entities');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invokeArgs($this->api, [&$testArray]);
 
         // Verify nested HTML entities are converted
@@ -351,7 +351,7 @@ class ApiChannelEntriesPrivateMethodsTest extends ChannelApiTestBase
         // Call _recursive_ascii_to_entities using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_recursive_ascii_to_entities');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invokeArgs($this->api, [&$testArray]);
 
         // Verify string fields are processed
@@ -438,7 +438,7 @@ class ApiChannelEntriesPrivateMethodsTest extends ChannelApiTestBase
         // Call _sync_related using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_sync_related');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $method->invokeArgs($this->api, [&$meta, &$data]);
 
         // Verify categories were inserted
@@ -540,7 +540,7 @@ class ApiChannelEntriesPrivateMethodsTest extends ChannelApiTestBase
         // Call _sync_related using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_sync_related');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $method->invokeArgs($this->api, [&$meta, &$data]);
 
         // Verify versioning data was inserted
@@ -642,7 +642,7 @@ class ApiChannelEntriesPrivateMethodsTest extends ChannelApiTestBase
         // Call _sync_related using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_sync_related');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $method->invokeArgs($this->api, [&$meta, &$data]);
 
         // Verification is implicit through mock expectations
@@ -685,7 +685,7 @@ class ApiChannelEntriesPrivateMethodsTest extends ChannelApiTestBase
         // Call _set_mod_data using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_set_mod_data');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $method->invokeArgs($this->api, [&$meta, &$data, &$mod_data]);
 
         // Verification is implicit through mock expectations
@@ -748,7 +748,7 @@ class ApiChannelEntriesPrivateMethodsTest extends ChannelApiTestBase
         // Call _get_custom_fields using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_get_custom_fields');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invoke($this->api);
 
         // Verify result structure
@@ -839,7 +839,7 @@ class ApiChannelEntriesPrivateMethodsTest extends ChannelApiTestBase
         // Call _get_custom_fields using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_get_custom_fields');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invoke($this->api);
 
         // Verify hook was executed and modified the result
@@ -894,7 +894,7 @@ class ApiChannelEntriesPrivateMethodsTest extends ChannelApiTestBase
         // Call _get_custom_fields using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_get_custom_fields');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invoke($this->api);
 
         // Verify empty result

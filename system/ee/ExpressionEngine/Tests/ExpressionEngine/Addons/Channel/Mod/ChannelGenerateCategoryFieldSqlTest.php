@@ -13,7 +13,7 @@ class ChannelGenerateCategoryFieldSqlTest extends ChannelTestBase
         // Make private method accessible
         $ref = new ReflectionClass($this->channel);
         $this->method = $ref->getMethod('generateCategoryFieldSQL');
-        $this->method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($this->method);
 
         // Set up basic mocks needed for the method
         $this->setupMocks();
@@ -248,10 +248,10 @@ class ChannelGenerateCategoryFieldSqlTest extends ChannelTestBase
         if (method_exists($this->channel, 'cacheCategoryFieldModels')) {
             $ref = new ReflectionClass($this->channel);
             $cacheMethod = $ref->getMethod('cacheCategoryFieldModels');
-            $cacheMethod->setAccessible(true);
+            \TestReflectionHelper::makeMethodAccessible($cacheMethod);
             $originalCacheMethod = $cacheMethod->getClosure($this->channel);
 
-            $cacheMethod->setAccessible(true);
+            \TestReflectionHelper::makeMethodAccessible($cacheMethod);
             $cacheMethod->invoke($this->channel);
             $cacheCalled = true;
         }

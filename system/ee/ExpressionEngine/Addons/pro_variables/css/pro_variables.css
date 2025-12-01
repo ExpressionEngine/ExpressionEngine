@@ -247,12 +247,14 @@
     cursor:grab;
     -webkit-border-radius:3px;
     -moz-border-radius:3px;
-    border-radius:3px
+    border-radius:3px;
+    color: var(--ee-text-primary);
+    font-size: 14px;
 }
 
 .pro-drag-lists ul li:hover {
-    background:#eee;
-    color:#000
+    background:var(--ee-sidebar-bg-active);
+    color:var(--ee-sidebar-text-active);
 }
 
 .pro-drag-lists li.ui-sortable-helper {
@@ -286,6 +288,7 @@
     background:#fff;
     vertical-align:middle;
     margin-right:5px;
+    max-width: 50px;
 
     -webkit-border-radius:3px;
     -moz-border-radius:3px;

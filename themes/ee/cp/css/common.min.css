@@ -21350,7 +21350,8 @@ body[data-theme=dark] .hljs .apache .hljs-attribute {
   content: "\f0cb";
 }
 
-.markItUp .html-underline a:before {
+.markItUp .html-underline a:before,
+.markItUp .html-ins a:before {
   content: "\f0cd";
 }
 
@@ -32715,6 +32716,9 @@ fieldset .field-control #eye {
   padding-right: 30px !important;
   background-size: 8px 12px;
   background-position: right 12px center;
+}
+.select-popup.sort-select, select.sort-select {
+  margin-top: 0;
 }
 .select-popup.select-popup--large, select.select-popup--large {
   height: initial;
@@ -53263,6 +53267,10 @@ body[data-theme=light] .ee-sidebar__items .ee-sidebar__version.ee-sidebar__versi
     margin-bottom: 5px;
     margin-right: 0;
   }
+}
+
+.member-delete-confirm {
+  margin-bottom: 0;
 }
 
 .hidden {

@@ -33,7 +33,7 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('switch_site');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         // Call with site_id = 2
         $result = $method->invoke($this->channelFormLib, 2);
@@ -73,7 +73,7 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('switch_site');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         // Call with site_id = 0
         $result = $method->invoke($this->channelFormLib, 0);
@@ -110,7 +110,7 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('switch_site');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         // Call with large site_id
         $largeSiteId = 999999;
@@ -148,7 +148,7 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('switch_site');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         // Call with negative site_id
         $result = $method->invoke($this->channelFormLib, -1);
@@ -189,7 +189,7 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('switch_site');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         // Call with site_id = 5
         $result = $method->invoke($this->channelFormLib, 5);
@@ -223,7 +223,7 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('switch_site');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         // Call with site_id = 3
         $result = $method->invoke($this->channelFormLib, 3);
@@ -258,7 +258,7 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('switch_site');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         // Call with string site_id (PHP will handle type juggling)
         $result = $method->invoke($this->channelFormLib, '7');
@@ -293,7 +293,7 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('switch_site');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         // Call multiple times with different site_ids
         $result1 = $method->invoke($this->channelFormLib, 1);
@@ -342,7 +342,7 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('switch_site');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         // Call with boolean true (PHP will convert to int 1)
         $result = $method->invoke($this->channelFormLib, true);
@@ -365,7 +365,7 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('switch_site');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         // Should throw an error when trying to access config methods
         $this->expectException(\Error::class);
@@ -389,7 +389,7 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('switch_site');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         // Should propagate the exception from set_item
         $this->expectException(\Exception::class);
@@ -415,7 +415,7 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('switch_site');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         // Should propagate the exception from get_cached_site_prefs
         $this->expectException(\Exception::class);
@@ -445,7 +445,7 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('switch_site');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         // Call with float site_id
         $result = $method->invoke($this->channelFormLib, 2.7);
@@ -482,7 +482,7 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('switch_site');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         // Call with extremely large site_id (beyond normal range)
         $largeSiteId = 999999999999999;
@@ -513,7 +513,7 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('switch_site');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         // Should throw an error when trying to call non-existent set_item method
         $this->expectException(\Error::class);
@@ -536,7 +536,7 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('switch_site');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         // Should throw an error when trying to call non-existent get_cached_site_prefs method
         $this->expectException(\Error::class);
@@ -567,7 +567,7 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('switch_site');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         // Create a temporary file resource
         $tempFile = tmpfile();

@@ -225,7 +225,7 @@ class EE_Template
         }
 
         $this->template = ($template_group != '' and $template != '') ?
-            $this->fetch_template($template_group, $template, false, $site_id) :
+            $this->fetch_template($template_group, $template, false, $site_id, $is_layout) :
             $this->parse_template_uri();
 
         // Add the template to our list of templates loaded
@@ -2434,18 +2434,19 @@ class EE_Template
     }
 
     /**
-     * Fetch Template Data
+     * Fetch template data from database or file.
      *
-     * Takes a Template Group, Template, and Site ID and will retrieve the Template and its metadata
-     * from the database (or file)
+     * Retrieves a template and its metadata by template group, template name, and site ID.
+     * Can optionally show default templates and handle layout templates.
      *
-     * @param   string
-     * @param   string
-     * @param   bool
-     * @param   int
-     * @return  string
+     * @param  string  $template_group  The template group name
+     * @param  string  $template        The template name
+     * @param  bool    $show_default    Whether to show default templates if not found (default: true)
+     * @param  int     $site_id         The site ID to fetch template from (default: '')
+     * @param  bool    $is_layout       Whether this is a layout template (default: false)
+     * @return string                   The template content
      */
-    public function fetch_template($template_group, $template, $show_default = true, $site_id = '')
+    public function fetch_template($template_group, $template, $show_default = true, $site_id = '', $is_layout = false)
     {
         if ($site_id == '' or !is_numeric($site_id)) {
             $site_id = ee()->config->item('site_id');
@@ -2635,7 +2636,7 @@ class EE_Template
             if (!array_intersect($templates_roles, $currentMemberRoles)) {
                 $this->log_item("No Template Access Privileges");
 
-                if ($this->depth > 0) {
+                if ($this->depth > 0 && !$is_layout) {
                     return '';
                 }
 
@@ -3370,7 +3371,11 @@ class EE_Template
             for ($i = 0, $s = count($match[0]); $i < $s; $i++) {
                 $class = ee()->security->sanitize_filename(strtolower($match[1][$i]));
 
-                $fqcn = ee('Addon')->get($class)->getModuleClass();
+                $addon = ee('Addon')->get($class);
+                if (!$addon) {
+                    continue; // Skip if addon not found
+                }
+                $fqcn = $addon->getModuleClass();
 
                 $this->tagdata = $match[3][$i];
 

@@ -1,7 +1,6 @@
 <?php $multi = ! empty($multiple); ?>
 <select name="<?=$name . ($multi ? '[]' : '')?>"<?php if ($multi) :
-    ?> class="pro-select-multiple" multiple<?php
-endif; ?>>
+    ?> class="pro-select-multiple" multiple<?php endif; ?> style="max-width: 100%">
 <?php foreach ($choices as $key => $val) : ?>
     <?php if (is_array($val) && ! empty($val)) : ?>
         <optgroup label="<?=htmlspecialchars($key, ENT_QUOTES)?>">

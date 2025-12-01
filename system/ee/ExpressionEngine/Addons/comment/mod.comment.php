@@ -734,12 +734,13 @@ class Comment
         if ($e_status = ee()->TMPL->fetch_param('entry_status')) {
             $e_status = str_replace('Open', 'open', $e_status);
             $e_status = str_replace('Closed', 'closed', $e_status);
-
-            ee()->functions->ar_andor_string($e_status, 'status');
-
-            if (stristr($sql, "'closed'") === false) {
+			
+            // If they don't specify closed, it defaults to it
+            if (! in_array('closed', explode('|', $e_status))) {
                 ee()->db->where('status !=', 'closed');
             }
+
+            ee()->functions->ar_andor_string($e_status, 'status');			
         } else {
             ee()->db->where('status !=', 'closed');
         }

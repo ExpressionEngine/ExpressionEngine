@@ -152,7 +152,7 @@ class ApiChannelEntriesIntegrationTest extends ChannelApiTestBase
         $this->api->channel_id = 1;
         $reflection = new ReflectionClass($this->api);
         $validateMethod = $reflection->getMethod('_check_for_data_errors');
-        $validateMethod->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($validateMethod);
 
         // Mock _validate_url_title to avoid complex mocking
         $this->api = $this->getMockBuilder(Api_channel_entries::class)

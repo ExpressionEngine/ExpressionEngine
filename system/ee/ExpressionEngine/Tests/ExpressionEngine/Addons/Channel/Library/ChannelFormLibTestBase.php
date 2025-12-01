@@ -110,6 +110,7 @@ if (!class_exists('FakeConfig')) {
 if (!class_exists('FakeFunctions')) {
     class FakeFunctions
     {
+        public $template_type = 'webpage'; // Prevent dynamic property deprecation warnings
         public function fetch_site_index($a = 0, $b = 0) { return '/'; }
         public function create_url($path = '') {
             if ($path) {
@@ -886,7 +887,7 @@ abstract class ChannelFormLibTestBase extends TestCase
     protected function getProtectedProperty($property) {
         $reflection = new ReflectionClass($this->channelFormLib);
         $prop = $reflection->getProperty($property);
-        $prop->setAccessible(true);
+        TestReflectionHelper::makePropertyAccessible($prop);
         return $prop;
     }
 

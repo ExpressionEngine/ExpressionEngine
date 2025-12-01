@@ -649,9 +649,19 @@ if (! function_exists('dump')) {
     function dump()
     {
         $args = func_get_args();
+        $backtrace = debug_backtrace();
+
         echo '<pre>';
+
         foreach ($args as $arg) {
             var_dump($arg);
+        }
+        // Show the file and line number that called dd()
+        if (isset($backtrace[0])) {
+            $caller = $backtrace[0];
+            $file = $caller['file'] ?? 'unknown';
+            $line = $caller['line'] ?? 'unknown';
+            echo "<small>-> {$file} on line {$line}</a>\n\n";
         }
         echo '</pre>';
     }
@@ -664,9 +674,19 @@ if (! function_exists('dd')) {
     function dd()
     {
         $args = func_get_args();
+        $backtrace = debug_backtrace();
+
         echo '<pre>';
+
         foreach ($args as $arg) {
             var_dump($arg);
+        }
+        // Show the file and line number that called dd()
+        if (isset($backtrace[0])) {
+            $caller = $backtrace[0];
+            $file = $caller['file'] ?? 'unknown';
+            $line = $caller['line'] ?? 'unknown';
+            echo "<small>-> {$file} on line {$line}</a>\n\n";
         }
         echo '</pre>';
         exit();

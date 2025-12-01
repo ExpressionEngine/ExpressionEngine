@@ -25,7 +25,7 @@ class ApiChannelEntriesChannelSwitchTest extends ChannelApiTestBase
 
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_do_channel_switch');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $method->invokeArgs($this->api, [&$data]);
 
         // Should not change channel

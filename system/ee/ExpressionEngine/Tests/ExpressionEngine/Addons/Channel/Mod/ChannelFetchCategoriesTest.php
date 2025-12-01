@@ -44,7 +44,7 @@ class ChannelFetchCategoriesTest extends ChannelTestBase
         // Monkey-patch generateCategoryFieldSQL to include field
         $ref = new ReflectionClass($this->channel);
         $method = $ref->getMethod('generateCategoryFieldSQL');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         // Cannot override method easily; rely on test DB row inclusion check in loop
 
         $this->channel->fetch_categories();
