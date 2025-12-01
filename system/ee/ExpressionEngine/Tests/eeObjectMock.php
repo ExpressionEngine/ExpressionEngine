@@ -65,10 +65,35 @@ class eeSingletonMock
         $this->typography = new FakeTypography();
         require_once SYSPATH . 'ee/legacy/libraries/Api.php';
         $this->legacy_api = new \Api();
+
+        // Set simple default mocks to avoid memory issues
+        // Don't set TMPL here - let tests set their own TMPL mocks
+        $this->output = new class {
+            private $output = '';
+            public function append_output($output) {
+                $this->output .= $output;
+            }
+            public function set_output($output) {
+                $this->output = $output;
+            }
+            public function get_output() {
+                return $this->output;
+            }
+            public function set_header($header) {
+                // No-op for testing
+            }
+            public function fatal_error($message) {
+                throw new Exception("fatal_error: " . $message);
+            }
+            public function show_message($data, $xhtml = true, $redirect_url = false, $template_name = 'generic') {
+                // Prevent HTML output and exit during tests
+            }
+        };
+
         $this->mock = $mock;
 
         // Override with static mocks if set
-        $overridable = ['db', 'config', 'functions', 'TMPL', 'session', 'load', 'logger', 'dbforge', 'input', 'lang', 'typography', 'extensions', 'core', 'uri', 'Model'];
+        $overridable = ['db', 'config', 'functions', 'session', 'load', 'logger', 'dbforge', 'input', 'lang', 'typography', 'extensions', 'core', 'uri', 'Model'];
         foreach ($overridable as $prop) {
             if (array_key_exists($prop, self::$mocks)) {
                 @$this->$prop = self::$mocks[$prop];
@@ -115,8 +140,18 @@ class eeSingletonLoadMock
         return;
     }
 
-    public function library()
+    public function library($library = '', $params = null, $object_name = null)
     {
+        $object_name = $object_name ?: $library;
+        // If a mock is set for this library, use it
+        if ($library && isset(self::$mocks[$library])) {
+            ee()->$object_name = self::$mocks[$library];
+            echo "Library mock set for $library\n";
+        } elseif ($library) {
+            // Otherwise create a basic mock
+            ee()->$object_name = new stdClass();
+            echo "Basic mock created for $library\n";
+        }
         return;
     }
 
@@ -134,6 +169,11 @@ class eeSingletonLoadMock
     {
         // Return empty array for testing - no additional package paths needed
         return [];
+    }
+
+    public function add_package_path($path)
+    {
+        // No-op for testing
     }
 }
 

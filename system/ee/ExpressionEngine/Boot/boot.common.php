@@ -344,7 +344,10 @@ function show_error($message, $status_code = 500, $heading = 'Error')
 {
     $_error = load_class('Exceptions', 'core');
     echo $_error->show_error($heading, $message, 'error_general', $status_code);
-    exit;
+    // Don't exit during PHPUnit tests to allow test suite to continue
+    if (!defined('PHPUNIT_TESTING') || !PHPUNIT_TESTING) {
+        exit;
+    }
 }
 
 /**

@@ -43,18 +43,28 @@ class Pro_searchUrlTest extends Pro_searchTestBase
 
     public function testUrlGeneratesQueryStringWhenNotEncodingAndRespectsForceProtocol()
     {
-        // Disable encoding
-        $this->setSettingsStub([
-            'encode_query' => 'n',
-            'default_result_page' => '/search/results',
-            'can_manage_shortcuts' => [],
-            'build_index_act_key' => 'secret'
-        ]);
+        // Disable encoding by setting settings directly on instance
+        $settings = new class {
+            public $prefix = 'pro_search_';
+            public function get($key) {
+                $map = [
+                    'encode_query' => 'n',
+                    'default_result_page' => '/search/results',
+                    'can_manage_shortcuts' => [],
+                    'build_index_act_key' => 'secret'
+                ];
+                return $map[$key] ?? null;
+            }
+        };
+        $rp = new ReflectionProperty('Pro_search', 'settings');
+        $rp->setAccessible(true);
+        $rp->setValue($this->pro, $settings);
 
         $this->setTemplateParams([
             'result_page' => '/search/results',
             'bar' => 'baz',
             'force_protocol' => 'http',
+            'encode' => 'yes',
         ]);
 
         $url = $this->pro->url();

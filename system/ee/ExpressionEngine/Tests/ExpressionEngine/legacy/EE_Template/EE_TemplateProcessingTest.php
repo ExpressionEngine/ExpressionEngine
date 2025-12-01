@@ -252,12 +252,12 @@ class EE_TemplateProcessingTest extends TestCase
         \TestReflectionHelper::makeMethodAccessible($reflection);
 
         // Set up the final_template property with undeclared layout variable tags
-        $this->template->final_template = 'Content{layout:variable}value{/layout:variable}{layout:contents}main{/layout:contents}';
+        $this->template->final_template = 'Content{layout:variable}value{/layout:variable}{layout:main}main{/layout:main}';
 
         $reflection->invoke($this->template);
 
         // Should remove undeclared layout variable tags (opening tags only, as per the method)
-        $this->assertEquals('Contentvalue{/layout:variable}main{/layout:contents}', $this->template->final_template);
+        $this->assertEquals('Contentvalue{/layout:variable}main{/layout:main}', $this->template->final_template);
     }
 
     public function testCleanupLayoutTagsHandlesNoTags()

@@ -225,6 +225,19 @@ abstract class ChannelTestBase extends TestCase
                     if ($name === 'typography') {
                         ee()->typography = new FakeTypography();
                     }
+                    if ($name === 'javascript_loader') {
+                        // Only set if not already set (preserve setMock mocks)
+                        if (!isset(ee()->javascript_loader)) {
+                            // Check if a mock was set via ee()->setMock()
+                            $mockClass = 'eeSingletonMock';
+                            if (class_exists($mockClass) && isset($mockClass::$mocks[$name])) {
+                                ee()->javascript_loader = $mockClass::$mocks[$name];
+                            } else {
+                                // Create a basic mock
+                                ee()->javascript_loader = new stdClass();
+                            }
+                        }
+                    }
                 }
             });
         } else {

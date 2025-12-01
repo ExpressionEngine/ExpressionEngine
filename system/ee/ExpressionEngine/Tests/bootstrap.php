@@ -57,5 +57,21 @@ function lang($str)
 require_once 'eeObjectMock.php';
 require_once 'TestReflectionHelper.php';
 
+// Ensure TMPL and output are always available for show_error to work properly
+if (function_exists('ee')) {
+    ee()->setMock('TMPL', new class {
+        public $tagdata = '';
+        public $tagparams = [];
+        public function fetch_param($key, $default = null) {
+            return $default;
+        }
+    });
+    ee()->setMock('output', new class {
+        public function fatal_error($message) {
+            throw new Exception("fatal_error: " . $message);
+        }
+    });
+}
+
 // Helper functions for testing - only define if not already loaded by EE
 // Note: remove_invisible_characters is defined in boot.common.php when EE is fully loaded

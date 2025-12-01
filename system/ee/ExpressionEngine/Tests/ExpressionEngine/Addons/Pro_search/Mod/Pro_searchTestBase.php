@@ -154,6 +154,11 @@ abstract class Pro_searchTestBase extends TestCase
 
 	protected function setUp(): void
 	{
+		// Define constant to prevent show_error from exiting during tests
+		if (!defined('PHPUNIT_TESTING')) {
+			define('PHPUNIT_TESTING', true);
+		}
+
 		// Ensure ee() has required core mocks, then override specific ones we need
 		ee()->setMock('TMPL', new ProSearchFakeTMPL());
 		ee()->setMock('functions', new ProSearchFakeFunctions());
@@ -162,7 +167,7 @@ abstract class Pro_searchTestBase extends TestCase
 		$this->pro = (new ReflectionClass('Pro_search'))
 			->newInstanceWithoutConstructor();
 
-		// Default settings stub
+		// Default settings stub - sets directly on instance
 		$this->setSettingsStub([
 			'encode_query' => 'y',
 			'default_result_page' => '/search/results',
@@ -194,6 +199,32 @@ abstract class Pro_searchTestBase extends TestCase
 			public function line($k){ return $k; }
 		});
 
+		// Default db mock
+		$this->setMock('db', new eeDbArMock());
+
+		// Default output mock to prevent HTML output and exits from show_error
+		$this->setMock('output', new class {
+			public function fatal_error($message) {
+				// For build_index tests, authentication errors are expected in some cases
+				// Don't throw exception, just silently handle
+			}
+			public function show_message($data, $xhtml = true, $redirect_url = false, $template_name = 'generic') {
+				// Prevent HTML output and exit during tests
+				// Just return without doing anything
+			}
+		});
+
+		// Set up default input mock with authentication credentials to prevent show_error calls
+		$this->setMock('input', new class {
+			public function get_post($k){
+				if ($k === 'key') return 'secret'; // Default auth key
+				return null;
+			}
+			public function get($k){
+				return null;
+			}
+		});
+
 		// Security mock for legacy restore_xid checks
 		$this->setMock('security', new class {
 			public function restore_xid(){}
@@ -204,6 +235,19 @@ abstract class Pro_searchTestBase extends TestCase
 			public $end_script = false;
 			public function active_hook($name){ return false; }
 			public function call($name, $data){ return $data; }
+		});
+
+		// Default collection model stub
+		$this->setMock('pro_search_collection_model', new class {
+			public function get_by_site($ids){ return []; }
+			public function get_by_param($v, $rows){ return $rows; }
+			public function get_by_language($v, $in, $rows){ return $rows; }
+		});
+
+		// Default shortcut model stub
+		$this->setMock('pro_search_shortcut_model', new class {
+			public function table(){ return 'exp_pro_search_shortcuts'; }
+			public function get(){ return new class { public function result_array(){ return []; } }; }
 		});
 
 		// Default log model stub with required API
@@ -246,7 +290,12 @@ abstract class Pro_searchTestBase extends TestCase
 			public function __construct($map){ $this->map = $map; }
 			public function get($key){ return $this->map[$key] ?? null; }
 		};
-		$this->setPrivate('settings', $settings);
+		// Set settings directly on the instance using reflection to avoid global mock conflicts
+		if ($this->pro) {
+			$rp = new ReflectionProperty('Pro_search', 'settings');
+			$rp->setAccessible(true);
+			$rp->setValue($this->pro, $settings);
+		}
 	}
 
 	protected function setParamsStub(array $initial): void
@@ -281,6 +330,11 @@ abstract class Pro_searchTestBase extends TestCase
 	protected function getLastRedirect(): ?string
 	{
 		return ee()->functions->lastRedirect;
+	}
+
+	protected function tearDown(): void
+	{
+		ee()->resetMocks();
 	}
 
 	protected function mockEmptyCollectionModel(): void

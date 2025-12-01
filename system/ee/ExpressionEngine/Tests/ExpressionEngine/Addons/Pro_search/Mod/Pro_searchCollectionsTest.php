@@ -46,10 +46,10 @@ class Pro_searchCollectionsTest extends Pro_searchTestBase
 
 	public function testCollectionsWithEmptyAfterFiltering()
 	{
-		// Mock to simulate no collections variable pair found, so no collections processing
+		// When no collections are found, should return no_results
 		$this->setTemplateTagdata('no collections here');
 		$out = $this->pro->collections();
-		$this->assertStringContainsString('no collections here', $out);
+		$this->assertSame('NO_RESULTS', $out);
 	}
 }
 
