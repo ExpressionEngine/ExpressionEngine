@@ -531,6 +531,7 @@ class Upload
                     }
                 }
 
+                // Update original file metadata with new file properties
                 $original->file_hw_original = $file->file_hw_original;
                 $original->file_size = $file->file_size;
 
