@@ -7,6 +7,7 @@ require_once PATH_ADDONS . 'structure/helper.php';
 
 use ExpressionEngine\Structure\Conduit\StaticCache;
 use ExpressionEngine\Structure\Conduit\PersistentCache;
+use ExpressionEngine\Model\Channel\ChannelEntry;
 
 /**
  * This source file is part of the open source project
@@ -803,6 +804,38 @@ class Structure_tab
     public function create_uri($str)
     {
         return ee('Format')->make('Text', $str)->urlSlug()->compile();
+    }
+
+    /**
+     * Clones the page data for cloned entry
+     *
+     * @param ExpressionEngine\Model\Channel\ChannelEntry $entry
+     * @param array $values An associative array of field => value
+     * @return array $values modified array of values
+     */
+    public function cloneData(ChannelEntry $entry, $values)
+    {
+        if ($values['uri'] == '') {
+            return $values;
+        }
+        //check if submitted URI exists
+        $site_pages = $this->sql->get_site_pages(true, true);
+        $uris = $site_pages['uris'];
+
+        //exclude current page from check
+        if (isset($uris[$entry->entry_id])) {
+            unset($uris[$entry->entry_id]);
+        }
+        //ensure leading slash is present
+        $value = '/' . trim($values['uri'], '/');
+
+        $word_separator = ee()->config->item('word_separator') != "dash" ? '_' : '-';
+        while (in_array($value, $uris)) {
+            $value = 'copy' . $word_separator . ltrim($value, '/');
+        }
+        $_POST['structure__uri'] = $values['uri'] = $value;
+
+        return $values;
     }
 }
 /* END Class */

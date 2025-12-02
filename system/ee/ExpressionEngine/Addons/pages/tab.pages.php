@@ -147,7 +147,7 @@ class Pages_tab
 
         $word_separator = ee()->config->item('word_separator') != "dash" ? '_' : '-';
         while (in_array($value, $uris)) {
-            $value = 'copy' . $word_separator . $value;
+            $value = 'copy' . $word_separator . ltrim($value, '/');
         }
         $_POST['pages__pages_uri'] = $values['pages_uri'] = $value;
 

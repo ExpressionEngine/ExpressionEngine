@@ -31,6 +31,7 @@ if (!function_exists('ee')) {
     }
 }
 
+#[AllowDynamicProperties]
 class eeSingletonMock
 {
     public $load;
@@ -885,6 +886,7 @@ class FakeDb
 
 // Test environment class with proper method support
 if (!class_exists('TestEnvironment')) {
+#[AllowDynamicProperties]
 class TestEnvironment
 {
     public $mocks = [];
