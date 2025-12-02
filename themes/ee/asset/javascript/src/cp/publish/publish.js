@@ -258,7 +258,7 @@ $(document).ready(function () {
 		// Show the save buttons
 		$('[data-publish] .tab-bar__right-buttons').show()
 
-		$('button[rel="live-preview"]').show();
+		$('button[rel="live-preview"]').removeAttr('style').show();
 		$(document).trigger('entry:preview-close')
 
 		// Hide the live preview modal

@@ -23,7 +23,7 @@ class OptionsFieldTest extends TestCase
     public function testFieldPrototypeAttribute(): OptionsField
     {
         $field = new _options_field('test-field');
-        $this->assertObjectHasAttribute('field_prototype', $field);
+        $this->assertObjectHasProperty('field_prototype', $field);
         $this->assertCount(8, $field->getFieldPrototype());
         return $field;
     }

@@ -96,7 +96,7 @@ class Emitter implements Publisher
      * @param Closure $listener The event listener callback [optional]
      * @return $this
      */
-    public function off($event, Closure $listener = null)
+    public function off($event, ?Closure $listener = null)
     {
         if (isset($listener)) {
             $hash = $this->hash($listener);
