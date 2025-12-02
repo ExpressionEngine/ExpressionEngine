@@ -182,7 +182,7 @@ class Pro_search_shortcut_model extends Pro_search_model
         // --------------------------------------
 
         $data = array_map(function ($str) {
-            if (! empty($str)) {
+            if (is_string($str) && ! empty($str)) {
                 $str = trim($str);
             }
             return $str;
@@ -201,7 +201,7 @@ class Pro_search_shortcut_model extends Pro_search_model
         // --------------------------------------
 
         if (empty($data['group_id']) || ! is_numeric($data['group_id'])) {
-            $this->_errors['shortcut_invalid_group'];
+            $this->_errors[] = 'shortcut_invalid_group';
         }
 
         // --------------------------------------

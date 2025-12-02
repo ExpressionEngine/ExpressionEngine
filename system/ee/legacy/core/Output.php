@@ -791,6 +791,13 @@ class EE_Output
             header("Content-Type: application/json; charset=" . ee()->config->item('charset'));
         }
 
+        // Are there any server headers to send?
+        if (count($this->headers) > 0) {
+            foreach ($this->headers as $header) {
+                @header($header[0], $header[1]);
+            }
+        }
+
         exit(json_encode($msg));
     }
 

@@ -77,6 +77,10 @@ class Profile extends CP_Controller
             'lang.password_icon' => lang('password_icon')
         ]);
 
+        ee()->cp->add_js_script(array(
+            'file' => array('cp/confirm_remove', 'cp/members/members'),
+        ));
+
         $this->breadcrumbs = array(
             ee('CP/URL')->make('members')->compile() => lang('members'),
             ee('CP/URL')->make('members/profile', $qs)->compile() => $this->member->screen_name
@@ -177,12 +181,7 @@ class Profile extends CP_Controller
 
             $list->addItem(lang('blocked_members'), ee('CP/URL')->make('members/profile/ignore', $this->query_string));
 
-            $sa_editing_self = ($this->member->isSuperAdmin() && $this->member->member_id == ee()->session->userdata['member_id']);
-            $group_locked = (! ee('Permission')->isSuperAdmin() && $this->member->PrimaryRole->is_locked);
-
-            if (! $sa_editing_self && ! $group_locked) {
-                $list->addItem(lang('member_roles'), ee('CP/URL')->make('members/profile/roles', $this->query_string));
-            }
+            $list->addItem(lang('member_roles'), ee('CP/URL')->make('members/profile/roles', $this->query_string));
 
             $list->addItem(lang('access_overview'), ee('CP/URL')->make('members/profile/access', $this->query_string));
             $list->addItem(lang('cp_settings'), ee('CP/URL')->make('members/profile/cp-settings', $this->query_string));
@@ -277,6 +276,23 @@ class Profile extends CP_Controller
                                 'margin_left' => true
                             )
                         );
+
+                        $vars['fieldset'] = [
+                            'group' => 'delete-confirm',
+                            'setting' => [
+                                'title' => '',
+                                'desc' => lang('move_toggle_to_confirm'),
+                                'attrs' => [
+                                    'class' => 'member-delete-confirm',
+                                ],
+                                'fields' => [
+                                    'confirm' => [
+                                        'type' => 'toggle',
+                                        'value' => 0,
+                                    ]
+                                ]
+                            ]
+                        ];
 
                         $heirs_view = ee('View')->make('members/delete_confirm')->render($vars);
                     }

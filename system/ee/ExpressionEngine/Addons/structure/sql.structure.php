@@ -1434,7 +1434,11 @@ class Sql_structure
         if ($cache_bust === true) {
             $sql = "SELECT site_pages FROM exp_sites WHERE site_id = $this->site_id";
             $pages_array = ee()->sql_helper->row($sql);
-            $all_pages = unserialize(base64_decode($pages_array['site_pages']));
+            if (empty($pages_array) || empty($pages_array['site_pages'])) {
+                $all_pages = array();
+            } else {
+                $all_pages = unserialize(base64_decode($pages_array['site_pages']));
+            }
         } else {
             $all_pages = ee()->config->item('site_pages');
         }

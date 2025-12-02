@@ -74,8 +74,8 @@ class EE_Core
 
         // application constants
         define('APP_NAME', 'ExpressionEngine');
-        define('APP_BUILD', '20250430');
-        define('APP_VER', '7.5.11');
+        define('APP_BUILD', '20251106');
+        define('APP_VER', '7.5.18');
         define('APP_VER_ID', '');
         define('SLASH', '&#47;');
         define('LD', '{');
@@ -321,9 +321,9 @@ class EE_Core
         $this->native_plugins = array('markdown', 'rss_parser', 'xml_encode');
         $this->native_modules = array(
             'block_and_allow', 'channel', 'comment', 'commerce', 'email',
-            'file', 'filepicker', 'forum', 'ip_to_nation', 'member',
+            'file', 'filepicker', 'forum', 'member',
             'metaweblog_api', 'moblog', 'pages', 'query', 'relationship', 'rss',
-            'rte', 'search', 'simple_commerce', 'spam', 'stats'
+            'rte', 'search', 'spam', 'stats'
         );
 
         // Is this a asset request?  If so, we're done.
@@ -418,7 +418,11 @@ class EE_Core
         }
 
         // Is MFA required?
-        if (REQ == 'PAGE' && ee()->session->userdata('mfa_flag') != 'skip') {
+        if (
+            REQ == 'PAGE' &&
+            (ee()->config->item('enable_mfa') === false || ee()->config->item('enable_mfa') === 'y') &&
+            ee()->session->userdata('mfa_flag') != 'skip'
+        ) {
             if (ee()->session->userdata('mfa_flag') == 'show') {
                 ee('pro:Mfa')->invokeMfaDialog();
             }
@@ -568,7 +572,12 @@ class EE_Core
         }
 
         //is member role forced to use MFA?
-        if (ee()->session->userdata('member_id') !== 0 && ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa == 'y' && ee()->session->getMember()->enable_mfa !== true) {
+        if (
+            (ee()->config->item('enable_mfa') === false || ee()->config->item('enable_mfa') === 'y') &&
+            ee()->session->userdata('member_id') !== 0 &&
+            ee()->session->getMember()->enable_mfa !== true &&
+            ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa == 'y'
+        ) {
             if (!(ee()->uri->segment(2) == 'login' && ee()->uri->segment(3) == 'logout') && !(ee()->uri->segment(2) == 'members' && ee()->uri->segment(3) == 'profile' && ee()->uri->segment(4) == 'pro' && ee()->uri->segment(5) == 'mfa')) {
                 ee()->lang->load('pro');
                 ee('CP/Alert')->makeInline('shared-form')
@@ -603,6 +612,17 @@ class EE_Core
 
         //show them post-update checks, again
         if (ee()->input->get('after') == 'update' || ee()->session->flashdata('update:completed')) {
+
+            // -------------------------------------------
+            // 'updater_complete' hook.
+            //  - added 7.5.16
+            //
+            if (ee()->extensions->active_hook('updater_complete') === true) {
+                ee()->extensions->call('updater_complete');
+            }
+            //
+            // -------------------------------------------
+
             $advisor = new \ExpressionEngine\Library\Advisor\Advisor();
             $messages = $advisor->postUpdateChecks();
             if (!empty($messages)) {

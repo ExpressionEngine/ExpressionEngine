@@ -1971,4 +1971,22 @@ class Hooks
         'params' => '$obj, $query',
         'library' => 'Wiki Module',
     ];
+
+    public const UPDATER_START = [
+        'name' => 'updater_start',
+        'params' => '$runner',
+        'library' => 'Updater',
+    ];
+
+    public const UPDATER_ERROR = [
+        'name' => 'updater_error',
+        'params' => '$runner, $exception',
+        'library' => 'Updater',
+    ];
+
+    public const UPDATER_COMPLETE = [
+        'name' => 'updater_complete',
+        'params' => '',
+        'library' => 'Updater',
+    ];
 }
