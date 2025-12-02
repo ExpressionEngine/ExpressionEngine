@@ -15,6 +15,11 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
                 $this->setItemCalls[] = ['key' => $key, 'value' => $value];
             }
 
+            public function item($key) {
+                // Return null/false since no site_id is set initially
+                return null;
+            }
+
             public function get_cached_site_prefs($site_id) {
                 $this->getCachedSitePrefsCalls[] = $site_id;
                 // Return mock site preferences
@@ -23,7 +28,8 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
                     'site_url' => 'https://example.com/',
                     'site_index' => '',
                     'template_group' => 'default',
-                    'template' => 'index'
+                    'template' => 'index',
+                    'site_pages' => []
                 ];
             }
         };
@@ -41,14 +47,17 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
         // Verify method returned successfully
         $this->assertNull($result);
 
-        // Verify config->set_item was called with correct parameters
-        $this->assertCount(1, $configMock->setItemCalls);
+        // Verify config->set_item was called twice: once for site_id, once for site_pages
+        $this->assertCount(2, $configMock->setItemCalls);
         $this->assertEquals('site_id', $configMock->setItemCalls[0]['key']);
         $this->assertEquals(2, $configMock->setItemCalls[0]['value']);
+        $this->assertEquals('site_pages', $configMock->setItemCalls[1]['key']);
+        $this->assertEquals([], $configMock->setItemCalls[1]['value']); // empty array from mock
 
-        // Verify config->get_cached_site_prefs was called with correct site_id
-        $this->assertCount(1, $configMock->getCachedSitePrefsCalls);
-        $this->assertEquals(2, $configMock->getCachedSitePrefsCalls[0]);
+        // Verify config->get_cached_site_prefs was called twice: once for current site_id (null), once for new site_id (2)
+        $this->assertCount(2, $configMock->getCachedSitePrefsCalls);
+        $this->assertEquals(null, $configMock->getCachedSitePrefsCalls[0]); // current site_id
+        $this->assertEquals(2, $configMock->getCachedSitePrefsCalls[1]); // new site_id
     }
 
     public function testSwitchSiteHandlesSiteIdZero()
