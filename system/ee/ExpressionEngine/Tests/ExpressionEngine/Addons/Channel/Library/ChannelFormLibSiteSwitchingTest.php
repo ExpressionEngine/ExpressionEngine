@@ -71,9 +71,21 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
                 $this->setItemCalls[] = ['key' => $key, 'value' => $value];
             }
 
+            public function item($key) {
+                // Return null/false since no site_id is set initially
+                return null;
+            }
+
             public function get_cached_site_prefs($site_id) {
                 $this->getCachedSitePrefsCalls[] = $site_id;
-                return ['site_name' => 'Default Site'];
+                return [
+                    'site_name' => 'Default Site',
+                    'site_url' => 'https://example.com/',
+                    'site_index' => '',
+                    'template_group' => 'default',
+                    'template' => 'index',
+                    'site_pages' => []
+                ];
             }
         };
 
@@ -90,11 +102,16 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
         // Verify method returned successfully
         $this->assertNull($result);
 
-        // Verify config methods were called with site_id = 0
-        $this->assertCount(1, $configMock->setItemCalls);
+        // Verify config->set_item was called twice: once for site_id, once for site_pages
+        $this->assertCount(2, $configMock->setItemCalls);
+        $this->assertEquals('site_id', $configMock->setItemCalls[0]['key']);
         $this->assertEquals(0, $configMock->setItemCalls[0]['value']);
-        $this->assertCount(1, $configMock->getCachedSitePrefsCalls);
-        $this->assertEquals(0, $configMock->getCachedSitePrefsCalls[0]);
+        $this->assertEquals('site_pages', $configMock->setItemCalls[1]['key']);
+        $this->assertEquals([], $configMock->setItemCalls[1]['value']); // empty array from mock
+        // Verify config->get_cached_site_prefs was called twice: once for current site_id (null), once for new site_id (0)
+        $this->assertCount(2, $configMock->getCachedSitePrefsCalls);
+        $this->assertEquals(null, $configMock->getCachedSitePrefsCalls[0]); // current site_id
+        $this->assertEquals(0, $configMock->getCachedSitePrefsCalls[1]); // new site_id
     }
 
     public function testSwitchSiteHandlesLargeSiteId()
@@ -108,9 +125,21 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
                 $this->setItemCalls[] = ['key' => $key, 'value' => $value];
             }
 
+            public function item($key) {
+                // Return null/false since no site_id is set initially
+                return null;
+            }
+
             public function get_cached_site_prefs($site_id) {
                 $this->getCachedSitePrefsCalls[] = $site_id;
-                return ['site_name' => 'Large Site ID'];
+                return [
+                    'site_name' => 'Large Site ID',
+                    'site_url' => 'https://example.com/',
+                    'site_index' => '',
+                    'template_group' => 'default',
+                    'template' => 'index',
+                    'site_pages' => []
+                ];
             }
         };
 
@@ -128,11 +157,16 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
         // Verify method returned successfully
         $this->assertNull($result);
 
-        // Verify config methods were called with large site_id
-        $this->assertCount(1, $configMock->setItemCalls);
+        // Verify config->set_item was called twice: once for site_id, once for site_pages
+        $this->assertCount(2, $configMock->setItemCalls);
+        $this->assertEquals('site_id', $configMock->setItemCalls[0]['key']);
         $this->assertEquals($largeSiteId, $configMock->setItemCalls[0]['value']);
-        $this->assertCount(1, $configMock->getCachedSitePrefsCalls);
-        $this->assertEquals($largeSiteId, $configMock->getCachedSitePrefsCalls[0]);
+        $this->assertEquals('site_pages', $configMock->setItemCalls[1]['key']);
+        $this->assertEquals([], $configMock->setItemCalls[1]['value']); // empty array from mock
+        // Verify config->get_cached_site_prefs was called twice: once for current site_id (null), once for new site_id
+        $this->assertCount(2, $configMock->getCachedSitePrefsCalls);
+        $this->assertEquals(null, $configMock->getCachedSitePrefsCalls[0]); // current site_id
+        $this->assertEquals($largeSiteId, $configMock->getCachedSitePrefsCalls[1]); // new site_id
     }
 
     public function testSwitchSiteHandlesNegativeSiteId()
@@ -146,9 +180,21 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
                 $this->setItemCalls[] = ['key' => $key, 'value' => $value];
             }
 
+            public function item($key) {
+                // Return null/false since no site_id is set initially
+                return null;
+            }
+
             public function get_cached_site_prefs($site_id) {
                 $this->getCachedSitePrefsCalls[] = $site_id;
-                return ['site_name' => 'Negative Site ID'];
+                return [
+                    'site_name' => 'Negative Site ID',
+                    'site_url' => 'https://example.com/',
+                    'site_index' => '',
+                    'template_group' => 'default',
+                    'template' => 'index',
+                    'site_pages' => []
+                ];
             }
         };
 
@@ -165,11 +211,16 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
         // Verify method returned successfully
         $this->assertNull($result);
 
-        // Verify config methods were called with negative site_id
-        $this->assertCount(1, $configMock->setItemCalls);
+        // Verify config->set_item was called twice: once for site_id, once for site_pages
+        $this->assertCount(2, $configMock->setItemCalls);
+        $this->assertEquals('site_id', $configMock->setItemCalls[0]['key']);
         $this->assertEquals(-1, $configMock->setItemCalls[0]['value']);
-        $this->assertCount(1, $configMock->getCachedSitePrefsCalls);
-        $this->assertEquals(-1, $configMock->getCachedSitePrefsCalls[0]);
+        $this->assertEquals('site_pages', $configMock->setItemCalls[1]['key']);
+        $this->assertEquals([], $configMock->setItemCalls[1]['value']); // empty array from mock
+        // Verify config->get_cached_site_prefs was called twice: once for current site_id (null), once for new site_id
+        $this->assertCount(2, $configMock->getCachedSitePrefsCalls);
+        $this->assertEquals(null, $configMock->getCachedSitePrefsCalls[0]); // current site_id
+        $this->assertEquals(-1, $configMock->getCachedSitePrefsCalls[1]); // new site_id
     }
 
     public function testSwitchSiteCallsMethodsInCorrectOrder()
@@ -187,9 +238,21 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
                 $this->callOrder[] = 'set_item';
             }
 
+            public function item($key) {
+                // Return null/false since no site_id is set initially
+                return null;
+            }
+
             public function get_cached_site_prefs($site_id) {
                 $this->callOrder[] = 'get_cached_site_prefs';
-                return ['site_name' => 'Order Test Site'];
+                return [
+                    'site_name' => 'Order Test Site',
+                    'site_url' => 'https://example.com/',
+                    'site_index' => '',
+                    'template_group' => 'default',
+                    'template' => 'index',
+                    'site_pages' => []
+                ];
             }
         };
 
@@ -206,8 +269,8 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
         // Verify method returned successfully
         $this->assertNull($result);
 
-        // Verify methods were called in correct order
-        $this->assertEquals(['set_item', 'get_cached_site_prefs'], $callOrder);
+        // Verify methods were called in correct order: cache current prefs, get new prefs, set site_id, set site_pages
+        $this->assertEquals(['get_cached_site_prefs', 'get_cached_site_prefs', 'set_item', 'set_item'], $callOrder);
     }
 
     public function testSwitchSiteHandlesNullConfigObject()
@@ -219,6 +282,11 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
 
             public function set_item($key, $value) {
                 $this->setItemCalls[] = ['key' => $key, 'value' => $value];
+            }
+
+            public function item($key) {
+                // Return null/false since no site_id is set initially
+                return null;
             }
 
             public function get_cached_site_prefs($site_id) {
@@ -240,9 +308,10 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
         // Verify method returned successfully even with null return
         $this->assertNull($result);
 
-        // Verify both methods were still called
-        $this->assertCount(1, $configMock->setItemCalls);
-        $this->assertCount(1, $configMock->getCachedSitePrefsCalls);
+        // Verify config->set_item was called twice: once for site_id, once for site_pages
+        $this->assertCount(2, $configMock->setItemCalls);
+        // Verify config->get_cached_site_prefs was called twice: once for current site_id (null), once for new site_id
+        $this->assertCount(2, $configMock->getCachedSitePrefsCalls);
     }
 
     public function testSwitchSiteHandlesStringSiteId()
@@ -256,9 +325,21 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
                 $this->setItemCalls[] = ['key' => $key, 'value' => $value];
             }
 
+            public function item($key) {
+                // Return null/false since no site_id is set initially
+                return null;
+            }
+
             public function get_cached_site_prefs($site_id) {
                 $this->getCachedSitePrefsCalls[] = $site_id;
-                return ['site_name' => 'String Site ID'];
+                return [
+                    'site_name' => 'String Site ID',
+                    'site_url' => 'https://example.com/',
+                    'site_index' => '',
+                    'template_group' => 'default',
+                    'template' => 'index',
+                    'site_pages' => []
+                ];
             }
         };
 
@@ -275,9 +356,10 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
         // Verify method returned successfully
         $this->assertNull($result);
 
-        // Verify config methods were called (PHP may convert string to int)
-        $this->assertCount(1, $configMock->setItemCalls);
-        $this->assertCount(1, $configMock->getCachedSitePrefsCalls);
+        // Verify config->set_item was called twice: once for site_id, once for site_pages
+        $this->assertCount(2, $configMock->setItemCalls);
+        // Verify config->get_cached_site_prefs was called twice: once for current site_id (null), once for new site_id
+        $this->assertCount(2, $configMock->getCachedSitePrefsCalls);
     }
 
     public function testSwitchSiteMultipleCallsUpdatesConfiguration()
@@ -291,9 +373,21 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
                 $this->setItemCalls[] = ['key' => $key, 'value' => $value];
             }
 
+            public function item($key) {
+                // Return null/false since no site_id is set initially
+                return null;
+            }
+
             public function get_cached_site_prefs($site_id) {
                 $this->getCachedSitePrefsCalls[] = $site_id;
-                return ['site_name' => "Site {$site_id}"];
+                return [
+                    'site_name' => "Site {$site_id}",
+                    'site_url' => 'https://example.com/',
+                    'site_index' => '',
+                    'template_group' => 'default',
+                    'template' => 'index',
+                    'site_pages' => []
+                ];
             }
         };
 
@@ -314,19 +408,20 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
         $this->assertNull($result2);
         $this->assertNull($result3);
 
-        // Verify all config method calls were tracked
-        $this->assertCount(3, $configMock->setItemCalls);
-        $this->assertCount(3, $configMock->getCachedSitePrefsCalls);
+        // Verify all config method calls were tracked (3 calls × 2 set_item calls each = 6 total)
+        $this->assertCount(6, $configMock->setItemCalls);
+        // Verify all config method calls were tracked (3 calls × 2 get_cached_site_prefs calls each = 6 total)
+        $this->assertCount(6, $configMock->getCachedSitePrefsCalls);
 
-        // Verify the site_id values were set correctly
+        // Verify the site_id values were set correctly (every other call is site_id)
         $this->assertEquals(1, $configMock->setItemCalls[0]['value']);
-        $this->assertEquals(2, $configMock->setItemCalls[1]['value']);
-        $this->assertEquals(1, $configMock->setItemCalls[2]['value']);
+        $this->assertEquals(2, $configMock->setItemCalls[2]['value']);
+        $this->assertEquals(1, $configMock->setItemCalls[4]['value']);
 
-        // Verify get_cached_site_prefs was called with correct site_ids
-        $this->assertEquals(1, $configMock->getCachedSitePrefsCalls[0]);
-        $this->assertEquals(2, $configMock->getCachedSitePrefsCalls[1]);
-        $this->assertEquals(1, $configMock->getCachedSitePrefsCalls[2]);
+        // Verify get_cached_site_prefs was called with correct site_ids (every other call is the new site_id)
+        $this->assertEquals(1, $configMock->getCachedSitePrefsCalls[1]); // First call: new site_id = 1
+        $this->assertEquals(2, $configMock->getCachedSitePrefsCalls[3]); // Second call: new site_id = 2
+        $this->assertEquals(1, $configMock->getCachedSitePrefsCalls[5]); // Third call: new site_id = 1
     }
 
     public function testSwitchSiteHandlesBooleanSiteId()
@@ -340,9 +435,21 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
                 $this->setItemCalls[] = ['key' => $key, 'value' => $value];
             }
 
+            public function item($key) {
+                // Return null/false since no site_id is set initially
+                return null;
+            }
+
             public function get_cached_site_prefs($site_id) {
                 $this->getCachedSitePrefsCalls[] = $site_id;
-                return ['site_name' => 'Boolean Site ID'];
+                return [
+                    'site_name' => 'Boolean Site ID',
+                    'site_url' => 'https://example.com/',
+                    'site_index' => '',
+                    'template_group' => 'default',
+                    'template' => 'index',
+                    'site_pages' => []
+                ];
             }
         };
 
@@ -359,11 +466,16 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
         // Verify method returned successfully
         $this->assertNull($result);
 
-        // Verify config methods were called (PHP converts true to 1)
-        $this->assertCount(1, $configMock->setItemCalls);
+        // Verify config->set_item was called twice: once for site_id, once for site_pages
+        $this->assertCount(2, $configMock->setItemCalls);
+        $this->assertEquals('site_id', $configMock->setItemCalls[0]['key']);
         $this->assertEquals(1, $configMock->setItemCalls[0]['value']);
-        $this->assertCount(1, $configMock->getCachedSitePrefsCalls);
-        $this->assertEquals(1, $configMock->getCachedSitePrefsCalls[0]);
+        $this->assertEquals('site_pages', $configMock->setItemCalls[1]['key']);
+        $this->assertEquals([], $configMock->setItemCalls[1]['value']); // empty array from mock
+        // Verify config->get_cached_site_prefs was called twice: once for current site_id (null), once for new site_id
+        $this->assertCount(2, $configMock->getCachedSitePrefsCalls);
+        $this->assertEquals(null, $configMock->getCachedSitePrefsCalls[0]); // current site_id
+        $this->assertEquals(1, $configMock->getCachedSitePrefsCalls[1]); // new site_id
     }
 
     public function testSwitchSiteHandlesNullConfigReference()
@@ -388,8 +500,19 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
             public function set_item($key, $value) {
                 throw new \Exception('Config write failed');
             }
+            public function item($key) {
+                // Return null/false since no site_id is set initially
+                return null;
+            }
             public function get_cached_site_prefs($site_id) {
-                return ['site_name' => 'Test Site'];
+                return [
+                    'site_name' => 'Test Site',
+                    'site_url' => 'https://example.com/',
+                    'site_index' => '',
+                    'template_group' => 'default',
+                    'template' => 'index',
+                    'site_pages' => []
+                ];
             }
         };
 
@@ -413,6 +536,10 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
             public $setItemCalls = [];
             public function set_item($key, $value) {
                 $this->setItemCalls[] = ['key' => $key, 'value' => $value];
+            }
+            public function item($key) {
+                // Return null/false since no site_id is set initially
+                return null;
             }
             public function get_cached_site_prefs($site_id) {
                 throw new \Exception('Cache read failed');
@@ -443,9 +570,21 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
                 $this->setItemCalls[] = ['key' => $key, 'value' => $value];
             }
 
+            public function item($key) {
+                // Return null/false since no site_id is set initially
+                return null;
+            }
+
             public function get_cached_site_prefs($site_id) {
                 $this->getCachedSitePrefsCalls[] = $site_id;
-                return ['site_name' => 'Float Site ID'];
+                return [
+                    'site_name' => 'Float Site ID',
+                    'site_url' => 'https://example.com/',
+                    'site_index' => '',
+                    'template_group' => 'default',
+                    'template' => 'index',
+                    'site_pages' => []
+                ];
             }
         };
 
@@ -462,11 +601,16 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
         // Verify method returned successfully
         $this->assertNull($result);
 
-        // PHP keeps float as float, so should get 2.0 (or close to it)
-        $this->assertCount(1, $configMock->setItemCalls);
+        // Verify config->set_item was called twice: once for site_id, once for site_pages
+        $this->assertCount(2, $configMock->setItemCalls);
+        $this->assertEquals('site_id', $configMock->setItemCalls[0]['key']);
         $this->assertEquals(2.7, $configMock->setItemCalls[0]['value']);
-        $this->assertCount(1, $configMock->getCachedSitePrefsCalls);
-        $this->assertEquals(2.7, $configMock->getCachedSitePrefsCalls[0]);
+        $this->assertEquals('site_pages', $configMock->setItemCalls[1]['key']);
+        $this->assertEquals([], $configMock->setItemCalls[1]['value']); // empty array from mock
+        // Verify config->get_cached_site_prefs was called twice: once for current site_id (null), once for new site_id
+        $this->assertCount(2, $configMock->getCachedSitePrefsCalls);
+        $this->assertEquals(null, $configMock->getCachedSitePrefsCalls[0]); // current site_id
+        $this->assertEquals(2.7, $configMock->getCachedSitePrefsCalls[1]); // new site_id
     }
 
     public function testSwitchSiteHandlesExtremelyLargeSiteId()
@@ -480,9 +624,21 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
                 $this->setItemCalls[] = ['key' => $key, 'value' => $value];
             }
 
+            public function item($key) {
+                // Return null/false since no site_id is set initially
+                return null;
+            }
+
             public function get_cached_site_prefs($site_id) {
                 $this->getCachedSitePrefsCalls[] = $site_id;
-                return ['site_name' => 'Large Site ID'];
+                return [
+                    'site_name' => 'Large Site ID',
+                    'site_url' => 'https://example.com/',
+                    'site_index' => '',
+                    'template_group' => 'default',
+                    'template' => 'index',
+                    'site_pages' => []
+                ];
             }
         };
 
@@ -500,19 +656,35 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
         // Verify method returned successfully
         $this->assertNull($result);
 
-        // Verify config methods were called with large site_id
-        $this->assertCount(1, $configMock->setItemCalls);
+        // Verify config->set_item was called twice: once for site_id, once for site_pages
+        $this->assertCount(2, $configMock->setItemCalls);
+        $this->assertEquals('site_id', $configMock->setItemCalls[0]['key']);
         $this->assertEquals($largeSiteId, $configMock->setItemCalls[0]['value']);
-        $this->assertCount(1, $configMock->getCachedSitePrefsCalls);
-        $this->assertEquals($largeSiteId, $configMock->getCachedSitePrefsCalls[0]);
+        $this->assertEquals('site_pages', $configMock->setItemCalls[1]['key']);
+        $this->assertEquals([], $configMock->setItemCalls[1]['value']); // empty array from mock
+        // Verify config->get_cached_site_prefs was called twice: once for current site_id (null), once for new site_id
+        $this->assertCount(2, $configMock->getCachedSitePrefsCalls);
+        $this->assertEquals(null, $configMock->getCachedSitePrefsCalls[0]); // current site_id
+        $this->assertEquals($largeSiteId, $configMock->getCachedSitePrefsCalls[1]); // new site_id
     }
 
     public function testSwitchSiteHandlesConfigWithoutSetItemMethod()
     {
         // Setup config mock without set_item method
         $configMock = new class {
+            public function item($key) {
+                // Return null/false since no site_id is set initially
+                return null;
+            }
             public function get_cached_site_prefs($site_id) {
-                return ['site_name' => 'Test Site'];
+                return [
+                    'site_name' => 'Test Site',
+                    'site_url' => 'https://example.com/',
+                    'site_index' => '',
+                    'template_group' => 'default',
+                    'template' => 'index',
+                    'site_pages' => []
+                ];
             }
             // Missing set_item method
         };
@@ -565,9 +737,21 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
                 $this->setItemCalls[] = ['key' => $key, 'value' => $value];
             }
 
+            public function item($key) {
+                // Return null/false since no site_id is set initially
+                return null;
+            }
+
             public function get_cached_site_prefs($site_id) {
                 $this->getCachedSitePrefsCalls[] = $site_id;
-                return ['site_name' => 'Resource Site ID'];
+                return [
+                    'site_name' => 'Resource Site ID',
+                    'site_url' => 'https://example.com/',
+                    'site_index' => '',
+                    'template_group' => 'default',
+                    'template' => 'index',
+                    'site_pages' => []
+                ];
             }
         };
 
@@ -589,11 +773,16 @@ class ChannelFormLibSiteSwitchingTest extends ChannelFormLibTestBase
             // Verify method returned successfully
             $this->assertNull($result);
 
-            // Resources are passed as-is, so we should get the resource
-            $this->assertCount(1, $configMock->setItemCalls);
+            // Verify config->set_item was called twice: once for site_id, once for site_pages
+            $this->assertCount(2, $configMock->setItemCalls);
+            $this->assertEquals('site_id', $configMock->setItemCalls[0]['key']);
             $this->assertIsResource($configMock->setItemCalls[0]['value']);
-            $this->assertCount(1, $configMock->getCachedSitePrefsCalls);
-            $this->assertIsResource($configMock->getCachedSitePrefsCalls[0]);
+            $this->assertEquals('site_pages', $configMock->setItemCalls[1]['key']);
+            $this->assertEquals([], $configMock->setItemCalls[1]['value']); // empty array from mock
+            // Verify config->get_cached_site_prefs was called twice: once for current site_id (null), once for new site_id
+            $this->assertCount(2, $configMock->getCachedSitePrefsCalls);
+            $this->assertEquals(null, $configMock->getCachedSitePrefsCalls[0]); // current site_id
+            $this->assertIsResource($configMock->getCachedSitePrefsCalls[1]); // new site_id
         } finally {
             // Clean up the temporary file
             fclose($tempFile);

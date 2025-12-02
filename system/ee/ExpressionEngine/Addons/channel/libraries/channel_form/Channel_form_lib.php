@@ -3157,7 +3157,7 @@ SCRIPT;
         ee()->config->get_cached_site_prefs(ee()->config->item('site_id'));
         $config = ee()->config->get_cached_site_prefs($site_id);
         ee()->config->set_item('site_id', $site_id);
-        ee()->config->set_item('site_pages', $config['site_pages']);
+        ee()->config->set_item('site_pages', ($config ?? [])['site_pages'] ?? []);
     }
 }
 
