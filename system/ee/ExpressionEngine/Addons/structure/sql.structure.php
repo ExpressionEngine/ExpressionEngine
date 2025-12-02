@@ -1744,7 +1744,7 @@ class Sql_structure
         if (in_array($uri . $trailing_slash, $pages)) {
             $i = 0;
             $old_uri = trim($uri, '/');
-            while (in_array($uri . $trailing_slash, $pages)) {
+            while (in_array('/' . trim($uri, '/') . $trailing_slash, $pages)) {
                 $i++;
                 if (defined('CLONING_MODE') && CLONING_MODE === true) {
                     $uri_parts = explode('/', $old_uri);
