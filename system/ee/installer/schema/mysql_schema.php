@@ -1581,18 +1581,6 @@ class EE_Schema
 			PRIMARY KEY (`remember_me_id`),
 			KEY `member_id` (`member_id`)
 		)";
-
-        // Cache table
-        // Used by the database cache driver to store cached data
-        $Q[] = "CREATE TABLE `exp_cache` (
-			`cache_key` varchar(255) NOT NULL,
-			`data` longtext NOT NULL,
-			`ttl` int(11) unsigned NOT NULL DEFAULT '0',
-			`created_at` int(11) unsigned NOT NULL,
-			PRIMARY KEY (`cache_key`),
-			KEY `created_at` (`created_at`)
-		)";
-
         $Q[] = "CREATE TABLE `exp_grid_columns` (
 			`col_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`field_id` int(10) unsigned DEFAULT NULL,
