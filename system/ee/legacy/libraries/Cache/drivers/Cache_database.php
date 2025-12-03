@@ -226,7 +226,7 @@ class EE_Cache_database extends CI_Driver
 
     /**
      * Is this caching driver supported on the system?
-     * Checks if cache table exists and creates it if not.
+     * Checks if cache table exists.
      *
      * @return	bool	TRUE if supported, FALSE otherwise
      */
@@ -238,54 +238,7 @@ class EE_Cache_database extends CI_Driver
         }
 
         // Check if cache table exists
-        if (ee()->db->table_exists($this->_cache_table)) {
-            return true;
-        }
-
-        return $this->_create_cache_table();
-    }
-
-    /**
-     * Create the cache table
-     *
-     * @return	bool	TRUE on success, FALSE on failure
-     */
-    protected function _create_cache_table()
-    {
-        $fields = array(
-            'cache_key' => array(
-                'type' => 'varchar',
-                'constraint' => '255',
-                'null' => false
-            ),
-            'data' => array(
-                'type' => 'longtext',
-                'null' => false
-            ),
-            'ttl' => array(
-                'type' => 'int',
-                'constraint' => '11',
-                'unsigned' => true,
-                'default' => 0
-            ),
-            'created_at' => array(
-                'type' => 'int',
-                'constraint' => '11',
-                'unsigned' => true,
-                'null' => false
-            )
-        );
-
-        ee()->dbforge->add_field($fields);
-        ee()->dbforge->add_key('cache_key', true);
-        ee()->dbforge->add_key('created_at');
-
-        // Create the table
-        if (ee()->dbforge->create_table($this->_cache_table, true)) {
-            return true;
-        }
-
-        return false;
+        return ee()->db->table_exists($this->_cache_table);
     }
 
     /**

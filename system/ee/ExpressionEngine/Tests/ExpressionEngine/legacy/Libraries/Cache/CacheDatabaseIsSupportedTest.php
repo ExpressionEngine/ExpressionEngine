@@ -27,18 +27,17 @@ class CacheDatabaseIsSupportedTest extends CacheDatabaseTestBase
     }
 
     /**
-     * Test that is_supported creates table when missing
+     * Test that is_supported returns false when table is missing
      */
-    public function testIsSupportedCreatesTableWhenMissing()
+    public function testIsSupportedReturnsFalseWhenTableMissing()
     {
         ee()->db->tableExistsReturn = false;
-        $this->mockDbforge->createTableReturn = true;
 
         $driver = $this->makeDatabaseDriver();
         $result = $driver->is_supported();
 
-        $this->assertTrue($this->mockDbforge->createTableCalled);
-        $this->assertTrue($result);
+        $this->assertFalse($this->mockDbforge->createTableCalled);
+        $this->assertFalse($result);
     }
 
     /**
@@ -56,17 +55,17 @@ class CacheDatabaseIsSupportedTest extends CacheDatabaseTestBase
     }
 
     /**
-     * Test that is_supported returns false when table creation fails
+     * Test that is_supported returns false when table doesn't exist
+     * (table creation is now handled by installer/updater, not the driver)
      */
-    public function testIsSupportedReturnsFalseWhenTableCreationFails()
+    public function testIsSupportedReturnsFalseWhenTableDoesNotExist()
     {
         ee()->db->tableExistsReturn = false;
-        $this->mockDbforge->createTableReturn = false;
 
         $driver = $this->makeDatabaseDriver();
         $result = $driver->is_supported();
 
-        $this->assertTrue($this->mockDbforge->createTableCalled);
+        $this->assertFalse($this->mockDbforge->createTableCalled);
         $this->assertFalse($result);
     }
 
@@ -75,15 +74,6 @@ class CacheDatabaseIsSupportedTest extends CacheDatabaseTestBase
      */
     public function testIsSupportedUsesCorrectTableName()
     {
-        $tableName = null;
-
-        // Enhance the mock to capture the table name
-        $originalTableExists = ee()->db->table_exists('cache');
-        ee()->db->table_exists = function($table) use (&$tableName) {
-            $tableName = $table;
-            return true;
-        };
-
         $driver = $this->makeDatabaseDriver();
         
         // Use reflection to get the protected _cache_table property
