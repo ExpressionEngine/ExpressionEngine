@@ -20,6 +20,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /*!
@@ -30,6 +34,60 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
+// Helper function to flatten nested items for virtualization
+function flattenItemsForVirtualization(items) {
+  var depth = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+  var flattened = [];
+
+  if (!items || !Array.isArray(items)) {
+    return flattened;
+  }
+
+  items.forEach(function (item) {
+    if (item.section) {
+      flattened.push(_objectSpread({}, item, {
+        depth: depth,
+        isSection: true
+      }));
+      return;
+    }
+
+    var flatItem = _objectSpread({}, item, {
+      depth: depth,
+      hasChildren: !!(item.children && item.children.length > 0),
+      originalChildren: item.children,
+      children: null
+    });
+
+    flattened.push(flatItem);
+
+    if (item.children && item.children.length > 0) {
+      var childrenFlattened = flattenItemsForVirtualization(item.children, depth + 1);
+      flattened = flattened.concat(childrenFlattened);
+    }
+  });
+  return flattened;
+} // Helper function to calculate item height for virtualization
+
+
+function getVirtualItemHeight(item) {
+  var height = 40;
+
+  if (item.instructions) {
+    height += 20;
+  }
+
+  if (item.toggles && Object.keys(item.toggles).length > 0) {
+    height += 10;
+  }
+
+  if (item.isSection) {
+    height = 35;
+  }
+
+  return height;
+}
+
 var SelectList = /*#__PURE__*/function (_React$Component) {
   _inherits(SelectList, _React$Component);
 
@@ -411,6 +469,19 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
       return item;
     }
   }, {
+    key: "shouldUseVirtualization",
+    value: function shouldUseVirtualization() {
+      // Use virtualization threshold, default to 100 items
+      var threshold = this.props.virtualizationThreshold !== undefined ? this.props.virtualizationThreshold : 100;
+      var totalCount = SelectList.countItems(this.props.items); // Don't virtualize if reorderable or nestableReorder is active
+
+      if (this.props.reorderable || this.props.nestableReorder) {
+        return false;
+      }
+
+      return totalCount > threshold;
+    }
+  }, {
     key: "render",
     value: function render() {
       var _this8 = this;
@@ -420,6 +491,8 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
       var values = props.selected.length ? props.selected.map(function (item) {
         return item.value;
       }) : [];
+      var useVirtualization = this.shouldUseVirtualization();
+      var flattenedItems = useVirtualization ? flattenItemsForVirtualization(props.items) : null;
       return React.createElement("div", {
         className: props.tooMany ? ' lots-of-checkboxes' : '',
         ref: function ref(container) {
@@ -459,12 +532,15 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
         splitForTwo: props.splitForTwo,
         list: props.items,
         selectedItems: props.selected,
-        handle: this.handleSelect
+        handle: this.handleSelect,
+        useVirtualization: useVirtualization,
+        flattenedItems: flattenedItems,
+        virtualizationHeight: props.virtualizationHeight || 400
       }, !props.loading && props.items.length == 0 && React.createElement(NoResults, {
         text: props.noResults
       }), props.loading && React.createElement(Loading, {
         text: EE.lang.loading
-      }), !props.loading && props.items.map(function (item, index) {
+      }), !props.loading && !useVirtualization && props.items.map(function (item, index) {
         return React.createElement(SelectItem, {
           key: item.value ? item.value : item.section,
           item: item,
@@ -486,6 +562,22 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
           state: _this8.state,
           toggleChanged: props.toggleChanged
         });
+      }), !props.loading && useVirtualization && React.createElement(VirtualizedItemList, {
+        items: flattenedItems,
+        name: props.name,
+        selected: props.selected,
+        disabledChoices: props.disabledChoices,
+        multi: props.multi,
+        selectable: props.selectable,
+        removable: props.removable,
+        unremovableChoices: props.unremovableChoices,
+        editable: props.editable,
+        handleSelect: this.handleSelect,
+        handleRemove: props.handleRemove,
+        groupToggle: props.groupToggle,
+        toggles: props.toggles,
+        state: this.state,
+        toggleChanged: props.toggleChanged
       })), !props.multi && props.tooMany && props.selected[0] && React.createElement(SelectedItem, {
         item: this.getFullItem(props.selected[0]),
         clearSelection: this.clearSelection,
@@ -634,7 +726,24 @@ function FieldInputs(props) {
     return React.createElement("ul", {
       className: 'field-inputs lots-of-checkboxes__items field-nested' + divClass
     }, props.children);
-  }
+  } // Add scrolling styles when virtualization is active
+
+
+  var virtualizationStyle = props.useVirtualization ? {
+    height: "".concat(props.virtualizationHeight, "px"),
+    overflow: 'auto',
+    position: 'relative'
+  } : {}; // If not nested and virtualization is active, wrap children in ul.field-nested for CSS compatibility
+
+  if (props.useVirtualization) {
+    return React.createElement("div", {
+      className: 'field-inputs lots-of-checkboxes__items' + divClass,
+      style: virtualizationStyle
+    }, React.createElement("ul", {
+      className: "field-nested"
+    }, props.children));
+  } // Regular non-virtualized rendering
+
 
   return React.createElement("div", {
     className: 'field-inputs lots-of-checkboxes__items' + divClass
@@ -719,7 +828,9 @@ var SelectItem = /*#__PURE__*/function (_React$Component2) {
           className: "field-group-head",
           key: props.item.section
         }, props.item.section);
-      }
+      } // For virtualized items, don't apply inline padding
+      // CSS will handle indentation via data-depth attribute
+
 
       var listItem = React.createElement("label", {
         className: 'checkbox-label',
@@ -907,4 +1018,170 @@ var ListOfSelectedCategories = /*#__PURE__*/function (_React$Component4) {
   }]);
 
   return ListOfSelectedCategories;
+}(React.Component); // Virtualized Item List Component - renders only visible items for performance
+
+
+var VirtualizedItemList = /*#__PURE__*/function (_React$Component5) {
+  _inherits(VirtualizedItemList, _React$Component5);
+
+  function VirtualizedItemList(props) {
+    var _this10;
+
+    _classCallCheck(this, VirtualizedItemList);
+
+    _this10 = _possibleConstructorReturn(this, _getPrototypeOf(VirtualizedItemList).call(this, props));
+
+    _defineProperty(_assertThisInitialized(_this10), "handleScroll", function () {
+      var scrollTop = _this10.scrollContainer ? _this10.scrollContainer.scrollTop : 0;
+
+      _this10.setState({
+        scrollTop: scrollTop
+      });
+    });
+
+    _this10.state = {
+      scrollTop: 0
+    };
+    _this10.containerRef = React.createRef();
+    _this10.scrollHandler = null;
+    return _this10;
+  }
+
+  _createClass(VirtualizedItemList, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      var _this11 = this;
+
+      // Find the scrollable parent container (the outer <div> with field-inputs)
+      if (this.containerRef.current) {
+        this.scrollContainer = this.containerRef.current.closest('.field-inputs');
+
+        if (this.scrollContainer) {
+          // Debounce scroll handler for better performance
+          this.scrollHandler = function () {
+            if (_this11.scrollTimeout) {
+              clearTimeout(_this11.scrollTimeout);
+            }
+
+            _this11.scrollTimeout = setTimeout(function () {
+              _this11.handleScroll();
+            }, 16); // ~60fps
+          };
+
+          this.scrollContainer.addEventListener('scroll', this.scrollHandler);
+        }
+      }
+    }
+  }, {
+    key: "componentWillUnmount",
+    value: function componentWillUnmount() {
+      if (this.scrollContainer && this.scrollHandler) {
+        this.scrollContainer.removeEventListener('scroll', this.scrollHandler);
+      }
+
+      if (this.scrollTimeout) {
+        clearTimeout(this.scrollTimeout);
+      }
+    }
+  }, {
+    key: "getVisibleRange",
+    value: function getVisibleRange() {
+      var scrollTop = this.state.scrollTop;
+      var containerHeight = 400; // Default container height
+
+      var itemHeight = 40; // Base item height
+
+      var overscan = 10; // Render extra items above/below viewport
+
+      var startIndex = Math.max(0, Math.floor(scrollTop / itemHeight) - overscan);
+      var visibleCount = Math.ceil(containerHeight / itemHeight) + overscan * 2;
+      var endIndex = Math.min(this.props.items.length - 1, startIndex + visibleCount);
+      return {
+        startIndex: startIndex,
+        endIndex: endIndex
+      };
+    }
+  }, {
+    key: "getTotalHeight",
+    value: function getTotalHeight() {
+      var totalHeight = 0;
+
+      for (var i = 0; i < this.props.items.length; i++) {
+        totalHeight += getVirtualItemHeight(this.props.items[i]);
+      }
+
+      return totalHeight;
+    }
+  }, {
+    key: "getOffsetTop",
+    value: function getOffsetTop(startIndex) {
+      var offset = 0;
+
+      for (var i = 0; i < startIndex; i++) {
+        offset += getVirtualItemHeight(this.props.items[i]);
+      }
+
+      return offset;
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var _this12 = this;
+
+      var _this$getVisibleRange = this.getVisibleRange(),
+          startIndex = _this$getVisibleRange.startIndex,
+          endIndex = _this$getVisibleRange.endIndex;
+
+      var totalHeight = this.getTotalHeight();
+      var offsetTop = this.getOffsetTop(startIndex);
+      var visibleItems = this.props.items.slice(startIndex, endIndex + 1); // Return virtualization structure without wrapping <ul>
+      // Parent FieldInputs component provides the <ul> wrapper and handles scrolling
+
+      return React.createElement(React.Fragment, null, React.createElement("div", {
+        ref: this.containerRef,
+        style: {
+          height: "".concat(totalHeight, "px"),
+          position: 'relative',
+          width: '100%'
+        }
+      }, React.createElement("div", {
+        style: {
+          position: 'absolute',
+          top: "".concat(offsetTop, "px"),
+          left: 0,
+          right: 0
+        }
+      }, visibleItems.map(function (item, localIndex) {
+        var globalIndex = startIndex + localIndex;
+        return React.createElement("li", {
+          key: item.value ? item.value : item.section,
+          className: "nestable-item",
+          "data-id": item.value,
+          "data-depth": item.depth || 0
+        }, React.createElement(SelectItem, {
+          item: item,
+          name: _this12.props.name,
+          selected: _this12.props.selected,
+          disabledChoices: _this12.props.disabledChoices,
+          multi: _this12.props.multi,
+          nested: false,
+          selectable: _this12.props.selectable,
+          reorderable: false,
+          removable: _this12.props.removable && (!_this12.props.unremovableChoices || !_this12.props.unremovableChoices.includes(item.value)),
+          editable: _this12.props.editable,
+          handleSelect: _this12.props.handleSelect,
+          handleRemove: function handleRemove(e, item) {
+            return _this12.props.handleRemove(e, item);
+          },
+          groupToggle: _this12.props.groupToggle,
+          toggles: _this12.props.toggles,
+          state: _this12.props.state,
+          toggleChanged: _this12.props.toggleChanged,
+          depth: item.depth
+        }));
+      }))));
+    }
+  }]);
+
+  return VirtualizedItemList;
 }(React.Component);

@@ -39,7 +39,7 @@ class Upload
                 'file_type' => lang('type_' . $file->file_type)
             ];
             if ($file->isImage()) {
-                $metadata['dimensions'] = (count($dimensions) > 1) ? $dimensions[0] . 'x' . $dimensions[1] . ' px' : '';
+                $metadata['dimensions'] = (count($dimensions) > 1) ? $dimensions[1] . 'x' . $dimensions[0] . ' px' : '';
             }
             $metadata = array_merge($metadata, [
                 'uploaded_by' => ($file->uploaded_by_member_id && $file->UploadAuthor) ? $file->UploadAuthor->getMemberName() : '',

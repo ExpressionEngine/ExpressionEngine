@@ -32702,6 +32702,168 @@ fieldset .field-control #eye {
   display: block;
 }
 
+/**
+ * Virtualized Select List Styles
+ * Handles indentation and styling for flattened virtualized lists
+ * to match the visual appearance of non-virtualized nested lists
+ */
+/* Apply padding-left indentation based on data-depth attribute */
+/* This mimics the behavior of nested ul.field-nested ul { padding-left: 20px; } */
+ul.field-nested li.nestable-item {
+  position: relative;
+}
+ul.field-nested li.nestable-item[data-depth="1"] {
+  padding-left: 20px;
+}
+ul.field-nested li.nestable-item[data-depth="2"] {
+  padding-left: 40px;
+}
+ul.field-nested li.nestable-item[data-depth="3"] {
+  padding-left: 60px;
+}
+ul.field-nested li.nestable-item[data-depth="4"] {
+  padding-left: 80px;
+}
+ul.field-nested li.nestable-item[data-depth="5"] {
+  padding-left: 100px;
+}
+ul.field-nested li.nestable-item[data-depth="6"] {
+  padding-left: 120px;
+}
+ul.field-nested li.nestable-item[data-depth="7"] {
+  padding-left: 140px;
+}
+ul.field-nested li.nestable-item[data-depth="8"] {
+  padding-left: 160px;
+}
+ul.field-nested li.nestable-item[data-depth="9"] {
+  padding-left: 180px;
+}
+ul.field-nested li.nestable-item[data-depth="10"] {
+  padding-left: 200px;
+}
+
+/* Add left border for nested items (depth > 0) to match ul.field-nested ul li label */
+/* Adjust input position for nested items to match ul.field-nested ul li input[type=checkbox] */
+ul.field-nested li.nestable-item[data-depth]:not([data-depth="0"]) label {
+  border-left: 2px solid var(--ee-border-dark);
+  padding-left: 10px;
+}
+ul.field-nested li.nestable-item[data-depth]:not([data-depth="0"]) input[type=checkbox],
+ul.field-nested li.nestable-item[data-depth]:not([data-depth="0"]) input[type=radio] {
+  left: 10px;
+}
+
+/*
+ * Pseudo-element for connection line between parent and first child
+ * Uses CSS sibling selectors to detect when depth increases (parent -> child transition)
+ * This mimics ul.field-nested ul li ul::before
+ */
+/*
+ * Shared styles for all depth transition pseudo-elements
+ * Uses adjacent sibling selector to detect when depth increases
+ */
+ul.field-nested li.nestable-item[data-depth="0"] + li.nestable-item[data-depth="1"]::before {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 22px;
+  height: 2px;
+  background: var(--ee-border-dark);
+  top: -2px;
+  left: 0px;
+}
+ul.field-nested li.nestable-item[data-depth="1"] + li.nestable-item[data-depth="2"]::before {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 22px;
+  height: 2px;
+  background: var(--ee-border-dark);
+  top: -2px;
+  left: 20px;
+}
+ul.field-nested li.nestable-item[data-depth="2"] + li.nestable-item[data-depth="3"]::before {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 22px;
+  height: 2px;
+  background: var(--ee-border-dark);
+  top: -2px;
+  left: 40px;
+}
+ul.field-nested li.nestable-item[data-depth="3"] + li.nestable-item[data-depth="4"]::before {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 22px;
+  height: 2px;
+  background: var(--ee-border-dark);
+  top: -2px;
+  left: 60px;
+}
+ul.field-nested li.nestable-item[data-depth="4"] + li.nestable-item[data-depth="5"]::before {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 22px;
+  height: 2px;
+  background: var(--ee-border-dark);
+  top: -2px;
+  left: 80px;
+}
+ul.field-nested li.nestable-item[data-depth="5"] + li.nestable-item[data-depth="6"]::before {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 22px;
+  height: 2px;
+  background: var(--ee-border-dark);
+  top: -2px;
+  left: 100px;
+}
+ul.field-nested li.nestable-item[data-depth="6"] + li.nestable-item[data-depth="7"]::before {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 22px;
+  height: 2px;
+  background: var(--ee-border-dark);
+  top: -2px;
+  left: 120px;
+}
+ul.field-nested li.nestable-item[data-depth="7"] + li.nestable-item[data-depth="8"]::before {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 22px;
+  height: 2px;
+  background: var(--ee-border-dark);
+  top: -2px;
+  left: 140px;
+}
+ul.field-nested li.nestable-item[data-depth="8"] + li.nestable-item[data-depth="9"]::before {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 22px;
+  height: 2px;
+  background: var(--ee-border-dark);
+  top: -2px;
+  left: 160px;
+}
+ul.field-nested li.nestable-item[data-depth="9"] + li.nestable-item[data-depth="10"]::before {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 22px;
+  height: 2px;
+  background: var(--ee-border-dark);
+  top: -2px;
+  left: 180px;
+}
+
 .select-popup, select {
   text-align: initial;
   -webkit-appearance: none;
@@ -32716,6 +32878,9 @@ fieldset .field-control #eye {
   padding-right: 30px !important;
   background-size: 8px 12px;
   background-position: right 12px center;
+}
+.select-popup.sort-select, select.sort-select {
+  margin-top: 0;
 }
 .select-popup.select-popup--large, select.select-popup--large {
   height: initial;
