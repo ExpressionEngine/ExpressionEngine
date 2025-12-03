@@ -3153,8 +3153,11 @@ SCRIPT;
      */
     private function switch_site($site_id)
     {
+        // cache the current site_prefs and cache and set the site_pages from the new site_prefs
+        ee()->config->get_cached_site_prefs(ee()->config->item('site_id'));
+        $config = ee()->config->get_cached_site_prefs($site_id);
         ee()->config->set_item('site_id', $site_id);
-        ee()->config->get_cached_site_prefs($site_id);
+        ee()->config->set_item('site_pages', $config['site_pages'] ?? []);
     }
 }
 
