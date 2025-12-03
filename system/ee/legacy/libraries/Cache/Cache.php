@@ -34,6 +34,7 @@ class Cache extends EE_Driver_Library
         'file',
         'memcached',
         'redis',
+        'database',
         'dummy'
     );
 
