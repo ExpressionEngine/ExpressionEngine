@@ -87,6 +87,17 @@ class CommandUpdate extends Cli
 
         $this->runUpgrade();
         $this->postFlightCheck();
+
+        // -------------------------------------------
+        // 'updater_complete' hook.
+        //  - added 7.5.16
+        //
+        if (ee()->extensions->active_hook('updater_complete') === true) {
+            ee()->extensions->call('updater_complete');
+        }
+        //
+        // -------------------------------------------
+
         $this->complete('command_update_success');
     }
 

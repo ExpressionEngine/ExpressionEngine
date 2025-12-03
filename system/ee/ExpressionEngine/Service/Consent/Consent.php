@@ -211,9 +211,9 @@ class Consent
 
                 return $consents[$grants[$request_ref]->consent_request_id]->isGranted();
             }
-
-            return false;
         }
+		
+        return false;
     }
 
     /**
@@ -242,9 +242,9 @@ class Consent
 
                 return $consents[$rid]->response_date != false;
             }
-
-            return false;
         }
+
+        return false;		
     }
 
     /**

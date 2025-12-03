@@ -46,7 +46,7 @@ if (! AJAX_REQUEST) {
                     <?php foreach ($breadcrumbs as $url => $name) : ?>
                         <?php $i++; ?>
                         <?php if ($i < count($breadcrumbs)) : ?>
-                        <li><a href="<?=$url?>" data-filter-url="<?=$url?>"><i class="fal fa-<?=($i == 1 ? 'hdd' : 'folder')?>"></i><?=$name?></a></li>
+                        <li><a href="<?=$url?>" <?php if (!isset($uploadLocationsAndDirectoriesDropdownChoices)): ?>data-filter-url="<?=$url?>"<?php endif; ?>><i class="fal fa-<?=($i == 1 ? 'hdd' : 'folder')?>"></i><?=$name?></a></li>
                         <?php else : ?>
                         <li><span><i class="fal fa-folder"></i><?=$name?></span></li>
                         <?php endif; ?>

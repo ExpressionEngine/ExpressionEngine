@@ -144,7 +144,7 @@ class Notes_ft extends EE_Fieldtype
      */
     public function accepts_content_type($name)
     {
-        return false;
+        return true;
     }
 
     private function getParsedNote()

@@ -1477,7 +1477,9 @@ class EE_Schema
 			KEY `upload_location_id` (`upload_location_id`),
 			KEY `directory_id` (`directory_id`),
 			KEY `file_type` (`file_type`),
-			KEY `site_id` (`site_id`)
+			KEY `site_id` (`site_id`),
+			KEY `file_name` (`file_name`),
+			KEY `title` (`title`)
 		)";
 
         $Q[] = "CREATE TABLE `exp_file_categories` (

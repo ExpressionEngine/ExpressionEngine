@@ -18,6 +18,7 @@ trait FileManagerTrait
     protected $searchableFields = [
         'credit',
         'description',
+        'file_id',
         'file_name',
         'location',
         'mime_type',
@@ -360,7 +361,7 @@ trait FileManagerTrait
             // We only need to eager load contents for destinations that are displaying
             // files in this current page of the listing
             if (! in_array($file->upload_location_id, $destinationsToEagerLoad)) {
-                if ($file->UploadDestination->adapter != 'local' && $file->UploadDestination->exists()) {
+                if ($file->UploadDestination->getProperty('adapter') != 'local' && $file->UploadDestination->exists()) {
                     $file->UploadDestination->eagerLoadContents();
                 }
                 $destinationsToEagerLoad[$file->upload_location_id] = $file->upload_location_id;
@@ -621,7 +622,7 @@ trait FileManagerTrait
                 $uploadLocationsAndDirectoriesDropdownChoices[$upload_pref->getId() . '.0'] = [
                     'label' => '<i class="fal fa-hdd"></i>' . $upload_pref->name,
                     'upload_location_id' => $upload_pref->id,
-                    'adapter' => $upload_pref->adapter,
+                    'adapter' => $upload_pref->getProperty('adapter'),
                     'directory_id' => 0,
                     'path' => '',
                     'children' => !bool_config_item('file_manager_compatibility_mode') ? $upload_pref->getDirectoriesDropdown(true) : []
