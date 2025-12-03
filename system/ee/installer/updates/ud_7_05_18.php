@@ -26,6 +26,7 @@ class Updater
     public function do_update()
     {
         $steps = new \ProgressIterator([
+            'addCacheTable',
             'addFilesIndexes',
         ]);
 
@@ -34,6 +35,41 @@ class Updater
         }
 
         return true;
+    }
+
+    private function addCacheTable()
+    {
+        if (ee()->db->table_exists('cache')) {
+            return;
+        }
+
+        ee()->dbforge->add_field([
+            'cache_key' => [
+                'type' => 'varchar',
+                'constraint' => 255,
+                'null' => false
+            ],
+            'data' => [
+                'type' => 'longtext',
+                'null' => false
+            ],
+            'ttl' => [
+                'type' => 'int',
+                'constraint' => 11,
+                'unsigned' => true,
+                'default' => 0
+            ],
+            'created_at' => [
+                'type' => 'int',
+                'constraint' => 11,
+                'unsigned' => true,
+                'null' => false
+            ]
+        ]);
+
+        ee()->dbforge->add_key('cache_key', true);
+        ee()->dbforge->add_key('created_at');
+        ee()->smartforge->create_table('cache');
     }
 
     public function addFilesIndexes()
