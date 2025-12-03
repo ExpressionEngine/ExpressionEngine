@@ -27,7 +27,7 @@ class Dimensions extends EntryManager\Columns\Column
     {
         $dimensions = explode(" ", $file->file_hw_original);
         if (count($dimensions) > 1 && $dimensions[0] != '') {
-            return $dimensions[0] . 'x' . $dimensions[1];
+            return $dimensions[1] . 'x' . $dimensions[0];
         }
         return '';
     }
