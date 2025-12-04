@@ -44,12 +44,13 @@ class ProSearchModResultsTest extends ProSearchTestBase
         
         // Mock Filters
         $filters = $this->getMockBuilder('stdClass')
-            ->addMethods(['filter', 'entry_ids', 'set_entry_ids', 'exclude', 'fixed_order'])
+            ->addMethods(['filter', 'entry_ids', 'set_entry_ids', 'exclude', 'fixed_order', 'names'])
             ->getMock();
         $filters->method('filter')->willReturn(null);
         $filters->method('entry_ids')->willReturn([1, 2, 3]);
         $filters->method('exclude')->willReturn(false);
         $filters->method('fixed_order')->willReturn(false);
+        $filters->method('names')->willReturn([]);
         ee()->setMock('pro_search_filters', $filters);
         
         // Mock Log Model
@@ -527,12 +528,13 @@ class ProSearchModResultsTest extends ProSearchTestBase
 
         // Mock filters to return collection-filtered results
         $filters = $this->getMockBuilder('stdClass')
-            ->addMethods(['filter', 'entry_ids', 'set_entry_ids', 'exclude', 'fixed_order'])
+            ->addMethods(['filter', 'entry_ids', 'set_entry_ids', 'exclude', 'fixed_order', 'names'])
             ->getMock();
         $filters->method('filter')->willReturn(null);
         $filters->method('entry_ids')->willReturn([1, 2, 3]); // Filtered results
         $filters->method('exclude')->willReturn(false);
         $filters->method('fixed_order')->willReturn(false);
+        $filters->method('names')->willReturn(['collection']);
         ee()->setMock('pro_search_filters', $filters);
 
         $tmpl = $this->getMockBuilder('stdClass')
@@ -625,12 +627,13 @@ class ProSearchModResultsTest extends ProSearchTestBase
 
         // Mock filters to return empty results
         $filters = $this->getMockBuilder('stdClass')
-            ->addMethods(['filter', 'entry_ids', 'set_entry_ids', 'exclude', 'fixed_order'])
+            ->addMethods(['filter', 'entry_ids', 'set_entry_ids', 'exclude', 'fixed_order', 'names'])
             ->getMock();
         $filters->method('filter')->willReturn(null);
         $filters->method('entry_ids')->willReturn([]); // Empty results
         $filters->method('exclude')->willReturn(false);
         $filters->method('fixed_order')->willReturn(false);
+        $filters->method('names')->willReturn([]);
         ee()->setMock('pro_search_filters', $filters);
 
         $tmpl = $this->getMockBuilder('stdClass')
@@ -679,12 +682,13 @@ class ProSearchModResultsTest extends ProSearchTestBase
 
         // Mock filters to return exclude-only results
         $filters = $this->getMockBuilder('stdClass')
-            ->addMethods(['filter', 'entry_ids', 'set_entry_ids', 'exclude', 'fixed_order'])
+            ->addMethods(['filter', 'entry_ids', 'set_entry_ids', 'exclude', 'fixed_order', 'names'])
             ->getMock();
         $filters->method('filter')->willReturn(null);
         $filters->method('entry_ids')->willReturn(false); // Not an array, so exclude mode
         $filters->method('exclude')->willReturn([5, 6, 7]); // Exclude these IDs
         $filters->method('fixed_order')->willReturn(false);
+        $filters->method('names')->willReturn([]);
         ee()->setMock('pro_search_filters', $filters);
 
         $tmpl = $this->getMockBuilder('stdClass')
