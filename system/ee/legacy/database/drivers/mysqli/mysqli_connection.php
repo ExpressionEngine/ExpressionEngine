@@ -207,11 +207,13 @@ class CI_DB_mysqli_connection
     public function get_indexes($table = '')
     {
         $indexes = [];
+        ee()->load->library('logger');
+        ee()->load->helper('array');
 
         // Check to make sure table exists
         if (! ee()->db->table_exists($table)) {
             ee()->logger->updater(__METHOD__ . " failed. Table '" . ee()->db->dbprefix . "$table' does not exist.", true);
-            return $keys;
+            return $indexes;
         }
 
         // Get indexes
@@ -219,7 +221,7 @@ class CI_DB_mysqli_connection
 
         if($query->num_rows() == 0) {
             ee()->logger->updater(__METHOD__ . " failed. Unable to get indexes from '" . ee()->db->dbprefix . "$table'.", true);
-            return $keys;
+            return $indexes;
         }
 
         foreach ($query->result_array() as $row) {
