@@ -1424,7 +1424,7 @@ class SetTest extends TestCase
         $modelMock = $this->getMockBuilder('stdClass')
             ->addMethods(['make', 'get'])
             ->getMock();
-        
+
         $modelMock->method('get')->willReturnCallback(function($modelName) {
             if ($modelName === 'Fieldtype') {
                 return new class {
@@ -1447,7 +1447,7 @@ class SetTest extends TestCase
                 }
             };
         });
-        
+
         $modelMock->method('make')->willReturnCallback(function($modelName) {
             $model = $this->getMockBuilder('stdClass')
                 ->addMethods(['getName', 'hasProperty', 'validate', 'on', 'set'])
@@ -1456,14 +1456,14 @@ class SetTest extends TestCase
             $model->method('hasProperty')->willReturn(true);
             $model->method('on')->willReturn(true);
             $model->method('set')->willReturn(true);
-            
+
             // All models need validate() method that returns a validation result
             $validationResult = $this->getMockBuilder('stdClass')
                 ->addMethods(['failed'])
                 ->getMock();
             $validationResult->method('failed')->willReturn(false);
             $model->method('validate')->willReturn($validationResult);
-            
+
             if ($modelName === 'Channel') {
                 $model->site_id = 1;
                 $model->channel_name = '';
@@ -1490,7 +1490,7 @@ class SetTest extends TestCase
                 $model->status = '';
                 $model->highlight = '';
             }
-            
+
             return $model;
         });
         ee()->setMock('Model', $modelMock);
@@ -1510,6 +1510,704 @@ class SetTest extends TestCase
         $this->assertArrayHasKey('uploads', $uploadDests);
         $this->assertArrayHasKey('test_cats', $categoryGroups);
         $this->assertCount(1, $statuses);
+    }
+
+    // ===== PHASE 1: Field Type Importers =====
+
+    public function testImportGridSetsUpHooks()
+    {
+        // Create mock field
+        $field = m::mock('stdClass');
+        $field->shouldReceive('on')->with('beforeValidate', m::type('Closure'))->once();
+        $field->shouldReceive('on')->with('beforeInsert', m::type('Closure'))->once();
+
+        // Create columns data
+        $columns = [
+            ['type' => 'text', 'col_label' => 'Title', 'col_name' => 'title'],
+            ['type' => 'textarea', 'col_label' => 'Content', 'col_name' => 'content']
+        ];
+
+        // Call importGrid via reflection
+        $this->invokePrivateMethod($this->set, 'importGrid', [$field, $columns, 'grid']);
+
+        // Verify hooks were registered (Mockery expectations verified automatically)
+        $this->assertTrue(true); // Explicit assertion to avoid risky test warning
+    }
+
+    public function testImportGridModifiesPostData()
+    {
+        // Setup
+        $field = m::mock('stdClass');
+        $hookClosure = null;
+        $field->shouldReceive('on')->andReturnUsing(function($event, $closure) use (&$hookClosure) {
+            if ($event === 'beforeInsert') {
+                $hookClosure = $closure;
+            }
+        });
+
+        $columns = [
+            ['type' => 'text', 'col_label' => 'Title']
+        ];
+
+        // Execute
+        $this->invokePrivateMethod($this->set, 'importGrid', [$field, $columns, 'grid']);
+
+        // Simulate hook execution
+        $_POST = [];
+        $hookClosure();
+
+        // Verify POST structure
+        $this->assertArrayHasKey('grid', $_POST);
+        $this->assertArrayHasKey('cols', $_POST['grid']);
+        $this->assertArrayHasKey('new_0', $_POST['grid']['cols']);
+        $this->assertEquals('Title', $_POST['grid']['cols']['new_0']['col_col_label']);
+
+        // Cleanup
+        $_POST = [];
+    }
+
+    public function testImportGridHandlesRelationshipColumns()
+    {
+        // Setup channels for relationship column testing
+        $channel1 = m::mock('stdClass');
+        $channel1->shouldReceive('getId')->andReturn(10);
+        $channel2 = m::mock('stdClass');
+        $channel2->shouldReceive('getId')->andReturn(20);
+
+        $this->setPrivateProperty($this->set, 'channels', [
+            'News' => $channel1,
+            'Blog' => $channel2
+        ]);
+
+        // Setup field
+        $field = m::mock('stdClass');
+        $hookClosure = null;
+        $field->shouldReceive('on')->andReturnUsing(function($event, $closure) use (&$hookClosure) {
+            if ($event === 'beforeInsert') {
+                $hookClosure = $closure;
+            }
+        });
+
+        $columns = [
+            [
+                'type' => 'relationship',
+                'col_label' => 'Related Articles',
+                'settings' => ['channels' => ['News', 'Blog']]
+            ]
+        ];
+
+        // Execute
+        $this->invokePrivateMethod($this->set, 'importGrid', [$field, $columns, 'grid']);
+
+        // Execute hook
+        $_POST = [];
+        $hookClosure();
+
+        // Verify channel IDs were resolved
+        $this->assertArrayHasKey('grid', $_POST);
+        $this->assertArrayHasKey('cols', $_POST['grid']);
+        $this->assertArrayHasKey('new_0', $_POST['grid']['cols']);
+        $this->assertEquals(['News' => 10, 'Blog' => 20], $_POST['grid']['cols']['new_0']['col_settings']['channels']);
+
+        // Cleanup
+        $_POST = [];
+    }
+
+    public function testImportGridHandlesFileGridType()
+    {
+        // Setup field
+        $field = m::mock('stdClass');
+        $hookClosure = null;
+        $field->shouldReceive('on')->andReturnUsing(function($event, $closure) use (&$hookClosure) {
+            if ($event === 'beforeInsert') {
+                $hookClosure = $closure;
+            }
+        });
+
+        $columns = [
+            ['type' => 'text', 'col_label' => 'Title']
+        ];
+
+        // Execute with 'file_grid' type
+        $this->invokePrivateMethod($this->set, 'importGrid', [$field, $columns, 'file_grid']);
+
+        // Execute hook
+        $_POST = [];
+        $hookClosure();
+
+        // Verify file_grid POST structure (not grid)
+        $this->assertArrayHasKey('file_grid', $_POST);
+        $this->assertArrayNotHasKey('grid', $_POST);
+        $this->assertArrayHasKey('cols', $_POST['file_grid']);
+        $this->assertEquals('Title', $_POST['file_grid']['cols']['new_0']['col_col_label']);
+
+        // Cleanup
+        $_POST = [];
+    }
+
+    public function testImportGridUnsetsExistingPostData()
+    {
+        // Setup field
+        $field = m::mock('stdClass');
+        $hookClosure = null;
+        $field->shouldReceive('on')->andReturnUsing(function($event, $closure) use (&$hookClosure) {
+            if ($event === 'beforeInsert') {
+                $hookClosure = $closure;
+            }
+        });
+
+        $columns = [
+            ['type' => 'text', 'col_label' => 'New Title']
+        ];
+
+        // Execute
+        $this->invokePrivateMethod($this->set, 'importGrid', [$field, $columns, 'grid']);
+
+        // Set up existing POST data that should be cleared
+        $_POST = ['grid' => ['existing' => 'data']];
+
+        // Execute hook
+        $hookClosure();
+
+        // Verify existing data was cleared and new data set
+        $this->assertArrayHasKey('grid', $_POST);
+        $this->assertArrayNotHasKey('existing', $_POST['grid']);
+        $this->assertArrayHasKey('cols', $_POST['grid']);
+        $this->assertEquals('New Title', $_POST['grid']['cols']['new_0']['col_col_label']);
+
+        // Cleanup
+        $_POST = [];
+    }
+
+    // ===== PHASE 1: importFileField Tests =====
+
+    public function testImportFileFieldWithAllowedDirectoriesAll()
+    {
+        $field = m::mock('stdClass');
+        $field->shouldNotReceive('on'); // No hook should be registered
+
+        $field_data = ['allowed_directories' => 'all'];
+
+        $this->invokePrivateMethod($this->set, 'importFileField', [$field, $field_data]);
+
+        // Verify no hooks registered
+        $this->assertTrue(true); // Explicit assertion to avoid risky test warning
+    }
+
+    public function testImportFileFieldWithSpecificDestination()
+    {
+        // Setup upload destination
+        $uploadDest = m::mock('stdClass');
+        $uploadDest->name = 'my_uploads';
+        $uploadDest->shouldReceive('getId')->andReturn(5);
+
+        $this->setPrivateProperty($this->set, 'upload_destinations', [
+            'my_uploads' => $uploadDest
+        ]);
+
+        // Setup field
+        $field = m::mock('stdClass');
+        $hookClosure = null;
+        $field->shouldReceive('on')->with('beforeInsert', m::type('Closure'))
+            ->andReturnUsing(function($event, $closure) use (&$hookClosure) {
+                $hookClosure = $closure;
+            });
+
+        $field_data = ['allowed_directories' => 'my_uploads'];
+
+        // Mock Model service using eeObjectMock.php pattern (see SetTest.php lines 353-359)
+        $destModel = m::mock('stdClass');
+        $destModel->shouldReceive('getId')->andReturn(5);
+
+        // Create chainable builder mock (following SetTest.php pattern)
+        $modelBuilder = $this->getMockBuilder('stdClass')
+            ->addMethods(['fields', 'filter', 'first'])
+            ->getMock();
+        $modelBuilder->method('fields')->with('id')->willReturnSelf();
+        $modelBuilder->method('filter')->with('name', 'my_uploads')->willReturnSelf();
+        $modelBuilder->method('first')->willReturn($destModel);
+
+        $modelService = $this->getMockBuilder('stdClass')
+            ->addMethods(['get'])
+            ->getMock();
+        $modelService->method('get')->with('UploadDestination')->willReturn($modelBuilder);
+
+        // Use eeObjectMock.php pattern to register mock
+        ee()->setMock('Model', $modelService);
+
+        // Execute
+        $this->invokePrivateMethod($this->set, 'importFileField', [$field, $field_data]);
+
+        // Execute hook
+        $field->shouldReceive('set')->once()->with(m::on(function($settings) {
+            return isset($settings['allowed_directories']) &&
+                   $settings['allowed_directories'] == 5;
+        }));
+
+        $hookClosure();
+
+        // Cleanup handled in tearDown()
+        $this->assertTrue(true); // Explicit assertion to avoid risky test warning
+    }
+
+    public function testImportFileFieldResolvesUploadDestinationId()
+    {
+        // Setup upload destination
+        $uploadDest = m::mock('stdClass');
+        $uploadDest->name = 'test_destination';
+        $uploadDest->shouldReceive('getId')->andReturn(42);
+
+        $this->setPrivateProperty($this->set, 'upload_destinations', [
+            'test_destination' => $uploadDest
+        ]);
+
+        // Setup field and hook
+        $field = m::mock('stdClass');
+        $hookClosure = null;
+        $field->shouldReceive('on')->with('beforeInsert', m::type('Closure'))
+            ->andReturnUsing(function($event, $closure) use (&$hookClosure) {
+                $hookClosure = $closure;
+            });
+
+        $field_data = ['allowed_directories' => 'test_destination'];
+
+        // Mock Model service for hook execution
+        $destModel = m::mock('stdClass');
+        $destModel->shouldReceive('getId')->andReturn(42);
+
+        $modelBuilder = $this->getMockBuilder('stdClass')
+            ->addMethods(['fields', 'filter', 'first'])
+            ->getMock();
+        $modelBuilder->method('fields')->with('id')->willReturnSelf();
+        $modelBuilder->method('filter')->with('name', 'test_destination')->willReturnSelf();
+        $modelBuilder->method('first')->willReturn($destModel);
+
+        $modelService = $this->getMockBuilder('stdClass')
+            ->addMethods(['get'])
+            ->getMock();
+        $modelService->method('get')->with('UploadDestination')->willReturn($modelBuilder);
+
+        ee()->setMock('Model', $modelService);
+
+        // Execute
+        $this->invokePrivateMethod($this->set, 'importFileField', [$field, $field_data]);
+
+        // Verify hook execution sets correct ID
+        $field->shouldReceive('set')->once()->with(m::on(function($settings) {
+            return isset($settings['allowed_directories']) &&
+                   $settings['allowed_directories'] == 42;
+        }));
+
+        $hookClosure();
+
+        $this->assertTrue(true); // Explicit assertion to avoid risky test warning
+    }
+
+    public function testImportFileFieldHandlesAliasedDestinationName()
+    {
+        // Setup upload destination with alias
+        $uploadDest = m::mock('stdClass');
+        $uploadDest->name = 'aliased_uploads'; // This is the aliased name
+        $uploadDest->shouldReceive('getId')->andReturn(7);
+
+        $this->setPrivateProperty($this->set, 'upload_destinations', [
+            'aliased_uploads' => $uploadDest
+        ]);
+
+        // Setup field
+        $field = m::mock('stdClass');
+        $hookClosure = null;
+        $field->shouldReceive('on')->with('beforeInsert', m::type('Closure'))
+            ->andReturnUsing(function($event, $closure) use (&$hookClosure) {
+                $hookClosure = $closure;
+            });
+
+        $field_data = ['allowed_directories' => 'aliased_uploads'];
+
+        // Mock Model service - hook should query using the aliased name
+        $destModel = m::mock('stdClass');
+        $destModel->shouldReceive('getId')->andReturn(7);
+
+        $modelBuilder = $this->getMockBuilder('stdClass')
+            ->addMethods(['fields', 'filter', 'first'])
+            ->getMock();
+        $modelBuilder->method('fields')->with('id')->willReturnSelf();
+        $modelBuilder->method('filter')->with('name', 'aliased_uploads')->willReturnSelf();
+        $modelBuilder->method('first')->willReturn($destModel);
+
+        $modelService = $this->getMockBuilder('stdClass')
+            ->addMethods(['get'])
+            ->getMock();
+        $modelService->method('get')->with('UploadDestination')->willReturn($modelBuilder);
+
+        ee()->setMock('Model', $modelService);
+
+        // Execute
+        $this->invokePrivateMethod($this->set, 'importFileField', [$field, $field_data]);
+
+        // Verify hook uses aliased name for query
+        $field->shouldReceive('set')->once()->with(m::on(function($settings) {
+            return isset($settings['allowed_directories']) &&
+                   $settings['allowed_directories'] == 7;
+        }));
+
+        $hookClosure();
+
+        $this->assertTrue(true); // Explicit assertion to avoid risky test warning
+    }
+
+    // ===== PHASE 1: importRelationshipField Tests =====
+
+    public function testImportRelationshipFieldMergesDefaults()
+    {
+        $field = m::mock('stdClass');
+        $field->shouldReceive('on')->with('beforeInsert', m::type('Closure'))->once(); // Hook registered even with defaults
+        $field_data = []; // Empty, should get defaults
+
+        $result = $this->invokePrivateMethod($this->set, 'importRelationshipField', [$field, $field_data]);
+
+        $this->assertEquals([], $result['channels']);
+        $this->assertEquals([], $result['authors']);
+        $this->assertEquals(100, $result['limit']);
+        $this->assertEquals(0, $result['expired']); // 'n' converted to 0
+        $this->assertEquals('title', $result['order_field']);
+        $this->assertEquals('asc', $result['order_dir']);
+    }
+
+    public function testImportRelationshipFieldConvertsBooleanStrings()
+    {
+        $field = m::mock('stdClass');
+        $field->shouldReceive('on')->with('beforeInsert', m::type('Closure'))->once(); // Hook registered for channels
+        $field_data = [
+            'expired' => 'y',
+            'future' => 'n',
+            'allow_multiple' => 'y'
+        ];
+
+        $result = $this->invokePrivateMethod($this->set, 'importRelationshipField', [$field, $field_data]);
+
+        $this->assertEquals(1, $result['expired']);
+        $this->assertEquals(0, $result['future']);
+        $this->assertEquals(1, $result['allow_multiple']);
+    }
+
+    public function testImportRelationshipFieldWithChannelsSetsUpHook()
+    {
+        // Setup channels
+        $channel1 = m::mock('stdClass');
+        $channel1->shouldReceive('getId')->andReturn(10);
+        $channel2 = m::mock('stdClass');
+        $channel2->shouldReceive('getId')->andReturn(20);
+
+        $this->setPrivateProperty($this->set, 'channels', [
+            'News' => $channel1,
+            'Blog' => $channel2
+        ]);
+
+        // Setup field
+        $field = m::mock('stdClass');
+        $hookClosure = null;
+        $field->shouldReceive('on')->with('beforeInsert', m::type('Closure'))
+            ->andReturnUsing(function($event, $closure) use (&$hookClosure) {
+                $hookClosure = $closure;
+            });
+
+        $field_data = ['channels' => ['News', 'Blog']];
+
+        // Execute
+        $this->invokePrivateMethod($this->set, 'importRelationshipField', [$field, $field_data]);
+
+        // Execute hook
+        $field->shouldReceive('set')->once()->with(m::on(function($settings) {
+            return isset($settings['channels']) &&
+                   $settings['channels'] === ['News' => 10, 'Blog' => 20];
+        }));
+
+        $hookClosure();
+
+        // Cleanup handled in tearDown()
+        $this->assertTrue(true); // Explicit assertion to avoid risky test warning
+    }
+
+    public function testImportRelationshipFieldHookResolvesChannelIds()
+    {
+        // Setup channels for resolution
+        $channel1 = m::mock('stdClass');
+        $channel1->shouldReceive('getId')->andReturn(100);
+        $channel2 = m::mock('stdClass');
+        $channel2->shouldReceive('getId')->andReturn(200);
+
+        $this->setPrivateProperty($this->set, 'channels', [
+            'Channel A' => $channel1,
+            'Channel B' => $channel2
+        ]);
+
+        // Setup field
+        $field = m::mock('stdClass');
+        $hookClosure = null;
+        $field->shouldReceive('on')->with('beforeInsert', m::type('Closure'))
+            ->andReturnUsing(function($event, $closure) use (&$hookClosure) {
+                $hookClosure = $closure;
+            });
+
+        $field_data = ['channels' => ['Channel A', 'Channel B']];
+
+        // Execute
+        $result = $this->invokePrivateMethod($this->set, 'importRelationshipField', [$field, $field_data]);
+
+        // Verify hook is set up and resolves IDs correctly
+        $field->shouldReceive('set')->once()->with(m::on(function($settings) {
+            return isset($settings['channels']) &&
+                   $settings['channels'] === ['Channel A' => 100, 'Channel B' => 200];
+        }));
+
+        $hookClosure();
+
+        $this->assertTrue(true); // Explicit assertion to avoid risky test warning
+    }
+
+    public function testImportRelationshipFieldWithoutChannels()
+    {
+        $field = m::mock('stdClass');
+        $field->shouldReceive('on')->with('beforeInsert', m::type('Closure'))->once(); // Hook is always registered due to defaults
+
+        $field_data = [
+            'limit' => 50,
+            'order_field' => 'date'
+        ];
+
+        $result = $this->invokePrivateMethod($this->set, 'importRelationshipField', [$field, $field_data]);
+
+        // Verify defaults are merged and hook is registered
+        $this->assertEquals(50, $result['limit']);
+        $this->assertEquals('date', $result['order_field']);
+        $this->assertEquals([], $result['channels']); // Default value
+        $this->assertTrue(true); // Explicit assertion to avoid risky test warning
+    }
+
+    public function testImportRelationshipFieldReturnsModifiedFieldData()
+    {
+        $field = m::mock('stdClass');
+        $field->shouldReceive('on')->with('beforeInsert', m::type('Closure'))->once(); // Hook registered for channels
+
+        $field_data = [
+            'expired' => 'y',
+            'future' => 'n',
+            'channels' => ['test']
+        ];
+
+        $result = $this->invokePrivateMethod($this->set, 'importRelationshipField', [$field, $field_data]);
+
+        // Verify method returns modified field_data array
+        $this->assertIsArray($result);
+        $this->assertEquals(1, $result['expired']); // Converted
+        $this->assertEquals(0, $result['future']); // Converted
+        $this->assertEquals(['test'], $result['channels']); // Preserved
+        $this->assertEquals([], $result['authors']); // Default added
+        $this->assertEquals(100, $result['limit']); // Default added
+    }
+
+    // ===== PHASE 1: importFluidFieldField Tests =====
+
+    public function testImportFluidFieldFieldAddsToPostSaveQueue()
+    {
+        $field = m::mock('stdClass');
+        $field_data = ['field_channel_fields' => ['field1', 'field2']];
+
+        $queueBefore = $this->getPrivateProperty($this->set, 'post_save_queue');
+        $this->assertCount(0, $queueBefore);
+
+        $this->invokePrivateMethod($this->set, 'importFluidFieldField', [$field, $field_data]);
+
+        $queueAfter = $this->getPrivateProperty($this->set, 'post_save_queue');
+        $this->assertCount(1, $queueAfter);
+        $this->assertInstanceOf(\Closure::class, $queueAfter[0]);
+    }
+
+    public function testImportFluidFieldFieldClosureResolvesFieldIds()
+    {
+        // Setup field models
+        $field1 = m::mock('stdClass');
+        $field1->field_id = 10;
+        $field2 = m::mock('stdClass');
+        $field2->field_id = 20;
+
+        // Mock Model service using eeObjectMock.php pattern (following SetTest.php lines 1164-1227)
+        // Create chainable builder mock
+        $collection = new class([10, 20]) {
+            private $fieldIds;
+            public function __construct($fieldIds) {
+                $this->fieldIds = $fieldIds;
+            }
+            public function pluck($field) {
+                return $this->fieldIds;
+            }
+        };
+
+        $builder = $this->getMockBuilder('stdClass')
+            ->addMethods(['fields', 'filter', 'all'])
+            ->getMock();
+        $builder->method('fields')->with('field_id')->willReturnSelf();
+        $builder->method('filter')->with('field_name', 'IN', ['field1', 'field2'])->willReturnSelf();
+        $builder->method('all')->willReturn($collection);
+
+        $modelService = $this->getMockBuilder('stdClass')
+            ->addMethods(['get'])
+            ->getMock();
+        $modelService->method('get')->with('ChannelField')->willReturn($builder);
+
+        // Use eeObjectMock.php pattern to register mock
+        ee()->setMock('Model', $modelService);
+
+        // Setup field
+        $field = m::mock('stdClass');
+        $field->shouldReceive('set')->once()->with(m::on(function($settings) {
+            return isset($settings['field_channel_fields']) &&
+                   $settings['field_channel_fields'] === [10, 20];
+        }));
+        $field->shouldReceive('save')->once();
+
+        $field_data = ['field_channel_fields' => ['field1', 'field2']];
+
+        // Execute
+        $this->invokePrivateMethod($this->set, 'importFluidFieldField', [$field, $field_data]);
+
+        // Execute closure from queue
+        $queue = $this->getPrivateProperty($this->set, 'post_save_queue');
+        $queue[0](); // Execute closure
+
+        // Cleanup handled in tearDown()
+        $this->assertTrue(true); // Explicit assertion to avoid risky test warning
+    }
+
+    public function testImportFluidFieldFieldClosureSetsFieldIds()
+    {
+        // Setup field models with different IDs
+        $field1 = m::mock('stdClass');
+        $field1->field_id = 100;
+        $field2 = m::mock('stdClass');
+        $field2->field_id = 200;
+        $field3 = m::mock('stdClass');
+        $field3->field_id = 300;
+
+        // Mock Model service for field lookup
+        $collection = new class([100, 200, 300]) {
+            private $fieldIds;
+            public function __construct($fieldIds) {
+                $this->fieldIds = $fieldIds;
+            }
+            public function pluck($field) {
+                return $this->fieldIds;
+            }
+        };
+
+        $builder = $this->getMockBuilder('stdClass')
+            ->addMethods(['fields', 'filter', 'all'])
+            ->getMock();
+        $builder->method('fields')->with('field_id')->willReturnSelf();
+        $builder->method('filter')->with('field_name', 'IN', ['field_a', 'field_b', 'field_c'])->willReturnSelf();
+        $builder->method('all')->willReturn($collection);
+
+        $modelService = $this->getMockBuilder('stdClass')
+            ->addMethods(['get'])
+            ->getMock();
+        $modelService->method('get')->with('ChannelField')->willReturn($builder);
+
+        ee()->setMock('Model', $modelService);
+
+        // Setup field
+        $field = m::mock('stdClass');
+        $field->shouldReceive('set')->once()->with(m::on(function($settings) {
+            return isset($settings['field_channel_fields']) &&
+                   $settings['field_channel_fields'] === [100, 200, 300];
+        }));
+        $field->shouldReceive('save')->once();
+
+        $field_data = ['field_channel_fields' => ['field_a', 'field_b', 'field_c']];
+
+        // Execute
+        $this->invokePrivateMethod($this->set, 'importFluidFieldField', [$field, $field_data]);
+
+        // Execute closure and verify field IDs are set correctly
+        $queue = $this->getPrivateProperty($this->set, 'post_save_queue');
+        $queue[0](); // Execute closure
+
+        // Verify queue still contains the closure (not automatically cleared)
+        $queue = $this->getPrivateProperty($this->set, 'post_save_queue');
+        $this->assertCount(1, $queue);
+    }
+
+    public function testImportFluidFieldFieldWithEmptyFieldNames()
+    {
+        // Setup field
+        $field = m::mock('stdClass');
+        $field_data = ['field_channel_fields' => []]; // Empty array
+
+        // Execute
+        $this->invokePrivateMethod($this->set, 'importFluidFieldField', [$field, $field_data]);
+
+        // Verify closure is added to queue
+        $queue = $this->getPrivateProperty($this->set, 'post_save_queue');
+        $this->assertCount(1, $queue);
+        $this->assertInstanceOf(\Closure::class, $queue[0]);
+
+        // Execute closure - will still call set() with empty array
+        $field->shouldReceive('set')->once()->with(['field_channel_fields' => []]);
+        $field->shouldReceive('save')->once();
+
+        $queue[0](); // Execute closure - should call field methods with empty array
+    }
+
+    public function testImportFluidFieldFieldClosureExecutesInPostSaveQueue()
+    {
+        // Setup minimal field models
+        $field1 = m::mock('stdClass');
+        $field1->field_id = 5;
+
+        // Mock Model service
+        $collection = new class([5]) {
+            private $fieldIds;
+            public function __construct($fieldIds) {
+                $this->fieldIds = $fieldIds;
+            }
+            public function pluck($field) {
+                return $this->fieldIds;
+            }
+        };
+
+        $builder = $this->getMockBuilder('stdClass')
+            ->addMethods(['fields', 'filter', 'all'])
+            ->getMock();
+        $builder->method('fields')->with('field_id')->willReturnSelf();
+        $builder->method('filter')->with('field_name', 'IN', ['single_field'])->willReturnSelf();
+        $builder->method('all')->willReturn($collection);
+
+        $modelService = $this->getMockBuilder('stdClass')
+            ->addMethods(['get'])
+            ->getMock();
+        $modelService->method('get')->with('ChannelField')->willReturn($builder);
+
+        ee()->setMock('Model', $modelService);
+
+        // Setup field
+        $field = m::mock('stdClass');
+        $field->shouldReceive('set')->once()->with(['field_channel_fields' => [5]]);
+        $field->shouldReceive('save')->once();
+
+        $field_data = ['field_channel_fields' => ['single_field']];
+
+        // Execute importFluidFieldField
+        $this->invokePrivateMethod($this->set, 'importFluidFieldField', [$field, $field_data]);
+
+        // Simulate save() calling post_save_queue closures
+        $queue = $this->getPrivateProperty($this->set, 'post_save_queue');
+        $this->assertCount(1, $queue);
+
+        // Execute closure as save() would
+        $queue[0](); // This should resolve field IDs and save the field
+
+        // Cleanup handled in tearDown()
+        $this->assertTrue(true); // Explicit assertion to avoid risky test warning
     }
 
     public function testLoadHandlesExceptions()
