@@ -219,7 +219,18 @@ class Moblog
             return false;
         }
 
-        if (strncasecmp(fgets($this->fp, 1024), '+OK', 3) != 0) {
+        // Set the socket to non-blocking mode
+        stream_set_blocking($this->fp, false);
+
+        // Set a timeout for the socket
+        stream_set_timeout($this->fp, 10); // 5 seconds timeout
+
+        // Attempt to read from the socket
+        $response = fgets($this->fp, 1024);
+
+        // Check if the response is from a POP3 server
+        if ($response === false || substr($response, 0, 3) !== '+OK') {
+            // Handle the case where the response is not from a POP3 server
             $this->message_array[] = 'invalid_server_response';
             @fclose($this->fp);
 
