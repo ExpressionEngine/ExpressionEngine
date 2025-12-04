@@ -17,6 +17,7 @@
 class Api
 {
     public $errors = array();  // holds any and all errors on failure
+    public $api_template_structure; // API template structure instance
 
     private $apis = array(	// apis available to initialize when loading the parent Api class
         'channel_structure', 'channel_entries', 'channel_fields',

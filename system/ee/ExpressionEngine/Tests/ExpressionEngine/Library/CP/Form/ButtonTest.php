@@ -25,7 +25,7 @@ class ButtonTest extends TestCase
     public function testPrototypeAttribute(): Button
     {
         $button = new _button('save');
-        $this->assertObjectHasAttribute('prototype', $button);
+        $this->assertObjectHasProperty('prototype', $button);
         $this->assertCount(9, $button->getPrototype());
         return $button;
     }
@@ -37,7 +37,7 @@ class ButtonTest extends TestCase
      */
     public function testStructureAttribute(Button $button): Button
     {
-        $this->assertObjectHasAttribute('structure', $button);
+        $this->assertObjectHasProperty('structure', $button);
         $this->assertCount(0, $button->getStructure());
         return $button;
     }
@@ -49,7 +49,7 @@ class ButtonTest extends TestCase
      */
     public function testNameAttribute(Button $button): Button
     {
-        $this->assertObjectHasAttribute('name', $button);
+        $this->assertObjectHasProperty('name', $button);
         return $button;
     }
 

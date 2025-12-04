@@ -81,7 +81,7 @@ class StructureDeleteDataByChannelTest extends StructureTestBase
 		// Mock get_site_pages_query and set_site_pages via partials: we'll override on structure instance
 		$ref = new ReflectionClass($this->structure);
 		$setSitePages = $ref->getMethod('set_site_pages');
-		$setSitePages->setAccessible(true);
+		\TestReflectionHelper::makeMethodAccessible($setSitePages);
 
 		// Monkey-patch by creating a proxy with __call for set_site_pages and get_site_pages_query
 		$structureProxy = new class($this->structure, $sitePages, $captured) extends Structure {

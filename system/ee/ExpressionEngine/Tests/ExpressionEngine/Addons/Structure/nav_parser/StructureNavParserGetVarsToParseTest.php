@@ -23,7 +23,7 @@ class StructureNavParserGetVarsToParseTest extends StructureTestBase
         $parser = new NavParser();
         $ref = new ReflectionClass($parser);
         $method = $ref->getMethod('get_vars_to_parse');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         $result = $method->invoke($parser, 'prefix:', [
             'title' => 1,

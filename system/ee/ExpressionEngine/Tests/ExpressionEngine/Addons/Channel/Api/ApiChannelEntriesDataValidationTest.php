@@ -33,7 +33,7 @@ class ApiChannelEntriesDataValidationTest extends ChannelApiTestBase
         // Call _base_prep using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_base_prep');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invokeArgs($this->api, [&$data]);
 
         // Verify success
@@ -73,7 +73,7 @@ class ApiChannelEntriesDataValidationTest extends ChannelApiTestBase
         // Call _base_prep using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_base_prep');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invokeArgs($this->api, [&$data]);
 
         // Verify success
@@ -109,7 +109,7 @@ class ApiChannelEntriesDataValidationTest extends ChannelApiTestBase
         // Call _base_prep using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_base_prep');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invokeArgs($this->api, [&$data]);
 
         // Verify success (super admin bypass)
@@ -147,7 +147,7 @@ class ApiChannelEntriesDataValidationTest extends ChannelApiTestBase
         // Call _base_prep using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_base_prep');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invokeArgs($this->api, [&$data]);
 
         // Verify success
@@ -190,7 +190,7 @@ class ApiChannelEntriesDataValidationTest extends ChannelApiTestBase
         // Call _base_prep using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_base_prep');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invokeArgs($this->api, [&$data]);
 
         // Verify success
@@ -261,7 +261,7 @@ class ApiChannelEntriesDataValidationTest extends ChannelApiTestBase
         // Call _base_prep using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_base_prep');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invokeArgs($this->api, [&$data]);
 
         // Verify success
@@ -302,7 +302,7 @@ class ApiChannelEntriesDataValidationTest extends ChannelApiTestBase
         // Call _base_prep using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_base_prep');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invokeArgs($this->api, [&$data]);
 
         // Verify success
@@ -336,7 +336,7 @@ class ApiChannelEntriesDataValidationTest extends ChannelApiTestBase
 
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_base_prep');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invokeArgs($this->api, [&$data]);
 
         $this->assertTrue($result);
@@ -364,7 +364,7 @@ class ApiChannelEntriesDataValidationTest extends ChannelApiTestBase
 
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_base_prep');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invokeArgs($this->api, [&$data]);
 
         $this->assertTrue($result);
@@ -396,7 +396,7 @@ class ApiChannelEntriesDataValidationTest extends ChannelApiTestBase
 
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_base_prep');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invokeArgs($this->api, [&$largeData]);
 
         $this->assertTrue($result);
@@ -422,7 +422,7 @@ class ApiChannelEntriesDataValidationTest extends ChannelApiTestBase
 
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_base_prep');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invokeArgs($this->api, [&$unicodeData]);
 
         $this->assertTrue($result);
@@ -454,7 +454,7 @@ class ApiChannelEntriesDataValidationTest extends ChannelApiTestBase
 
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_base_prep');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invokeArgs($this->api, [&$nestedData]);
 
         $this->assertTrue($result);
@@ -489,7 +489,7 @@ class ApiChannelEntriesDataValidationTest extends ChannelApiTestBase
 
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_base_prep');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invokeArgs($this->api, [&$mixedData]);
 
         $this->assertTrue($result);
@@ -627,7 +627,7 @@ class ApiChannelEntriesDataValidationTest extends ChannelApiTestBase
         // Call _check_for_data_errors using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_check_for_data_errors');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         $method->invokeArgs($this->api, [&$data]);
 
@@ -756,7 +756,7 @@ class ApiChannelEntriesDataValidationTest extends ChannelApiTestBase
         // Call _check_for_data_errors using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_check_for_data_errors');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $method->invokeArgs($this->api, [&$data]);
 
         // Verify error was set
@@ -896,7 +896,7 @@ class ApiChannelEntriesDataValidationTest extends ChannelApiTestBase
         // Call _check_for_data_errors using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_check_for_data_errors');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $method->invokeArgs($this->api, [&$data]);
 
         // Verify error was set for required field
@@ -1042,7 +1042,7 @@ class ApiChannelEntriesDataValidationTest extends ChannelApiTestBase
         // Call _check_for_data_errors using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_check_for_data_errors');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $method->invokeArgs($this->api, [&$data]);
 
         // Verify error was set for invalid date
@@ -1183,7 +1183,7 @@ class ApiChannelEntriesDataValidationTest extends ChannelApiTestBase
         // Call _check_for_data_errors using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_check_for_data_errors');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $method->invokeArgs($this->api, [&$data]);
 
         // Verify error was set for unauthorized author change

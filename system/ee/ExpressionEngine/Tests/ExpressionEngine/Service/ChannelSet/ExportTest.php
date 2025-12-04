@@ -26,7 +26,7 @@ class ExportTest extends TestCase
     {
         $export = new Export();
         $method = new \ReflectionMethod($export, $name);
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         $args = func_get_args();
         array_shift($args);

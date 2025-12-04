@@ -18,6 +18,7 @@ trait FileManagerTrait
     protected $searchableFields = [
         'credit',
         'description',
+        'file_id',
         'file_name',
         'location',
         'mime_type',

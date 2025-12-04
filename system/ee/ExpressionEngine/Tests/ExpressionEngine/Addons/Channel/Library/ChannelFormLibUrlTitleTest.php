@@ -43,7 +43,7 @@ class ChannelFormLibUrlTitleTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_url_title_js');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         $result = $method->invoke($this->channelFormLib);
 
@@ -84,7 +84,7 @@ class ChannelFormLibUrlTitleTest extends ChannelFormLibTestBase
         // Call the private method
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_url_title_js');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         $result = $method->invoke($this->channelFormLib);
 
@@ -123,7 +123,7 @@ class ChannelFormLibUrlTitleTest extends ChannelFormLibTestBase
         // Call the private method
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_url_title_js');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         $result = $method->invoke($this->channelFormLib);
 
@@ -167,7 +167,7 @@ class ChannelFormLibUrlTitleTest extends ChannelFormLibTestBase
         // Call the private method
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_url_title_js');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         $result = $method->invoke($this->channelFormLib);
 
@@ -221,7 +221,7 @@ class ChannelFormLibUrlTitleTest extends ChannelFormLibTestBase
         // Call the private method
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_url_title_js');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         $result = $method->invoke($this->channelFormLib);
 
@@ -261,7 +261,7 @@ class ChannelFormLibUrlTitleTest extends ChannelFormLibTestBase
         // Call the private method
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_url_title_js');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         $result = $method->invoke($this->channelFormLib);
 
@@ -306,7 +306,7 @@ class ChannelFormLibUrlTitleTest extends ChannelFormLibTestBase
         // Call the private method
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_url_title_js');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         $result = $method->invoke($this->channelFormLib);
 
@@ -347,7 +347,7 @@ class ChannelFormLibUrlTitleTest extends ChannelFormLibTestBase
         // Call the private method
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_url_title_js');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         $result = $method->invoke($this->channelFormLib);
 
@@ -393,7 +393,7 @@ class ChannelFormLibUrlTitleTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_url_title_js');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         $result = $method->invoke($this->channelFormLib);
 
@@ -434,7 +434,7 @@ class ChannelFormLibUrlTitleTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_url_title_js');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         $result = $method->invoke($this->channelFormLib);
 
@@ -481,7 +481,7 @@ class ChannelFormLibUrlTitleTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_url_title_js');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         $result = $method->invoke($this->channelFormLib);
 
@@ -535,7 +535,7 @@ class ChannelFormLibUrlTitleTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_url_title_js');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         $result = $method->invoke($this->channelFormLib);
 
@@ -576,7 +576,7 @@ class ChannelFormLibUrlTitleTest extends ChannelFormLibTestBase
         // Call the private method using reflection
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_url_title_js');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         $result = $method->invoke($this->channelFormLib);
 

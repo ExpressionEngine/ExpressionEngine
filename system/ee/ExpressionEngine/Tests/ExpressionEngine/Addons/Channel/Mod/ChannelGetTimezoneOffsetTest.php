@@ -13,7 +13,7 @@ class ChannelGetTimezoneOffsetTest extends ChannelTestBase
         // Make private method accessible
         $ref = new ReflectionClass($this->channel);
         $this->method = $ref->getMethod('_get_timezone_offset');
-        $this->method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($this->method);
     }
 
     public function testReturnsZeroOffsetForDefaultTimezone()

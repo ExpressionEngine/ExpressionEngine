@@ -646,6 +646,17 @@ $lang = array(
     'Settings saved',
 
     //----------------------------------------
+    // Lang for new Relationship field 
+    // for drag nad drops view
+    //----------------------------------------
+
+    'relate_entry' => 'Relate Entry',
+
+    'channel' => 'Channel',
+
+    'no_entries_found' => 'No Entries Found',
+
+    //----------------------------------------
     // Required for FIELDTYPE page
     //----------------------------------------
 

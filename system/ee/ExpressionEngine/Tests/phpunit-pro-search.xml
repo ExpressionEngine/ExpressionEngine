@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit backupGlobals="false"
+		 backupStaticAttributes="false"
+		 bootstrap="bootstrap.php"
+		 colors="true"
+		 convertErrorsToExceptions="true"
+		 convertNoticesToExceptions="true"
+		 convertWarningsToExceptions="true"
+		 processIsolation="false"
+		 stopOnFailure="false"
+>
+	<testsuites>
+		<testsuite name="Pro Search Test Suite">
+			<directory suffix=".php">./ExpressionEngine/Addons/Pro_search/</directory>
+		</testsuite>
+	</testsuites>
+
+	<coverage processUncoveredFiles="true">
+		<include>
+			<directory suffix=".php">../Addons/pro_search</directory>
+		</include>
+        <report>
+            <clover outputFile="coverage.xml"/>
+            <text outputFile="coverage.txt" showUncoveredFiles="false"/>
+        </report>
+	</coverage>
+
+	<listeners>
+		 <listener class="\Mockery\Adapter\Phpunit\TestListener"></listener>
+	</listeners>
+</phpunit>
+

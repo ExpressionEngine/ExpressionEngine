@@ -45,7 +45,7 @@ class StructureNavParserAddEntryVarsEe23Test extends StructureTestBase
         // Invoke protected method directly
         $ref = new ReflectionClass($parser);
         $method = $ref->getMethod('add_entry_vars_ee23');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $method->invoke($parser);
 
         $this->assertSame('Legacy X', $parser->rows_by_entry['200']['root:title']);

@@ -1056,7 +1056,7 @@ GRID_FALLBACK;
                 'text_direction' => $field->getSetting('field_text_direction'),
                 'field_data' => $this->entry($field->getName()),
                 'rows' => $field->getSetting('field_ta_rows'),
-                'maxlength' => $field->getSetting('field_maxl'),
+                'maxlength' => $field->getSetting('field_maxl') ?: '',
                 'formatting_buttons' => '',
                 'field_show_formatting_btns' => ($field->getSetting('field_show_formatting_btns') == 'y') ? 1 : 0,
                 'textinput' => 0,
@@ -3153,8 +3153,11 @@ SCRIPT;
      */
     private function switch_site($site_id)
     {
+        // cache the current site_prefs and cache and set the site_pages from the new site_prefs
+        ee()->config->get_cached_site_prefs(ee()->config->item('site_id'));
+        $config = ee()->config->get_cached_site_prefs($site_id);
         ee()->config->set_item('site_id', $site_id);
-        ee()->config->get_cached_site_prefs($site_id);
+        ee()->config->set_item('site_pages', $config['site_pages'] ?? []);
     }
 }
 

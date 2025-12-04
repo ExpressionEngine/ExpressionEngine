@@ -107,7 +107,7 @@ class ApiChannelEntriesSystemIntegrationTest extends ChannelApiTestBase
         // Call _fetch_channel_preferences using reflection
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_fetch_channel_preferences');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $method->invoke($this->api, $channelId);
 
         // Verify preferences were set correctly
@@ -221,7 +221,7 @@ class ApiChannelEntriesSystemIntegrationTest extends ChannelApiTestBase
 
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_fetch_channel_preferences');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         // The method may throw an exception, which is acceptable behavior
         // We're testing that it doesn't crash the entire application
@@ -259,7 +259,7 @@ class ApiChannelEntriesSystemIntegrationTest extends ChannelApiTestBase
 
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_fetch_channel_preferences');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         $method->invoke($this->api, 1);
 
@@ -292,7 +292,7 @@ class ApiChannelEntriesSystemIntegrationTest extends ChannelApiTestBase
 
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_fetch_channel_preferences');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         $startTime = microtime(true);
         $method->invoke($this->api, 1);
@@ -345,7 +345,7 @@ class ApiChannelEntriesSystemIntegrationTest extends ChannelApiTestBase
         // Call _fetch_channel_preferences without channel_id
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_fetch_channel_preferences');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $method->invoke($this->api);
 
         // Verify instance channel_id was used
@@ -372,7 +372,7 @@ class ApiChannelEntriesSystemIntegrationTest extends ChannelApiTestBase
         // Call _fetch_channel_preferences
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_fetch_channel_preferences');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $result = $method->invoke($this->api, $channelId);
 
         // Verify method completed without error
@@ -414,7 +414,7 @@ class ApiChannelEntriesSystemIntegrationTest extends ChannelApiTestBase
         // Call _fetch_channel_preferences
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_fetch_channel_preferences');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $method->invoke($this->api, $channelId);
 
         // Verify all preferences were mapped correctly
@@ -458,7 +458,7 @@ class ApiChannelEntriesSystemIntegrationTest extends ChannelApiTestBase
 
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_fetch_channel_preferences');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $method->invoke($this->api, $channelId);
 
         $this->assertEquals('test@example.com,admin@example.com', $this->api->c_prefs['notify_address']);
@@ -531,7 +531,7 @@ class ApiChannelEntriesSystemIntegrationTest extends ChannelApiTestBase
         // Call _fetch_channel_preferences
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_fetch_channel_preferences');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $method->invoke($this->api, $channelId);
 
         // Verify preferences were set
@@ -560,7 +560,7 @@ class ApiChannelEntriesSystemIntegrationTest extends ChannelApiTestBase
         // Call _fetch_channel_preferences with null
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_fetch_channel_preferences');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $method->invoke($this->api, null);
 
         // Should use instance channel_id (which is null, so channel structure gets null)
@@ -585,7 +585,7 @@ class ApiChannelEntriesSystemIntegrationTest extends ChannelApiTestBase
         // Call _fetch_channel_preferences
         $reflection = new ReflectionClass($this->api);
         $method = $reflection->getMethod('_fetch_channel_preferences');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         try {
             $method->invoke($this->api, $channelId);
