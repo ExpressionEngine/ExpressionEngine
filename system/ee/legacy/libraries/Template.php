@@ -4364,7 +4364,7 @@ class EE_Template
                         'template_type' => $template_type,
                         'template_data' => file_get_contents($basepath . '/' . $group . '/' . $template),
                         'edit_date' => ee()->localize->now,
-                        'last_author_id' => ee()->session->userdata['member_id'],
+                        'last_author_id' => ee()->session->userdata('member_id'),
                         'site_id' => ee()->config->item('site_id')
                     );
 
@@ -4388,7 +4388,7 @@ class EE_Template
                         'template_data' => '',
                         'edit_date' => ee()->localize->now,
                         'save_template_file' => 'y',
-                        'last_author_id' => ee()->session->userdata['member_id'],
+                        'last_author_id' => ee()->session->userdata('member_id'),
                         'site_id' => ee()->config->item('site_id')
                     );
 

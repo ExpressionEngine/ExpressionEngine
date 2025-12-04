@@ -22,6 +22,8 @@ class EE_Schema
     public $theme_path = '';
     public $version;
 	public $userdata;
+    public $base_path;
+    public $root_theme_path;
 
     private $default_engine = 'InnoDB';
 
