@@ -21,23 +21,28 @@ class MenuSet extends Model
     protected static $_table_name = 'menu_sets';
 
     protected static $_validation_rules = array(
-        'name' => 'required|noHtml|unique'
+        'name' => 'required|noHtml|maxLength[20]|unique[site_id]'
     );
 
     protected static $_relationships = array(
+        'Site' => array(
+            'type' => 'belongsTo'
+        ),
         'Items' => array(
             'model' => 'MenuItem',
             'type' => 'HasMany'
         ),
-        'RoleSettings' => array(
-            'model' => 'RoleSetting',
-            'type' => 'HasMany',
-            'to_key' => 'menu_set_id',
-            'weak' => true
+        'Roles' => array(
+            'type' => 'hasAndBelongsToMany',
+            'model' => 'Role',
+            'pivot' => array(
+                'table' => 'exp_menu_set_roles'
+            )
         ),
     );
 
     protected $set_id;
+    protected $site_id;
     protected $name;
 
     /**

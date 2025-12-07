@@ -19,6 +19,7 @@ class Submenu extends Menu
     public $addlink;
     public $placeholder;
     public $view_all_link;
+    public $icon;
 
     private $has_add = false;
     private $has_filter = false;
@@ -28,7 +29,7 @@ class Submenu extends Menu
      *
      * @throws Exception
      */
-    public function addSubmenu($title)
+    public function addSubmenu($title, $addonName = null)
     {
         throw new \Exception("Cannot nest submenus.");
     }
@@ -115,6 +116,19 @@ class Submenu extends Menu
     public function setTitle($title)
     {
         $this->title = htmlspecialchars($title);
+
+        return $this;
+    }
+
+    /**
+     * Set icon for this submenu
+     *
+     * @param null|string $icon
+     * @return self
+     */
+    public function setIcon($icon = null)
+    {
+        $this->icon = (!empty($icon) && strpos($icon, 'default-addon-icon.svg') === false) ? $icon : null;
 
         return $this;
     }

@@ -10,6 +10,7 @@
 
 namespace ExpressionEngine\Service\Addon;
 
+use Cache;
 use ExpressionEngine\Core\Provider;
 
 /**
@@ -20,6 +21,7 @@ class Addon
     protected $provider;
     protected $basepath;
     protected $shortname;
+    protected $iconUrl;
 
     protected $_components = [];
 
@@ -27,6 +29,8 @@ class Addon
     private static $installed_modules;
     private static $installed_extensions;
     private static $installed_fieldtypes;
+
+    private $addonIconAction;
 
     public function __construct(Provider $provider)
     {
@@ -760,6 +764,11 @@ class Addon
      */
     public function getIconUrl($default = null)
     {
+        // already set?
+        if (!is_null($this->iconUrl)) {
+            return $this->iconUrl;
+        }
+
         $masks = [
             'icon.svg',
             'icon.png'
@@ -772,19 +781,22 @@ class Addon
         }
 
         if (!empty($icon)) {
-            $action_id = ee()->db->select('action_id')
-                ->where('class', 'File')
-                ->where('method', 'addonIcon')
-                ->get('actions');
-            $url = ee()->functions->fetch_site_index() . QUERY_MARKER . 'ACT=' . $action_id->row('action_id') . AMP . 'addon=' . $this->shortname . AMP . 'file=' . $mask;
+            if (empty($this->addonIconAction)) {
+                $action = ee()->db->select('action_id')
+                    ->where('class', 'File')
+                    ->where('method', 'addonIcon')
+                    ->get('actions');
+                $this->addonIconAction = $action->row('action_id');
+            }
+            $this->iconUrl = ee()->functions->fetch_site_index() . QUERY_MARKER . 'ACT=' . $this->addonIconAction . AMP . 'addon=' . $this->shortname . AMP . 'file=' . $mask;
         } else {
             if (empty($default)) {
                 $default = 'default-addon-icon.svg';
             }
-            $url = URL_THEMES . 'asset/img/' . $default;
+            $this->iconUrl = URL_THEMES . 'asset/img/' . $default;
         }
 
-        return $url;
+        return $this->iconUrl;
     }
 
     /**

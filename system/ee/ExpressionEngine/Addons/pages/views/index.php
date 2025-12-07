@@ -1,47 +1,48 @@
 <div class="panel">
-	<?=form_open($base_url, 'class="tbl-ctrls"')?>
+    <?=form_open($base_url, 'class="tbl-ctrls"')?>
     <div class="panel-heading">
       <div class="form-btns form-btns-top">
         <div class="title-bar title-bar--large">
-      		<h3 class="title-bar__title"><?=lang('all_pages')?></h3>
-          <div class="title-bar__extra-tools">
-						<a class="button button--primary js-dropdown-toggle has-sub" href=""><?=lang('create_new')?></a>
-						<div class="dropdown">
-							<div class="channels-pages-create">
-								<?php
-                                $menus = ee()->menu->generate_menu();
-                                foreach ($menus['channels']['create'] as $channel_name => $link):
-                                ?>
-									<div class="search-channel" data-search="<?=strtolower($channel_name)?>"><a href="<?=$link?>" class="dropdown__link"><?=$channel_name?></a></div>
-								<?php endforeach ?>
-							</div>
-						</div>
-          </div>
+              <h3 class="title-bar__title"><?=lang('all_pages')?></h3>
+                <div class="title-bar__extra-tools">
+                    <a class="button button--primary js-dropdown-toggle has-sub" href=""><?=lang('create_new')?></a>
+                    <div class="dropdown">
+                        <div class="channels-pages-create">
+                            <?php
+                            ee('CP/NavigationSidebar')->populateItems();
+                            $choices = ee()->session->cache("ExpressionEngine\Service\Sidebar\Navigation\NavigationSidebar", 'create_entry_menu/' . ee()->config->item('site_id'), []);
+                            foreach ($choices as $link => $channel_name):
+                            ?>
+                                <div class="search-channel" data-search="<?=strtolower($channel_name)?>"><a href="<?=$link?>" class="dropdown__link"><?=$channel_name?></a></div>
+                            <?php endforeach ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
 
-		<?=ee('CP/Alert')->get('pages-form')?>
+    <?=ee('CP/Alert')->get('pages-form')?>
 
-		<?php $this->embed('ee:_shared/table', $table); ?>
-		<?=$pagination?>
-		<?php if (! empty($table['columns']) && ! empty($table['data'])): ?>
-		<?php $this->embed('ee:_shared/form/bulk-action-bar', [
-		    'options' => [
-		        [
-		            'value' => "",
-		            'text' => '-- ' . lang('with_selected') . ' --'
-		        ],
-		        [
-		            'value' => "remove",
-		            'text' => lang('delete'),
-		            'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-remove"'
-		        ]
-		    ],
-		    'modal' => true
-		]); ?>
-		<?php endif; ?>
-	<?=form_close();?>
+    <?php $this->embed('ee:_shared/table', $table); ?>
+    <?=$pagination?>
+    <?php if (! empty($table['columns']) && ! empty($table['data'])): ?>
+    <?php $this->embed('ee:_shared/form/bulk-action-bar', [
+        'options' => [
+            [
+                'value' => "",
+                'text' => '-- ' . lang('with_selected') . ' --'
+            ],
+            [
+                'value' => "remove",
+                'text' => lang('delete'),
+                'attrs' => ' data-confirm-trigger="selected" rel="modal-confirm-remove"'
+            ]
+        ],
+        'modal' => true
+    ]); ?>
+    <?php endif; ?>
+    <?=form_close();?>
 </div>
 
 <?php

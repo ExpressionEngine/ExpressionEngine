@@ -293,6 +293,12 @@
 		margin-right: 10px;
 	}
 
+  & > img {
+    margin-right: 10px;
+    top: 3px;
+    position: relative;
+  }
+
 	&.active, &:hover, &.dropdown-open {
 		background: color(sidebar-bg-active);
 		color: color(sidebar-text-active);

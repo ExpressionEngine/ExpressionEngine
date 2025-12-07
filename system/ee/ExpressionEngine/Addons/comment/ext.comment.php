@@ -22,7 +22,7 @@ class Comment_ext
     {
         ee()->lang->load('comment');
 
-        $sub = $menu->addSubmenu(lang('comments'));
+        $sub = $menu->addSubmenu(lang('comments'), 'comment');
 
         $new_comments = ee('Model')->get('Comment')
             ->filter('site_id', ee()->config->item('site_id'))

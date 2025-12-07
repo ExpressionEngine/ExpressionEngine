@@ -115,7 +115,7 @@ class MenuManager extends Settings
                 $checkbox['disabled'] = "disabled";
             }
 
-            $assigned = ee('Model')->get('Role', $set->RoleSettings->pluck('role_id'))->all()->pluck('name');
+            $assigned = ee('Model')->get('Role', $set->Roles->pluck('role_id'))->all()->pluck('name');
 
             $columns = array(
                 $main_link,
@@ -139,7 +139,7 @@ class MenuManager extends Settings
     {
         ee()->view->cp_breadcrumbs = array(
             ee('CP/URL')->make('settings/menu-manager')->compile() => lang('menu_manager'),
-            '' => lang('create_menu_set')
+            '' => lang('create_new_menu_set')
         );
 
         return $this->form();
@@ -177,11 +177,11 @@ class MenuManager extends Settings
     {
         if (is_null($set_id)) {
             $alert_key = 'created';
-            ee()->view->cp_page_title = lang('create_menu_set');
+            ee()->view->cp_page_title = lang('create_new_menu_set');
             ee()->view->base_url = ee('CP/URL')->make('settings/menu-manager/create-set/');
             $set = ee('Model')->make('MenuSet');
         } else {
-            $set = ee('Model')->get('MenuSet')->with('RoleSettings')->filter('set_id', (int) $set_id)->all()->first();
+            $set = ee('Model')->get('MenuSet')->with('Roles')->filter('set_id', (int) $set_id)->all()->first();
 
             if (! $set) {
                 show_error(lang('unauthorized_access'), 403);
@@ -193,6 +193,9 @@ class MenuManager extends Settings
         }
 
         if (! empty($_POST)) {
+            $set->name = ee('Security/XSS')->clean(ee('Request')->post('name'));
+            $set->site_id = ee('Request')->post('site_id') != 0 ? (int) ee('Request')->post('site_id') : 0;
+
             $assigned = (array) ee('Request')->post('roles');
 
             if (defined('CLONING_MODE') && CLONING_MODE === true) {
@@ -202,13 +205,13 @@ class MenuManager extends Settings
                 while (true !== $set->validateUnique('name', $_POST['name'])) {
                     $_POST['name'] = lang('copy_of') . ' ' . $_POST['name'];
                 }
-                $assigned = array_diff($assigned, $set->RoleSettings->pluck('role_id'));
+                $assigned = array_diff($assigned, $set->Roles->pluck('role_id'));
                 $set->markAsDirty();
             }
             $set->set($_POST);
 
-            $set->RoleSettings = ee('Model')
-                ->get('RoleSetting')
+            $set->Roles = ee('Model')
+                ->get('Role')
                 ->filter('role_id', 'IN', array_intersect($assigned, ee('Permission')->rolesThatCan('access_cp')))
                 ->all();
             $sort = (array) ee('Request')->post('sort', array());
@@ -300,7 +303,6 @@ class MenuManager extends Settings
                     )
                 )
             );
-            ;
         }
 
         $grid = ee('CP/GridInput', array(
@@ -410,33 +412,12 @@ class MenuManager extends Settings
      */
     private function mainForm(MenuSet $set)
     {
-        $disabled_choices = array();
         $roles = ee('Model')->get('Role')
             ->filter('role_id', 'IN', array_merge(ee('Permission')->rolesThatCan('access_cp'), [1]))
             ->all()
             ->getDictionary('role_id', 'name');
 
-        $other_sets = ee('Model')->get('MenuSet')
-            ->with('RoleSettings')
-            ->filter('RoleSettings.role_id', ee('Permission')->rolesThatCan('access_cp'));
-
-        if (! $set->isNew()) {
-            // Exclude this set
-            $other_sets->filter('set_id', '!=', $set->set_id);
-        }
-
-        foreach ($other_sets->all() as $other_set) {
-            foreach ($other_set->RoleSettings as $role) {
-                $roles[$role->role_id] = [
-                    'label' => $role->name,
-                    'value' => $role->role_id,
-                    'instructions' => lang('assigned_to') . ' ' . $other_set->name
-                ];
-                $disabled_choices[] = $role->role_id;
-            }
-        }
-
-        $selected_roles = ($set->RoleSettings) ? $set->RoleSettings->pluck('role_id') : array();
+        $selected_roles = ($set->Roles) ? $set->Roles->pluck('role_id') : array();
 
         $section = array(
             array(
@@ -456,7 +437,6 @@ class MenuManager extends Settings
                     'roles' => array(
                         'type' => 'checkbox',
                         'choices' => $roles,
-                        'disabled_choices' => $disabled_choices,
                         'value' => $selected_roles,
                         'no_results' => [
                             'text' => sprintf(lang('no_found'), lang('roles'))
@@ -465,6 +445,19 @@ class MenuManager extends Settings
                 )
             ),
         );
+
+        if (bool_config_item('multiple_sites_enabled')) {
+            $section[] = array(
+                'title' => 'enable_on_all_sites',
+                'desc' => 'enable_menu_on_all_sites_desc',
+                'fields' => array(
+                    'enable_on_all_sites' => array(
+                        'type' => 'yes_no',
+                        'value' => ($set->site_id == 0),
+                    )
+                )
+            );
+        }
 
         return $section;
     }
