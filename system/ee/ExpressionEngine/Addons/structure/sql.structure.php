@@ -1826,9 +1826,13 @@ class Sql_structure
             $site_id = ee()->config->item('site_id');
         }
 
-        foreach ($site_pages['uris'] as &$uri) {
-            if ($uri != "/") {
-                $uri = rtrim($uri, '/');
+        $settings = $this->get_settings();
+        $trailing_slash = isset($settings['add_trailing_slash']) && $settings['add_trailing_slash'] === 'y' ? '/' : null;
+        if (is_null($trailing_slash)) {
+            foreach ($site_pages['uris'] as &$uri) {
+                if ($uri != "/") {
+                    $uri = rtrim($uri, '/');
+                }
             }
         }
 
