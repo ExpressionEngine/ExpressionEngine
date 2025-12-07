@@ -694,6 +694,7 @@ class EE_Config
         $channel_default = array(
             'image_resize_protocol',
             'image_library_path',
+            'image_manipulation_quality',
             'word_separator',
             'use_category_name',
             'reserved_category_word',
