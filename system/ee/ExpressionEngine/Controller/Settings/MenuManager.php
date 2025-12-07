@@ -139,7 +139,7 @@ class MenuManager extends Settings
     {
         ee()->view->cp_breadcrumbs = array(
             ee('CP/URL')->make('settings/menu-manager')->compile() => lang('menu_manager'),
-            '' => lang('create_menu_set')
+            '' => lang('create_new_menu_set')
         );
 
         return $this->form();
@@ -177,11 +177,11 @@ class MenuManager extends Settings
     {
         if (is_null($set_id)) {
             $alert_key = 'created';
-            ee()->view->cp_page_title = lang('create_menu_set');
+            ee()->view->cp_page_title = lang('create_new_menu_set');
             ee()->view->base_url = ee('CP/URL')->make('settings/menu-manager/create-set/');
             $set = ee('Model')->make('MenuSet');
         } else {
-            $set = ee('Model')->get('MenuSet')->with('RoleSettings')->filter('set_id', (int) $set_id)->all()->first();
+            $set = ee('Model')->get('MenuSet')->with('Roles')->filter('set_id', (int) $set_id)->all()->first();
 
             if (! $set) {
                 show_error(lang('unauthorized_access'), 403);
@@ -205,13 +205,13 @@ class MenuManager extends Settings
                 while (true !== $set->validateUnique('name', $_POST['name'])) {
                     $_POST['name'] = lang('copy_of') . ' ' . $_POST['name'];
                 }
-                $assigned = array_diff($assigned, $set->RoleSettings->pluck('role_id'));
+                $assigned = array_diff($assigned, $set->Roles->pluck('role_id'));
                 $set->markAsDirty();
             }
             $set->set($_POST);
 
-            $set->RoleSettings = ee('Model')
-                ->get('RoleSetting')
+            $set->Roles = ee('Model')
+                ->get('Role')
                 ->filter('role_id', 'IN', array_intersect($assigned, ee('Permission')->rolesThatCan('access_cp')))
                 ->all();
             $sort = (array) ee('Request')->post('sort', array());
