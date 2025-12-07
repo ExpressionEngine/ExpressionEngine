@@ -309,7 +309,10 @@ class EE_Config
                 ->all()
                 ->getDictionary('key', 'value');
 
-            $config = array_merge($site_configs, $config);
+            // If the config has already been loaded and current_site is set then the site_prefs we're loading
+            // for a different site should have the database config take precedence over the current site's config file
+            $current_site = $this->item('site_id');
+            $config = ($current_site && $current_site != $row['site_id']) ? array_merge($config, $site_configs) : array_merge($site_configs, $config);
         }
 
         // Fold in the Preferences in the Database
@@ -353,6 +356,7 @@ class EE_Config
 
         $config['email_newline_form_safe'] = $config['email_newline'];
         $config['email_newline'] = $this->setEmailNewline($config['email_newline']);
+        $config['email_crlf'] = $this->setEmailNewline($config['email_crlf'] ?? '');
 
         if ($mutating) {
             $this->config = $config;
@@ -1002,8 +1006,8 @@ class EE_Config
 
                     $prefs[$value] = $site_prefs[$value];
 
-                    // exception for email_newline, which uses backslashes, and is not a path variable
-                    if ($value != 'email_newline') {
+                    // exception for email_newline and email_crlf, which uses backslashes, and is not a path variable
+                    if (!in_array($value, ['email_newline', 'email_crlf'])) {
                         $prefs[$value] = str_replace('\\', '/', $prefs[$value]);
                     }
 
@@ -1426,7 +1430,7 @@ class EE_Config
                     '%n/%j/%Y' => 'mm/dd/yyyy',
                     '%j/%n/%Y' => 'dd/mm/yyyy',
                     '%j-%n-%Y' => 'dd-mm-yyyy',
-                    '%j.%n.%Y' => 'dd.mm.yyyy',
+                    '%d.%m.%Y' => 'dd.mm.yyyy',
                     '%Y-%m-%d' => 'yyyy-mm-dd'
                 )),
                 'time_format' => array('r', array('24' => '24_hour', '12' => '12_hour')),

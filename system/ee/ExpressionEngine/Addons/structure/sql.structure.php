@@ -1434,7 +1434,11 @@ class Sql_structure
         if ($cache_bust === true) {
             $sql = "SELECT site_pages FROM exp_sites WHERE site_id = $this->site_id";
             $pages_array = ee()->sql_helper->row($sql);
-            $all_pages = unserialize(base64_decode($pages_array['site_pages']));
+            if (empty($pages_array) || empty($pages_array['site_pages'])) {
+                $all_pages = array();
+            } else {
+                $all_pages = unserialize(base64_decode($pages_array['site_pages']));
+            }
         } else {
             $all_pages = ee()->config->item('site_pages');
         }
@@ -1738,12 +1742,19 @@ class Sql_structure
         $trailing_slash = isset($settings['add_trailing_slash']) && $settings['add_trailing_slash'] === 'y' ? '/' : '';
 
         if (in_array($uri . $trailing_slash, $pages)) {
-            $uri = rtrim($uri, '/') . $separator . '1/';
-
-            if (in_array($uri, $pages)) {
-                $uri = rtrim($uri, '-1/') . $separator . '2/';
+            $i = 0;
+            $old_uri = trim($uri, '/');
+            while (in_array('/' . trim($uri, '/') . $trailing_slash, $pages)) {
+                $i++;
+                if (defined('CLONING_MODE') && CLONING_MODE === true) {
+                    $uri_parts = explode('/', $old_uri);
+                    $uri = str_repeat('copy' . $separator, $i) . array_pop($uri_parts);
+                    $uri = implode('/', $uri_parts) . '/' . $uri;
+                } else {
+                    $uri = rtrim($uri, $separator . ($i - 1)) . $separator . $i;
+                }
             }
-
+            $uri = '/' . trim($uri, '/') . $trailing_slash;
             return $uri;
         }
 

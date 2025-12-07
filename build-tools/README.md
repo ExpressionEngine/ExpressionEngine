@@ -2,13 +2,95 @@
 
 # Updating version number for release
 
-Update `build.json` with the new version number.
+## Using the PHP Version Bumper Script
 
-Run `gulp version_bump` to update the version number in the core, test config files, and create necessary update file.
+The `make_version.php` script provides a secure, CLI-based way to update ExpressionEngine's version numbers across all necessary files.
 
-Open a PR with the changes.
+### Quick Start
 
-This script is also part of general build process, so it will be run automatically when building the app on GitHub.
+```bash
+# Interactive mode (prompts for version and date)
+php make_version.php
+
+# Non-interactive mode
+php make_version.php -v 7.5.19 -d 2025-12-01
+
+# With version identifier
+php make_version.php -v 7.5.19-rc.1 -d 2025-12-01
+```
+
+### What it does
+
+The script updates version numbers in these core files:
+- `system/ee/legacy/libraries/Core.php` (APP_VER, APP_BUILD, APP_VER_ID)
+- `system/ee/installer/controllers/wizard.php` ($version)
+- `system/ee/ExpressionEngine/Tests/bootstrap.php` (APP_VER)
+- `tests/cypress/support/config/config.php` (app_version)
+
+It also creates installer update files by copying `ud_6_02_03.php` with the new version.
+
+### Command-line Options
+
+| Option | Short | Description |
+|--------|-------|-------------|
+| `--version=<version>` | `-v` | Version to set (e.g., 7.5.19) |
+| `--date=<YYYY-MM-DD>` | `-d` | Release date (used for build number) |
+| `--update-build-date` | | Update only the build number for current version (reads version from files) |
+| `--skip-update-file` | | Skip creating installer update file |
+| `--dry-run` | | Show what would change without making changes |
+| `--root=<path>` | | Repository root path (defaults to script dir/../) |
+| `--help` | `-h` | Show help |
+
+### Examples
+
+```bash
+# Basic version bump
+php make_version.php -v 7.5.19 -d 2025-12-01
+
+# Version with release candidate identifier
+php make_version.php -v 7.5.19-rc.1 -d 2025-12-01
+
+# Dry run to preview changes
+php make_version.php --dry-run -v 7.5.20 -d 2025-12-15
+
+# Skip update file creation
+php make_version.php -v 7.5.19 -d 2025-12-01 --skip-update-file
+
+# Update only the build number for current version
+php make_version.php --update-build-date -d 2025-12-25
+
+# Dry run build update
+php make_version.php --update-build-date --dry-run -d 2025-12-25
+
+# Use different repository root
+php make_version.php -v 7.5.19 -d 2025-12-01 --root=/path/to/repo
+```
+
+### Version Format
+
+The script accepts versions in these formats:
+- `X.Y.Z` (e.g., `7.5.19`)
+- `X.Y.Z-identifier` (e.g., `7.5.19-rc.1`, `7.5.20-beta.2`)
+
+Version components are validated to be between 0-99.
+
+### Security Features
+
+- **Path traversal protection**: Repository root must be within project directory
+- **Input validation**: Strict validation of version and date formats
+- **Privilege checks**: Prevents running as root
+- **CLI-only execution**: Must be run from command line
+- **Input sanitization**: All user inputs are filtered
+
+### Legacy Gulp Method (Deprecated)
+
+> **Note**: The old gulp-based method is deprecated. Use the PHP script instead.
+
+Update `build.json` with the new version number and run `gulp version_bump`.
+
+# Checking for compatibility with different PHP versions
+
+`phpcs -p ./system/ee --standard=PHPCompatibility --runtime-set testVersion 7.2-8.4 --report-full=/path/to/logfile.txt`
 
 # Building ExpressionEngine
 

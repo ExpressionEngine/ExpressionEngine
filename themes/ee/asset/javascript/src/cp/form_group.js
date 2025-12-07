@@ -89,7 +89,7 @@ function toggleFields(fields, show, key) {
 
 		if (fieldset.hasClass('fieldset-invalid')) {
 			if (fieldset.find('input:visible').not('.button').length == 0 && fieldset.find('select:visible').length == 0 && fieldset.find('div[data-select-react]:visible').length == 0) {
-				
+
 				fieldset.removeClass('fieldset-invalid');
 				fieldset.find('em.ee-form-error-message').remove();
 			}
@@ -140,7 +140,7 @@ EE.cp.form_group_toggle = function(element) {
 			return $(this).data('group').split('|').includes(data)
 		});
 		var section_targets = $('*[data-section-group*="'+data+'"]').filter(function() {
-			return $(this).data('sectionGroup').split('|').includes(data)
+			return $(this).data('sectionGroup').toString().split('|').includes(data)
 		});
 
 		if (states[data] == undefined || states[data] == false) {
@@ -166,7 +166,7 @@ EE.cp.form_group_toggle = function(element) {
 				group: config[value],
 				state: value,
 				for: $(element).parent().data('toggle-for')
-			} 
+			}
 		})
 	);
 

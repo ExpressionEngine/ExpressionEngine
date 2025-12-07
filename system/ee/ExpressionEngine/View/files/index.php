@@ -46,7 +46,7 @@ if (! AJAX_REQUEST) {
                     <?php foreach ($breadcrumbs as $url => $name) : ?>
                         <?php $i++; ?>
                         <?php if ($i < count($breadcrumbs)) : ?>
-                        <li><a href="<?=$url?>" data-filter-url="<?=$url?>"><i class="fal fa-<?=($i == 1 ? 'hdd' : 'folder')?>"></i><?=$name?></a></li>
+                        <li><a href="<?=$url?>" <?php if (!isset($uploadLocationsAndDirectoriesDropdownChoices)): ?>data-filter-url="<?=$url?>"<?php endif; ?>><i class="fal fa-<?=($i == 1 ? 'hdd' : 'folder')?>"></i><?=$name?></a></li>
                         <?php else : ?>
                         <li><span><i class="fal fa-folder"></i><?=$name?></span></li>
                         <?php endif; ?>
@@ -129,7 +129,7 @@ if (! AJAX_REQUEST) {
             );
 
             $modal = $this->make('ee:_shared/modal_confirm_delete')->render($modal_vars);
-            echo $modal;
+            ee('CP/Modal')->addModal('modal-confirm-delete-file', $modal);
 
             // Move file modal
             $moveChoices = [];
@@ -154,7 +154,7 @@ if (! AJAX_REQUEST) {
             );
 
             $modal = $this->make('ee:files/modals/move')->render($modal_vars);
-            echo $modal;
+            ee('CP/Modal')->addModal('modal-confirm-move-file', $modal);
 
             // Rename modal
             $renameModal = ee('View')->make('files/modals/rename')->render([
@@ -164,7 +164,8 @@ if (! AJAX_REQUEST) {
                     'bulk_action' => 'rename'
                 ],
             ]);
-            echo $renameModal;
+
+            ee('CP/Modal')->addModal('modal-confirm-rename-file', $renameModal);
         }
         ?>
     </div>

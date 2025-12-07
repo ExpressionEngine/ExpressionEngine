@@ -30,7 +30,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-            php-version: '8.1'
+            php-version: '8.2'
             extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
             coverage: none
             ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
@@ -83,7 +83,7 @@ jobs:
           APP_REPO_PATH: ${{ github.workspace }}
           REDACTORX_REPO_PATH: ${{ github.workspace }}/__redactorx
         run: |
-          gulp app --local --nogit --head --skip-lint --jira-collector --skip-pro --version=${{ steps.build_json.outputs.BUILD_VERSION }}-dp.${{ env.dp_ver }}
+          gulp app --local --nogit --head --skip-lint --skip-pro --version=${{ steps.build_json.outputs.BUILD_VERSION }}-dp.${{ env.dp_ver }}
 
       - name: Archive Build files
         uses: actions/upload-artifact@v4

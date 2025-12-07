@@ -20,7 +20,7 @@ use ExpressionEngine\Model\Content\StructureModel;
 class FileManagerColumns extends Columns
 {
     //view_id might hold view type here
-    public function __construct(array $columns = array(), StructureModel $uploadLocation = null, $view_id_or_type = null)
+    public function __construct(array $columns = array(), ?StructureModel $uploadLocation = null, $view_id_or_type = null)
     {
         parent::__construct($columns, $uploadLocation, $view_id_or_type);
 

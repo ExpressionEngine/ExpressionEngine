@@ -39,7 +39,7 @@ class Upload
                 'file_type' => lang('type_' . $file->file_type)
             ];
             if ($file->isImage()) {
-                $metadata['dimensions'] = (count($dimensions) > 1) ? $dimensions[0] . 'x' . $dimensions[1] . ' px' : '';
+                $metadata['dimensions'] = (count($dimensions) > 1) ? $dimensions[1] . 'x' . $dimensions[0] . ' px' : '';
             }
             $metadata = array_merge($metadata, [
                 'uploaded_by' => ($file->uploaded_by_member_id && $file->UploadAuthor) ? $file->UploadAuthor->getMemberName() : '',
@@ -359,6 +359,12 @@ class Upload
         );
     }
 
+    /**
+     * Resolve file name conflict on upload
+     *
+     * @param int $file_id ID of new uploaded file
+     * @return array
+     */
     public function resolveNameConflict($file_id)
     {
         $file = ee('Model')->get('File', $file_id)
@@ -524,6 +530,8 @@ class Upload
                         $file->getFilesystem()->forceCopy($src, $dest);
                     }
                 }
+
+                $original->file_hw_original = $file->file_hw_original;
 
                 $file->delete();
 

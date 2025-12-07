@@ -5,8 +5,5 @@
         "app": "git@github.com:ExpressionEngine/ExpressionEngine",
         "docs": "git@github.com:ExpressionEngine/ExpressionEngine-User-Guide"
     },
-
-    "local_repositories": {
-
-    }
+    "local_repositories": []
 }

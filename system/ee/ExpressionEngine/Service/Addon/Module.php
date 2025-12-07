@@ -98,7 +98,10 @@ class Module extends Controller
         // without the modules folder. This is done in this order to the error message shows the new way
         if (! class_exists($object) && $useModuleFolder) {
             return $this->buildObject($method, $action, false);
+        } elseif (! class_exists($object) && isset(ee()->TMPL)) {
+            return $this->buildObject($method, false, $useModuleFolder);
         }
+
 
         return $object;
     }
