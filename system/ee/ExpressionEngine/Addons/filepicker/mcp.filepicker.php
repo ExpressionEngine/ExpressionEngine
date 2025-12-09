@@ -40,21 +40,6 @@ class Filepicker_mcp
         ee()->lang->loadfile('filemanager');
     }
 
-    protected function getUserUploadDirectories()
-    {
-        $dirs = ee('Model')->get('UploadDestination')
-            ->filter('site_id', 'IN', [0, ee()->config->item('site_id')])
-            ->filter('module_id', 0)
-            ->order('name', 'asc')
-            ->all();
-
-        $member = ee()->session->getMember();
-
-        return $dirs->filter(function ($dir) use ($member) {
-            return $dir->memberHasAccess($member);
-        });
-    }
-
     protected function getSystemUploadDirectories()
     {
         $dirs = ee('Model')->get('UploadDestination')
@@ -84,7 +69,7 @@ class Filepicker_mcp
         $requested_directory = ee()->input->get('requested_directory') ?: ee()->input->get('directories');
         $requested_directory = empty($requested_directory) ? $field_upload_locations : $requested_directory;
 
-        $dirs = $this->getUserUploadDirectories();
+        $dirs = ee('File')->makeUpload()->getUserUploadDirectories();
         if ($requested_directory != 'all') {
             $dirs = $dirs->filter('id', (int) $requested_directory);
         }
@@ -340,6 +325,16 @@ class Filepicker_mcp
             $errors = $result['validation_result'];
 
             if ($result['uploaded']) {
+                // when dropped into RTE, return the result immediately
+                if (ee('Request')->get('from') == 'rte') {
+                    return [
+                        'ajax' => true,
+                        'body' => [
+                            'status' => 'success',
+                            'url' => $file->getAbsoluteURL()
+                        ]
+                    ];
+                }
                 // mark the file as newly uploaded in file picker
                 ee()->session->set_flashdata('file_id', $file->getId());
 
