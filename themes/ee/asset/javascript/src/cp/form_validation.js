@@ -568,7 +568,7 @@ EE.cp.formValidation = {
 			// Wait half a second, then clear the timer and send the AJAX request
 			timer = setTimeout(function() {
 				clearTimeout(timer);
-				if (field.is('textarea')) {
+				if (field.is('textarea') && field.is('textarea:not(.rte-textarea)')) {
 					return false;
 				} else {
 					that._sendAjaxRequest(field);
