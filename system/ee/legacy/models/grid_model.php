@@ -454,11 +454,37 @@ class Grid_model extends CI_Model
                     ] + $row_data;
                     // search:field parameter
                     if (isset($options['search']) && ! empty($options['search'])) {
+                        $search_data = $override[$i];
+                        $columns = $this->get_columns_for_field($field_id, $content_type);
+                        ee()->load->library('api');
+                        ee()->legacy_api->instantiate('channel_fields');
+                        ee()->load->helper('custom_field_helper');
+
+                        foreach ($columns as $col) {
+                            $col_key = 'col_id_' . $col['col_id'];
+                            if (isset($search_data[$col_key])) {
+                                $ft = ee()->api_channel_fields->setup_handler($col['col_type'], true);
+                                if ($ft) {
+                                    $ft->settings = $col['col_settings'];
+                                    $val = $search_data[$col_key];
+                                    if (method_exists($ft, 'grid_save')) {
+                                        $val = $ft->grid_save($val);
+                                    } elseif (method_exists($ft, 'save')) {
+                                        $val = $ft->save($val);
+                                    }
+                                    if (is_array($val)) {
+                                        $val = encode_multi_field($val);
+                                    }
+                                    $search_data[$col_key] = $val;
+                                }
+                            }
+                        }
+
                         $conditions = $this->_field_search($options['search'], $field_id, $content_type, false);
                         if (!empty($conditions)) {
                             $valid = false;
                             foreach ($conditions as $sub_condition) {
-                                $valid = $this->previewDataPassesCondition($sub_condition, $override[$i]);
+                                $valid = $this->previewDataPassesCondition($sub_condition, $search_data);
                                 if ($valid) {
                                     break;
                                 }
