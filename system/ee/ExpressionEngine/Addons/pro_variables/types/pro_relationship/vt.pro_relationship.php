@@ -649,8 +649,20 @@ class Pro_relationship extends Pro_variables_type
             return '';
         }
         
-        var_dump('result', $result);
         return $result;
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Do something after the variable has been saved to the DB
+     * Override base class to call post_save_var()
+     */
+    public function post_save($var_data)
+    {
+        $this->post_save_var($var_data);
+        
+        return $var_data;
     }
 
     // --------------------------------------------------------------------
@@ -662,6 +674,7 @@ class Pro_relationship extends Pro_variables_type
     {
         $this->setup_relationship_ft();
         
+        // Extract data array from POST - relationship fieldtype sends data as array with 'data' key
         $data = array(
             'data' => isset($var_data['data']) ? array_filter($var_data['data'], 'is_numeric') : array()
         );
@@ -682,15 +695,17 @@ class Pro_relationship extends Pro_variables_type
      */
     public function post_save_var($var_data)
     {
+        if (empty($this->id) || !is_numeric($this->id)) {
+            return;
+        }
+        
         $this->setup_relationship_ft();
         
         $cache_name = $this->input_name();
         $post = ee()->session->cache('Relationship_ft', $cache_name);
         
-        if ($post === false || !isset($post['data'])) {
-            if ($this->id) {
-                $this->clear_existing_relationships();
-            }
+        if ($post === false || !isset($post['data']) || empty($post['data'])) {
+            $this->clear_existing_relationships();
             return;
         }
         
@@ -706,7 +721,7 @@ class Pro_relationship extends Pro_variables_type
             
             $ships[] = array(
                 'parent_id' => $this->id,
-                'child_id' => $child_id,
+                'child_id' => (int) $child_id,
                 'field_id' => $this->id,
                 'order' => $order++,
                 'grid_col_id' => 0,
@@ -720,7 +735,9 @@ class Pro_relationship extends Pro_variables_type
             ee()->db->insert_batch($this->_table, $ships);
         }
         
-        ee()->session->delete_cache('Relationship_ft', $cache_name);
+        if (isset(ee()->session->cache['Relationship_ft'][$cache_name])) {
+            unset(ee()->session->cache['Relationship_ft'][$cache_name]);
+        }
     }
 
     // --------------------------------------------------------------------
@@ -756,11 +773,9 @@ class Pro_relationship extends Pro_variables_type
         $related = $this->get_related_entries();
         
         if (empty($tagdata)) {
-            // No tagdata, return entry IDs separated by pipe
             if (empty($related)) {
                 return '';
             }
-            // Extract entry IDs from the data array
             $entry_ids = array();
             foreach ($related as $row) {
                 $entry_ids[] = $row[$this->name . ':entry_id'];
@@ -768,7 +783,6 @@ class Pro_relationship extends Pro_variables_type
             return implode('|', $entry_ids);
         }
         
-        // Parse tagdata with related entry data
         return ee()->TMPL->parse_variables($tagdata, $related);
     }
 
@@ -791,14 +805,12 @@ class Pro_relationship extends Pro_variables_type
             $order_map[$rel['child_id']] = $rel['order'];
         }
         
-        // Get entries
         $entries = ee('Model')
             ->get('ChannelEntry')
             ->filter('entry_id', 'IN', $child_ids)
             ->with('Channel', 'Author')
             ->all();
         
-        // Build data array with order preserved
         $data = array();
         $entries_by_id = array();
         
@@ -806,7 +818,6 @@ class Pro_relationship extends Pro_variables_type
             $entries_by_id[$entry->entry_id] = $entry;
         }
         
-        // Sort by order
         uasort($order_map, function($a, $b) {
             return $a - $b;
         });
