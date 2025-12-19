@@ -479,6 +479,39 @@ class eeDbArMock
         // Simple implementation - just return $this for chaining
         return $this;
     }
+
+    public function where_not_in($field, $values)
+    {
+        if (!isset($this->whereInConditions)) {
+            $this->whereInConditions = [];
+        }
+        $this->whereInConditions[$field] = (array) $values;
+        return $this;
+    }
+
+    public function update_batch($table, $data, $key)
+    {
+        // Simple implementation - just return success
+        return true;
+    }
+
+    public function insert_batch($table, $data)
+    {
+        // Simple implementation - just return success
+        return true;
+    }
+
+    public function table_exists($table)
+    {
+        // Simple implementation - return false by default
+        return false;
+    }
+
+    public function list_tables($prefix = '')
+    {
+        // Simple implementation - return empty array by default
+        return [];
+    }
 }
 
 if (!class_exists('eeDbResultMock')) {
