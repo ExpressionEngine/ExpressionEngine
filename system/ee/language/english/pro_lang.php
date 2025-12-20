@@ -46,7 +46,7 @@ $lang = array(
 
     // Pro Cookies
     'cookie_frontedit' => 'Front-end editing',
-    'cookie_frontedit_desc' => 'Determines whether ExpressioEngine front-end editing features should be enabled.',
+    'cookie_frontedit_desc' => 'Determines whether ExpressionEngine front-end editing features should be enabled.',
 
     'export_consent_log' => 'Export Consent Audit Logs',
     'exported_consent_log' => 'Exported Consent Audit Logs',
