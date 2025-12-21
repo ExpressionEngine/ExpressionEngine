@@ -207,7 +207,7 @@ class Unpacker
         $somethingFound = false;
         $files = new FilesystemIterator($extracted, FilesystemIterator::UNIX_PATHS);
         foreach ($files as $item) {
-            if ($item->isDir() && !in_array($item->getBasename(), ['.', '..'])) {
+            if ($item->isDir() && !in_array($item->getBasename(), ['.', '..']) && !in_array($item->getBasename(), ['system', 'themes'])) {
                 $firstDir = $item->getBasename();
             }
             if ($item->getBasename() == 'addon.setup.php') {
@@ -359,7 +359,9 @@ class Unpacker
         // remove the leftover files
         ee('Filesystem')->deleteDir($this->getExtractedArchivePath());
         if (empty($failedToMove)) {
-            ee('Filesystem')->deleteDir($this->path() . 'backup');
+            if (ee('Filesystem')->exists($this->path() . 'backup')) {
+                ee('Filesystem')->deleteDir($this->path() . 'backup');
+            }
             if (ee('Filesystem')->exists($this->path() . 'backup_themes')) {
                 ee('Filesystem')->deleteDir($this->path() . 'backup_themes');
             }
@@ -369,9 +371,9 @@ class Unpacker
             }
 
             $addon = ee('pro:Addon')->get($addonShortName);
-            $resultMessage = sprintf(lang('command_addons_unpack_complete'), $addon->getName());
+            $resultMessage = sprintf(lang('addons_unpack_complete'), $addon->getName());
         } else {
-            $resultMessage = sprintf(lang('command_addons_unpack_failed'), implode(', ', $failedToMove));
+            $resultMessage = sprintf(lang('addons_unpack_failed'), implode(', ', $failedToMove));
         }
 
         return $resultMessage;
