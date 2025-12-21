@@ -17,6 +17,7 @@ trait UpdaterPaths
 {
     protected $filename = 'ExpressionEngine.zip';
     protected $extracted_folder = 'ExpressionEngine';
+    protected $folder = 'ee_update';
 
     /**
      * Constructs and returns the path to the downloaded zip archive
@@ -46,13 +47,25 @@ trait UpdaterPaths
      */
     protected function path()
     {
-        $cache_path = PATH_CACHE . 'ee_update/';
+        $cache_path = PATH_CACHE . $this->folder . '/';
 
         if (! is_dir($cache_path)) {
             $this->filesystem->mkDir($cache_path);
         }
 
         return $cache_path;
+    }
+
+    /**
+     * Sets the addon archive path and extracted folder name
+     *
+     * @param string $addon_name Name of the addon
+     */
+    public function setAddonArchivePath($addon_name)
+    {
+        $this->folder = 'addons';
+        $this->filename = $addon_name . '.zip';
+        $this->extracted_folder = $addon_name;
     }
 }
 // EOF

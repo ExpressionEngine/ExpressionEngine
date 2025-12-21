@@ -61,6 +61,8 @@ $lang = array(
 
     'addons_not_installed' => 'Add-Ons Not Installed',
 
+    'addons_unpack_invalid_structure' => 'The unpacked add-on does not have a valid structure.',
+
     'addon_not_fully_functional' => '%s is not fully functional',
 
     'existing_consent_request' => 'The following add-on(s) could not be installed due to an existing Consent Request which the add-on(s) are trying to create:',

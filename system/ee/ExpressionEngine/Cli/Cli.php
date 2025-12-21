@@ -103,6 +103,7 @@ class Cli
         'addons:list' => Commands\CommandAddonsList::class,
         'addons:uninstall' => Commands\CommandAddonsUninstall::class,
         'addons:update' => Commands\CommandAddonsUpdate::class,
+        'addons:unpack' => Commands\CommandAddonsUnpack::class,
 
         // Backup
         'backup:database' => Commands\CommandBackupDatabase::class,

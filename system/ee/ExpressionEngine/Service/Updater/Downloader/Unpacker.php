@@ -17,6 +17,7 @@ use ExpressionEngine\Service\Updater\Logger;
 use ExpressionEngine\Service\Updater\RequirementsCheckerLoader;
 use ExpressionEngine\Library\Filesystem\Filesystem;
 use ZipArchive;
+use FilesystemIterator;
 
 /**
  * Updater unpacker
@@ -167,6 +168,213 @@ class Unpacker
                 $e->getCode()
             );
         }
+    }
+
+    /**
+     * Get the list of add-on zip files in folder
+     *
+     * @return array List of add-on short names
+     */
+    public function getAddonsList()
+    {
+        $addons = [];
+        $path = $this->path('addons');
+        $files = new \FilesystemIterator($path, \FilesystemIterator::UNIX_PATHS);
+        foreach ($files as $item) {
+            if ($item->getExtension() == 'zip') {
+                $addons[] = $item->getBasename('.zip');
+            }
+        }
+        return $addons;
+    }
+
+    /**
+     * Unpack and move the addon to the correct location
+     *
+     * @param string $addonShortName Short name of the addon
+     * @return string Result message
+     */
+    public function unpackAndMoveAddon($addonShortName, $deleteZip = false)
+    {
+        // check if it has correct folder structure
+        // several options here:
+        // - the files are directly in the extracted folder
+        // - there is a single folder inside the extracted folder that contains the files, matching the addon name
+        // - there is system/user/addons structure inside the extracted folder
+        $extracted = $this->getExtractedArchivePath();
+        $addonFolders = [];
+        $themesFolders = [];
+        $somethingFound = false;
+        $files = new FilesystemIterator($extracted, FilesystemIterator::UNIX_PATHS);
+        foreach ($files as $item) {
+            if ($item->isDir() && !in_array($item->getBasename(), ['.', '..'])) {
+                $firstDir = $item->getBasename();
+            }
+            if ($item->getBasename() == 'addon.setup.php') {
+                $addonFolders[$addonShortName] = $extracted;
+                $somethingFound = true;
+                break;
+            }
+            if ($item->isDir() && $item->getBasename() == $addonShortName) {
+                $addonFolders[$addonShortName] = $item->getPathname();
+                $somethingFound = true;
+                break;
+            }
+        }
+
+        if (!$somethingFound) {
+            // look deeper
+            if (isset($firstDir)) {
+                $extracted .= '/' . $firstDir;
+                $files = new FilesystemIterator($extracted, FilesystemIterator::UNIX_PATHS);
+                foreach ($files as $item) {
+                    if ($item->getBasename() == 'addon.setup.php') {
+                        $addonFolders[$addonShortName] = $extracted;
+                        break;
+                    }
+                    if ($item->isDir() && $item->getBasename() == $addonShortName) {
+                        $addonFolders[$addonShortName] = $item->getPathname();
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (empty($addonFolders)) {
+            $files = new FilesystemIterator($extracted, FilesystemIterator::UNIX_PATHS);
+            foreach ($files as $item) {
+                if ($item->isDir() && $item->getBasename() == 'system') {
+                    $systemFiles = new FilesystemIterator($item->getPathname(), FilesystemIterator::UNIX_PATHS);
+                    foreach ($systemFiles as $subitem) {
+                        if ($subitem->isDir() && $subitem->getBasename() == $addonShortName) {
+                            $addonFolders[$addonShortName] = $subitem->getPathname();
+                            break;
+                        }
+                        if ($subitem->isDir() && $subitem->getBasename() == 'user') {
+                            $userFiles = new FilesystemIterator($subitem->getPathname(), FilesystemIterator::UNIX_PATHS);
+                            foreach ($userFiles as $userSubitem) {
+                                if ($userSubitem->isDir() && $userSubitem->getBasename() == 'addons') {
+                                    $userAddonsFiles = new FilesystemIterator($userSubitem->getPathname(), FilesystemIterator::UNIX_PATHS);
+                                    foreach ($userAddonsFiles as $addonSubitem) {
+                                        // there can be multiple adddons, so we need each folder that has a setup file
+                                        if ($addonSubitem->isDir() && !in_array($addonSubitem->getBasename(), ['.', '..'])) {
+                                            $addonFolderFiles = new FilesystemIterator($addonSubitem->getPathname(), FilesystemIterator::UNIX_PATHS);
+                                            foreach ($addonFolderFiles as $file) {
+                                                if ($file->getBasename() == 'addon.setup.php') {
+                                                    $addonFolders[$addonSubitem->getBasename()] = $addonSubitem->getPathname();
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    break 2;
+                                }
+                            }
+                        }
+                    }
+                }
+                if ($item->isDir() && $item->getBasename() == 'themes') {
+                    $themeFiles = new FilesystemIterator($item->getPathname(), FilesystemIterator::UNIX_PATHS);
+                    foreach ($themeFiles as $subitem) {
+                        if ($subitem->isDir() && $subitem->getBasename() == $addonShortName) {
+                            $themesFolders[$subitem->getBasename()] = $subitem->getPathname();
+                            break;
+                        }
+                        if ($subitem->isDir() && $subitem->getBasename() == 'user') {
+                            $userFiles = new FilesystemIterator($subitem->getPathname(), FilesystemIterator::UNIX_PATHS);
+                            foreach ($userFiles as $userSubitem) {
+                                if ($userSubitem->isDir() && !in_array($userSubitem->getBasename(), ['.', '..'])) {
+                                    $themesFolders[$userSubitem->getBasename()] = $userSubitem->getPathname();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // make sure the folder has addon.setup.php file
+        foreach ($addonFolders as $i => $addonFolder) {
+            $files = new FilesystemIterator($addonFolder, FilesystemIterator::UNIX_PATHS);
+            foreach ($files as $item) {
+                if ($item->getBasename() == 'addon.setup.php') {
+                    break 2;
+                }
+            }
+            // if no setup file, remove from the list
+            unset($addonFolders[$i]);
+        }
+
+        if (empty($addonFolders)) {
+            ee('Filesystem')->deleteDir($this->getExtractedArchivePath());
+            throw new \Exception(lang('addons_unpack_invalid_structure'));
+        }
+
+        $failedToMove = [];
+        $backupFolderId = uniqid();
+        // copy everything we have to addons folder
+        foreach ($addonFolders as $addonName => $addonFolder) {
+            // back up first
+            if (ee('Filesystem')->exists(PATH_THIRD . $addonName)) {
+                ee('Filesystem')->copy(PATH_THIRD . $addonName, $this->path() . 'backup/' . $addonName . '_' . $backupFolderId);
+                ee('Filesystem')->deleteDir(PATH_THIRD . $addonName);
+            }
+            try {
+                ee('Filesystem')->copy($addonFolder, PATH_THIRD . $addonName);
+            } catch (\Exception $e) {
+                if (ee('Filesystem')->exists($this->path() . 'backup/' . $addonName . '_' . $backupFolderId)) {
+                    // Remove the copied files
+                    ee('Filesystem')->deleteDir(PATH_THIRD . $addonName);
+
+                    // Restore from backup
+                    ee('Filesystem')->copy($this->path() . 'backup/' . $addonName . '_' . $backupFolderId, PATH_THIRD . $addonName);
+                }
+                $failedToMove[] = 'addons/' . $addonName;
+            }
+        }
+
+        if (!empty($themesFolders)) {
+            // copy themes if we have them
+            foreach ($themesFolders as $folderName => $themesFolder) {
+                // back up first
+                if (ee('Filesystem')->exists(PATH_THIRD_THEMES . $folderName)) {
+                    ee('Filesystem')->copy(PATH_THIRD_THEMES . $folderName, $this->path() . 'backup_themes/' . $folderName . '_' . $backupFolderId);
+                    ee('Filesystem')->deleteDir(PATH_THIRD_THEMES . $folderName);
+                }
+                try {
+                    ee('Filesystem')->copy($themesFolder, PATH_THIRD_THEMES . $folderName);
+                } catch (\Exception $e) {
+                    if (ee('Filesystem')->exists($this->path() . 'backup_themes/' . $folderName . '_' . $backupFolderId)) {
+                        // Remove the copied files
+                        ee('Filesystem')->deleteDir(PATH_THIRD_THEMES . $folderName);
+
+                        // Restore from backup
+                        ee('Filesystem')->copy($this->path() . 'backup_themes/' . $folderName . '_' . $backupFolderId, PATH_THIRD_THEMES . $folderName);
+                    }
+                    $failedToMove[] = 'themes/' . $folderName;
+                }
+            }
+        }
+
+        // remove the leftover files
+        ee('Filesystem')->deleteDir($this->getExtractedArchivePath());
+        if (empty($failedToMove)) {
+            ee('Filesystem')->deleteDir($this->path() . 'backup');
+            if (ee('Filesystem')->exists($this->path() . 'backup_themes')) {
+                ee('Filesystem')->deleteDir($this->path() . 'backup_themes');
+            }
+
+            if ($deleteZip) {
+                ee('Filesystem')->delete($this->getArchiveFilePath());
+            }
+
+            $addon = ee('pro:Addon')->get($addonShortName);
+            $resultMessage = sprintf(lang('command_addons_unpack_complete'), $addon->getName());
+        } else {
+            $resultMessage = sprintf(lang('command_addons_unpack_failed'), implode(', ', $failedToMove));
+        }
+
+        return $resultMessage;
     }
 }
 
