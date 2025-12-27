@@ -178,6 +178,7 @@ $lang = array(
     'license_invalid_license_key' => 'Invalid Key',
     'license_missing_license_key' => 'Missing Key',
     'license_update_available' => 'Update Available',
+    'license_update_available_message' => 'A new version of %s is available. Get <a href="https://expressionengine.com/store/licenses#update-available" target="_blank">more info</a> or <a href="%s">download the update</a>.',
     'unlicensed_addon' => 'Unlicensed Add-on',
     'unlicensed_addon_message' => '<b>%s</b> does not have a valid license. <a href="https://expressionengine.com/store/licenses" target="_blank">More Info</a>',
 
