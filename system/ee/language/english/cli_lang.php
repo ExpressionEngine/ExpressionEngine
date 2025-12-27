@@ -40,6 +40,7 @@ $lang = array(
     'command_addons_unpack_option_delete_zip'      => 'Delete the original zip file after unpacking',
     'command_addons_unpack_moving_files'           => 'Moving files to add-on folder for %s...',
     'command_addons_some_files_not_copied'         => 'Some files were not copied: %s',
+    'command_addons_unpack_no_zips_found'          => 'No add-on zip files were found to unpack.',
 
     // Lang entries for command addons:pack
     'command_addons_pack_description'            => 'Packs an add-on into a zip file',

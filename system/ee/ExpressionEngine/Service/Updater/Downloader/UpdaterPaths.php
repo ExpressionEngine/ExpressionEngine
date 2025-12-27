@@ -61,11 +61,13 @@ trait UpdaterPaths
      *
      * @param string $addon_name Name of the addon
      */
-    public function setAddonArchivePath($addon_name)
+    public function setAddonArchivePath($addon_name = '')
     {
         $this->folder = 'addons';
-        $this->filename = $addon_name . '.zip';
-        $this->extracted_folder = $addon_name;
+        if (!empty($addon_name)) {
+            $this->filename = $addon_name . '.zip';
+            $this->extracted_folder = $addon_name;
+        }
     }
 }
 // EOF

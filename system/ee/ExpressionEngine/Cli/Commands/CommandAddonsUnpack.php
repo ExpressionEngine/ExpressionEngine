@@ -61,9 +61,14 @@ class CommandAddonsUnpack extends Cli
         $this->info('command_addons_unpack_begin');
 
         $unpacker = ee('Updater/Unpacker');
+        $unpacker->setAddonArchivePath();
 
         // get the list of zip files
         $addons = $unpacker->getAddonsList();
+
+        if (empty($addons)) {
+            $this->fail('command_addons_unpack_no_zips_found');
+        }
 
         // Gather all the addon information
         $addonShortName = $this->data['addon'] = $this->getOptionOrAsk('--addon', "command_addons_unpack_ask_addon", 'first', true, $addons);
