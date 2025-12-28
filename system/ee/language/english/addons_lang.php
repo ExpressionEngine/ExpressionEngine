@@ -113,6 +113,8 @@ $lang = array(
 
     'uninstalled' => 'Uninstalled',
 
+    'licensed' => 'Licensed',
+
     /* 2.x */
 
     'configuration' => 'Configuration',

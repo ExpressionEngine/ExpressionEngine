@@ -481,11 +481,16 @@ class File
             }
         } else {
             $addon = ee('Addon')->get(ee()->input->get('addon'));
-            $filename = ee()->input->get('file');
-            if (!in_array($filename, ['icon.svg', 'icon.png'])) {
-                $filename = 'icon.svg';
+            // if there is no add-on folder, go to cache/store folder
+            if (is_null($addon)) {
+                $path = PATH_CACHE . 'store/' . ee()->input->get('addon') . '/icon';
+            } else {
+                $filename = ee()->input->get('file');
+                if (!in_array($filename, ['icon.svg', 'icon.png'])) {
+                    $filename = 'icon.svg';
+                }
+                $path = $addon->getPath() . '/' . $filename;
             }
-            $path = $addon->getPath() . '/' . $filename;
         }
         if (empty($path)) {
             $path = 'icon.svg';
