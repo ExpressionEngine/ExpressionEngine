@@ -279,7 +279,8 @@ class Unpacker
             }
 
             $addon = ee('pro:Addon')->get($addonShortName);
-            $resultMessage = sprintf(lang('addons_unpack_complete'), $addon->getName());
+            $addonName = !is_null($addon) ? $addon->getName() : $addonShortName;
+            $resultMessage = sprintf(lang('addons_unpack_complete'), $addonName);
         } else {
             $resultMessage = sprintf(lang('addons_unpack_failed'), implode(', ', $failedToMove));
         }
@@ -296,6 +297,7 @@ class Unpacker
      */
     private function iterateForAddon($directory, $addonShortName)
     {
+        $allAddonShortNames = array_keys($this->addonFolders);
         $directory = realpath($directory);
 
         $files = new FilesystemIterator($directory, FilesystemIterator::UNIX_PATHS | FilesystemIterator::SKIP_DOTS);
@@ -307,6 +309,14 @@ class Unpacker
             }
             // if it's not add-on folder, is this a themes folder?
             $normalizedPath = str_replace('\\', '/', $item->getPathname());
+            // folder matching add-on name in themes
+            foreach ($allAddonShortNames as $slug) {
+                if (strpos($normalizedPath, '/themes/' . $slug) !== false && strpos($normalizedPath, '/themes/' . $slug) === strlen($normalizedPath) - strlen('/themes/' . $slug) && $item->isDir()) {
+                    $this->themesFolders[$item->getBasename()] = $item->getPathname();
+                    break;
+                }
+            }
+            // all folders in themes / user
             if (strpos($normalizedPath, '/themes/user') !== false && strpos($normalizedPath, '/themes/user') === strlen($normalizedPath) - strlen('/themes/user') && $item->isDir()) {
                 $themeFiles = new FilesystemIterator($normalizedPath, FilesystemIterator::UNIX_PATHS | FilesystemIterator::SKIP_DOTS);
                 foreach ($themeFiles as $item) {
