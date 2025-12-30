@@ -483,7 +483,15 @@ class File
             $addon = ee('Addon')->get(ee()->input->get('addon'));
             // if there is no add-on folder, go to cache/store folder
             if (is_null($addon)) {
-                $path = PATH_CACHE . 'store/' . ee()->input->get('addon') . '/icon';
+                $cache_key = 'store/' . ee()->input->get('addon') . '/icon';
+                $data = ee()->cache->get($cache_key, Cache::GLOBAL_SCOPE);
+                if (!empty($data)) {
+                    $finfo = ee()->cache->file->get_metadata($cache_key, Cache::GLOBAL_SCOPE);
+                    ee()->output->send_cache_headers($finfo['mtime'], 2592000, $cache_key);
+                    $mime = ee('MimeType')->ofBuffer($data);
+                } else {
+                    unset($data);
+                }
             } else {
                 $filename = ee()->input->get('file');
                 if (!in_array($filename, ['icon.svg', 'icon.png'])) {
@@ -498,18 +506,21 @@ class File
 
         ee()->output->out_type = 'cp_asset';
         ee()->output->enable_profiler(false);
-        if (file_exists($path) && is_file($path)) {
-            ee()->output->send_cache_headers(filemtime($path), 5184000, $path);
-        } else {
-            $path = PATH_THEMES . 'asset/img/default-addon-icon.svg';
+        if (!isset($data)) {
+            if (file_exists($path) && is_file($path)) {
+                ee()->output->send_cache_headers(filemtime($path), 5184000, $path);
+                $mime = ee('MimeType')->ofFile($path);
+            } else {
+                $path = PATH_THEMES . 'asset/img/default-addon-icon.svg';
+                $mime = 'image/svg+xml';
+            }
+            $data = file_get_contents($path);
         }
-        $mime = ee('MimeType')->ofFile($path);
         if ($mime == 'image/svg') {
             $mime = 'image/svg+xml';
         }
         @header('Content-type: ' . $mime);
-
-        ee()->output->set_output(file_get_contents($path));
+        ee()->output->set_output($data);
 
         if (ee()->config->item('send_headers') == 'y') {
             @header('Content-Length: ' . strlen(ee()->output->final_output));
