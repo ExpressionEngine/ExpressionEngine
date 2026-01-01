@@ -582,6 +582,35 @@ $lang = array(
     'command_sites_site_status' => 'Site online status?',
     'command_sites_editing_site' => 'Editing %s MSM site...',
 
+    'command_select_msm_site' => 'Select an MSM site:',
+    'command_all_sites' => 'All Sites',
+
+    // category groups
+    'command_category_groups_list_header' => 'Category Groups:',
+    'command_category_groups_list_no_category_groups_found' => 'No category groups found.',
+    'command_category_groups_list_total' => 'Total category groups: %d',
+    'command_category_groups_id' => 'ID',
+    'command_category_groups_site_id' => 'Site ID',
+    'command_category_groups_name' => 'Group Name',
+    'command_category_groups_added' => 'Category group added successfully!',
+    'command_category_groups_not_added' => 'Category group could not be added.',
+    'command_category_groups_adding' => 'Creating new category group...',
+    'command_category_groups_not_found' => 'Category group not found.',
+    'command_category_groups_editing' => 'Editing %s category group...',
+
+    'command_category_groups_delete_ask' => 'Which category group do you want to delete?',
+    'command_category_groups_delete_confirm' => 'Are you sure you want to delete this category group %s and all its associated data? This action cannot be undone.',
+    'command_category_groups_deleting_group' => 'Deleting category group...',
+    'command_category_groups_group_deleted' => 'Category group deleted successfully!',
+    'command_category_groups_group_not_deleted' => 'Category group could not be deleted.',
+
+    'command_category_groups_edit_ask' => 'Which category group do you want to edit?',
+    'command_sites_editing_category_group' => 'Editing %s category group...',
+    'command_category_groups_ask_name' => 'Category group name?',
+    'command_sites_saving_category_group' => 'Saving category group...',
+    'command_category_groups_group_saved' => 'Category group saved successfully!',
+    'command_category_groups_group_not_saved' => 'Category group could not be saved.',
+
     // version
     'command_version_description' => 'Displays ExpressionEngine version information',
     'command_version_summary' => 'Shows the current ExpressionEngine version and system information',

@@ -125,6 +125,12 @@ class Cli
         'sites:edit' => Commands\CommandSitesEdit::class,
         'sites:delete' => Commands\CommandSitesDelete::class,
 
+        // Category Groups
+        'cgroups:list' => Commands\CommandCategoryGroupList::class,
+        'cgroups:add' => Commands\CommandCategoryGroupAdd::class,
+        'cgroups:edit' => Commands\CommandCategoryGroupEdit::class,
+        'cgroups:delete' => Commands\CommandCategoryGroupDelete::class,
+
         // Version
         'version' => Commands\CommandVersion::class,
 
@@ -898,5 +904,56 @@ class Cli
         }
 
         return $jsonOptions;
+    }
+
+    /**
+     * Get MSM site ID based on --site_id option or user prompt
+     * @param  string $default 'all' or 'first' or specific site ID
+     * @return int|null
+     */
+    protected function getMsmSiteId($default = 'all')
+    {
+        $site_id = null;
+
+        if (!bool_config_item('multiple_sites_enabled')) {
+            return ee()->config->item('site_id');
+        }
+
+        $sites = ee('Model')->get('Site')->all()->getDictionary('site_id', 'site_label');
+
+        switch ($default) {
+            case 'first':
+                $default = array_key_first($sites);
+                $defaultAsText = $sites[$default];
+                break;
+            case 'all':
+                $defaultAsText = lang('command_all_sites');
+                $default = null;
+                break;
+            default:
+                $defaultAsText = $default;
+                break;
+        }
+
+        if (count($sites) > 1) {
+            if ($this->option('--site')) {
+                $site_id = $this->option('--site');
+                if ($site_id === 'all') {
+                    $site_id = null;
+                } elseif ($site_id === 'first') {
+                    $site_id = array_key_first($sites);
+                }
+            } else {
+                $site_id = $this->askFromList(lang('command_select_msm_site') . ' [' . $defaultAsText . ']', $sites, $default);
+            }
+        } else {
+            $site_id = array_key_first($sites);
+        }
+
+        if (!array_key_exists($site_id, $sites) && !is_null($site_id)) {
+            $this->fail(lang('command_sites_site_not_found'));
+        }
+
+        return $site_id;
     }
 }
