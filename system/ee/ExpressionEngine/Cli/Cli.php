@@ -119,6 +119,12 @@ class Cli
         // Fieldtypes
         'fieldtypes:list' => Commands\CommandFieldtypesList::class,
 
+        // Sites
+        'sites:list' => Commands\CommandSitesList::class,
+        'sites:add' => Commands\CommandSitesAdd::class,
+        'sites:edit' => Commands\CommandSitesEdit::class,
+        'sites:delete' => Commands\CommandSitesDelete::class,
+
         // Version
         'version' => Commands\CommandVersion::class,
 
