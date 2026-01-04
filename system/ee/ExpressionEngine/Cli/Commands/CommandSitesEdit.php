@@ -11,13 +11,15 @@
 namespace ExpressionEngine\Cli\Commands;
 
 use ExpressionEngine\Cli\Cli;
-use ExpressionEngine\Service\Model\Collection;
+use ExpressionEngine\Cli\CliOptionsTrait;
 
 /**
  * Command to edit site
  */
 class CommandSitesEdit extends Cli
 {
+    use CliOptionsTrait;
+
     /**
      * name of command
      * @var string
@@ -72,11 +74,13 @@ class CommandSitesEdit extends Cli
             return;
         }
 
-        if ($this->option('--site_id')) {
-            $this->data['site_id'] = $this->option('--site_id');
-        } else {
-            $this->data['site_id'] = $this->askFromList(lang('command_sites_edit_ask'), $sites, null);
-        }
+        $this->data['site_id'] = $this->getOptionValue('site_id', [
+            'type' => 'select',
+            'desc' => 'command_sites_edit_ask',
+            'choices' => $sites,
+            'default' => null,
+            'required' => true
+        ]);
 
         if (empty($this->data['site_id'])) {
             $this->fail(lang('command_sites_site_not_found'));
@@ -89,8 +93,13 @@ class CommandSitesEdit extends Cli
 
         $this->info(sprintf(lang('command_sites_editing_site'), $site->site_label));
 
-        $fields = $this->getOptionOrAsk('--fields', lang('command_sites_edit_which_fields'), 'name, label, description, color, status');
-        $fields = array_map('trim', explode(',', $fields));
+        $fields = $this->getOptionValue('fields', [
+            'type' => 'checkbox',
+            'desc' => 'command_sites_edit_ask',
+            'choices' => ['name', 'label', 'description', 'color', 'status'],
+            'default' => 'name, label, description, color, status',
+            'required' => true
+        ]);
 
         foreach ($fields as $field) {
             if ($field == 'status') {
@@ -117,15 +126,7 @@ class CommandSitesEdit extends Cli
         $this->info(lang('command_sites_saving_site'));
 
         $site->set($this->data);
-        $validation = $site->validate();
-        if ($validation->failed()) {
-            foreach ($validation->getAllErrors() as $field => $messages) {
-                foreach ($messages as $message) {
-                    $this->error($message);
-                }
-            }
-            $this->fail(lang('command_sites_site_not_saved'));
-        }
+        $this->validateModel($site, lang('command_sites_site_not_saved'));
 
         $site->save();
         $this->info(lang('command_sites_site_saved'));

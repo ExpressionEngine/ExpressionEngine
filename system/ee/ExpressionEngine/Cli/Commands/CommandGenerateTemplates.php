@@ -11,12 +11,15 @@
 namespace ExpressionEngine\Cli\Commands;
 
 use ExpressionEngine\Cli\Cli;
+use ExpressionEngine\Cli\CliOptionsTrait;
 
 /**
  * Command to make action files for addons
  */
 class CommandGenerateTemplates extends Cli
 {
+    use CliOptionsTrait;
+
     /**
      * name of command
      * @var string
@@ -46,6 +49,12 @@ class CommandGenerateTemplates extends Cli
         'code,c'        => 'command_generate_templates_show_template_code',
         'json,j'        => 'command_generate_templates_show_template_content_json',
     ];
+
+    /**
+    * whether command options are dynamic
+    * @var bool
+    */
+    public $dynamicCommandOptions = true;
 
     protected $data = [];
 
@@ -381,30 +390,6 @@ class CommandGenerateTemplates extends Cli
     }
 
     /**
-     * Setup command options from generator options
-     *
-     * @param array $options
-     */
-    private function setupCommandOptions($options)
-    {
-        $normalizedOptions = [];
-        foreach ($options as $option => $optionParams) {
-            $command = $option;
-            if (isset($optionParams['type']) && $optionParams['type'] == 'checkbox') {
-                $command .= '*';
-            }
-            $command .= ':';
-            if (isset($optionParams['required']) && $optionParams['required']) {
-                $command .= ':';
-            }
-            $normalizedOptions[$command] = isset($optionParams['desc']) ? $optionParams['desc'] : $option;
-        }
-
-        $this->commandOptions = array_merge($normalizedOptions, $this->commandOptions);
-        $this->loadOptions(); // need to have those re-loaded now
-    }
-
-    /**
      * Process generator options and collect user input
      *
      * @param array $options
@@ -429,91 +414,6 @@ class CommandGenerateTemplates extends Cli
             // Validate the option
             $this->validateOption($generator, $option);
         }
-    }
-
-    /**
-     * Check if an option should be skipped
-     *
-     * @param array $optionParams
-     * @return bool
-     */
-    private function shouldSkipOption($optionParams)
-    {
-        return in_array($optionParams['type'], ['radio', 'select']) &&
-            (
-                !isset($optionParams['choices']) || //no choice
-                empty($optionParams['choices']) || // choice is empty
-                (count($optionParams['choices']) == 1 && array_key_first($optionParams['choices']) == ($optionParams['default'] ?? null)) // there just 1 choice, which is default
-            );
-    }
-
-    /**
-     * Get option value from user input
-     *
-     * @param string $option
-     * @param array $optionParams
-     * @return mixed
-     */
-    private function getOptionValue($option, $optionParams)
-    {
-        $default = $optionParams['default'] ?? '';
-        $required = $optionParams['required'] ?? false;
-        $askText = $this->buildAskText($option, $optionParams);
-
-        $optionValue = $this->getOptionOrAsk(
-            '--' . $option,
-            $askText,
-            $default,
-            $required
-        );
-
-        return $this->processOptionValue($optionValue, $optionParams);
-    }
-
-    /**
-     * Build the ask text for an option
-     *
-     * @param string $option
-     * @param array $optionParams
-     * @return string
-     */
-    private function buildAskText($option, $optionParams)
-    {
-        $askText = isset($optionParams['desc']) ? lang($optionParams['desc']) : lang($option);
-
-        if (isset($optionParams['choices']) && !empty($optionParams['choices'])) {
-            foreach ($optionParams['choices'] as $key => $val) {
-                $askText .= "\n - " . $key . " : " . lang($val);
-            }
-            if ($optionParams['type'] == 'checkbox') {
-                $askText .= "\n\n" . lang('separate_choices_commas') . ":";
-            } else {
-                $askText .= "\n\n: ";
-            }
-        }
-
-        return $askText;
-    }
-
-    /**
-     * Process option value based on its type
-     *
-     * @param mixed $optionValue
-     * @param array $optionParams
-     * @return mixed
-     */
-    private function processOptionValue($optionValue, $optionParams)
-    {
-        // ensure the checkbox options receive an array
-        // comma is expected separator, but we'll also allow | for convenience
-        if ($optionParams['type'] == 'checkbox' && !is_array($optionValue)) {
-            $optionValue = explode('|', str_replace(',', '|', $optionValue));
-            $optionValue = array_map('trim', $optionValue);
-        } elseif (is_string($optionValue)) {
-            $optionValue = trim($optionValue);
-        }
-
-        return $optionValue;
     }
 
     /**

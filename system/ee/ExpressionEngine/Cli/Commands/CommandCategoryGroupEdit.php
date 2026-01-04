@@ -12,12 +12,15 @@ namespace ExpressionEngine\Cli\Commands;
 
 use ExpressionEngine\Cli\Cli;
 use ExpressionEngine\Service\Model\Collection;
+use ExpressionEngine\Cli\CliOptionsTrait;
 
 /**
  * Command to edit an existing category group
  */
 class CommandCategoryGroupEdit extends Cli
 {
+    use CliOptionsTrait;
+
     /**
      * name of command
      * @var string
@@ -81,15 +84,7 @@ class CommandCategoryGroupEdit extends Cli
         $this->info(lang('command_sites_saving_category_group'));
 
         $category_group->set($this->data);
-        $validation = $category_group->validate();
-        if ($validation->failed()) {
-            foreach ($validation->getAllErrors() as $field => $messages) {
-                foreach ($messages as $message) {
-                    $this->error($message);
-                }
-            }
-            $this->fail(lang('command_category_groups_group_not_saved'));
-        }
+        $this->validateModel($category_group, lang('command_category_groups_group_not_saved'));
 
         $category_group->save();
         $this->info(lang('command_category_groups_group_saved'));

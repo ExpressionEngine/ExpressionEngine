@@ -15,9 +15,9 @@ use ExpressionEngine\Service\Model\Collection;
 use ExpressionEngine\Cli\CliOptionsTrait;
 
 /**
- * Command to list all category groups
+ * Command to list all categories
  */
-class CommandCategoryGroupList extends Cli
+class CommandCategoriesList extends Cli
 {
     use CliOptionsTrait;
 
@@ -25,19 +25,19 @@ class CommandCategoryGroupList extends Cli
      * name of command
      * @var string
      */
-    public $name = 'List Category Groups';
+    public $name = 'List Categories';
 
     /**
      * signature of command
      * @var string
      */
-    public $signature = 'cgroups:list';
+    public $signature = 'categories:list';
 
     /**
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli.php cgroups:list [--site=<site_id>|all|first] [--format=<format>]';
+    public $usage = 'php eecli.php categories:list';
 
     /**
      * options available for use in command
@@ -45,6 +45,7 @@ class CommandCategoryGroupList extends Cli
      */
     public $commandOptions = [
         'site,s:' => 'command_category_groups_list_option_site',
+        'category_group,g:' => 'command_categories_list_option_category_group',
         'format,f:' => 'command_channels_list_option_format',
     ];
 
@@ -52,7 +53,7 @@ class CommandCategoryGroupList extends Cli
      * Sets the tablemask for the list table
      * @var boolean
      */
-    public $tableMask = "|%-8.8s |%-8.8s |%-80.80s |";
+    public $tableMask = "|%-8.8s |%-20.20s |%-65.65s |";
 
     /**
      * Run the command
@@ -60,16 +61,26 @@ class CommandCategoryGroupList extends Cli
      */
     public function handle()
     {
-        // do we need to ask for site?
-        $site_id = $this->getMsmSiteId('all');
-
         $format = $this->option('--format', 'table');
 
-        // Get all sites
-        $query = ee('Model')->get('CategoryGroup');
+        $site_id = $this->getMsmSiteId('all');
 
+        $category_groups = ee('Model')->get('CategoryGroup')->fields('group_id', 'group_name');
         if (isset($site_id) && !is_null($site_id)) {
-            $query->filter('site_id', $site_id);
+            $category_groups->filter('site_id', $site_id);
+        }
+        $category_groups = $category_groups->all()->getDictionary('group_id', 'group_name');
+        $groupId = $this->getOptionValue('category_group', [
+            'type' => 'select',
+            'desc' => 'command_categories_list_which_category_group',
+            'choices' => $category_groups,
+            'default' => null,
+            'required' => false
+        ]);
+
+        $query = ee('Model')->get('Category')->with('CategoryGroup');
+        if (isset($groupId) && !empty($groupId)) {
+            $query->filter('group_id', $groupId);
         }
 
         $data = $query->all();
@@ -94,14 +105,14 @@ class CommandCategoryGroupList extends Cli
      */
     private function displayTable($data)
     {
-        $this->info('command_category_groups_list_header');
+        $this->info('command_categories_list_header');
         $this->write('');
 
         // Table header
         $this->write(sprintf($this->tableMask,
-            lang('command_category_groups_id'),
-            lang('command_category_groups_site_id'),
-            lang('command_category_groups_name')
+            lang('command_categories_id'),
+            lang('command_categories_name'),
+            lang('command_categories_url_title')
         ));
 
         $this->write(str_repeat('-', 100));
@@ -110,18 +121,18 @@ class CommandCategoryGroupList extends Cli
         foreach ($data as $row) {
 
             $this->write(sprintf($this->tableMask,
-                $row->group_id,
-                $row->site_id,
-                $row->group_name
+                $row->cat_id,
+                $row->cat_name,
+                $row->cat_url_title
             ));
         }
 
         $this->write('');
-        $this->complete(sprintf(lang('command_category_groups_list_total'), $data->count()));
+        $this->complete(sprintf(lang('command_categories_list_total'), $data->count()));
     }
 
     /**
-     * Display category groups in JSON format
+     * Display categories in JSON format
      * @param Collection $data
      */
     private function displayJson($data)
@@ -129,9 +140,9 @@ class CommandCategoryGroupList extends Cli
         $data = [];
         foreach ($data as $row) {
             $data[] = [
-                'id' => $row->group_id,
-                'site_id' => $row->site_id,
-                'group_name' => $row->group_name
+                'cat_id' => $row->cat_id,
+                'cat_name' => $row->cat_name,
+                'cat_url_title' => $row->cat_url_title
             ];
         }
 
@@ -139,20 +150,20 @@ class CommandCategoryGroupList extends Cli
     }
 
     /**
-     * Display sites in CSV format
-     * @param Collection $sites
+     * Display categories in CSV format
+     * @param Collection $data
      */
     private function displayCsv($data)
     {
         // CSV header
-        $this->write('ID,Site ID,Group Name');
+        $this->write('ID,Name,URL Title');
 
         // CSV rows
         foreach ($data as $row) {
             $row = [
-                $row->group_id,
-                $row->site_id,
-                $row->group_name
+                $row->cat_id,
+                $row->cat_name,
+                $row->cat_url_title
             ];
 
             $this->write(implode(',', $row));

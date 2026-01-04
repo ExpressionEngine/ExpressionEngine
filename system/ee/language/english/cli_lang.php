@@ -589,6 +589,7 @@ $lang = array(
     'command_category_groups_list_header' => 'Category Groups:',
     'command_category_groups_list_no_category_groups_found' => 'No category groups found.',
     'command_category_groups_list_total' => 'Total category groups: %d',
+    'command_category_groups_list_option_site' => 'Site ID (\'all\' for all sites, \'first\' for first site)',
     'command_category_groups_id' => 'ID',
     'command_category_groups_site_id' => 'Site ID',
     'command_category_groups_name' => 'Group Name',
@@ -610,6 +611,40 @@ $lang = array(
     'command_sites_saving_category_group' => 'Saving category group...',
     'command_category_groups_group_saved' => 'Category group saved successfully!',
     'command_category_groups_group_not_saved' => 'Category group could not be saved.',
+
+    // categories
+    'command_categories_list_description' => 'Lists all categories in the system',
+    'command_categories_list_summary' => 'Displays all categories with their details in various formats',
+    'command_categories_list_header' => 'Categories:',
+    'command_categories_list_option_category_group' => 'Filter by category group ID',
+    'command_categories_list_which_category_group' => 'Category Group to filter by? [leave blank for all]',
+
+    'command_categories_list_header' => 'Categories:',
+    'command_categories_name' => 'Name',
+    'command_categories_id' => 'ID',
+    'command_categories_group_id' => 'Group ID',
+    'command_categories_url_title' => 'URL Title',
+    'command_categories_list_total' => 'Total categories: %d',
+    'command_categories_no_categories_found' => 'No categories found.',
+
+    'command_categories_category_group' => 'Category Group',
+
+    'command_categories_adding' => 'Creating new category...',
+    'command_categories_added' => 'Category added successfully!',
+    'command_categories_not_added' => 'Category could not be added.',
+
+    'command_categories_category_id' => 'Category ID',
+    'command_categories_delete_ask' => 'Which category do you want to delete?',
+    'command_categories_not_found' => 'Category not found.',
+    'command_categories_delete_confirm' => 'Are you sure you want to delete this category %s? This action cannot be undone.',
+    'command_categories_deleting_category' => 'Deleting category...',
+    'command_categories_deleted' => 'Category deleted successfully!',
+    'command_categories_not_deleted' => 'Category could not be deleted.',
+    'command_categories_edit_ask' => 'Which category do you want to edit?',
+    'command_categories_editing' => 'Editing %s category...',
+    'command_categories_saving' => 'Saving category...',
+    'command_categories_saved' => 'Category saved successfully!',
+    'command_categories_not_saved' => 'Category could not be saved.',
 
     // version
     'command_version_description' => 'Displays ExpressionEngine version information',

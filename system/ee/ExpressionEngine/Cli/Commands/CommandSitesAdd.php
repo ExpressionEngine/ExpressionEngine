@@ -12,12 +12,15 @@ namespace ExpressionEngine\Cli\Commands;
 
 use ExpressionEngine\Cli\Cli;
 use ExpressionEngine\Service\Model\Collection;
+use ExpressionEngine\Cli\CliOptionsTrait;
 
 /**
  * Command to add a new site
  */
 class CommandSitesAdd extends Cli
 {
+    use CliOptionsTrait;
+
     /**
      * name of command
      * @var string
@@ -78,15 +81,7 @@ class CommandSitesAdd extends Cli
         $this->info(lang('command_sites_adding_site'));
 
         $site = ee('Model')->make('Site', $this->data);
-        $validation = $site->validate();
-        if ($validation->failed()) {
-            foreach ($validation->getAllErrors() as $field => $messages) {
-                foreach ($messages as $message) {
-                    $this->error($message);
-                }
-            }
-            $this->fail(lang('command_sites_site_not_added'));
-        }
+        $this->validateModel($site, lang('command_sites_site_not_added'));
 
         $site->save();
         $this->complete(lang('command_sites_site_added'));

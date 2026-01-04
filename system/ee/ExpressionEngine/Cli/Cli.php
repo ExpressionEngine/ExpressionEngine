@@ -74,6 +74,12 @@ class Cli
     public $commandOptions;
 
     /**
+     * whether command options are dynamic
+     * @var bool
+     */
+    public $dynamicCommandOptions = false;
+
+    /**
      * Summary of the command
      * @var string
      */
@@ -130,6 +136,12 @@ class Cli
         'cgroups:add' => Commands\CommandCategoryGroupAdd::class,
         'cgroups:edit' => Commands\CommandCategoryGroupEdit::class,
         'cgroups:delete' => Commands\CommandCategoryGroupDelete::class,
+
+        // Categories
+        'categories:list' => Commands\CommandCategoriesList::class,
+        'categories:add' => Commands\CommandCategoriesAdd::class,
+        'categories:edit' => Commands\CommandCategoriesEdit::class,
+        'categories:delete' => Commands\CommandCategoriesDelete::class,
 
         // Version
         'version' => Commands\CommandVersion::class,
@@ -714,7 +726,7 @@ class Cli
             $errors = $this->options->getErrors();
 
             foreach ($errors as $i => $error) {
-                if ($this->signature == 'generate:templates' && $error instanceof Exception\OptionNotDefined) {
+                if ($this->dynamicCommandOptions && $error instanceof Exception\OptionNotDefined) {
                     // a very specific exception that we make for command that's dynamically loading options
                     unset($errors[$i]);
                     continue;
@@ -726,6 +738,30 @@ class Cli
                 $this->fail();
             }
         };
+    }
+
+    /**
+     * Setup command options from generator options
+     *
+     * @param array $options
+     */
+    protected function setupCommandOptions($options)
+    {
+        $normalizedOptions = [];
+        foreach ($options as $option => $optionParams) {
+            $command = $option;
+            if (isset($optionParams['type']) && $optionParams['type'] == 'checkbox') {
+                $command .= '*';
+            }
+            $command .= ':';
+            if (isset($optionParams['required']) && $optionParams['required']) {
+                $command .= ':';
+            }
+            $normalizedOptions[$command] = isset($optionParams['desc']) ? $optionParams['desc'] : $option;
+        }
+
+        $this->commandOptions = array_merge($normalizedOptions, $this->commandOptions);
+        $this->loadOptions(); // need to have those re-loaded now
     }
 
     /**
@@ -904,56 +940,5 @@ class Cli
         }
 
         return $jsonOptions;
-    }
-
-    /**
-     * Get MSM site ID based on --site_id option or user prompt
-     * @param  string $default 'all' or 'first' or specific site ID
-     * @return int|null
-     */
-    protected function getMsmSiteId($default = 'all')
-    {
-        $site_id = null;
-
-        if (!bool_config_item('multiple_sites_enabled')) {
-            return ee()->config->item('site_id');
-        }
-
-        $sites = ee('Model')->get('Site')->all()->getDictionary('site_id', 'site_label');
-
-        switch ($default) {
-            case 'first':
-                $default = array_key_first($sites);
-                $defaultAsText = $sites[$default];
-                break;
-            case 'all':
-                $defaultAsText = lang('command_all_sites');
-                $default = null;
-                break;
-            default:
-                $defaultAsText = $default;
-                break;
-        }
-
-        if (count($sites) > 1) {
-            if ($this->option('--site')) {
-                $site_id = $this->option('--site');
-                if ($site_id === 'all') {
-                    $site_id = null;
-                } elseif ($site_id === 'first') {
-                    $site_id = array_key_first($sites);
-                }
-            } else {
-                $site_id = $this->askFromList(lang('command_select_msm_site') . ' [' . $defaultAsText . ']', $sites, $default);
-            }
-        } else {
-            $site_id = array_key_first($sites);
-        }
-
-        if (!array_key_exists($site_id, $sites) && !is_null($site_id)) {
-            $this->fail(lang('command_sites_site_not_found'));
-        }
-
-        return $site_id;
     }
 }

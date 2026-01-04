@@ -11,13 +11,15 @@
 namespace ExpressionEngine\Cli\Commands;
 
 use ExpressionEngine\Cli\Cli;
-use ExpressionEngine\Service\Model\Collection;
+use ExpressionEngine\Cli\CliOptionsTrait;
 
 /**
  * Command to add a new category group
  */
 class CommandCategoryGroupAdd extends Cli
 {
+    use CliOptionsTrait;
+
     /**
      * name of command
      * @var string
@@ -60,15 +62,7 @@ class CommandCategoryGroupAdd extends Cli
         $this->info(lang('command_category_groups_adding'));
 
         $category_group = ee('Model')->make('CategoryGroup', $this->data);
-        $validation = $category_group->validate();
-        if ($validation->failed()) {
-            foreach ($validation->getAllErrors() as $field => $messages) {
-                foreach ($messages as $message) {
-                    $this->error($message);
-                }
-            }
-            $this->fail(lang('command_category_groups_not_added'));
-        }
+        $this->validateModel($category_group, lang('command_category_groups_not_added'));
 
         $category_group->save();
         $this->complete(lang('command_category_groups_added'));

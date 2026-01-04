@@ -98,6 +98,16 @@ class FieldDisplay
         return $this->field->getItem('field_required') == 'y';
     }
 
+    public function isOptionFieldtype()
+    {
+        return $this->field->isOptionFieldtype();
+    }
+
+    public function getFieldOptions()
+    {
+        return $this->field->getPossibleValuesForEvaluation();
+    }
+
     public function collapse()
     {
         $this->collapsed = true;

@@ -11,13 +11,15 @@
 namespace ExpressionEngine\Cli\Commands;
 
 use ExpressionEngine\Cli\Cli;
-use ExpressionEngine\Service\Model\Collection;
+use ExpressionEngine\Cli\CliOptionsTrait;
 
 /**
  * Command to delete a site
  */
 class CommandSitesDelete extends Cli
 {
+    use CliOptionsTrait;
+
     /**
      * name of command
      * @var string
@@ -67,11 +69,13 @@ class CommandSitesDelete extends Cli
             return;
         }
 
-        if ($this->option('--site_id')) {
-            $this->data['site_id'] = $this->option('--site_id');
-        } else {
-            $this->data['site_id'] = $this->askFromList(lang('command_sites_delete_ask'), $sites, null);
-        }
+        $this->data['site_id'] = $this->getOptionValue('site_id', [
+            'type' => 'select',
+            'desc' => 'command_sites_delete_ask',
+            'choices' => $sites,
+            'default' => null,
+            'required' => true
+        ]);
 
         if (empty($this->data['site_id'])) {
             $this->fail(lang('command_sites_site_not_found'));
