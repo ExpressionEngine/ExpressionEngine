@@ -103,6 +103,11 @@ class FieldDisplay
         return $this->field->isOptionFieldtype();
     }
 
+    public function hasArrayData()
+    {
+        return $this->field->hasArrayData();
+    }
+
     public function getFieldOptions()
     {
         return $this->field->getPossibleValuesForEvaluation();

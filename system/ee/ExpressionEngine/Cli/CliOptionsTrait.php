@@ -97,7 +97,7 @@ trait CliOptionsTrait
         return $optionValue;
     }
 
-        /**
+    /**
      * Get MSM site ID based on --site_id option or user prompt
      * @param  string $default 'all' or 'first' or specific site ID
      * @return int|null
@@ -161,7 +161,7 @@ trait CliOptionsTrait
      * Get the list of fields for category
      *
      * @param Collection|null $currentCategory
-     * @return void
+     * @return object
      */
     private function getFieldsForCategories($currentCategory = null)
     {
@@ -255,6 +255,107 @@ trait CliOptionsTrait
             $key = array_key_exists($field, $customFields) ? $customFields[$field] : $field;
             $this->data[$key] = $this->getOptionValue($field, $params);
         }
+
+        return $currentCategory;
+    }
+
+    /**
+     * Get the list of fields for entry
+     *
+     * @param Collection|null $currentEntry
+     * @return object
+     */
+    private function getFieldsForEntries($currentEntry = null)
+    {
+        $allFields = [];
+
+        if (is_null($currentEntry)) {
+            $currentEntry = ee('Model')->make('ChannelEntry', [
+                'channel_id' => $this->data['channel_id'],
+                'author_id' => ee('Member')->getDefaultCLIAuthor()->getId()
+            ]);
+            $isNew = true;
+        }
+
+        $channel = ee('Model')->get('Channel', $currentEntry->channel_id)->with(['CategoryGroups' => 'Categories'])->all()->first();
+        $categories = [];
+        foreach ($channel->CategoryGroups as $categoryGroup) {
+            foreach ($categoryGroup->Categories as $category) {
+                $categories[$category->cat_id] = $category->cat_name . ' (' . $categoryGroup->group_name . ')';
+            }
+        }
+
+        $allFields = array_merge($allFields, [
+            'title' => [
+                'type' => 'text',
+                'desc' => 'title',
+                'default' => $currentEntry->title,
+                'required' => true
+            ],
+            'url_title' => [
+                'desc' => 'url_title',
+                'default' => $currentEntry->url_title,
+                'required' => true
+            ],
+            'status' => [
+                'type' => 'select',
+                'desc' => 'status',
+                'choices' => ee('Model')->get('Status')->fields('status')->all()->getDictionary('status', 'status'),
+                'default' => $currentEntry->status ?? 'open',
+                'required' => true
+            ],
+            'categories' => [
+                'type' => 'select',
+                'desc' => 'categories',
+                'choices' => $categories,
+                'default' => $isNew ? '' : implode(',', $currentEntry->Categories->pluck('cat_id')),
+                'required' => false
+            ],
+        ]);
+
+        $customFields = [];
+        foreach ($currentEntry->getDisplay()->getFields() as $field) {
+            if (in_array($field->getShortName(), [ 'entry_date', 'expiration_date', 'comment_expiration_date', 'channel_id', 'author_id', 'allow_comments', 'versioning_enabled', 'revisions' ])) {
+                // these fields are not supported in CLI context
+                continue;
+            }
+            // we only can use CLI-compiliant field types (the "simple" ones)
+            if ($field->hasArrayData()) {
+                continue;
+            }
+            $fieldTechName = is_numeric($field->getId()) ? 'field_id_' . $field->getId() : $field->getId();
+            $allFields[$field->getShortName()] = [
+                'type' => $field->getTypeName(),
+                'desc' => $field->getLabel(),
+                'default' => $currentEntry->$fieldTechName,
+                'required' => $field->isRequired()
+            ];
+            if ($field->isOptionFieldtype()) {
+                $allFields[$field->getShortName()]['choices'] = $field->getFieldOptions();
+            }
+            $customFields[$field->getShortName()] = $fieldTechName;
+        }
+
+        $fieldsOption = $this->getOptionOrAsk('--fields', lang('command_sites_edit_which_fields'), implode(', ', array_keys($allFields)));
+        $fieldsOption = array_map('trim', explode(',', $fieldsOption));
+
+        $fields = [];
+        foreach ($fieldsOption as $field) {
+            if (array_key_exists($field, $allFields)) {
+                $fields[$field] = $allFields[$field];
+            } else {
+                $fields[$field] = [];
+            }
+        }
+
+        $this->setupCommandOptions($fields);
+
+        foreach ($fields as $field => $params) {
+            $key = array_key_exists($field, $customFields) ? $customFields[$field] : $field;
+            $this->data[$key] = $this->getOptionValue($field, $params);
+        }
+
+        return $currentEntry;
     }
 
     /**

@@ -15,9 +15,9 @@ use ExpressionEngine\Service\Model\Collection;
 use ExpressionEngine\Cli\CliOptionsTrait;
 
 /**
- * Command to list all categories
+ * Command to list all entries
  */
-class CommandCategoriesList extends Cli
+class CommandEntriesList extends Cli
 {
     use CliOptionsTrait;
 
@@ -25,19 +25,19 @@ class CommandCategoriesList extends Cli
      * name of command
      * @var string
      */
-    public $name = 'List Categories';
+    public $name = 'List Entries';
 
     /**
      * signature of command
      * @var string
      */
-    public $signature = 'categories:list';
+    public $signature = 'entries:list';
 
     /**
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli.php categories:list';
+    public $usage = 'php eecli.php entries:list';
 
     /**
      * options available for use in command
@@ -45,7 +45,7 @@ class CommandCategoriesList extends Cli
      */
     public $commandOptions = [
         'site,s:' => 'command_category_groups_list_option_site',
-        'category_group,g:' => 'command_categories_list_option_category_group',
+        'channel,c:' => 'command_entries_list_option_channel',
         'format,f:' => 'command_channels_list_option_format',
     ];
 
@@ -53,7 +53,7 @@ class CommandCategoriesList extends Cli
      * Sets the tablemask for the list table
      * @var boolean
      */
-    public $tableMask = "|%-8.8s |%-20.20s |%-65.65s |";
+    public $tableMask = "|%-8.8s |%-40.40s |%-20.20s |%-17.17s |%-15.15s |%-8.8s |";
 
     /**
      * Run the command
@@ -61,28 +61,30 @@ class CommandCategoriesList extends Cli
      */
     public function handle()
     {
+        ee()->lang->load('content');
+
         $format = $this->option('--format', 'table');
 
-        if ($this->option('--category_group', false) === false) {
+        if ($this->option('--channel', false) === false) {
             $site_id = $this->getMsmSiteId('all');
         }
 
-        $category_groups = ee('Model')->get('CategoryGroup')->fields('group_id', 'group_name');
+        $channels = ee('Model')->get('Channel')->fields('channel_id', 'channel_title');
         if (isset($site_id) && !is_null($site_id)) {
-            $category_groups->filter('site_id', $site_id);
+            $channels->filter('site_id', $site_id);
         }
-        $category_groups = $category_groups->all()->getDictionary('group_id', 'group_name');
-        $groupId = $this->getOptionValue('category_group', [
+        $channels = $channels->all()->getDictionary('channel_id', 'channel_title');
+        $channelId = $this->getOptionValue('channel', [
             'type' => 'select',
-            'desc' => 'command_categories_list_which_category_group',
-            'choices' => $category_groups,
+            'desc' => 'command_entries_list_option_channel',
+            'choices' => $channels,
             'default' => null,
             'required' => false
         ]);
 
-        $query = ee('Model')->get('Category')->with('CategoryGroup');
-        if (isset($groupId) && !empty($groupId)) {
-            $query->filter('group_id', $groupId);
+        $query = ee('Model')->get('ChannelEntry')->with('Channel', 'Author');
+        if (isset($channelId) && !empty($channelId)) {
+            $query->filter('channel_id', $channelId);
         }
 
         $data = $query->all();
@@ -107,30 +109,36 @@ class CommandCategoriesList extends Cli
      */
     private function displayTable($data)
     {
-        $this->info('command_categories_list_header');
+        $this->info('command_entries_list_header');
         $this->write('');
 
         // Table header
         $this->write(sprintf($this->tableMask,
-            lang('command_categories_id'),
-            lang('command_categories_name'),
-            lang('command_categories_url_title')
+            lang('column_entry_id'),
+            lang('column_title'),
+            lang('channel'),
+            lang('date'),
+            lang('author'),
+            lang('status')
         ));
 
-        $this->write(str_repeat('-', 100));
+        $this->write(str_repeat('-', 120));
 
         // Table rows
         foreach ($data as $row) {
 
             $this->write(sprintf($this->tableMask,
-                $row->cat_id,
-                $row->cat_name,
-                $row->cat_url_title
+                $row->entry_id,
+                $row->title,
+                $row->Channel->channel_title,
+                ee()->localize->format_date('%Y-%m-%d %H:%i', $row->entry_date),
+                $row->Author->screen_name,
+                lang($row->status)
             ));
         }
 
         $this->write('');
-        $this->complete(sprintf(lang('command_categories_list_total'), $data->count()));
+        $this->complete(sprintf(lang('command_entries_list_total'), $data->count()));
     }
 
     /**
@@ -142,9 +150,12 @@ class CommandCategoriesList extends Cli
         $data = [];
         foreach ($data as $row) {
             $data[] = [
-                'cat_id' => $row->cat_id,
-                'cat_name' => $row->cat_name,
-                'cat_url_title' => $row->cat_url_title
+                'entry_id' => $row->entry_id,
+                'title' => $row->title,
+                'channel' => $row->Channel->channel_title,
+                'date' => ee()->localize->format_date('%Y-%m-%d %H:%i', $row->entry_date),
+                'author' => $row->Author->screen_name,
+                'status' => lang($row->status)
             ];
         }
 
@@ -158,14 +169,17 @@ class CommandCategoriesList extends Cli
     private function displayCsv($data)
     {
         // CSV header
-        $this->write('ID,Name,URL Title');
+        $this->write('ID,Title,Channel,Date,Author,Status');
 
         // CSV rows
         foreach ($data as $row) {
             $row = [
-                $row->cat_id,
-                $row->cat_name,
-                $row->cat_url_title
+                $row->entry_id,
+                $row->title,
+                $row->Channel->channel_title,
+                ee()->localize->format_date('%Y-%m-%d %H:%i', $row->entry_date),
+                $row->Author->screen_name,
+                lang($row->status)
             ];
 
             $this->write(implode(',', $row));

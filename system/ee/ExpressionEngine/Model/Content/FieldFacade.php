@@ -320,6 +320,12 @@ class FieldFacade
         return is_subclass_of($ft, 'OptionFieldtype');
     }
 
+    public function hasArrayData()
+    {
+        $ft = $this->getNativeField();
+        return property_exists($ft, 'has_array_data') && $ft->has_array_data === true;
+    }
+
     public function getSupportedEvaluationRules()
     {
         ee()->lang->load('fieldtypes');

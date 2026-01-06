@@ -91,9 +91,9 @@ class CommandCategoriesAdd extends Cli
 
         $this->info(lang('command_categories_adding'));
 
-        $this->getFieldsForCategories();
+        $category = $this->getFieldsForCategories();
 
-        $category = ee('Model')->make('Category', $this->data);
+        $category->set($this->data);
         $this->validateModel($category, lang('command_categories_not_added'));
 
         $category->save();

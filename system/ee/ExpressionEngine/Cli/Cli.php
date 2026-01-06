@@ -143,6 +143,12 @@ class Cli
         'categories:edit' => Commands\CommandCategoriesEdit::class,
         'categories:delete' => Commands\CommandCategoriesDelete::class,
 
+        // Entries
+        'entries:list' => Commands\CommandEntriesList::class,
+        'entries:add' => Commands\CommandEntriesAdd::class,
+        //'entries:edit' => Commands\CommandEntriesEdit::class,
+        'entries:delete' => Commands\CommandEntriesDelete::class,
+
         // Version
         'version' => Commands\CommandVersion::class,
 
@@ -511,7 +517,7 @@ class Cli
     {
         $defaultChoice = !empty($default) ? "<<white>>[<<yellow>>{$default}<<white>>]<<reset>>" : '';
 
-        $this->output->out(lang($question) . ' ' . $defaultChoice);
+        $this->output->out(strip_tags(lang($question)) . ' ' . $defaultChoice);
 
         $result = (string) $this->input->in();
 
@@ -753,7 +759,6 @@ class Cli
             if (isset($optionParams['type']) && $optionParams['type'] == 'checkbox') {
                 $command .= '*';
             }
-            $command .= ':';
             if (isset($optionParams['required']) && $optionParams['required']) {
                 $command .= ':';
             }
@@ -761,6 +766,15 @@ class Cli
         }
 
         $this->commandOptions = array_merge($normalizedOptions, $this->commandOptions);
+        $this->loadOptions(); // need to have those re-loaded now
+    }
+
+    protected function removeCommandOption($option)
+    {
+        if (isset($this->commandOptions[$option])) {
+            unset($this->commandOptions[$option]);
+        }
+        dump($this->commandOptions);
         $this->loadOptions(); // need to have those re-loaded now
     }
 

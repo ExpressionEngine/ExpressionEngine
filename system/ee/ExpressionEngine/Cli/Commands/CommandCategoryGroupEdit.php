@@ -59,11 +59,13 @@ class CommandCategoryGroupEdit extends Cli
     {
         $category_groups = ee('Model')->get('CategoryGroup')->all()->getDictionary('group_id', 'group_name');
 
-        if ($this->option('--group_id')) {
-            $this->data['group_id'] = $this->option('--group_id');
-        } else {
-            $this->data['group_id'] = $this->askFromList(lang('command_category_groups_edit_ask'), $category_groups, null);
-        }
+        $this->data['group_id'] = $this->getOptionValue('group_id', [
+            'type' => 'select',
+            'desc' => 'command_category_groups_edit_ask',
+            'choices' => $category_groups,
+            'default' => null,
+            'required' => true
+        ]);
 
         if (!array_key_exists($this->data['group_id'], $category_groups)) {
             $this->fail(lang('command_category_groups_not_found'));

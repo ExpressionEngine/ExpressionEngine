@@ -90,9 +90,11 @@ class CommandCategoriesEdit extends Cli
             $this->fail(lang('command_categories_not_found'));
         }
 
-        $this->info(sprintf(lang('command_categories_editing'), $categoriesQuery->getDictionary('cat_id', 'cat_name')[$this->data['cat_id']]));
+        $category = $categoriesQuery->filter('cat_id', $this->data['cat_id'])->first();
 
-        $this->getFieldsForCategories($category);
+        $this->info(sprintf(lang('command_categories_editing'), $category->cat_name));
+
+        $category = $this->getFieldsForCategories($category);
 
         $category->set($this->data);
 

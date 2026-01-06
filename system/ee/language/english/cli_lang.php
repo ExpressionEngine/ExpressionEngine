@@ -646,6 +646,33 @@ $lang = array(
     'command_categories_saved' => 'Category saved successfully!',
     'command_categories_not_saved' => 'Category could not be saved.',
 
+    // entries:list
+    'command_entries_list_description' => 'Lists all channel entries in the system',
+    'command_entries_list_summary' => 'Displays all channel entries with their details in various formats',
+    'command_entries_list_header' => 'Channel Entries:',
+    'command_entries_list_no_entries_found' => 'No entries found.',
+    'command_entries_list_total' => 'Total entries: %d',
+    'command_entries_list_id' => 'ID',
+    'command_entries_list_title' => 'Title',
+    'command_entries_list_channel' => 'Channel',
+    'command_entries_list_author' => 'Author',
+    'command_entries_list_date' => 'Date',
+    'command_entries_list_status' => 'Status',
+    'command_entries_list_option_channel' => 'Filter by channel ID',
+
+    'command_entries_delete_ask' => 'Which entry do you want to delete?',
+    'command_entries_delete_confirm' => 'Are you sure you want to delete this entry %s? This action cannot be undone.',
+    'command_entries_deleting_entry' => 'Deleting entry...',
+    'command_entries_deleted' => 'Entry deleted successfully!',
+    'command_entries_not_deleted' => 'Entry could not be deleted.',
+
+    'command_entries_not_found' => 'Entry not found.',
+    'command_channels_not_found' => 'Channel not found.',
+    'command_entries_adding' => 'Creating new entry...',
+    'command_entries_added' => 'Entry added successfully!',
+    'command_entries_not_added' => 'Entry could not be added.',
+    'command_entries_status_invalid' => 'Invalid status',
+
     // version
     'command_version_description' => 'Displays ExpressionEngine version information',
     'command_version_summary' => 'Shows the current ExpressionEngine version and system information',
