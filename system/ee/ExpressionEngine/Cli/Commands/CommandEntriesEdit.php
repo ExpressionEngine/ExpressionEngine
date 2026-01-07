@@ -11,13 +11,12 @@
 namespace ExpressionEngine\Cli\Commands;
 
 use ExpressionEngine\Cli\Cli;
-use ExpressionEngine\Service\Model\Collection;
 use ExpressionEngine\Cli\CliOptionsTrait;
 
 /**
- * Command to delete an entry
+ * Command to edit an entry
  */
-class CommandEntriesDelete extends Cli
+class CommandEntriesEdit extends Cli
 {
     use CliOptionsTrait;
 
@@ -25,19 +24,19 @@ class CommandEntriesDelete extends Cli
      * name of command
      * @var string
      */
-    public $name = 'Delete Entry';
+    public $name = 'Edit Entry';
 
     /**
      * signature of command
      * @var string
      */
-    public $signature = 'entries:delete';
+    public $signature = 'entries:edit';
 
     /**
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli.php entries:delete --entry_id=<entry_id> [--force]';
+    public $usage = 'php eecli.php entries:edit [--entry_id=<entry_id>]';
 
     /**
      * options available for use in command
@@ -45,10 +44,15 @@ class CommandEntriesDelete extends Cli
      */
     public $commandOptions = [
         'site,s:' => 'command_category_groups_list_option_site',
-        'channel,c:' => 'command_entries_list_option_channel',
-        'entry_id,i:' => 'command_entries_entry_id',
-        'force,f' => 'command_sites_force_delete',
+        'entry_id,e:' => 'command_entries_edit_entry_id',
+        'fields,f:' => 'command_sites_fields',
     ];
+
+    /**
+    * whether command options are dynamic
+    * @var bool
+    */
+    public $dynamicCommandOptions = true;
 
     protected $data = [];
 
@@ -58,6 +62,10 @@ class CommandEntriesDelete extends Cli
      */
     public function handle()
     {
+        ee()->lang->load('admin_content');
+        ee()->lang->load('channel');
+        ee()->lang->load('content');
+
         $entries = [];
 
         if ($this->option('--entry_id', false) === false) {
@@ -90,29 +98,35 @@ class CommandEntriesDelete extends Cli
 
         $this->data['entry_id'] = $this->getOptionValue('entry_id', [
             'type' => 'select',
-            'desc' => 'command_entries_delete_ask',
+            'desc' => 'command_entries_edit_ask',
             'choices' => $entries,
             'default' => null,
             'required' => true
         ]);
 
-        if (!array_key_exists($this->data['entry_id'], $entries)) {
+        $entry = ee('Model')->get('ChannelEntry', $this->data['entry_id'])->first();
+        if (empty($entry)) {
             $this->fail(lang('command_entries_not_found'));
         }
 
-        $entry = ee('Model')->get('ChannelEntry', $this->data['entry_id'])->first();
-        $confirmation = $this->option('--force', false);
-        if (!$confirmation) {
-            $confirmation = $this->confirm(sprintf(lang('command_entries_delete_confirm'), $entry->title), false);
+        $this->info(sprintf(lang('command_entries_editing'), $entry->title));
+
+        $entry = $this->getFieldsForEntries($entry);
+
+        // set categories
+        if (isset($this->data['categories']) && !empty($this->data['categories'])) {
+            $categories = ee('Model')->get('Category', $this->data['categories'])->all();
+            unset($this->data['categories']);
+            $entry->Categories = $categories;
         }
-        if (!$confirmation) {
-            $this->fail(lang('command_entries_not_deleted'));
-        }
 
-        $this->info(lang('command_entries_deleting_entry'));
+        $this->data['edit_date'] = ee()->localize->now;
 
-        $entry->delete();
+        $entry->set($this->data);
+        $this->validateModel($entry, lang('command_entries_not_saved'));
 
-        $this->complete(lang('command_entries_deleted'));
+        $entry->save();
+        $this->complete(lang('command_entries_saved'));
     }
+
 }

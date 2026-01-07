@@ -94,8 +94,8 @@ class CommandEntriesAdd extends Cli
         $entry = $this->getFieldsForEntries();
 
         // set categories
-        if (isset($this->data['categories'])) {
-            $categories = ee('Model')->get('Category', explode(',', $this->data['categories']))->all();
+        if (isset($this->data['categories']) && !empty($this->data['categories'])) {
+            $categories = ee('Model')->get('Category', $this->data['categories'])->all();
             unset($this->data['categories']);
             $entry->Categories = $categories;
         }

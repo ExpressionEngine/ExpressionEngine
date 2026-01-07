@@ -275,6 +275,8 @@ trait CliOptionsTrait
                 'author_id' => ee('Member')->getDefaultCLIAuthor()->getId()
             ]);
             $isNew = true;
+        } else {
+            $isNew = false;
         }
 
         $channel = ee('Model')->get('Channel', $currentEntry->channel_id)->with(['CategoryGroups' => 'Categories'])->all()->first();
@@ -285,47 +287,27 @@ trait CliOptionsTrait
             }
         }
 
-        $allFields = array_merge($allFields, [
-            'title' => [
-                'type' => 'text',
-                'desc' => 'title',
-                'default' => $currentEntry->title,
-                'required' => true
-            ],
-            'url_title' => [
-                'desc' => 'url_title',
-                'default' => $currentEntry->url_title,
-                'required' => true
-            ],
-            'status' => [
-                'type' => 'select',
-                'desc' => 'status',
-                'choices' => ee('Model')->get('Status')->fields('status')->all()->getDictionary('status', 'status'),
-                'default' => $currentEntry->status ?? 'open',
-                'required' => true
-            ],
-            'categories' => [
-                'type' => 'select',
-                'desc' => 'categories',
-                'choices' => $categories,
-                'default' => $isNew ? '' : implode(',', $currentEntry->Categories->pluck('cat_id')),
-                'required' => false
-            ],
-        ]);
-
         $customFields = [];
         foreach ($currentEntry->getDisplay()->getFields() as $field) {
+            if (strpos($field->getShortName(), 'categories[cat_') === 0) {
+                // categories to be handled later
+                continue;
+            }
             if (in_array($field->getShortName(), [ 'entry_date', 'expiration_date', 'comment_expiration_date', 'channel_id', 'author_id', 'allow_comments', 'versioning_enabled', 'revisions' ])) {
                 // these fields are not supported in CLI context
                 continue;
             }
-            // we only can use CLI-compiliant field types (the "simple" ones)
-            if ($field->hasArrayData()) {
+            // arrays can't handled in CLI unless it's multiselect or checkbox
+            if ($field->hasArrayData() && !in_array($field->getShortName(), ['status']) && ! $field->isOptionFieldtype()) {
+                continue;
+            }
+            // some ft's are 'simple' but we can't handle them here
+            if (in_array($field->getType(), ['relationship'])) {
                 continue;
             }
             $fieldTechName = is_numeric($field->getId()) ? 'field_id_' . $field->getId() : $field->getId();
             $allFields[$field->getShortName()] = [
-                'type' => $field->getTypeName(),
+                'type' => in_array($field->getType(), ['select', 'checkbox', 'text']) ? $field->getType() : ($field->isOptionFieldtype() ? 'checkbox' : 'text'),
                 'desc' => $field->getLabel(),
                 'default' => $currentEntry->$fieldTechName,
                 'required' => $field->isRequired()
@@ -334,6 +316,19 @@ trait CliOptionsTrait
                 $allFields[$field->getShortName()]['choices'] = $field->getFieldOptions();
             }
             $customFields[$field->getShortName()] = $fieldTechName;
+        }
+
+        $allFields['categories'] = [
+            'type' => 'checkbox',
+            'desc' => 'categories',
+            'choices' => $categories,
+            'default' => $isNew ? '' : implode(',', $currentEntry->Categories->pluck('cat_id')),
+            'required' => false
+        ];
+
+        if (isset($allFields['status'])) {
+            $allFields['status']['choices'] = $channel->Statuses->sortBy('status_order')->getDictionary('status', 'status');
+            $allFields['status']['default'] = $currentEntry->status ?? $channel->deft_status;
         }
 
         $fieldsOption = $this->getOptionOrAsk('--fields', lang('command_sites_edit_which_fields'), implode(', ', array_keys($allFields)));

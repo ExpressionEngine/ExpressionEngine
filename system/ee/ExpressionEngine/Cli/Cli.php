@@ -146,7 +146,7 @@ class Cli
         // Entries
         'entries:list' => Commands\CommandEntriesList::class,
         'entries:add' => Commands\CommandEntriesAdd::class,
-        //'entries:edit' => Commands\CommandEntriesEdit::class,
+        'entries:edit' => Commands\CommandEntriesEdit::class,
         'entries:delete' => Commands\CommandEntriesDelete::class,
 
         // Version

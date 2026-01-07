@@ -673,6 +673,13 @@ $lang = array(
     'command_entries_not_added' => 'Entry could not be added.',
     'command_entries_status_invalid' => 'Invalid status',
 
+    'command_entries_entry_id' => 'Entry ID',
+    'command_entries_edit_ask' => 'Which entry do you want to edit?',
+    'command_entries_editing' => 'Editing %s entry...',
+    'command_entries_saving' => 'Saving entry...',
+    'command_entries_saved' => 'Entry saved successfully!',
+    'command_entries_not_saved' => 'Entry could not be saved.',
+
     // version
     'command_version_description' => 'Displays ExpressionEngine version information',
     'command_version_summary' => 'Shows the current ExpressionEngine version and system information',

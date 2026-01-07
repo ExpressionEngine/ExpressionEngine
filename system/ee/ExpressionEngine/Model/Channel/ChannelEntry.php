@@ -1488,7 +1488,7 @@ class ChannelEntry extends ContentModel
                 ];
             }
 
-            $member = ee()->session->getMember();
+            $member = REQ === 'CLI' ? ee('Member')->getDefaultCLIAuthor() : ee()->session->getMember();
             $channelFormSettings = ee('Model')->get('ChannelFormSettings')->filter('channel_id', $this->Channel->channel_id)->first();
             if (!empty($member) || (!empty($channelFormSettings) && $channelFormSettings->allow_guest_posts == 'y')) {
                 $assigned_statuses = !empty($member) ? $member->getAssignedStatuses()->pluck('status_id') : [];
