@@ -354,6 +354,112 @@ trait CliOptionsTrait
     }
 
     /**
+     * Get the list of fields for member
+     *
+     * @param Collection|null $currentMember
+     * @return object
+     */
+    private function  getFieldsForMembers($currentMember = null)
+    {
+        $allFields = [];
+        ee()->load->library('session');
+
+        if (is_null($currentMember)) {
+            $currentMember = ee('Model')->make('Member');
+            $currentMember->language = ee()->config->item('deft_lang') ?: 'english';
+            $isNew = true;
+        } else {
+            $isNew = false;
+        }
+
+        $allFields = [
+            'username' => [
+                'type' => 'text',
+                'desc' => 'command_members_username',
+                'default' => $currentMember->username,
+                'required' => true
+            ],
+            'email' => [
+                'type' => 'text',
+                'desc' => 'command_members_email',
+                'default' => $currentMember->email,
+                'required' => true
+            ],
+            'password' => [
+                'type' => 'text',
+                'desc' => 'command_members_password',
+                'default' => '',
+                'required' => $isNew
+            ],
+            'password_confirm' => [
+                'type' => 'text',
+                'desc' => 'command_members_password_confirm',
+                'default' => '',
+                'required' => $isNew
+            ],
+            'screen_name' => [
+                'type' => 'text',
+                'desc' => 'command_members_screen_name',
+                'default' => $currentMember->screen_name,
+                'required' => true
+            ],
+            'role_id' => [
+                'type' => 'select',
+                'desc' => 'command_members_role',
+                'choices' => ee('Model')->get('Role')->all()->getDictionary('role_id', 'name'),
+                'default' => $currentMember->role_id,
+                'required' => true
+            ],
+        ];
+
+        $customFields = [];
+        foreach ($currentMember->getDisplay()->getFields() as $field) {
+            $fieldTechName = 'm_field_id_' . $field->getId();
+            $allFields[$field->getShortName()] = [
+                'type' => in_array($field->getType(), ['select', 'checkbox', 'text']) ? $field->getType() : ($field->isOptionFieldtype() ? 'checkbox' : 'text'),
+                'desc' => $field->getLabel(),
+                'default' => $currentMember->$fieldTechName,
+                'required' => $field->isRequired()
+            ];
+            if ($field->isOptionFieldtype()) {
+                $allFields[$field->getShortName()]['choices'] = $field->getFieldOptions();
+            }
+            $customFields[$field->getShortName()] = $fieldTechName;
+        }
+
+        $fieldsOption = $this->getOptionOrAsk('--fields', lang('command_members_edit_which_fields'), implode(', ', array_keys($allFields)));
+        $fieldsOption = array_map('trim', explode(',', $fieldsOption));
+
+        $fields = [];
+        foreach ($fieldsOption as $field) {
+            if (array_key_exists($field, $allFields)) {
+                $fields[$field] = $allFields[$field];
+            } else {
+                $fields[$field] = [];
+            }
+        }
+
+        $this->setupCommandOptions($fields);
+
+        foreach ($fields as $field => $params) {
+            $key = array_key_exists($field, $customFields) ? $customFields[$field] : $field;
+            $this->data[$key] = $this->getOptionValue($field, $params);
+        }
+
+        if (empty($this->data['screen_name'])) {
+            $this->data['screen_name'] = $this->data['username'];
+        }
+
+        if (isset($this->data['password']) && empty($this->data['password']) && !$isNew) {
+            unset($this->data['password']);
+            unset($this->data['password_confirm']);
+        }
+
+        return $currentMember;
+    }
+
+
+    /**
      * Validate model in CLI context
      *
      * @param [type] $model

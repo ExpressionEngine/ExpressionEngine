@@ -147,9 +147,9 @@ class CommandEntriesList extends Cli
      */
     private function displayJson($data)
     {
-        $data = [];
+        $jsonData = [];
         foreach ($data as $row) {
-            $data[] = [
+            $jsonData[] = [
                 'entry_id' => $row->entry_id,
                 'title' => $row->title,
                 'channel' => $row->Channel->channel_title,
@@ -159,7 +159,7 @@ class CommandEntriesList extends Cli
             ];
         }
 
-        $this->write(json_encode($data, JSON_PRETTY_PRINT | JSON_HEX_QUOT | JSON_HEX_APOS));
+        $this->write(json_encode($jsonData, JSON_PRETTY_PRINT | JSON_HEX_QUOT | JSON_HEX_APOS));
     }
 
     /**

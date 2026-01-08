@@ -15,9 +15,9 @@ use ExpressionEngine\Service\Model\Collection;
 use ExpressionEngine\Cli\CliOptionsTrait;
 
 /**
- * Command to list all category groups
+ * Command to list all members
  */
-class CommandCategoryGroupList extends Cli
+class CommandMembersList extends Cli
 {
     use CliOptionsTrait;
 
@@ -25,26 +25,25 @@ class CommandCategoryGroupList extends Cli
      * name of command
      * @var string
      */
-    public $name = 'List Category Groups';
+    public $name = 'List Members';
 
     /**
      * signature of command
      * @var string
      */
-    public $signature = 'cgroups:list';
+    public $signature = 'members:list';
 
     /**
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli.php cgroups:list [--site=<site_id>|all|first] [--format=<format>]';
+    public $usage = 'php eecli.php members:list';
 
     /**
      * options available for use in command
      * @var array
      */
     public $commandOptions = [
-        'site,s:' => 'command_category_groups_list_option_site',
         'format,f:' => 'command_channels_list_option_format',
     ];
 
@@ -52,7 +51,7 @@ class CommandCategoryGroupList extends Cli
      * Sets the tablemask for the list table
      * @var boolean
      */
-    public $tableMask = "|%-8.8s |%-8.8s |%-80.80s |";
+    public $tableMask = "|%-8.8s |%-25.25s |%-25.25s |%-30.30s |%-17.17s |%-17.17s |";
 
     /**
      * Run the command
@@ -60,18 +59,9 @@ class CommandCategoryGroupList extends Cli
      */
     public function handle()
     {
-        // do we need to ask for site?
-        $site_id = $this->getMsmSiteId('all');
-
         $format = $this->option('--format', 'table');
 
-        // Get all sites
-        $query = ee('Model')->get('CategoryGroup');
-
-        if (isset($site_id) && !is_null($site_id)) {
-            $query->filter('site_id', $site_id);
-        }
-
+        $query = ee('Model')->get('Member');
         $data = $query->all();
 
         switch ($format) {
@@ -94,34 +84,41 @@ class CommandCategoryGroupList extends Cli
      */
     private function displayTable($data)
     {
-        $this->info('command_category_groups_list_header');
+        $this->info(lang('command_members_list_header'));
         $this->write('');
 
         // Table header
-        $this->write(sprintf($this->tableMask,
-            lang('command_category_groups_id'),
-            lang('command_category_groups_site_id'),
-            lang('command_category_groups_name')
+        $this->write(sprintf(
+            $this->tableMask,
+            'ID',
+            'Username',
+            'Screen Name',
+            'Email',
+            'Joined',
+            'Last Visit'
         ));
 
-        $this->write(str_repeat('-', 100));
+        $this->write(str_repeat('-', 130));
 
         // Table rows
         foreach ($data as $row) {
-
-            $this->write(sprintf($this->tableMask,
-                $row->group_id,
-                $row->site_id,
-                $row->group_name
+            $this->write(sprintf(
+                $this->tableMask,
+                $row->member_id,
+                (string) $row->username,
+                (string) $row->screen_name,
+                (string) $row->email,
+                $this->formatDate($row->join_date),
+                $this->formatDate($row->last_visit)
             ));
         }
 
         $this->write('');
-        $this->complete(sprintf(lang('command_category_groups_list_total'), $data->count()));
+        $this->complete(sprintf(lang('command_members_list_total'), $data->count()));
     }
 
     /**
-     * Display category groups in JSON format
+     * Display members in JSON format
      * @param Collection $data
      */
     private function displayJson($data)
@@ -129,9 +126,12 @@ class CommandCategoryGroupList extends Cli
         $jsonData = [];
         foreach ($data as $row) {
             $jsonData[] = [
-                'id' => $row->group_id,
-                'site_id' => $row->site_id,
-                'group_name' => $row->group_name
+                'member_id' => $row->member_id,
+                'username' => (string) $row->username,
+                'screen_name' => (string) $row->screen_name,
+                'email' => (string) $row->email,
+                'joined' => $this->formatDate($row->join_date),
+                'last_visit' => $this->formatDate($row->last_visit),
             ];
         }
 
@@ -139,23 +139,38 @@ class CommandCategoryGroupList extends Cli
     }
 
     /**
-     * Display sites in CSV format
-     * @param Collection $sites
+     * Display members in CSV format
+     * @param Collection $data
      */
     private function displayCsv($data)
     {
         // CSV header
-        $this->write('ID,Site ID,Group Name');
+        $this->write('ID,Username,Screen Name,Email,Joined,Last Visit');
 
         // CSV rows
         foreach ($data as $row) {
-            $row = [
-                $row->group_id,
-                $row->site_id,
-                $row->group_name
+            $line = [
+                $row->member_id,
+                (string) $row->username,
+                (string) $row->screen_name,
+                (string) $row->email,
+                $this->formatDate($row->join_date),
+                $this->formatDate($row->last_visit),
             ];
 
-            $this->write(implode(',', $row));
+            $this->write(implode(',', $line));
         }
+    }
+
+    /**
+     * Format timestamp to Y-m-d H:i, handle empty/zero values
+     */
+    private function formatDate($timestamp)
+    {
+        if (empty($timestamp)) {
+            return '-';
+        }
+
+        return ee()->localize->format_date('%Y-%m-%d %H:%i', $timestamp);
     }
 }

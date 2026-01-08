@@ -67,24 +67,7 @@ class CommandSitesEdit extends Cli
             return;
         }
 
-        $sites = ee('Model')->get('Site')->all()->getDictionary('site_id', 'site_label');
-
-        if (count($sites) <= 1) {
-            $this->fail('command_sites_no_sites');
-            return;
-        }
-
-        $this->data['site_id'] = $this->getOptionValue('site_id', [
-            'type' => 'select',
-            'desc' => 'command_sites_edit_ask',
-            'choices' => $sites,
-            'default' => null,
-            'required' => true
-        ]);
-
-        if (empty($this->data['site_id'])) {
-            $this->fail(lang('command_sites_site_not_found'));
-        }
+        $this->data['site_id'] = $this->getMsmSiteId('first');
 
         $site = ee('Model')->get('Site', $this->data['site_id'])->first();
         if (!$site) {
@@ -95,8 +78,14 @@ class CommandSitesEdit extends Cli
 
         $fields = $this->getOptionValue('fields', [
             'type' => 'checkbox',
-            'desc' => 'command_sites_edit_ask',
-            'choices' => ['name', 'label', 'description', 'color', 'status'],
+            'desc' => 'command_sites_fields',
+            'choices' => [
+                'name' => lang('command_sites_name'),
+                'label' => lang('command_sites_label'),
+                'description' => lang('command_sites_desc'),
+                'color' => lang('command_sites_color'),
+                'status' => lang('command_sites_status')
+            ],
             'default' => 'name, label, description, color, status',
             'required' => true
         ]);

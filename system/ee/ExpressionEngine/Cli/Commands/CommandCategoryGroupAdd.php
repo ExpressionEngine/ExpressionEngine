@@ -30,20 +30,20 @@ class CommandCategoryGroupAdd extends Cli
      * signature of command
      * @var string
      */
-    public $signature = 'cgroup:add';
+    public $signature = 'cgroups:add';
 
     /**
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli.php cgroup:add [--site=<site_id>] [--name="category_group_name"]';
+    public $usage = 'php eecli.php cgroups:add [--site=<site_id>] [--name="category_group_name"]';
 
     /**
      * options available for use in command
      * @var array
      */
     public $commandOptions = [
-        'site,s:' => 'command_fields_list_option_site',
+        'site,s:' => 'command_category_groups_site_id',
         'name,n:' => 'command_category_groups_name'
     ];
 

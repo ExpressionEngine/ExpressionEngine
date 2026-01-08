@@ -139,16 +139,16 @@ class CommandCategoriesList extends Cli
      */
     private function displayJson($data)
     {
-        $data = [];
+        $jsonData = [];
         foreach ($data as $row) {
-            $data[] = [
+            $jsonData[] = [
                 'cat_id' => $row->cat_id,
                 'cat_name' => $row->cat_name,
                 'cat_url_title' => $row->cat_url_title
             ];
         }
 
-        $this->write(json_encode($data, JSON_PRETTY_PRINT | JSON_HEX_QUOT | JSON_HEX_APOS));
+        $this->write(json_encode($jsonData, JSON_PRETTY_PRINT | JSON_HEX_QUOT | JSON_HEX_APOS));
     }
 
     /**

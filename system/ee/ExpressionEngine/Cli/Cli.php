@@ -149,6 +149,12 @@ class Cli
         'entries:edit' => Commands\CommandEntriesEdit::class,
         'entries:delete' => Commands\CommandEntriesDelete::class,
 
+        // Members
+        'members:list' => Commands\CommandMembersList::class,
+        'members:delete' => Commands\CommandMembersDelete::class,
+        'members:add' => Commands\CommandMembersAdd::class,
+        'members:edit' => Commands\CommandMembersEdit::class,
+
         // Version
         'version' => Commands\CommandVersion::class,
 

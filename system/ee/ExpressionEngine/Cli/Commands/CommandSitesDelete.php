@@ -62,24 +62,9 @@ class CommandSitesDelete extends Cli
             return;
         }
 
-        $sites = ee('Model')->get('Site')->all()->getDictionary('site_id', 'site_label');
+        $this->info(lang('command_sites_deleting_site'));
 
-        if (count($sites) <= 1) {
-            $this->fail('command_sites_no_sites');
-            return;
-        }
-
-        $this->data['site_id'] = $this->getOptionValue('site_id', [
-            'type' => 'select',
-            'desc' => 'command_sites_delete_ask',
-            'choices' => $sites,
-            'default' => null,
-            'required' => true
-        ]);
-
-        if (empty($this->data['site_id'])) {
-            $this->fail(lang('command_sites_site_not_found'));
-        }
+        $this->data['site_id'] = $this->getMsmSiteId('first');
 
         $site = ee('Model')->get('Site', $this->data['site_id'])->first();
         if (!$site) {

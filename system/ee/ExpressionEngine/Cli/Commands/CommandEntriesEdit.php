@@ -44,7 +44,7 @@ class CommandEntriesEdit extends Cli
      */
     public $commandOptions = [
         'site,s:' => 'command_category_groups_list_option_site',
-        'entry_id,e:' => 'command_entries_edit_entry_id',
+        'entry_id,e:' => 'command_entries_entry_id',
         'fields,f:' => 'command_sites_fields',
     ];
 
