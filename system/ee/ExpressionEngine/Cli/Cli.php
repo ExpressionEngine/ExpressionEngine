@@ -155,6 +155,12 @@ class Cli
         'members:add' => Commands\CommandMembersAdd::class,
         'members:edit' => Commands\CommandMembersEdit::class,
 
+        // Upload Directories
+        'upload-directories:list' => Commands\CommandUploadDirectoriesList::class,
+        'upload-directories:add' => Commands\CommandUploadDirectoriesAdd::class,
+        'upload-directories:edit' => Commands\CommandUploadDirectoriesEdit::class,
+        'upload-directories:delete' => Commands\CommandUploadDirectoriesDelete::class,
+
         // Version
         'version' => Commands\CommandVersion::class,
 

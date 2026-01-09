@@ -746,6 +746,46 @@ $lang = array(
     'command_members_saved'                        => 'Member saved successfully',
     'command_members_member_id'                    => 'Member ID',
 
+    // Lang entries for command upload-directories:list
+    'command_upload_directories_list_description'      => 'Lists all upload directories',
+    'command_upload_directories_list_summary'          => '',
+    'command_upload_directories_list_header'           => 'All Upload Directories',
+    'command_upload_directories_list_option_site'      => 'Site ID or handle (default: all)',
+    'command_upload_directories_list_option_format'    => 'Output format (table, json, csv)',
+    'command_upload_directories_list_total'            => 'Total upload directories: %d',
+    'command_upload_directories_id'                    => 'ID',
+    'command_upload_directories_site_id'               => 'Site ID',
+    'command_upload_directories_name'                  => 'Name',
+    'command_upload_directories_server_path'           => 'Server Path',
+    'command_upload_directories_url'                   => 'URL',
+    // Lang entries for command upload-directories:add
+    'command_upload_directories_add_description'       => 'Creates a new upload directory',
+    'command_upload_directories_add_summary'           => '',
+    'command_upload_directories_adding'                => 'Adding upload directory...',
+    'command_upload_directories_adapter'               => 'Storage Adapter (local, s3, etc.)',
+    'command_upload_directories_added'                 => 'Upload directory added successfully',
+    'command_upload_directories_not_added'             => 'Upload directory could not be added',
+
+    // Lang entries for command upload-directories:edit
+    'command_upload_directories_edit_description'      => 'Edits an existing upload directory',
+    'command_upload_directories_edit_summary'          => '',
+    'command_upload_directories_edit_ask'              => 'Which upload directory do you want to edit?',
+    'command_upload_directories_editing'               => 'Editing upload directory: %s',
+    'command_upload_directories_not_found'             => 'Upload directory not found',
+    'command_upload_directories_not_saved'             => 'Upload directory could not be saved',
+    'command_upload_directories_saved'                 => 'Upload directory saved successfully',
+    'command_upload_directories_upload_id'             => 'Upload Directory ID',
+
+    // Lang entries for command upload-directories:delete
+    'command_upload_directories_delete_description'    => 'Deletes an upload directory',
+    'command_upload_directories_delete_summary'        => '',
+    'command_upload_directories_delete_ask'            => 'Which upload directory do you want to delete?',
+    'command_upload_directories_delete_confirm'        => 'Are you sure you want to delete the upload directory "%s"?',
+    'command_upload_directories_deleting'              => 'Deleting upload directory...',
+    'command_upload_directories_deleted'               => 'Upload directory deleted successfully',
+    'command_upload_directories_not_deleted'           => 'Upload directory deletion cancelled',
+    'command_upload_directories_not_found'            => 'Upload directory not found',
+
     // version
     'command_version_description' => 'Displays ExpressionEngine version information',
     'command_version_summary' => 'Shows the current ExpressionEngine version and system information',

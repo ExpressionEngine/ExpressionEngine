@@ -37,7 +37,7 @@ trait CliOptionsTrait
      */
     private function getOptionValue($option, $optionParams)
     {
-        $default = isset($optionParams['default']) ? $optionParams['default'] : '';
+        $default = isset($optionParams['default']) ? $optionParams['default'] : (isset($optionParams['value']) ? $optionParams['value'] : '');
         $required = $optionParams['required'] ?? false;
         $askText = $this->buildAskText($option, $optionParams);
 
@@ -102,7 +102,7 @@ trait CliOptionsTrait
      * @param  string $default 'all' or 'first' or specific site ID
      * @return int|null
      */
-    protected function getMsmSiteId($default = 'all')
+    protected function getMsmSiteId($default = 'all', $canBeShared = false)
     {
         $site_id = null;
 
@@ -111,6 +111,9 @@ trait CliOptionsTrait
         }
 
         $sites = ee('Model')->get('Site')->all()->getDictionary('site_id', 'site_label');
+        if ($canBeShared) {
+            $sites = ['0' => lang('command_all_sites')] + $sites;
+        }
 
         switch ($default) {
             case 'first':
@@ -119,7 +122,7 @@ trait CliOptionsTrait
                 break;
             case 'all':
                 $defaultAsText = lang('command_all_sites');
-                $default = null;
+                $default = ($canBeShared) ? 0 : null;
                 break;
             default:
                 $defaultAsText = $default;
@@ -359,7 +362,7 @@ trait CliOptionsTrait
      * @param Collection|null $currentMember
      * @return object
      */
-    private function  getFieldsForMembers($currentMember = null)
+    private function getFieldsForMembers($currentMember = null)
     {
         $allFields = [];
         ee()->load->library('session');
@@ -456,6 +459,163 @@ trait CliOptionsTrait
         }
 
         return $currentMember;
+    }
+
+    /**
+     * Get the list of fields for upload directory
+     *
+     * @param Collection|null $currentUploadDirectory
+     * @return object
+     */
+    private function getFieldsForUploadDirectories($currentUploadDirectory = null)
+    {
+        $isNew = false;
+        if (is_null($currentUploadDirectory)) {
+            $currentUploadDirectory = ee('Model')->make('UploadDestination', [
+                'adapter' => 'local',
+                'site_id' => $this->data['site_id']
+            ]);
+            $isNew = true;
+        }
+        $this->data['adapter'] = $currentUploadDirectory->adapter;
+
+        $fields = [];
+
+        $this->data['name'] = $this->getOptionOrAsk('--name', lang('command_upload_directories_name'), $currentUploadDirectory->name, true);
+
+        if (!bool_config_item('file_manager_compatibility_mode')) {
+            $adapters = ee('Filesystem/Adapter')->all();
+            if (count($adapters) > 1) {
+                $adapterChoices = [];
+                foreach (array_keys($adapters) as $key) {
+                    $adapterChoices[$key] = lang('adapter_' . $key);
+                }
+                $this->data['adapter'] = $this->getOptionValue('adapter', [
+                    'type' => 'select',
+                    'desc' => 'command_upload_directories_adapter',
+                    'choices' => $adapterChoices,
+                    'default' => $currentUploadDirectory->adapter,
+                    'required' => true,
+                ]);
+            }
+
+            $this->data['allow_subfolders'] = $this->getOptionValue('allow_subfolders', [
+                'type' => 'select',
+                'choices' => array(
+                    'y' => lang('yes'),
+                    'n' => lang('no')
+                ),
+                'default' => !$isNew ? $currentUploadDirectory->getRawProperty('allow_subfolders') : 'n'
+            ]);
+
+            if ($this->data['allow_subfolders'] == 'y') {
+                $fields['subfolders_on_top'] = [
+                    'type' => 'select',
+                    'desc' => 'keep_subfolders_top',
+                    'choices' => [
+                        'y' => lang('yes'),
+                        'n' => lang('no')
+                    ],
+                    'default' => !$isNew ? $currentUploadDirectory->getRawProperty('subfolders_on_top') : 'n'
+                ];
+            }
+        }
+
+        $adapterSettings = array_merge([
+            'url' => $currentUploadDirectory->getConfigOverriddenProperty('url'),
+            'server_path' => $currentUploadDirectory->getConfigOverriddenProperty('server_path'),
+        ], $currentUploadDirectory->getProperty('adapter_settings') ?? []);
+        $adapterFields = ee('Filesystem/Adapter')->createSettingsFields($this->data['adapter'], $adapterSettings);
+        if (!empty($adapterFields)) {
+            foreach ($adapterFields as $adapterField) {
+                $fields += $adapterField['fields'];
+            }
+        }
+
+        $fileTypes = array_filter(array_keys(ee()->config->loadFile('mimes')), 'is_string');
+        $allowed_types = ['all' => lang('type_all')];
+        foreach ($fileTypes as $type) {
+            $allowed_types[$type] = lang('type_' . $type);
+        }
+
+        $fields['allowed_types'] = [
+            'type' => 'checkbox',
+            'desc' => 'upload_allowed_types',
+            'choices' => $allowed_types,
+            'default' => !$isNew ? implode(', ', $currentUploadDirectory->allowed_types) : 'all',
+            'required' => true,
+        ];
+
+        $fields['default_modal_view'] = [
+            'type' => 'select',
+            'choices' => array(
+                'list' => lang('default_modal_view_list'),
+                'thumb' => lang('default_modal_view_thumbnails')
+            ),
+            'default' => !$isNew ? $currentUploadDirectory->default_modal_view : 'list'
+        ];
+
+        $fields['max_size'] = [
+            'desc' => 'upload_file_size',
+            'type' => 'text',
+            'default' => $currentUploadDirectory->max_size
+        ];
+
+        $fields['max_width'] = [
+            'desc' => 'upload_image_width',
+            'type' => 'text',
+            'default' => $currentUploadDirectory->max_width
+        ];
+
+        $fields['max_height'] = [
+            'desc' => 'upload_image_height',
+            'type' => 'text',
+            'default' => $currentUploadDirectory->max_height
+        ];
+
+        $roles = ee('Model')->get('Role')
+            ->filter('role_id', 'NOT IN', array(1,2,3,4))
+            ->order('name')
+            ->all()
+            ->getDictionary('role_id', 'name');
+
+        $fields['upload_roles'] = [
+            'type' => 'checkbox',
+            'choices' => $roles,
+            'default' => !$isNew ? implode(', ', $currentUploadDirectory->Roles->pluck('role_id')) : ''
+        ];
+
+        $cat_group_options = ee('Model')
+            ->get('CategoryGroup')
+            ->filter('site_id', ee()->config->item('site_id'))
+            ->filter('exclude_group', '!=', '2')
+            ->all()
+            ->getDictionary('group_id', 'group_name');
+
+        $fields['cat_group'] = [
+            'type' => 'checkbox',
+            'desc' => 'upload_category_groups',
+            'choices' => $cat_group_options,
+            'default' => !$isNew ? implode(', ', $currentUploadDirectory->CategoryGroups->pluck('group_id')) : ''
+        ];
+
+        $this->setupCommandOptions($fields);
+
+        foreach ($fields as $field => $params) {
+            $this->data[$field] = $this->getOptionValue($field, $params);
+        }
+
+        if (isset($this->data['upload_roles'])) {
+            $currentUploadDirectory->Roles = ee('Model')->get('Role', $this->data['upload_roles'])->all();
+            unset($this->data['upload_roles']);
+        }
+
+        if (isset($this->data['cat_group'])) {
+            $currentUploadDirectory->CategoryGroups = ee('Model')->get('CategoryGroup', $this->data['cat_group'])->all();
+            
+        }
+
+        return $currentUploadDirectory;
     }
 
 
