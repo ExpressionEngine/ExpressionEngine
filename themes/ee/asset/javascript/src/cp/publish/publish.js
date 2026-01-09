@@ -165,6 +165,22 @@ $(document).ready(function () {
 		// Show that the preview is refreshing
 		$('.live-preview__preview-loader').addClass('loaded');
 
+		// Save the current scroll position before updating the iframe
+		var savedScrollPosition = null;
+		try {
+			if (iframe.contentWindow && iframe.contentDocument && iframe.contentDocument.documentElement) {
+				// Try to get scroll position from contentWindow.scrollY (modern) or contentDocument.documentElement.scrollTop (fallback)
+				savedScrollPosition = iframe.contentWindow.scrollY || 
+				                      iframe.contentWindow.pageYOffset || 
+				                      iframe.contentDocument.documentElement.scrollTop || 
+				                      iframe.contentDocument.body.scrollTop || 
+				                      0;
+			}
+		} catch (e) {
+			// If we can't access the iframe content (cross-origin or not loaded), ignore
+			savedScrollPosition = null;
+		}
+
 		ajaxRequest = $.ajax({
 			type: "POST",
 			dataType: 'html',
@@ -179,6 +195,26 @@ $(document).ready(function () {
 					iframe.contentDocument.open();
 					iframe.contentDocument.write(xhr.responseText);
 					iframe.contentDocument.close();
+
+					// Restore scroll position after content is loaded
+					if (savedScrollPosition !== null && savedScrollPosition > 0) {
+						// Function to restore scroll position
+						var restoreScroll = function() {
+							try {
+								if (iframe.contentWindow) {
+									iframe.contentWindow.scrollTo(0, savedScrollPosition);
+								}
+							} catch (e) {
+								// If we can't access the iframe, ignore
+							}
+						};
+
+						// Restore scroll position after content is written
+						// Use multiple timeouts to handle different rendering speeds
+						setTimeout(restoreScroll, 0);   // Immediate attempt
+						setTimeout(restoreScroll, 50);   // Quick retry for fast rendering
+						setTimeout(restoreScroll, 200);  // Final retry for slower rendering
+					}
 				}
 				// Hide the refreshing indicator
 				$('.live-preview__preview-loader').removeClass('loaded');
@@ -258,7 +294,7 @@ $(document).ready(function () {
 		// Show the save buttons
 		$('[data-publish] .tab-bar__right-buttons').show()
 
-		$('button[rel="live-preview"]').removeAttr('style').show();
+		$('button[rel="live-preview"]').show();
 		$(document).trigger('entry:preview-close')
 
 		// Hide the live preview modal
