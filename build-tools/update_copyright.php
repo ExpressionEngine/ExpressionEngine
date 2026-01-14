@@ -20,6 +20,8 @@ class CopyrightUpdater
     private $targetYear = '';
     private $repoRoot = '';
     private $dryRun = false;
+    private $startTime = 0;
+    private $maxExecutionTime = 300; // 5 minutes default
 
     private $allowedExtensions = [
         'php', 'js', 'ts', 'tsx', 'jsx', 'es6',
@@ -41,6 +43,7 @@ class CopyrightUpdater
 
     public function __construct()
     {
+        $this->startTime = time();
         $this->checkBasicSecurity();
         $this->parseArguments();
         $this->checkRepositorySecurity();
@@ -185,11 +188,21 @@ class CopyrightUpdater
 
     private function processFile($filePath)
     {
+        // Check execution timeout
+        if (time() - $this->startTime > $this->maxExecutionTime) {
+            throw new Exception("Execution timeout exceeded ({$this->maxExecutionTime} seconds)");
+        }
+
         // Check if file is in excluded directory
         $relativePath = str_replace($this->repoRoot, '', $filePath);
+
+        // Normalize path separators and remove leading/trailing separators
+        $normalizedPath = trim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relativePath), DIRECTORY_SEPARATOR);
+        $pathParts = explode(DIRECTORY_SEPARATOR, $normalizedPath);
+
         foreach ($this->excludedDirs as $excludedDir) {
-            if (strpos($relativePath, $excludedDir . DIRECTORY_SEPARATOR) === 0 ||
-                strpos($relativePath, DIRECTORY_SEPARATOR . $excludedDir . DIRECTORY_SEPARATOR) !== false) {
+            // Check if any path component matches an excluded directory
+            if (in_array($excludedDir, $pathParts)) {
                 return;
             }
         }
@@ -200,7 +213,25 @@ class CopyrightUpdater
             return;
         }
 
+        // Skip symlinks for security
+        if (is_link($filePath)) {
+            return;
+        }
+
         $this->filesChecked++;
+
+        // Check file size to prevent memory exhaustion (5MB limit for source files)
+        $fileSize = filesize($filePath);
+        if ($fileSize === false) {
+            echo "Warning: Could not determine file size for {$relativePath}\n";
+            $this->filesSkipped++;
+            return;
+        }
+        if ($fileSize > 5 * 1024 * 1024) { // 5MB limit
+            echo "Warning: Skipping large file ({$fileSize} bytes): {$relativePath}\n";
+            $this->filesSkipped++;
+            return;
+        }
 
         // Read file content
         $content = file_get_contents($filePath);
@@ -234,16 +265,15 @@ class CopyrightUpdater
             if ($this->dryRun) {
                 echo "Would update: {$relativePath}\n";
             } else {
-                // Check write permissions
-                if (!is_writable($filePath)) {
-                    echo "Warning: No write permission for {$relativePath}\n";
+                try {
+                    // Atomic write (will handle permission errors internally)
+                    $this->writeFileAtomically($filePath, $newContent);
+                    echo "Updated: {$relativePath}\n";
+                } catch (Exception $e) {
+                    echo "Warning: Could not update {$relativePath}: " . $e->getMessage() . "\n";
                     $this->filesSkipped++;
                     return;
                 }
-
-                // Atomic write
-                $this->writeFileAtomically($filePath, $newContent);
-                echo "Updated: {$relativePath}\n";
             }
             $this->filesUpdated++;
         } else {
@@ -253,6 +283,9 @@ class CopyrightUpdater
 
     private function writeFileAtomically($filePath, $content)
     {
+        // Store original file permissions
+        $originalPerms = fileperms($filePath);
+
         // Write to temporary file first (atomic operation)
         $tempFile = $filePath . '.tmp.' . uniqid();
         $bytesWritten = file_put_contents($tempFile, $content);
@@ -264,9 +297,9 @@ class CopyrightUpdater
 
         // Verify the written content
         $writtenContent = file_get_contents($tempFile);
-        $writtenChecksum = md5($writtenContent);
+        $writtenChecksum = hash('sha256', $writtenContent);
 
-        if ($writtenChecksum !== md5($content)) {
+        if ($writtenChecksum !== hash('sha256', $content)) {
             unlink($tempFile);
             throw new Exception("File integrity check failed for {$filePath}");
         }
@@ -277,11 +310,17 @@ class CopyrightUpdater
             throw new Exception("Failed to rename temporary file to {$filePath}");
         }
 
+        // Restore original file permissions
+        if ($originalPerms !== false && !chmod($filePath, $originalPerms)) {
+            // Non-critical error - log warning but continue
+            echo "Warning: Could not restore original permissions for {$filePath}\n";
+        }
+
         // Verify final file integrity
         $finalContent = file_get_contents($filePath);
-        $finalChecksum = md5($finalContent);
+        $finalChecksum = hash('sha256', $finalContent);
 
-        if ($finalChecksum !== md5($content)) {
+        if ($finalChecksum !== hash('sha256', $content)) {
             // Since we're in git, suggest using git to restore
             if (file_exists($filePath)) {
                 throw new Exception("Final file integrity check failed for {$filePath}. Use 'git checkout {$filePath}' to restore.");
