@@ -893,7 +893,8 @@ abstract class EE_Fieldtype
             $data = decode_multi_field($data);
             $firstEmptyValue = null;
             if (array_key_first($field_options) === '') {
-                $firstEmptyValue = array_shift($field_options);
+                $firstEmptyValue = $field_options[''];
+                unset($field_options['']);
             }
 
             // Get keys from a multidimensional array recursively
