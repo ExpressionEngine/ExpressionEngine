@@ -618,8 +618,8 @@ class UploadDestination extends StructureModel
                 'mime_type' => $mime,
                 'file_name' => $fileInfo['basename'],
                 'file_size' => isset($fileInfo['size']) ? $fileInfo['size'] : 0,
-                'uploaded_by_member_id' => ee()->session->userdata('member_id'),
-                'modified_by_member_id' => ee()->session->userdata('member_id'),
+                'uploaded_by_member_id' => REQ === 'CLI' ? ee('Member')->getDefaultCLIAuthor()->getId() : ee()->session->userdata('member_id'),
+                'modified_by_member_id' => REQ === 'CLI' ? ee('Member')->getDefaultCLIAuthor()->getId() : ee()->session->userdata('member_id'),
                 'upload_date' => $fileInfo['timestamp'],
                 'modified_date' => $fileInfo['timestamp']
             ];

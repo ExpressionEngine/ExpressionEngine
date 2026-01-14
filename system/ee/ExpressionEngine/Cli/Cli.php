@@ -161,6 +161,12 @@ class Cli
         'upload-directories:edit' => Commands\CommandUploadDirectoriesEdit::class,
         'upload-directories:delete' => Commands\CommandUploadDirectoriesDelete::class,
 
+        // Files
+        'files:list' => Commands\CommandFilesList::class,
+        'files:add' => Commands\CommandFilesAdd::class,
+        'files:edit' => Commands\CommandFilesEdit::class,
+        'files:delete' => Commands\CommandFilesDelete::class,
+
         // Version
         'version' => Commands\CommandVersion::class,
 

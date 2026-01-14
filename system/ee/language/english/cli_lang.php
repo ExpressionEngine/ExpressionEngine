@@ -786,6 +786,63 @@ $lang = array(
     'command_upload_directories_not_deleted'           => 'Upload directory deletion cancelled',
     'command_upload_directories_not_found'            => 'Upload directory not found',
 
+    // Lang entries for command files:list
+    'command_files_list_description'                => 'Lists all files',
+    'command_files_list_summary'                    => '',
+    'command_files_list_header'                     => 'All Files',
+    'command_files_list_option_format'              => 'Output format (table, json, csv)',
+    'command_files_list_total'                      => 'Total files: %d',
+    'command_files_id'                              => 'File ID',
+    'command_files_upload_id'                       => 'Upload Directory ID',
+    'command_files_name'                            => 'File Name',
+    'command_files_size'                            => 'Size',
+    'command_files_uploaded'                        => 'Upload Date',
+    'command_files_title'                           => 'Title',
+    'command_files_description'                     => 'Description',
+    'command_files_file_id'                         => 'File ID',
+    'command_files_file_path'                       => 'File Path (relative to upload directory)',
+    'command_files_source_path'                     => 'Source File Path (full path)',
+
+    // Lang entries for command files:add
+    'command_files_add_description'                 => 'Adds a new file',
+    'command_files_add_summary'                     => '',
+    'command_files_add_source'                      => 'What is the file source path type?',
+    'command_files_source_relative'                 => 'Relative (already in upload directory)',
+    'command_files_source_absolute'                 => 'Absolute (needs to be copied)',
+    'command_files_adding'                          => 'Adding file...',
+    'command_files_added'                           => 'File added successfully',
+    'command_files_not_added'                       => 'File could not be added',
+    'command_files_upload_not_found'                => 'Upload directory not found',
+    'command_files_not_found'                       => 'File not found',
+    'command_files_source_not_found'                => 'Source file not found',
+    'command_files_copy_failed'                     => 'Failed to copy file to upload directory',
+    'command_files_file_exists'                     => 'File already exists in the upload directory, possible actions',
+    'command_files_file_exists_skip'                => 'Skip adding the file',
+    'command_files_file_exists_overwrite'           => 'Overwrite the existing file',
+    'command_files_file_exists_rename'              => 'Rename the new file',
+    'command_files_new_file_name'                   => 'New file name',
+
+    // Lang entries for command files:edit
+    'command_files_edit_description'                => 'Edits an existing file',
+    'command_files_edit_summary'                    => '',
+    'command_files_edit_ask'                        => 'Which file do you want to edit?',
+    'command_files_editing'                         => 'Editing file: %s',
+    'command_files_not_saved'                       => 'File could not be saved',
+    'command_files_saved'                           => 'File saved successfully',
+
+    // Lang entries for command files:delete
+    'command_files_delete_description'              => 'Deletes a file',
+    'command_files_delete_summary'                  => '',
+    'command_files_delete_ask'                      => 'Which file do you want to delete?',
+    'command_files_delete_confirm'                  => 'Are you sure you want to delete the file "%s"?',
+    'command_files_delete_physical'                 => 'Also delete the physical file from the server?',
+    'command_files_delete_file'                     => 'Delete physical file from server',
+    'command_files_deleting'                        => 'Deleting file...',
+    'command_files_deleted'                         => 'File deleted successfully',
+    'command_files_not_deleted'                     => 'File deletion cancelled',
+    'command_files_delete_physical_failed'          => 'Warning: Could not delete physical file from server',
+
+
     // version
     'command_version_description' => 'Displays ExpressionEngine version information',
     'command_version_summary' => 'Shows the current ExpressionEngine version and system information',
