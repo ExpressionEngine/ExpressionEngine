@@ -34,7 +34,9 @@ class CopyrightUpdater
         'vendor-build',
         '.git',
         'build',
-        'dist'
+        'dist',
+        'ckeditor',
+        'jquery'
     ];
 
     private $filesUpdated = 0;
