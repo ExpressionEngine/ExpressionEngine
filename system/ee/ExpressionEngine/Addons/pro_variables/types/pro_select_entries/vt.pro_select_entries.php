@@ -37,6 +37,42 @@ class Pro_select_entries extends Pro_variables_type
     // --------------------------------------------------------------------
 
     /**
+     * Sanitize settings before saving to database
+     */
+    public function save_settings()
+    {
+        $settings = $this->settings();
+
+        // Ensure channels is an array and filter empty values
+        if (!is_array($settings['channels'])) {
+            $settings['channels'] = empty($settings['channels']) ? [] : [$settings['channels']];
+        }
+        $settings['channels'] = array_values(array_filter($settings['channels'], function($v) {
+            return $v !== '' && $v !== null;
+        }));
+
+        // Ensure categories is an array and filter empty values
+        if (!is_array($settings['categories'])) {
+            $settings['categories'] = empty($settings['categories']) ? [] : [$settings['categories']];
+        }
+        $settings['categories'] = array_values(array_filter($settings['categories'], function($v) {
+            return $v !== '' && $v !== null;
+        }));
+
+        // Ensure statuses is an array and filter empty values
+        if (!is_array($settings['statuses'])) {
+            $settings['statuses'] = empty($settings['statuses']) ? [] : [$settings['statuses']];
+        }
+        $settings['statuses'] = array_values(array_filter($settings['statuses'], function($v) {
+            return $v !== '' && $v !== null;
+        }));
+
+        return $settings;
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
      * Display settings sub-form for this variable type
      */
     public function display_settings()
@@ -364,6 +400,15 @@ class Pro_select_entries extends Pro_variables_type
                     }
                 }
 
+                $select_filters = [];
+                if (count($channels) > 1) {
+                    $select_filters[] = [
+                        'name' => 'channel_id',
+                        'title' => lang('channel'),
+                        'placeholder' => lang('filter_channels'),
+                    ];
+                }
+
                 $lang = [
                     'relateEntry' => lang('relate_entry'),
                     'search' => lang('search'),
@@ -371,24 +416,43 @@ class Pro_select_entries extends Pro_variables_type
                     'remove' => lang('remove'),
                 ];
 
+                // Sanitize settings - ensure arrays and filter empty values
+                $channels = $this->settings['channels'];
+                if (!is_array($channels)) {
+                    $channels = empty($channels) ? [] : [$channels];
+                }
+                $channels = array_filter($channels, function($v) { return $v !== '' && $v !== null; });
+
+                $categories = $this->settings['categories'];
+                if (!is_array($categories)) {
+                    $categories = empty($categories) ? [] : [$categories];
+                }
+                $categories = array_filter($categories, function($v) { return $v !== '' && $v !== null; });
+
+                $statuses = $this->settings['statuses'];
+                if (!is_array($statuses)) {
+                    $statuses = empty($statuses) ? [] : [$statuses];
+                }
+                $statuses = array_filter($statuses, function($v) { return $v !== '' && $v !== null; });
+
                 $settings = array(
-                    'channels' => $this->settings['channels'],
-                    'categories' => $this->settings['categories'],
-                    'statuses' => $this->settings['statuses'],
+                    'channels' => array_values($channels),
+                    'categories' => array_values($categories),
+                    'statuses' => array_values($statuses),
                     'limit' => $this->settings['limit'] ? $this->settings['limit'] : 100,
                     'order_field' => $this->settings['orderby'],
                     'order_dir' => $this->settings['sort'],
                     'authors' => [],
-                    'expired' => '',
-                    'future' => '',
+                    'expired' => $this->settings['show_expired'] == 'y',
+                    'future' => $this->settings['show_future'] == 'y',
                     'entry_id' => '',
                 );
+
                 $settings = json_encode($settings);
                 $settings = ee('Encrypt')->encode(
                     $settings,
                     ee()->config->item('session_crypt_key')
                 );
-
                 //  Multiple choice Relationship field
                 $data = array(
                     'var_type' => $this->info['name'],
