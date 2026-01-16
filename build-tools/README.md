@@ -88,6 +88,84 @@ Version components are validated to be between 0-99.
 
 Update `build.json` with the new version number and run `gulp version_bump`.
 
+# Updating copyright year
+
+## Using the PHP Copyright Year Updater Script
+
+The `update_copyright.php` script provides a secure, CLI-based way to update copyright year ranges in source code headers across the repository.
+
+### Quick Start
+
+```bash
+# Use current year (defaults to system year)
+php update_copyright.php
+
+# Specify a target year
+php update_copyright.php -y 2025
+
+# Dry run to preview changes
+php update_copyright.php --dry-run -y 2025
+```
+
+### What it does
+
+The script recursively scans the repository and updates copyright headers matching the pattern:
+- `Copyright (c) YYYY-YYYY, Packet Tide` (and variations with "LLC" and URLs)
+
+It updates the end year in the range to the target year while preserving the start year.
+
+### File Types Scanned
+
+The script processes files with these extensions:
+- PHP: `.php`
+- JavaScript/TypeScript: `.js`, `.ts`, `.tsx`, `.jsx`, `.es6`
+- Styles: `.css`, `.scss`, `.less`
+- Templates: `.html`
+
+### Excluded Directories
+
+The following directories are automatically excluded from scanning:
+- `vendor`
+- `node_modules`
+- `vendor-build`
+- `.git`
+- `build`
+- `dist`
+
+### Command-line Options
+
+| Option | Short | Description |
+|--------|-------|-------------|
+| `--year=<YYYY>` | `-y` | Target year (defaults to current system year) |
+| `--path=<path>` | `-p` | Root directory to scan (defaults to repo root) |
+| `--dry-run` | | Show what would be changed without making changes |
+| `--help` | `-h` | Show help |
+
+### Examples
+
+```bash
+# Update to current year
+php update_copyright.php
+
+# Update to specific year
+php update_copyright.php -y 2025
+
+# Dry run to preview changes
+php update_copyright.php --dry-run -y 2025
+
+# Use different repository root
+php update_copyright.php -p /path/to/repo -y 2025
+```
+
+### Security Features
+
+- **Path traversal protection**: Repository root must be within project directory
+- **Input validation**: Strict validation of year format (YYYY, 2000-2100)
+- **Privilege checks**: Prevents running as root
+- **CLI-only execution**: Must be run from command line
+- **Atomic file writes**: Uses temporary files and atomic rename operations
+- **File integrity checks**: Verifies content after writing
+
 # Checking for compatibility with different PHP versions
 
 `phpcs -p ./system/ee --standard=PHPCompatibility --runtime-set testVersion 7.2-8.4 --report-full=/path/to/logfile.txt`
