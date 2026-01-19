@@ -43,31 +43,33 @@ class Pro_select_entries extends Pro_variables_type
     {
         $settings = $this->settings();
 
-        // Ensure channels is an array and filter empty values
-        if (!is_array($settings['channels'])) {
-            $settings['channels'] = empty($settings['channels']) ? [] : [$settings['channels']];
-        }
-        $settings['channels'] = array_values(array_filter($settings['channels'], function($v) {
-            return $v !== '' && $v !== null;
-        }));
-
-        // Ensure categories is an array and filter empty values
-        if (!is_array($settings['categories'])) {
-            $settings['categories'] = empty($settings['categories']) ? [] : [$settings['categories']];
-        }
-        $settings['categories'] = array_values(array_filter($settings['categories'], function($v) {
-            return $v !== '' && $v !== null;
-        }));
-
-        // Ensure statuses is an array and filter empty values
-        if (!is_array($settings['statuses'])) {
-            $settings['statuses'] = empty($settings['statuses']) ? [] : [$settings['statuses']];
-        }
-        $settings['statuses'] = array_values(array_filter($settings['statuses'], function($v) {
-            return $v !== '' && $v !== null;
-        }));
+        // Ensure channels, categories, and statuses are arrays and filter empty values
+        $settings['channels'] = $this->normalize_array_setting($settings['channels']);
+        $settings['categories'] = $this->normalize_array_setting($settings['categories']);
+        $settings['statuses'] = $this->normalize_array_setting($settings['statuses']);
 
         return $settings;
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Normalize array setting value
+     *
+     * Converts non-array values to arrays, filters out empty strings and null values,
+     * and re-indexes the array.
+     *
+     * @param mixed $value The value to normalize
+     * @return array Normalized array with empty values filtered out
+     */
+    protected function normalize_array_setting($value)
+    {
+        if (!is_array($value)) {
+            $value = empty($value) ? [] : [$value];
+        }
+        return array_values(array_filter($value, function($v) {
+            return $v !== '' && $v !== null;
+        }));
     }
 
     // --------------------------------------------------------------------
@@ -417,28 +419,14 @@ class Pro_select_entries extends Pro_variables_type
                 ];
 
                 // Sanitize settings - ensure arrays and filter empty values
-                $channels = $this->settings['channels'];
-                if (!is_array($channels)) {
-                    $channels = empty($channels) ? [] : [$channels];
-                }
-                $channels = array_filter($channels, function($v) { return $v !== '' && $v !== null; });
-
-                $categories = $this->settings['categories'];
-                if (!is_array($categories)) {
-                    $categories = empty($categories) ? [] : [$categories];
-                }
-                $categories = array_filter($categories, function($v) { return $v !== '' && $v !== null; });
-
-                $statuses = $this->settings['statuses'];
-                if (!is_array($statuses)) {
-                    $statuses = empty($statuses) ? [] : [$statuses];
-                }
-                $statuses = array_filter($statuses, function($v) { return $v !== '' && $v !== null; });
+                $channels = $this->normalize_array_setting($this->settings['channels']);
+                $categories = $this->normalize_array_setting($this->settings['categories']);
+                $statuses = $this->normalize_array_setting($this->settings['statuses']);
 
                 $settings = array(
-                    'channels' => array_values($channels),
-                    'categories' => array_values($categories),
-                    'statuses' => array_values($statuses),
+                    'channels' => $channels,
+                    'categories' => $categories,
+                    'statuses' => $statuses,
                     'limit' => $this->settings['limit'] ? $this->settings['limit'] : 100,
                     'order_field' => $this->settings['orderby'],
                     'order_dir' => $this->settings['sort'],
