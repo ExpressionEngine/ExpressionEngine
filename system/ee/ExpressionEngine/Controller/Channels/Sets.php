@@ -47,7 +47,6 @@ class Sets extends AbstractChannelsController
         );
 
         if (! empty($_FILES)) {
-            // echo "FILES not empty\n";
             $set_file = ee('Request')->file('set_file');
 
             $validator = ee('Validation')->make(array(
@@ -57,7 +56,6 @@ class Sets extends AbstractChannelsController
             $result = $validator->validate(array('set_file' => $set_file['name']));
 
             if ($result->isNotValid()) {
-                // echo "Validation failed\n";
                 $errors = $result;
                 ee('CP/Alert')->makeInline('shared-form')
                     ->asIssue()
@@ -67,20 +65,17 @@ class Sets extends AbstractChannelsController
 
                 $vars['errors'] = $errors;
             } elseif (strtolower(pathinfo($set_file['name'], PATHINFO_EXTENSION)) !== 'zip') {
-                // echo "Extension not zip\n";
                 ee('CP/Alert')->makeInline('shared-form')
                     ->asIssue()
                     ->withTitle(lang('channel_set_filetype_error'))
                     ->addToBody(lang('channel_set_filetype_error_desc'))
                     ->now();
             } else {
-                // echo "Valid upload\n";
                 $set = ee('ChannelSet')->importUpload($set_file);
                 $set_path = ee('Encrypt')->encode(
                     $set->getPath(),
                     ee()->config->item('session_crypt_key')
                 );
-                // echo "Redirecting...\n";
                 ee()->functions->redirect(
                     ee('CP/URL')->make(
                         'channels/sets/doImport',
@@ -90,7 +85,6 @@ class Sets extends AbstractChannelsController
             }
         }
 
-        // echo "Rendering...\n";
         ee()->view->cp_breadcrumbs = array(
             ee('CP/URL')->make('channels')->compile() => lang('channels')
         );

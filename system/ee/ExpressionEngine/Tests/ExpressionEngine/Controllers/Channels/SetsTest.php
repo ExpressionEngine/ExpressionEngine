@@ -1479,7 +1479,6 @@ namespace {
 
     if (!function_exists('force_download')) {
         function force_download($filename = '', $data = '') {
-            // echo "Downloaded: $filename"; // Debug
             throw new \Exception('Force download called');
         }
     }

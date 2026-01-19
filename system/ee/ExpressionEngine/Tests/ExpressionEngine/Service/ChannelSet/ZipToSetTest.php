@@ -94,21 +94,9 @@ class ZipToSetTest extends TestCase
         // So the file may be at root or in a subdirectory
         $jsonPath1 = $extractedPath . '/channel_set.json';
         $jsonPath2 = $extractedPath . '/channel_set/channel_set.json';
-        
-        // Debug: list what's actually in the directory
-        $files = [];
-        if (is_dir($extractedPath)) {
-            $iterator = new \RecursiveIteratorIterator(
-                new \RecursiveDirectoryIterator($extractedPath, \RecursiveDirectoryIterator::SKIP_DOTS),
-                \RecursiveIteratorIterator::SELF_FIRST
-            );
-            foreach ($iterator as $file) {
-                $files[] = $file->getPathname();
-            }
-        }
-        
+
         $jsonExists = file_exists($jsonPath1) || file_exists($jsonPath2);
-        $this->assertTrue($jsonExists, "channel_set.json should exist. Files found: " . implode(', ', $files));
+        $this->assertTrue($jsonExists, "channel_set.json should exist in extracted directory");
     }
 
     public function testExtractAsThrowsExceptionWithPHPFiles()
