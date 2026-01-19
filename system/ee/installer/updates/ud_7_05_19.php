@@ -25,6 +25,25 @@ class Updater
      */
     public function do_update()
     {
+        $steps = new \ProgressIterator([
+            'addActionsIndexes',
+        ]);
+
+        foreach ($steps as $k => $v) {
+            $this->$v();
+        }
+
+        return true;
+    }
+
+    public function addActionsIndexes()
+    {
+        // Add index for actions.class
+        ee()->smartforge->add_key('actions', 'class', 'class');
+
+        // Add index for actions.method
+        ee()->smartforge->add_key('actions', 'method', 'method');
+
         return true;
     }
 }
