@@ -1117,6 +1117,8 @@ class Member_auth extends Member
     {
         return ee()->localize->now - (24 * 60 * 60); // 24 hours as per email instructions
     }
+
+}
 // END CLASS
 
 // EOF
