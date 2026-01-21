@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -568,7 +568,7 @@ EE.cp.formValidation = {
 			// Wait half a second, then clear the timer and send the AJAX request
 			timer = setTimeout(function() {
 				clearTimeout(timer);
-				if (field.is('textarea')) {
+				if (field.is('textarea') && field.is('textarea:not(.rte-textarea)')) {
 					return false;
 				} else {
 					that._sendAjaxRequest(field);

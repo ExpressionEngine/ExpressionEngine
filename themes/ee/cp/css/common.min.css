@@ -52966,6 +52966,9 @@ body[data-theme=light] .ee-sidebar__items .ee-sidebar__version.ee-sidebar__versi
   border-radius: 4px;
   pointer-events: none;
 }
+.f_manager-wrapper tr.app-listing__row .thumbnail_img[src*=svg] {
+  min-width: 50px;
+}
 .f_manager-wrapper tr.app-listing__row i.fas, .f_manager-wrapper tr.app-listing__row i.fal, .f_manager-wrapper tr.app-listing__row i.column-sort::after, .f_manager-wrapper tr.app-listing__row i.app-notice__icon::before, .f_manager-wrapper tr.app-listing__row i.app-notice__dismiss::before, .f_manager-wrapper tr.app-listing__row i.m-close:before, .f_manager-wrapper tr.app-listing__row i.sidebar__link.remove:after, .f_manager-wrapper tr.app-listing__row .tab-bar--editable i.tab-remove:before, .tab-bar--editable .f_manager-wrapper tr.app-listing__row i.tab-remove:before,
 .f_manager-wrapper tr.app-listing__row .tab-bar--editable i.tab-on:before,
 .tab-bar--editable .f_manager-wrapper tr.app-listing__row i.tab-on:before,

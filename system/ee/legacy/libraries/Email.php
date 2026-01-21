@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -87,6 +87,18 @@ class EE_Email
      * TLS Crypto Method
      */
     public $tls_crypto_method = STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
+
+    /**
+     * SMTP Peer Name
+     *
+     * Alternative peer name for SSL/TLS certificate verification.
+     * Useful when connecting to an SMTP host that uses a certificate
+     * for a different hostname (e.g., connecting to smtp.example.com
+     * but certificate is for smtp.examplemailservice.com).
+     *
+     * @var string
+     */
+    public $smtp_peer_name = '';
 
     /**
      * Whether to apply word-wrapping to the message body.
@@ -440,6 +452,13 @@ class EE_Email
             }
         }
 
+        if (ee()->config->item('smtp_peer_name') !== false) {
+            $peer_name = ee()->config->item('smtp_peer_name');
+            if (is_string($peer_name) && $peer_name !== '') {
+                $config['smtp_peer_name'] = $peer_name;
+            }
+        }
+
         $this->initialize($config);
     }
 
@@ -491,7 +510,7 @@ class EE_Email
                 return;
             }
         }
-        
+
         if (preg_match('/\<(.*)\>/', $from, $match)) {
             $from = $match[1];
         }
@@ -566,9 +585,9 @@ class EE_Email
             $to = ee()->extensions->call('email_to_address', $to);
             if (ee()->extensions->end_script === true) {
                 return;
-            }			
+            }
         }
-        
+
         $to = $this->_str_to_array($to);
         $to = $this->clean_email($to);
 
@@ -1707,16 +1726,40 @@ class EE_Email
             return true;
         }
 
+        $context = null;
+
+        if (! empty($this->smtp_peer_name) && is_string($this->smtp_peer_name)) {
+            $context = stream_context_create(array(
+                'ssl' => array(
+                    'peer_name' => $this->smtp_peer_name,
+                    'verify_peer' => true,
+                    'verify_peer_name' => true,
+                )
+            ));
+        }
+
         $ssl = ($this->smtp_crypto === 'ssl') ? 'ssl://' : '';
 
-        // suppress warning, we'll catch timeout error later if that happens
-        $this->_smtp_connect = @fsockopen(
-            $ssl . $this->smtp_host,
-            $this->smtp_port,
-            $errno,
-            $errstr,
-            $this->smtp_timeout
-        );
+        if ($context !== null) {
+            $errno = 0;
+            $errstr = '';
+            $this->_smtp_connect = @stream_socket_client(
+                ($ssl ? $ssl : 'tcp://') . $this->smtp_host . ':' . $this->smtp_port,
+                $errno,
+                $errstr,
+                $this->smtp_timeout,
+                STREAM_CLIENT_CONNECT,
+                $context
+            );
+        } else {
+            $this->_smtp_connect = @fsockopen(
+                $ssl . $this->smtp_host,
+                $this->smtp_port,
+                $errno,
+                $errstr,
+                $this->smtp_timeout
+            );
+        }
 
         if (! is_resource($this->_smtp_connect)) {
             $this->_set_error_message('lang:email_smtp_error', $errno . ' ' . $errstr);

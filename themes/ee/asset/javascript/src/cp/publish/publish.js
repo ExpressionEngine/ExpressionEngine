@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 var isNavigatingAway = false;
@@ -165,6 +165,22 @@ $(document).ready(function () {
 		// Show that the preview is refreshing
 		$('.live-preview__preview-loader').addClass('loaded');
 
+		// Save the current scroll position before updating the iframe
+		var savedScrollPosition = null;
+		try {
+			if (iframe.contentWindow && iframe.contentDocument && iframe.contentDocument.documentElement) {
+				// Try to get scroll position from contentWindow.scrollY (modern) or contentDocument.documentElement.scrollTop (fallback)
+				savedScrollPosition = iframe.contentWindow.scrollY || 
+				                      iframe.contentWindow.pageYOffset || 
+				                      iframe.contentDocument.documentElement.scrollTop || 
+				                      iframe.contentDocument.body.scrollTop || 
+				                      0;
+			}
+		} catch (e) {
+			// If we can't access the iframe content (cross-origin or not loaded), ignore
+			savedScrollPosition = null;
+		}
+
 		ajaxRequest = $.ajax({
 			type: "POST",
 			dataType: 'html',
@@ -177,8 +193,77 @@ $(document).ready(function () {
 			complete: function(xhr) {
 				if (xhr.responseText !== undefined) {
 					iframe.contentDocument.open();
-					iframe.contentDocument.write(xhr.responseText);
+					
+					// Inject scroll preservation script into the HTML for Firefox compatibility
+					// This prevents Firefox from resetting scroll position during document close
+					var htmlContent = xhr.responseText;
+					if (savedScrollPosition !== null && savedScrollPosition > 0) {
+						// Inject a script that preserves scroll position immediately when document loads
+						var scrollScript = '<script>(function(){var saved=' + savedScrollPosition + ';function restore(){window.scrollTo(0,saved);document.documentElement.scrollTop=saved;document.body.scrollTop=saved;}if(document.readyState==="complete"){restore();}else{window.addEventListener("load",restore);document.addEventListener("DOMContentLoaded",restore);}requestAnimationFrame(restore);setTimeout(restore,0);setTimeout(restore,10);})();</script>';
+						// Insert before closing body tag, or at end if no body tag
+						if (htmlContent.indexOf('</body>') !== -1) {
+							htmlContent = htmlContent.replace('</body>', scrollScript + '</body>');
+						} else {
+							htmlContent = htmlContent + scrollScript;
+						}
+					}
+					
+					iframe.contentDocument.write(htmlContent);
+					
+					// Restore scroll position BEFORE close() to prevent Firefox flicker
+					// Firefox resets scroll position during close(), so we need to be more aggressive
+					if (savedScrollPosition !== null && savedScrollPosition > 0) {
+						// Function to restore scroll position
+						var restoreScroll = function() {
+							try {
+								if (iframe.contentWindow) {
+									iframe.contentWindow.scrollTo(0, savedScrollPosition);
+									// Also try setting directly on document elements for Firefox
+									if (iframe.contentDocument) {
+										if (iframe.contentDocument.documentElement) {
+											iframe.contentDocument.documentElement.scrollTop = savedScrollPosition;
+										}
+										if (iframe.contentDocument.body) {
+											iframe.contentDocument.body.scrollTop = savedScrollPosition;
+										}
+									}
+								}
+							} catch (e) {
+								// If we can't access the iframe, ignore
+							}
+						};
+
+						// Try to restore BEFORE close() - this helps prevent Firefox flicker
+						restoreScroll();
+					}
+					
+					// Close the document
 					iframe.contentDocument.close();
+
+					// Restore scroll position after content is loaded
+					if (savedScrollPosition !== null && savedScrollPosition > 0) {
+						// Use requestAnimationFrame for smoother, frame-synced restoration
+						// This is especially important for Firefox which handles iframe updates differently
+						var restoreOnFrame = function() {
+							restoreScroll();
+							requestAnimationFrame(function() {
+								restoreScroll();
+								requestAnimationFrame(function() {
+									restoreScroll();
+								});
+							});
+						};
+						
+						// Immediate restoration attempts
+						requestAnimationFrame(restoreOnFrame);
+						
+						// Also use timeouts as fallback for different rendering speeds
+						setTimeout(restoreScroll, 0);   // Immediate attempt
+						setTimeout(restoreScroll, 10);   // Very quick retry
+						setTimeout(restoreScroll, 50);   // Quick retry for fast rendering
+						setTimeout(restoreScroll, 100);  // Medium retry
+						setTimeout(restoreScroll, 200);  // Final retry for slower rendering
+					}
 				}
 				// Hide the refreshing indicator
 				$('.live-preview__preview-loader').removeClass('loaded');
