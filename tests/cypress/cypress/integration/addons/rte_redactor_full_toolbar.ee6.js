@@ -28,16 +28,16 @@ context('RTE Toolset Edit Page - Redactor Full - Toolbar', () => {
         it('Verifies all active buttons match Redactor Full configuration', function() {
 
             // Verify Main toolbar (editor) buttons
-            // page.get('main_toolbar_fieldset').within(() => {
-            //     expectedRedactorFull.editor.forEach(buttonName => {
-            //         cy.get(`span#tb-option-${buttonName}`)
-            //             .should('exist')
-            //             .find('a')
-            //             .should('not.have.class', 'disable')
-            //             .find('input')
-            //             .should('not.have.attr', 'disabled')
-            //     })
-            // })
+            page.get('main_toolbar_fieldset').within(() => {
+                expectedRedactorFull.editor.forEach(buttonName => {
+                    cy.get(`span#tb-option-${buttonName}`)
+                        .should('exist')
+                        .find('a')
+                        .should('not.have.class', 'disable')
+                        .find('input')
+                        .should('not.have.attr', 'disabled')
+                })
+            })
 
             // Verify each toolbar section: toggle is ON, fieldset is visible, buttons are active
             toolbarSections.forEach(({ name, toggle, fieldset, configKey }) => {

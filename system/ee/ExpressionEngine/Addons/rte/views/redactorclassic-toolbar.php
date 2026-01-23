@@ -1,5 +1,5 @@
-<div class="rte-toolbar" id="redactor-toolbar-<?=$type?>">
-    <div id="tb-selections-redactor-<?=$type?>">
+<div class="rte-toolbar" id="redactorClassic-toolbar-<?=$type?>">
+    <div id="tb-selections-redactorClassic-<?=$type?>">
         <div class="form-standard">
             <div class="redactor-toolbar cke_toolbox">
                 <?php foreach ($buttons as $button => $label): ?>

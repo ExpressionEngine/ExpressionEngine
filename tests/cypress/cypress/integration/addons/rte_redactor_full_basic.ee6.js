@@ -10,7 +10,7 @@
  * - Advanced Settings
  */
 
-import { setupRedactorFullTests, page, saveToolset, assertButtonActive, assertButtonDisabled } from '../../support/rte/redactor-full-setup';
+import { setupRedactorFullTests, page, saveToolset, assertButtonActive, assertButtonDisabled, navigateToPublishEditPage, navigateToToolsetEditPage } from '../../support/rte/redactor-full-setup';
 
 context('RTE Toolset Edit Page - Redactor Full - Basic', () => {
 
@@ -101,7 +101,7 @@ context('RTE Toolset Edit Page - Redactor Full - Basic', () => {
                 pluginsToDisable.forEach(pluginName => {
                     cy.get(`span#tb-option-${pluginName}`)
                         .find('a')
-                        .should('have.class', 'disabled')
+                        .should('have.class', 'disable')
                         .find('input')
                         .should('have.attr', 'disabled')
                 })
@@ -125,9 +125,19 @@ context('RTE Toolset Edit Page - Redactor Full - Basic', () => {
             cy.contains('CSS template with styles').should('exist')
         })
 
-        it('Shows Minimal height field with value 200', function() {
+        it('Shows Minimal height field with value 200 and applies to .rx-content on entry page', function() {
+            // Check the field value on toolset page
             page.get('minimal_height').should('exist')
             page.get('minimal_height').invoke('val').should('eq', '200')
+
+            // Navigate to entry page and verify .rx-content has min-height: 200px
+            navigateToPublishEditPage()
+            cy.get('.rx-content')
+                .should('exist')
+                .and('have.css', 'min-height', '200px')
+
+            // Navigate back to toolset edit page for subsequent tests
+            navigateToToolsetEditPage()
         })
 
         it('Shows Maximal height field', function() {

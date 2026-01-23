@@ -80,7 +80,7 @@ context('RTE Toolset Edit Page - Redactor Full - Formatting', () => {
         })
     })
 
-    describe('Disabled Buttons Exclusion', function() {
+    describe.only('Disabled Buttons Exclusion', function() {
         it('Disables specific buttons and verifies they are excluded from publish edit page', function() {
             // Ensure all toolbars are enabled first
 
@@ -186,39 +186,31 @@ context('RTE Toolset Edit Page - Redactor Full - Formatting', () => {
             cy.wait(200)
             
             // Verify Context bar does NOT contain Bold
-            // getRedactorField().within(() => {
-            //     // Type new text
-            //     cy.get('div.rx-content, [contenteditable="true"]').first()
-            //         .focus()
-            //         .type('{selectall}{del}Test word for selection', { delay: 50 })
-            //     cy.wait(300)
-            // })
+            // Clear and type new text
+            getRedactorField().find('.rx-content').clear().type('Test word for selection')
+            cy.wait(300)
             
-            // Use JavaScript to select text and trigger context bar (mouse selection required)
-            // getRedactorField().find('div.rx-content, [contenteditable="true"]').first().then($el => {
-            //     const el = $el[0]
+            // Select a specific word using JavaScript to trigger context bar
+            // getRedactorField().find('.rx-content p').first().then($p => {
+            //     const el = $p[0]
+            //     const text = el.textContent
+            //     const wordStart = text.indexOf('word')
+            //     const wordEnd = wordStart + 4 // 'word' is 4 characters
+                
+            //     // Create a range for the word
             //     const range = document.createRange()
+            //     const textNode = el.firstChild
+            //     range.setStart(textNode, wordStart)
+            //     range.setEnd(textNode, wordEnd)
+                
+            //     // Apply the selection
             //     const sel = window.getSelection()
-                
-            //     // Select specific part of the text (often better for triggering context bars)
-            //     if (el.firstChild) {
-            //         range.setStart(el.firstChild, 0)
-            //         range.setEnd(el.firstChild, 4) // Select "Test"
-            //         sel.removeAllRanges()
-            //         sel.addRange(range)
-            //     }
-                
-            //     // Trigger mouse events in sequence
-            //     const mouseEventInit = { bubbles: true, cancelable: true, view: window };
-            //     el.dispatchEvent(new MouseEvent('mousedown', mouseEventInit));
-            //     el.dispatchEvent(new MouseEvent('mouseup', mouseEventInit));
-            //     el.dispatchEvent(new MouseEvent('click', mouseEventInit));
+            //     sel.removeAllRanges()
+            //     sel.addRange(range)
             // })
+            // cy.wait(500)
             
-            // // Give it time to render
-            // cy.wait(1000)
-            
-            // // Context bar is outside fieldset
+            // Context bar should appear when text is selected
             // cy.get('.rx-context', { timeout: 10000 }).should('be.visible')
             // cy.get('.rx-context').find('[data-name="bold"]').should('not.exist')
             

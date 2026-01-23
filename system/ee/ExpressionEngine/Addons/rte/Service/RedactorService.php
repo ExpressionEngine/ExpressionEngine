@@ -193,10 +193,10 @@ class RedactorService extends RedactorClassicService implements RteService {
         }
 
         if (isset($config['height']) && !empty($config['height']) && is_numeric($config['height'])) {
-            $config['toolbar']['editor']->minHeight = (int) $config['height'] . 'px';
+            $config['toolbar']['minHeight'] = (int) $config['height'] . 'px';
         }
         if (isset($config['max_height']) && !empty($config['max_height']) && is_numeric($config['max_height'])) {
-            $config['toolbar']['editor']->maxHeight = (int) $config['max_height'] . 'px';
+            $config['toolbar']['maxHeight'] = (int) $config['max_height'] . 'px';
         }
 
         //link

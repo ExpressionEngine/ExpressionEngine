@@ -146,7 +146,7 @@
                                     <?=(!empty($svg)) ? $svg : '<span class="fa-solid fa-' . $icon_class
                                     .'"></span>'; ?>
                                 </span>
-                                <input type="hidden" name="settings[redactor_toolbar][<?=$type?>][]" <?php if (!in_array($button, $selection)) { echo 'disabled'; } ?> value="<?php echo $button ?>">
+                                <input type="hidden" name="settings[redactor_toolbar][<?=$type?>][]" <?php if (in_array($button, $selection) === $reverse) { echo 'disabled'; } ?> value="<?php echo $button ?>">
                             </a>
                         </span>
                     </span>

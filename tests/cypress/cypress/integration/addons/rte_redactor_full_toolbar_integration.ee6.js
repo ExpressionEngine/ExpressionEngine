@@ -20,19 +20,6 @@ import {
     getRedactorField 
 } from '../../support/rte/redactor-full-setup';
 
-// Helper: Collect all button data-names from a fieldset
-function collectButtonDataNames(fieldsetSelector) {
-    const dataNames = []
-    return cy.get(fieldsetSelector).within(() => {
-        cy.get('a[data-name]').each(($btn) => {
-            const dataName = $btn.attr('data-name')
-            if (dataName) {
-                dataNames.push(dataName)
-            }
-        })
-    }).then(() => dataNames)
-}
-
 // Helper: Ensure toggle is enabled
 function ensureToggleEnabled(toggleSelector) {
     return page.get(toggleSelector).then($el => {
@@ -131,28 +118,20 @@ context('RTE Toolset Edit Page - Redactor Full - Toolbar Integration', () => {
 
     setupRedactorFullTests()
 
-    // doesn't work
     describe('Main Toolbar Integration', function() {
         it('Verifies Main toolbar buttons appear in Redactor field on publish edit page', function() {
-            collectButtonDataNames('[id*="hide"]').then((dataNames) => {
-                // Use page object if available
-                page.get('main_toolbar_fieldset').within(() => {
-                    cy.get('a.rx-button').then(($buttons) => {
-                        const mainToolbarDataNames = []
-
-                        $buttons.each((i, btn) => {
-                            const $btn = Cypress.$(btn)
-                            const spanId = $btn.parents('span[id^="tb-option-"]').attr('id')
-                           if (spanId) {
-                                const name = spanId.replace('tb-option-', '')
-                                mainToolbarDataNames.push(name)
-                            }
-                        })
-                        
-                        navigateToPublishEditPage()
-                        verifyButtonsInContainer('.rx-toolbar-0', mainToolbarDataNames)
-                    })
-                })
+            // Collect button names from main toolbar fieldset
+            const mainToolbarDataNames = []
+            
+            page.get('main_toolbar_fieldset').find('a.rx-button').each(($btn) => {
+                const spanId = $btn.parents('span[id^="tb-option-"]').attr('id')
+                if (spanId) {
+                    const name = spanId.replace('tb-option-', '')
+                    mainToolbarDataNames.push(name)
+                }
+            }).then(() => {
+                navigateToPublishEditPage()
+                verifyButtonsInContainer('.rx-toolbar-0', mainToolbarDataNames)
             })
         })
     })
