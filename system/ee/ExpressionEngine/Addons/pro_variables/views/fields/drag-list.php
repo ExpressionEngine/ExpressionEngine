@@ -6,7 +6,7 @@
             'multi' => $multiple,
             'filter_url' => $filter_url,
             'limit' => $limit ? $limit : 100,
-            'no_results' => lang('no_entries_found'),
+            'no_results' => strip_tags(lang('no_entries_found')),
             'button_label' => null,
             'can_add_items' => false,
             'can_edit_items' => false,

@@ -29246,6 +29246,10 @@ input[type=button].btn-block {
   margin-bottom: 0px;
 }
 
+div[data-relationship-react] .dropdown, div[data-relationship-react] .select__dropdown {
+  overflow: visible;
+}
+
 .colorpicker__inner_wrapper {
   position: relative;
 }
