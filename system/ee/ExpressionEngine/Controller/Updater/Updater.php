@@ -183,7 +183,7 @@ class Updater extends CP_Controller
         }
 
         // Send JSON to the notifications endpoint.
-        $endpoint = 'https://update.expressionengine.com/notifications/subscribe';
+        $endpoint = '';
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $endpoint);
         curl_setopt($curl, CURLOPT_POST, true);
