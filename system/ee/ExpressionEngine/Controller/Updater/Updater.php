@@ -136,5 +136,82 @@ class Updater extends CP_Controller
             ));
         }
     }
+
+    public function subscribe()
+    {
+        ee()->lang->loadfile('updater');
+
+        // Validate the email before any outbound request.
+        $email = trim(ee()->input->post('email'));
+        $validator = ee('Validation')->make(array(
+            'email' => 'required|email'
+        ));
+        $result = $validator->validate(array(
+            'email' => $email
+        ));
+
+        if ($result->isNotValid()) {
+            return ee()->output->send_ajax_response(array(
+                'messageType' => 'error',
+                'message' => lang('updater_subscribe_invalid_email')
+            ));
+        }
+
+        if (! function_exists('curl_init')) {
+            return ee()->output->send_ajax_response(array(
+                'messageType' => 'error',
+                'message' => lang('updater_subscribe_submit_error')
+            ));
+        }
+
+        // Build payload for the notifications service.
+        $payload = array(
+            'email' => $email,
+            'notifications_opt_in' => 'y',
+            'marketing_opt_in' => (ee()->input->post('marketing_opt_in') === 'y') ? 'y' : 'n',
+            'site_url' => ee()->config->item('site_url'),
+            'app_version' => ee()->config->item('app_version'),
+            'source' => 'one_click_updater'
+        );
+
+        $payload_json = json_encode($payload);
+        if ($payload_json === false) {
+            return ee()->output->send_ajax_response(array(
+                'messageType' => 'error',
+                'message' => lang('updater_subscribe_submit_error')
+            ));
+        }
+
+        // Send JSON to the notifications endpoint.
+        $endpoint = 'https://update.expressionengine.com/notifications/subscribe';
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $endpoint);
+        curl_setopt($curl, CURLOPT_POST, true);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $payload_json);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            'Content-Length: ' . strlen($payload_json)
+        ));
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 10);
+
+        $response = curl_exec($curl);
+        $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        curl_close($curl);
+
+        // Treat non-2xx responses as a failure to subscribe.
+        if ($response === false || $http_code < 200 || $http_code >= 300) {
+            return ee()->output->send_ajax_response(array(
+                'messageType' => 'error',
+                'message' => lang('updater_subscribe_submit_error')
+            ));
+        }
+
+        return ee()->output->send_ajax_response(array(
+            'messageType' => 'success',
+            'message' => ''
+        ));
+    }
 }
 // EOF

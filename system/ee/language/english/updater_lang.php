@@ -151,6 +151,33 @@ Please make sure you have the latest version of each file in place and then try 
 
     'update_version_warning_desc' => 'Your current system status is set to <b>%s</b>. If you need to change that, please visit System Settings.',
 
+    'updater_subscribe_title' =>
+    'Stay informed about important admin notifications',
+
+    'updater_subscribe_desc' =>
+    'Get occasional emails about security issues, end-of-life notices, and other critical admin updates. We only send a few messages per year, when needed.',
+
+    'updater_subscribe_email_label' =>
+    'Email address',
+
+    'updater_subscribe_marketing_label' =>
+    'Also send me marketing emails about new features and products',
+
+    'updater_subscribe_submit' =>
+    'Subscribe',
+
+    'updater_subscribe_skip' =>
+    'No thanks, continue',
+
+    'updater_subscribe_invalid_email' =>
+    'Please enter a valid email address.',
+
+    'updater_subscribe_submit_error' =>
+    'We could not submit your email right now. Please try again or continue to the control panel.',
+
+    'updater_subscribe_error_title' =>
+    'Unable to subscribe',
+
     '' => ''
 );
 

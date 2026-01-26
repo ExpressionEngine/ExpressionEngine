@@ -39,6 +39,8 @@ var Updater = {
 			}));
 			form.appendTo('body').submit();
 		});
+
+		this._bindSubscribe();
 	},
 
 	runStep: function(step) {
@@ -67,8 +69,10 @@ var Updater = {
 						if ( ! that._updaterInPlace && result.nextStep == 'updateFiles') {
 							that._updaterInPlace = true;
 						}
+					} else if ($('.updater-subscribe').length) {
+						that._showSubscribe();
 					} else {
-						window.location = EE.BASE;
+						that._redirectToCp();
 					}
 				} else {
 					that._showError(result);
@@ -89,6 +93,20 @@ var Updater = {
 				}
 				that._showError(error);
 			}
+		});
+	},
+
+	_bindSubscribe: function() {
+		var that = this;
+
+		$('body').on('submit', '#updater-subscribe-form', function(e) {
+			e.preventDefault();
+			that._submitSubscribe($(this));
+		});
+
+		$('body').on('click', '.js-updater-subscribe-skip', function(e) {
+			e.preventDefault();
+			that._redirectToCp();
 		});
 	},
 
@@ -150,6 +168,69 @@ var Updater = {
 		trace_container.toggleClass('hidden', ! trace_exists);
 
 		$('.stopped', issue_box).html(EE.lang.we_stopped_on.replace('%s', this._lastStep));
+	},
+
+	_showSubscribe: function() {
+		var panel = $('.updater-subscribe');
+
+		$('.updating').addClass('hidden');
+		$('.updater-stopped').addClass('hidden');
+		panel.removeClass('hidden');
+		$('.js-updater-subscribe-error', panel).addClass('hidden');
+		$('#updater-subscribe-email').trigger('focus');
+	},
+
+	_showSubscribeError: function($form, message) {
+		var errorBox = $('.js-updater-subscribe-error', $form);
+
+		$('.js-updater-subscribe-error-text', errorBox).text(message);
+		errorBox.removeClass('hidden');
+	},
+
+	_submitSubscribe: function($form) {
+		var that = this,
+			email = $.trim($('#updater-subscribe-email').val()),
+			invalidMessage = $form.data('error-invalid-email'),
+			submitErrorMessage = $form.data('error-submit'),
+			marketingOptIn = $('#updater-subscribe-marketing').is(':checked') ? 'y' : 'n',
+			emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),
+			submitButton = $('button[type=submit]', $form);
+
+		if (! emailValid) {
+			return that._showSubscribeError($form, invalidMessage);
+		}
+
+		submitButton.prop('disabled', true).addClass('button--disabled');
+		$('.js-updater-subscribe-error', $form).addClass('hidden');
+
+		$.ajax({
+			type: 'POST',
+			url: EE.BASE + '&C=updater&M=subscribe',
+			dataType: 'json',
+			headers: { 'X-CSRF-TOKEN': EE.CSRF_TOKEN },
+			data: {
+				email: email,
+				notifications_opt_in: 'y',
+				marketing_opt_in: marketingOptIn
+			},
+			success: function(result) {
+				if (result.messageType == 'success') {
+					that._redirectToCp();
+				} else {
+					that._showSubscribeError($form, result.message || submitErrorMessage);
+				}
+			},
+			error: function() {
+				that._showSubscribeError($form, submitErrorMessage);
+			},
+			complete: function() {
+				submitButton.prop('disabled', false).removeClass('button--disabled');
+			}
+		});
+	},
+
+	_redirectToCp: function() {
+		window.location = EE.BASE;
 	},
 
 	_showSuccess: function() {
