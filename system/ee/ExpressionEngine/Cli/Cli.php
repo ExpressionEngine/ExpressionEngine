@@ -48,6 +48,48 @@ class Cli
     public $arguments;
 
     /**
+     * name of command
+     * @var string
+     */
+    public $name;
+
+    /**
+     * signature of command
+     * @var string
+     */
+    public $signature;
+
+    /**
+     * How to use command
+     * @var string
+     */
+    public $usage;
+
+    /**
+     * options available for use in command
+     * @var array
+     */
+    public $commandOptions;
+
+    /**
+     * Summary of the command
+     * @var string
+     */
+    public $summary;
+
+    /**
+     * Description of the command
+     * @var string
+     */
+    public $description;
+
+    /**
+     * Command options
+     * @var object
+     */
+    public $options;
+
+    /**
      * list of commands available from EE
      * @var array
      */

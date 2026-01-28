@@ -17,7 +17,7 @@ jobs:
             uses: fkirc/skip-duplicate-actions@master
             with:
               cancel_others: true
-    
+
     build-for-testing:
         needs: cancel-running-tests
         name: Build EE for testing
@@ -25,10 +25,10 @@ jobs:
         runs-on: ubuntu-latest
         steps:
           - name: Checkout code
-            uses: actions/checkout@v3
+            uses: actions/checkout@v4
 
           - name: Cache repository info
-            uses: actions/cache@v3
+            uses: actions/cache@v4
             with:
               path: .git
               key: cache-ee-git-${{ github.sha }}
@@ -42,7 +42,7 @@ jobs:
                 ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
 
           - name: Setup node
-            uses: actions/setup-node@v3
+            uses: actions/setup-node@v4
             with:
               node-version: '10'
 
@@ -57,7 +57,7 @@ jobs:
               content=`node -pe 'JSON.parse(process.argv[1]).tag' "$(cat build.json)"`
               echo "BUILD_VERSION=$content" >> $GITHUB_OUTPUT
 
-          - name: Run build process 
+          - name: Run build process
             working-directory: build-tools
             env:
               RELEASE_PRIVATE_KEY: ${{ secrets.RELEASE_PRIVATE_KEY }}
@@ -71,7 +71,7 @@ jobs:
               mv ExpressionEngine${{ steps.build_json.outputs.BUILD_VERSION }} ExpressionEngine
 
           - name: Cache built EE version
-            uses: actions/cache@v3
+            uses: actions/cache@v4
             with:
               path: build-tools/builds/ExpressionEngine
               key: cache-ee-build-${{ github.sha }}
@@ -108,12 +108,12 @@ jobs:
                 sudo locale-gen de_DE
                 sudo locale-gen uk
                 sudo locale-gen ru
-            
+
             - name: Checkout code
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
 
             - name: Use cached EE build
-              uses: actions/cache@v3
+              uses: actions/cache@v4
               with:
                 path: build-tools/builds/ExpressionEngine
                 key: cache-ee-build-${{ github.sha }}

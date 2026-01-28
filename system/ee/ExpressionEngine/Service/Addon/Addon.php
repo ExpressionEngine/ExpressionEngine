@@ -34,7 +34,7 @@ class Addon
         $this->shortname = $provider->getPrefix();
 
         $files = $this->getFilesMatching('*' . $this->getPrefix() . '.php');
-        $possibleComponents = ['upd', 'mcp', 'mod', 'pi', 'ext', 'rtefb', 'upgrade', 'spam', 'jump'];
+        $possibleComponents = ['upd', 'mcp', 'mod', 'pi', 'ext', 'tab', 'rtefb', 'upgrade', 'spam', 'jump'];
         foreach ($possibleComponents as $type) {
             if (in_array($this->getPath() . "/{$type}." . $this->getPrefix() . '.php', $files)) {
                 $this->_components[] = $type;
@@ -111,7 +111,6 @@ class Addon
         }
 
         if ($this->hasPlugin()) {
-
             // Check for an installed plugin
             // @TODO restore the model approach once we have solved the
             // circular dependency between the Add-on service and the
@@ -517,6 +516,17 @@ class Addon
         return $this->hasFile('spam');
     }
 
+
+    /**
+     * Has a tab.* file?
+     *
+     * @return bool TRUE of it does, FALSE if not
+     */
+    public function hasTab()
+    {
+        return $this->hasFile('tab');
+    }
+
     /**
      * Gets an array of the jump menu items
      *
@@ -632,7 +642,7 @@ class Addon
 
     private function hasConsentRequestInstalled($name)
     {
-        return (bool)ee('Model')->get('ConsentRequest')
+        return (bool) ee('Model')->get('ConsentRequest')
             ->filter('consent_name', $name)
             ->count();
     }
@@ -793,6 +803,7 @@ class Addon
 
         if (!ee()->cache->file->is_writable('/addons-status')) {
             $this->logLicenseError('license_error_file_not_writable');
+
             return false;
         }
 
@@ -801,6 +812,7 @@ class Addon
         // Make sure the cache exists and has the proper integrity to use.
         if (empty($cache) || empty($integrity) || hash('sha256', $cache) !== $integrity) {
             $this->logLicenseError('license_error_file_broken');
+
             return false;
         }
 
@@ -808,6 +820,7 @@ class Addon
 
         if (empty($json) || !$data = json_decode($json, true)) {
             $this->logLicenseError('license_error_file_broken');
+
             return false;
         }
 
@@ -816,6 +829,7 @@ class Addon
 
         if ($sha !== hash('sha256', json_encode($data))) {
             $this->logLicenseError('license_error_file_broken');
+
             return false;
         }
 

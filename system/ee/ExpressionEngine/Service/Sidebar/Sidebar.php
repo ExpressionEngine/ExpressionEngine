@@ -17,6 +17,8 @@ use ExpressionEngine\Service\View\ViewFactory;
  */
 class Sidebar extends AbstractSidebar
 {
+    public $collapsedState;
+
     /**
      * Renders the sidebar
      *
@@ -53,9 +55,23 @@ class Sidebar extends AbstractSidebar
             $this->class .= ' ';
         }
 
+        //depending on where it is inserted, set class for owner
+        $owner = ee()->uri->segment(2);
+        if (ee()->uri->segment(2) == 'addons') {
+            $owner = ee()->uri->segment(4);
+        }
+        $containerClass = ' secondary-sidebar__' . $owner;
+        $state = json_decode(ee()->input->cookie('secondary_sidebar'));
+        if (!empty($state) && isset($state->$owner) && $state->$owner == 1) {
+            $containerClass = ' secondary-sidebar__collapsed';
+            $this->collapsedState = true;
+        }
+
         return $this->view->make('_shared/sidebar/sidebar')
             ->render([
                 'class' => $this->class,
+                'containerClass' => $containerClass,
+                'owner' => $owner,
                 'sidebar' => $output,
             ]);
     }
@@ -141,6 +157,65 @@ class Sidebar extends AbstractSidebar
         $this->class = ' mb';
 
         return $this;
+    }
+
+    /**
+     * Gets the list
+     *
+     * @return BasicList
+     */
+    public function getList()
+    {
+        return $this->list;
+    }
+
+    /**
+     * Gets the items
+     *
+     * @return mixed BasicItem|Header|Divider
+     */
+    public function getItems()
+    {
+        return $this->items;
+    }
+
+    public function getItemByUrl($url)
+    {
+        $matchedItem = null;
+
+        // Loop through the items and search for
+        foreach ($this->getItems() as $item) {
+            // If the sidebar item implement urlMatches, lets check if it matches
+            if (method_exists($item, 'urlMatches') && $item->urlMatches($url)) {
+                $matchedItem = $item;
+            }
+
+            // If this is a header, search through the sub-items for the selected one
+            if ($item instanceof Header) {
+                $foundItem = $item->getItemByUrl($url);
+                if (!is_null($foundItem)) {
+                    $matchedItem = $foundItem;
+                }
+            }
+        }
+
+        // If there is a list
+        if (!empty($this->getList())) {
+            $foundItem = $this->getList()->getItemByUrl($url);
+            if (!is_null($foundItem)) {
+                $matchedItem = $foundItem;
+            }
+        }
+
+        // If there is a list
+        if (!empty($this->getList())) {
+            $foundItem = $this->getList()->getItemByUrl($url);
+            if (!is_null($foundItem)) {
+                $matchedItem = $foundItem;
+            }
+        }
+
+        return  $matchedItem;
     }
 }
 

@@ -23,6 +23,7 @@ class Installer
     public $actions = []; //module actions
     public $settings = []; //extension settings
     public $methods = []; //extensions methods
+    public $install_errors = []; //errors raised during install
 
     public function __construct($settings = [])
     {
@@ -47,6 +48,7 @@ class Installer
             'has_publish_fields' => $this->has_publish_fields,
         ])->save();
 
+        // Loop through each action and install it
         foreach ($this->actions as $action) {
             if (!isset($action['class'])) {
                 $action['class'] = $classname;
@@ -54,7 +56,12 @@ class Installer
             ee('Model')->make('Action', $action)->save();
         }
 
+        // Install ext hooks
+        $this->activate_extension();
+
         ee('Migration')->migrateAllByType($this->shortname);
+
+        ee()->db->data_cache = []; // Reset the cache so it will re-fetch a list of tables
 
         return true;
     }
@@ -68,18 +75,30 @@ class Installer
         if ($current == '' or version_compare($current, $this->version, '==')) {
             return false;
         }
-        
+
+        $classname = $this->addon->getModuleClass();
+
+        // Loop through each action and insert it if it doesnt exist, update if it does
         foreach ($this->actions as $action) {
             if (!isset($action['class'])) {
                 $action['class'] = $classname;
             }
-            $model = ee('Model')->get('Action')->filter('class', $action['class'])->filter('method', $action['method'])->first();
-            if (!empty($model)) {
-                $model->save();
+
+            $actionModel = ee('Model')->get('Action')
+                ->filter('class', $action['class'])
+                ->filter('method', $action['method'])
+                ->first();
+
+            if (!empty($actionModel)) {
+                $actionModel->set($action)->save();
             } else {
                 ee('Model')->make('Action', $action)->save();
             }
         }
+
+        // Run the ext updater
+        $this->activate_extension();
+
         ee('Migration')->migrateAllByType($this->shortname);
 
         return true;
@@ -100,10 +119,12 @@ class Installer
             ->filter('module_name', $classname)
             ->delete();
 
-        ee('Model')
-            ->get('Module')
-            ->filter('module_name', $this->addon->getControlPanelClass())
-            ->delete();
+        if ($this->addon->hasControlPanel()) {
+            ee('Model')
+                ->get('Module')
+                ->filter('module_name', $this->addon->getControlPanelClass())
+                ->delete();
+        }
 
         foreach ($this->actions as $action) {
             if (!isset($action['class'])) {
@@ -116,6 +137,8 @@ class Installer
                 ->delete();
         }
 
+        $this->disable_extension();
+
         return true;
     }
 
@@ -125,10 +148,16 @@ class Installer
      */
     public function activate_extension()
     {
+        // If we don't have the extension class, return false
+        if (! $this->addon->hasExtension()) {
+            return false;
+        }
+
         $classname = $this->addon->getExtensionClass();
 
+        // Loop through each extension and insert it if it doesnt exist, update if it does
         foreach ($this->methods as $method) {
-            ee('Model')->make('Extension', [
+            $ext = [
                 'class' => $classname,
                 'method' => isset($method['method']) ? $method['method'] : $method['hook'],
                 'hook' => $method['hook'],
@@ -136,7 +165,21 @@ class Installer
                 'priority' => isset($method['priority']) ? (int) $method['priority'] : 10,
                 'version' => $this->addon->getVersion(),
                 'enabled' => (isset($method['enabled']) && in_array($method['enabled'], ['n', false])) ? 'n' : 'y'
-            ])->save();
+            ];
+
+            // Get the extension as a model
+            $extensionModel = ee('Model')->get('Extension')
+                ->filter('class', $ext['class'])
+                ->filter('hook', $ext['hook'])
+                ->first();
+
+            if (!empty($extensionModel)) {
+                // If we found an extension matching this one, update it
+                $extensionModel->set($ext)->save();
+            } else {
+                // If we didnt find a matching Extension, lets just insert it
+                ee('Model')->make('Extension', $ext)->save();
+            }
         }
 
         return true;
@@ -148,6 +191,11 @@ class Installer
      */
     public function disable_extension()
     {
+        // If we don't have the extension class, return false
+        if (! $this->addon->hasExtension()) {
+            return false;
+        }
+
         ee('Model')
             ->get('Extension')
             ->filter('class', $this->addon->getExtensionClass())
