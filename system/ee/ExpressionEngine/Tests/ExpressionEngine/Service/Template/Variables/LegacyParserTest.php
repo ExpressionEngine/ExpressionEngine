@@ -365,6 +365,29 @@ class LegacyParserTest extends TestCase
         $this->assertSame([], $result['var_pair']);
     }
 
+    public function testExtractDateFormatReturnsNullForEmptyInput()
+    {
+        $this->assertNull($this->parser->extractDateFormat(''));
+    }
+
+    /**
+     * @dataProvider extractDateFormatProvider
+     */
+    public function testExtractDateFormatExtractsFormatToken($dateString, $expected)
+    {
+        $this->assertSame($expected, $this->parser->extractDateFormat($dateString));
+    }
+
+    public function extractDateFormatProvider()
+    {
+        return [
+            'no format parameter' => ['date', false],
+            'double-quoted format' => ['date format="%Y-%m-%d"', '%Y-%m-%d'],
+            'single-quoted format' => ["date format='%H:%i'", '%H:%i'],
+            'whitespace around equals' => ['date format = "%M %d, %Y"', '%M %d, %Y'],
+        ];
+    }
+
     public function testGetFullTagReturnsPartialTagWhenNoMatch()
     {
         $result = $this->parser->getFullTag('plain text', '{tag}');
