@@ -389,6 +389,55 @@ class LegacyParserTest extends TestCase
         ];
     }
 
+    /**
+     * @dataProvider parseTagParametersProvider
+     */
+    public function testParseTagParametersHandlesQuotesCommentsAndDefaults($paramString, array $defaults, array $expected)
+    {
+        $this->assertSame($expected, $this->parser->parseTagParameters($paramString, $defaults));
+    }
+
+    public function parseTagParametersProvider()
+    {
+        return [
+            'empty string returns defaults' => [
+                '',
+                ['limit' => '5'],
+                ['limit' => '5'],
+            ],
+            'no matches returns defaults' => [
+                'foo=bar',
+                ['limit' => '5'],
+                ['limit' => '5'],
+            ],
+            'quoted parameters with trimming' => [
+                'foo=" bar " baz=\'qux\'',
+                [],
+                ['foo' => 'bar', 'baz' => 'qux'],
+            ],
+            'removes template comments before parsing' => [
+                'foo="bar" {!-- ignore --} baz="qux"',
+                [],
+                ['foo' => 'bar', 'baz' => 'qux'],
+            ],
+            'respects numeric defaults when value is not numeric' => [
+                'limit="five" offset="10"',
+                ['limit' => 3, 'offset' => 7],
+                ['limit' => 3, 'offset' => '10'],
+            ],
+            'keeps numeric values when numeric defaults provided' => [
+                'limit="15"',
+                ['limit' => 3],
+                ['limit' => '15'],
+            ],
+            'backslash-escaped quotes are handled' => [
+                'title=\\"Hello\\"',
+                [],
+                ['title' => 'Hello'],
+            ],
+        ];
+    }
+
     public function testGetFullTagReturnsPartialTagWhenNoMatch()
     {
         $result = $this->parser->getFullTag('plain text', '{tag}');
