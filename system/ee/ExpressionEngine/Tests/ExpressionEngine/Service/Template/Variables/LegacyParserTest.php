@@ -510,6 +510,197 @@ class LegacyParserTest extends TestCase
             $functions->calls[0]
         );
     }
+
+    public function testParseModifiedVariablesReturnsOriginalWhenNoModifiedTagsPresent()
+    {
+        $functions = new class {
+            public $calls = [];
+
+            public function prep_conditionals($str, $conditionals)
+            {
+                $this->calls[] = [$str, $conditionals];
+                return 'PREP:' . $str;
+            }
+        };
+
+        ee()->setMock('functions', $functions);
+
+        $template = 'Value: {foo}';
+        $result = $this->parser->parseModifiedVariables($template, ['foo' => 'bar']);
+
+        $this->assertSame($template, $result);
+        $this->assertSame([], $functions->calls);
+    }
+
+    public function testParseModifiedVariablesSupportsPrefixedVariableName()
+    {
+        $functions = new class {
+            public $calls = [];
+
+            public function prep_conditionals($str, $conditionals)
+            {
+                $this->calls[] = [$str, $conditionals];
+                return 'PREP:' . $str;
+            }
+        };
+
+        ee()->setMock('functions', $functions);
+
+        $template = 'Value: {embed:foo:rot13}';
+        $result = $this->parser->parseModifiedVariables($template, ['embed:foo' => 'bar']);
+
+        $this->assertSame('PREP:Value: one', $result);
+        $this->assertCount(1, $functions->calls);
+        $this->assertSame(
+            ['Value: one', ['embed:foo:rot13' => 'one']],
+            $functions->calls[0]
+        );
+    }
+
+    public function testParseModifiedVariablesUsesFallbackWhenAllModifiersMissing()
+    {
+        $parser = new class extends LegacyParser {
+            public function parseVariableProperties($template_var, $prefix = '')
+            {
+                return [
+                    'field_name' => 'foo',
+                    'params' => [],
+                    'modifier' => 'rot13',
+                ];
+            }
+        };
+
+        $functions = new class {
+            public $calls = [];
+
+            public function prep_conditionals($str, $conditionals)
+            {
+                $this->calls[] = [$str, $conditionals];
+                return 'PREP:' . $str;
+            }
+        };
+
+        ee()->setMock('functions', $functions);
+
+        $template = 'Value: {foo:rot13}';
+        $result = $parser->parseModifiedVariables($template, ['foo' => 'bar']);
+
+        $this->assertSame('PREP:Value: one', $result);
+        $this->assertCount(1, $functions->calls);
+        $this->assertSame(
+            ['Value: one', ['foo:rot13' => 'one']],
+            $functions->calls[0]
+        );
+    }
+
+    public function testParseModifiedVariablesFallbackSkipsUnknownModifier()
+    {
+        $parser = new class extends LegacyParser {
+            public function parseVariableProperties($template_var, $prefix = '')
+            {
+                return [
+                    'field_name' => 'foo',
+                    'params' => [],
+                    'modifier' => 'unknown',
+                ];
+            }
+        };
+
+        $functions = new class {
+            public $calls = [];
+
+            public function prep_conditionals($str, $conditionals)
+            {
+                $this->calls[] = [$str, $conditionals];
+                return 'PREP:' . $str;
+            }
+        };
+
+        ee()->setMock('functions', $functions);
+        ee()->setMock('Variables/Modifiers', new class {
+            public function has($name)
+            {
+                return false;
+            }
+        });
+
+        $template = 'Value: {foo:unknown}';
+        $result = $parser->parseModifiedVariables($template, ['foo' => 'bar']);
+
+        $this->assertSame($template, $result);
+        $this->assertSame([], $functions->calls);
+    }
+
+    public function testParseModifiedVariablesReplacesRepeatedModifiedVariables()
+    {
+        $functions = new class {
+            public $calls = [];
+
+            public function prep_conditionals($str, $conditionals)
+            {
+                $this->calls[] = [$str, $conditionals];
+                return 'PREP:' . $str;
+            }
+        };
+
+        ee()->setMock('functions', $functions);
+
+        $template = 'A {foo:rot13} B {foo:rot13}';
+        $result = $this->parser->parseModifiedVariables($template, ['foo' => 'bar']);
+
+        $this->assertSame('PREP:A one B one', $result);
+        $this->assertCount(1, $functions->calls);
+        $this->assertSame(
+            ['A one B one', ['foo:rot13' => 'one']],
+            $functions->calls[0]
+        );
+    }
+
+    /**
+     * @dataProvider parseOrParameterProvider
+     */
+    public function testParseOrParameterParsesOptionsAndNegation($input, $expected)
+    {
+        $this->assertSame($expected, $this->parser->parseOrParameter($input));
+    }
+
+    public function parseOrParameterProvider()
+    {
+        return [
+            'empty input' => [
+                '',
+                ['options' => [], 'not' => false],
+            ],
+            'whitespace input' => [
+                '   ',
+                ['options' => [], 'not' => false],
+            ],
+            'single option' => [
+                'foo',
+                ['options' => ['foo'], 'not' => false],
+            ],
+            'multi options with spacing' => [
+                ' foo | bar |  baz ',
+                ['options' => ['foo', 'bar', 'baz'], 'not' => false],
+            ],
+            'multi options with empty segments' => [
+                'foo||bar|',
+                ['options' => ['foo', 'bar'], 'not' => false],
+            ],
+            'negated single option' => [
+                'not foo',
+                ['options' => ['foo'], 'not' => true],
+            ],
+            'negated options' => [
+                'not foo|bar',
+                ['options' => ['foo', 'bar'], 'not' => true],
+            ],
+            'negation with no options' => [
+                'not ',
+                ['options' => ['not'], 'not' => false],
+            ],
+        ];
+    }
 }
 
 class FakeModifier
