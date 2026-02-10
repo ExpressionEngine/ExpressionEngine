@@ -364,4 +364,26 @@ class LegacyParserTest extends TestCase
         $this->assertSame(['date format="%Y-%m"' => '%Y-%m'], $result['var_single']);
         $this->assertSame([], $result['var_pair']);
     }
+
+    public function testGetFullTagReturnsPartialTagWhenNoMatch()
+    {
+        $result = $this->parser->getFullTag('plain text', '{tag}');
+        $this->assertSame('{tag}', $result);
+    }
+
+    public function testGetFullTagExpandsNestedTags()
+    {
+        $tagdata = '{tag}outer {tag}inner{/tag} tail{/tag}';
+        $result = $this->parser->getFullTag($tagdata, '{tag}');
+
+        $this->assertSame($tagdata, $result);
+    }
+
+    public function testGetFullTagHonorsCustomDelimiters()
+    {
+        $tagdata = '[quote]Outer [quote]Inner[/quote] tail[/quote]';
+        $result = $this->parser->getFullTag($tagdata, '[quote]', '[', ']');
+
+        $this->assertSame($tagdata, $result);
+    }
 }
