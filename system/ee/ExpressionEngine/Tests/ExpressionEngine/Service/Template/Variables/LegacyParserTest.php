@@ -2,6 +2,8 @@
 
 namespace ExpressionEngine\Tests\Service\Template\Variables;
 
+require_once __DIR__ . '/../../../../eeObjectMock.php';
+
 use ExpressionEngine\Service\Template\Variables\LegacyParser;
 use PHPUnit\Framework\TestCase;
 
@@ -11,11 +13,18 @@ class LegacyParserTest extends TestCase
 
     public function setUp(): void
     {
+        if (! defined('LD')) {
+            define('LD', '{');
+        }
+        if (! defined('RD')) {
+            define('RD', '}');
+        }
         $this->parser = new LegacyParser();
     }
 
     public function tearDown(): void
     {
+        ee()->resetMocks();
         $this->parser = null;
     }
 
@@ -305,5 +314,54 @@ class LegacyParserTest extends TestCase
         ];
 
         return $tags;
+    }
+
+    public function testExtractVariablesReturnsEmptyForEmptyTagdata()
+    {
+        $result = $this->parser->extractVariables('');
+        $this->assertSame(['var_single' => [], 'var_pair' => []], $result);
+    }
+
+    public function testExtractVariablesReturnsEmptyWhenNoDelimiters()
+    {
+        $result = $this->parser->extractVariables('plain text');
+        $this->assertSame(['var_single' => [], 'var_pair' => []], $result);
+    }
+
+    public function testExtractVariablesExtractsSinglesPairsAndSkipsComments()
+    {
+        ee()->setMock('Variables/Parser', new class {
+            public function parseTagParameters($tag)
+            {
+                return ['parsed' => $tag];
+            }
+        });
+
+        $tagdata = "{foo param='bar'}content{/foo}{baz}{!-- comment --}";
+        $result = $this->parser->extractVariables($tagdata);
+
+        $this->assertSame(['baz' => 'baz'], $result['var_single']);
+        $this->assertSame(
+            ["foo param='bar'" => ['parsed' => "foo param='bar'"]],
+            $result['var_pair']
+        );
+    }
+
+    public function testExtractVariablesHonorsTarget()
+    {
+        $tagdata = '{foo}{bar}{foo:modifier}';
+        $result = $this->parser->extractVariables($tagdata, 'bar');
+
+        $this->assertSame(['bar' => 'bar'], $result['var_single']);
+        $this->assertSame([], $result['var_pair']);
+    }
+
+    public function testExtractVariablesExtractsDateFormats()
+    {
+        $tagdata = '{date format="%Y-%m"}';
+        $result = $this->parser->extractVariables($tagdata);
+
+        $this->assertSame(['date format="%Y-%m"' => '%Y-%m'], $result['var_single']);
+        $this->assertSame([], $result['var_pair']);
     }
 }
