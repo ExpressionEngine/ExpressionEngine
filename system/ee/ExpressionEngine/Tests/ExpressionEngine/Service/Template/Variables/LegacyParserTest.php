@@ -384,6 +384,7 @@ class LegacyParserTest extends TestCase
             'no format parameter' => ['date', false],
             'double-quoted format' => ['date format="%Y-%m-%d"', '%Y-%m-%d'],
             'single-quoted format' => ["date format='%H:%i'", '%H:%i'],
+            'escaped quote delimiters' => ['date format=\\"%Y/%m\\"', '%Y/%m'],
             'whitespace around equals' => ['date format = "%M %d, %Y"', '%M %d, %Y'],
         ];
     }
