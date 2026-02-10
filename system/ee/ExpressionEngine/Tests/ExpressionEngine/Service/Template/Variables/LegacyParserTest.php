@@ -410,4 +410,112 @@ class LegacyParserTest extends TestCase
 
         $this->assertSame($tagdata, $result);
     }
+
+    public function testParseModifiedVariablesAppliesMultipleModifiersAndPrepsConditionals()
+    {
+        if (! defined('REQ')) {
+            define('REQ', 'PAGE');
+        }
+
+        $functions = new class {
+            public $calls = [];
+
+            public function prep_conditionals($str, $conditionals)
+            {
+                $this->calls[] = [$str, $conditionals];
+                return 'PREP:' . $str;
+            }
+        };
+
+        ee()->setMock('functions', $functions);
+        ee()->setMock('Variables/Modifiers', new class {
+            public function has($name)
+            {
+                return $name === 'custom';
+            }
+
+            public function all()
+            {
+                return [
+                    'custom' => '\\ExpressionEngine\\Tests\\Service\\Template\\Variables\\FakeModifier',
+                ];
+            }
+        });
+
+        $template = 'Value: {foo:rot13:custom}';
+        $result = $this->parser->parseModifiedVariables($template, ['foo' => 'bar']);
+
+        $this->assertSame('PREP:Value: one-custom', $result);
+        $this->assertCount(1, $functions->calls);
+        $this->assertSame(
+            ['Value: one-custom', ['foo:rot13:custom' => 'one-custom']],
+            $functions->calls[0]
+        );
+    }
+
+    public function testParseModifiedVariablesSkipsWhenFirstModifierInvalid()
+    {
+        $functions = new class {
+            public $calls = [];
+
+            public function prep_conditionals($str, $conditionals)
+            {
+                $this->calls[] = [$str, $conditionals];
+                return 'PREP:' . $str;
+            }
+        };
+
+        ee()->setMock('functions', $functions);
+        ee()->setMock('Variables/Modifiers', new class {
+            public function has($name)
+            {
+                return false;
+            }
+        });
+
+        $template = 'Value: {foo:unknown:rot13}';
+        $result = $this->parser->parseModifiedVariables($template, ['foo' => 'bar']);
+
+        $this->assertSame($template, $result);
+        $this->assertSame([], $functions->calls);
+    }
+
+    public function testParseModifiedVariablesSkipsInvalidLaterModifierButKeepsPrior()
+    {
+        $functions = new class {
+            public $calls = [];
+
+            public function prep_conditionals($str, $conditionals)
+            {
+                $this->calls[] = [$str, $conditionals];
+                return 'PREP:' . $str;
+            }
+        };
+
+        ee()->setMock('functions', $functions);
+        ee()->setMock('Variables/Modifiers', new class {
+            public function has($name)
+            {
+                return false;
+            }
+        });
+
+        $template = 'Value: {foo:rot13:unknown}';
+        $result = $this->parser->parseModifiedVariables($template, ['foo' => 'bar']);
+
+        $this->assertSame('PREP:Value: one', $result);
+        $this->assertCount(1, $functions->calls);
+        $this->assertSame(
+            ['Value: one', ['foo:rot13:unknown' => 'one']],
+            $functions->calls[0]
+        );
+    }
+}
+
+class FakeModifier
+{
+    public function modify($data, $params, $tagdata = false)
+    {
+        return $data . '-custom';
+    }
 }
