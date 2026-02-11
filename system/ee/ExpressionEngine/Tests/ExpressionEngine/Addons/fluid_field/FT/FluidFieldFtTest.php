@@ -178,6 +178,33 @@ class FluidFieldFtTest extends FluidFieldTestBase
         $this->assertCount(1, $this->modelService->makeCalls);
     }
 
+    public function testSaveSkipsTemplateRowAndNonFieldValues()
+    {
+        $existingField = new FluidFieldFacadeStub(1);
+        $existingField->setItem('field_search', true);
+        $existingRecord = new FluidFieldRecordStub(5, 1, $existingField);
+        $this->session->set_cache('FluidField', 'FluidField/10/99', new FluidFieldTestCollection([$existingRecord]));
+
+        $result = $this->fieldtype->save([
+            'fields' => [
+                'new_field_0' => [
+                    'field_group_id_0' => [
+                        'field_id_1' => 'template-row',
+                    ],
+                ],
+                'field_5' => [
+                    'field_group_id_0' => [
+                        'not_a_field_id' => 'skip-me',
+                    ],
+                ],
+            ],
+        ]);
+
+        $this->assertSame('', $result);
+        $this->assertCount(0, $this->modelService->makeCalls);
+        $this->assertNull($existingField->getItem('fluid_field_data_id'));
+    }
+
     public function testPostSaveReturnsEarlyWhenSessionCacheIsMissing()
     {
         $this->assertNull($this->fieldtype->post_save([]));
@@ -266,6 +293,13 @@ class FluidFieldFtTest extends FluidFieldTestBase
 
         $this->assertSame('reindexed-value fallback-value', $this->fieldtype->reindex([]));
         $this->assertTrue($reindexField->getItem('field_search'));
+    }
+
+    public function testReindexReturnsEmptyStringWhenNoStoredFieldsExist()
+    {
+        $this->session->set_cache('FluidField', 'FluidField/10/99', new FluidFieldTestCollection());
+
+        $this->assertSame('', $this->fieldtype->reindex([]));
     }
 
     public function testPrepareDataPersistsFieldValueFormatAndTimezone()
@@ -438,6 +472,29 @@ class FluidFieldFtTest extends FluidFieldTestBase
         $this->assertNotEmpty($this->javascript->global);
         $this->assertNotEmpty($this->cp->scripts);
         $this->assertCount(1, $this->modal->modals);
+    }
+
+    public function testDisplaySettingsDefaultsGroupsToEmptyArrayWhenMissing()
+    {
+        $channelField = new FluidFieldChannelFieldStub(1, 'title', new FluidFieldFacadeStub(1));
+
+        $this->setModelGetCallback(function ($model, $id = null) use ($channelField) {
+            if ($model === 'ChannelField') {
+                return $this->makeModelQuery(new FluidFieldTestCollection([$channelField]));
+            }
+
+            if ($model === 'ChannelFieldGroup') {
+                return $this->makeModelQuery(new FluidFieldTestCollection());
+            }
+
+            return $this->makeModelQuery(new FluidFieldTestCollection(), null);
+        });
+
+        $this->fieldtype->display_settings([
+            'field_channel_fields' => [1],
+        ]);
+
+        $this->assertSame([], $this->javascript->global[0]['fields.fluid_field.groups']);
     }
 
     public function testSaveSettingsReturnsDefaultsIntersectionWithoutReindex()
@@ -707,6 +764,20 @@ class FluidFieldFtTest extends FluidFieldTestBase
         $count = $this->fieldtype->replace_total_fields([], ['type' => 'text', 'name' => 'alpha'], '');
 
         $this->assertSame(1, $count);
+    }
+
+    public function testReplaceTotalFieldsReturnsAllRowsWhenNoFiltersAreProvided()
+    {
+        $firstField = new FluidFieldChannelFieldStub(1, 'alpha', new FluidFieldFacadeStub(1), 'text');
+        $secondField = new FluidFieldChannelFieldStub(2, 'beta', new FluidFieldFacadeStub(2), 'date');
+
+        $recordA = new FluidFieldRecordStub(1, 1, new FluidFieldFacadeStub(1), $firstField);
+        $recordB = new FluidFieldRecordStub(2, 2, new FluidFieldFacadeStub(2), $secondField);
+        $this->session->set_cache('FluidField', 'FluidField/10/99', new FluidFieldTestCollection([$recordA, $recordB]));
+
+        $count = $this->fieldtype->replace_total_fields([], [], '');
+
+        $this->assertSame(2, $count);
     }
 
     public function testValidateReturnsAjaxCallbackUsingFallbackFieldLookupAndArrayCasting()
