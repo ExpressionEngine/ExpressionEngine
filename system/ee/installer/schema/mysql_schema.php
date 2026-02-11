@@ -341,7 +341,9 @@ class EE_Schema
 			ip_address varchar(45) default '0' NOT NULL,
 			word varchar(20) NOT NULL,
 			PRIMARY KEY `captcha_id` (`captcha_id`),
-			KEY `word` (`word`)
+			KEY `word` (`word`),
+			KEY `date` (`date`),
+			KEY `ip_address_date_idx` (`ip_address`, `date`)
 		)";
 
         // Password Lockout
