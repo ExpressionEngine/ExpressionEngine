@@ -97,22 +97,6 @@ class FluidFieldParserTest extends \PHPUnit\Framework\TestCase
 {
     public static function setUpBeforeClass(): void
     {
-        if (!defined('SYSPATH')) {
-            define('SYSPATH', realpath(__DIR__ . '/../../../../../../system/') . '/');
-        }
-
-        if (!defined('BASEPATH')) {
-            define('BASEPATH', SYSPATH . 'ee/legacy/');
-        }
-
-        if (!defined('LD')) {
-            define('LD', '{');
-        }
-
-        if (!defined('RD')) {
-            define('RD', '}');
-        }
-
         if (!class_exists(\ExpressionEngine\Addons\FluidField\Model\FluidField::class, false)) {
             class_alias(
                 __NAMESPACE__ . '\FluidFieldTestDouble',
