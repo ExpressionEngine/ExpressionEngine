@@ -10,7 +10,15 @@ require_once __DIR__ . '/../../../eeObjectMock.php';
 class FluidFieldTestDouble
 {
     public $ChannelField;
+    public $ChannelFieldGroup;
+    public $entry_id;
+    public $fluid_field_id;
+    public $group;
+    public $order;
+    public $field_data_id;
     private $id;
+    private $field;
+    private $fieldData;
 
     public function __construct(int $id, string $type, string $name)
     {
@@ -18,12 +26,69 @@ class FluidFieldTestDouble
         $this->ChannelField = (object) [
             'field_type' => $type,
             'field_name' => $name,
+            'field_order' => $id,
+            'field_label' => ucfirst($name),
         ];
+        $this->ChannelFieldGroup = null;
+        $this->field = new class($type) {
+            public $items = [];
+            private $type;
+
+            public function __construct(string $type)
+            {
+                $this->type = $type;
+            }
+
+            public function setItem($key, $value)
+            {
+                $this->items[$key] = $value;
+
+                return $this;
+            }
+
+            public function getType()
+            {
+                return $this->type;
+            }
+        };
+        $this->setFieldData([]);
     }
 
     public function getId()
     {
         return $this->id;
+    }
+
+    public function setField($field)
+    {
+        $this->field = $field;
+    }
+
+    public function getField()
+    {
+        return $this->field;
+    }
+
+    public function setFieldData(array $values)
+    {
+        $this->fieldData = new class($values) {
+            private $values;
+
+            public function __construct(array $values)
+            {
+                $this->values = $values;
+            }
+
+            public function getValues()
+            {
+                return $this->values;
+            }
+        };
+    }
+
+    public function getFieldData()
+    {
+        return $this->fieldData;
     }
 }
 
@@ -232,6 +297,129 @@ class FluidFieldParserTest extends \PHPUnit\Framework\TestCase
 
         $this->assertTrue($result);
         $this->assertSame([], $this->getPrivateProperty($parser, 'data')->asArray());
+    }
+
+    public function testPreProcessSkipsVariableTagsForNonReservedModifiers(): void
+    {
+        ee()->setMock('Variables/Parser', new class {
+            public function parseVariableProperties($properties, $field_name = null)
+            {
+                return ['field_name' => 'custom_modifier'];
+            }
+        });
+
+        $preParser = new class {
+            public function prefix()
+            {
+                return 'fluid:';
+            }
+
+            public function entry_ids()
+            {
+                return [];
+            }
+        };
+
+        $parser = $this->makeParser();
+
+        $result = $parser->pre_process(
+            '{fluid:content:foo}Body{/fluid:content:foo}',
+            $preParser,
+            ['content' => 11]
+        );
+
+        $this->assertTrue($result);
+        $this->assertSame([], $this->getPrivateProperty($parser, 'data')->asArray());
+    }
+
+    public function testOverrideWithPreviewDataReturnsOriginalCollectionWhenNoPreviewDataExists(): void
+    {
+        ee()->setMock('LivePreview', new class {
+            public function hasEntryData()
+            {
+                return false;
+            }
+        });
+
+        $parser = $this->makeParser();
+        $row = (object) ['entry_id' => 3, 'name' => 'keep'];
+        $result = $parser->overrideWithPreviewData(new Collection([$row]), [11]);
+
+        $this->assertSame([$row], array_values($result->asArray()));
+    }
+
+    public function testOverrideWithPreviewDataFiltersExistingPreviewEntryWhenNoFieldPayloadExists(): void
+    {
+        $queryMock = new class {
+            public $filters = [];
+
+            public function filter(...$args)
+            {
+                $this->filters[] = $args;
+
+                return $this;
+            }
+
+            public function all()
+            {
+                return new class {
+                    public function indexBy($column)
+                    {
+                        if ($column !== 'id') {
+                            throw new \RuntimeException('Unexpected index column');
+                        }
+
+                        return [];
+                    }
+                };
+            }
+        };
+
+        $modelMock = new class($queryMock) {
+            public $resource = null;
+            private $queryMock;
+
+            public function __construct($queryMock)
+            {
+                $this->queryMock = $queryMock;
+            }
+
+            public function get($resource)
+            {
+                $this->resource = $resource;
+
+                return $this->queryMock;
+            }
+        };
+
+        ee()->setMock('LivePreview', new class {
+            public function hasEntryData()
+            {
+                return true;
+            }
+
+            public function getEntryData()
+            {
+                return ['entry_id' => 7];
+            }
+        });
+        ee()->setMock('Model', $modelMock);
+
+        $parser = $this->makeParser();
+        $previewRow = (object) ['entry_id' => 7, 'name' => 'preview'];
+        $keptRow = (object) ['entry_id' => 9, 'name' => 'keep'];
+
+        $result = $parser->overrideWithPreviewData(new Collection([$previewRow, $keptRow]), [11]);
+
+        $this->assertSame('fluid_field:FluidField', $modelMock->resource);
+        $this->assertSame(
+            [
+                ['fluid_field_id', 'IN', [11]],
+                ['entry_id', 7],
+            ],
+            $queryMock->filters
+        );
+        $this->assertSame([$keptRow], array_values($result->asArray()));
     }
 
     public function testGetPossibleFieldsLoadsFromModelAndCachesOnCacheMiss(): void
@@ -443,6 +631,92 @@ class FluidFieldParserTest extends \PHPUnit\Framework\TestCase
         );
     }
 
+    public function testParseReturnsEmptyStringWhenTagdataIsEmpty(): void
+    {
+        $parser = $this->makeParser();
+
+        $result = $parser->parse(['entry_id' => 1], 11, [], '');
+
+        $this->assertSame('', $result);
+    }
+
+    public function testParseRendersSingleFieldWhenDataMatchesEntryAndField(): void
+    {
+        $variablesParser = new class {
+            public $tagdata = null;
+
+            public function extractVariables($tagdata)
+            {
+                $this->tagdata = $tagdata;
+
+                return [
+                    'var_single' => [],
+                    'var_pair' => ['fluid:content:title' => []],
+                ];
+            }
+        };
+
+        $functions = new class {
+            public $calls = [];
+
+            public function prep_conditionals($tagdata, $cond)
+            {
+                $this->calls[] = ['tagdata' => $tagdata, 'cond' => $cond];
+
+                return $tagdata;
+            }
+        };
+
+        $tagMock = new class {
+            public $parseCalls = [];
+
+            public function parse($field, $meta = [])
+            {
+                $this->parseCalls[] = ['field' => $field, 'meta' => $meta];
+
+                return '[parsed:' . $meta['fluid:content:current_field_name'] . ']';
+            }
+
+            public function setTag($tag)
+            {
+                return $this;
+            }
+        };
+
+        ee()->setMock('Variables/Parser', $variablesParser);
+        ee()->setMock('functions', $functions);
+        ee()->setMock('fluid_field:Tag', $tagMock);
+        ee()->setMock('api_channel_fields', $this->buildApiChannelFieldsMock([]));
+
+        $fluidField = $this->makeFluidFieldDouble(101, 'text', 'title');
+        $fluidField->entry_id = 5;
+        $fluidField->fluid_field_id = 11;
+        $fluidField->group = null;
+        $fluidField->order = 1;
+        $fluidField->field_data_id = 200;
+        $fluidField->setFieldData(['field_id_101' => 'alpha']);
+
+        $parser = $this->makeParser();
+        $this->setPrivateProperty($parser, '_prefix', 'fluid:');
+        $this->setPrivateProperty($parser, 'fluid_fields', [11 => 'content']);
+        $this->setPrivateProperty($parser, 'data', new Collection([$fluidField]));
+
+        $result = $parser->parse(
+            ['entry_id' => 5, 'title' => 'Row'],
+            11,
+            [],
+            '{fluid:content:title}Body{/fluid:content:title}'
+        );
+
+        $this->assertSame('[parsed:title]', $result);
+        $this->assertSame('{fluid:content:title}Body{/fluid:content:title}', $variablesParser->tagdata);
+        $this->assertCount(2, $functions->calls);
+        $this->assertCount(1, $tagMock->parseCalls);
+        $this->assertSame(1, $tagMock->parseCalls[0]['meta']['fluid:content:count']);
+        $this->assertSame(5, $tagMock->parseCalls[0]['field']->items['row']['entry_id']);
+        $this->assertSame('alpha', $tagMock->parseCalls[0]['field']->items['row']['field_id_101']);
+    }
+
     private function makeParser(): \Fluid_field_parser
     {
         return new \Fluid_field_parser();
@@ -482,5 +756,12 @@ class FluidFieldParserTest extends \PHPUnit\Framework\TestCase
         $reflection = new \ReflectionProperty($object, $property);
         $reflection->setAccessible(true);
         return $reflection->getValue($object);
+    }
+
+    private function setPrivateProperty($object, string $property, $value): void
+    {
+        $reflection = new \ReflectionProperty($object, $property);
+        $reflection->setAccessible(true);
+        $reflection->setValue($object, $value);
     }
 }
