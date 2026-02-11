@@ -425,6 +425,11 @@ class LegacyParserTest extends TestCase
                 [],
                 ['foo' => 'bar', 'baz' => 'qux'],
             ],
+            'removes multiline template comments before parsing' => [
+                "foo=\"bar\" {!-- ignore\nspanning lines --} baz=\"qux\"",
+                [],
+                ['foo' => 'bar', 'baz' => 'qux'],
+            ],
             'applies missing defaults alongside parsed params' => [
                 'foo="bar"',
                 ['foo' => 'fallback', 'limit' => '5'],
@@ -440,8 +445,18 @@ class LegacyParserTest extends TestCase
                 ['limit' => 3],
                 ['limit' => '15'],
             ],
+            'uses numeric default when parsed numeric field is empty' => [
+                'limit=""',
+                ['limit' => 3],
+                ['limit' => 3],
+            ],
             'backslash-escaped quotes are handled' => [
                 'title=\\"Hello\\"',
+                [],
+                ['title' => 'Hello'],
+            ],
+            'backslash-escaped single quotes are handled' => [
+                "title=\\'Hello\\'",
                 [],
                 ['title' => 'Hello'],
             ],
@@ -752,6 +767,14 @@ class LegacyParserTest extends TestCase
             ],
             'negated options' => [
                 'not foo|bar',
+                ['options' => ['foo', 'bar'], 'not' => true],
+            ],
+            'case-insensitive negation keyword' => [
+                'NoT foo|bar',
+                ['options' => ['foo', 'bar'], 'not' => true],
+            ],
+            'negation with extra spacing before options' => [
+                'not   foo  |  bar ',
                 ['options' => ['foo', 'bar'], 'not' => true],
             ],
             'negation with no options' => [
