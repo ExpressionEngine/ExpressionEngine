@@ -415,10 +415,20 @@ class LegacyParserTest extends TestCase
                 [],
                 ['foo' => 'bar', 'baz' => 'qux'],
             ],
+            'preserves whitespace-only values' => [
+                'foo="   "',
+                [],
+                ['foo' => '   '],
+            ],
             'removes template comments before parsing' => [
                 'foo="bar" {!-- ignore --} baz="qux"',
                 [],
                 ['foo' => 'bar', 'baz' => 'qux'],
+            ],
+            'applies missing defaults alongside parsed params' => [
+                'foo="bar"',
+                ['foo' => 'fallback', 'limit' => '5'],
+                ['foo' => 'bar', 'limit' => '5'],
             ],
             'respects numeric defaults when value is not numeric' => [
                 'limit="five" offset="10"',
