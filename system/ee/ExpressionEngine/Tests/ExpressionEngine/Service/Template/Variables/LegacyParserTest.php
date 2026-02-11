@@ -389,6 +389,8 @@ class LegacyParserTest extends TestCase
             'escaped single-quote delimiters' => ["date format=\\'%Y/%m\\'", '%Y/%m'],
             'whitespace around equals' => ['date format = "%M %d, %Y"', '%M %d, %Y'],
             'format token may span newlines' => ["date format=\"%Y\n%m\"", "%Y\n%m"],
+            'empty format token returns empty string' => ['date format=""', ''],
+            'first format token is returned when repeated' => ['date format="%Y" other="x" format="%m"', '%Y'],
         ];
     }
 
@@ -405,6 +407,11 @@ class LegacyParserTest extends TestCase
         return [
             'empty string returns defaults' => [
                 '',
+                ['limit' => '5'],
+                ['limit' => '5'],
+            ],
+            'null param string returns defaults' => [
+                null,
                 ['limit' => '5'],
                 ['limit' => '5'],
             ],
@@ -463,6 +470,11 @@ class LegacyParserTest extends TestCase
                 ['limit' => 3],
                 ['limit' => '15'],
             ],
+            'keeps numeric zero when numeric defaults provided' => [
+                'limit="0"',
+                ['limit' => 3],
+                ['limit' => '0'],
+            ],
             'uses numeric default when parsed numeric field is empty' => [
                 'limit=""',
                 ['limit' => 3],
@@ -492,6 +504,11 @@ class LegacyParserTest extends TestCase
                 "title=\\'Hello\\'",
                 [],
                 ['title' => 'Hello'],
+            ],
+            'missing closing quote falls back to defaults' => [
+                'title="Hello',
+                ['title' => 'fallback'],
+                ['title' => 'fallback'],
             ],
         ];
     }
@@ -786,9 +803,17 @@ class LegacyParserTest extends TestCase
                 'foo',
                 ['options' => ['foo'], 'not' => false],
             ],
+            'single option is trimmed before parsing' => [
+                '   foo bar   ',
+                ['options' => ['foo bar'], 'not' => false],
+            ],
             'multi options with spacing' => [
                 ' foo | bar |  baz ',
                 ['options' => ['foo', 'bar', 'baz'], 'not' => false],
+            ],
+            'delimiters with surrounding whitespace discard whitespace-only segments' => [
+                ' | foo | ',
+                ['options' => ['foo'], 'not' => false],
             ],
             'multi options with empty segments' => [
                 'foo||bar|',
@@ -833,6 +858,10 @@ class LegacyParserTest extends TestCase
             'tab after not is not treated as negation prefix' => [
                 "not\tfoo|bar",
                 ['options' => ["not\tfoo", 'bar'], 'not' => false],
+            ],
+            'newline after not is not treated as negation prefix' => [
+                "not\nfoo|bar",
+                ['options' => ["not\nfoo", 'bar'], 'not' => false],
             ],
             'tabs around options are trimmed' => [
                 "foo|\tbar\t|baz",
