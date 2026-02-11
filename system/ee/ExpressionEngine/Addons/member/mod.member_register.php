@@ -237,6 +237,7 @@ class Member_register extends Member
             'P' => ee()->functions->get_protected_form_params([
                 'primary_role' => ee()->TMPL->fetch_param('primary_role'),
                 'inline_errors' => ee()->TMPL->fetch_param('inline_errors'),
+                'email_as_username' => ee()->TMPL->fetch_param('email_as_username', 'no'),
             ]),
         );
 
@@ -289,6 +290,8 @@ class Member_register extends Member
         // Handle our protected data if any. This contains our extra params.
         $protected = ee()->functions->handle_protected();
 
+        $emailAsUsername = get_bool_from_string($protected['email_as_username'] ?? 'n');
+
         // Determine where we need to return to in case of success or error.
         $return_link = ee()->functions->determine_return();
         $return_error_link = ee()->functions->determine_error_return();
@@ -336,6 +339,11 @@ class Member_register extends Member
             if (! isset($_POST[$val])) {
                 $_POST[$val] = '';
             }
+        }
+
+        // Allow username to fall back to the submitted email when enabled
+        if ($emailAsUsername && $_POST['username'] === '' && !empty($_POST['email'])) {
+            $_POST['username'] = trim_nbs(ee()->input->post('email'));
         }
 
         if ($_POST['screen_name'] == '') {
