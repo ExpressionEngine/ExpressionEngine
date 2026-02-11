@@ -385,6 +385,7 @@ class LegacyParserTest extends TestCase
             'double-quoted format' => ['date format="%Y-%m-%d"', '%Y-%m-%d'],
             'single-quoted format' => ["date format='%H:%i'", '%H:%i'],
             'escaped quote delimiters' => ['date format=\\"%Y/%m\\"', '%Y/%m'],
+            'escaped single-quote delimiters' => ["date format=\\'%Y/%m\\'", '%Y/%m'],
             'whitespace around equals' => ['date format = "%M %d, %Y"', '%M %d, %Y'],
         ];
     }
@@ -407,6 +408,11 @@ class LegacyParserTest extends TestCase
             ],
             'no matches returns defaults' => [
                 'foo=bar',
+                ['limit' => '5'],
+                ['limit' => '5'],
+            ],
+            'comment-only input returns defaults' => [
+                '{!-- only comment --}',
                 ['limit' => '5'],
                 ['limit' => '5'],
             ],
@@ -449,6 +455,11 @@ class LegacyParserTest extends TestCase
                 'limit=""',
                 ['limit' => 3],
                 ['limit' => 3],
+            ],
+            'keeps empty non-numeric value when default is non-numeric' => [
+                'title=""',
+                ['title' => 'fallback'],
+                ['title' => ''],
             ],
             'backslash-escaped quotes are handled' => [
                 'title=\\"Hello\\"',
@@ -792,6 +803,10 @@ class LegacyParserTest extends TestCase
             'tab after not is not treated as negation prefix' => [
                 "not\tfoo|bar",
                 ['options' => ["not\tfoo", 'bar'], 'not' => false],
+            ],
+            'not without trailing space is treated as a value' => [
+                'not|foo',
+                ['options' => ['not', 'foo'], 'not' => false],
             ],
             'numeric zero input is treated as empty options' => [
                 '0',
