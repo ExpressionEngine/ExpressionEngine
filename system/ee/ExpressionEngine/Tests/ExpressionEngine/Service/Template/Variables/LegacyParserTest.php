@@ -779,9 +779,12 @@ class LegacyParserTest extends TestCase
 
     public function testParseModifiedVariablesAppliesMultipleModifiersAndPrepsConditionals()
     {
-        if (! defined('REQ')) {
-            define('REQ', 'PAGE');
-        }
+        $parser = new class extends LegacyParser {
+            public function replace_custom($data, $params = array(), $tagdata = false)
+            {
+                return $data . '-custom';
+            }
+        };
 
         $functions = new class {
             public $calls = [];
@@ -794,22 +797,8 @@ class LegacyParserTest extends TestCase
         };
 
         ee()->setMock('functions', $functions);
-        ee()->setMock('Variables/Modifiers', new class {
-            public function has($name)
-            {
-                return $name === 'custom';
-            }
-
-            public function all()
-            {
-                return [
-                    'custom' => '\\ExpressionEngine\\Tests\\Service\\Template\\Variables\\FakeModifier',
-                ];
-            }
-        });
-
         $template = 'Value: {foo:rot13:custom}';
-        $result = $this->parser->parseModifiedVariables($template, ['foo' => 'bar']);
+        $result = $parser->parseModifiedVariables($template, ['foo' => 'bar']);
 
         $this->assertSame('PREP:Value: one-custom', $result);
         $this->assertCount(1, $functions->calls);
@@ -1022,7 +1011,7 @@ class LegacyParserTest extends TestCase
         );
     }
 
-    public function testParseModifiedVariablesHandlesExternalModifierInFallbackBranch()
+    public function testParseModifiedVariablesHandlesCustomModifierMethodInFallbackBranch()
     {
         $parser = new class extends LegacyParser {
             public function parseVariableProperties($template_var, $prefix = '')
@@ -1033,6 +1022,11 @@ class LegacyParserTest extends TestCase
                     'modifier' => 'custom',
                     'all_modifiers' => [],
                 ];
+            }
+
+            public function replace_custom($data, $params = array(), $tagdata = false)
+            {
+                return $data . '-custom';
             }
         };
 
@@ -1047,20 +1041,6 @@ class LegacyParserTest extends TestCase
         };
 
         ee()->setMock('functions', $functions);
-        ee()->setMock('Variables/Modifiers', new class {
-            public function has($name)
-            {
-                return $name === 'custom';
-            }
-
-            public function all()
-            {
-                return [
-                    'custom' => '\\ExpressionEngine\\Tests\\Service\\Template\\Variables\\FakeModifier',
-                ];
-            }
-        });
-
         $template = 'Value: {foo:custom}';
         $result = $parser->parseModifiedVariables($template, ['foo' => 'bar']);
 
@@ -1246,13 +1226,5 @@ class LegacyParserTest extends TestCase
                 ['options' => ['not'], 'not' => false],
             ],
         ];
-    }
-}
-
-class FakeModifier
-{
-    public function modify($data, $params, $tagdata = false)
-    {
-        return $data . '-custom';
     }
 }
