@@ -535,6 +535,33 @@ class FluidFieldParserTest extends \PHPUnit\Framework\TestCase
         );
     }
 
+    public function testPreProcessReturnsFalseWhenMatchedFieldResolvesToUnknownConfiguredKey(): void
+    {
+        ee()->setMock('Variables/Parser', new class {
+            public function parseVariableProperties($properties, $field_name = null)
+            {
+                return ['field_name' => 'count'];
+            }
+        });
+
+        $preParser = new class {
+            public function prefix()
+            {
+                return 'fluid:';
+            }
+        };
+
+        $parser = $this->makeParser();
+
+        $result = $parser->pre_process(
+            '{fluid:content:}Body{/fluid:content:}',
+            $preParser,
+            ['content:' => 11]
+        );
+
+        $this->assertFalse($result);
+    }
+
     public function testOverrideWithPreviewDataReturnsOriginalCollectionWhenNoPreviewDataExists(): void
     {
         ee()->setMock('LivePreview', new class {
@@ -926,6 +953,113 @@ class FluidFieldParserTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(['channel_data_field_101', 'channel_data_field_202'], $dbMock->tables);
         $this->assertSame('alpha', $first->getFieldData()->getValues()['field_id_101']);
         $this->assertSame('beta', $second->getFieldData()->getValues()['field_id_202']);
+        $this->assertCount(2, $result->asArray());
+    }
+
+    public function testFetchFluidFieldsUsesOneTableQueryPerFieldIdWhenMultipleRowsShareField(): void
+    {
+        $first = $this->makeFluidFieldDouble(201, 'text', 'title');
+        $first->field_id = 101;
+        $first->field_data_id = 9001;
+        $first->entry_id = 5;
+        $first->fluid_field_id = 11;
+
+        $second = $this->makeFluidFieldDouble(202, 'textarea', 'body');
+        $second->field_id = 101;
+        $second->field_data_id = 9002;
+        $second->entry_id = 5;
+        $second->fluid_field_id = 11;
+
+        $queryMock = new class(new Collection([$first, $second])) {
+            private $result;
+
+            public function __construct(Collection $result)
+            {
+                $this->result = $result;
+            }
+
+            public function with()
+            {
+                return $this;
+            }
+
+            public function filter()
+            {
+                return $this;
+            }
+
+            public function order()
+            {
+                return $this;
+            }
+
+            public function all()
+            {
+                return $this->result;
+            }
+        };
+
+        $modelMock = new class($queryMock) {
+            private $queryMock;
+
+            public function __construct($queryMock)
+            {
+                $this->queryMock = $queryMock;
+            }
+
+            public function get($resource)
+            {
+                if ($resource !== 'fluid_field:FluidField') {
+                    throw new \RuntimeException('Unexpected model resource: ' . $resource);
+                }
+
+                return $this->queryMock;
+            }
+        };
+
+        $dbMock = new class {
+            public $whereInCalls = [];
+            public $tables = [];
+
+            public function where_in($column, $ids)
+            {
+                $this->whereInCalls[] = [$column, $ids];
+
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->tables[] = $table;
+
+                return new class {
+                    public function result_array()
+                    {
+                        return [
+                            ['id' => 9001, 'field_id_101' => 'alpha'],
+                            ['id' => 9002, 'field_id_101' => 'beta'],
+                        ];
+                    }
+                };
+            }
+        };
+
+        ee()->setMock('LivePreview', new class {
+            public function hasEntryData()
+            {
+                return false;
+            }
+        });
+        ee()->setMock('Model', $modelMock);
+        ee()->setMock('db', $dbMock);
+
+        $parser = $this->makeParser();
+        $result = $this->invokePrivateMethod($parser, 'fetchFluidFields', [[5], [11]]);
+
+        $this->assertSame([['id', [9001, 9002]]], $dbMock->whereInCalls);
+        $this->assertSame(['channel_data_field_101'], $dbMock->tables);
+        $this->assertSame('alpha', $first->getFieldData()->getValues()['field_id_101']);
+        $this->assertSame('beta', $second->getFieldData()->getValues()['field_id_101']);
         $this->assertCount(2, $result->asArray());
     }
 
@@ -1361,6 +1495,159 @@ class FluidFieldParserTest extends \PHPUnit\Framework\TestCase
         $this->assertArrayNotHasKey('fluid:content:unknown_calc', $tagMock->parseCalls[1]['meta']);
     }
 
+    public function testParseSkipsEvaluatingSingleVariableWhenMetaKeyAlreadyExists(): void
+    {
+        $variablesParser = new class {
+            public function extractVariables($tagdata)
+            {
+                return [
+                    'var_single' => [
+                        'fluid:content:count' => 'fluid:content:count',
+                    ],
+                    'var_pair' => [
+                        'fluid:content:title' => [],
+                    ],
+                ];
+            }
+
+            public function parseVariableProperties()
+            {
+                throw new \RuntimeException('parseVariableProperties should not be called for existing meta keys');
+            }
+        };
+
+        $functions = new class {
+            public function prep_conditionals($tagdata, $cond)
+            {
+                return $tagdata;
+            }
+        };
+
+        $tagMock = new class {
+            public $parseCalls = [];
+
+            public function parse($field, $meta = [])
+            {
+                $this->parseCalls[] = ['field' => $field, 'meta' => $meta];
+
+                return '[count:' . $meta['fluid:content:count'] . ']';
+            }
+
+            public function setTag($tag)
+            {
+                return $this;
+            }
+        };
+
+        ee()->setMock('Variables/Parser', $variablesParser);
+        ee()->setMock('functions', $functions);
+        ee()->setMock('fluid_field:Tag', $tagMock);
+        ee()->setMock('api_channel_fields', $this->buildApiChannelFieldsMock([]));
+
+        $field = $this->makeFluidFieldDouble(1, 'text', 'title');
+        $field->entry_id = 5;
+        $field->fluid_field_id = 11;
+        $field->group = null;
+        $field->order = 1;
+        $field->field_data_id = 101;
+
+        $parser = $this->makeParser();
+        $this->setPrivateProperty($parser, '_prefix', 'fluid:');
+        $this->setPrivateProperty($parser, 'fluid_fields', [11 => 'content']);
+        $this->setPrivateProperty($parser, 'data', new Collection([$field]));
+
+        $result = $parser->parse(
+            ['entry_id' => 5],
+            11,
+            [],
+            '{fluid:content:title}Title{/fluid:content:title}'
+        );
+
+        $this->assertSame('[count:1]', $result);
+        $this->assertCount(1, $tagMock->parseCalls);
+    }
+
+    public function testParseSetsPrevAndNextFieldNamesAcrossGroupBoundaries(): void
+    {
+        $variablesParser = new class {
+            public function extractVariables($tagdata)
+            {
+                return [
+                    'var_single' => [],
+                    'var_pair' => [
+                        'fluid:content:first' => [],
+                        'fluid:content:second' => [],
+                    ],
+                ];
+            }
+        };
+
+        $functions = new class {
+            public function prep_conditionals($tagdata, $cond)
+            {
+                return $tagdata;
+            }
+        };
+
+        $tagMock = new class {
+            public $parseCalls = [];
+
+            public function parse($field, $meta = [])
+            {
+                $this->parseCalls[] = ['field' => $field, 'meta' => $meta];
+
+                return '[' . $meta['fluid:content:current_field_name'] . ']';
+            }
+
+            public function setTag($tag)
+            {
+                return $this;
+            }
+        };
+
+        ee()->setMock('Variables/Parser', $variablesParser);
+        ee()->setMock('functions', $functions);
+        ee()->setMock('fluid_field:Tag', $tagMock);
+        ee()->setMock('api_channel_fields', $this->buildApiChannelFieldsMock([]));
+
+        $first = $this->makeFluidFieldDouble(1, 'text', 'first');
+        $first->entry_id = 5;
+        $first->fluid_field_id = 11;
+        $first->group = null;
+        $first->order = 1;
+        $first->field_data_id = 101;
+
+        $second = $this->makeFluidFieldDouble(2, 'textarea', 'second');
+        $second->entry_id = 5;
+        $second->fluid_field_id = 11;
+        $second->group = null;
+        $second->order = 2;
+        $second->field_data_id = 102;
+
+        $parser = $this->makeParser();
+        $this->setPrivateProperty($parser, '_prefix', 'fluid:');
+        $this->setPrivateProperty($parser, 'fluid_fields', [11 => 'content']);
+        $this->setPrivateProperty($parser, 'data', new Collection([$first, $second]));
+
+        $result = $parser->parse(
+            ['entry_id' => 5],
+            11,
+            [],
+            '{fluid:content:first}{fluid:content:second}'
+        );
+
+        $this->assertSame('[first][second]', $result);
+        $this->assertCount(2, $tagMock->parseCalls);
+        $this->assertNull($tagMock->parseCalls[0]['meta']['fluid:content:prev_field_name']);
+        $this->assertSame('second', $tagMock->parseCalls[0]['meta']['fluid:content:next_field_name']);
+        $this->assertSame('first', $tagMock->parseCalls[1]['meta']['fluid:content:prev_field_name']);
+        $this->assertNull($tagMock->parseCalls[1]['meta']['fluid:content:next_field_name']);
+        $this->assertSame(1, $tagMock->parseCalls[0]['meta']['fluid:content:first']);
+        $this->assertSame(0, $tagMock->parseCalls[0]['meta']['fluid:content:last']);
+        $this->assertSame(0, $tagMock->parseCalls[1]['meta']['fluid:content:first']);
+        $this->assertSame(1, $tagMock->parseCalls[1]['meta']['fluid:content:last']);
+    }
+
     public function testParseFallsBackWhenGroupedOutputHasNoFieldsChunksAndPrioritizesRelationshipTagReplacement(): void
     {
         $variablesParser = new class {
@@ -1644,6 +1931,194 @@ class FluidFieldParserTest extends \PHPUnit\Framework\TestCase
         );
     }
 
+    public function testOverrideWithPreviewDataHandlesNullFieldGroupIdsAndGroupKeyChanges(): void
+    {
+        $existingGroupMap = [
+            50 => (object) ['group' => 9],
+            51 => (object) ['group' => 10],
+        ];
+
+        $queryMock = new class($existingGroupMap) {
+            public $filters = [];
+            private $existingGroupMap;
+
+            public function __construct(array $existingGroupMap)
+            {
+                $this->existingGroupMap = $existingGroupMap;
+            }
+
+            public function filter(...$args)
+            {
+                $this->filters[] = $args;
+
+                return $this;
+            }
+
+            public function all()
+            {
+                return new class($this->existingGroupMap) {
+                    private $existingGroupMap;
+
+                    public function __construct(array $existingGroupMap)
+                    {
+                        $this->existingGroupMap = $existingGroupMap;
+                    }
+
+                    public function indexBy($column)
+                    {
+                        if ($column !== 'id') {
+                            throw new \RuntimeException('Unexpected index column');
+                        }
+
+                        return $this->existingGroupMap;
+                    }
+                };
+            }
+        };
+
+        $modelMock = new class($queryMock) {
+            public $resources = [];
+            public $makeResources = [];
+            private $queryMock;
+
+            public function __construct($queryMock)
+            {
+                $this->queryMock = $queryMock;
+            }
+
+            public function get($resource)
+            {
+                $this->resources[] = $resource;
+
+                return $this->queryMock;
+            }
+
+            public function make($resource)
+            {
+                $this->makeResources[] = $resource;
+
+                return new class {
+                    public $id;
+                    public $fluid_field_id;
+                    public $entry_id;
+                    public $field_id;
+                    public $field_group_id;
+                    public $group;
+                    public $order;
+                    public $field_data_id;
+                    private $fieldData;
+
+                    public function setId($id)
+                    {
+                        $this->id = $id;
+                    }
+
+                    public function setFieldData(array $values)
+                    {
+                        $this->fieldData = new class($values) {
+                            private $values;
+
+                            public function __construct(array $values)
+                            {
+                                $this->values = $values;
+                            }
+
+                            public function getValues()
+                            {
+                                return $this->values;
+                            }
+                        };
+                    }
+
+                    public function getFieldData()
+                    {
+                        return $this->fieldData;
+                    }
+                };
+            }
+        };
+
+        ee()->setMock('LivePreview', new class {
+            public function hasEntryData()
+            {
+                return true;
+            }
+
+            public function getEntryData()
+            {
+                return [
+                    'entry_id' => 7,
+                    'field_id_11' => [
+                        'fields' => [
+                            'field_50' => [
+                                'row' => ['field_id_101' => 'alpha'],
+                                'field_group_id_2' => 2,
+                            ],
+                            'field_51' => [
+                                'row' => ['field_id_102' => 'beta'],
+                                'field_group_id_2' => 2,
+                            ],
+                            'new_field_for_group_10' => [
+                                'row' => ['field_id_103' => 'gamma'],
+                            ],
+                            'new_field_for_group_9' => [
+                                'row' => ['field_id_104' => 'delta'],
+                            ],
+                        ],
+                    ],
+                ];
+            }
+        });
+        ee()->setMock('Model', $modelMock);
+
+        $previewExisting = (object) ['entry_id' => 7];
+        $persisted = (object) ['entry_id' => 9, 'name' => 'persisted'];
+
+        $parser = $this->makeParser();
+        $result = $parser->overrideWithPreviewData(new Collection([$previewExisting, $persisted]), [11]);
+
+        $rows = array_values($result->asArray());
+        $previewRows = array_slice($rows, 1);
+
+        $this->assertCount(5, $rows);
+        $this->assertSame($persisted, $rows[0]);
+        $this->assertSame([1, 2, 3, 4], array_map(function ($row) {
+            return $row->group;
+        }, $previewRows));
+        $this->assertSame([2, 2, null, null], array_map(function ($row) {
+            return $row->field_group_id;
+        }, $previewRows));
+        $this->assertSame(
+            [
+                'field_id_11,field_50',
+                'field_id_11,field_51',
+                'field_id_11,new_field_for_group_10',
+                'field_id_11,new_field_for_group_9',
+            ],
+            array_map(function ($row) {
+                return $row->id;
+            }, $previewRows)
+        );
+        $this->assertSame([101, 102, 103, 104], array_map(function ($row) {
+            return $row->field_id;
+        }, $previewRows));
+        $this->assertSame([1, 2, 3, 4], array_map(function ($row) {
+            return $row->order;
+        }, $previewRows));
+        $this->assertSame(['fluid_field:FluidField'], $modelMock->resources);
+        $this->assertSame(
+            [
+                ['fluid_field_id', 'IN', [11]],
+                ['entry_id', 7],
+            ],
+            $queryMock->filters
+        );
+        $this->assertSame(
+            ['fluid_field:FluidField', 'fluid_field:FluidField', 'fluid_field:FluidField', 'fluid_field:FluidField'],
+            $modelMock->makeResources
+        );
+    }
+
     public function testOverrideWithPreviewDataSkipsRowsWithoutFieldIdPayload(): void
     {
         $queryMock = new class {
@@ -1731,6 +2206,136 @@ class FluidFieldParserTest extends \PHPUnit\Framework\TestCase
             $queryMock->filters
         );
         $this->assertSame([$keptRow], array_values($result->asArray()));
+    }
+
+    public function testOverrideWithPreviewDataCreatesUngroupedPreviewRowsForUnknownFieldKeys(): void
+    {
+        $queryMock = new class {
+            public function filter()
+            {
+                return $this;
+            }
+
+            public function all()
+            {
+                return new class {
+                    public function indexBy($column)
+                    {
+                        if ($column !== 'id') {
+                            throw new \RuntimeException('Unexpected index column');
+                        }
+
+                        return [];
+                    }
+                };
+            }
+        };
+
+        $modelMock = new class($queryMock) {
+            public $makeResources = [];
+            private $queryMock;
+
+            public function __construct($queryMock)
+            {
+                $this->queryMock = $queryMock;
+            }
+
+            public function get($resource)
+            {
+                if ($resource !== 'fluid_field:FluidField') {
+                    throw new \RuntimeException('Unexpected model resource: ' . $resource);
+                }
+
+                return $this->queryMock;
+            }
+
+            public function make($resource)
+            {
+                $this->makeResources[] = $resource;
+
+                return new class {
+                    public $id;
+                    public $fluid_field_id;
+                    public $entry_id;
+                    public $field_id;
+                    public $field_group_id;
+                    public $group;
+                    public $order;
+                    public $field_data_id;
+                    private $fieldData;
+
+                    public function setId($id)
+                    {
+                        $this->id = $id;
+                    }
+
+                    public function setFieldData(array $values)
+                    {
+                        $this->fieldData = new class($values) {
+                            private $values;
+
+                            public function __construct(array $values)
+                            {
+                                $this->values = $values;
+                            }
+
+                            public function getValues()
+                            {
+                                return $this->values;
+                            }
+                        };
+                    }
+
+                    public function getFieldData()
+                    {
+                        return $this->fieldData;
+                    }
+                };
+            }
+        };
+
+        ee()->setMock('LivePreview', new class {
+            public function hasEntryData()
+            {
+                return true;
+            }
+
+            public function getEntryData()
+            {
+                return [
+                    'entry_id' => 7,
+                    'field_id_11' => [
+                        'fields' => [
+                            'field_95' => [
+                                'row' => ['field_id_401' => 'alpha'],
+                            ],
+                            'field_96' => [
+                                'row' => ['field_id_402' => 'beta'],
+                            ],
+                        ],
+                    ],
+                ];
+            }
+        });
+        ee()->setMock('Model', $modelMock);
+
+        $previewRow = (object) ['entry_id' => 7, 'name' => 'preview'];
+        $keptRow = (object) ['entry_id' => 9, 'name' => 'keep'];
+
+        $parser = $this->makeParser();
+        $result = $parser->overrideWithPreviewData(new Collection([$previewRow, $keptRow]), [11]);
+
+        $rows = array_values($result->asArray());
+
+        $this->assertCount(3, $rows);
+        $this->assertSame($keptRow, $rows[0]);
+        $this->assertSame(['fluid_field:FluidField', 'fluid_field:FluidField'], $modelMock->makeResources);
+        $this->assertSame('field_id_11,field_95', $rows[1]->id);
+        $this->assertNull($rows[1]->field_group_id);
+        $this->assertSame(1, $rows[1]->group);
+        $this->assertSame('field_id_11,field_96', $rows[2]->id);
+        $this->assertNull($rows[2]->field_group_id);
+        $this->assertSame(2, $rows[2]->group);
     }
 
     public function testParseHandlesFieldGroupsChunksAndTagReplacementPass(): void
@@ -1833,6 +2438,128 @@ class FluidFieldParserTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('hero:title', $tagMock->setTagCalls[0]);
         $this->assertSame('body', $tagMock->parseCalls[0]['meta']['fluid:content:current_field_name']);
         $this->assertSame('title', $tagMock->parseCalls[1]['meta']['fluid:content:current_field_name']);
+    }
+
+    public function testParseHandlesComplexFixedOrderWithMixedFieldTypes(): void
+    {
+        $fieldsChunk = '{fields fixed_order="summary|title|related" order="desc"}{fluid:content:title}{fluid:content:related}{fluid:content:summary}{/fields}';
+
+        $variablesParser = new class {
+            public function extractVariables($tagdata)
+            {
+                return [
+                    'var_single' => [],
+                    'var_pair' => [
+                        'fluid:content:hero' => [],
+                    ],
+                ];
+            }
+        };
+
+        $functions = new class {
+            public function prep_conditionals($tagdata, $cond)
+            {
+                return $tagdata;
+            }
+        };
+
+        $tagMock = new class {
+            public $parseCalls = [];
+            public $setTagCalls = [];
+            private $currentTag = '';
+            private $output = '[related][title][summary]|{hero:title}|{hero:related}|{hero:summary}';
+
+            public function parse($field, $meta = [])
+            {
+                $this->parseCalls[] = ['field' => $field, 'meta' => $meta, 'tag' => $this->currentTag];
+
+                if (isset($meta['fluid:content:current_field_name'])) {
+                    return '[' . $meta['fluid:content:current_field_name'] . ']';
+                }
+
+                $this->output = str_replace('{' . $this->currentTag . '}', '[repl:' . $this->currentTag . ']', $this->output);
+
+                return $this->output;
+            }
+
+            public function setTag($tag)
+            {
+                $this->currentTag = $tag;
+                $this->setTagCalls[] = $tag;
+
+                return $this;
+            }
+        };
+
+        ee()->setMock('Variables/Parser', $variablesParser);
+        ee()->setMock('functions', $functions);
+        ee()->setMock('fluid_field:Tag', $tagMock);
+        ee()->setMock(
+            'api_channel_fields',
+            $this->buildApiChannelFieldsMock([
+                [
+                    null,
+                    '{fluid:content:title}{fluid:content:related}{fluid:content:summary}',
+                    ['fixed_order' => 'summary|title|related', 'order' => 'desc'],
+                    $fieldsChunk,
+                ],
+            ])
+        );
+
+        $title = $this->makeFluidFieldDouble(1, 'text', 'title');
+        $title->entry_id = 5;
+        $title->fluid_field_id = 11;
+        $title->group = 1;
+        $title->order = 1;
+        $title->field_data_id = 201;
+        $title->ChannelFieldGroup = (object) ['group_name' => 'Hero Group', 'short_name' => 'hero'];
+
+        $related = $this->makeFluidFieldDouble(2, 'relationship', 'related');
+        $related->entry_id = 5;
+        $related->fluid_field_id = 11;
+        $related->group = 1;
+        $related->order = 2;
+        $related->field_data_id = 202;
+        $related->ChannelFieldGroup = (object) ['group_name' => 'Hero Group', 'short_name' => 'hero'];
+
+        $summary = $this->makeFluidFieldDouble(3, 'textarea', 'summary');
+        $summary->entry_id = 5;
+        $summary->fluid_field_id = 11;
+        $summary->group = 1;
+        $summary->order = 3;
+        $summary->field_data_id = 203;
+        $summary->ChannelFieldGroup = (object) ['group_name' => 'Hero Group', 'short_name' => 'hero'];
+
+        $parser = $this->makeParser();
+        $this->setPrivateProperty($parser, '_prefix', 'fluid:');
+        $this->setPrivateProperty($parser, 'fluid_fields', [11 => 'content']);
+        $this->setPrivateProperty($parser, 'data', new Collection([$title, $related, $summary]));
+
+        $result = $parser->parse(
+            ['entry_id' => 5],
+            11,
+            [],
+            '{fluid:content:hero}' . $fieldsChunk . '|{hero:title}|{hero:related}|{hero:summary}{/fluid:content:hero}'
+        );
+
+        $fieldPasses = array_values(array_filter($tagMock->parseCalls, function ($call) {
+            return isset($call['meta']['fluid:content:current_field_name']);
+        }));
+
+        $this->assertSame(
+            ['related', 'title', 'summary'],
+            array_map(function ($call) {
+                return $call['meta']['fluid:content:current_field_name'];
+            }, $fieldPasses)
+        );
+        $this->assertCount(3, $tagMock->setTagCalls);
+        $this->assertSame('hero:related', $tagMock->setTagCalls[0]);
+        $this->assertContains('hero:title', $tagMock->setTagCalls);
+        $this->assertContains('hero:summary', $tagMock->setTagCalls);
+        $this->assertSame(
+            '[related][title][summary]|[repl:hero:title]|[repl:hero:related]|[repl:hero:summary]',
+            $result
+        );
     }
 
     private function makeParser(): \Fluid_field_parser
