@@ -17,6 +17,55 @@ use PHPUnit\Framework\TestCase;
 
 class StatementTest extends TestCase
 {
+    public function testShouldAddBodyReturnsFalseWhenLastEvaluatedFalse()
+    {
+        $parser = $this->createParserMock();
+        $statement = new Statement($parser);
+        $parser->expects($this->never())->method('output');
+
+        $statement->addIf($this->createExpression(true, false));
+
+        $this->assertFalse($statement->shouldAddBody());
+    }
+
+    public function testShouldAddBodyReturnsFalseWhenStatementIsDone()
+    {
+        $parser = $this->createParserMock();
+        $statement = new Statement($parser);
+        $parser->expects($this->never())->method('output');
+
+        $statement->addIf($this->createExpression(true, true));
+        $statement->addElseIf($this->createExpression(true, false));
+
+        $this->assertFalse($statement->shouldAddBody());
+    }
+
+    public function testCloseIfOutputsEndTagWhenConditionalWasRewritten()
+    {
+        $parser = $this->createParserMock();
+        $statement = new Statement($parser);
+
+        $parser->expects($this->exactly(2))
+            ->method('output')
+            ->withConsecutive(
+                [$this->equalTo('{if unresolved_var}')],
+                [$this->equalTo('{/if}')]
+            );
+
+        $statement->addIf($this->createExpression(false, false, 'unresolved_var'));
+        $statement->closeIf();
+    }
+
+    public function testCloseIfDoesNotOutputEndTagWhenNoConditionalWasRewritten()
+    {
+        $parser = $this->createParserMock();
+        $statement = new Statement($parser);
+        $parser->expects($this->never())->method('output');
+
+        $statement->addIf($this->createExpression(true, true));
+        $statement->closeIf();
+    }
+
     public function testAddElseReturnsFalseWhenPriorIfBranchWasTrue()
     {
         $parser = $this->createParserMock();

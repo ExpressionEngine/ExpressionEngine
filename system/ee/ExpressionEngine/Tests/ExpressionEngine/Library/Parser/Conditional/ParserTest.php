@@ -17,6 +17,29 @@ use PHPUnit\Framework\TestCase;
 
 class ParserTest extends TestCase
 {
+    public function testOutputLastAnnotationNoopsWhenNoneExists()
+    {
+        $parser = new Parser([]);
+        $parser->output('prefix');
+
+        $parser->outputLastAnnotation();
+
+        $this->assertSame('prefix', $this->readOutput($parser));
+    }
+
+    public function testOutputLastAnnotationAppendsStoredAnnotation()
+    {
+        $parser = new Parser([]);
+        $parser->output('prefix');
+
+        $annotation = (object) ['lexeme' => '{!-- conditional --}'];
+        $this->setLastConditionalAnnotation($parser, $annotation);
+
+        $parser->outputLastAnnotation();
+
+        $this->assertSame('prefix{!-- conditional --}', $this->readOutput($parser));
+    }
+
     private function parseTemplate(string $template, array $vars = [], bool $safety = false): string
     {
         $lexer = new Lexer();
@@ -71,5 +94,20 @@ class ParserTest extends TestCase
         $this->expectException(ParserException::class);
 
         $this->parseTemplate('{if foo}Yes');
+    }
+
+    private function readOutput(Parser $parser): string
+    {
+        $reflection = new \ReflectionProperty(Parser::class, 'output');
+        $reflection->setAccessible(true);
+
+        return $reflection->getValue($parser);
+    }
+
+    private function setLastConditionalAnnotation(Parser $parser, object $annotation): void
+    {
+        $reflection = new \ReflectionProperty(Parser::class, 'last_conditional_annotation');
+        $reflection->setAccessible(true);
+        $reflection->setValue($parser, $annotation);
     }
 }
