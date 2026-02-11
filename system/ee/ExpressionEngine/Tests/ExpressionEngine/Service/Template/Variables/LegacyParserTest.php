@@ -761,6 +761,14 @@ class LegacyParserTest extends TestCase
                 'foo||bar|',
                 ['options' => ['foo', 'bar'], 'not' => false],
             ],
+            'pipe-only delimiters return empty options' => [
+                '|||',
+                ['options' => [], 'not' => false],
+            ],
+            'whitespace-only segment is preserved after trim mapping' => [
+                'foo|   |bar',
+                ['options' => ['foo', '', 'bar'], 'not' => false],
+            ],
             'negated single option' => [
                 'not foo',
                 ['options' => ['foo'], 'not' => true],
@@ -769,6 +777,10 @@ class LegacyParserTest extends TestCase
                 'not foo|bar',
                 ['options' => ['foo', 'bar'], 'not' => true],
             ],
+            'negated pipe-only delimiters return empty options' => [
+                'not |||',
+                ['options' => [], 'not' => true],
+            ],
             'case-insensitive negation keyword' => [
                 'NoT foo|bar',
                 ['options' => ['foo', 'bar'], 'not' => true],
@@ -776,6 +788,18 @@ class LegacyParserTest extends TestCase
             'negation with extra spacing before options' => [
                 'not   foo  |  bar ',
                 ['options' => ['foo', 'bar'], 'not' => true],
+            ],
+            'tab after not is not treated as negation prefix' => [
+                "not\tfoo|bar",
+                ['options' => ["not\tfoo", 'bar'], 'not' => false],
+            ],
+            'numeric zero input is treated as empty options' => [
+                '0',
+                ['options' => [], 'not' => false],
+            ],
+            'negated numeric zero keeps negation with empty options' => [
+                'not 0',
+                ['options' => [], 'not' => true],
             ],
             'negation with no options' => [
                 'not ',
