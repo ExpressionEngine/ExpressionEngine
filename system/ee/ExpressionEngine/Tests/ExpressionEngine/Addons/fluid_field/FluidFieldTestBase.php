@@ -554,6 +554,7 @@ class FluidFieldChannelFieldStub
     public $field_label;
     public $field_type;
     public $field_order;
+    public $createTableCalls = 0;
 
     private $field;
     private $tableName;
@@ -586,6 +587,7 @@ class FluidFieldChannelFieldStub
 
     public function createTable(): void
     {
+        $this->createTableCalls++;
     }
 }
 
@@ -1124,6 +1126,7 @@ class FluidFieldValidatorStub
     public $rules = [];
     public $definedRules = [];
     public $result;
+    public $validateCalls = [];
 
     public function __construct($result)
     {
@@ -1142,6 +1145,7 @@ class FluidFieldValidatorStub
 
     public function validate($data)
     {
+        $this->validateCalls[] = $data;
         return $this->result;
     }
 }
