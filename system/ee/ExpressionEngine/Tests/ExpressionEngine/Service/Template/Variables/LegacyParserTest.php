@@ -37,6 +37,34 @@ class LegacyParserTest extends TestCase
         $this->assertEquals($expected, $props);
     }
 
+    public function testParseVariablePropertiesMarksNumericModifiersInvalidAndSkipsParams()
+    {
+        $props = $this->parser->parseVariableProperties('hello:123:trim param="ignored"');
+
+        $this->assertSame('hello', $props['field_name']);
+        $this->assertSame('trim', $props['modifier']);
+        $this->assertSame('123:trim', $props['full_modifier']);
+        $this->assertTrue($props['invalid_modifier']);
+        $this->assertSame([], $props['params']);
+        $this->assertSame(
+            [
+                '123' => [],
+                'trim' => [],
+            ],
+            $props['all_modifiers']
+        );
+    }
+
+    public function testParseVariablePropertiesParsesParameterAfterNewline()
+    {
+        $props = $this->parser->parseVariableProperties("hello\nparam='hey'");
+
+        $this->assertSame('hello', $props['field_name']);
+        $this->assertSame('', $props['modifier']);
+        $this->assertFalse($props['invalid_modifier']);
+        $this->assertSame(['param' => 'hey'], $props['params']);
+    }
+
     public function tagProvider()
     {
         $tags = [
@@ -454,6 +482,50 @@ class LegacyParserTest extends TestCase
         $this->assertSame(['foo=bar' => ['parsed' => 'foo=bar']], $result['var_pair']);
     }
 
+    public function testExtractVariablesOnlyRunsSimpleConditionParserForSupportedTokens()
+    {
+        $parser = new class extends LegacyParser {
+            public $simpleConditionCalls = [];
+
+            public function fetch_simple_conditions($val)
+            {
+                $this->simpleConditionCalls[] = $val;
+
+                return 'COND:' . $val;
+            }
+        };
+
+        $tagdata = "{switch \\| yes}{multi_field \\| yes}{foo \\| bar}";
+        $result = $parser->extractVariables($tagdata);
+
+        $this->assertSame(
+            [
+                'switch \| yes' => 'switch \| yes',
+                'multi_field \| yes' => 'multi_field \| yes',
+                'foo \| bar' => 'COND:foo \| bar',
+            ],
+            $result['var_single']
+        );
+        $this->assertSame([], $result['var_pair']);
+        $this->assertSame(['foo \| bar'], $parser->simpleConditionCalls);
+    }
+
+    public function testExtractVariablesHandlesNestedSameNamedPairs()
+    {
+        ee()->setMock('Variables/Parser', new class {
+            public function parseTagParameters($tag)
+            {
+                return ['parsed' => $tag];
+            }
+        });
+
+        $tagdata = '{foo}outer {foo}inner{/foo} tail{/foo}';
+        $result = $this->parser->extractVariables($tagdata);
+
+        $this->assertSame(['foo' => 'foo'], $result['var_single']);
+        $this->assertSame(['foo' => ['parsed' => 'foo']], $result['var_pair']);
+    }
+
     public function testExtractDateFormatReturnsNullForEmptyInput()
     {
         $this->assertNull($this->parser->extractDateFormat(''));
@@ -483,12 +555,24 @@ class LegacyParserTest extends TestCase
         ];
     }
 
+    public function testExtractDateFormatReturnsFalseWhenQuoteIsUnclosed()
+    {
+        $this->assertFalse($this->parser->extractDateFormat("date format='%Y"));
+    }
+
     /**
      * @dataProvider parseTagParametersProvider
      */
     public function testParseTagParametersHandlesQuotesCommentsAndDefaults($paramString, array $defaults, array $expected)
     {
         $this->assertSame($expected, $this->parser->parseTagParameters($paramString, $defaults));
+    }
+
+    public function testParseTagParametersParsesAttributesSeparatedByNewlinesAndTabs()
+    {
+        $result = $this->parser->parseTagParameters("foo=\"bar\"\n\tbaz='qux'");
+
+        $this->assertSame(['foo' => 'bar', 'baz' => 'qux'], $result);
     }
 
     public function parseTagParametersProvider()
@@ -622,6 +706,14 @@ class LegacyParserTest extends TestCase
         $result = $this->parser->getFullTag($tagdata, '[quote]', '[', ']');
 
         $this->assertSame($tagdata, $result);
+    }
+
+    public function testGetFullTagReturnsExpandedPartialWhenNestedTagNeverCloses()
+    {
+        $tagdata = '{tag}outer {tag}inner';
+        $result = $this->parser->getFullTag($tagdata, '{tag}');
+
+        $this->assertSame('{tag}outer {tag}', $result);
     }
 
     public function testParseModifiedVariablesAppliesMultipleModifiersAndPrepsConditionals()
@@ -869,12 +961,100 @@ class LegacyParserTest extends TestCase
         );
     }
 
+    public function testParseModifiedVariablesHandlesExternalModifierInFallbackBranch()
+    {
+        $parser = new class extends LegacyParser {
+            public function parseVariableProperties($template_var, $prefix = '')
+            {
+                return [
+                    'field_name' => 'foo',
+                    'params' => ['mode' => 'x'],
+                    'modifier' => 'custom',
+                    'all_modifiers' => [],
+                ];
+            }
+        };
+
+        $functions = new class {
+            public $calls = [];
+
+            public function prep_conditionals($str, $conditionals)
+            {
+                $this->calls[] = [$str, $conditionals];
+                return 'PREP:' . $str;
+            }
+        };
+
+        ee()->setMock('functions', $functions);
+        ee()->setMock('Variables/Modifiers', new class {
+            public function has($name)
+            {
+                return $name === 'custom';
+            }
+
+            public function all()
+            {
+                return [
+                    'custom' => '\\ExpressionEngine\\Tests\\Service\\Template\\Variables\\FakeModifier',
+                ];
+            }
+        });
+
+        $template = 'Value: {foo:custom}';
+        $result = $parser->parseModifiedVariables($template, ['foo' => 'bar']);
+
+        $this->assertSame('PREP:Value: bar-custom', $result);
+        $this->assertCount(1, $functions->calls);
+        $this->assertSame(
+            ['Value: bar-custom', ['foo:custom' => 'bar-custom']],
+            $functions->calls[0]
+        );
+    }
+
+    public function testParseModifiedVariablesContinuesAfterFirstInvalidModifierToken()
+    {
+        $functions = new class {
+            public $calls = [];
+
+            public function prep_conditionals($str, $conditionals)
+            {
+                $this->calls[] = [$str, $conditionals];
+                return 'PREP:' . $str;
+            }
+        };
+
+        ee()->setMock('functions', $functions);
+        ee()->setMock('Variables/Modifiers', new class {
+            public function has($name)
+            {
+                return false;
+            }
+        });
+
+        $template = 'A {foo:unknown:rot13} B {foo:rot13}';
+        $result = $this->parser->parseModifiedVariables($template, ['foo' => 'bar']);
+
+        $this->assertSame('PREP:A {foo:unknown:rot13} B one', $result);
+        $this->assertCount(1, $functions->calls);
+        $this->assertSame(
+            ['A {foo:unknown:rot13} B one', ['foo:rot13' => 'one']],
+            $functions->calls[0]
+        );
+    }
+
     /**
      * @dataProvider parseOrParameterProvider
      */
     public function testParseOrParameterParsesOptionsAndNegation($input, $expected)
     {
         $this->assertSame($expected, $this->parser->parseOrParameter($input));
+    }
+
+    public function testParseOrParameterTrimsOptionsAfterSplit()
+    {
+        $result = $this->parser->parseOrParameter(' one | two | three ');
+
+        $this->assertSame(['options' => ['one', 'two', 'three'], 'not' => false], $result);
     }
 
     public function parseOrParameterProvider()
