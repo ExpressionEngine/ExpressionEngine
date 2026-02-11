@@ -382,11 +382,13 @@ class LegacyParserTest extends TestCase
     {
         return [
             'no format parameter' => ['date', false],
+            'unquoted format parameter does not match' => ['date format=%Y-%m-%d', false],
             'double-quoted format' => ['date format="%Y-%m-%d"', '%Y-%m-%d'],
             'single-quoted format' => ["date format='%H:%i'", '%H:%i'],
             'escaped quote delimiters' => ['date format=\\"%Y/%m\\"', '%Y/%m'],
             'escaped single-quote delimiters' => ["date format=\\'%Y/%m\\'", '%Y/%m'],
             'whitespace around equals' => ['date format = "%M %d, %Y"', '%M %d, %Y'],
+            'format token may span newlines' => ["date format=\"%Y\n%m\"", "%Y\n%m"],
         ];
     }
 
@@ -426,6 +428,16 @@ class LegacyParserTest extends TestCase
                 [],
                 ['foo' => '   '],
             ],
+            'repeated parameters keep the last value' => [
+                'foo="first" foo="second"',
+                [],
+                ['foo' => 'second'],
+            ],
+            'supports parameter names with colons' => [
+                'embed:limit="10"',
+                [],
+                ['embed:limit' => '10'],
+            ],
             'removes template comments before parsing' => [
                 'foo="bar" {!-- ignore --} baz="qux"',
                 [],
@@ -455,6 +467,16 @@ class LegacyParserTest extends TestCase
                 'limit=""',
                 ['limit' => 3],
                 ['limit' => 3],
+            ],
+            'uses numeric default when parsed numeric field is whitespace-only' => [
+                'limit="   "',
+                ['limit' => 3],
+                ['limit' => 3],
+            ],
+            'trimmed numeric string keeps parsed value over numeric default' => [
+                'limit=" 12 "',
+                ['limit' => 3],
+                ['limit' => '12'],
             ],
             'keeps empty non-numeric value when default is non-numeric' => [
                 'title=""',
@@ -796,13 +818,25 @@ class LegacyParserTest extends TestCase
                 'NoT foo|bar',
                 ['options' => ['foo', 'bar'], 'not' => true],
             ],
+            'leading whitespace before negation is ignored' => [
+                '   not foo|bar  ',
+                ['options' => ['foo', 'bar'], 'not' => true],
+            ],
             'negation with extra spacing before options' => [
                 'not   foo  |  bar ',
                 ['options' => ['foo', 'bar'], 'not' => true],
             ],
+            'negated single option with internal spaces' => [
+                'not foo bar',
+                ['options' => ['foo bar'], 'not' => true],
+            ],
             'tab after not is not treated as negation prefix' => [
                 "not\tfoo|bar",
                 ['options' => ["not\tfoo", 'bar'], 'not' => false],
+            ],
+            'tabs around options are trimmed' => [
+                "foo|\tbar\t|baz",
+                ['options' => ['foo', 'bar', 'baz'], 'not' => false],
             ],
             'not without trailing space is treated as a value' => [
                 'not|foo',
