@@ -365,6 +365,95 @@ class LegacyParserTest extends TestCase
         $this->assertSame([], $result['var_pair']);
     }
 
+    public function testExtractVariablesExtractsVariableFromConditionalsWithNestedTags()
+    {
+        $tagdata = "{if {segment_1} == 'news'}{segment_1}{/if}";
+        $result = $this->parser->extractVariables($tagdata);
+
+        $this->assertSame(['segment_1' => 'segment_1'], $result['var_single']);
+        $this->assertSame([], $result['var_pair']);
+    }
+
+    public function testExtractVariablesIgnoresNumericAndIfTokensWithoutNestedVariables()
+    {
+        $tagdata = '{123}{if foo == "bar"}{/if}';
+        $result = $this->parser->extractVariables($tagdata);
+
+        $this->assertSame([], $result['var_single']);
+        $this->assertSame([], $result['var_pair']);
+    }
+
+    public function testExtractVariablesDeduplicatesSingleAndPairTags()
+    {
+        $variablesParser = new class {
+            public $calls = [];
+
+            public function parseTagParameters($tag)
+            {
+                $this->calls[] = $tag;
+
+                return ['parsed' => $tag];
+            }
+        };
+        ee()->setMock('Variables/Parser', $variablesParser);
+
+        $tagdata = '{foo}{foo}{bar}one{/bar}{bar}two{/bar}';
+        $result = $this->parser->extractVariables($tagdata);
+
+        $this->assertSame(['foo' => 'foo'], $result['var_single']);
+        $this->assertSame(['bar' => ['parsed' => 'bar']], $result['var_pair']);
+        $this->assertSame(['bar'], $variablesParser->calls);
+    }
+
+    public function testExtractVariablesReturnsEmptyForMissingTarget()
+    {
+        $tagdata = '{foo}{bar}{/bar}';
+        $result = $this->parser->extractVariables($tagdata, 'missing');
+
+        $this->assertSame([], $result['var_single']);
+        $this->assertSame([], $result['var_pair']);
+    }
+
+    public function testExtractVariablesHandlesNestedDelimitersInVariableToken()
+    {
+        $tagdata = '{outer{inner}}';
+        $result = $this->parser->extractVariables($tagdata);
+
+        $this->assertSame(['inner' => 'inner'], $result['var_single']);
+        $this->assertSame([], $result['var_pair']);
+    }
+
+    public function testExtractVariablesHonorsTargetForModifiedTags()
+    {
+        $tagdata = '{bar}{bar:modifier}{foo}';
+        $result = $this->parser->extractVariables($tagdata, 'bar');
+
+        $this->assertSame(
+            [
+                'bar' => 'bar',
+                'bar:modifier' => 'bar:modifier',
+            ],
+            $result['var_single']
+        );
+        $this->assertSame([], $result['var_pair']);
+    }
+
+    public function testExtractVariablesMatchesPairsWithEqualsInOpeningTag()
+    {
+        ee()->setMock('Variables/Parser', new class {
+            public function parseTagParameters($tag)
+            {
+                return ['parsed' => $tag];
+            }
+        });
+
+        $tagdata = '{foo=bar}content{/foo}';
+        $result = $this->parser->extractVariables($tagdata);
+
+        $this->assertSame([], $result['var_single']);
+        $this->assertSame(['foo=bar' => ['parsed' => 'foo=bar']], $result['var_pair']);
+    }
+
     public function testExtractDateFormatReturnsNullForEmptyInput()
     {
         $this->assertNull($this->parser->extractDateFormat(''));
