@@ -219,6 +219,12 @@ class Structure_core_nav_parser
             'channel_id',
             'entry_date',
             'status',
+            'author_id',
+            'sticky',
+            'expiration_date',
+            'edit_date',
+            'view_count',
+            'comment_total',
             'Channel.channel_title',
             'Channel.channel_name',
         );
