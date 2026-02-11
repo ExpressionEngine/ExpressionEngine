@@ -65,6 +65,16 @@ class LegacyParserTest extends TestCase
         $this->assertSame(['param' => 'hey'], $props['params']);
     }
 
+    public function testParseVariablePropertiesTrimsWhitespaceAfterPrefixBeforeParsing()
+    {
+        $props = $this->parser->parseVariableProperties("embed:   foo:rot13 param='hey'", 'embed:');
+
+        $this->assertSame('foo', $props['field_name']);
+        $this->assertSame('rot13', $props['modifier']);
+        $this->assertFalse($props['invalid_modifier']);
+        $this->assertSame(['param' => 'hey'], $props['params']);
+    }
+
     public function tagProvider()
     {
         $tags = [
@@ -526,9 +536,22 @@ class LegacyParserTest extends TestCase
         $this->assertSame(['foo' => ['parsed' => 'foo']], $result['var_pair']);
     }
 
+    public function testExtractVariablesIgnoresMalformedNestedDelimiterToken()
+    {
+        $result = $this->parser->extractVariables('{{foo}}');
+
+        $this->assertSame([], $result['var_single']);
+        $this->assertSame([], $result['var_pair']);
+    }
+
     public function testExtractDateFormatReturnsNullForEmptyInput()
     {
         $this->assertNull($this->parser->extractDateFormat(''));
+    }
+
+    public function testExtractDateFormatReturnsNullForNullInput()
+    {
+        $this->assertNull($this->parser->extractDateFormat(null));
     }
 
     /**
@@ -552,12 +575,18 @@ class LegacyParserTest extends TestCase
             'format token may span newlines' => ["date format=\"%Y\n%m\"", "%Y\n%m"],
             'empty format token returns empty string' => ['date format=""', ''],
             'first format token is returned when repeated' => ['date format="%Y" other="x" format="%m"', '%Y'],
+            'double-escaped quote delimiters do not match' => ['date format=\\\\\"%Y/%m\\\\\"', false],
         ];
     }
 
     public function testExtractDateFormatReturnsFalseWhenQuoteIsUnclosed()
     {
         $this->assertFalse($this->parser->extractDateFormat("date format='%Y"));
+    }
+
+    public function testExtractDateFormatReturnsFalseWhenEscapingIsAsymmetric()
+    {
+        $this->assertFalse($this->parser->extractDateFormat('date format=\\"%Y/%m"'));
     }
 
     /**
@@ -573,6 +602,13 @@ class LegacyParserTest extends TestCase
         $result = $this->parser->parseTagParameters("foo=\"bar\"\n\tbaz='qux'");
 
         $this->assertSame(['foo' => 'bar', 'baz' => 'qux'], $result);
+    }
+
+    public function testParseTagParametersReturnsEmptyArrayForCommentOnlyInputWithoutDefaults()
+    {
+        $result = $this->parser->parseTagParameters('{!-- only comment --}');
+
+        $this->assertSame([], $result);
     }
 
     public function parseTagParametersProvider()
@@ -714,6 +750,31 @@ class LegacyParserTest extends TestCase
         $result = $this->parser->getFullTag($tagdata, '{tag}');
 
         $this->assertSame('{tag}outer {tag}', $result);
+    }
+
+    public function testGetFullTagReturnsMatchWithoutRecursionWhenNoNestedOpeningExists()
+    {
+        $tagdata = '{tag}value}';
+        $result = $this->parser->getFullTag($tagdata, '{tag}');
+
+        $this->assertSame('{tag}value}', $result);
+    }
+
+    public function testGetFullTagExpandsMultipleLevelsOfNestedTags()
+    {
+        $tagdata = '{tag}one {tag}two {tag}three{/tag} four{/tag} five{/tag}';
+        $result = $this->parser->getFullTag($tagdata, '{tag}');
+
+        $this->assertSame($tagdata, $result);
+    }
+
+    public function testGetFullTagEscapesRegexMetaCharactersInPartialTag()
+    {
+        $partialTag = "{exp:channel:entries channel='news+events' search:entry_id='not 10|20'}";
+        $tagdata = $partialTag . 'payload{/exp:channel:entries}';
+        $result = $this->parser->getFullTag($tagdata, $partialTag);
+
+        $this->assertSame($tagdata, $result);
     }
 
     public function testParseModifiedVariablesAppliesMultipleModifiersAndPrepsConditionals()
@@ -1042,6 +1103,34 @@ class LegacyParserTest extends TestCase
         );
     }
 
+    public function testParseModifiedVariablesSkipsMissingVarAndStillParsesMatchingVar()
+    {
+        $functions = new class {
+            public $calls = [];
+
+            public function prep_conditionals($str, $conditionals)
+            {
+                $this->calls[] = [$str, $conditionals];
+                return 'PREP:' . $str;
+            }
+        };
+
+        ee()->setMock('functions', $functions);
+
+        $template = 'Value: {foo:rot13}';
+        $result = $this->parser->parseModifiedVariables($template, [
+            'missing' => 'skip',
+            'foo' => 'bar',
+        ]);
+
+        $this->assertSame('PREP:Value: one', $result);
+        $this->assertCount(1, $functions->calls);
+        $this->assertSame(
+            ['Value: one', ['foo:rot13' => 'one']],
+            $functions->calls[0]
+        );
+    }
+
     /**
      * @dataProvider parseOrParameterProvider
      */
@@ -1119,6 +1208,10 @@ class LegacyParserTest extends TestCase
             'negation with extra spacing before options' => [
                 'not   foo  |  bar ',
                 ['options' => ['foo', 'bar'], 'not' => true],
+            ],
+            'negated options preserve empty post-trim segment' => [
+                'not foo|   |bar',
+                ['options' => ['foo', '', 'bar'], 'not' => true],
             ],
             'negated single option with internal spaces' => [
                 'not foo bar',
