@@ -235,7 +235,7 @@ class Structure_core_nav_parser
         // Model Query Builder handles legacy vs modern storage automatically
         $channelEntries = ee('Model')->get('ChannelEntry', $this->entry_ids)
             ->with('Channel')
-            ->fields($model_fields)
+            ->fields(...$model_fields)
             ->all();
 
         // Structure data
@@ -264,9 +264,11 @@ class Structure_core_nav_parser
             $fields[$channel->getId()] = $filtered;
         }
 
+        $requested_field_names = array_values($select_field_ids);
+
         foreach ($channelEntries as $channelEntry) {
             if (isset($this->rows_by_entry[$channelEntry->entry_id])) {
-                $this->populate_variable_row_from_model($channelEntry, $fields, $structure_data);
+                $this->populate_variable_row_from_model($channelEntry, $fields, $structure_data, $requested_field_names);
             }
         }
     }
@@ -281,7 +283,6 @@ class Structure_core_nav_parser
         }
 
         $query = ee()->db->select('field_id, field_name')
-            ->where('site_id', ee()->config->item('site_id'))
             ->where_in('field_name', $field_names)
             ->get('channel_fields');
 
@@ -358,12 +359,18 @@ class Structure_core_nav_parser
 
     /**
      * Populate a variable row from a ChannelEntry model (used by full models and extension paths).
+     *
+     * @param array $requested_field_names When using select_fields, ensures these vars are set (to empty if channel lacks the field)
      */
-    protected function populate_variable_row_from_model($channelEntry, $fields, $structure_data)
+    protected function populate_variable_row_from_model($channelEntry, $fields, $structure_data, $requested_field_names = array())
     {
         $variable_row = &$this->rows_by_entry[$channelEntry->entry_id];
         $prefix = $variable_row['__prefix'];
         unset($variable_row['__prefix']);
+
+        foreach ($requested_field_names as $fname) {
+            $variable_row[$prefix . $fname] = '';
+        }
 
         foreach ($channelEntry->getFields() as $field_name) {
             $variable_row[$prefix . $field_name] = $channelEntry->$field_name;
