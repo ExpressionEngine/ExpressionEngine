@@ -1771,6 +1771,10 @@ class FluidFieldFtTest extends FluidFieldTestBase
         $this->assertCount(1, $validation->validator->validateCalls);
     }
 
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function testPostSaveUsesCloningModeLookupForMissingExistingFieldRows()
     {
         if (!defined('CLONING_MODE')) {

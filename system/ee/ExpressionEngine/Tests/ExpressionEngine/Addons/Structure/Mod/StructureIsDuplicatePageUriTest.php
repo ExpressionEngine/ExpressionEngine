@@ -165,6 +165,10 @@ class StructureIsDuplicatePageUriTest extends StructureTestBase
         $this->assertSame('/conflicting-page_2', $result);
     }
 
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function testIsDuplicatePageUriReturnsModifiedUriWhenConflictExistsCloningModeSimplePage()
     {
         // Define CLONING_MODE constant
@@ -215,6 +219,10 @@ class StructureIsDuplicatePageUriTest extends StructureTestBase
         $this->assertSame('/copy_conflicting-page', $result);
     }
 
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function testIsDuplicatePageUriReturnsModifiedUriWhenConflictExistsCloningModeNestedPage()
     {
         // Define CLONING_MODE constant
@@ -265,6 +273,10 @@ class StructureIsDuplicatePageUriTest extends StructureTestBase
         $this->assertSame('/parent/child/copy-page', $result);
     }
 
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function testIsDuplicatePageUriReturnsModifiedUriWhenConflictExistsCloningModeMultipleClones()
     {
         // Define CLONING_MODE constant
