@@ -1513,6 +1513,64 @@ class FluidFieldFtTest extends FluidFieldTestBase
         $this->assertCount(2, $this->db->inserts);
     }
 
+    public function testPostSaveIncrementsGroupOrderWhenSameGroupIdAppearsInDifferentRows()
+    {
+        $this->session->set_cache(
+            Fluid_field_ft::class,
+            $this->fieldtype->name(),
+            [
+                'fields' => [
+                    'new_field_1' => [
+                        'field_group_id_10' => [
+                            'field_id_2' => 'alpha',
+                        ],
+                    ],
+                    'new_field_2' => [
+                        'field_group_id_10' => [
+                            'field_id_3' => 'beta',
+                        ],
+                    ],
+                ],
+            ]
+        );
+        $this->session->set_cache('FluidField', 'FluidField/10/99', new FluidFieldTestCollection());
+
+        $createdRecords = [];
+        $this->setModelMakeCallback(function ($model) use (&$createdRecords) {
+            if ($model === 'fluid_field:FluidField') {
+                $record = new FluidFieldRecordStub();
+                $createdRecords[] = $record;
+
+                return $record;
+            }
+
+            return new FluidFieldRecordStub();
+        });
+
+        $this->setModelGetCallback(function ($model, $id = null) {
+            if ($model === 'ChannelField' && $id !== null) {
+                $fieldId = (int) $id;
+                $field = new FluidFieldFacadeStub($fieldId);
+
+                return $this->makeModelQuery(
+                    new FluidFieldTestCollection(),
+                    new FluidFieldChannelFieldStub($fieldId, 'field_' . $fieldId, $field)
+                );
+            }
+
+            return $this->makeModelQuery(new FluidFieldTestCollection(), null);
+        });
+
+        $this->fieldtype->post_save([]);
+
+        $this->assertCount(2, $createdRecords);
+        $this->assertSame(1, $createdRecords[0]->group);
+        $this->assertSame(2, $createdRecords[1]->group);
+        $this->assertSame(10, $createdRecords[0]->field_group_id);
+        $this->assertSame(10, $createdRecords[1]->field_group_id);
+        $this->assertCount(2, $this->db->inserts);
+    }
+
     public function testDisplayFieldRendersStandaloneRowFromPostedData()
     {
         $field = new FluidFieldChannelFieldStub(1, 'title', new FluidFieldFacadeStub(1));
@@ -1771,10 +1829,6 @@ class FluidFieldFtTest extends FluidFieldTestBase
         $this->assertCount(1, $validation->validator->validateCalls);
     }
 
-    /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
-     */
     public function testPostSaveUsesCloningModeLookupForMissingExistingFieldRows()
     {
         if (!defined('CLONING_MODE')) {
