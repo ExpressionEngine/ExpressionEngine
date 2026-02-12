@@ -280,15 +280,14 @@ class Structure_core_nav_parser
             return array();
         }
 
-        $result = array();
-        $all_fields = $this->get_custom_fields();
+        $query = ee()->db->select('field_id, field_name')
+            ->where('site_id', ee()->config->item('site_id'))
+            ->where_in('field_name', $field_names)
+            ->get('channel_fields');
 
-        foreach ($all_fields as $group_id => $group_fields) {
-            foreach ($group_fields as $field_id => $field_data) {
-                if (in_array($field_data['field_name'], $field_names)) {
-                    $result[$field_id] = $field_data['field_name'];
-                }
-            }
+        $result = array();
+        foreach ($query->result_array() as $row) {
+            $result[$row['field_id']] = $row['field_name'];
         }
 
         return $result;
