@@ -10,16 +10,104 @@
 
 namespace ExpressionEngine\Tests\Library\Parser\Conditional;
 
+use ExpressionEngine\Library\Parser\Conditional\Lexer;
+use ExpressionEngine\Library\Parser\Conditional\Parser;
+use ExpressionEngine\Library\Parser\Conditional\Exception\ParserException;
 use PHPUnit\Framework\TestCase;
 
 class ParserTest extends TestCase
 {
-    public function setUp(): void
+    public function testOutputLastAnnotationNoopsWhenNoneExists()
     {
+        $parser = new Parser([]);
+        $parser->output('prefix');
+
+        $parser->outputLastAnnotation();
+
+        $this->assertSame('prefix', $this->readOutput($parser));
     }
 
-    public function testEmpty()
+    public function testOutputLastAnnotationAppendsStoredAnnotation()
     {
-        $this->assertTrue(true);
+        $parser = new Parser([]);
+        $parser->output('prefix');
+
+        $annotation = (object) ['lexeme' => '{!-- conditional --}'];
+        $this->setLastConditionalAnnotation($parser, $annotation);
+
+        $parser->outputLastAnnotation();
+
+        $this->assertSame('prefix{!-- conditional --}', $this->readOutput($parser));
+    }
+
+    private function parseTemplate(string $template, array $vars = [], bool $safety = false): string
+    {
+        $lexer = new Lexer();
+        $tokens = $lexer->tokenize($template);
+        $parser = new Parser($tokens);
+        $parser->setVariables($vars);
+
+        if ($safety) {
+            $parser->safetyOn();
+        }
+
+        return $parser->parse();
+    }
+
+    public function testParseReturnsTemplateWhenNoConditionals()
+    {
+        $template = 'Hello world.';
+
+        $this->assertSame($template, $this->parseTemplate($template));
+    }
+
+    public function testParseSelectsElseBranchWhenConditionIsFalse()
+    {
+        $template = '{if foo == "bar"}Yes{if:else}No{/if}';
+
+        $this->assertSame('No', $this->parseTemplate($template, ['foo' => 'baz']));
+    }
+
+    public function testParseSelectsIfBranchWhenConditionIsTrue()
+    {
+        $template = '{if foo == "bar"}Yes{if:else}No{/if}';
+
+        $this->assertSame('Yes', $this->parseTemplate($template, ['foo' => 'bar']));
+    }
+
+    public function testParseSkipsNestedConditionalsWhenOuterIsFalse()
+    {
+        $template = '{if foo}{if bar}X{/if}{if:else}Y{/if}';
+
+        $this->assertSame('Y', $this->parseTemplate($template, ['foo' => false, 'bar' => true]));
+    }
+
+    public function testParseSafetyOnTreatsNonScalarsAsFalse()
+    {
+        $template = '{if foo}YES{if:else}NO{/if}';
+
+        $this->assertSame('NO', $this->parseTemplate($template, ['foo' => ['array']], true));
+    }
+
+    public function testParseThrowsWhenEndIfMissing()
+    {
+        $this->expectException(ParserException::class);
+
+        $this->parseTemplate('{if foo}Yes');
+    }
+
+    private function readOutput(Parser $parser): string
+    {
+        $reflection = new \ReflectionProperty(Parser::class, 'output');
+        $reflection->setAccessible(true);
+
+        return $reflection->getValue($parser);
+    }
+
+    private function setLastConditionalAnnotation(Parser $parser, object $annotation): void
+    {
+        $reflection = new \ReflectionProperty(Parser::class, 'last_conditional_annotation');
+        $reflection->setAccessible(true);
+        $reflection->setValue($parser, $annotation);
     }
 }
