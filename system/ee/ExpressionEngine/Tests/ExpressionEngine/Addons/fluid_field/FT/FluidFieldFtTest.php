@@ -1414,6 +1414,25 @@ class FluidFieldFtTest extends FluidFieldTestBase
         $this->assertSame(4, $existingRecord->field_group_id);
     }
 
+    public function testSaveSkipsLegacyRowsWithoutGroupWrapperWhenNoFieldIdsArePresent()
+    {
+        $existingField = new FluidFieldFacadeStub(1);
+        $existingRecord = new FluidFieldRecordStub(5, 1, $existingField);
+        $this->session->set_cache('FluidField', 'FluidField/10/99', new FluidFieldTestCollection([$existingRecord]));
+
+        $result = $this->fieldtype->save([
+            'fields' => [
+                'field_5' => [
+                    'legacy_key' => 'legacy-value',
+                ],
+            ],
+        ]);
+
+        $this->assertSame('', $result);
+        $this->assertCount(0, $this->modelService->makeCalls);
+        $this->assertNull($existingField->getItem('fluid_field_data_id'));
+    }
+
     public function testPostSaveHandlesNewFieldForGroupAndSkipsNonFieldKeys()
     {
         $this->session->set_cache(
@@ -1457,6 +1476,38 @@ class FluidFieldFtTest extends FluidFieldTestBase
         $this->assertSame(1, $newRecord->group);
         $this->assertNotEmpty($this->db->inserts);
         $this->assertSame('exp_channel_data_field_2', $this->db->inserts[0][0]);
+    }
+
+    public function testPostSaveSkipsTemplateAndLegacyRowsWithoutFieldIds()
+    {
+        $existingRecord = new FluidFieldRecordStub(5, 1, new FluidFieldFacadeStub(1));
+        $existingRecord->field_data_id = 500;
+
+        $this->session->set_cache(
+            Fluid_field_ft::class,
+            $this->fieldtype->name(),
+            [
+                'fields' => [
+                    'new_field_0' => [
+                        'field_group_id_0' => [
+                            'field_id_1' => 'template-value',
+                        ],
+                    ],
+                    'field_5' => [
+                        'legacy_key' => [
+                            'non_field_key' => 'skip-me',
+                        ],
+                    ],
+                ],
+            ]
+        );
+        $this->session->set_cache('FluidField', 'FluidField/10/99', new FluidFieldTestCollection([$existingRecord]));
+
+        $this->fieldtype->post_save([]);
+
+        $this->assertCount(0, $this->db->updates);
+        $this->assertCount(0, $this->db->inserts);
+        $this->assertTrue($existingRecord->deleted);
     }
 
     public function testPostSaveKeepsGroupOrderForMultipleFieldsWithinSameRow()
@@ -1622,6 +1673,94 @@ class FluidFieldFtTest extends FluidFieldTestBase
         $this->assertSame('[view:fluid_field:publish]', $result);
         $this->assertTrue($hasStandaloneRow);
         $this->assertFalse($hasGroupedRow);
+    }
+
+    public function testDisplayFieldUsesEmptyPrefixWhenShortNameAndGroupSettingsAreMissing()
+    {
+        $this->fieldtype->_init([
+            'id' => 10,
+            'name' => 'fluid_content',
+            'content_id' => null,
+            'content_type' => 'channel',
+        ]);
+
+        $field = new FluidFieldChannelFieldStub(1, 'title', new FluidFieldFacadeStub(1));
+        $allFields = new FluidFieldTestCollection([$field]);
+
+        $this->fieldtype->settings['field_channel_fields'] = [1];
+        $this->fieldtype->settings['field_short_name'] = '';
+        unset($this->fieldtype->settings['field_channel_field_groups']);
+
+        $this->setModelGetCallback(function ($model, $id = null) use ($allFields) {
+            if ($model === 'ChannelField') {
+                return $this->makeModelQuery($allFields);
+            }
+
+            if ($model === 'ChannelFieldGroup') {
+                return $this->makeModelQuery(new FluidFieldTestCollection());
+            }
+
+            return $this->makeModelQuery(new FluidFieldTestCollection(), null);
+        });
+
+        $result = $this->fieldtype->display_field('stored-value');
+
+        $templatePrefix = null;
+        foreach ($this->viewService->renders as $render) {
+            if ($render['view'] === 'fluid_field:field' && isset($render['data']['field_name_prefix'])) {
+                $templatePrefix = $render['data']['field_name_prefix'];
+                break;
+            }
+        }
+
+        $this->assertSame('[view:fluid_field:publish]', $result);
+        $this->assertSame('', $templatePrefix);
+    }
+
+    public function testDisplayFieldSkipsNonFieldPostedKeysAndOmitsEmptyGroupFilters()
+    {
+        $field = new FluidFieldChannelFieldStub(1, 'title', new FluidFieldFacadeStub(1));
+        $emptyGroup = new FluidFieldGroupStub(10, 'Empty Group', 'empty_group', new FluidFieldTestCollection());
+        $allFields = new FluidFieldTestCollection([$field]);
+        $groups = new FluidFieldTestCollection([$emptyGroup]);
+
+        $this->fieldtype->settings['field_channel_fields'] = [1];
+        $this->fieldtype->settings['field_channel_field_groups'] = [10];
+        $this->session->set_cache('FluidField', 'FluidField/10/99', new FluidFieldTestCollection());
+
+        $this->setModelGetCallback(function ($model, $id = null) use ($allFields, $groups) {
+            if ($model === 'ChannelField') {
+                return $this->makeModelQuery($allFields);
+            }
+
+            if ($model === 'ChannelFieldGroup') {
+                return $this->makeModelQuery($groups);
+            }
+
+            return $this->makeModelQuery(new FluidFieldTestCollection(), null);
+        });
+
+        $result = $this->fieldtype->display_field([
+            'fields' => [
+                'new_field_1' => [
+                    'field_group_id_0' => [
+                        'not_a_field' => 'skip-me',
+                        'field_id_1' => 'posted-value',
+                    ],
+                ],
+            ],
+        ]);
+
+        $filterCount = null;
+        foreach ($this->viewService->renders as $render) {
+            if ($render['view'] === 'fluid_field:filters') {
+                $filterCount = count($render['data']['filters']);
+                break;
+            }
+        }
+
+        $this->assertSame('[view:fluid_field:publish]', $result);
+        $this->assertSame(1, $filterCount);
     }
 
     public function testSaveSettingsNormalizesEmptyStringFieldSelection()
@@ -1882,6 +2021,57 @@ class FluidFieldFtTest extends FluidFieldTestBase
         });
 
         $this->assertCount(1, $cloningLookups);
+        $this->assertSame(10, $newRecord->field_group_id);
+        $this->assertSame(1, $newRecord->group);
+        $this->assertNotEmpty($this->db->inserts);
+    }
+
+    public function testPostSaveCloningModeHandlesMissingCloneLookupResult()
+    {
+        if (!defined('CLONING_MODE')) {
+            define('CLONING_MODE', true);
+        }
+
+        $this->session->set_cache(
+            Fluid_field_ft::class,
+            $this->fieldtype->name(),
+            [
+                'fields' => [
+                    'field_77' => [
+                        'field_group_id_10' => [
+                            'field_id_2' => 'cloned-value',
+                        ],
+                    ],
+                ],
+            ]
+        );
+        $this->session->set_cache('FluidField', 'FluidField/10/99', new FluidFieldTestCollection());
+
+        $newField = new FluidFieldFacadeStub(2);
+        $newRecord = new FluidFieldRecordStub(0, 2, $newField, new FluidFieldChannelFieldStub(2, 'field_two', $newField));
+
+        $this->setModelMakeCallback(function ($model) use ($newRecord) {
+            if ($model === 'fluid_field:FluidField') {
+                return $newRecord;
+            }
+
+            return new FluidFieldRecordStub();
+        });
+
+        $this->setModelGetCallback(function ($model, $id = null) {
+            if ($model === 'fluid_field:FluidField') {
+                return $this->makeModelQuery(new FluidFieldTestCollection(), null);
+            }
+
+            if ($model === 'ChannelField' && (int) $id === 2) {
+                return $this->makeModelQuery(new FluidFieldTestCollection(), new FluidFieldChannelFieldStub(2, 'field_two', new FluidFieldFacadeStub(2)));
+            }
+
+            return $this->makeModelQuery(new FluidFieldTestCollection(), null);
+        });
+
+        $this->fieldtype->post_save([]);
+
         $this->assertSame(10, $newRecord->field_group_id);
         $this->assertSame(1, $newRecord->group);
         $this->assertNotEmpty($this->db->inserts);
