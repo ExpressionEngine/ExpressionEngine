@@ -18,13 +18,14 @@ class FluidFieldFtFrontendDisplayTest extends TestCase
         $bootstrapPath = dirname(__DIR__, 4) . '/bootstrap.php';
 
         $script = <<<'PHP'
+<?php
 error_reporting(0);
 ini_set('display_errors', '0');
-require_once '__BOOTSTRAP__';
+require_once __BOOTSTRAP__;
 if (!defined('REQ')) {
     define('REQ', 'PAGE');
 }
-require_once '__BASE__';
+require_once __BASE__;
 ee()->resetMocks();
 $session = new FluidFieldSessionStub();
 $input = new FluidFieldInputStub();
@@ -80,13 +81,25 @@ echo json_encode([
 ]);
 PHP;
 
-        $script = str_replace(['__BASE__', '__BOOTSTRAP__'], [addslashes($basePath), addslashes($bootstrapPath)], $script);
+        $script = str_replace(
+            ['__BASE__', '__BOOTSTRAP__'],
+            [var_export($basePath, true), var_export($bootstrapPath, true)],
+            $script
+        );
 
-        $command = escapeshellarg(PHP_BINARY) . ' -d error_reporting=0 -d display_errors=0 -r ' . escapeshellarg($script);
-        $output = shell_exec($command);
+        $tmpScriptPath = tempnam(sys_get_temp_dir(), 'fluid-field-ft-');
+        $this->assertNotFalse($tmpScriptPath);
+        file_put_contents($tmpScriptPath, $script);
 
-        $this->assertNotFalse($output);
-        $lines = array_values(array_filter(array_map('trim', explode("\n", (string) $output))));
+        $command = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($tmpScriptPath) . ' 2>&1';
+        $outputLines = [];
+        $exitCode = 0;
+        exec($command, $outputLines, $exitCode);
+
+        @unlink($tmpScriptPath);
+
+        $this->assertSame(0, $exitCode, "Command failed: {$command}\n" . implode("\n", $outputLines));
+        $lines = array_values(array_filter(array_map('trim', $outputLines)));
         $decoded = json_decode((string) end($lines), true);
         $this->assertIsArray($decoded);
         $this->assertSame('', $decoded['result']);
