@@ -205,6 +205,40 @@ class FluidFieldFtTest extends FluidFieldTestBase
         $this->assertNull($existingField->getItem('fluid_field_data_id'));
     }
 
+    public function testSaveCreatesNewFieldWithPositiveGroupIdWithoutSearchCompilation()
+    {
+        $existingRecord = new FluidFieldRecordStub(5, 1, new FluidFieldFacadeStub(1));
+        $this->session->set_cache('FluidField', 'FluidField/10/99', new FluidFieldTestCollection([$existingRecord]));
+
+        $newField = new FluidFieldFacadeStub(2);
+        $newField->saveResult = 'new-value';
+        $newRecord = new FluidFieldRecordStub(0, 2, $newField);
+
+        $this->setModelMakeCallback(function ($model) use ($newRecord) {
+            if ($model === 'fluid_field:FluidField') {
+                return $newRecord;
+            }
+
+            return new FluidFieldRecordStub();
+        });
+
+        $result = $this->fieldtype->save([
+            'fields' => [
+                'new_field_2' => [
+                    'field_group_id_7' => [
+                        'field_id_2' => 'created-value',
+                    ],
+                ],
+            ],
+        ]);
+
+        $this->assertSame('', $result);
+        $this->assertCount(1, $this->modelService->makeCalls);
+        $this->assertSame(10, $newRecord->fluid_field_id);
+        $this->assertSame(7, $newRecord->field_group_id);
+        $this->assertSame(2, $newRecord->field_id);
+    }
+
     public function testPostSaveReturnsEarlyWhenSessionCacheIsMissing()
     {
         $this->assertNull($this->fieldtype->post_save([]));
@@ -270,9 +304,13 @@ class FluidFieldFtTest extends FluidFieldTestBase
         });
 
         $this->fieldtype->post_save([]);
-
-        $this->assertGreaterThan(0, count($this->db->updates));
-        $this->assertGreaterThan(0, count($this->db->inserts));
+        if (defined('CLONING_MODE') && CLONING_MODE === true) {
+            $this->assertCount(0, $this->db->updates);
+            $this->assertGreaterThan(0, count($this->db->inserts));
+        } else {
+            $this->assertGreaterThan(0, count($this->db->updates));
+            $this->assertGreaterThan(0, count($this->db->inserts));
+        }
         $this->assertTrue($orphanRecord->deleted);
     }
 
@@ -1763,6 +1801,74 @@ class FluidFieldFtTest extends FluidFieldTestBase
         $this->assertSame(1, $filterCount);
     }
 
+    public function testDisplayFieldTemplateGroupFiltersOutUnsupportedFields()
+    {
+        $this->fieldtype->_init([
+            'id' => 10,
+            'name' => 'fluid_content',
+            'content_id' => null,
+            'content_type' => 'channel',
+        ]);
+
+        $templateField = new FluidFieldChannelFieldStub(1, 'title', new FluidFieldFacadeStub(1));
+        $supportedGroupFacade = new FluidFieldFacadeStub(2);
+        $unsupportedGroupFacade = new FluidFieldFacadeStub(3);
+        $unsupportedGroupFacade->accepts = false;
+
+        $supportedGroupField = new FluidFieldChannelFieldStub(2, 'body', $supportedGroupFacade);
+        $unsupportedGroupField = new FluidFieldChannelFieldStub(3, 'gallery', $unsupportedGroupFacade);
+
+        $group = new FluidFieldGroupStub(
+            10,
+            'Body Group',
+            'body_group',
+            new FluidFieldTestCollection([$supportedGroupField, $unsupportedGroupField])
+        );
+
+        $this->fieldtype->settings['field_channel_fields'] = [1];
+        $this->fieldtype->settings['field_channel_field_groups'] = [10];
+
+        $allFields = new FluidFieldTestCollection([$templateField, $supportedGroupField, $unsupportedGroupField]);
+        $groups = new FluidFieldTestCollection([$group]);
+
+        $this->setModelGetCallback(function ($model, $id = null) use ($templateField, $allFields, $groups) {
+            if ($model === 'ChannelField' && is_array($id)) {
+                return $this->makeModelQuery(new FluidFieldTestCollection([$templateField]));
+            }
+
+            if ($model === 'ChannelField' && $id === null) {
+                return $this->makeModelQuery($allFields);
+            }
+
+            if ($model === 'ChannelFieldGroup') {
+                return $this->makeModelQuery($groups);
+            }
+
+            return $this->makeModelQuery(new FluidFieldTestCollection(), null);
+        });
+
+        $result = $this->fieldtype->display_field('stored-value');
+
+        $templateGroupFields = null;
+        foreach ($this->viewService->renders as $render) {
+            if (
+                $render['view'] === 'fluid_field:fieldgroup'
+                && isset($render['data']['field_group'])
+                && $render['data']['field_group']->getId() === 10
+                && isset($render['data']['field_group_fields'])
+                && $render['data']['field_group_fields'] instanceof FluidFieldTestCollection
+            ) {
+                $templateGroupFields = $render['data']['field_group_fields'];
+                break;
+            }
+        }
+
+        $this->assertSame('[view:fluid_field:publish]', $result);
+        $this->assertInstanceOf(FluidFieldTestCollection::class, $templateGroupFields);
+        $this->assertCount(1, $templateGroupFields);
+        $this->assertSame(2, $templateGroupFields->asArray()[0]->getId());
+    }
+
     public function testSaveSettingsNormalizesEmptyStringFieldSelection()
     {
         $this->fieldtype->settings['field_channel_fields'] = [1];
@@ -2075,6 +2181,69 @@ class FluidFieldFtTest extends FluidFieldTestBase
         $this->assertSame(10, $newRecord->field_group_id);
         $this->assertSame(1, $newRecord->group);
         $this->assertNotEmpty($this->db->inserts);
+    }
+
+    public function testPostSaveCloningModeTreatsExistingFieldRowsAsNewWithoutUpdate()
+    {
+        if (!defined('CLONING_MODE')) {
+            define('CLONING_MODE', true);
+        }
+
+        $existingField = new FluidFieldFacadeStub(2);
+        $existingRecord = new FluidFieldRecordStub(5, 2, $existingField, new FluidFieldChannelFieldStub(2, 'field_two', $existingField));
+        $existingRecord->group = 4;
+        $existingRecord->field_data_id = 500;
+
+        $this->session->set_cache(
+            Fluid_field_ft::class,
+            $this->fieldtype->name(),
+            [
+                'fields' => [
+                    'field_5' => [
+                        'field_group_id_10' => [
+                            'field_id_2' => 'cloned-value',
+                        ],
+                    ],
+                ],
+            ]
+        );
+        $this->session->set_cache('FluidField', 'FluidField/10/99', new FluidFieldTestCollection([$existingRecord]));
+
+        $newField = new FluidFieldFacadeStub(2);
+        $newRecord = new FluidFieldRecordStub(0, 2, $newField, new FluidFieldChannelFieldStub(2, 'field_two', $newField));
+
+        $this->setModelMakeCallback(function ($model) use ($newRecord) {
+            if ($model === 'fluid_field:FluidField') {
+                return $newRecord;
+            }
+
+            return new FluidFieldRecordStub();
+        });
+
+        $this->setModelGetCallback(function ($model, $id = null) {
+            if ($model === 'ChannelField' && (int) $id === 2) {
+                return $this->makeModelQuery(new FluidFieldTestCollection(), new FluidFieldChannelFieldStub(2, 'field_two', new FluidFieldFacadeStub(2)));
+            }
+
+            if ($model === 'fluid_field:FluidField') {
+                return $this->makeModelQuery(new FluidFieldTestCollection(), null);
+            }
+
+            return $this->makeModelQuery(new FluidFieldTestCollection(), null);
+        });
+
+        $this->fieldtype->post_save([]);
+
+        $fluidFieldLookups = array_filter($this->modelService->getCalls, function ($call) {
+            return $call[0] === 'fluid_field:FluidField';
+        });
+
+        $this->assertCount(0, $this->db->updates);
+        $this->assertNotEmpty($this->db->inserts);
+        $this->assertTrue($existingRecord->deleted);
+        $this->assertCount(0, $fluidFieldLookups);
+        $this->assertSame(10, $newRecord->field_group_id);
+        $this->assertSame(1, $newRecord->group);
     }
 }
 
