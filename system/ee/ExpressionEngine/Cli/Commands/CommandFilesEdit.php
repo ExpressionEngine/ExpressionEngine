@@ -109,17 +109,46 @@ class CommandFilesEdit extends Cli
 
         $this->info(sprintf(lang('command_files_editing'), $file->file_name));
 
-        $title = $this->getOptionOrAsk('--title', lang('command_files_title'), $file->title, false);
-        if (!empty($title)) {
-            $this->data['title'] = $title;
-        }
+        $this->data['title'] = $this->getOptionOrAsk('--title', lang('title'), $file->title, false);
 
-        $description = $this->getOptionOrAsk('--description', lang('command_files_description'), $file->description, false);
-        if (!empty($description)) {
-            $this->data['description'] = $description;
-        }
+        $this->data['description'] = $this->getOptionOrAsk('--description', lang('description'), $file->description, false);
+
+        $this->data['credit'] = $this->getOptionOrAsk('--credit', lang('credit'), $file->credit, false);
+
+        $this->data['location'] = $this->getOptionOrAsk('--location', lang('location'), $file->location, false);
+
+        $this->data['modified_date'] = ee()->localize->now;
+        $this->data['modified_by_member_id'] = ee('Member')->getDefaultCLIAuthor()->member_id;
 
         $file->set($this->data);
+
+        // Get category group from upload directory and allow editing if available
+        $uploadDirectory = $file->UploadDestination;
+        if ($uploadDirectory && $uploadDirectory->CategoryGroups->count() > 0) {
+            $categoryGroupIds = $uploadDirectory->CategoryGroups->pluck('group_id');
+            if (!empty($categoryGroupIds)) {
+                $categories = ee('Model')->get('Category')
+                    ->filter('group_id', 'IN', $categoryGroupIds)
+                    ->order('group_id', 'asc')
+                    ->order('cat_name', 'asc')
+                    ->all()
+                    ->getDictionary('cat_id', 'cat_name');
+
+                if (!empty($categories)) {
+                    $currentCategories = $file->Categories->pluck('cat_id');
+                    $selectedCategories = $this->getOptionValue('categories', [
+                        'type' => 'checkbox',
+                        'desc' => 'categories',
+                        'choices' => $categories,
+                        'default' => implode(',', $currentCategories),
+                        'required' => false
+                    ]);
+
+                    $file->Categories = ee('Model')->get('Category', $selectedCategories)->all();
+                }
+            }
+        }
+
         $this->validateModel($file, lang('command_files_not_saved'));
 
         $file->save();
