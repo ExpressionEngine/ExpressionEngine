@@ -82,6 +82,10 @@ EE.cp.formValidation = {
 
 		// Don't fire AJAX when submit button pressed
 		$(container).on('mousedown', this._buttonSelector, function() {
+			if ($(this).is(':disabled')) {
+				return;
+			}
+
 			that.pause();
 			window.prevFocus = false;
 		})
@@ -119,10 +123,25 @@ EE.cp.formValidation = {
 				}, 0);
 		});
 
-		$(container).on('change', 'input[type=checkbox], input[type=radio], input[type=hidden], input[type=range], select', function() {
+		$(container).on('focusout', 'div.redactor-styles, div.ck-content', function() {
+			var element = $(this);
+			window.prevFocus = false;
+			// #region agent log
+			fetch('http://127.0.0.1:7243/ingest/edc2d991-7497-4645-a0bd-d8cb9adf9bdf',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({runId:'pre-fix',hypothesisId:'H2',location:'form_validation.js:bindInputs:focusout',message:'RTE wrapper focusout',data:{tag:element.prop('tagName'),className:element.attr('class') || '',name:element.attr('name') || ''},timestamp:Date.now()})}).catch(()=>{});
+			// #endregion
+
+			setTimeout(function() {
+				that._sendAjaxRequest(element);
+			}, 0);
+		});
+
+		$(container).on('change', 'input[type=checkbox], input[type=radio], input[type=hidden], input[type=range], select, textarea.rte-textarea', function() {
 
 			var element = $(this);
 			window.prevFocus = false;
+			// #region agent log
+			fetch('http://127.0.0.1:7243/ingest/edc2d991-7497-4645-a0bd-d8cb9adf9bdf',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({runId:'pre-fix',hypothesisId:'H1',location:'form_validation.js:bindInputs:change',message:'Change handler fired',data:{tag:element.prop('tagName'),type:element.attr('type') || '',name:element.attr('name') || '',className:element.attr('class') || ''},timestamp:Date.now()})}).catch(()=>{});
+			// #endregion
 
 			if (element.data('ajaxValidate') == 'no') return
 
@@ -134,7 +153,7 @@ EE.cp.formValidation = {
 		// Upon loading the page with invalid fields, bind the text field
 		// timer to correct the validation as the user types (for AJAX
 		// validation only)
-		$('form.ajax-validate .fieldset-invalid, form.ajax-validate div.grid-publish:has(div.invalid)').each(function() {
+		$('form.ajax-validate .fieldset-invalid, form.ajax-validate div.grid-publish:has(div.invalid), form.ajax-validate div.grid-field:has(.invalid)').each(function() {
 			that._bindTextFieldTimer($(this));
 		});
 	},
@@ -285,6 +304,16 @@ EE.cp.formValidation = {
 	 * @param	{jQuery object}	field	jQuery object of field validating
 	 */
 	_sendAjaxRequest: function(field) {
+		// #region agent log
+		fetch('http://127.0.0.1:7243/ingest/edc2d991-7497-4645-a0bd-d8cb9adf9bdf',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({runId:'pre-fix',hypothesisId:'H1',location:'form_validation.js:_sendAjaxRequest:entry',message:'SendAjaxRequest entry',data:{paused:this.paused,tag:field && field.prop ? field.prop('tagName') : '',name:field && field.attr ? (field.attr('name') || '') : '',className:field && field.attr ? (field.attr('class') || '') : ''},timestamp:Date.now()})}).catch(()=>{});
+		// #endregion
+
+		field = this._resolveFieldForValidation(field);
+
+		// #region agent log
+		fetch('http://127.0.0.1:7243/ingest/edc2d991-7497-4645-a0bd-d8cb9adf9bdf',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({runId:'pre-fix',hypothesisId:'H1',location:'form_validation.js:_sendAjaxRequest:resolved',message:'Field resolved before guard',data:{paused:this.paused,tag:field && field.prop ? field.prop('tagName') : '',name:field && field.attr ? (field.attr('name') || '') : '',className:field && field.attr ? (field.attr('class') || '') : ''},timestamp:Date.now()})}).catch(()=>{});
+		// #endregion
+
 		if (this.paused || field.attr('name') === undefined) {
 			return;
 		}
@@ -332,6 +361,9 @@ EE.cp.formValidation = {
 		}
 
 		$.ajax({
+			// #region agent log
+			beforeSend: function() { fetch('http://127.0.0.1:7243/ingest/edc2d991-7497-4645-a0bd-d8cb9adf9bdf',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({runId:'pre-fix',hypothesisId:'H3',location:'form_validation.js:_sendAjaxRequest:beforeSend',message:'AJAX validation dispatch',data:{fieldName:field.attr('name') || '',formAction:action || ''},timestamp:Date.now()})}).catch(()=>{}); },
+			// #endregion
 			url: action,
 			data: data+'&ee_fv_field='+field.attr('name'),
 			type: 'POST',
@@ -340,6 +372,33 @@ EE.cp.formValidation = {
 				that._toggleErrorForFields(field, ret);
 			}
 		});
+	},
+
+	/**
+	 * For rich text editors, interaction events can come from wrapper elements
+	 * that do not have a field name. Resolve those to the underlying textarea.
+	 *
+	 * @param	{jQuery object}	field	jQuery object of interacted element
+	 * @return	{jQuery object}			jQuery object of field used for validation
+	 */
+	_resolveFieldForValidation: function(field) {
+		if ( ! field || field.length === 0 || field.attr('name') !== undefined) {
+			return field;
+		}
+
+		if (field.is('div.redactor-styles, div.ck-content') || field.closest('.redactor-box, .ck-editor').length) {
+			var container = field.closest('.field-control, td, .grid-field'),
+				rteTextarea = container.find('textarea.rte-textarea[name]').first();
+
+			if (rteTextarea.length > 0) {
+				// #region agent log
+				fetch('http://127.0.0.1:7243/ingest/edc2d991-7497-4645-a0bd-d8cb9adf9bdf',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({runId:'pre-fix',hypothesisId:'H4',location:'form_validation.js:_resolveFieldForValidation',message:'Resolved wrapper to rte textarea',data:{wrapperClass:field.attr('class') || '',resolvedName:rteTextarea.attr('name') || ''},timestamp:Date.now()})}).catch(()=>{});
+				// #endregion
+				return rteTextarea;
+			}
+		}
+
+		return field;
 	},
 
 	/**
@@ -555,8 +614,8 @@ EE.cp.formValidation = {
 			return;
 		}
 
-		// Bind the timer on keydown and change
-		inputs.data('validating', true).on('keydown change', function() {
+		// Bind the timer while typing/changing
+		inputs.data('validating', true).on('keydown input change', function() {
 
 			// Reset the timer, no need to validate if user is still typing
 			if (timer !== undefined) {
@@ -568,7 +627,16 @@ EE.cp.formValidation = {
 			// Wait half a second, then clear the timer and send the AJAX request
 			timer = setTimeout(function() {
 				clearTimeout(timer);
+				// #region agent log
+				fetch('http://127.0.0.1:7243/ingest/edc2d991-7497-4645-a0bd-d8cb9adf9bdf',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({runId:'pre-fix',hypothesisId:'H5',location:'form_validation.js:_bindTextFieldTimer:timerFired',message:'Debounced timer fired',data:{tag:field.prop('tagName'),name:field.attr('name') || '',className:field.attr('class') || '',isRteWrapper:field.is('div.redactor-styles, div.ck-content'),isNonRteTextarea:(field.is('textarea') && field.is('textarea:not(.rte-textarea)'))},timestamp:Date.now()})}).catch(()=>{});
+				// #endregion
 				if (field.is('textarea') && field.is('textarea:not(.rte-textarea)')) {
+					return false;
+				}
+
+				// Rich text wrappers validate when focus leaves the editor so we don't
+				// fire repeated requests while typing in contenteditable areas.
+				if (field.is('div.redactor-styles, div.ck-content')) {
 					return false;
 				} else {
 					that._sendAjaxRequest(field);
