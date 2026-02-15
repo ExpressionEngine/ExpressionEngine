@@ -44,7 +44,7 @@ class ChannelFetchCacheTest extends ChannelTestBase
         // Ensure _dynamic_parameters is initialized since constructor was skipped
         $ref = new ReflectionClass($this->channel);
         $prop = $ref->getProperty('_dynamic_parameters');
-        $prop->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($prop);
         $prop->setValue($this->channel, array('channel', 'entry_id', 'category', 'orderby',
             'sort', 'sticky', 'show_future_entries', 'show_expired', 'entry_id_from',
             'entry_id_to', 'not_entry_id', 'start_on', 'stop_before', 'year', 'month',

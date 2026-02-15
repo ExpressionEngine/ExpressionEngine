@@ -84,7 +84,7 @@ class ChannelParseChannelEntriesTest extends ChannelTestBase
         // Set protected preview_conditions via reflection
         $ref = new ReflectionClass('Channel');
         $prop = $ref->getProperty('preview_conditions');
-        $prop->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($prop);
         $prop->setValue($this->channel, ["(t.status = 'open')"]);
         $this->setMock('LivePreview', new class($previewData) {
             private $d; public function __construct($d){ $this->d = $d; }

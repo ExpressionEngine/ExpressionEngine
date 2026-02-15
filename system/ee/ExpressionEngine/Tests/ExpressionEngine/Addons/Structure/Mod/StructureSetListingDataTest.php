@@ -21,7 +21,7 @@ class StructureSetListingDataTest extends StructureTestBase
             public function escape_str($str) { return addslashes($str); }
             public function update_string($table, $data, $where) { $this->cap->update_data = $data; return 'UPDATE ' . $table; }
             public function insert_string($table, $data) { return 'INSERT ' . $table; }
-            public function get_where($table, $where)
+            public function get_where($table, $where = null, $limit = null, $offset = null)
             {
                 $this->cap->get_where_calls++;
                 // Simulate no existing row on first call

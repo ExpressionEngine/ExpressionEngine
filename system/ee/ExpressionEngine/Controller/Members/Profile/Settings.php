@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -108,7 +108,7 @@ class Settings extends Profile
                             'type' => 'image',
                             'id' => 'avatar',
                             'edit' => false,
-                            'image' => $avatar_exists ? $avatar_directory->url . $this->member->avatar_filename : '',
+                            'image' => $avatar_exists ? rtrim($avatar_directory->url, '/') . '/' . ltrim($this->member->avatar_filename, '/') : '',
                             'value' => $this->member->avatar_filename
                         )
                     )

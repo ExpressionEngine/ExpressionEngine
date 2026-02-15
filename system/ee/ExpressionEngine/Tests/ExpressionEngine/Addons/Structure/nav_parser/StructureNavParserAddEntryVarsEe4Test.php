@@ -134,12 +134,12 @@ class StructureNavParserAddEntryVarsEe4Test extends StructureTestBase
         // Ensure file_field library is available (StructureTestBase sets it on demand)
         $ref = new ReflectionClass($parser);
         $method = $ref->getMethod('add_entry_vars_start');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $method->invoke($parser);
 
         // Rows by entry should now include structure__ fields and path variables
         $rowsProp = $ref->getProperty('rows_by_entry');
-        $rowsProp->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($rowsProp);
         $rows = $rowsProp->getValue($parser);
 
         $this->assertArrayHasKey('100', $rows);

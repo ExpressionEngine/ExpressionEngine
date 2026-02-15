@@ -251,7 +251,7 @@ class ChannelFormLibSecurityEdgeCasesTest extends ChannelFormLibTestBase
 
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_add_errors');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         try {
             $result = $method->invoke($this->channelFormLib);

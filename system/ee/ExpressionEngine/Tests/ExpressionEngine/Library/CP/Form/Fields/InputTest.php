@@ -29,7 +29,7 @@ class InputTest extends TestCase
     public function testFieldParamsAttribute(): Input
     {
         $field = new _input_field('test-field', 'color');
-        $this->assertObjectHasAttribute('custom_params', $field);
+        $this->assertObjectHasProperty('custom_params', $field);
         $this->assertCount(0, $field->getCustomParams());
         return $field;
     }

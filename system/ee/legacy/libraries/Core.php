@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -74,7 +74,7 @@ class EE_Core
 
         // application constants
         define('APP_NAME', 'ExpressionEngine');
-        define('APP_BUILD', '20250503');
+        define('APP_BUILD', '20260115');
         define('APP_VER', '7.6.0');
         define('APP_VER_ID', '');
         define('SLASH', '&#47;');
@@ -321,9 +321,9 @@ class EE_Core
         $this->native_plugins = array('markdown', 'rss_parser', 'xml_encode');
         $this->native_modules = array(
             'block_and_allow', 'channel', 'comment', 'commerce', 'email',
-            'file', 'filepicker', 'forum', 'ip_to_nation', 'member',
+            'file', 'filepicker', 'forum', 'member',
             'metaweblog_api', 'moblog', 'pages', 'query', 'relationship', 'rss',
-            'rte', 'search', 'simple_commerce', 'spam', 'stats'
+            'rte', 'search', 'spam', 'stats'
         );
 
         // Is this a asset request?  If so, we're done.
