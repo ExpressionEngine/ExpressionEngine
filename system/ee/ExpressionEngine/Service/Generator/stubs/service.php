@@ -2,50 +2,20 @@
 
 namespace {{namespace}};
 
-use ExpressionEngine\Service\Addon\Addon;
-
 /**
- * {{service_name}} Service
- * 
- * @package     {{addon_name}}
- * @author      {{author}}
- * @description {{description}}
+ * {{service_name}}
+ *
+ * Usage: ee('{{addon}}:{{service_name}}')
  */
 class {{service_name}}
 {
     /**
-     * @var Addon
-     */
-    protected $addon;
-
-    /**
-     * Constructor
-     *
-     * @param Addon $addon
-     */
-    public function __construct(Addon $addon)
-    {
-        $this->addon = $addon;
-    }
-
-    /**
      * Example service method
      *
-     * @param string $param
      * @return string
      */
-    public function exampleMethod($param = '')
+    public function example()
     {
-        return 'Example: ' . $param;
+        return '{{service_name}} is working!';
     }
-
-    /**
-     * Get addon information
-     *
-     * @return array
-     */
-    public function getAddonInfo()
-    {
-        return $this->addon->getInfo();
-    }
-} 
+}
