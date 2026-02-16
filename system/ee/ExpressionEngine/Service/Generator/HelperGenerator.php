@@ -15,10 +15,6 @@ use ExpressionEngine\Library\String\Str;
 
 class HelperGenerator extends AbstractGenerator
 {
-
-    protected $description;
-    protected $author;
-    protected $addonType;
     protected $helpersPath;
 
     public function __construct(Filesystem $filesystem, Str $str, array $data)
@@ -27,8 +23,7 @@ class HelperGenerator extends AbstractGenerator
         $this->filesystem = $filesystem;
         $this->str = $str;
 
-        $this->addon = $data['addon_name'];
-
+        $this->addon = $data['addon'];
 
         // Set up addon path, generator path, and stub path
         $this->init();
@@ -36,35 +31,24 @@ class HelperGenerator extends AbstractGenerator
 
     private function init()
     {
-        $this->initCommon($this->addon);
-        $this->helpersPath = $this->addonPath . '/helpers/';
+        $this->initCommon();
+        $this->helpersPath = $this->addonPath . 'helpers/';
 
         // Get stub path
         $this->stubPath = $this->generatorPath . '/stubs/';
 
-        if (!$this->filesystem->isDir($this->helpersPath)) {
+        if (! $this->filesystem->isDir($this->helpersPath)) {
             $this->filesystem->mkDir($this->helpersPath);
         }
     }
 
     public function build()
     {
-        // Create main helper file
-        $this->createMainHelperFile();
-
-        return true;
-    }
-
-    /**
-     * Create the main helper file
-     */
-    private function createMainHelperFile()
-    {
         $helperStub = $this->filesystem->read($this->stub('helper.php'));
         $helperStub = $this->write('addon_name', $this->addon, $helperStub);
 
         $this->putFile($this->addon . '_helper.php', $helperStub, 'helpers');
+
+        return true;
     }
-
-
-} 
+}
