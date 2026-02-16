@@ -528,14 +528,6 @@ $lang = array(
     'command_make_service_option_addon'         => 'Name of add-on',
     'command_make_service_option_singleton'     => 'Register this service as a singleton',
 
-    // Lang entries for command make:helper
-    'command_make_helper_description'          => 'Creates a new helper for an add-on',
-    'command_make_helper_summary'              => 'This interactively generates a helper for an existing add-on',
-    'command_make_helper_lets_build_helper'    => 'Let\'s build your helper!',
-    'command_make_helper_ask_addon'            => 'What add-on is this for?',
-    'command_make_helper_lets_build'           => 'Let\'s build!',
-    'command_make_helper_created_successfully' => 'Your helper has been created successfully!',
-    'command_make_helper_option_addon'         => 'Name of add-on',
 
 );
 

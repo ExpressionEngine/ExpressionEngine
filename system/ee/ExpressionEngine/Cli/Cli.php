@@ -126,7 +126,6 @@ class Cli
         'make:command' => Commands\CommandMakeCommand::class,
         'make:cp-route' => Commands\CommandMakeCpRoute::class,
         'make:extension-hook' => Commands\CommandMakeExtensionHook::class,
-        'make:helper' => Commands\CommandMakeHelper::class,
         'make:fieldtype' => Commands\CommandMakeFieldtype::class,
         'make:jump' => Commands\CommandMakeJump::class,
         'make:migration' => Commands\CommandMakeMigration::class,
