@@ -82,10 +82,6 @@ EE.cp.formValidation = {
 
 		// Don't fire AJAX when submit button pressed
 		$(container).on('mousedown', this._buttonSelector, function() {
-			if ($(this).is(':disabled')) {
-				return;
-			}
-
 			that.pause();
 			window.prevFocus = false;
 		})
@@ -126,9 +122,6 @@ EE.cp.formValidation = {
 		$(container).on('focusout', 'div.redactor-styles, div.ck-content', function() {
 			var element = $(this);
 			window.prevFocus = false;
-			// #region agent log
-			fetch('http://127.0.0.1:7243/ingest/edc2d991-7497-4645-a0bd-d8cb9adf9bdf',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({runId:'pre-fix',hypothesisId:'H2',location:'form_validation.js:bindInputs:focusout',message:'RTE wrapper focusout',data:{tag:element.prop('tagName'),className:element.attr('class') || '',name:element.attr('name') || ''},timestamp:Date.now()})}).catch(()=>{});
-			// #endregion
 
 			setTimeout(function() {
 				that._sendAjaxRequest(element);
@@ -139,9 +132,6 @@ EE.cp.formValidation = {
 
 			var element = $(this);
 			window.prevFocus = false;
-			// #region agent log
-			fetch('http://127.0.0.1:7243/ingest/edc2d991-7497-4645-a0bd-d8cb9adf9bdf',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({runId:'pre-fix',hypothesisId:'H1',location:'form_validation.js:bindInputs:change',message:'Change handler fired',data:{tag:element.prop('tagName'),type:element.attr('type') || '',name:element.attr('name') || '',className:element.attr('class') || ''},timestamp:Date.now()})}).catch(()=>{});
-			// #endregion
 
 			if (element.data('ajaxValidate') == 'no') return
 
