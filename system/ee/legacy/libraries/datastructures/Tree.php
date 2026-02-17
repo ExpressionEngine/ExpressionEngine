@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -36,7 +36,7 @@ class EE_Tree
      *
      * @return Object<ImmutableTree>
      */
-    public function from_list($data, array $conf = null)
+    public function from_list($data, ?array $conf = null)
     {
         $conf = array_merge(
             array(

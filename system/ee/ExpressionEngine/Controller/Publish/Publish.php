@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -159,11 +159,15 @@ class Publish extends AbstractPublishController
 
         $site_id = ee()->config->item('site_id');
 
-        $autosave = ee('Model')->get('ChannelEntryAutosave')
+        $autosaveQuery = ee('Model')->get('ChannelEntryAutosave')
             ->filter('original_entry_id', $entry_id)
             ->filter('site_id', $site_id)
-            ->filter('channel_id', $channel_id)
-            ->first();
+            ->filter('channel_id', $channel_id);
+        // for new entries, use author as extra identifier
+        if (empty($entry_id)) {
+            $autosaveQuery->filter('author_id', ee()->input->post('author_id', ee()->session->userdata('member_id')));
+        }
+        $autosave = $autosaveQuery->first();
 
         if (! $autosave) {
             $autosave = ee('Model')->make('ChannelEntryAutosave');

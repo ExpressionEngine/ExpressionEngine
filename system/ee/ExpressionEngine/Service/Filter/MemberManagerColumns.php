@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -20,7 +20,7 @@ use ExpressionEngine\Model\Content\StructureModel;
 class MemberManagerColumns extends Columns
 {
     //view_id might hold view type here
-    public function __construct(array $columns = array(), StructureModel $primaryRole = null, $view_id_or_type = null)
+    public function __construct(array $columns = array(), ?StructureModel $primaryRole = null, $view_id_or_type = null)
     {
         parent::__construct($columns, $primaryRole, $view_id_or_type);
 

@@ -8,7 +8,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -64,7 +64,7 @@
             $dotenv = ExpressionEngine\Dependency\Dotenv\Dotenv::createImmutable(SYSPATH .'../', '.env.php');
             $dotenv->load();
             // force the installer/updater?
-            defined('INSTALL_MODE') || define('INSTALL_MODE', getenv('EE_INSTALL_MODE') === 'TRUE');
+            defined('INSTALL_MODE') || define('INSTALL_MODE', ($_ENV['EE_INSTALL_MODE'] ?? false) === 'TRUE');
         }
     } catch (\Exception $e) {
 

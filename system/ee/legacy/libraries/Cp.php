@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -108,7 +108,7 @@ class Cp
             'cp_current_site_label' => ee()->config->item('site_name'),
             'cp_screen_name' => ee('Format')->make('Text', $member->screen_name)->attributeSafe(),
             'cp_member_primary_role_title' => $member->PrimaryRole ? $member->PrimaryRole->name : '',
-            'cp_avatar_path' => ($member->avatar_filename) ? ee()->config->slash_item('avatar_url') . $member->avatar_filename : (URL_THEMES . 'asset/img/default-avatar.png'),
+            'cp_avatar_path' => ($member->avatar_filename) ? rtrim(ee()->config->slash_item('avatar_url'), '/') . '/' . ltrim($member->avatar_filename, '/') : (URL_THEMES . 'asset/img/default-avatar.png'),
             'cp_avatar_width' => ($member->avatar_filename) ? $member->avatar_width : '',
             'cp_avatar_height' => ($member->avatar_filename) ? $member->avatar_height : '',
             'cp_quicklinks' => $this->_get_quicklinks($member->getQuicklinks()),

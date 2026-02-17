@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -105,7 +105,7 @@ class CommandSyncUploadDirectory extends Cli
             $replaceSizeIds = array_map('trim', explode(',', $manipulations));
         }
 
-        if ($uploadLocation->adapter == 'local' && is_object($uploadLocation->getRawProperty('server_path')) && strpos($uploadLocation->getRawProperty('server_path')->path, '{base_path}') !== false && empty(ee()->config->item('base_path'))) {
+        if ($uploadLocation->getProperty('adapter') == 'local' && is_object($uploadLocation->getRawProperty('server_path')) && strpos($uploadLocation->getRawProperty('server_path')->path, '{base_path}') !== false && empty(ee()->config->item('base_path'))) {
             $this->fail('cli_error_sync_upload_directory_base_path_is_empty');
         }
 

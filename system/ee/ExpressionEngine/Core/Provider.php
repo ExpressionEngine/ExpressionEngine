@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -296,7 +296,7 @@ class Provider extends InjectionBindingDecorator
      * @param Closure $map Closure to call on the data before returning
      * @return Mixed Setup value
      */
-    public function get($key, $default = null, Closure $map = null)
+    public function get($key, $default = null, ?Closure $map = null)
     {
         if (array_key_exists($key, $this->data)) {
             $data = $this->data[$key];

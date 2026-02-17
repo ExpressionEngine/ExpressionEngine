@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -80,6 +80,18 @@ class RunnerTest extends TestCase
     {
         $this->runner->safetyOn();
         $this->runConditionTest($description, $str_in, $expected_out);
+    }
+
+    public function testEnableProtectJavascriptPreservesScriptConditionals()
+    {
+        $template = '<script>const label = "{if 1 == 2}bad{if:else}ok{/if}";</script>{if 2 == 2}outside{/if}';
+        $runner = new Runner();
+        $runner->enableProtectJavascript();
+
+        $this->assertSame(
+            '<script>const label = "{if 1 == 2}bad{if:else}ok{/if}";</script>outside',
+            $this->runCondition($template, array(), $runner)
+        );
     }
 
     public function testBasicVariableReplacement()

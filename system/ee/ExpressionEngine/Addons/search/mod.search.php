@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -1310,7 +1310,7 @@ class Search
         $row['comment_url'] = parse_config_variables($row['comment_url'], $overrides);
         $row['search_results_url'] = parse_config_variables($row['search_results_url'], $overrides);
 
-        if (isset($row['field_id_' . $row['search_excerpt']]) and $row['field_id_' . $row['search_excerpt']]) {
+        if (isset($row['field_id_' . $row['search_excerpt']]) and $row['field_id_' . $row['search_excerpt']] and !is_array($row['field_id_' . $row['search_excerpt']])) {
             $format = (! isset($row['field_ft_' . $row['search_excerpt']])) ? 'xhtml' : $row['field_ft_' . $row['search_excerpt']];
 
             // Replace block HTML tags with spaces so words don't run together in case

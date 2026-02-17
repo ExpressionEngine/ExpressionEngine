@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -634,6 +634,20 @@ class Channel extends StructureModel
         ee()->session->set_cache(__CLASS__, $cache_key, $field_groups);
 
         return new Collection($fields);
+    }
+
+    protected function set__channel_notify_emails($value)
+    {
+        $value = trim($value);
+        $value = str_replace(' ', '', $value);
+        $this->setRawProperty('channel_notify_emails', $value);
+    }
+
+    protected function set__comment_notify_emails($value)
+    {
+        $value = trim($value);
+        $value = str_replace(' ', '', $value);
+        $this->setRawProperty('comment_notify_emails', $value);
     }
 
     public function maxEntriesLimitReached()

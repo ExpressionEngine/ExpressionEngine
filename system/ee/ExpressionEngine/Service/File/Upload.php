@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -39,7 +39,7 @@ class Upload
                 'file_type' => lang('type_' . $file->file_type)
             ];
             if ($file->isImage()) {
-                $metadata['dimensions'] = (count($dimensions) > 1) ? $dimensions[0] . 'x' . $dimensions[1] . ' px' : '';
+                $metadata['dimensions'] = (count($dimensions) > 1) ? $dimensions[1] . 'x' . $dimensions[0] . ' px' : '';
             }
             $metadata = array_merge($metadata, [
                 'uploaded_by' => ($file->uploaded_by_member_id && $file->UploadAuthor) ? $file->UploadAuthor->getMemberName() : '',
