@@ -40,7 +40,7 @@ use Mockery as m;
 /**
  * Base test class for Multi Select fieldtype tests
  */
-class MultiSelectTestBase extends OptionFieldtypeTestBase
+abstract class MultiSelectTestBase extends OptionFieldtypeTestBase
 {
     protected $fieldtype;
 

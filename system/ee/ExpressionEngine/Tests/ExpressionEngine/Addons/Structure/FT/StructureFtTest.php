@@ -94,8 +94,9 @@ if (!function_exists('form_dropdown')) {
     function form_dropdown($name, $options, $selected = null)
     {
         $html = '<select name="' . htmlspecialchars($name, ENT_QUOTES, 'UTF-8') . '">';
+        $selectedValues = is_array($selected) ? array_map('strval', $selected) : [(string) $selected];
         foreach ((array) $options as $value => $label) {
-            $isSelected = ((string) $value === (string) $selected) ? ' selected' : '';
+            $isSelected = in_array((string) $value, $selectedValues, true) ? ' selected' : '';
             $html .= '<option value="' . htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8') . '"' . $isSelected . '>'
                 . htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8') . '</option>';
         }

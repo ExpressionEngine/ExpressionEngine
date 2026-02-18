@@ -28,13 +28,6 @@ use ExpressionEngine\Model\Channel\ChannelEntry;
 use ExpressionEngine\Structure\Conduit\StaticCache;
 use PHPUnit\Framework\TestCase;
 
-if (!class_exists('Cache')) {
-    class Cache
-    {
-        public const GLOBAL_SCOPE = 'global';
-    }
-}
-
 class StructureTabWrapperFixture extends Structure_tab
 {
     public $calls = [];
@@ -67,12 +60,40 @@ class StructureTabWrapperFixture extends Structure_tab
     }
 }
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 class StructureTabTest extends TestCase
 {
     protected function setUp(): void
     {
+        $this->ensureCacheClass();
         ee()->resetMocks();
         StaticCache::clear();
+    }
+
+    private function ensureCacheClass(): void
+    {
+        if (class_exists('Cache', false)) {
+            return;
+        }
+
+        $cacheFile = null;
+        if (defined('BASEPATH')) {
+            $candidate = rtrim(BASEPATH, '/\\') . '/libraries/Cache/Cache.php';
+            if (is_file($candidate) && class_exists('EE_Driver_Library', false)) {
+                $cacheFile = $candidate;
+            }
+        }
+
+        if ($cacheFile) {
+            require_once $cacheFile;
+        }
+
+        if (!class_exists('Cache', false)) {
+            eval('class Cache { public const GLOBAL_SCOPE = "global"; }');
+        }
     }
 
     public function testWrapperMethodsDelegateToCoreMethods()
