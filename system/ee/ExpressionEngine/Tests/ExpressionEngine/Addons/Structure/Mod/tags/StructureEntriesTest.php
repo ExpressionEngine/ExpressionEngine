@@ -218,6 +218,87 @@ class StructureEntriesTest extends StructureTestBase
         $this->assertSame('201|202', ee()->TMPL->tagparams['fixed_order']);
         $this->assertSame('y', $this->structure->sql->lastIncludeHidden);
     }
+
+    public function testEntriesRunsRealMethodAndPreservesComputedFixedOrder()
+    {
+        $this->structure->sql = new class {
+            public function get_child_entries($parent_id, $cat, $include_hidden)
+            {
+                return [41, 42];
+            }
+        };
+
+        $this->structure->enable = [
+            'categories' => false,
+            'category_fields' => false,
+            'custom_fields' => false,
+            'member_data' => false,
+            'pagination' => false,
+            'relationships' => false,
+            'relationship_custom_fields' => false,
+            'relationship_categories' => false,
+        ];
+
+        $this->setTemplateParams([
+            'parent_id' => 88,
+            'dynamic' => 'no',
+        ]);
+
+        $this->structure->entries();
+
+        $this->assertSame('41|42', ee()->TMPL->tagparams['fixed_order']);
+    }
+
+    public function testEntriesRunsRealMethodWithDynamicCategoryAndNoResults()
+    {
+        ee()->setMock('uri', new class {
+            private $segs = ['blog', 'category', 'news'];
+            public $uri_string = 'blog/category/news';
+            public function total_segments()
+            {
+                return count($this->segs);
+            }
+            public function segment($i)
+            {
+                return $this->segs[$i - 1] ?? null;
+            }
+        });
+
+        $captured = (object) ['cat' => null];
+        $this->structure->sql = new class($captured) {
+            private $captured;
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+            public function get_child_entries($parent_id, $cat, $include_hidden)
+            {
+                $this->captured->cat = $cat;
+                return false;
+            }
+        };
+
+        $this->structure->enable = [
+            'categories' => false,
+            'category_fields' => false,
+            'custom_fields' => false,
+            'member_data' => false,
+            'pagination' => false,
+            'relationships' => false,
+            'relationship_custom_fields' => false,
+            'relationship_categories' => false,
+        ];
+
+        $this->setTemplateParams([
+            'parent_id' => 90,
+            'include_hidden' => 'y',
+            'dynamic' => 'yes',
+        ]);
+        $this->structure->cat_trigger = 'category';
+
+        $this->structure->entries();
+
+        $this->assertSame('news', $captured->cat);
+        $this->assertSame('-1', ee()->TMPL->tagparams['entry_id']);
+    }
 }
-
-
