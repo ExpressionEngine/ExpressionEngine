@@ -12,6 +12,7 @@ namespace ExpressionEngine\Tests\Service\Model;
 
 use ExpressionEngine\Service\Model\Model;
 use ExpressionEngine\Service\Model\Registry;
+use ExpressionEngine\Service\Model\RegistryClassExistsShim;
 use PHPUnit\Framework\TestCase;
 
 class RegistryTest extends TestCase
@@ -51,6 +52,16 @@ class RegistryTest extends TestCase
         $registry->expandAlias('missing');
     }
 
+    public function testExpandAliasReturnsGivenNameWhenAliasMissingAndClassExists()
+    {
+        $registry = new Registry(array(), 'ee', array('ee'));
+        RegistryClassExistsShim::$existing['custom:model'] = true;
+
+        $this->assertSame('custom:model', $registry->expandAlias('custom:model'));
+
+        RegistryClassExistsShim::$existing = array();
+    }
+
     public function testGetMetaDataReaderCachesPerClassAndName()
     {
         $aliases = array(
@@ -74,6 +85,22 @@ class RegistryModelStub extends Model
     protected static $_primary_key = 'id';
 
     protected $id;
+}
+
+namespace ExpressionEngine\Service\Model;
+
+class RegistryClassExistsShim
+{
+    public static $existing = array();
+}
+
+function class_exists($name, $autoload = true)
+{
+    if (isset(RegistryClassExistsShim::$existing[$name])) {
+        return RegistryClassExistsShim::$existing[$name];
+    }
+
+    return \class_exists($name, $autoload);
 }
 
 // EOF
