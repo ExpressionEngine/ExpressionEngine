@@ -40,7 +40,7 @@ use Mockery as m;
 /**
  * Base test class for Selectable Buttons fieldtype tests
  */
-class SelectableButtonsTestBase extends OptionFieldtypeTestBase
+abstract class SelectableButtonsTestBase extends OptionFieldtypeTestBase
 {
     protected $fieldtype;
 
