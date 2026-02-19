@@ -310,11 +310,11 @@ class EE_Route
             if ($matches['rule'] == 'regex') {
                 $index = $pos + 7;
                 $regex = substr($matches[0], 6, 1);
-                $valid = @preg_match("/$regex/", '');
+                $valid = $this->is_valid_regex_fragment($regex);
 
-                while ($valid === false) {
+                while (! $valid) {
                     $regex .= substr($rules, $index, 1);
-                    $valid = @preg_match("/$regex/", '');
+                    $valid = $this->is_valid_regex_fragment($regex);
                     $index++;
 
                     if ($end < $index) {
@@ -335,6 +335,48 @@ class EE_Route
         }
 
         return $parsed_rules;
+    }
+
+    /**
+     * Validate a regex fragment without leaking parser warnings.
+     *
+     * @param string $regex
+     * @return bool
+     */
+    private function is_valid_regex_fragment($regex)
+    {
+        $delimiters = array('/', '#', '~', '%', '!', '@', ';', '`', '=');
+        $delimiter = '/';
+
+        foreach ($delimiters as $candidate) {
+            if (strpos($regex, $candidate) === false) {
+                $delimiter = $candidate;
+                break;
+            }
+        }
+
+        if (strpos($regex, $delimiter) !== false) {
+            $regex = str_replace($delimiter, '\\' . $delimiter, $regex);
+        }
+
+        $valid = true;
+
+        set_error_handler(function () use (&$valid) {
+            $valid = false;
+            return true;
+        });
+
+        try {
+            $result = preg_match($delimiter . $regex . $delimiter, '');
+
+            if ($result === false) {
+                $valid = false;
+            }
+        } finally {
+            restore_error_handler();
+        }
+
+        return $valid;
     }
 }
 // END CLASS
