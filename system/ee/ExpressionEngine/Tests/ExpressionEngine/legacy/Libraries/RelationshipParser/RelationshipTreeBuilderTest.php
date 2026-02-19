@@ -181,6 +181,17 @@ class RelationshipTreeBuilderTest extends TestCase
         $this->assertCount(0, $root->children());
     }
 
+    public function testBuildTreeInternalFluidModeEvaluatesSuffixTokenInShortcutDetection()
+    {
+        $builder = $this->makeBuilder([1 => ['rel' => 10]], [], null, 88);
+
+        $root = $builder->exposeBuildTreeInternal('{rel:title}');
+
+        $this->assertInstanceOf(\QueryNode::class, $root);
+        $this->assertCount(1, $root->children());
+        $this->assertSame('rel', $root->children()[0]->name());
+    }
+
     public function testBuildTreeInternalThrowsWhenNestedParentTagIsMissing()
     {
         $builder = $this->makeBuilder([1 => ['rel' => 10, 'child' => 11]]);
@@ -483,6 +494,23 @@ class RelationshipTreeBuilderTest extends TestCase
 
         $this->assertNull($result);
         $this->assertArrayHasKey(99, ee()->extensions->lastLookup);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function testGetParserLoadsParserClassWhenNotPreloaded()
+    {
+        $this->assertFalse(class_exists('EE_Relationship_data_parser', false));
+
+        $builder = $this->makeBuilder([1 => ['rel' => 10]]);
+        $builder->setUniqueIds([]);
+
+        $parser = $builder->get_parser(new \EE_TreeNode('__root__'));
+
+        $this->assertInstanceOf(\EE_Relationship_data_parser::class, $parser);
+        $this->assertTrue(class_exists('EE_Relationship_data_parser', false));
     }
 
     private function makeBuilder(
