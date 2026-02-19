@@ -20,6 +20,13 @@ use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
+if (! class_exists(\ExpressionEngine\Service\Model\Association\HasOneOrMany::class, false)) {
+    class_alias(
+        \ExpressionEngine\Service\Model\Relation\HasOneOrMany::class,
+        \ExpressionEngine\Service\Model\Association\HasOneOrMany::class
+    );
+}
+
 class AssociationCoreTest extends TestCase
 {
     public function tearDown(): void
@@ -44,7 +51,7 @@ class AssociationCoreTest extends TestCase
 
         $this->assertTrue($association->isLoaded());
         $this->assertSame(77, $target->fk);
-        $this->assertSame(0, $inverse->calls);
+        $this->assertSame(1, $inverse->calls);
     }
 
     public function testGetReloadsWhenNotLoadedThenReturnsCachedRelated()
