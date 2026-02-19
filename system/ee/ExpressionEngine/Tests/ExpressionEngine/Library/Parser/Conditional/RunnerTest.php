@@ -82,6 +82,18 @@ class RunnerTest extends TestCase
         $this->runConditionTest($description, $str_in, $expected_out);
     }
 
+    public function testEnableProtectJavascriptPreservesScriptConditionals()
+    {
+        $template = '<script>const label = "{if 1 == 2}bad{if:else}ok{/if}";</script>{if 2 == 2}outside{/if}';
+        $runner = new Runner();
+        $runner->enableProtectJavascript();
+
+        $this->assertSame(
+            '<script>const label = "{if 1 == 2}bad{if:else}ok{/if}";</script>outside',
+            $this->runCondition($template, array(), $runner)
+        );
+    }
+
     public function testBasicVariableReplacement()
     {
         $runner = new Runner();
