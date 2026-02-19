@@ -294,15 +294,7 @@ EE.cp.formValidation = {
 	 * @param	{jQuery object}	field	jQuery object of field validating
 	 */
 	_sendAjaxRequest: function(field) {
-		// #region agent log
-		fetch('http://127.0.0.1:7243/ingest/edc2d991-7497-4645-a0bd-d8cb9adf9bdf',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({runId:'pre-fix',hypothesisId:'H1',location:'form_validation.js:_sendAjaxRequest:entry',message:'SendAjaxRequest entry',data:{paused:this.paused,tag:field && field.prop ? field.prop('tagName') : '',name:field && field.attr ? (field.attr('name') || '') : '',className:field && field.attr ? (field.attr('class') || '') : ''},timestamp:Date.now()})}).catch(()=>{});
-		// #endregion
-
 		field = this._resolveFieldForValidation(field);
-
-		// #region agent log
-		fetch('http://127.0.0.1:7243/ingest/edc2d991-7497-4645-a0bd-d8cb9adf9bdf',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({runId:'pre-fix',hypothesisId:'H1',location:'form_validation.js:_sendAjaxRequest:resolved',message:'Field resolved before guard',data:{paused:this.paused,tag:field && field.prop ? field.prop('tagName') : '',name:field && field.attr ? (field.attr('name') || '') : '',className:field && field.attr ? (field.attr('class') || '') : ''},timestamp:Date.now()})}).catch(()=>{});
-		// #endregion
 
 		if (this.paused || field.attr('name') === undefined) {
 			return;
@@ -351,9 +343,6 @@ EE.cp.formValidation = {
 		}
 
 		$.ajax({
-			// #region agent log
-			beforeSend: function() { fetch('http://127.0.0.1:7243/ingest/edc2d991-7497-4645-a0bd-d8cb9adf9bdf',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({runId:'pre-fix',hypothesisId:'H3',location:'form_validation.js:_sendAjaxRequest:beforeSend',message:'AJAX validation dispatch',data:{fieldName:field.attr('name') || '',formAction:action || ''},timestamp:Date.now()})}).catch(()=>{}); },
-			// #endregion
 			url: action,
 			data: data+'&ee_fv_field='+field.attr('name'),
 			type: 'POST',
@@ -381,9 +370,6 @@ EE.cp.formValidation = {
 				rteTextarea = container.find('textarea.rte-textarea[name]').first();
 
 			if (rteTextarea.length > 0) {
-				// #region agent log
-				fetch('http://127.0.0.1:7243/ingest/edc2d991-7497-4645-a0bd-d8cb9adf9bdf',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({runId:'pre-fix',hypothesisId:'H4',location:'form_validation.js:_resolveFieldForValidation',message:'Resolved wrapper to rte textarea',data:{wrapperClass:field.attr('class') || '',resolvedName:rteTextarea.attr('name') || ''},timestamp:Date.now()})}).catch(()=>{});
-				// #endregion
 				return rteTextarea;
 			}
 		}
@@ -617,9 +603,6 @@ EE.cp.formValidation = {
 			// Wait half a second, then clear the timer and send the AJAX request
 			timer = setTimeout(function() {
 				clearTimeout(timer);
-				// #region agent log
-				fetch('http://127.0.0.1:7243/ingest/edc2d991-7497-4645-a0bd-d8cb9adf9bdf',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({runId:'pre-fix',hypothesisId:'H5',location:'form_validation.js:_bindTextFieldTimer:timerFired',message:'Debounced timer fired',data:{tag:field.prop('tagName'),name:field.attr('name') || '',className:field.attr('class') || '',isRteWrapper:field.is('div.redactor-styles, div.ck-content'),isNonRteTextarea:(field.is('textarea') && field.is('textarea:not(.rte-textarea)'))},timestamp:Date.now()})}).catch(()=>{});
-				// #endregion
 				if (field.is('textarea') && field.is('textarea:not(.rte-textarea)')) {
 					return false;
 				}
