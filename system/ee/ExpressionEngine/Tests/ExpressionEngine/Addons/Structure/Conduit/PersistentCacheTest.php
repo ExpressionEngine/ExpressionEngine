@@ -169,6 +169,10 @@ class PersistentCacheTest extends StructureTestBase
 
     public function testSetReturnsFalseWhenBaseCacheDirectoryIsNotWritable()
     {
+        if (DIRECTORY_SEPARATOR === '\\') {
+            $this->markTestSkipped('This test is not reliable on Windows due to different permission handling');
+        }
+
         $base = $this->tmpRoot . '/readonly-base';
         @mkdir($base, 0555, true);
 
