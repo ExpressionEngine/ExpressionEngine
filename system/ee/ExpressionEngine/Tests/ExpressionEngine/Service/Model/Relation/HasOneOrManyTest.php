@@ -158,6 +158,46 @@ class HasOneOrManyTest extends TestCase
         $this->assertTrue(true);
     }
 
+    public function testDropWithSingleObjectTargetUsesDirectIdBranch()
+    {
+        $relation = $this->makeRelation(array(
+            'from_key' => 'entry_id',
+            'to_key' => 'member_id',
+            'weak' => false
+        ));
+
+        $source = new HasOneOrManySourceModelStub();
+        $source->fill(array('entry_id' => 21));
+        $target = m::mock();
+        $target->shouldReceive('getId')->once()->andReturn(44);
+
+        $store = m::mock(DataStore::class);
+        $query = m::mock();
+        $store->shouldReceive('rawQuery')->once()->andReturn($query);
+        $query->shouldReceive('where')->once()->with('member_id', 21)->andReturnSelf();
+        $query->shouldReceive('where_in')->once()->with('member_id', array(44))->andReturnSelf();
+        $query->shouldReceive('delete')->once()->with('exp_members');
+
+        $relation->setDataStore($store);
+        $relation->drop($source, $target);
+        $this->assertTrue(true);
+    }
+
+    public function testDropWithInvalidNonCollectionTargetThrowsError()
+    {
+        $relation = $this->makeRelation(array(
+            'from_key' => 'entry_id',
+            'to_key' => 'member_id',
+            'weak' => false
+        ));
+
+        $source = new HasOneOrManySourceModelStub();
+        $source->fill(array('entry_id' => 21));
+
+        $this->expectException(\Error::class);
+        $relation->drop($source, false);
+    }
+
     public function testSetDropsComplementForArrayTargetsInStrongRelation()
     {
         $relation = $this->makeRelation(array(
