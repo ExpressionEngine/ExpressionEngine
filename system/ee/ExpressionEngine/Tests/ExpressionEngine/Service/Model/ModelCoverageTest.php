@@ -143,7 +143,7 @@ class ModelCoverageTest extends TestCase
         );
 
         $this->expectException(\Error::class);
-        $this->expectExceptionMessage("Class 'ExpressionEngine\\Service\\Model\\InvalidArgumentException' not found");
+        $this->expectExceptionMessageMatches('/ExpressionEngine\\\\Service\\\\Model\\\\InvalidArgumentException/');
         $model->validateUniqueWithinSiblings('slug', 'value', array('parent'));
     }
 
