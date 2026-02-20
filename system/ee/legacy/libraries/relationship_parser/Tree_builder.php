@@ -116,10 +116,14 @@ class EE_relationship_tree_builder
             }
 
             // Store flattened ids for the big entry query
-            $all_entry_ids[] = $this->_propagate_ids(
-                $node,
-                ee()->relationship_model->node_query($node, $entry_ids, $this->grid_field_id, $this->fluid_field_data_id)
-            );
+            $result = ee()->relationship_model->node_query($node, $entry_ids, $this->grid_field_id, $this->fluid_field_data_id);
+
+            if (empty($result)) {
+                $all_entry_ids[] = array();
+                continue; // Nothing to propagate for this node
+            }
+
+            $all_entry_ids[] = $this->_propagate_ids($node, $result);
         }
 
         $this->_unique_ids = array_unique(
