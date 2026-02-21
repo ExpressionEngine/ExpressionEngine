@@ -941,7 +941,7 @@ class Fields extends AbstractFieldsController
         ];
 
         $structure = ee('Addon')->get('structure');
-        if (version_compare($structure->getInstalledVersion(), '6.1.0', '>=')) {
+        if ($structure->isInstalled() && version_compare($structure->getInstalledVersion(), '6.1.0', '>=')) {
             $cache_key = 'conditional_fields_pages_' . ee()->config->item('site_id');
             $pages = ee()->cache->get('/site_pages/' . md5($cache_key), \Cache::GLOBAL_SCOPE);
             if ($pages === false) {

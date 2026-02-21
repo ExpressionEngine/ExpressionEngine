@@ -41,6 +41,12 @@ class Condition extends Model
             'model' => 'ChannelField',
             'from_key' => 'condition_field_id',
             'to_key' => 'field_id'
+        ),
+        'CategoryGroup' => array(
+            'type' => 'belongsTo',
+            'model' => 'CategoryGroup',
+            'from_key' => 'condition_category_group_id',
+            'to_key' => 'group_id'
         )
     );
 
