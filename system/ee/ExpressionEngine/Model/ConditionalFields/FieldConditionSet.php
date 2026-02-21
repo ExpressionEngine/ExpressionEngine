@@ -32,7 +32,7 @@ class FieldConditionSet extends Model
 
     protected static $_relationships = array(
         'FieldConditions' => array(
-            'model'      => 'FieldCondition',
+            'model'      => 'Condition',
             'type'       => 'hasMany'
         ),
         'ChannelFields' => array(

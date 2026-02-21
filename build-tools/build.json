@@ -1,5 +1,6 @@
 {
-    "tag": "7.5.19",
+    "tag": "7.6.0",
+
     "repositories": {
         "app": "git@github.com:ExpressionEngine/ExpressionEngine",
         "docs": "git@github.com:ExpressionEngine/ExpressionEngine-User-Guide"

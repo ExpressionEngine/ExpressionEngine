@@ -55,7 +55,12 @@ class CategoryGroup extends StructureModel
                 'left' => 'group_id',
                 'right' => 'upload_location_id'
             )
-        )
+        ),
+        'FieldConditions' => array(
+            'type' => 'hasMany',
+            'model' => 'CategoryCondition',
+            'to_key' => 'condition_category_group_id'
+        ),
     );
 
     protected static $_validation_rules = array(
