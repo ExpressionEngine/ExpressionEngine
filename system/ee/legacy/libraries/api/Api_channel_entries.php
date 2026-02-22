@@ -601,7 +601,7 @@ class Api_channel_entries extends Api
             $this->_set_error('missing_title', 'title');
         }
 
-        if ($this->c_prefs['enable_versioning'] == 'y' && $this->c_prefs['revision_comment_required'] == 'y') {
+        if (isset($this->c_prefs['enable_versioning']) && $this->c_prefs['enable_versioning'] == 'y' && isset($this->c_prefs['revision_comment_required']) && $this->c_prefs['revision_comment_required'] == 'y') {
             $data['revision_comment'] = isset($data['revision_comment']) ? trim($data['revision_comment']) : '';
             if ($data['revision_comment'] === '') {
                 $this->_set_error('missing_revision_comment', 'revision_comment');
