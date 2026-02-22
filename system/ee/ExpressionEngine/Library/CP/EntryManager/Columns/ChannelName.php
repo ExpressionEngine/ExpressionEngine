@@ -37,8 +37,13 @@ class ChannelName extends Column
         return 'channel';
     }
 
+    public function getTableColumnConfig()
+    {
+        return ['encode' => false];
+    }
+
     public function renderTableCell($data, $field_id, $entry)
     {
-        return ee('Format')->make('Text', $entry->Channel->channel_title);
+        return $entry->Channel->getCpTitleHtml();
     }
 }

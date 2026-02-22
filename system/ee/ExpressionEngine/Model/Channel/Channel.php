@@ -130,6 +130,7 @@ class Channel extends StructureModel
         'allow_preview' => 'enum[y,n]',
         'comment_url' => 'xss',
         'channel_description' => 'xss|maxLength[255]',
+        'channel_icon' => 'xss|maxLength[255]',
         'deft_comments' => 'enum[y,n]',
         'channel_require_membership' => 'enum[y,n]',
         'channel_allow_img_urls' => 'enum[y,n]',
@@ -183,6 +184,7 @@ class Channel extends StructureModel
     protected $channel_title;
     protected $channel_url;
     protected $channel_description;
+    protected $channel_icon;
     protected $channel_lang;
     protected $total_entries;
     protected $total_records;
@@ -235,6 +237,36 @@ class Channel extends StructureModel
     public function get__channel_title()
     {
         return ee('Security/XSS')->clean($this->getRawProperty('channel_title'));
+    }
+
+    /**
+     * Returns an HTML-safe channel title with optional icon for CP display
+     *
+     * @return string
+     */
+    public function getCpTitleHtml()
+    {
+        $title = ee('Format')->make('Text', $this->channel_title)->convertToEntities();
+        $icon = $this->sanitizeChannelIcon();
+
+        if (empty($icon)) {
+            return $title;
+        }
+
+        return '<i class="fal fa-' . $icon . '"></i> ' . $title;
+    }
+
+    /**
+     * Sanitizes channel_icon for use in CSS class
+     *
+     * @return string
+     */
+    protected function sanitizeChannelIcon()
+    {
+        $icon = strip_quotes((string) $this->channel_icon);
+        $icon = preg_replace('/[^a-z0-9\-]/i', '', $icon);
+
+        return $icon;
     }
 
     /**

@@ -665,6 +665,7 @@ class EE_Schema
 			channel_title varchar(100) NOT NULL,
 			channel_url varchar(100) NOT NULL,
 			channel_description varchar(255) NULL DEFAULT NULL,
+			channel_icon varchar(255) NULL DEFAULT NULL,
 			channel_lang varchar(12) NOT NULL,
 			total_entries mediumint(8) default '0' NOT NULL,
 			total_records mediumint(8) unsigned NOT NULL DEFAULT '0',

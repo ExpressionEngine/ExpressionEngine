@@ -146,6 +146,7 @@ class Layouts extends AbstractChannelsController
             ->render($vars['base_url']);
 
         $vars['cp_page_title'] = sprintf(lang('channel_form_layouts'), $channel->channel_title);
+        $vars['cp_page_title_html'] = sprintf(lang('channel_form_layouts'), $channel->getCpTitleHtml());
         $vars['channel_title'] = ee('Format')->make('Text', $channel->channel_title)->convertToEntities();
         $vars['layouts'] = $data;
         $vars['no_results'] = ['text' => lang('no_layouts'), 'href' => $vars['create_url']];

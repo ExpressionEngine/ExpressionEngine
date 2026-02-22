@@ -11,7 +11,7 @@
         <div class="panel-heading">
           <div class="form-btns form-btns-top">
             <div class="title-bar title-bar--large">
-              <h3 class="title-bar__title"><?=$cp_page_title?></h3>
+			  <h3 class="title-bar__title"><?=isset($cp_page_title_html) ? $cp_page_title_html : $cp_page_title?></h3>
               <div class="title-bar__extra-tools">
   					<a class="button button--primary" href="<?=$create_url?>"><?=lang('new_layout')?></a>
         </div>

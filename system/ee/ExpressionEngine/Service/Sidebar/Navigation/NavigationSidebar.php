@@ -49,7 +49,7 @@ class NavigationSidebar extends AbstractSidebar
                 $allowed_channel_ids = (ee('Permission')->isSuperAdmin()) ? null : array_keys(ee()->session->userdata['assigned_channels']);
 
                 $channels = ee('Model')->get('Channel', $allowed_channel_ids)
-                    ->fields('channel_id', 'channel_title', 'max_entries', 'total_records')
+                    ->fields('channel_id', 'channel_title', 'channel_icon', 'max_entries', 'total_records')
                     ->filter('site_id', ee()->config->item('site_id'))
                     ->order('channel_title', 'ASC')
                     ->all();
@@ -83,7 +83,8 @@ class NavigationSidebar extends AbstractSidebar
                             }
                         }
                     }
-                    $listitem = $list->addItem($channel->channel_title, $editLink ?: '#');
+                    $channelTitle = $channel->getCpTitleHtml();
+                    $listitem = $list->addItem($channelTitle, $editLink ?: '#');
                     if (!empty($publishLink)) {
                         $listitem->withAddLink($publishLink);
                     }
