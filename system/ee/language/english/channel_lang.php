@@ -264,6 +264,10 @@ $lang = array(
 
     'channel_description_desc' => 'Brief description of this channel.',
 
+    'channel_icon' => 'Channel icon',
+
+    'channel_icon_desc' => 'Name of <a href="https://fontawesome.com/v6/search" target="_blank">Font Awesome</a> icon to represent this channel, e.g. <code>newspaper</code>.',
+
     'channel_form' => 'Channel Form',
 
     'channel_form_default_author' => 'Author',

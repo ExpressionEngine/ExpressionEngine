@@ -176,7 +176,7 @@ class Comments extends AbstractPublishController
         } else {
             ee()->view->cp_heading = sprintf(
                 lang('all_comments'),
-                (!is_null($channel)) ? $channel->channel_title : ''
+                (!is_null($channel)) ? $channel->getCpTitleHtml() : ''
             );
         }
 

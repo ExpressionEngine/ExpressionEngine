@@ -63,7 +63,7 @@
                                 disabled="disabled"
                             <?php endif; ?>
                             type="checkbox"
-                            aria-label="<?=$row['label'] . ' ' . lang('checkbox')?>"
+                            aria-label="<?=htmlspecialchars($row['label']) . ' ' . lang('checkbox')?>"
                         >
                     </div>
                 <?php endif ?>

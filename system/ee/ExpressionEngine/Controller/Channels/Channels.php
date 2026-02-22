@@ -69,7 +69,8 @@ class Channels extends AbstractChannelsController
 
             $data[] = [
                 'id' => $channel->getId(),
-                'label' => \htmlspecialchars((string) $channel->channel_title),
+                'label' => $channel->getCpTitleHtml(),
+                'htmlLabel' => true,
                 'href' => $edit_url,
                 'extra' => [
                     'encode' => false,
@@ -990,6 +991,16 @@ class Channels extends AbstractChannelsController
                         'channel_description' => array(
                             'type' => 'textarea',
                             'value' => $channel->channel_description
+                        )
+                    )
+                ),
+                array(
+                    'title' => 'channel_icon',
+                    'desc' => 'channel_icon_desc',
+                    'fields' => array(
+                        'channel_icon' => array(
+                            'type' => 'text',
+                            'value' => $channel->getRawProperty('channel_icon')
                         )
                     )
                 ),
