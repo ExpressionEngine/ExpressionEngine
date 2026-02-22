@@ -803,6 +803,14 @@ $lang = array(
 
     'versioning_enabled_desc' => 'When enabled, you can store up to %d revisions of this entry.',
 
+    'versioning_enabled_required_desc' => 'Revision comments are required for this channel, so revisions cannot be disabled for this entry.',
+
+    'revision_comment' => 'Revision comment',
+
+    'revision_comment_desc' => 'Brief note about what changed in this revision.',
+
+    'missing_revision_comment' => 'Please enter a revision comment.',
+
     'view' => 'View',
 
     'view_comments' => 'View Comments',

@@ -687,6 +687,11 @@ class ChannelEntry extends ContentModel
         }
 
         $data = $_POST ?: $this->getValues();
+        $revision_comment = '';
+        if (isset($data['revision_comment'])) {
+            $revision_comment = trim($data['revision_comment']);
+            unset($data['revision_comment']);
+        }
 
         $last_version = $this->Versions->sortBy('version_date')->reverse()->first();
 
@@ -715,6 +720,7 @@ class ChannelEntry extends ContentModel
             'channel_id' => $this->channel_id,
             'author_id' => ee()->session->userdata('member_id') ?: 1,
             'version_date' => ee()->localize->now,
+            'revision_comment' => $revision_comment,
             'version_data' => $data
         );
 
@@ -1054,8 +1060,23 @@ class ChannelEntry extends ContentModel
 
     public function get__versioning_enabled()
     {
+        if ($this->Channel && $this->Channel->revision_comment_required) {
+            return 'y';
+        }
+
         return isset($this->versioning_enabled)
             ? $this->versioning_enabled : $this->Channel->enable_versioning;
+    }
+
+    public function set__versioning_enabled($value)
+    {
+        if ($this->Channel && $this->Channel->revision_comment_required) {
+            $this->versioning_enabled = 'y';
+
+            return;
+        }
+
+        $this->versioning_enabled = $value;
     }
 
     /**
@@ -1254,16 +1275,34 @@ class ChannelEntry extends ContentModel
             );
 
             if ($this->Channel && $this->Channel->enable_versioning) {
+                $versioning_required = (bool) $this->Channel->revision_comment_required;
+                $versioning_instructions = sprintf(lang('versioning_enabled_desc'), $this->Channel->max_revisions);
+                if ($versioning_required) {
+                    $versioning_instructions .= BR . lang('versioning_enabled_required_desc');
+                }
+
                 $default_fields['versioning_enabled'] = array(
                     'field_id' => 'versioning_enabled',
                     'field_label' => lang('versioning_enabled'),
                     'field_required' => 'n',
                     'field_show_fmt' => 'n',
-                    'field_instructions' => sprintf(lang('versioning_enabled_desc'), $this->Channel->max_revisions),
+                    'field_instructions' => $versioning_instructions,
                     'field_text_direction' => 'ltr',
                     'field_type' => 'toggle',
                     'yes_no' => true,
-                    'field_maxl' => 100
+                    'field_maxl' => 100,
+                    'disabled' => $versioning_required
+                );
+                $default_fields['revision_comment'] = array(
+                    'field_id' => 'revision_comment',
+                    'field_label' => lang('revision_comment'),
+                    'field_required' => $versioning_required ? 'y' : 'n',
+                    'field_show_fmt' => 'n',
+                    'field_instructions' => lang('revision_comment_desc'),
+                    'field_text_direction' => 'ltr',
+                    'field_type' => 'text',
+                    'field_maxl' => 255,
+                    'field_wide' => true
                 );
                 $default_fields['revisions'] = array(
                     'field_id' => 'revisions',

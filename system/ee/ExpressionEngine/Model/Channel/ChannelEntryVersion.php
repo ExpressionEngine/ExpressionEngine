@@ -52,6 +52,7 @@ class ChannelEntryVersion extends Model
     protected $channel_id;
     protected $author_id;
     protected $version_date;
+    protected $revision_comment;
     protected $version_data;
 
     public function getAuthorName()

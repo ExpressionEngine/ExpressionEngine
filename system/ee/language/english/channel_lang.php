@@ -346,6 +346,10 @@ $lang = array(
 
     'enable_versioning_desc' => 'When enabled, ExpressionEngine will save revisions of each entry for this channel.',
 
+    'revision_comment_required' => 'Require revision comment?',
+
+    'revision_comment_required_desc' => 'When enabled, entries in this channel must include a revision comment and revisions cannot be disabled per entry.',
+
     'html_formatting' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> formatting',
 
     'invalid_url_title_prefix' => 'This field cannot contain spaces.',

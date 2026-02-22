@@ -703,6 +703,7 @@ class EE_Schema
 			search_results_url varchar(80) NULL DEFAULT NULL,
 			rss_url varchar(80) NULL DEFAULT NULL,
 			enable_versioning char(1) NOT NULL default 'n',
+			revision_comment_required char(1) NOT NULL default 'n',
 			max_revisions smallint(4) unsigned NOT NULL default 10,
 			default_entry_title varchar(100) NULL DEFAULT NULL,
 			title_field_label varchar(100) NOT NULL DEFAULT 'Title',
@@ -806,6 +807,7 @@ class EE_Schema
 			channel_id int(4) unsigned NOT NULL,
 			author_id int(10) unsigned NOT NULL,
 			version_date bigint(10) NOT NULL,
+			revision_comment varchar(255) NULL DEFAULT NULL,
 			version_data mediumtext NOT NULL,
 			PRIMARY KEY `version_id` (`version_id`),
 			KEY `entry_id` (`entry_id`)

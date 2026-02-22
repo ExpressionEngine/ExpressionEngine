@@ -635,6 +635,8 @@ $lang = array(
 
     'rev_id' => '#',
 
+    'rev_comment' => 'Comment',
+
     'revisions' => 'Revisions',
 
     'search_results' => 'Search Results',

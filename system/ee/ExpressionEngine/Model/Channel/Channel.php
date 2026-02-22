@@ -40,6 +40,7 @@ class Channel extends StructureModel
         'comment_notify' => 'boolString',
         'comment_notify_authors' => 'boolString',
         'enable_versioning' => 'boolString',
+        'revision_comment_required' => 'boolString',
         'search_excerpt' => 'int',
         'conditional_sync_required' => 'boolString',
         'enforce_auto_url_title' => 'boolString',
@@ -146,6 +147,7 @@ class Channel extends StructureModel
         'comment_notify' => 'enum[y,n]',
         'comment_notify_authors' => 'enum[y,n]',
         'enable_versioning' => 'enum[y,n]',
+        'revision_comment_required' => 'enum[y,n]',
         'max_entries' => 'isNatural',
         'max_revisions' => 'isNatural',
         'max_characters' => 'isNatural',
@@ -218,6 +220,7 @@ class Channel extends StructureModel
     protected $comment_notify_authors = false;
     protected $comment_notify_emails;
     protected $comment_expiration;
+    protected $revision_comment_required = false;
     protected $search_results_url;
     protected $rss_url;
     protected $enable_versioning = false;
@@ -482,6 +485,11 @@ class Channel extends StructureModel
                 'fields' => array(
                     array(
                         'field' => 'versioning_enabled',
+                        'visible' => true,
+                        'collapsed' => false
+                    ),
+                    array(
+                        'field' => 'revision_comment',
                         'visible' => true,
                         'collapsed' => false
                     ),

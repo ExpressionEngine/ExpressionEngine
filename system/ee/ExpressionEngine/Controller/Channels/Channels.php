@@ -1238,11 +1238,25 @@ class Channels extends AbstractChannelsController
                     'fields' => array(
                         'enable_versioning' => array(
                             'type' => 'yes_no',
+                            'group_toggle' => array(
+                                'y' => 'revision_comment_required'
+                            ),
                             'value' => $channel->enable_versioning,
                             'note' => form_label(
                                 form_checkbox('update_versioning', 'y')
                                 . lang('update_versioning')
                             )
+                        )
+                    )
+                ),
+                array(
+                    'title' => 'revision_comment_required',
+                    'desc' => 'revision_comment_required_desc',
+                    'group' => 'revision_comment_required',
+                    'fields' => array(
+                        'revision_comment_required' => array(
+                            'type' => 'yes_no',
+                            'value' => $channel->revision_comment_required
                         )
                     )
                 ),
@@ -1587,6 +1601,10 @@ class Channels extends AbstractChannelsController
             $_POST['comment_expiration'] = 0;
         }
         $channel->set($_POST);
+
+        if ($channel->enable_versioning != 'y') {
+            $channel->revision_comment_required = 'n';
+        }
 
         $channel->CategoryGroups = ee('Model')->get('CategoryGroup', $categoryGroups)->all();
         $channel->FieldGroups = ee('Model')->get('ChannelFieldGroup', ee()->input->post('field_groups'))->all();
