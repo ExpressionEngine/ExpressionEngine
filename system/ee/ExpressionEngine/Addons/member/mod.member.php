@@ -1347,11 +1347,11 @@ class Member
             ->filter('date', '>', $now - $rate_limit_window)
             ->count();
 
-        $string = $this->generateCaptchaResponseCode();
-
         if ($recent_attempts >= $rate_limit_max) {
             return ee()->output->send_ajax_response(['success' => false, 'code' => 'failed']);
         }
+
+        $string = $this->generateCaptchaResponseCode();
 
         $captcha = ee('Model')->make('Captcha');
         $captcha->date = $now;
