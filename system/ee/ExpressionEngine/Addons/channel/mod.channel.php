@@ -5319,8 +5319,15 @@ class Channel
         }
         $allAllowedOrigins = array_unique($allAllowedOrigins);
 
+        $allowMethodsHeader = 'POST, OPTIONS';
+        $useSavedData = false;
+        if (ee('Request')->isGet() && ee('Request')->get('modal_form') == 'y') {
+            $allowMethodsHeader = 'GET, ' . $allowMethodsHeader;
+            $useSavedData = true;
+        }
+
         @header('Access-Control-Allow-Origin: ' . $allowedOrigin);
-        @header('Access-Control-Allow-Methods: POST, OPTIONS');
+        @header('Access-Control-Allow-Methods: ' . $allowMethodsHeader);
         @header('Access-Control-Max-Age: 3600');
         if (array_key_exists('HTTP_ACCESS_CONTROL_REQUEST_HEADERS', $_SERVER)) {
             @header('Access-Control-Allow-Headers: ' . $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']);
@@ -5340,7 +5347,7 @@ class Channel
 
         $prefer_system_preview = ee()->input->get('prefer_system_preview') == 'y';
 
-        return ee('LivePreview')->preview($channel_id, $entry_id, $return, $prefer_system_preview);
+        return ee('LivePreview')->preview($channel_id, $entry_id, $return, $prefer_system_preview, $useSavedData);
     }
 
     /**

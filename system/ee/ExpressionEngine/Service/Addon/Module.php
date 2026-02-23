@@ -18,6 +18,8 @@ use ExpressionEngine\Library\String\Str;
 
 class Module extends Controller
 {
+    protected static $isActRequest = null;
+
     /**
      * Checks if we have an Action based request
      * @param string $method
@@ -25,7 +27,30 @@ class Module extends Controller
      */
     protected function isActRequest($method)
     {
-        return (REQ == 'ACTION') && (ee('LivePreview')->hasEntryData() === false);
+        if (!is_null(self::$isActRequest)) {
+            return self::$isActRequest;
+        }
+        // not an action request at all
+        if (REQ != 'ACTION') {
+            self::$isActRequest = false;
+            return self::$isActRequest;
+        }
+        // "traditional" live preview
+        if (ee('LivePreview')->hasEntryData() !== false) {
+            self::$isActRequest = false;
+            return self::$isActRequest;
+        }
+        // preview for saved data
+        $lpAction = ee()->db->select('action_id')
+            ->where('class', 'Channel')
+            ->where('method', 'live_preview')
+            ->get('actions');
+        if ($lpAction->num_rows() > 0 && ee('Request')->get('ACT') == $lpAction->row('action_id')) {
+            self::$isActRequest = false;
+            return self::$isActRequest;
+        }
+        self::$isActRequest = true;
+        return self::$isActRequest;
     }
 
     /**

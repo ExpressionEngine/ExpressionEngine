@@ -28,6 +28,7 @@ class ColumnFactory
         'channel' => Columns\ChannelName::class,
         'comments' => Columns\Comments::class,
         'categories' => Columns\Categories::class,
+        'live_preview' => Columns\LivePreview::class,
         'view_count_one' => Columns\ViewCount::class,
         'view_count_two' => Columns\ViewCount::class,
         'view_count_three' => Columns\ViewCount::class,

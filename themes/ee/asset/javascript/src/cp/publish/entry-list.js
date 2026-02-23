@@ -171,6 +171,33 @@ $(document).ready(function () {
 		event.preventDefault();
 	});
 
+	// ===================================
+	// Live Preview
+	// ===================================
+	$('body').on('click', 'button[rel="entry-preview"]', function(e) {
+		e.preventDefault();
+
+		EE.cp.ModalForm.openForm({
+			url: $(this).data('url'),
+			full: true,
+			iframe: true,
+			load: (modal) => {
+
+				let icon = $('.app-notice---attention', modal).find('.app-notice__icon');
+				icon.addClass('fal fa-close js-modal-close').removeClass('app-notice__icon');
+
+				let title = '<span class="txt-fade">[esc]</span> <b>' + $(this).data('title') + '</b>';
+
+				EE.cp.ModalForm.setTitle(title)
+
+				modal.on('modal:close', function(e) {
+					e.preventDefault();
+					icon.addClass('app-notice__icon').removeClass('fal').removeClass('fa-close').removeClass('js-modal-close');
+				});
+			}
+		})
+	});
+
 	// ==================================
 	// column filter custom view selector
 	// ==================================
