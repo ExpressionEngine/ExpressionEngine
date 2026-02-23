@@ -1347,10 +1347,6 @@ class Member
             ->filter('date', '>', $now - $rate_limit_window)
             ->count();
 
-        if ($recent_attempts >= $rate_limit_max) {
-            return ee()->output->send_ajax_response(['success' => false, 'code' => 'failed']);
-        }
-
         $string = $this->generateCaptchaResponseCode();
 
         $captcha = ee('Model')->make('Captcha');
@@ -1358,6 +1354,10 @@ class Member
         $captcha->ip_address = $ip_address;
         $captcha->word = $string;
         $captcha->save();
+
+        if ($recent_attempts >= $rate_limit_max) {
+            return ee()->output->send_ajax_response(['success' => false, 'code' => 'failed']);
+        }
 
         $token = (string) ee()->input->get_post('rec');
         if ($token === '') {
