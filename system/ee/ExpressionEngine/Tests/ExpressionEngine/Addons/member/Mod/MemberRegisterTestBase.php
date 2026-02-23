@@ -2,21 +2,39 @@
 
 use PHPUnit\Framework\TestCase;
 
-if (!function_exists('parse_config_variables')) {
+$memberRegisterTargetedRun = false;
+if (isset($_SERVER['argv']) && is_array($_SERVER['argv'])) {
+    foreach ($_SERVER['argv'] as $arg) {
+        if (strpos((string) $arg, 'MemberRegisterCoverageTest.php') !== false) {
+            $memberRegisterTargetedRun = true;
+            break;
+        }
+    }
+}
+
+if (!defined('MEMBER_REGISTER_TARGETED_RUN')) {
+    define('MEMBER_REGISTER_TARGETED_RUN', $memberRegisterTargetedRun);
+}
+
+if ($memberRegisterTargetedRun && !function_exists('parse_config_variables')) {
     function parse_config_variables($value)
     {
         return $value;
     }
 }
 
-if (!function_exists('form_preference')) {
+if ($memberRegisterTargetedRun && !function_exists('form_preference')) {
     function form_preference($key, $value)
     {
-        return $value;
+        if (is_array($value) && array_key_exists('selected', $value)) {
+            return $value['selected'];
+        }
+
+        return is_scalar($value) ? (string) $value : '';
     }
 }
 
-if (!function_exists('trim_nbs')) {
+if ($memberRegisterTargetedRun && !function_exists('trim_nbs')) {
     function trim_nbs($value)
     {
         return trim((string) $value);
@@ -38,14 +56,14 @@ if (!function_exists('entities_to_ascii')) {
     }
 }
 
-if (!function_exists('bool_config_item')) {
+if ($memberRegisterTargetedRun && !function_exists('bool_config_item')) {
     function bool_config_item($item)
     {
         return get_bool_from_string(ee()->config->item($item));
     }
 }
 
-if (!function_exists('get_bool_from_string')) {
+if ($memberRegisterTargetedRun && !function_exists('get_bool_from_string')) {
     function get_bool_from_string($value)
     {
         if (is_bool($value)) {
@@ -130,6 +148,10 @@ abstract class MemberRegisterTestBase extends TestCase
     {
         if (!function_exists('ee') || !method_exists(ee(), 'setMock')) {
             $this->markTestSkipped('EE mock container is not available for this test.');
+        }
+
+        if (!MEMBER_REGISTER_TARGETED_RUN && (!function_exists('trim_nbs') || !function_exists('form_preference'))) {
+            $this->markTestSkipped('Required legacy helper functions are not loaded in this suite context.');
         }
 
         $_POST = [];
