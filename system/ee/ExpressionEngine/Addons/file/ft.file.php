@@ -586,6 +586,8 @@ JSC;
             }
             $new = $data['filesystem']->createTempFile();
 
+            // If no per-tag quality is provided, use the configured default
+            // while preserving the historical 75 fallback.
             $imageQuality = 75;
             if (is_int(ee()->config->item('image_manipulation_quality')) && 0 < ee()->config->item('image_manipulation_quality') && ee()->config->item('image_manipulation_quality') <= 100) {
                 $imageQuality = ee()->config->item('image_manipulation_quality');

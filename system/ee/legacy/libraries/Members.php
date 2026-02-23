@@ -370,6 +370,8 @@ class Members
             $image_path = $this->config->slash_item('photo_path');
         }
 
+        // Keep member image resizing aligned with configured manipulation quality,
+        // with 75 retained as the safe legacy default.
         $imageQuality = 75;
         if (is_int(ee()->config->item('image_manipulation_quality')) && 0 < ee()->config->item('image_manipulation_quality') && ee()->config->item('image_manipulation_quality') <= 100) {
             $imageQuality = ee()->config->item('image_manipulation_quality');
