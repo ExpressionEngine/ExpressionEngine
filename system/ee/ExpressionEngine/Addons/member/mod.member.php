@@ -1349,15 +1349,15 @@ class Member
 
         $string = $this->generateCaptchaResponseCode();
 
+        if ($recent_attempts >= $rate_limit_max) {
+            return ee()->output->send_ajax_response(['success' => false, 'code' => 'failed']);
+        }
+
         $captcha = ee('Model')->make('Captcha');
         $captcha->date = $now;
         $captcha->ip_address = $ip_address;
         $captcha->word = $string;
         $captcha->save();
-
-        if ($recent_attempts >= $rate_limit_max) {
-            return ee()->output->send_ajax_response(['success' => false, 'code' => 'failed']);
-        }
 
         $token = (string) ee()->input->get_post('rec');
         if ($token === '') {
