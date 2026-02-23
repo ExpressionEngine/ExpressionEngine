@@ -175,12 +175,14 @@ class MemberRecaptchaCheckTest extends TestCase
 
         $member = $this->buildMemberMock();
         $member->method('shouldRunRecaptchaCleanup')->willReturn(false);
+        $member->method('generateCaptchaResponseCode')->willReturn('missing-token-code');
         $member->expects($this->never())->method('verifyRecaptchaToken');
 
         $result = $member->recaptcha_check();
 
         $this->assertEquals(['success' => false, 'code' => 'failed'], $result);
-        $this->assertCount(0, $this->model->savedCaptchas);
+        $this->assertCount(1, $this->model->savedCaptchas);
+        $this->assertSame('missing-token-code', $this->model->savedCaptchas[0]['word']);
     }
 
     public function testRecaptchaCheckRejectsWhenRateLimitExceeded()
@@ -191,12 +193,14 @@ class MemberRecaptchaCheckTest extends TestCase
 
         $member = $this->buildMemberMock();
         $member->method('shouldRunRecaptchaCleanup')->willReturn(false);
+        $member->method('generateCaptchaResponseCode')->willReturn('rate-limited-code');
         $member->expects($this->never())->method('verifyRecaptchaToken');
 
         $result = $member->recaptcha_check();
 
         $this->assertEquals(['success' => false, 'code' => 'failed'], $result);
-        $this->assertCount(0, $this->model->savedCaptchas);
+        $this->assertCount(1, $this->model->savedCaptchas);
+        $this->assertSame('rate-limited-code', $this->model->savedCaptchas[0]['word']);
     }
 
     public function testRecaptchaCheckRejectsWhenGoogleResponseIsInvalid()
@@ -207,12 +211,14 @@ class MemberRecaptchaCheckTest extends TestCase
 
         $member = $this->buildMemberMock();
         $member->method('shouldRunRecaptchaCleanup')->willReturn(false);
+        $member->method('generateCaptchaResponseCode')->willReturn('invalid-google-code');
         $member->method('verifyRecaptchaToken')->willReturn(null);
 
         $result = $member->recaptcha_check();
 
         $this->assertEquals(['success' => false, 'code' => 'failed'], $result);
-        $this->assertCount(0, $this->model->savedCaptchas);
+        $this->assertCount(1, $this->model->savedCaptchas);
+        $this->assertSame('invalid-google-code', $this->model->savedCaptchas[0]['word']);
     }
 
     public function testRecaptchaCheckRejectsWhenScoreIsBelowThreshold()
@@ -223,6 +229,7 @@ class MemberRecaptchaCheckTest extends TestCase
 
         $member = $this->buildMemberMock();
         $member->method('shouldRunRecaptchaCleanup')->willReturn(false);
+        $member->method('generateCaptchaResponseCode')->willReturn('low-score-code');
         $member->method('verifyRecaptchaToken')->willReturn([
             'success' => true,
             'score' => 0.1,
@@ -231,7 +238,8 @@ class MemberRecaptchaCheckTest extends TestCase
         $result = $member->recaptcha_check();
 
         $this->assertEquals(['success' => false, 'code' => 'failed'], $result);
-        $this->assertCount(0, $this->model->savedCaptchas);
+        $this->assertCount(1, $this->model->savedCaptchas);
+        $this->assertSame('low-score-code', $this->model->savedCaptchas[0]['word']);
     }
 
     public function testRecaptchaCheckStoresCaptchaAndReturnsCodeOnSuccess()
@@ -265,6 +273,7 @@ class MemberRecaptchaCheckTest extends TestCase
 
         $member = $this->buildMemberMock();
         $member->method('shouldRunRecaptchaCleanup')->willReturn(true);
+        $member->method('generateCaptchaResponseCode')->willReturn('cleanup-test-code');
         $member->method('verifyRecaptchaToken')->willReturn([
             'success' => false,
             'score' => 0.0,
@@ -273,6 +282,8 @@ class MemberRecaptchaCheckTest extends TestCase
         $member->recaptcha_check();
 
         $this->assertSame(1, $this->model->deleteCount);
+        $this->assertCount(1, $this->model->savedCaptchas);
+        $this->assertSame('cleanup-test-code', $this->model->savedCaptchas[0]['word']);
     }
 
     private function buildMemberMock()

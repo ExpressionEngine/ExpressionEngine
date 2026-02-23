@@ -1329,11 +1329,6 @@ class Member
      */
     public function recaptcha_check()
     {
-        $token = (string) ee()->input->get_post('rec');
-        if ($token === '') {
-            return ee()->output->send_ajax_response(['success' => false, 'code' => 'failed']);
-        }
-
         $now = ee()->localize->now;
         $ip_address = ee()->input->ip_address();
         $captcha_expiration = 60 * 60 * 2;
@@ -1352,7 +1347,20 @@ class Member
             ->filter('date', '>', $now - $rate_limit_window)
             ->count();
 
+        $string = $this->generateCaptchaResponseCode();
+
+        $captcha = ee('Model')->make('Captcha');
+        $captcha->date = $now;
+        $captcha->ip_address = $ip_address;
+        $captcha->word = $string;
+        $captcha->save();
+
         if ($recent_attempts >= $rate_limit_max) {
+            return ee()->output->send_ajax_response(['success' => false, 'code' => 'failed']);
+        }
+
+        $token = (string) ee()->input->get_post('rec');
+        if ($token === '') {
             return ee()->output->send_ajax_response(['success' => false, 'code' => 'failed']);
         }
 
@@ -1371,15 +1379,6 @@ class Member
         if ($success !== true || $score < $threshold) {
             return ee()->output->send_ajax_response(['success' => false, 'code' => 'failed']);
         }
-
-        // Mostly random string
-        $string = $this->generateCaptchaResponseCode();
-
-        $captcha = ee('Model')->make('Captcha');
-        $captcha->date = $now;
-        $captcha->ip_address = $ip_address;
-        $captcha->word = $string;
-        $captcha->save();
 
         return ee()->output->send_ajax_response(['success' => true, 'code' => $string]);
     }
@@ -1418,7 +1417,8 @@ class Member
     }
 
     /**
-     * Creates the transient code stored in exp_captcha for successful checks.
+     * Creates the transient code stored in exp_captcha for reCAPTCHA attempts.
+     * The code is only returned to the client on successful verification.
      *
      * @return string
      */
