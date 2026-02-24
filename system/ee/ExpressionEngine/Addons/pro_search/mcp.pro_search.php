@@ -524,12 +524,12 @@ class Pro_search_mcp
             }
         }
 
-        foreach (ee()->input->post('permissions') as $perm) {
+        foreach (ee('Request')->post('permissions', []) as $perm) {
             if (strpos($perm, ':') === false) {
                 continue;
             }
             $perm = explode(':', $perm);
-            $settings[$perm[0]][] = $perm[1];
+            $settings[ee('Security/XSS')->clean($perm[0])][] = ee('Security/XSS')->clean($perm[1]);
         }
 
         // -------------------------------------
