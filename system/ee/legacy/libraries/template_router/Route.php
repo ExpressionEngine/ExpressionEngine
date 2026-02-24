@@ -310,16 +310,22 @@ class EE_Route
             if ($matches['rule'] == 'regex') {
                 $index = $pos + 7;
                 $regex = substr($matches[0], 6, 1);
-                $valid = @preg_match("/$regex/", '');
 
-                while ($valid === false) {
-                    $regex .= substr($rules, $index, 1);
-                    $valid = @preg_match("/$regex/", '');
-                    $index++;
+                set_error_handler(function () {
+                    return true;
+                });
 
-                    if ($end < $index) {
-                        throw new Exception(lang('invalid_regex'));
+                try {
+                    while (preg_match('/' . $regex . '/', '') === false) {
+                        $regex .= substr($rules, $index, 1);
+                        $index++;
+
+                        if ($end < $index) {
+                            throw new Exception(lang('invalid_regex'));
+                        }
                     }
+                } finally {
+                    restore_error_handler();
                 }
 
                 $matches[0] = "regex[{$regex}]|";
