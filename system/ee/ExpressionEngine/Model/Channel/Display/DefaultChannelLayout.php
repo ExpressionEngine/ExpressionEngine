@@ -208,6 +208,12 @@ class DefaultChannelLayout extends DefaultLayout
                         'width' => 100
                     ),
                     array(
+                        'field' => 'revision_comment',
+                        'visible' => true,
+                        'collapsed' => false,
+                        'width' => 100
+                    ),
+                    array(
                         'field' => 'revisions',
                         'visible' => true,
                         'collapsed' => false,

@@ -151,6 +151,7 @@ abstract class AbstractPublish extends CP_Controller
                 'rev_id',
                 'rev_date',
                 'rev_author',
+                'rev_comment',
                 'manage' => array(
                     'encode' => false
                 )
@@ -193,6 +194,7 @@ abstract class AbstractPublish extends CP_Controller
                     $i,
                     ee()->localize->human_time($version->version_date->format('U'), true, true),
                     $authors[$version->author_id],
+                    $version->revision_comment,
                     $toolbar
                 )
             );
@@ -217,6 +219,7 @@ abstract class AbstractPublish extends CP_Controller
                         $current_id,
                         $edit_date,
                         $current_author_id,
+                        '',
                         '<a href="' . ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id) . '"><span class="st-open">' . lang('current') . '</span></a>'
                     ))
             );
@@ -374,6 +377,10 @@ abstract class AbstractPublish extends CP_Controller
             unset($_POST['author_id']);
         }
 
+        if ($entry->isNew() && (! isset($_POST['revision_comment']) || trim($_POST['revision_comment']) === '')) {
+            $_POST['revision_comment'] = lang('create_entry_success');
+        }
+
         //workaround if some category groups are hidden and some are displayed
         if (count($category_fields_hidden) != 0 && count($category_fields_hidden) != count($category_fields)) {
             foreach ($category_fields_hidden as $fieldname) {
@@ -407,12 +414,25 @@ abstract class AbstractPublish extends CP_Controller
                     $_POST['url_title'] = $_POST['url_title'] . $word_separator . uniqid();
                 }
             }
+
+            if ($entry->Channel && $entry->Channel->enable_versioning && $entry->Channel->revision_comment_required) {
+                $_POST['versioning_enabled'] = 'y';
+            }
             $entry->set($_POST);
         }
 
         $hidden_fields = $entry->evaluateConditionalFields();
 
         $result = $entry->validate();
+
+        if ($entry->Channel && $entry->Channel->enable_versioning && $entry->Channel->revision_comment_required) {
+            $revision_comment = isset($_POST['revision_comment']) ? trim($_POST['revision_comment']) : '';
+            if ($revision_comment === '') {
+                $rule = new \ExpressionEngine\Service\Validation\Rule\Required();
+                $rule->stop();
+                $result->addFailed('revision_comment', $rule);
+            }
+        }
 
         if ($response = $this->ajaxValidation($result)) {
             if (isset($response[0]) && $response[0] == 'success') {

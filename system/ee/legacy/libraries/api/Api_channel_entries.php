@@ -489,7 +489,7 @@ class Api_channel_entries extends Api
 
         $query = ee()->api_channel_structure->get_channel_info($channel_id);
 
-        foreach (array('channel_url', 'rss_url', 'deft_status', 'comment_url', 'comment_system_enabled', 'enable_versioning', 'max_revisions') as $key) {
+        foreach (array('channel_url', 'rss_url', 'deft_status', 'comment_url', 'comment_system_enabled', 'enable_versioning', 'revision_comment_required', 'max_revisions') as $key) {
             $this->c_prefs[$key] = $query->row($key);
         }
 
@@ -599,6 +599,13 @@ class Api_channel_entries extends Api
         if (! isset($data['title']) or ! $data['title'] = strip_tags(trim($data['title']))) {
             $data['title'] = '';
             $this->_set_error('missing_title', 'title');
+        }
+
+        if (isset($this->c_prefs['enable_versioning']) && $this->c_prefs['enable_versioning'] == 'y' && isset($this->c_prefs['revision_comment_required']) && $this->c_prefs['revision_comment_required'] == 'y') {
+            $data['revision_comment'] = isset($data['revision_comment']) ? trim($data['revision_comment']) : '';
+            if ($data['revision_comment'] === '') {
+                $this->_set_error('missing_revision_comment', 'revision_comment');
+            }
         }
 
         // Set entry_date and edit_date to "now" if empty
@@ -923,6 +930,10 @@ class Api_channel_entries extends Api
                 // but it makes more sense here.
                 $this->c_prefs['enable_versioning'] = 'n';
             }
+        }
+
+        if ($this->c_prefs['enable_versioning'] == 'y' && $this->c_prefs['revision_comment_required'] == 'y') {
+            $data['versioning_enabled'] = 'y';
         }
 
         $this->instantiate('channel_fields');
@@ -1253,11 +1264,17 @@ class Api_channel_entries extends Api
             // so let's overwrite it now
             $data['revision_post']['entry_id'] = $this->entry_id;
 
+            $revision_comment = isset($data['revision_comment']) ? trim($data['revision_comment']) : '';
+            if (isset($data['revision_post']['revision_comment'])) {
+                unset($data['revision_post']['revision_comment']);
+            }
+
             ee()->db->insert('entry_versioning', array(
                 'entry_id' => $this->entry_id,
                 'channel_id' => $this->channel_id,
                 'author_id' => ee()->session->userdata('member_id'),
                 'version_date' => ee()->localize->now,
+                'revision_comment' => $revision_comment,
                 'version_data' => serialize($data['revision_post'])
             ));
 
