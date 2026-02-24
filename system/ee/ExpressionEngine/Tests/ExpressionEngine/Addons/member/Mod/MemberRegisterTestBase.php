@@ -2,77 +2,6 @@
 
 use PHPUnit\Framework\TestCase;
 
-$memberRegisterTargetedRun = false;
-if (isset($_SERVER['argv']) && is_array($_SERVER['argv'])) {
-    foreach ($_SERVER['argv'] as $arg) {
-        if (strpos((string) $arg, 'MemberRegisterCoverageTest.php') !== false) {
-            $memberRegisterTargetedRun = true;
-            break;
-        }
-    }
-}
-
-if (!defined('MEMBER_REGISTER_TARGETED_RUN')) {
-    define('MEMBER_REGISTER_TARGETED_RUN', $memberRegisterTargetedRun);
-}
-
-if ($memberRegisterTargetedRun && !function_exists('parse_config_variables')) {
-    function parse_config_variables($value)
-    {
-        return $value;
-    }
-}
-
-if ($memberRegisterTargetedRun && !function_exists('form_preference')) {
-    function form_preference($key, $value)
-    {
-        if (is_array($value) && array_key_exists('selected', $value)) {
-            return $value['selected'];
-        }
-
-        return is_scalar($value) ? (string) $value : '';
-    }
-}
-
-if ($memberRegisterTargetedRun && !function_exists('trim_nbs')) {
-    function trim_nbs($value)
-    {
-        return trim((string) $value);
-    }
-}
-
-if (!function_exists('reduce_multiples')) {
-    function reduce_multiples($str, $character = ',', $trim = false)
-    {
-        $result = preg_replace('/' . preg_quote($character, '/') . '+/', $character, (string) $str);
-        return $trim ? trim((string) $result, $character) : $result;
-    }
-}
-
-if (!function_exists('entities_to_ascii')) {
-    function entities_to_ascii($value)
-    {
-        return (string) $value;
-    }
-}
-
-if ($memberRegisterTargetedRun && !function_exists('bool_config_item')) {
-    function bool_config_item($item)
-    {
-        return get_bool_from_string(ee()->config->item($item));
-    }
-}
-
-if ($memberRegisterTargetedRun && !function_exists('get_bool_from_string')) {
-    function get_bool_from_string($value)
-    {
-        if (is_bool($value)) {
-            return $value;
-        }
-        return in_array(strtolower((string) $value), ['y', 'yes', 'true', '1'], true);
-    }
-}
-
 if (!defined('QUERY_MARKER')) {
     define('QUERY_MARKER', '?');
 }
@@ -136,6 +65,8 @@ class MemberRegisterFixture extends Member_register
 
 abstract class MemberRegisterTestBase extends TestCase
 {
+    private static $memberRegisterHelpersLoaded = false;
+
     protected $subject;
     protected $db;
     protected $input;
@@ -146,12 +77,10 @@ abstract class MemberRegisterTestBase extends TestCase
 
     protected function setUp(): void
     {
+        $this->loadMemberRegisterDependencies();
+
         if (!function_exists('ee') || !method_exists(ee(), 'setMock')) {
             $this->markTestSkipped('EE mock container is not available for this test.');
-        }
-
-        if (!MEMBER_REGISTER_TARGETED_RUN && (!function_exists('trim_nbs') || !function_exists('form_preference'))) {
-            $this->markTestSkipped('Required legacy helper functions are not loaded in this suite context.');
         }
 
         $_POST = [];
@@ -187,6 +116,25 @@ abstract class MemberRegisterTestBase extends TestCase
     protected function setInputGetPost(array $values): void
     {
         $this->input->getPost = $values;
+    }
+
+    private function loadMemberRegisterDependencies(): void
+    {
+        if (self::$memberRegisterHelpersLoaded) {
+            return;
+        }
+
+        require_once SYSPATH . 'ee/ExpressionEngine/Boot/boot.common.php';
+        require_once APPPATH . 'helpers/string_helper.php';
+        require_once APPPATH . 'helpers/text_helper.php';
+        if (!function_exists('form_preference')) {
+            if (!defined('REQ')) {
+                define('REQ', 'CP');
+            }
+            require_once APPPATH . 'helpers/form_helper.php';
+        }
+
+        self::$memberRegisterHelpersLoaded = true;
     }
 
     private function setupCoreMocks(): void
@@ -225,9 +173,9 @@ abstract class MemberRegisterTestBase extends TestCase
             {
                 return [
                     'fields' => [
-                        'date_format' => 'us',
-                        'time_format' => '24',
-                        'include_seconds' => 'n',
+                        'date_format' => ['type' => 'v', 'value' => 'us'],
+                        'time_format' => ['type' => 'v', 'value' => '24'],
+                        'include_seconds' => ['type' => 'v', 'value' => 'n'],
                     ],
                 ];
             }
