@@ -519,6 +519,17 @@ $lang = array(
     'separate_choices_commas' => 'Separate multiple options with commas',
     'command_generate_templates_building_templates' => 'Building templates...',
 
+    // Lang entries for command make:service
+    'command_make_service_description'          => 'Creates a new service for an add-on',
+    'command_make_service_summary'              => 'This interactively generates a service for an existing add-on',
+    'command_make_service_lets_build_service'   => 'Let\'s build your service!',
+    'command_make_service_ask_service_name'     => 'What is the service name?',
+    'command_make_service_ask_addon'            => 'What add-on is this for?',
+    'command_make_service_lets_build'           => 'Let\'s build!',
+    'command_make_service_created_successfully' => 'Your service has been created successfully!',
+    'command_make_service_option_addon'         => 'Name of add-on',
+    'command_make_service_option_singleton'     => 'Register this service as a singleton',
+
     // channels:list
     'command_channels_list_description' => 'Lists all channels in the system',
     'command_channels_list_summary' => 'Displays all channels with their details in various formats',
