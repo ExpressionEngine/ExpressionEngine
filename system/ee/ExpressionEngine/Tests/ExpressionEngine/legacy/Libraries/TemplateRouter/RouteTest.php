@@ -90,6 +90,184 @@ class RouteTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(0, preg_match($pattern, 'other/foo'));
     }
 
+    public function testRegexContainingUnescapedSlashIsRejectedWithoutWarningSpam(): void
+    {
+        $warnings = [];
+        $exception = null;
+
+        set_error_handler(function ($severity, $message, $file = null, $line = null) use (&$warnings) {
+            if ($severity === E_WARNING) {
+                $warnings[] = sprintf('%s (%s:%d)', $message, (string) $file, (int) $line);
+                return true;
+            }
+
+            return false;
+        });
+
+        try {
+            new \EE_Route('/x/{slug:regex[(foo/bar)]}', false);
+        } catch (\Exception $e) {
+            $exception = $e;
+        } finally {
+            restore_error_handler();
+        }
+
+        $this->assertInstanceOf(\Exception::class, $exception);
+        $this->assertSame('invalid_regex', $exception->getMessage());
+        $this->assertSame([], $warnings, "Unexpected warnings:\n" . implode("\n", $warnings));
+    }
+
+    public function testRegexContainingEscapedSlashParsesWithoutWarningSpam(): void
+    {
+        $warnings = [];
+
+        set_error_handler(function ($severity, $message, $file = null, $line = null) use (&$warnings) {
+            if ($severity === E_WARNING) {
+                $warnings[] = sprintf('%s (%s:%d)', $message, (string) $file, (int) $line);
+                return true;
+            }
+
+            return false;
+        });
+
+        $compiled = '';
+
+        try {
+            $compiled = (new \EE_Route('/x/{slug:regex[(foo\/bar)]}', false))->compile();
+        } finally {
+            restore_error_handler();
+        }
+
+        $this->assertNotEmpty($compiled);
+        $this->assertSame([], $warnings, "Unexpected warnings:\n" . implode("\n", $warnings));
+    }
+
+    public function testRegexRuleCanBeFollowedByAnotherRule(): void
+    {
+        $route = new \EE_Route('/x/{slug:regex[(foo|bar)]|max_length[20]}', true);
+        $compiled = $route->compile();
+        $pattern = '#' . $compiled . '#i';
+
+        $this->assertNotEmpty($compiled);
+        $this->assertSame(1, preg_match($pattern, 'x/foo'));
+        $this->assertSame(1, preg_match($pattern, 'x/bar'));
+        $this->assertSame(0, preg_match($pattern, 'x/baz'));
+        $this->assertSame(0, preg_match($pattern, 'x/abcdefghijklmnopqrstuvwxyz'));
+    }
+
+    public function testRegexValidationRestoresPreviousErrorHandlerOnSuccess(): void
+    {
+        $captured = [];
+
+        set_error_handler(function ($severity, $message) use (&$captured) {
+            if ($severity === E_USER_WARNING) {
+                $captured[] = (string) $message;
+                return true;
+            }
+
+            return false;
+        });
+
+        try {
+            (new \EE_Route('/x/{slug:regex[(foo|bar)]}', false))->compile();
+            trigger_error('outer-handler-success', E_USER_WARNING);
+        } finally {
+            restore_error_handler();
+        }
+
+        $this->assertSame(['outer-handler-success'], $captured);
+    }
+
+    public function testRegexValidationRestoresPreviousErrorHandlerOnException(): void
+    {
+        $captured = [];
+        $exception = null;
+
+        set_error_handler(function ($severity, $message) use (&$captured) {
+            if ($severity === E_USER_WARNING) {
+                $captured[] = (string) $message;
+                return true;
+            }
+
+            return false;
+        });
+
+        try {
+            new \EE_Route('/x/{slug:regex[((abc]}', false);
+        } catch (\Exception $e) {
+            $exception = $e;
+            trigger_error('outer-handler-exception', E_USER_WARNING);
+        } finally {
+            restore_error_handler();
+        }
+
+        $this->assertInstanceOf(\Exception::class, $exception);
+        $this->assertSame('invalid_regex', $exception->getMessage());
+        $this->assertSame(['outer-handler-exception'], $captured);
+    }
+
+    public function testRegexContainingEscapedClosingBracketParsesWithoutWarningSpam(): void
+    {
+        $warnings = [];
+
+        set_error_handler(function ($severity, $message, $file = null, $line = null) use (&$warnings) {
+            if ($severity === E_WARNING) {
+                $warnings[] = sprintf('%s (%s:%d)', $message, (string) $file, (int) $line);
+                return true;
+            }
+
+            return false;
+        });
+
+        $compiled = '';
+
+        try {
+            $compiled = (new \EE_Route('/x/{slug:regex[([a-z\]])]}', false))->compile();
+        } finally {
+            restore_error_handler();
+        }
+
+        $this->assertNotEmpty($compiled);
+        $this->assertSame([], $warnings, "Unexpected warnings:\n" . implode("\n", $warnings));
+    }
+
+    public function testMultipleRegexVariablesInOneRouteRemainIndependent(): void
+    {
+        $route = new \EE_Route('/x/{a:regex[(foo|bar)]}/{b:regex[(one|two)]}', true);
+        $compiled = $route->compile();
+        $pattern = '#' . $compiled . '#i';
+
+        $this->assertSame(1, preg_match($pattern, 'x/foo/one'));
+        $this->assertSame(1, preg_match($pattern, 'x/bar/two'));
+        $this->assertSame(0, preg_match($pattern, 'x/foo/three'));
+        $this->assertSame(0, preg_match($pattern, 'x/baz/one'));
+    }
+
+    public function testEscapedSlashWithLookaroundParsesWithoutWarningSpam(): void
+    {
+        $warnings = [];
+
+        set_error_handler(function ($severity, $message, $file = null, $line = null) use (&$warnings) {
+            if ($severity === E_WARNING) {
+                $warnings[] = sprintf('%s (%s:%d)', $message, (string) $file, (int) $line);
+                return true;
+            }
+
+            return false;
+        });
+
+        $compiled = '';
+
+        try {
+            $compiled = (new \EE_Route('/x/{slug:regex[(((?!(foo\/bar)).)+?)]}', false))->compile();
+        } finally {
+            restore_error_handler();
+        }
+
+        $this->assertNotEmpty($compiled);
+        $this->assertSame([], $warnings, "Unexpected warnings:\n" . implode("\n", $warnings));
+    }
+
     public function complexRegexRouteProvider(): array
     {
         return [
