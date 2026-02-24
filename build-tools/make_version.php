@@ -101,7 +101,7 @@ class VersionBumper
         }
 
         // Set date
-        $date = '';
+        $date = date('Y-m-d');
         if (isset($options['d'])) {
             $date = $options['d'];
         } elseif (isset($options['date'])) {
