@@ -355,11 +355,16 @@ class Member_ft extends Relationship_ft implements ColumnInterface
     /**
      * Replace template tags
      */
-    public function replace_tag($data, $params = '', $tagdata = '')
+    public function replace_tag($data = [], $params = '', $tagdata = '')
     {
         $vars = [
             'entries' => []
         ];
+
+        if (is_string($data)) {
+            $data = [];
+        }
+
         foreach ($data as $member_id => $order) {
             $memberQuery = ee('Model')->get('Member', $member_id)->with('PrimaryRole')->first(true);
             if (!empty($memberQuery)) {
