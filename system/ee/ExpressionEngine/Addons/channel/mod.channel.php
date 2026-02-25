@@ -5325,6 +5325,9 @@ class Channel
             }
             $scheme = !empty($parts['scheme']) ? strtolower($parts['scheme']) : (ee('Request')->isEncrypted() ? 'https' : 'http');
             $host = strtolower($parts['host']);
+            if (strpos($host, ':') !== false && strpos($host, '[') !== 0) {
+                $host = '[' . $host . ']';
+            }
             if (!empty($parts['port'])) {
                 $host .= ':' . $parts['port'];
             }
@@ -5363,27 +5366,27 @@ class Channel
             if ($configuredUrl === '') {
                 continue;
             }
-            $parsed_host = parse_url($configuredUrl, PHP_URL_HOST);
-            $parsed_port = parse_url($configuredUrl, PHP_URL_PORT);
-            $domain = $parsed_host ?: $configuredUrl;
-            $domain = strtolower(trim($domain));
-            if (strpos($domain, '/') !== false) {
-                $domain = substr($domain, 0, strpos($domain, '/'));
-            }
-            if (!empty($parsed_port) && strpos($domain, ':') === false) {
-                $domain .= ':' . $parsed_port;
-            }
-            if ($domain === '') {
+            $normalized_configured = $normalize_origin($configuredUrl);
+            if (empty($normalized_configured)) {
                 continue;
             }
-            $host = $domain;
-            $port = '';
-            if (strpos($domain, ':') !== false) {
-                $port = ':' . substr($domain, strpos($domain, ':') + 1);
-                $host = substr($domain, 0, strpos($domain, ':'));
+
+            $parts = parse_url($normalized_configured);
+            if (!$parts || empty($parts['host'])) {
+                continue;
             }
+
+            $host = strtolower($parts['host']);
+            if (strpos($host, ':') !== false && strpos($host, '[') !== 0) {
+                $host = '[' . $host . ']';
+            }
+            $port = !empty($parts['port']) ? ':' . $parts['port'] : '';
+
+            $domain = $host . $port;
             $domains = [$domain];
-            if ($host === 'localhost' || $host === '127.0.0.1') {
+
+            $host_for_alias = trim($host, '[]');
+            if ($host_for_alias === 'localhost' || $host_for_alias === '127.0.0.1') {
                 $domains = [
                     'localhost' . $port,
                     '127.0.0.1' . $port

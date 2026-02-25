@@ -262,6 +262,9 @@ class LivePreviewToken
 
         $scheme = !empty($parts['scheme']) ? strtolower($parts['scheme']) : (ee('Request')->isEncrypted() ? 'https' : 'http');
         $host = strtolower($parts['host']);
+        if (strpos($host, ':') !== false && strpos($host, '[') !== 0) {
+            $host = '[' . $host . ']';
+        }
         if (!empty($parts['port'])) {
             $host .= ':' . $parts['port'];
         }

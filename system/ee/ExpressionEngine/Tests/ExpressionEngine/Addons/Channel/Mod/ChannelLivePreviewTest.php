@@ -885,4 +885,47 @@ class ChannelLivePreviewTest extends ChannelTestBase
         $this->assertTrue($livePreview->called);
         $this->assertSame('PREVIEW', $out);
     }
+
+    public function testLivePreviewAllowsIpv6OriginWhenConfiguredWithPort()
+    {
+        $_SERVER['HTTP_ORIGIN'] = 'http://[::1]:8080';
+        unset($_SERVER['HTTP_REFERER']);
+
+        $livePreview = new class {
+            public $called = false;
+            public function preview() { $this->called = true; return 'PREVIEW'; }
+            public function hasEntryData(){ return false; }
+        };
+        $this->setMock('LivePreview', $livePreview);
+
+        $this->setMock('input', new class {
+            public function get_post($k){ if ($k === 'entry_id') { return 3; } if ($k === 'channel_id') { return 1; } return null; }
+            public function get($k){ if($k==='return'){ return rawurlencode(base64_encode('http://[::1]:8080/return')); } if($k==='prefer_system_preview'){ return 'n'; } return null; }
+        });
+        $this->setMock('Request', new class {
+            public function get($k){
+                if ($k === 'from') { return rawurlencode(base64_encode('http://[::1]:8080')); }
+                return null;
+            }
+            public function isEncrypted(){ return false; }
+            public function method(){ return 'POST'; }
+        });
+        $this->setMock('Model', new class { public function get($m){ return new class { public function filter(){ return $this; } public function all(){ return new class { public function pluck($k){ return ['http://[::1]:8080/']; } }; } }; } });
+        $this->setMock('Config', new class { public function getFile(){ return new class { public function get($k){ return []; } }; } });
+        $this->setMock('lang', new class { public function load($k){} public function line($k){ return $k; } });
+        $this->setMock('output', new class { public function show_user_error(){ return 'ERR'; } });
+        $this->setMock('Permission', new class { public function can($k){ return true; } public function isSuperAdmin(){ return false; } });
+        ee()->session->set_userdata('member_id', 1);
+        $this->setPreviewTokenHeader($this->issuePreviewToken([
+            'origin' => 'http://[::1]:8080',
+            'return' => 'http://[::1]:8080/return'
+        ]));
+        $this->setMock('config', (function(){ $c = new FakeConfig(); $c->items['cp_url'] = 'http://localhost/admin.php';
+            $c->items['site_id'] = 1; return $c; })());
+
+        $out = $this->channel->live_preview();
+
+        $this->assertTrue($livePreview->called);
+        $this->assertSame('PREVIEW', $out);
+    }
 }
