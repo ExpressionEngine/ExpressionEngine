@@ -79,14 +79,14 @@ context('File Manager', () => {
     }
 
     function setManualPerPage(value) {
-        cy.intercept('/admin.php?/cp/files*').as('fileRequest')
         page.get('perpage_filter').click()
+        cy.intercept(`/admin.php?/cp/files*&perpage=${value}*`).as('fileRequestPerpage')
         page.get('perpage_manual_filter')
             .should('be.visible')
             .click()
             .type('{selectall}')
             .type(`${value}{enter}`)
-        cy.wait('@fileRequest').its('request.url').should('include', `perpage=${value}`)
+        cy.wait('@fileRequestPerpage')
         cy.hasNoErrors()
 
         page.get('perpage_filter').find('.has-sub').invoke('text').then((text) => {
