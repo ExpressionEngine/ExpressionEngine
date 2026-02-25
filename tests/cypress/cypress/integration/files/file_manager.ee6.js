@@ -80,14 +80,16 @@ context('File Manager', () => {
 
     function setManualPerPage(value) {
         page.get('perpage_filter').click()
-        cy.intercept(`/admin.php?/cp/files*&perpage=${value}*`).as('fileRequestPerpage')
+        cy.intercept('/admin.php?/cp/files*').as('fileRequest')
         page.get('perpage_manual_filter')
             .should('be.visible')
             .click()
             .type('{selectall}')
-            .type(`${value}{enter}`)
-        cy.wait('@fileRequestPerpage')
+            .type(`${value}`)
+            .type('{enter}')
+        cy.wait('@fileRequest').its('request.body').should('include', `perpage=${value}`)
         cy.hasNoErrors()
+        cy.url({timeout: 20000}).should('include', `perpage=${value}`)
 
         page.get('perpage_filter').find('.has-sub').invoke('text').then((text) => {
             return text.replace(/\s+/g, ' ').trim()
