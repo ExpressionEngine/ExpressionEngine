@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -702,24 +702,52 @@ abstract class AbstractPublish extends CP_Controller
                     ->where('class', 'Channel')
                     ->where('method', 'live_preview')
                     ->get('actions');
+
                 $preview_url = ee()->functions->fetch_site_index() . QUERY_MARKER . 'ACT=' . $action_id->row('action_id') . AMP . 'channel_id=' . $entry->channel_id;
+
                 if (!empty($entry->entry_id)) {
                     $preview_url .= AMP . 'entry_id=' . $entry->entry_id;
                 }
+
+                $preview_token_url = ee('CP/URL')->make(
+                    'publish/live-preview-token/' . $entry->channel_id . '/' . ($entry->entry_id ?: 0)
+                )->compile();
+
+                $return = null;
                 if (ee()->input->get('return') != '') {
-                    $preview_url .= AMP . 'return=' . rawurlencode(base64_encode(urldecode(ee()->input->get('return', true))));
+                    $return = urldecode(ee()->input->get('return', true));
+                    $preview_url .= AMP . 'return=' . rawurlencode(base64_encode($return));
                 }
+
+                $from_origin = null;
+                //cross-domain live previews are only possible if $_SERVER['HTTP_HOST'] is set
+                if (isset($_SERVER['HTTP_HOST']) && !empty($_SERVER['HTTP_HOST'])) {
+                    $from_origin = (ee('Request')->isEncrypted() ? 'https://' : 'http://') . strtolower($_SERVER['HTTP_HOST']);
+                    $preview_url .= AMP . 'from=' . rawurlencode(base64_encode($from_origin));
+                }
+
+                $preview_token = ee('LivePreviewToken')->issueFromRequest(
+                    (int) ee()->session->userdata('member_id'),
+                    (int) $entry->channel_id,
+                    !empty($entry->entry_id) ? (int) $entry->entry_id : null,
+                    $from_origin,
+                    $return,
+                    null,
+                    (int) ee()->config->item('site_id'),
+                    false
+                );
+
                 if (ee()->input->get('prefer_system_preview') == 'y') {
                     $preview_url .= AMP . 'prefer_system_preview=y';
                 }
-                //cross-domain live previews are only possible if $_SERVER['HTTP_HOST'] is set
-                if (isset($_SERVER['HTTP_HOST']) && !empty($_SERVER['HTTP_HOST'])) {
-                    $preview_url .= AMP . 'from=' . rawurlencode(base64_encode((ee('Request')->isEncrypted() ? 'https://' : 'http://') . strtolower($_SERVER['HTTP_HOST'])));
-                }
+
                 $modal_vars = [
                     'preview_url' => $preview_url,
+                    'preview_token' => $preview_token,
+                    'preview_token_url' => $preview_token_url,
                     'hide_closer' => ee()->input->get('hide_closer') === 'y' ? true : false
                 ];
+
                 $modal = ee('View')->make('publish/live-preview-modal')->render($modal_vars);
                 ee('CP/Modal')->addModal('live-preview', $modal);
 

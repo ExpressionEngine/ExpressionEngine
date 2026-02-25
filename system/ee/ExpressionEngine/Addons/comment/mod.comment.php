@@ -10,7 +10,7 @@ use ExpressionEngine\Addons\Comment\Service\Variables\Comment as CommentVars;
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -734,12 +734,13 @@ class Comment
         if ($e_status = ee()->TMPL->fetch_param('entry_status')) {
             $e_status = str_replace('Open', 'open', $e_status);
             $e_status = str_replace('Closed', 'closed', $e_status);
-
-            ee()->functions->ar_andor_string($e_status, 'status');
-
-            if (stristr($sql, "'closed'") === false) {
+			
+            // If they don't specify closed, it defaults to it
+            if (! in_array('closed', explode('|', $e_status))) {
                 ee()->db->where('status !=', 'closed');
             }
+
+            ee()->functions->ar_andor_string($e_status, 'status');			
         } else {
             ee()->db->where('status !=', 'closed');
         }
