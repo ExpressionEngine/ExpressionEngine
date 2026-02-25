@@ -2877,16 +2877,17 @@ class Channel
                 'category_description' => 'c.cat_description'
             );
             foreach ($this->catfields as $catfield) {
-                $allowedOrderBy[$catfield['field_name']] = 'field_id_' . $catfield['field_id'];
+                $allowedOrderBy[strtolower($catfield['field_name'])] = 'field_id_' . $catfield['field_id'];
             }
 
-            $orderby = (string) ee()->TMPL->fetch_param('orderby');
-            $sort = ee()->TMPL->fetch_param('sort', 'ASC');
-            if (!in_array(strtoupper($sort), ['ASC', 'DESC'])) {
+            $orderby = '';
+            $orderby_param = strtolower(trim((string) ee()->TMPL->fetch_param('orderby')));
+            $sort = strtoupper((string) ee()->TMPL->fetch_param('sort', 'ASC'));
+            if (!in_array($sort, ['ASC', 'DESC'], true)) {
                 $sort = 'ASC';
             }
-            if (!empty($orderby) && isset($allowedOrderBy[$orderby])) {
-                $orderby = ', ' . $allowedOrderBy[$orderby] . ' ' . $sort;
+            if ($orderby_param !== '' && isset($allowedOrderBy[$orderby_param])) {
+                $orderby = ', ' . $allowedOrderBy[$orderby_param] . ' ' . $sort;
             }
 
             if ($show_empty == 'no') {
