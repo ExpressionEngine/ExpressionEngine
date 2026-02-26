@@ -214,12 +214,38 @@ jobs:
                 chrome-version: ${{ steps.get-chrome-version.outputs.chrome_version }}
 
             - name: Get Cypress Specs
-              if: ${{ github.event_name == 'workflow_dispatch' && (!inputs.use_cypress_dashboard || env.CYPRESS_RECORD_KEY == '') }}
+              if: "${{ env.CYPRESS_RECORD_KEY == '' || (github.event_name == 'workflow_dispatch' && !inputs.use_cypress_dashboard) }}"
               env:
                 CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
               run: |
                 echo "SPECS=$(node tests/cypress-split.js 9 ${{ matrix.containers }})" >> $GITHUB_OUTPUT
               id: specs
+
+            - name: Run Cypress Tests (without dashboard)
+              if: "${{ env.CYPRESS_RECORD_KEY == '' || (github.event_name == 'workflow_dispatch' && !inputs.use_cypress_dashboard) }}"
+              uses: cypress-io/github-action@v6
+              with:
+                spec: ${{ steps.specs.outputs.SPECS }}
+                browser: ${{ steps.setup-chrome.outputs.chrome-path }}
+                working-directory: tests/cypress
+              env:
+                CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+                DEBUG: '@cypress/github-action'
+
+            - name: Run Cypress Tests
+              if: "${{ env.CYPRESS_RECORD_KEY != '' && (github.event_name != 'workflow_dispatch' || inputs.use_cypress_dashboard) }}"
+              uses: cypress-io/github-action@v6
+              with:
+                # spec: ${{ steps.specs.outputs.SPECS }}
+                browser: ${{ steps.setup-chrome.outputs.chrome-path }}
+                working-directory: tests/cypress
+                record: true
+                parallel: true
+                group: PHP${{ matrix.php }}
+              env:
+                CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+                CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Run Cypress Tests (Electron)
               uses: cypress-io/github-action@v6
