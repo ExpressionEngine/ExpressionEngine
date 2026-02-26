@@ -621,6 +621,21 @@ class EE_Session
         $this->userdata['group_title'] = $this->member_model->PrimaryRole->name;
         $this->userdata['group_description'] = $this->member_model->PrimaryRole->description;
 
+        // Merge role_settings for the current site when missing (e.g. fallback query path).
+        // Use the first role with site-specific settings; members with secondary-role-only
+        // access may have a primary role with no settings for this site.
+        if (! array_key_exists('prv_msg_send_limit', $this->userdata)) {
+            $site_id = (int) ee()->config->item('site_id');
+            foreach ($this->member_model->getAllRoles() as $role) {
+                $roleSetting = $role->RoleSettings->filter('site_id', $site_id)->first();
+                if ($roleSetting) {
+                    $roleSettings = array_diff_key($roleSetting->getValues(), array_flip(array('id', 'role_id', 'site_id')));
+                    $this->userdata = array_merge($this->userdata, $roleSettings);
+                    break;
+                }
+            }
+        }
+
         // Add in the Permissions for backwards compatibility
         $permissions = $this->member_model->getPermissions();
         foreach ($permissions as $perm => $perm_id) {
@@ -1236,7 +1251,9 @@ class EE_Session
         if (REQ == 'CP') {
             $memberQuery->with('EntryManagerViews');
         }
-        $memberQuery->filter('RoleSettings.site_id', ee()->config->item('site_id'));
+        // Do not filter by RoleSettings.site_id - members with access via a secondary role
+        // may have a primary role with no site-specific role_settings, which would exclude
+        // them. Permission checks (e.g. can_access_cp) correctly use getAllRoles().
         $this->member_model = $memberQuery->all()->first();
     }
 
