@@ -21,7 +21,9 @@ class Translate extends Utilities
     protected $languages_dir;
 
     /**
-     * Constructor
+     * Create a new translate utility controller instance.
+     *
+     * @return void
      */
     public function __construct()
     {
@@ -39,7 +41,11 @@ class Translate extends Utilities
     }
 
     /**
-     * Magic method that sets the language and routes the action
+     * Route language-specific utility actions.
+     *
+     * @param string $name
+     * @param array<int, mixed> $arguments
+     * @return void
      */
     public function __call($name, $arguments)
     {
@@ -60,6 +66,11 @@ class Translate extends Utilities
         }
     }
 
+    /**
+     * Display the available Control Panel language packs.
+     *
+     * @return void
+     */
     public function index()
     {
         ee()->lang->load('settings');
@@ -124,9 +135,10 @@ class Translate extends Utilities
     }
 
     /**
-     * List the "*_lang.php" files in a $language directory
+     * List translatable language files for the selected language.
      *
-     * @param string $language	The language directory (i.e. 'english')
+     * @param string $language
+     * @return void
      */
     private function listFiles($language)
     {
@@ -231,10 +243,10 @@ class Translate extends Utilities
     }
 
     /**
-     * Find the language in the potential language directories
+     * Resolve the language directory from supported parent paths.
      *
-     * @param string $language	The language name (i.e. 'english')
-     * @return string The full path to the language directory
+     * @param string $language
+     * @return string
      */
     private function getLanguageDirectory($language)
     {
@@ -254,10 +266,11 @@ class Translate extends Utilities
     }
 
     /**
-     * Zip and send the selected language files
+     * Export selected language files as a zip download.
      *
-     * @param string $language	The language directory (i.e. 'english')
-     * @param array  $files		The list of files to export
+     * @param string $language
+     * @param array<int, string> $files
+     * @return void
      */
     private function export($language, $files)
     {
@@ -300,6 +313,13 @@ class Translate extends Utilities
         exit;
     }
 
+    /**
+     * Render the translation editor for a language file.
+     *
+     * @param string $language
+     * @param string $file
+     * @return mixed
+     */
     private function edit($language, $file)
     {
         $file = ee()->security->sanitize_filename($file);
@@ -383,6 +403,13 @@ class Translate extends Utilities
         return ee()->cp->render('settings/form', $vars);
     }
 
+    /**
+     * Persist submitted translations for a language file.
+     *
+     * @param string $language
+     * @param string $file
+     * @return void
+     */
     private function save($language, $file)
     {
         $file = ee()->security->sanitize_filename($file);
