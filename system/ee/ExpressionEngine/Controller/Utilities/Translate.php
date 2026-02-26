@@ -324,13 +324,22 @@ class Translate extends Utilities
         if (file_exists($path . $filename) && is_readable($path . $filename)) {
             require($path . $filename);
 
-            $M = $lang;
+            if (isset($lang) && is_array($lang)) {
+                $M = $lang;
+            } else {
+                $this->addInvalidTranslationFileAlert($path . $filename);
+            }
 
             unset($lang);
         }
 
         if (file_exists($dest_dir . $filename)) {
             require($dest_dir . $filename);
+
+            if (! isset($lang) || ! is_array($lang)) {
+                $this->addInvalidTranslationFileAlert($dest_dir . $filename);
+                $lang = $M;
+            }
         } else {
             $lang = $M;
         }
@@ -382,23 +391,22 @@ class Translate extends Utilities
         $filename = $file . '_lang.php';
         $dest_loc = $dest_dir . $filename;
 
-        $str = '<?php' . "\n" . '$lang = array(' . "\n\n\n";
-
         ee()->lang->loadfile($file);
+        $allowed_keys = $this->getAllowedTranslationKeys($file);
+        $normalized = $this->normalizeSubmittedTranslations($_POST, $allowed_keys);
 
-        foreach ($_POST as $key => $val) {
-            $val = str_replace('<script', '', $val);
-            $val = str_replace('<iframe', '', $val);
-            $val = str_replace(array("\\", "'"), array("\\\\", "\'"), $val);
+        if (! $normalized['is_valid']) {
+            ee('CP/Alert')->makeInline('shared-form')
+                ->asIssue()
+                ->withTitle(lang('translate_error'))
+                ->addToBody(lang('translate_error_desc'))
+                ->defer();
 
-            $key = ee('Security/XSS')->clean($key);
-            $val = ee('Security/XSS')->clean($val);
-
-            $str .= '\'' . $key . '\' => ' . "\n" . '\'' . $val . '\'' . ",\n\n";
+            ee()->functions->redirect(ee('CP/URL')->make('utilities/translate/' . $language . '/edit/' . $file));
+            return;
         }
 
-        $str .= "''=>''\n);\n\n";
-        $str .= "// End of File";
+        $str = $this->renderLanguagePhp($normalized['translations']);
 
         // Make sure any existing file is writeable
         if (file_exists($dest_loc)) {
@@ -430,6 +438,147 @@ class Translate extends Utilities
                 ->defer();
         }
         ee()->functions->redirect(ee('CP/URL')->make('utilities/translate/' . $language . '/edit/' . $file));
+    }
+
+    /**
+     * Queue an inline alert when a translation file cannot be safely parsed.
+     *
+     * @param string $path
+     * @return void
+     */
+    private function addInvalidTranslationFileAlert($path)
+    {
+        ee('CP/Alert')->makeInline('shared-form')
+            ->asIssue()
+            ->withTitle(lang('cannot_access'))
+            ->addToBody($path)
+            ->defer();
+    }
+
+    /**
+     * Return valid translatable keys from the canonical English language file.
+     *
+     * @param string $file
+     * @return array<int, string>
+     */
+    private function getAllowedTranslationKeys($file)
+    {
+        $english = ee()->lang->load($file, 'english', true);
+
+        if (! is_array($english)) {
+            return [];
+        }
+
+        $allowed_keys = [];
+        foreach (array_keys($english) as $key) {
+            if (is_string($key) && $key !== '') {
+                $allowed_keys[] = $key;
+            }
+        }
+
+        return $allowed_keys;
+    }
+
+    /**
+     * Return non-translation form keys expected on CP form posts.
+     *
+     * @return array<int, string>
+     */
+    private function getKnownTranslationFormKeys()
+    {
+        return [
+            'csrf_token',
+            'XID',
+            'site_id',
+        ];
+    }
+
+    /**
+     * Validate posted translations and normalize them for safe persistence.
+     *
+     * @param mixed $post
+     * @param array<int, string> $allowed_keys
+     * @param callable|null $cleaner
+     * @return array{
+     *     is_valid: bool,
+     *     translations: array<string, string>,
+     *     unexpected_keys: array<int, string>,
+     *     invalid_value_keys: array<int, string>
+     * }
+     */
+    private function normalizeSubmittedTranslations($post, $allowed_keys, $cleaner = null)
+    {
+        if (! is_array($post)) {
+            $post = [];
+        }
+
+        if ($cleaner === null) {
+            $cleaner = function ($value) {
+                return ee('Security/XSS')->clean($value);
+            };
+        }
+
+        $translations = [];
+        $unexpected_keys = [];
+        $invalid_value_keys = [];
+
+        $allowed_lookup = array_fill_keys($allowed_keys, true);
+        $known_form_keys = array_fill_keys($this->getKnownTranslationFormKeys(), true);
+
+        // Any unknown field names indicate client-side form tampering.
+        foreach (array_keys($post) as $posted_key) {
+            if (! isset($allowed_lookup[$posted_key]) && ! isset($known_form_keys[$posted_key])) {
+                $unexpected_keys[] = $posted_key;
+            }
+        }
+
+        // Persist only allowed keys and keep deterministic output order.
+        foreach ($allowed_keys as $allowed_key) {
+            $raw_value = array_key_exists($allowed_key, $post) ? $post[$allowed_key] : '';
+
+            if (! is_scalar($raw_value) && $raw_value !== null) {
+                $invalid_value_keys[] = $allowed_key;
+                continue;
+            }
+
+            $translations[$allowed_key] = $this->sanitizeTranslationValue((string) $raw_value, $cleaner);
+        }
+
+        return [
+            'is_valid' => empty($unexpected_keys) && empty($invalid_value_keys),
+            'translations' => $translations,
+            'unexpected_keys' => $unexpected_keys,
+            'invalid_value_keys' => $invalid_value_keys,
+        ];
+    }
+
+    /**
+     * Apply legacy value sanitization before writing translation values.
+     *
+     * @param string $value
+     * @param callable $cleaner
+     * @return string
+     */
+    private function sanitizeTranslationValue($value, $cleaner)
+    {
+        $value = str_replace('<script', '', $value);
+        $value = str_replace('<iframe', '', $value);
+
+        return $cleaner($value);
+    }
+
+    /**
+     * Render the translation array as a PHP language file.
+     *
+     * @param array<string, string> $translations
+     * @return string
+     */
+    private function renderLanguagePhp($translations)
+    {
+        // Preserve legacy sentinel empty key in generated language files.
+        $translations[''] = '';
+
+        return "<?php\n" . '$lang = ' . var_export($translations, true) . ";\n\n// End of File\n";
     }
 }
 // END CLASS
