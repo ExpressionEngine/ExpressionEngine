@@ -42,7 +42,7 @@ class RteTest extends TestCase
         });
 
         $data = '{filedir_7}';
-        $this->helper::replaceFileUrls($data);
+        RteHelper::replaceFileUrls($data);
 
         $this->assertSame('{filedir_7}', $data);
     }
