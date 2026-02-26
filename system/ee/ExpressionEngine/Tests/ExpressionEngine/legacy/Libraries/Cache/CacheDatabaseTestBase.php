@@ -5,7 +5,7 @@ namespace ExpressionEngine\Tests\ExpressionEngine\legacy\Libraries\Cache;
 /**
  * Base class for Cache_database driver tests
  */
-class CacheDatabaseTestBase extends CacheTestBase
+abstract class CacheDatabaseTestBase extends CacheTestBase
 {
     /**
      * Mock database query result
@@ -288,4 +288,3 @@ class CacheDatabaseTestBase extends CacheTestBase
         return $method->invokeArgs($object, $args);
     }
 }
-

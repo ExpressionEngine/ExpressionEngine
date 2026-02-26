@@ -714,7 +714,7 @@ $(document).ready(function(){
 		$('body').on('modal:close', '.modal-wrap, .modal-form-wrap, .app-modal', function(e) {
 			var modal = $(this)
 
-			if (modal.is(":visible")) {
+			if (modal.is(":visible") && !modal.hasClass('must-interact')) {
 				// fade out the overlay
 				$('.overlay').fadeOut('slow');
 

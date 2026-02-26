@@ -586,6 +586,13 @@ JSC;
             }
             $new = $data['filesystem']->createTempFile();
 
+            // If no per-tag quality is provided, use the configured default
+            // while preserving the historical 75 fallback.
+            $imageQuality = 75;
+            if (is_int(ee()->config->item('image_manipulation_quality')) && 0 < ee()->config->item('image_manipulation_quality') && ee()->config->item('image_manipulation_quality') <= 100) {
+                $imageQuality = ee()->config->item('image_manipulation_quality');
+            }
+
             $imageLibConfig = array(
                 'image_library' => ee()->config->item('image_resize_protocol'),
                 'library_path' => ee()->config->item('image_library_path'),
@@ -594,7 +601,7 @@ JSC;
                 'maintain_ratio' => isset($params['maintain_ratio']) ? get_bool_from_string($params['maintain_ratio']) : true,
                 'master_dim' => (isset($params['master_dim']) && in_array($params['master_dim'], ['auto', 'width', 'height'])) ? $params['master_dim'] : 'auto',
 
-                'quality' => isset($params['quality']) ? (int) $params['quality'] : 75,
+                'quality' => isset($params['quality']) ? (int) $params['quality'] : $imageQuality,
                 'x_axis' => isset($params['x']) ? (int) $params['x'] : 0,
                 'y_axis' => isset($params['y']) ? (int) $params['y'] : 0,
                 'rotation_angle' => (isset($params['angle']) && in_array($params['angle'], ['90', '180', '270', 'vrt', 'hor'])) ? $params['angle'] : null,

@@ -19,7 +19,7 @@ require_once __DIR__ . '/../../../eeObjectMock.php';
  * Base test class for EE_Template advanced method tests
  * Provides common mocking and setup for methods that need complex EE mocking
  */
-class EE_TemplateAdvancedMethodsTestBase extends TestCase
+abstract class EE_TemplateAdvancedMethodsTestBase extends TestCase
 {
     protected $template;
 

@@ -58,7 +58,39 @@ class Stats_upd extends Installer
             ee()->smartforge->modify_column('stats', $fields);
         }
 
+        // Clean up legacy public action that is no longer used by core stats flows.
+        if (version_compare($current, '2.2.1', '<')) {
+            $this->removeLegacySyncStatsAction();
+        }
+
         return true;
+    }
+
+    /**
+     * Module uninstaller
+     *
+     * @access  public
+     * @return  bool
+     */
+    public function uninstall()
+    {
+        $this->removeLegacySyncStatsAction();
+
+        return parent::uninstall();
+    }
+
+    /**
+     * Remove the deprecated Stats::sync_stats action row if present.
+     *
+     * @return void
+     */
+    private function removeLegacySyncStatsAction()
+    {
+        ee('Model')
+            ->get('Action')
+            ->filter('class', 'Stats')
+            ->filter('method', 'sync_stats')
+            ->delete();
     }
 }
 // END CLASS

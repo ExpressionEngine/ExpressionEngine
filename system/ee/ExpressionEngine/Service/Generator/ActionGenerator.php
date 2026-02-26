@@ -13,19 +13,16 @@ namespace ExpressionEngine\Service\Generator;
 use ExpressionEngine\Library\Filesystem\Filesystem;
 use ExpressionEngine\Library\String\Str;
 
-class ActionGenerator
+class ActionGenerator extends AbstractGenerator
 {
-    public $name;
-    public $addon;
-    protected $filesystem;
-    protected $str;
-    protected $generatorPath;
-    protected $addonPath;
-    protected $stubPath;
     protected $ActionName;
     protected $csrf_exempt;
     protected $actionsPath;
     protected $namespace;
+
+    public $requiredComponentFiles = [
+        'mod',
+    ];
 
     public function __construct(Filesystem $filesystem, Str $str, array $data)
     {
@@ -47,17 +44,8 @@ class ActionGenerator
 
     private function init()
     {
-        $this->generatorPath = SYSPATH . 'ee/ExpressionEngine/Service/Generator';
-        $this->addonPath = SYSPATH . 'user/addons/' . $this->addon . '/';
-        $this->actionsPath = SYSPATH . 'user/addons/' . $this->addon . '/';
-
-        // Make sure the addon exists
-        if (! ee('Addon')->get($this->addon)) {
-            throw new \Exception(lang('cli_error_the_specified_addon_does_not_exist'), 1);
-        } elseif (! file_exists($this->addonPath . 'mod.' . $this->addon . '.php')) {
-            throw new \Exception(lang('command_make_action_error_addon_must_have_module'), 1);
-        }
-
+        $this->initCommon();
+        $this->actionsPath = $this->addonPath;
         // Get stub path
         $this->stubPath = $this->generatorPath . '/stubs/MakeAddon/';
     }
@@ -71,29 +59,6 @@ class ActionGenerator
         $this->putFile('Actions/' . $this->ActionName . '.php', $actionStub);
 
         $this->makeMigration();
-    }
-
-    private function stub($file)
-    {
-        return $this->stubPath . $file;
-    }
-
-    private function write($key, $value, $file)
-    {
-        return str_replace('{{' . $key . '}}', $value, $file);
-    }
-
-    private function putFile($name, $contents, $path = null)
-    {
-        if ($path) {
-            $path = trim($path, '/') . '/';
-        } else {
-            $path = '';
-        }
-
-        if (!$this->filesystem->exists($this->addonPath . $path . $name)) {
-            $this->filesystem->write($this->addonPath . $path . $name, $contents);
-        }
     }
 
     private function makeMigration()

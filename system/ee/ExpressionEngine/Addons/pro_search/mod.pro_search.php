@@ -322,7 +322,12 @@ class Pro_search
         // --------------------------------------
 
         if ($params = array_filter($params, 'pro_not_empty')) {
-            $data['hidden_fields']['params'] = pro_search_encode($params);
+            $encoded_params = pro_search_encode($params);
+            $data['hidden_fields']['params'] = $encoded_params;
+
+            if ($signature = $this->_create_params_signature($encoded_params)) {
+                $data['hidden_fields']['sig'] = $signature;
+            }
         }
 
         // --------------------------------------
@@ -1520,9 +1525,18 @@ class Pro_search
         // --------------------------------------
 
         $data = array();
+        $trusted_params = array();
 
         if ($params = ee()->input->post('params')) {
             $data = pro_search_decode($params);
+
+            if (! is_array($data)) {
+                $data = array();
+            }
+
+            if ($this->_is_valid_params_signature($params, ee()->input->get_post('sig'))) {
+                $trusted_params = $this->_get_trusted_signed_params($data);
+            }
         }
 
         // --------------------------------------
@@ -1531,7 +1545,7 @@ class Pro_search
 
         foreach (array_merge($_GET, $_POST) as $key => $val) {
             // Keys to skip
-            if (in_array($key, array('ACT', 'XID', 'csrf_token', 'params', 'site_id'))) {
+            if (in_array($key, array('ACT', 'XID', 'csrf_token', 'params', 'sig', 'site_id'))) {
                 continue;
             }
 
@@ -1547,6 +1561,8 @@ class Pro_search
 
         $data = array_filter($data, 'pro_not_empty');
 
+        $data = $this->_enforce_trusted_params($data, $trusted_params);
+
         // --------------------------------------
         // 'pro_search_catch_search' extension hook
         //  - Check incoming data and optionally change it
@@ -1561,6 +1577,7 @@ class Pro_search
             // Clean again to be sure
             $data = array_filter($data, 'pro_not_empty');
         }
+
 
         // --------------------------------------
         // Check for required parameter
@@ -1612,7 +1629,7 @@ class Pro_search
         // --------------------------------------
 
         // Empty out flashdata to avoid serving of JSON for ajax request
-        if (AJAX_REQUEST && count(ee()->session->flashdata)) {
+        if (defined('AJAX_REQUEST') && AJAX_REQUEST && count(ee()->session->flashdata)) {
             ee()->session->flashdata = array();
         }
 
@@ -1622,6 +1639,85 @@ class Pro_search
     // --------------------------------------------------------------------
     // PRIVATE METHODS
     // --------------------------------------------------------------------
+
+    /**
+     * Return params that are trusted when signature validation succeeds.
+     *
+     * @access      private
+     * @param       array
+     * @return      array
+     */
+    private function _get_trusted_signed_params($data = array())
+    {
+        if (! is_array($data) || empty($data)) {
+            return array();
+        }
+
+        $trusted = array();
+
+        foreach ($this->_trusted_signed_param_keys() as $key) {
+            if (isset($data[$key])) {
+                $trusted[$key] = $data[$key];
+            }
+        }
+
+        return $trusted;
+    }
+
+    /**
+     * Return signed params that are treated as trusted configuration.
+     *
+     * @access      private
+     * @return      array
+     */
+    private function _trusted_signed_param_keys()
+    {
+        return array('result_page', 'required', 'force_protocol');
+    }
+
+    /**
+     * Enforce trust boundaries around signed params.
+     *
+     * `result_page` can remain user-controlled only for internal paths.
+     * `required` and `force_protocol` are treated as form config and must be
+     * signed to be honored.
+     *
+     * @access      private
+     * @param       array
+     * @param       array
+     * @return      array
+     */
+    private function _enforce_trusted_params($data = array(), $trusted_params = array())
+    {
+        if (! is_array($data)) {
+            $data = array();
+        }
+
+        if (! is_array($trusted_params)) {
+            $trusted_params = array();
+        }
+
+        foreach ($trusted_params as $key => $value) {
+            $data[$key] = $value;
+        }
+
+        foreach ($this->_trusted_signed_param_keys() as $key) {
+            if (array_key_exists($key, $trusted_params)) {
+                continue;
+            }
+
+            if ($key === 'result_page') {
+                if (isset($data['result_page']) && $this->_is_external_result_page($data['result_page'])) {
+                    unset($data['result_page']);
+                }
+                continue;
+            }
+
+            unset($data[$key]);
+        }
+
+        return $data;
+    }
 
     /**
      * Create URL for given page and encoded query
@@ -1716,6 +1812,65 @@ class Pro_search
         }
 
         return $url . $qs . $hash;
+    }
+
+    /**
+     * Create an HMAC signature for the encoded params payload.
+     *
+     * @access     private
+     * @param      string
+     * @return     string
+     */
+    private function _create_params_signature($params = '')
+    {
+        $key = (string) ee()->config->item('encryption_key');
+
+        if (! (is_string($params) && strlen($params) && strlen($key))) {
+            return '';
+        }
+
+        return hash_hmac('sha256', $params, $key);
+    }
+
+    /**
+     * Validate encoded params against the incoming signature.
+     *
+     * @access     private
+     * @param      string
+     * @param      string
+     * @return     bool
+     */
+    private function _is_valid_params_signature($params = '', $signature = '')
+    {
+        if (! (is_string($params) && strlen($params) && is_string($signature) && strlen($signature))) {
+            return false;
+        }
+
+        $expected = $this->_create_params_signature($params);
+
+        if (! strlen($expected)) {
+            return false;
+        }
+
+        return function_exists('hash_equals')
+            ? hash_equals($expected, $signature)
+            : ($expected === $signature);
+    }
+
+    /**
+     * Check if a result page value points to an external URL.
+     *
+     * @access     private
+     * @param      string
+     * @return     bool
+     */
+    private function _is_external_result_page($page = '')
+    {
+        if (! (is_string($page) && strlen($page))) {
+            return false;
+        }
+
+        return (bool) preg_match('#^(https?:)?//#i', $page);
     }
 
     // --------------------------------------------------------------------

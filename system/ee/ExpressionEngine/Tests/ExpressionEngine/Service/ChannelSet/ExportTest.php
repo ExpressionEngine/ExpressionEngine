@@ -22,6 +22,28 @@ class ExportTest extends TestCase
         $this->export = new Export();
     }
 
+    private function ensureCacheDir(): array
+    {
+        $cleanupTemp = false;
+
+        if (!defined('PATH_CACHE')) {
+            $tempDir = sys_get_temp_dir() . '/ee_test_' . uniqid();
+            define('PATH_CACHE', rtrim($tempDir, '/\\') . '/');
+            $cleanupTemp = true;
+        }
+
+        $cacheDir = rtrim(PATH_CACHE, '/\\') . '/';
+
+        if (!is_dir($cacheDir)) {
+            mkdir($cacheDir, 0777, true);
+        }
+        if (!is_dir($cacheDir . 'cset')) {
+            mkdir($cacheDir . 'cset', 0777, true);
+        }
+
+        return [$cacheDir, $cleanupTemp];
+    }
+
     protected static function call($name, ...$args)
     {
         // If first arg is an Export instance, use it; otherwise create new one
@@ -462,15 +484,7 @@ class ExportTest extends TestCase
 
     public function testZipCreatesZipFileWithDefaultName()
     {
-        // Create a temporary directory for cache
-        $tempDir = sys_get_temp_dir() . '/ee_test_' . uniqid();
-        mkdir($tempDir, 0777, true);
-        mkdir($tempDir . '/cset', 0777, true);
-        
-        // Override PATH_CACHE constant for testing
-        if (!defined('PATH_CACHE')) {
-            define('PATH_CACHE', $tempDir . '/');
-        }
+        [$cacheDir, $cleanupTemp] = $this->ensureCacheDir();
 
         // Mock channel
         $channel = $this->getMockBuilder('stdClass')
@@ -512,21 +526,15 @@ class ExportTest extends TestCase
         if (file_exists($result)) {
             unlink($result);
         }
-        rmdir($tempDir . '/cset');
-        rmdir($tempDir);
+        if ($cleanupTemp) {
+            rmdir($cacheDir . 'cset');
+            rmdir($cacheDir);
+        }
     }
 
     public function testZipCreatesZipFileWithCustomName()
     {
-        // Create a temporary directory for cache
-        $tempDir = sys_get_temp_dir() . '/ee_test_' . uniqid();
-        mkdir($tempDir, 0777, true);
-        mkdir($tempDir . '/cset', 0777, true);
-        
-        // Override PATH_CACHE constant for testing
-        if (!defined('PATH_CACHE')) {
-            define('PATH_CACHE', $tempDir . '/');
-        }
+        [$cacheDir, $cleanupTemp] = $this->ensureCacheDir();
 
         // Mock channel
         $channel = $this->getMockBuilder('stdClass')
@@ -568,21 +576,15 @@ class ExportTest extends TestCase
         if (file_exists($result)) {
             unlink($result);
         }
-        rmdir($tempDir . '/cset');
-        rmdir($tempDir);
+        if ($cleanupTemp) {
+            rmdir($cacheDir . 'cset');
+            rmdir($cacheDir);
+        }
     }
 
     public function testZipIncludesChannelSetJson()
     {
-        // Create a temporary directory for cache
-        $tempDir = sys_get_temp_dir() . '/ee_test_' . uniqid();
-        mkdir($tempDir, 0777, true);
-        mkdir($tempDir . '/cset', 0777, true);
-        
-        // Override PATH_CACHE constant for testing
-        if (!defined('PATH_CACHE')) {
-            define('PATH_CACHE', $tempDir . '/');
-        }
+        [$cacheDir, $cleanupTemp] = $this->ensureCacheDir();
 
         // Mock channel
         $channel = $this->getMockBuilder('stdClass')
@@ -639,8 +641,10 @@ class ExportTest extends TestCase
         if (file_exists($zipPath)) {
             unlink($zipPath);
         }
-        rmdir($tempDir . '/cset');
-        rmdir($tempDir);
+        if ($cleanupTemp) {
+            rmdir($cacheDir . 'cset');
+            rmdir($cacheDir);
+        }
     }
 
     public function tearDown(): void

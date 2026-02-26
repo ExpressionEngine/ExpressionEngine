@@ -36,10 +36,6 @@ class SetsTest extends TestCase
         if (!defined('PATH_THIRD')) {
             define('PATH_THIRD', SYSPATH . 'user/addons/');
         }
-        if (!defined('EE_APPPATH')) {
-             define('EE_APPPATH', APPPATH);
-        }
-
         // Include necessary files
         if (!class_exists('EE_Controller')) {
             require_once SYSPATH . 'ee/legacy/core/Controller.php';

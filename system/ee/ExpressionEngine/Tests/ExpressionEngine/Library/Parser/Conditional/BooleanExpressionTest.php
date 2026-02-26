@@ -145,6 +145,33 @@ class BooleanExpressionTest extends TestCase
         $this->assertTrue($this->expr->evaluate());
     }
 
+    public function testCanEvaluateStaysTrueForEvaluableTokens()
+    {
+        $this->expr->add(new Token\Boolean('TRUE'));
+        $this->expr->add(new Token\Operator('&&'));
+        $this->expr->add(new Token\Number(1));
+
+        $this->assertTrue($this->expr->canEvaluate());
+    }
+
+    public function testCanEvaluateTurnsFalseWhenNonEvaluableTokenIsAdded()
+    {
+        $this->expr->add(new Token\Tag('{exp:channel:entries}'));
+        $this->expr->add(new Token\Operator('&&'));
+        $this->expr->add(new Token\Boolean('TRUE'));
+
+        $this->assertFalse($this->expr->canEvaluate());
+    }
+
+    public function testStringifyReassemblesTokenStream()
+    {
+        $this->expr->add(new Token\Variable('foo'));
+        $this->expr->add(new Token\Operator('&&'));
+        $this->expr->add(new Token\StringLiteral('bar'));
+
+        $this->assertSame("foo && 'bar'", $this->expr->stringify());
+    }
+
     public function truthyDataProvider()
     {
         return array(
