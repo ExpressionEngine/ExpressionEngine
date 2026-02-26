@@ -10,6 +10,9 @@ class TranslateTestFunctionOverrides
     /** @var bool|null */
     public static $isReallyWritable = null;
 
+    /** @var bool|null */
+    public static $isReadable = null;
+
     /** @var bool */
     public static $throwOnForceDownload = false;
 
@@ -25,6 +28,17 @@ if (! function_exists(__NAMESPACE__ . '\is_really_writable')) {
         }
 
         return \is_really_writable($path);
+    }
+}
+
+if (! function_exists(__NAMESPACE__ . '\is_readable')) {
+    function is_readable($path)
+    {
+        if (TranslateTestFunctionOverrides::$isReadable !== null) {
+            return TranslateTestFunctionOverrides::$isReadable;
+        }
+
+        return \is_readable($path);
     }
 }
 

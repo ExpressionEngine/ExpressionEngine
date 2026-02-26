@@ -31,6 +31,7 @@ class TranslateTest extends TestCase
         }
 
         \ExpressionEngine\Controller\Utilities\TranslateTestFunctionOverrides::$isReallyWritable = null;
+        \ExpressionEngine\Controller\Utilities\TranslateTestFunctionOverrides::$isReadable = null;
         \ExpressionEngine\Controller\Utilities\TranslateTestFunctionOverrides::$throwOnForceDownload = false;
         \ExpressionEngine\Controller\Utilities\TranslateTestFunctionOverrides::$tempnamPath = null;
 
@@ -45,6 +46,7 @@ class TranslateTest extends TestCase
         }
 
         \ExpressionEngine\Controller\Utilities\TranslateTestFunctionOverrides::$isReallyWritable = null;
+        \ExpressionEngine\Controller\Utilities\TranslateTestFunctionOverrides::$isReadable = null;
         \ExpressionEngine\Controller\Utilities\TranslateTestFunctionOverrides::$throwOnForceDownload = false;
         \ExpressionEngine\Controller\Utilities\TranslateTestFunctionOverrides::$tempnamPath = null;
 
@@ -787,7 +789,6 @@ class TranslateTest extends TestCase
         mkdir($languageDir, 0777, true);
         $targetFile = $languageDir . '/addons_lang.php';
         file_put_contents($targetFile, "<?php\n\$lang = ['sample_key' => 'Sample'];\n");
-        chmod($targetFile, 0000);
 
         ee()->setMock('security', new class {
             public function sanitize_filename($file)
@@ -862,9 +863,9 @@ class TranslateTest extends TestCase
         ee()->setMock('cp', $cp);
 
         try {
+            \ExpressionEngine\Controller\Utilities\TranslateTestFunctionOverrides::$isReadable = false;
             $result = $this->invokePrivateMethod('edit', [$language, 'addons']);
         } finally {
-            chmod($targetFile, 0644);
             @unlink($targetFile);
             @rmdir($languageDir);
         }
