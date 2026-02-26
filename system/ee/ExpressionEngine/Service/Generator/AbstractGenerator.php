@@ -126,7 +126,7 @@ abstract class AbstractGenerator
 
         foreach ($this->requiredComponentFiles as $file) {
             if (! file_exists($this->addonPath . $file . '.' . $this->addon . '.php')) {
-                throw new \Exception(lang('cli_error_the_specified_addon_component_does_not_exist: ' . $file), 1);
+                throw new \Exception(sprintf(lang('cli_error_the_specified_addon_component_does_not_exist'), $file), 1);
             }
         }
     }

@@ -10,6 +10,7 @@ $lang = array(
     'cli_option_help'                              => 'See help menu for given command',
     'cli_option_help_json'                         => 'See help menu for given command in JSON format',
     'cli_error_the_specified_addon_does_not_exist' => 'The specified add-on does not exist',
+    'cli_error_the_specified_addon_component_does_not_exist' => 'The specified add-on component does not exist: %s',
     'cli_error_cli_disabled'                       => 'The ExpressionEngine CLI is currently disabled. To use the CLI, you must enable it in the settings.',
     'cli_no_addons'                                => 'There are no add-ons available',
     'cli_table_no_results'                         => 'No results found.',
