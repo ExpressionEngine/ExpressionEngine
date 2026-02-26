@@ -1204,6 +1204,14 @@ class EE_Session
             ee()->db->where('member_id', (int) $member_id);
 
             $data = ee()->db->get();
+
+            // Hardening: allow CP session bootstrap even when a site-specific
+            // role_settings row is missing for the member's primary role.
+            if ($data->num_rows() == 0) {
+                $data = ee()->db->from('members')
+                    ->where('member_id', (int) $member_id)
+                    ->get();
+            }
         }
 
         if (! is_object($this->member_model) || $this->member_model->member_id != $member_id) {
