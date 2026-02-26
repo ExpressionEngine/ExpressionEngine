@@ -1578,8 +1578,6 @@ class Pro_search
             $data = array_filter($data, 'pro_not_empty');
         }
 
-        // Re-apply trust rules after extensions can mutate data.
-        $data = $this->_enforce_trusted_params($data, $trusted_params);
 
         // --------------------------------------
         // Check for required parameter

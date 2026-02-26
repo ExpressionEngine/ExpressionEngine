@@ -244,7 +244,7 @@ class ProSearchModCatchSearchSecurityTest extends ProSearchTestBase
         $this->assertSame('https://example.com/search/results', $this->redirectUrl);
     }
 
-    public function testCatchSearchUsesDefaultResultPageWhenExtensionSetsUnsignedExternalResultPage()
+    public function testCatchSearchAllowsExtensionToSetUnsignedExternalResultPage()
     {
         $this->setExtensionHookCallback(function ($hook, $data) {
             $data['result_page'] = 'https://results.example.org/path';
@@ -255,7 +255,7 @@ class ProSearchModCatchSearchSecurityTest extends ProSearchTestBase
 
         $this->mod->catch_search();
 
-        $this->assertStringStartsWith('https://example.com/search/results', $this->redirectUrl);
+        $this->assertStringStartsWith('https://results.example.org/path', $this->redirectUrl);
     }
 
     public function testCatchSearchUsesSignedForceProtocolWhenRawOverrideIsProvided()
