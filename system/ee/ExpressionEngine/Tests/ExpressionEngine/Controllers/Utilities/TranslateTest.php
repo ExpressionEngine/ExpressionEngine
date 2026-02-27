@@ -938,14 +938,14 @@ class TranslateTest extends TestCase
             }
         });
 
-        $this->controller->load = new class {
+        ee()->setMock('load', new class {
             public function helper($name)
             {
                 if ($name === 'file') {
                     require_once BASEPATH . 'helpers/file_helper.php';
                 }
             }
-        };
+        });
         $this->setControllerProperty('languages_dir', $baseDir);
 
         try {
@@ -1077,14 +1077,14 @@ class TranslateTest extends TestCase
                 return true;
             }
         });
-        $this->controller->load = new class {
+        ee()->setMock('load', new class {
             public function helper($name)
             {
                 if ($name === 'file') {
                     require_once BASEPATH . 'helpers/file_helper.php';
                 }
             }
-        };
+        });
         $this->setControllerProperty('languages_dir', $baseDir);
 
         try {
@@ -1150,14 +1150,14 @@ class TranslateTest extends TestCase
                 return true;
             }
         });
-        $this->controller->load = new class {
+        ee()->setMock('load', new class {
             public function helper($name)
             {
                 if ($name === 'file') {
                     require_once BASEPATH . 'helpers/file_helper.php';
                 }
             }
-        };
+        });
         $this->setControllerProperty('languages_dir', $baseDir);
 
         try {
@@ -1228,14 +1228,14 @@ class TranslateTest extends TestCase
                 return true;
             }
         });
-        $this->controller->load = new class {
+        ee()->setMock('load', new class {
             public function helper($name)
             {
                 if ($name === 'file') {
                     require_once BASEPATH . 'helpers/file_helper.php';
                 }
             }
-        };
+        });
         $this->setControllerProperty('languages_dir', $baseDir);
 
         try {

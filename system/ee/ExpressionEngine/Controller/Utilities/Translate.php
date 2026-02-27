@@ -460,7 +460,7 @@ class Translate extends Utilities
             }
         }
 
-        $this->load->helper('file');
+        ee()->load->helper('file');
 
         if (write_file($dest_loc, $str)) {
             ee('CP/Alert')->makeInline('shared-form')
