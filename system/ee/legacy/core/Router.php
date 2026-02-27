@@ -124,16 +124,18 @@ class EE_Router
         }
 
         // Is the method being specified?
-        if (strpos($this->default_controller, '/') !== false) {
-            $x = explode('/', $this->default_controller);
+        $default_controller = (string) $this->default_controller;
+
+        if (strpos($default_controller, '/') !== false) {
+            $x = explode('/', $default_controller);
 
             $this->set_class($x[0]);
             $this->set_method($x[1]);
             $this->_set_request($x);
         } else {
-            $this->set_class($this->default_controller);
+            $this->set_class($default_controller);
             $this->set_method('index');
-            $this->_set_request(array($this->default_controller, 'index'));
+            $this->_set_request(array($default_controller, 'index'));
         }
 
         // re-index the routed segments array so it starts with 1 rather than 0
@@ -202,13 +204,13 @@ class EE_Router
         $saved_segments = $segments;
         $directory = APPPATH . '../ExpressionEngine/Controller/';
         $namespace = '';
-        if (strtolower($segments[0]) == 'cp') {
+        if (strtolower((string) ($segments[0] ?? '')) == 'cp') {
             array_shift($segments); // This will not factor into the path for namespaced stuff
             $c++;
         }
 
         while ($c < count($saved_segments)) {
-            $segment = str_replace('-', '_', $segments[0]);
+            $segment = str_replace('-', '_', (string) ($segments[0] ?? ''));
             $words = explode('_', $segment);
             $words = array_map('ucfirst', $words);
             $segment = implode('', $words);
@@ -231,7 +233,7 @@ class EE_Router
             // controller class.
             if (! file_exists($directory . $segment . '.php')) {
                 if ($c > 0) {
-                    $segment = str_replace('-', '_', $saved_segments[$c - 1]);
+                    $segment = str_replace('-', '_', (string) ($saved_segments[$c - 1] ?? ''));
                     $words = explode('_', $segment);
                     $words = array_map('ucfirst', $words);
                     $segment = implode('', $words);
@@ -327,7 +329,7 @@ class EE_Router
 
         // Is there a literal match?  If so we're done
         if (isset($this->routes[$uri])) {
-            return $this->_set_request(explode('/', $this->routes[$uri]));
+            return $this->_set_request(explode('/', (string) $this->routes[$uri]));
         }
 
         // Loop through the route array looking for wild-cards
@@ -338,11 +340,11 @@ class EE_Router
             // Does the RegEx match?
             if (preg_match('#^' . $key . '$#', $uri)) {
                 // Do we have a back-reference?
-                if (strpos($val, '$') !== false and strpos($key, '(') !== false) {
+                if (strpos((string) $val, '$') !== false and strpos($key, '(') !== false) {
                     $val = preg_replace('#^' . $key . '$#', $val, $uri);
                 }
 
-                return $this->_set_request(explode('/', $val));
+                return $this->_set_request(explode('/', (string) $val));
             }
         }
 
@@ -360,7 +362,7 @@ class EE_Router
      */
     public function set_class($class)
     {
-        $this->class = str_replace(array('/', '.'), '', $class);
+        $this->class = str_replace(array('/', '.'), '', (string) $class);
     }
 
     /**
