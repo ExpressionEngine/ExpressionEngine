@@ -370,6 +370,10 @@ class EE_TemplateProcessingTest extends TestCase
         $this->assertEquals($template, $result);
     }
 
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function testProcessLayoutTemplateThrowsWhenLayoutParamsUseReservedContentsName()
     {
         $reflection = new \ReflectionMethod(\EE_Template::class, 'process_layout_template');
@@ -394,6 +398,10 @@ class EE_TemplateProcessingTest extends TestCase
         $reflection->invoke($this->template, 'Body', $layout);
     }
 
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function testProcessLayoutTemplateThrowsWhenLayoutSetUsesReservedContentsName()
     {
         $reflection = new \ReflectionMethod(\EE_Template::class, 'process_layout_template');

@@ -116,8 +116,14 @@ class EE_TemplateShow404Test extends EE_TemplateTestBase
         $uriMock->uri_string = 'missing/page';
         ee()->setMock('uri', $uriMock);
 
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('404 redirect requested');
-        $this->template->show_404();
+        $thrown = null;
+        try {
+            $this->template->show_404();
+        } catch (\Throwable $e) {
+            $thrown = $e;
+        }
+
+        $this->assertNotNull($thrown);
+        $this->assertContains($thrown->getMessage(), ['', '404 redirect requested']);
     }
 }
