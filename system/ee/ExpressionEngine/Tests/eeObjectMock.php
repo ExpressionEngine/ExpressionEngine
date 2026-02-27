@@ -326,6 +326,7 @@ class eeDbArMock
 {
     public $rows = [];
     public $dbprefix = '';
+    public $last_query = '';
     private $whereConditions = [];
     private $limitValue = null;
     public $whereInConditions = [];

@@ -385,6 +385,7 @@ class SqlStructureDataMethodsTest extends TestCase
     {
         ee()->setMock('db', new class($this) {
             private $test;
+            public $table;
             public function __construct($test)
             {
                 $this->test = $test;

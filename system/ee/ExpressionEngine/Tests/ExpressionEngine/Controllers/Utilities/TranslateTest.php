@@ -332,6 +332,8 @@ class TranslateTest extends TestCase
         });
 
         $view = new class {
+            public $cp_page_title = '';
+            public $cp_breadcrumbs = [];
             public $messages = [];
 
             public function set_message($type, $message)
@@ -360,6 +362,8 @@ class TranslateTest extends TestCase
         mkdir($languageDir, 0777, true);
 
         $view = new class {
+            public $cp_page_title = '';
+            public $cp_breadcrumbs = [];
             public $messages = [];
 
             public function set_message($type, $message)
@@ -403,6 +407,8 @@ class TranslateTest extends TestCase
         };
         ee()->setMock('load', $load);
         ee()->setMock('view', new class {
+            public $cp_page_title = '';
+            public $cp_breadcrumbs = [];
             public function set_message($type, $message)
             {
                 return true;
@@ -437,6 +443,8 @@ class TranslateTest extends TestCase
         file_put_contents($languageDir . '/addons_lang.php', "<?php\n\$lang = ['sample' => 'Sample'];\n");
 
         $view = new class {
+            public $cp_page_title = '';
+            public $cp_breadcrumbs = [];
             public $messages = [];
 
             public function set_message($type, $message)
@@ -836,6 +844,8 @@ class TranslateTest extends TestCase
         });
         ee()->setMock('CP/URL', $this->makeUrlFactory());
         $view = new class {
+            public $cp_page_title = '';
+            public $cp_breadcrumbs = [];
             public $messages = [];
 
             public function set_message($type, $message, $a = '', $b = false)
