@@ -571,12 +571,18 @@ class EE_Core
             return ee()->output->fatal_error(lang('not_authorized'));
         }
 
+        $is_mfa_required_for_role = false;
+        if (ee()->session->userdata('member_id') !== 0) {
+            $role_settings = ee()->session->getMember()->getRoleSettingsForSite((int) ee()->config->item('site_id'));
+            $is_mfa_required_for_role = (! empty($role_settings) && $role_settings->require_mfa == 'y');
+        }
+
         //is member role forced to use MFA?
         if (
             (ee()->config->item('enable_mfa') === false || ee()->config->item('enable_mfa') === 'y') &&
             ee()->session->userdata('member_id') !== 0 &&
             ee()->session->getMember()->enable_mfa !== true &&
-            ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->require_mfa == 'y'
+            $is_mfa_required_for_role
         ) {
             if (!(ee()->uri->segment(2) == 'login' && ee()->uri->segment(3) == 'logout') && !(ee()->uri->segment(2) == 'members' && ee()->uri->segment(3) == 'profile' && ee()->uri->segment(4) == 'pro' && ee()->uri->segment(5) == 'mfa')) {
                 ee()->lang->load('pro');

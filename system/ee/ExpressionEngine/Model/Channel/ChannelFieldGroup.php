@@ -156,7 +156,9 @@ class ChannelFieldGroup extends Model
         if (ee()->session->userdata('member_id') == 0) {
             return '';
         }
-        if (ee()->session->getMember()->PrimaryRole->RoleSettings->filter('site_id', ee()->config->item('site_id'))->first()->show_field_names == 'y') {
+
+        $role_settings = ee()->session->getMember()->getRoleSettingsForSite((int) ee()->config->item('site_id'));
+        if (! empty($role_settings) && $role_settings->show_field_names == 'y') {
             $vars = [
                 'name' => $prefix . $this->short_name,
                 'id' => $this->group_id

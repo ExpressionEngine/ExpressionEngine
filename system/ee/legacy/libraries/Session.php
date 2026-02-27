@@ -621,19 +621,10 @@ class EE_Session
         $this->userdata['group_title'] = $this->member_model->PrimaryRole->name;
         $this->userdata['group_description'] = $this->member_model->PrimaryRole->description;
 
-        // Merge role_settings for the current site when missing (e.g. fallback query path).
-        // Use the first role with site-specific settings; members with secondary-role-only
-        // access may have a primary role with no settings for this site.
-        if (! array_key_exists('prv_msg_send_limit', $this->userdata)) {
-            $site_id = (int) ee()->config->item('site_id');
-            foreach ($this->member_model->getAllRoles() as $role) {
-                $roleSetting = $role->RoleSettings->filter('site_id', $site_id)->first();
-                if ($roleSetting) {
-                    $roleSettings = array_diff_key($roleSetting->getValues(), array_flip(array('id', 'role_id', 'site_id')));
-                    $this->userdata = array_merge($this->userdata, $roleSettings);
-                    break;
-                }
-            }
+        $roleSetting = $this->member_model->getRoleSettingsForSite((int) ee()->config->item('site_id'), REQ == 'CP');
+        if ($roleSetting) {
+            $roleSettings = array_diff_key($roleSetting->getValues(), array_flip(array('id', 'role_id', 'site_id')));
+            $this->userdata = array_merge($this->userdata, $roleSettings);
         }
 
         // Add in the Permissions for backwards compatibility
@@ -1201,6 +1192,7 @@ class EE_Session
         // Query DB for member data.  Depending on the validation type we'll
         // either use the cookie data or the member ID gathered with the session query.
         $data = [];
+        $used_fallback_member_query = false;
 
         $member_id = $this->sdata['member_id'];
 
@@ -1220,9 +1212,10 @@ class EE_Session
 
             $data = ee()->db->get();
 
-            // Hardening: allow CP session bootstrap even when a site-specific
-            // role_settings row is missing for the member's primary role.
+            // Allow query fallback when the primary role is missing site-specific
+            // role_settings. Eligibility is validated after member model setup.
             if ($data->num_rows() == 0) {
+                $used_fallback_member_query = true;
                 $data = ee()->db->from('members')
                     ->where('member_id', (int) $member_id)
                     ->get();
@@ -1231,6 +1224,14 @@ class EE_Session
 
         if (! is_object($this->member_model) || $this->member_model->member_id != $member_id) {
             $this->_setupMemberModel($member_id);
+        }
+
+        // If the primary-role role_settings join was not available, require an assigned role
+        // with site-specific settings before continuing session bootstrap.
+        if (! empty($used_fallback_member_query)) {
+            if (! is_object($this->member_model) || ! $this->member_model->getRoleSettingsForSite((int) ee()->config->item('site_id'), REQ == 'CP')) {
+                return [];
+            }
         }
 
         return $data;
