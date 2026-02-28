@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -96,7 +96,7 @@ class Emitter implements Publisher
      * @param Closure $listener The event listener callback [optional]
      * @return $this
      */
-    public function off($event, Closure $listener = null)
+    public function off($event, ?Closure $listener = null)
     {
         if (isset($listener)) {
             $hash = $this->hash($listener);

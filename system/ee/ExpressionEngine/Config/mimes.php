@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -30,6 +30,7 @@ return array(
         'image/tiff', // .tif, .tiff
         'image/x-png', // .png
         'image/webp', // .webp
+        'image/avif', // .avif
         'image/x-icon', // .ico
         'image/vnd.microsoft.icon', //.ico
     ),

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -83,7 +83,7 @@ class Groups extends AbstractRolesController
                 if (ee('Request')->post('submit') == 'save_and_new') {
                     ee()->functions->redirect(ee('CP/URL')->make('members/roles/groups/create'));
                 } elseif (ee('Request')->post('submit') == 'save_and_close') {
-                    ee()->functions->redirect(ee('CP/URL')->make('members/roles/groups'));
+                    ee()->functions->redirect(ee('CP/URL')->make('members/roles'));
                 } else {
                     ee()->functions->redirect(ee('CP/URL')->make('members/roles/groups/edit/' . $role_group->getId()));
                 }
@@ -208,7 +208,7 @@ class Groups extends AbstractRolesController
         return $role_group;
     }
 
-    private function form(RoleGroup $role_group = null)
+    private function form(?RoleGroup $role_group = null)
     {
         if (! $role_group) {
             $role_group = ee('Model')->make('RoleGroup');

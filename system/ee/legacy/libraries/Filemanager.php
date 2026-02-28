@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -248,6 +248,10 @@ class Filemanager
         }
 
         if ($mime == 'image/webp' && !defined('IMAGETYPE_WEBP')) {
+            return false;
+        }
+
+        if ($mime == 'image/avif' && !defined('IMAGETYPE_AVIF')) {
             return false;
         }
 
@@ -1182,7 +1186,7 @@ class Filemanager
         $filesystem = $prefs['directory']->getFilesystem();
         $file_path = str_replace('\\', '/', $filesystem->absolute($file_path));
 
-        $img_path = ($prefs['directory']->adapter == 'local') ? rtrim(str_replace('\\', '/', $prefs['server_path']), '/') . '/' : '';
+        $img_path = ($prefs['directory']->getProperty('adapter') == 'local') ? rtrim(str_replace('\\', '/', $prefs['server_path']), '/') . '/' : '';
         $dirname = rtrim(str_replace('\\', '/', $filesystem->absolute($filesystem->subdirectory($file_path))), '/') . '/';
         if (empty($img_path) || strpos($dirname, $img_path) === 0) {
             $img_path = $dirname;
@@ -1837,7 +1841,7 @@ class Filemanager
 
                 // Permissions can only get more strict!
                 if (isset($settings['field_content_type']) && $settings['field_content_type'] == 'image') {
-                    $allowed_types = 'gif|jpg|jpeg|png|jpe|svg|webp';
+                    $allowed_types = 'gif|jpg|jpeg|png|jpe|svg|webp|avif';
                 }
             }
 

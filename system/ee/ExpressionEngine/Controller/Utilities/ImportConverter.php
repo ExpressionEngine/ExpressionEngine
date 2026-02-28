@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -361,10 +361,10 @@ class ImportConverter extends Utilities
         // Validate selected fields
         foreach ($_POST as $key => $val) {
             if (substr($key, 0, 5) == 'field') {
-                $_POST['unique_check'][$key] = $val;
                 $paired[$key] = $val;
             }
         }
+        ee('Request')->set('unique_check', $paired);
 
         ee()->load->library('form_validation');
         ee()->form_validation->set_rules(array(

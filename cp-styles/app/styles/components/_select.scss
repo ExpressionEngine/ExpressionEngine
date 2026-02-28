@@ -200,3 +200,66 @@
 		}
 	}
 }
+
+
+/**
+ * Virtualized Select List Styles
+ * Handles indentation and styling for flattened virtualized lists
+ * to match the visual appearance of non-virtualized nested lists
+ */
+
+/* Apply padding-left indentation based on data-depth attribute */
+/* This mimics the behavior of nested ul.field-nested ul { padding-left: 20px; } */
+
+ul.field-nested {
+  li.nestable-item {
+  	position: relative;
+
+    @for $i from 1 through 10 {
+      &[data-depth="#{$i}"] {
+        padding-left: #{$i * 20}px;
+      }
+    }
+  }
+}
+
+/* Add left border for nested items (depth > 0) to match ul.field-nested ul li label */
+/* Adjust input position for nested items to match ul.field-nested ul li input[type=checkbox] */
+
+ul.field-nested li.nestable-item[data-depth]:not([data-depth="0"]) {
+  label {
+    border-left: 2px solid var(--ee-border-dark);
+    padding-left: 10px;
+  }
+
+  input[type="checkbox"],
+  input[type="radio"] {
+    left: 10px;
+  }
+}
+
+/*
+ * Pseudo-element for connection line between parent and first child
+ * Uses CSS sibling selectors to detect when depth increases (parent -> child transition)
+ * This mimics ul.field-nested ul li ul::before
+ */
+
+/*
+ * Shared styles for all depth transition pseudo-elements
+ * Uses adjacent sibling selector to detect when depth increases
+ */
+
+ul.field-nested {
+  @for $i from 0 through 9 {
+    li.nestable-item[data-depth="#{$i}"] + li.nestable-item[data-depth="#{$i + 1}"]::before {
+      content: "";
+      display: block;
+      position: absolute;
+      width: 22px;
+      height: 2px;
+      background: var(--ee-border-dark);
+      top: -2px;
+      left: #{$i * 20}px;
+    }
+  }
+}

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -1329,35 +1329,102 @@ class Member
      */
     public function recaptcha_check()
     {
+        $now = ee()->localize->now;
+        $ip_address = ee()->input->ip_address();
+        $captcha_expiration = 60 * 60 * 2;
+        $rate_limit_window = 60 * 5;
+        $rate_limit_max = 25;
+
+        // Keep the captcha table bounded for reCAPTCHA flows as well.
+        if ($this->shouldRunRecaptchaCleanup()) {
+            ee('Model')->get('Captcha')
+                ->filter('date', '<', $now - $captcha_expiration)
+                ->delete();
+        }
+
+        $recent_attempts = ee('Model')->get('Captcha')
+            ->filter('ip_address', $ip_address)
+            ->filter('date', '>', $now - $rate_limit_window)
+            ->count();
+
+        $string = $this->generateCaptchaResponseCode();
+
+        $captcha = ee('Model')->make('Captcha');
+        $captcha->date = $now;
+        $captcha->ip_address = $ip_address;
+        $captcha->word = $string;
+        $captcha->save();
+
+        if ($recent_attempts >= $rate_limit_max) {
+            return ee()->output->send_ajax_response(['success' => false, 'code' => 'failed']);
+        }
+
+        $token = (string) ee()->input->get_post('rec');
+        if ($token === '') {
+            return ee()->output->send_ajax_response(['success' => false, 'code' => 'failed']);
+        }
+
         // Make the POST request
         $data = [
             'secret' => ee()->config->item('recaptcha_site_secret'),
-            'response' => ee()->input->get_post('rec'),
+            'response' => $token,
         ];
 
+        $result = $this->verifyRecaptchaToken($data);
+
+        $threshold = (float) ee()->config->item('recaptcha_score_threshold');
+        $success = is_array($result) && !empty($result['success']);
+        $score = (is_array($result) && isset($result['score'])) ? (float) $result['score'] : 0.0;
+
+        if ($success !== true || $score < $threshold) {
+            return ee()->output->send_ajax_response(['success' => false, 'code' => 'failed']);
+        }
+
+        return ee()->output->send_ajax_response(['success' => true, 'code' => $string]);
+    }
+
+    /**
+     * Determines if we should run periodic CAPTCHA cleanup.
+     *
+     * @return bool
+     */
+    protected function shouldRunRecaptchaCleanup()
+    {
+        return (mt_rand() % 100) < 5;
+    }
+
+    /**
+     * Verifies the reCAPTCHA token with Google.
+     *
+     * @param array $data The verification payload
+     * @return array|null
+     */
+    protected function verifyRecaptchaToken(array $data)
+    {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 10);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 15);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_URL, 'https://www.google.com/recaptcha/api/siteverify');
         curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
         $response = curl_exec($curl);
-        $result = json_decode($response, true);
+        curl_close($curl);
 
-        // Mostly random string
-        $string = bin2hex(openssl_random_pseudo_bytes(10));
+        return is_string($response) ? json_decode($response, true) : null;
+    }
 
-        $captcha = ee('Model')->make('Captcha');
-        $captcha->date = ee()->localize->now;
-        $captcha->ip_address = ee()->input->ip_address();
-        $captcha->word = $string;
-        $captcha->save();
-
-        if ($result['success'] !== true || $result['score'] < ee()->config->item('recaptcha_score_threshold')) {
-            $string = "failed";
-        }
-
-        return ee()->output->send_ajax_response(['success' => $result['success'], 'code' => $string]);
+    /**
+     * Creates the transient code stored in exp_captcha for reCAPTCHA attempts.
+     * The code is only returned to the client on successful verification.
+     *
+     * @return string
+     */
+    protected function generateCaptchaResponseCode()
+    {
+        return bin2hex(openssl_random_pseudo_bytes(10));
     }
 
     /**

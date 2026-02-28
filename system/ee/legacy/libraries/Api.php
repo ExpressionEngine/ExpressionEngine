@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -17,6 +17,7 @@
 class Api
 {
     public $errors = array();  // holds any and all errors on failure
+    public $api_template_structure; // API template structure instance
 
     private $apis = array(	// apis available to initialize when loading the parent Api class
         'channel_structure', 'channel_entries', 'channel_fields',
@@ -67,7 +68,10 @@ class Api
         $this->errors = array();
 
         foreach ($params as $param => $val) {
-            $this->{$param} = $val;
+            // Skip numeric keys to avoid creating dynamic properties like $0, $1, etc.
+            if (!is_numeric($param)) {
+                $this->{$param} = $val;
+            }
         }
     }
 
