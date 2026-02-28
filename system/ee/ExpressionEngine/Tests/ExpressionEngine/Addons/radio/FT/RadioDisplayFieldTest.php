@@ -273,7 +273,7 @@ class RadioDisplayFieldTest extends RadioTestBase
     public function testDisplayFieldWithContentId()
     {
         $fieldtype = $this->getMockRadioFieldtypeWithSettings();
-        @$fieldtype->content_id = 123; // Simulate existing entry
+        $fieldtype->content_id = 123; // Simulate existing entry
 
         $data = null;
         $result = $fieldtype->display_field($data);
