@@ -11,6 +11,13 @@ class FileUpdaterTest extends TestCase
 {
     use \Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
+    protected $filesystem;
+    protected $verifier;
+    protected $logger;
+    protected $archive_path;
+    protected $backups_path;
+    protected $fileupdater;
+
     public function setUp(): void
     {
         $this->filesystem = Mockery::mock('ExpressionEngine\Updater\Library\Filesystem\Filesystem');
@@ -47,8 +54,6 @@ class FileUpdaterTest extends TestCase
             '/themes/ee/',
             $this->backups_path . 'themes_ee/'
         );
-
-        $this->filesystem->shouldReceive('isWritable')->atLeast()->once();
 
         $this->fileupdater->backupExistingInstallFiles();
 
@@ -117,7 +122,7 @@ class FileUpdaterTest extends TestCase
     public function testVerifyNewFiles()
     {
         $hash_manifiest = SYSPATH . 'ee/updater/hash-manifest';
-        $exclusions = ['system/ee/installer/updater'];
+        $exclusions = ['system/ee/installer/updater', 'system/eecli.php'];
 
         $this->verifier->shouldReceive('verifyPath')->with(
             SYSPATH . 'ee/',
@@ -127,7 +132,7 @@ class FileUpdaterTest extends TestCase
         )->andReturn(true)->once();
 
         $this->verifier->shouldReceive('verifyPath')->with(
-            '/themes/ee',
+            '/themes/ee/',
             $hash_manifiest,
             'themes/ee',
             $exclusions
@@ -199,6 +204,7 @@ class FileUpdaterTest extends TestCase
         // Destination directory doesn't exist?
         $this->filesystem->shouldReceive('exists')->with($destination)->andReturn(false)->once();
         $this->filesystem->shouldReceive('mkDir')->with($destination, false)->andReturn(true)->once();
+        $this->filesystem->shouldReceive('isDir')->with($source)->andReturn(true)->once();
         $this->filesystem->shouldReceive('getDirectoryContents')->with($source)->andReturn([])->once();
 
         $source = '/themes/ee/';
@@ -206,6 +212,7 @@ class FileUpdaterTest extends TestCase
 
         $this->filesystem->shouldReceive('exists')->with($destination)->andReturn(false)->once();
         $this->filesystem->shouldReceive('mkDir')->with($destination, false)->andReturn(true)->once();
+        $this->filesystem->shouldReceive('isDir')->with($source)->andReturn(true)->once();
         $this->filesystem->shouldReceive('getDirectoryContents')->with($source)->andReturn([])->once();
 
         $this->fileupdater->backupExistingInstallFiles();
@@ -240,6 +247,7 @@ class FileUpdaterTest extends TestCase
         // Should exclude files
         $this->filesystem->shouldReceive('exists')->with($destination)->andReturn(false)->once();
         $this->filesystem->shouldReceive('mkDir')->with($destination, false)->andReturn(true)->once();
+        $this->filesystem->shouldReceive('isDir')->with($source)->andReturn(true)->once();
         $this->filesystem->shouldReceive('getDirectoryContents')->with($source)->andReturn([
             $source . 'index.html',
             $source . 'updater',
@@ -257,6 +265,7 @@ class FileUpdaterTest extends TestCase
         $this->filesystem->shouldReceive('mkDir')->with($destination, false)->andReturn(true)->once();
 
         $file_path = $source . 'index.html';
+        $this->filesystem->shouldReceive('isDir')->with($source)->andReturn(true)->once();
         $this->filesystem->shouldReceive('getDirectoryContents')->with($source)->andReturn([])->once();
 
         $this->fileupdater->backupExistingInstallFiles();
@@ -266,6 +275,7 @@ class FileUpdaterTest extends TestCase
         $destination = $this->backups_path . 'system_ee/';
         $this->filesystem->shouldReceive('exists')->with($destination)->andReturn(false)->once();
         $this->filesystem->shouldReceive('mkDir')->with($destination, false)->andReturn(true)->once();
+        $this->filesystem->shouldReceive('isDir')->with($source)->andReturn(true)->once();
         $this->filesystem->shouldReceive('getDirectoryContents')->with($source)->andReturn([
             $source . 'index.html',
         ])->once();
@@ -336,6 +346,7 @@ class FileUpdaterTest extends TestCase
         $this->filesystem->shouldReceive('exists')->with($destination)->andReturn(true)->once();
         $this->filesystem->shouldReceive('isDir')->with($destination)->andReturn(true)->once();
         $this->filesystem->shouldReceive('isWritable')->with($destination)->andReturn(true)->once();
+        $this->filesystem->shouldReceive('isDir')->with($source)->andReturn(true)->once();
 
         $file_path = $source . 'index.html';
         $this->filesystem->shouldReceive('getDirectoryContents')->with($source)->andReturn([$file_path])->once();

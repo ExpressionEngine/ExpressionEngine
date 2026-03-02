@@ -2243,10 +2243,11 @@ class Channel
         $offset = 0;
         $timezones = timezones();
         $timezone = ee()->config->item('default_site_timezone');
+        $timezone_key = $timezone ?? '';
 
         // Check legacy timezone formats
-        if (isset($timezones[$timezone])) {
-            $offset = $timezones[$timezone] * 3600;
+        if (isset($timezones[$timezone_key])) {
+            $offset = $timezones[$timezone_key] * 3600;
         } else {
             // Otherwise, get the offset from DateTime
             $dt = new DateTime('now', new DateTimeZone($timezone ?? 'UTC'));
@@ -2735,9 +2736,10 @@ class Channel
     public function channel_name()
     {
         $channel_name = ee()->TMPL->fetch_param('channel');
+        $channel_name_key = $channel_name ?? '';
 
-        if (isset($this->channel_name[$channel_name])) {
-            return $this->channel_name[$channel_name];
+        if (isset($this->channel_name[$channel_name_key])) {
+            return $this->channel_name[$channel_name_key];
         }
 
         $sql = "SELECT channel_title FROM exp_channels ";
@@ -2751,7 +2753,7 @@ class Channel
         $query = ee()->db->query($sql);
 
         if ($query->num_rows() == 1) {
-            $this->channel_name[$channel_name] = $query->row('channel_title') ;
+            $this->channel_name[$channel_name_key] = $query->row('channel_title') ;
 
             return $query->row('channel_title') ;
         } else {

@@ -174,9 +174,10 @@ class Username extends Filter
         $value = $this->display_value;
         if (is_null($value)) {
             $value = $this->value();
+            $option_key = ($value === null) ? '' : $value;
 
-            $value = (array_key_exists($value, $this->options)) ?
-                $this->options[$value] :
+            $value = (array_key_exists($option_key, $this->options)) ?
+                $this->options[$option_key] :
                 $value;
         }
 

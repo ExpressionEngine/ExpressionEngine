@@ -2136,19 +2136,22 @@ GRID_FALLBACK;
                 );
 
                 foreach ($row as $column => $value) {
+                    $site_key = $site_id ?? '';
+                    $channel_key = $channel_id ?? '';
+
                     if (! isset($this->settings[$column])) {
                         $this->settings[$column] = array();
                     }
 
-                    if (! isset($this->settings[$column][$site_id])) {
-                        $this->settings[$column][$site_id] = array();
+                    if (! isset($this->settings[$column][$site_key])) {
+                        $this->settings[$column][$site_key] = array();
                     }
 
                     if ($column == 'allow_guest_posts') {
                         $value = $this->bool_string($value);
                     }
 
-                    $this->settings[$column][$site_id][$channel_id] = $value;
+                    $this->settings[$column][$site_key][$channel_key] = $value;
                 }
             }
         }
