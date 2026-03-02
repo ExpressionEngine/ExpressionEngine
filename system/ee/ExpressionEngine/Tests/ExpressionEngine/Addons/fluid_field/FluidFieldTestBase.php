@@ -196,7 +196,7 @@ abstract class FluidFieldTestBase extends TestCase
     {
         $reflection = new ReflectionClass($object);
         $refMethod = $reflection->getMethod($method);
-        $refMethod->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($refMethod);
 
         return $refMethod->invokeArgs($object, $args);
     }
@@ -205,7 +205,7 @@ abstract class FluidFieldTestBase extends TestCase
     {
         $reflection = new ReflectionClass($object);
         $refProperty = $reflection->getProperty($property);
-        $refProperty->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($refProperty);
 
         return $refProperty->getValue($object);
     }
@@ -214,7 +214,7 @@ abstract class FluidFieldTestBase extends TestCase
     {
         $reflection = new ReflectionClass($object);
         $refProperty = $reflection->getProperty($property);
-        $refProperty->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($refProperty);
         $refProperty->setValue($object, $value);
     }
 

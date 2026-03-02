@@ -1322,7 +1322,7 @@ class TranslateTest extends TestCase
     private function invokePrivateMethod($method, array $args = [])
     {
         $reflection = new \ReflectionMethod($this->controller, $method);
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($reflection);
 
         return $reflection->invokeArgs($this->controller, $args);
     }
@@ -1330,7 +1330,7 @@ class TranslateTest extends TestCase
     private function setControllerProperty($property, $value): void
     {
         $reflection = new \ReflectionProperty($this->controller, $property);
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($reflection);
         $reflection->setValue($this->controller, $value);
     }
 

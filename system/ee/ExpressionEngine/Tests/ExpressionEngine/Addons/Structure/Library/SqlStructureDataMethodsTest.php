@@ -1328,7 +1328,7 @@ class SqlStructureDataMethodsTest extends TestCase
         };
 
         $rm = new ReflectionMethod($sql, '_get_structure_channel_ids');
-        $rm->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($rm);
         $ids = $rm->invoke($sql, true, true);
 
         $this->assertSame('2,3,9', $ids);

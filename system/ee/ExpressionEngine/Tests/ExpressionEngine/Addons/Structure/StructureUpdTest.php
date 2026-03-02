@@ -949,7 +949,7 @@ class StructureUpdTest extends TestCase
     private function invokePrivate($method, array $args = [])
     {
         $rm = new ReflectionMethod($this->upd, $method);
-        $rm->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($rm);
         return $rm->invokeArgs($this->upd, $args);
     }
 }

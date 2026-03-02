@@ -19,12 +19,12 @@ class EE_TemplateGetFetchDataTest extends EE_TemplateTestBase
         }
 
         $this->method = new \ReflectionMethod(\EE_Template::class, '_get_fetch_data');
-        $this->method->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($this->method);
         ee()->config->setItem('site_id', 1);
         ee()->config->setItem('multiple_sites_enabled', 'n');
 
         $sitesProperty = new \ReflectionProperty(\EE_Template::class, 'sites');
-        $sitesProperty->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($sitesProperty);
         $sitesProperty->setValue($this->template, []);
     }
 

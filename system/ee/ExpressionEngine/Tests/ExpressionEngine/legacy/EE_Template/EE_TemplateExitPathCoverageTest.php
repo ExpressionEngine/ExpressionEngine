@@ -201,7 +201,7 @@ switch ($scenario) {
         $template = new EE_Template();
         $template->template = '{exp:channel:entries}{layout="layouts/main"}';
         $method = new ReflectionMethod($template, '_find_layout');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($method);
         $method->invoke($template);
         break;
 
@@ -209,7 +209,7 @@ switch ($scenario) {
         $template = new EE_Template();
         $template->template = '{layout="layouts/main"}{layout="layouts/secondary"}';
         $method = new ReflectionMethod($template, '_find_layout');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($method);
         $method->invoke($template);
         break;
 
