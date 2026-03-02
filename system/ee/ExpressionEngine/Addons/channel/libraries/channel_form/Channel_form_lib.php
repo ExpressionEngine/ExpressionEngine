@@ -1889,7 +1889,7 @@ GRID_FALLBACK;
     {
         $selected = array();
 
-        if ($this->entry->entry_id or ! empty($this->channel->deft_category)) {
+        if ((isset($this->entry) && $this->entry->entry_id) or ! empty($this->channel->deft_category)) {
             $selected = $this->entry->Categories->pluck('cat_id');
         }
 
@@ -2062,7 +2062,9 @@ GRID_FALLBACK;
             $query->filter('url_title', $url_title);
         }
 
-        $query->filter('ChannelEntry.channel_id', $this->channel->channel_id);
+        if (isset($this->channel) && isset($this->channel->channel_id)) {
+            $query->filter('ChannelEntry.channel_id', $this->channel->channel_id);
+        }
         $query->filter('ChannelEntry.site_id', $this->site_id);
 
         $entry = $query->first();
@@ -2126,8 +2128,8 @@ GRID_FALLBACK;
             // and now into safecracker legacy format. Good grief, why does it
             // group them by column name?
             foreach ($rows as $row) {
-                $site_id = $row['site_id'];
-                $channel_id = $row['channel_id'];
+                $site_id = $row['site_id'] ?? null;
+                $channel_id = $row['channel_id'] ?? null;
 
                 unset(
                     $row['site_id'],
@@ -2384,7 +2386,7 @@ GRID_FALLBACK;
 
     public function get_field($field_name)
     {
-        return $this->custom_fields[$field_name];
+        return (isset($this->custom_fields[$field_name])) ? $this->custom_fields[$field_name] : null;
     }
 
     /**
@@ -2446,6 +2448,10 @@ GRID_FALLBACK;
     {
         $field = $this->get_field($field_name);
         $options = array();
+
+        if (! $field) {
+            return $options;
+        }
 
         $field_data = (is_array($this->entry('field_id_' . $field->field_id)))
             ? $this->entry('field_id_' . $field->field_id) : explode('|', (string) $this->entry('field_id_' . $field->field_id));

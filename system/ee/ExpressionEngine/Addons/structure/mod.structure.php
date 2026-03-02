@@ -1714,9 +1714,24 @@ class Structure extends Channel
 
         ee()->load->helper('string');
 
-        $site_pages = unserialize(base64_decode((string) $query->row('site_pages')));
+        $encoded_site_pages = (string) $query->row('site_pages');
+        $decoded_site_pages = base64_decode($encoded_site_pages, true);
 
-        return $site_pages[ee()->config->item('site_id')];
+        if ($decoded_site_pages === false || $decoded_site_pages === '') {
+            return [];
+        }
+
+        $site_pages = @unserialize($decoded_site_pages, ['allowed_classes' => false]);
+        if (! is_array($site_pages)) {
+            return [];
+        }
+
+        $site_id = ee()->config->item('site_id');
+        if (! isset($site_pages[$site_id]) || ! is_array($site_pages[$site_id])) {
+            return [];
+        }
+
+        return $site_pages[$site_id];
 
         // $site_id =ee()->config->item('site_id');
         // $query_pages = ee()->db->query("SELECT site_pages FROM exp_sites WHERE site_id = $site_id");

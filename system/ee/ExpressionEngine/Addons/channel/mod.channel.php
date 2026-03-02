@@ -2087,6 +2087,10 @@ class Channel
         $channel_ids = array();
 
         foreach ($query->result_array() as $row) {
+            if (! isset($row['entry_id'], $row['channel_id'])) {
+                continue;
+            }
+
             $entries[] = $row['entry_id'];
             $channel_ids[] = $row['channel_id'];
         }
@@ -2098,6 +2102,10 @@ class Channel
         $hiddenFieldsQuery = ee('db')->select('entry_id, field_id')->from('channel_entry_hidden_fields')->where_in('entry_id', $entries)->get();
         if ($hiddenFieldsQuery->num_rows() > 0) {
             foreach ($hiddenFieldsQuery->result_array() as $hiddenFieldsRow) {
+                if (! isset($hiddenFieldsRow['entry_id'], $hiddenFieldsRow['field_id'])) {
+                    continue;
+                }
+
                 if (!isset($this->hidden_fields[$hiddenFieldsRow['entry_id']])) {
                     $this->hidden_fields[$hiddenFieldsRow['entry_id']] = [];
                 }

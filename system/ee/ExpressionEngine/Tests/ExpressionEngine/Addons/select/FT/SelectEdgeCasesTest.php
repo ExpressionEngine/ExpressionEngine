@@ -546,7 +546,9 @@ class SelectEdgeCasesTest extends SelectTestBase
         ];
 
         $fieldtype = $this->getMockFieldtypeWithSettings([
-            'field_options' => array_map('strval', $numericTests)
+            'field_options' => array_map(function ($value) {
+                return (is_float($value) && is_nan($value)) ? 'NAN' : strval($value);
+            }, $numericTests)
         ]);
 
         $data = 'integer';
