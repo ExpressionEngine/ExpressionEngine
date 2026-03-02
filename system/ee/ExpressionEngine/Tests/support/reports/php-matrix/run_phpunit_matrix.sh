@@ -7,7 +7,7 @@ mkdir -p "${REPORT_DIR}"
 
 PHPUNIT_CMD="system/ee/ExpressionEngine/Tests/vendor/bin/phpunit -c system/ee/ExpressionEngine/Tests/phpunit.xml"
 HERD_BIN="/Users/tomjaeger/Library/Application Support/Herd/bin"
-VERSIONS=("74" "80" "81" "82" "83" "84")
+VERSIONS=("74" "80" "81" "82" "83" "84" "85")
 
 if [[ ! -f "${ROOT_DIR}/system/ee/ExpressionEngine/Tests/phpunit.xml" ]]; then
     echo "Could not resolve repository root from script location: ${ROOT_DIR}" >&2
