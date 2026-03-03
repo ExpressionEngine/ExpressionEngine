@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -1115,8 +1115,9 @@ class Member_auth extends Member
      */
     private function getTokenExpiration()
     {
-        return ee()->localize->now - (60 * 60); // One hour
+        return ee()->localize->now - (24 * 60 * 60); // 24 hours as per email instructions
     }
+
 }
 // END CLASS
 

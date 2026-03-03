@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -119,7 +119,16 @@ EE.cp.formValidation = {
 				}, 0);
 		});
 
-		$(container).on('change', 'input[type=checkbox], input[type=radio], input[type=hidden], input[type=range], select', function() {
+		$(container).on('focusout', 'div.redactor-styles, div.ck-content', function() {
+			var element = $(this);
+			window.prevFocus = false;
+
+			setTimeout(function() {
+				that._sendAjaxRequest(element);
+			}, 0);
+		});
+
+		$(container).on('change', 'input[type=checkbox], input[type=radio], input[type=hidden], input[type=range], select, textarea.rte-textarea', function() {
 
 			var element = $(this);
 			window.prevFocus = false;
@@ -134,7 +143,7 @@ EE.cp.formValidation = {
 		// Upon loading the page with invalid fields, bind the text field
 		// timer to correct the validation as the user types (for AJAX
 		// validation only)
-		$('form.ajax-validate .fieldset-invalid, form.ajax-validate div.grid-publish:has(div.invalid)').each(function() {
+		$('form.ajax-validate .fieldset-invalid, form.ajax-validate div.grid-publish:has(div.invalid), form.ajax-validate div.grid-field:has(.invalid)').each(function() {
 			that._bindTextFieldTimer($(this));
 		});
 	},
@@ -285,6 +294,8 @@ EE.cp.formValidation = {
 	 * @param	{jQuery object}	field	jQuery object of field validating
 	 */
 	_sendAjaxRequest: function(field) {
+		field = this._resolveFieldForValidation(field);
+
 		if (this.paused || field.attr('name') === undefined) {
 			return;
 		}
@@ -340,6 +351,30 @@ EE.cp.formValidation = {
 				that._toggleErrorForFields(field, ret);
 			}
 		});
+	},
+
+	/**
+	 * For rich text editors, interaction events can come from wrapper elements
+	 * that do not have a field name. Resolve those to the underlying textarea.
+	 *
+	 * @param	{jQuery object}	field	jQuery object of interacted element
+	 * @return	{jQuery object}			jQuery object of field used for validation
+	 */
+	_resolveFieldForValidation: function(field) {
+		if ( ! field || field.length === 0 || field.attr('name') !== undefined) {
+			return field;
+		}
+
+		if (field.is('div.redactor-styles, div.ck-content') || field.closest('.redactor-box, .ck-editor').length) {
+			var container = field.closest('.field-control, td, .grid-field'),
+				rteTextarea = container.find('textarea.rte-textarea[name]').first();
+
+			if (rteTextarea.length > 0) {
+				return rteTextarea;
+			}
+		}
+
+		return field;
 	},
 
 	/**
@@ -555,8 +590,8 @@ EE.cp.formValidation = {
 			return;
 		}
 
-		// Bind the timer on keydown and change
-		inputs.data('validating', true).on('keydown change', function() {
+		// Bind the timer while typing/changing
+		inputs.data('validating', true).on('keydown input change', function() {
 
 			// Reset the timer, no need to validate if user is still typing
 			if (timer !== undefined) {
@@ -568,7 +603,13 @@ EE.cp.formValidation = {
 			// Wait half a second, then clear the timer and send the AJAX request
 			timer = setTimeout(function() {
 				clearTimeout(timer);
-				if (field.is('textarea')) {
+				if (field.is('textarea') && field.is('textarea:not(.rte-textarea)')) {
+					return false;
+				}
+
+				// Rich text wrappers validate when focus leaves the editor so we don't
+				// fire repeated requests while typing in contenteditable areas.
+				if (field.is('div.redactor-styles, div.ck-content')) {
 					return false;
 				} else {
 					that._sendAjaxRequest(field);

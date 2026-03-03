@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -19,7 +19,7 @@ require_once __DIR__ . '/../../../eeObjectMock.php';
  * Base test class for EE_Template advanced method tests
  * Provides common mocking and setup for methods that need complex EE mocking
  */
-class EE_TemplateAdvancedMethodsTestBase extends TestCase
+abstract class EE_TemplateAdvancedMethodsTestBase extends TestCase
 {
     protected $template;
 

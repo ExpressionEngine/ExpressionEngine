@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -61,7 +61,11 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
         $data = $obj->row();
         $prefix = $obj->prefix();
 
-        $overrides = ee()->config->get_cached_site_prefs($data['entry_site_id']);
+		// If parsing the member tags-profile in particular- the entry_site_id is null
+		// Getting the cached prefs of null can end up with the wrong site id and then the wrong config values
+		$data['entry_site_id'] = (empty($data['entry_site_id'])) ? ee()->config->item('site_id') : $data['entry_site_id'];
+
+        $overrides = ee()->config->get_cached_site_prefs($data['entry_site_id']);	
         $data['channel_url'] = parse_config_variables($data['channel_url'], $overrides);
         $data['comment_url'] = parse_config_variables($data['comment_url'], $overrides);
 

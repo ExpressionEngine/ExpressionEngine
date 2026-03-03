@@ -7,7 +7,7 @@ namespace ExpressionEngine\Tests\ExpressionEngine\legacy\Libraries\Cache;
  * ExpressionEngine (https://expressionEngine.com)
  *
  * @link      https://expressionEngine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionEngine.com/license Licensed under Apache License, Version 2.0
  */
 
