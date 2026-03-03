@@ -13,7 +13,7 @@ class Local extends Flysystem\Adapter\Local implements AdapterInterface, Validat
     protected $linkHandling;
 
     protected $_validation_rules = [
-        'server_path' => 'required',
+        'server_path' => 'required|validateNotBasePath',
         'url' => 'required|validateUrl',
     ];
 
@@ -64,7 +64,7 @@ class Local extends Flysystem\Adapter\Local implements AdapterInterface, Validat
                 'fields' => [
                     'url' => [
                         'type' => 'text',
-                        'value' => $settings['url'] ?? '{base_url}',
+                        'value' => $settings['url'] ?? (strrpos(ee()->config->item('base_url'), '/', strlen(ee()->config->item('base_url')) - 1 === false) ? '{base_url}/uploads' : '{base_url}uploads'),
                         'required' => true
                     ]
                 ]
@@ -75,7 +75,7 @@ class Local extends Flysystem\Adapter\Local implements AdapterInterface, Validat
                 'fields' => [
                     'server_path' => [
                         'type' => 'text',
-                        'value' => $settings['server_path'] ?? '{base_path}',
+                        'value' => $settings['server_path'] ?? (strrpos(ee()->config->item('base_path'), '/', strlen(ee()->config->item('base_path')) - 1) === false && strrpos(ee()->config->item('base_path'), DIRECTORY_SEPARATOR, strlen(ee()->config->item('base_path')) - 1 === false) ? '{base_path}/uploads' : '{base_path}uploads'),
                         'required' => true
                     ]
                 ]
@@ -92,6 +92,23 @@ class Local extends Flysystem\Adapter\Local implements AdapterInterface, Validat
             $rule->stop();
 
             return lang('valid_url');
+        }
+
+        return true;
+    }
+
+    /**
+     * Make sure path is not the same as base_path
+     */
+    public function validateNotBasePath($key, $value, $params, $rule)
+    {
+        $base_path = rtrim(ee()->config->item('base_path'), DIRECTORY_SEPARATOR . '/');
+        $value = rtrim(str_replace('{base_path}', $base_path, $value), DIRECTORY_SEPARATOR . '/');
+
+        if ($value == $base_path) {
+            $rule->stop();
+
+            return lang('not_base_path');
         }
 
         return true;

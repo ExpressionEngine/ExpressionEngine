@@ -10,6 +10,7 @@ $lang = array(
     'cli_option_help'                              => 'See help menu for given command',
     'cli_option_help_json'                         => 'See help menu for given command in JSON format',
     'cli_error_the_specified_addon_does_not_exist' => 'The specified add-on does not exist',
+    'cli_error_the_specified_addon_component_does_not_exist' => 'The specified add-on component does not exist: %s',
     'cli_error_cli_disabled'                       => 'The ExpressionEngine CLI is currently disabled. To use the CLI, you must enable it in the settings.',
     'cli_no_addons'                                => 'There are no add-ons available',
     'cli_table_no_results'                         => 'No results found.',
@@ -518,6 +519,17 @@ $lang = array(
     'command_generate_templates_invalid_generator' => 'An invalid generator was supplied.',
     'separate_choices_commas' => 'Separate multiple options with commas',
     'command_generate_templates_building_templates' => 'Building templates...',
+
+    // Lang entries for command make:service
+    'command_make_service_description'          => 'Creates a new service for an add-on',
+    'command_make_service_summary'              => 'This interactively generates a service for an existing add-on',
+    'command_make_service_lets_build_service'   => 'Let\'s build your service!',
+    'command_make_service_ask_service_name'     => 'What is the service name?',
+    'command_make_service_ask_addon'            => 'What add-on is this for?',
+    'command_make_service_lets_build'           => 'Let\'s build!',
+    'command_make_service_created_successfully' => 'Your service has been created successfully!',
+    'command_make_service_option_addon'         => 'Name of add-on',
+    'command_make_service_option_singleton'     => 'Register this service as a singleton',
 
     // channels:list
     'command_channels_list_description' => 'Lists all channels in the system',

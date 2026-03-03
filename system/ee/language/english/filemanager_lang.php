@@ -515,7 +515,7 @@ $lang = array(
 
     'upload_remove_modal_upload_directory' => 'Upload directory',
 
-    'upload_url' => 'Upload directory',
+    'upload_url' => 'Upload directory URL',
 
     'upload_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of this directory. We recommend using <code>{base_url}your_upload_directory</code>',
 

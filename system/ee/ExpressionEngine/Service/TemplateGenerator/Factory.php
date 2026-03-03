@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -359,15 +359,39 @@ class Factory
         if (is_null($this->ftStubsAndGenerators)) {
             $this->ftStubsAndGenerators = [];
             ee()->legacy_api->instantiate('channel_fields');
+            if (!isset(ee()->addons)) {
+                ee()->load->library('addons');
+            }
+            $fieldtypes = ee()->addons->get_files('fieldtypes');
             foreach (ee('Addon')->installed() as $addon) {
                 if ($addon->hasFieldtype()) {
                     $provider = $addon->getProvider();
                     foreach ($addon->get('fieldtypes', array($provider->getPrefix() => [])) as $fieldtype => $metadata) {
+                        if (!$this->fieldtypeFileExists($fieldtype, $fieldtypes)) {
+                            $this->logFieldtypeWarning(sprintf(
+                                'TemplateGenerator skipped fieldtype "%s". Could not find expected file ft.%s.php.',
+                                $fieldtype,
+                                $fieldtype
+                            ));
+
+                            continue;
+                        }
+
                         $stub = 'field';
                         $generator = null;
                         $ftClassName = ee()->api_channel_fields->include_handler($fieldtype);
-                        $reflection = new \ReflectionClass($ftClassName);
-                        $instance = $reflection->newInstanceWithoutConstructor();
+                        try {
+                            $reflection = new \ReflectionClass($ftClassName);
+                            $instance = $reflection->newInstanceWithoutConstructor();
+                        } catch (\Throwable $e) {
+                            $this->logFieldtypeWarning(sprintf(
+                                'TemplateGenerator skipped fieldtype "%s" due to reflection error: %s',
+                                $fieldtype,
+                                $e->getMessage()
+                            ));
+
+                            continue;
+                        }
                         if (isset($instance->stub)) {
                             // grab the stub out of fieldtype property
                             $stub = $instance->stub;
@@ -391,6 +415,40 @@ class Factory
         }
 
         return $this->ftStubsAndGenerators;
+    }
+
+    /**
+     * Check whether the expected fieldtype file can be discovered.
+     */
+    protected function fieldtypeFileExists(string $fieldtype, array $fieldtypes): bool
+    {
+        $file = 'ft.' . $fieldtype . '.php';
+        $paths = [PATH_ADDONS . $fieldtype . '/'];
+
+        if (isset($fieldtypes[$fieldtype])) {
+            $paths[] = PATH_THIRD . $fieldtypes[$fieldtype]['package'] . '/';
+            $paths[] = PATH_ADDONS . $fieldtypes[$fieldtype]['package'] . '/';
+        }
+
+        $paths[] = PATH_ADDONS . $fieldtype . '/';
+
+        foreach ($paths as $path) {
+            if (file_exists($path . $file)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Log a warning without assuming the legacy logger is always loaded.
+     */
+    protected function logFieldtypeWarning(string $message): void
+    {
+        if (function_exists('log_message')) {
+            log_message('error', $message);
+        }
     }
 
     protected function getProviderGeneratorClass(Provider $provider, $class)

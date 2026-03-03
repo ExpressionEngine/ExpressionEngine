@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -31,6 +31,7 @@ if (!function_exists('ee')) {
     }
 }
 
+#[AllowDynamicProperties]
 class eeSingletonMock
 {
     public $load;
@@ -68,7 +69,7 @@ class eeSingletonMock
         $this->mock = $mock;
 
         // Override with static mocks if set
-        $overridable = ['db', 'config', 'functions', 'TMPL', 'session', 'load', 'logger', 'dbforge', 'input', 'lang', 'typography', 'extensions', 'core', 'uri'];
+        $overridable = ['db', 'config', 'functions', 'TMPL', 'session', 'load', 'logger', 'dbforge', 'input', 'lang', 'typography', 'extensions', 'core', 'uri', 'Model'];
         foreach ($overridable as $prop) {
             if (array_key_exists($prop, self::$mocks)) {
                 @$this->$prop = self::$mocks[$prop];
@@ -324,6 +325,7 @@ class eeLangMock
 class eeDbArMock
 {
     public $rows = [];
+    public $dbprefix = '';
     private $whereConditions = [];
     private $limitValue = null;
     public $whereInConditions = [];
@@ -884,6 +886,7 @@ class FakeDb
 
 // Test environment class with proper method support
 if (!class_exists('TestEnvironment')) {
+#[AllowDynamicProperties]
 class TestEnvironment
 {
     public $mocks = [];
