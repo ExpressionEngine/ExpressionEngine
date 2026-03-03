@@ -20,6 +20,7 @@ if (!defined('PATH_ADDONS')) {
 }
 
 // Define a constant to check if we should use AllowDynamicProperties attribute (PHP 8.0+ only)
+// In PHP 8.4+, #[AllowDynamicProperties] is still needed to avoid deprecation warnings
 if (!defined('USE_ALLOW_DYNAMIC_PROPERTIES')) {
     define('USE_ALLOW_DYNAMIC_PROPERTIES', PHP_VERSION_ID >= 80000);
 }

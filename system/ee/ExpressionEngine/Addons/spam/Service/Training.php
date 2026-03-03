@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -147,15 +147,19 @@ class Training
      */
     private function getParameters($class)
     {
-        $parameters = ee('Model')->get('spam:SpamParameter')
-            ->fields('mean', 'variance')
-            ->filter('class', $class)
-            ->filter('kernel_id', $this->kernel->kernel_id)
-            ->all();
-
+        $parameters = ee()->db->select('mean, variance')
+            ->from('spam_parameters')
+            ->where('class', $class)
+            ->where('kernel_id', $this->kernel->kernel_id)
+            ->get();
+		
         $result = array();
+		
+        if ($parameters->num_rows() == 0) {
+            return $result;
+        }
 
-        foreach ($parameters as $parameter) {
+        foreach ($parameters->result() as $parameter) {
             $result[] = ee('spam:Distribution', $parameter->mean, $parameter->variance);
         }
 
