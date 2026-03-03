@@ -24,4 +24,24 @@ class StructureDebugTest extends StructureTestBase
 		$out = ob_get_clean();
 		$this->assertStringContainsString('hello', $out);
 	}
+
+	public function testConstructorInitializesSqlAndNestedSet()
+	{
+		ee()->setMock('pagination', new class {
+			public function create()
+			{
+				return new stdClass();
+			}
+		});
+		ee()->setMock('addons_model', new class {
+			public function module_installed($name)
+			{
+				return true;
+			}
+		});
+
+		$real = new Structure();
+		$this->assertInstanceOf(Sql_structure::class, $real->sql);
+		$this->assertNotNull($real->nset);
+	}
 }

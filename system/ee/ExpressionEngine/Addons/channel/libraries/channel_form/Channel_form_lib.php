@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 require_once PATH_ADDONS . 'channel/libraries/channel_form/Channel_form_exception.php';
@@ -3153,8 +3153,11 @@ SCRIPT;
      */
     private function switch_site($site_id)
     {
+        // cache the current site_prefs and cache and set the site_pages from the new site_prefs
+        ee()->config->get_cached_site_prefs(ee()->config->item('site_id'));
+        $config = ee()->config->get_cached_site_prefs($site_id);
         ee()->config->set_item('site_id', $site_id);
-        ee()->config->get_cached_site_prefs($site_id);
+        ee()->config->set_item('site_pages', $config['site_pages'] ?? []);
     }
 }
 

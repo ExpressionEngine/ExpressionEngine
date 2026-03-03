@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -789,6 +789,13 @@ class EE_Output
 
         if (ee()->config->item('send_headers') == 'y') {
             header("Content-Type: application/json; charset=" . ee()->config->item('charset'));
+        }
+
+        // Are there any server headers to send?
+        if (count($this->headers) > 0) {
+            foreach ($this->headers as $header) {
+                @header($header[0], $header[1]);
+            }
         }
 
         exit(json_encode($msg));
