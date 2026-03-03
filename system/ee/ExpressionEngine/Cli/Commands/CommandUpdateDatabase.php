@@ -289,9 +289,16 @@ class CommandUpdateDatabase extends Cli
             'DOC_URL' =>  'https://docs.expressionengine.com/latest/',
         ]);
 
-        file_put_contents(PATH_CACHE . 'ee_update/configs.json', json_encode([
-            'archive_path' => PATH_CACHE . 'ee_update/'
-        ]));
+        $updatePath = PATH_CACHE . 'ee_update/';
+        if (!is_dir($updatePath) && !mkdir($updatePath, 0755, true) && !is_dir($updatePath)) {
+            return $this->fail("Unable to create updater cache directory at {$updatePath}");
+        }
+
+        if (file_put_contents($updatePath . 'configs.json', json_encode([
+            'archive_path' => $updatePath
+        ])) === false) {
+            return $this->fail("Unable to write updater config file at {$updatePath}configs.json");
+        }
 
         $runner = $this->getUpdaterRunner();
 
