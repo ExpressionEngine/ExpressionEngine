@@ -21,6 +21,11 @@ on:
         - '7.4'
         - '7.3'
         - '7.2'
+      use_cypress_dashboard:
+        type: boolean
+        description: Use Cypress Dashboard
+        required: false
+        default: false
 
 jobs:
     cancel-running-tests:
@@ -258,7 +263,7 @@ jobs:
                 chrome-version: ${{ steps.get-chrome-version.outputs.chrome_version }}
 
             - name: Get Cypress Specs
-              if: "${{ env.CYPRESS_RECORD_KEY == '' }}"
+              if: "${{ env.CYPRESS_RECORD_KEY == '' || (github.event_name == 'workflow_dispatch' && !inputs.use_cypress_dashboard) }}"
               env:
                 CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
               run: |
@@ -267,7 +272,7 @@ jobs:
 
             - name: Run Cypress Tests (without dashboard)
               uses: cypress-io/github-action@v6
-              if: "${{ env.CYPRESS_RECORD_KEY == '' }}"
+              if: "${{ env.CYPRESS_RECORD_KEY == '' || (github.event_name == 'workflow_dispatch' && !inputs.use_cypress_dashboard) }}"
               with:
                 spec: ${{ steps.specs.outputs.SPECS }}
                 browser: ${{ steps.setup-chrome.outputs.chrome-path }}
@@ -278,7 +283,7 @@ jobs:
 
             - name: Run Cypress Tests
               uses: cypress-io/github-action@v6
-              if: "${{ env.CYPRESS_RECORD_KEY != '' }}"
+              if: "${{ env.CYPRESS_RECORD_KEY != '' && (github.event_name != 'workflow_dispatch' || inputs.use_cypress_dashboard) }}"
               with:
                 browser: ${{ steps.setup-chrome.outputs.chrome-path }}
                 working-directory: tests/cypress

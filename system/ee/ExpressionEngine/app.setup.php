@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -68,6 +68,7 @@ use ExpressionEngine\Service\Generator\ProletGenerator;
 use ExpressionEngine\Service\Generator\SidebarGenerator;
 use ExpressionEngine\Service\Generator\TemplateTagGenerator;
 use ExpressionEngine\Service\Generator\WidgetGenerator;
+use ExpressionEngine\Service\Generator\ServiceGenerator;
 use ExpressionEngine\Model\Channel\ChannelEntry;
 use ExpressionEngine\Model\Channel\Reindex;
 
@@ -351,6 +352,16 @@ $setup = [
             return new LivePreview\LivePreview(ee()->session);
         },
 
+        'LivePreviewToken' => function ($ee) {
+            $key = ee()->config->item('live_preview_key') ?: ee()->config->item('encryption_key');
+
+            return new LivePreview\LivePreviewToken(
+                ee()->session,
+                $ee->make('Encrypt', $key),
+                $key
+            );
+        },
+
         'Str' => function ($ee) {
             return new Str();
         },
@@ -448,6 +459,13 @@ $setup = [
             $str = $ee->make('Str');
 
             return new WidgetGenerator($filesystem, $str, $data);
+        },
+
+        'ServiceGenerator' => function ($ee, $data) {
+            $filesystem = $ee->make('Filesystem');
+            $str = $ee->make('Str');
+
+            return new ServiceGenerator($filesystem, $str, $data);
         },
 
         'Consent' => function ($ee, $member_id = null) {
