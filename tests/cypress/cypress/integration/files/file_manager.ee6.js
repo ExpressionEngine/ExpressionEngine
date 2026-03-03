@@ -78,6 +78,24 @@ context('File Manager', () => {
         cy.hasNoErrors()
     }
 
+    function setManualPerPage(value) {
+        page.get('perpage_filter').click()
+        cy.intercept('/admin.php?/cp/files*').as('fileRequest')
+        page.get('perpage_manual_filter')
+            .should('be.visible')
+            .click()
+            .type('{selectall}')
+            .type(`${value}`)
+            .type('{enter}')
+        cy.wait('@fileRequest').its('request.body').should('include', `perpage=${value}`)
+        cy.hasNoErrors()
+        cy.url({timeout: 20000}).should('include', `perpage=${value}`)
+
+        page.get('perpage_filter').find('.has-sub').invoke('text').then((text) => {
+            return text.replace(/\s+/g, ' ').trim()
+        }).should('match', new RegExp(`show\\s*\\(${value}\\)`))
+    }
+
     afterEach(function() {
         cy.task('filesystem:delete', '../../images/about/')
         cy.task('filesystem:create', Cypress.env("TEMP_DIR")+'/about');
@@ -114,15 +132,7 @@ context('File Manager', () => {
     it('Change the page size manually', () => {
         beforeEach_all_files();
         cy.visit(page.url + '&perpage=1')
-        page.get('perpage_filter').click()
-        //page.wait_until_perpage_filter_menu_visible
-        cy.intercept('/admin.php?/cp/files*').as('fileRequest')
-        page.get('perpage_manual_filter').type('5{enter}')
-        cy.wait('@fileRequest')
-        cy.hasNoErrors()
-        page.get('perpage_filter').find('.has-sub').invoke('text').then((text) => {
-            return text.trim()
-        }).should('match', /show(\s)*\(5\)/)
+        setManualPerPage(5)
 
         page.get('pagination').should('exist')
         page.get('pages').should('have.length', 2)
@@ -136,18 +146,10 @@ context('File Manager', () => {
     it('navigate pages', () => {
         beforeEach_all_files();
         cy.visit(page.url + '&perpage=1')
-        page.get('perpage_filter').click()
-        //page.wait_until_perpage_filter_menu_visible
-        cy.intercept('/admin.php?/cp/files*').as('fileRequest')
-        page.get('perpage_manual_filter').type('5{enter}')
-        cy.wait('@fileRequest')
-        cy.hasNoErrors()
+        setManualPerPage(5)
         page.get('pages').last().click()
         cy.hasNoErrors()
         cy.wait('@fileRequest')
-        page.get('perpage_filter').find('.has-sub').invoke('text').then((text) => {
-            return text.trim()
-        }).should('match', /show(\s)*\(5\)/)
         page.get('pagination').should('exist')
         page.get('pages').should('have.length', 2)
         const pages = ["1", "2"]
@@ -191,11 +193,7 @@ context('File Manager', () => {
     it('Sorting is kept when paginating', () => {
         cy.visit(page.url + '&perpage=1')
         cy.log('set to 5 files per page')
-        cy.intercept('/admin.php?/cp/files*').as('fileRequest')
-        page.get('perpage_filter').click()
-        page.get('perpage_manual_filter').type('5{enter}')
-        cy.wait('@fileRequest')
-        cy.hasNoErrors()
+        setManualPerPage(5)
 
         cy.log('sort by title, asc')
         page.get('title_name_header').find('a.column-sort').click()

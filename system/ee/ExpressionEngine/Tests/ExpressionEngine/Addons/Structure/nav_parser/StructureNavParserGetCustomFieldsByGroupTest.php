@@ -30,6 +30,35 @@ class StructureNavParserGetCustomFieldsByGroupTest extends StructureTestBase
         $this->assertSame($map, $map2);
         unset($parser);
     }
-}
 
+    public function testGetCustomFieldsByGroupReturnsEmptyMapForEmptyGroup()
+    {
+        $parser = new NavParser();
+        $ref = new ReflectionClass($parser);
+        $method = $ref->getMethod('get_custom_fields_by_group');
+        \TestReflectionHelper::makeMethodAccessible($method);
+
+        $this->assertSame([], $method->invoke($parser, 0));
+        unset($parser);
+    }
+
+    public function testGetCustomFieldsByGroupFallsBackToRawFieldWhenSettingsAreInvalid()
+    {
+        ee()->db->setRows([
+            ['group_id' => 8, 'field_id' => 20, 'field_name' => 'broken', 'field_settings' => 'not-valid-base64'],
+        ]);
+
+        $parser = new NavParser();
+        $ref = new ReflectionClass($parser);
+        $method = $ref->getMethod('get_custom_fields_by_group');
+        \TestReflectionHelper::makeMethodAccessible($method);
+
+        $map = $method->invoke($parser, 8);
+
+        $this->assertSame(['broken' => 20], $map);
+        $this->assertArrayHasKey(20, ee()->api_channel_fields->settings);
+        $this->assertSame('broken', ee()->api_channel_fields->settings[20]['field_name']);
+        unset($parser);
+    }
+}
 

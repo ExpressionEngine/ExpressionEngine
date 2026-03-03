@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -1311,23 +1311,19 @@ EOH;
     public function curl_process($url, $payload)
     {
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
 
-        // Start ob to prevent curl_exec from displaying stuff.
-        ob_start();
-        curl_exec($ch);
-
-        //Get contents of output buffer
-        $info = ob_get_contents();
+        $info = curl_exec($ch);
         curl_close($ch);
 
-        //End ob and erase contents.
-        ob_end_clean();
-
-        return $info;
+        return is_string($info) ? $info : '';
     }
 
     /** ----------------------------------------
