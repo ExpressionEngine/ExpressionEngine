@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -36,6 +36,7 @@ class Updater
                 'addCategoryGroupSettings',
                 'addMemberRelationshipTable',
                 'addMemberFieldtype',
+                'ensureRoleChannelDefault',
                 'ensureBuiltinRoles',
                 'addShowFieldNamesSetting',
                 'increaseEmailLength',
@@ -384,6 +385,13 @@ class Updater
                 )
             )
         );
+    }
+
+    // Upgrades from pre-v3 may not have a default set for the cp_homepage_channel field
+    // in exp_role_settings, which may cause a MySQL error in ensureBuiltinRoles hence adding it here as well as 7.5.10
+    private function ensureRoleChannelDefault()
+    {
+        ee()->db->query("ALTER TABLE exp_role_settings ALTER COLUMN cp_homepage_channel SET DEFAULT 0");
     }
 
     // in some very old EE versions is was possible to delete built-in member groups

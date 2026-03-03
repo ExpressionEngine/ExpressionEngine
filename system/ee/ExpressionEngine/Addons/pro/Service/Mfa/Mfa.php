@@ -3,12 +3,13 @@
 /**
  * ExpressionEngine Pro
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
 */
 
 namespace ExpressionEngine\Addons\Pro\Service\Mfa;
 
 use ExpressionEngine\Dependency\OTPHP\TOTP;
+use ExpressionEngine\Dependency\OTPHP\InternalClock;
 use ExpressionEngine\Dependency\ParagonIE\ConstantTime\Base32;
 use ExpressionEngine\Dependency\BaconQrCode\Renderer\ImageRenderer;
 use ExpressionEngine\Dependency\BaconQrCode\Renderer\Image\SvgImageBackEnd;
@@ -49,7 +50,7 @@ class Mfa
      */
     public function generateQrCode($secret, $size = 400)
     {
-        $totp = TOTP::create(Base32::encodeUpper($secret));
+        $totp = TOTP::createFromSecret(Base32::encodeUpper($secret), new InternalClock());
         $totp->setIssuer(ee()->config->item('site_name'));
         $totp->setLabel(ee()->session->userdata('username'));
 
@@ -72,7 +73,7 @@ class Mfa
      */
     public function validateOtp($input, $secret)
     {
-        $totp = TOTP::create(Base32::encodeUpper($secret));
+        $totp = TOTP::createFromSecret(Base32::encodeUpper($secret), new InternalClock());
         return $totp->verify($input);
     }
 

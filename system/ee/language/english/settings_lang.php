@@ -248,7 +248,7 @@ $lang = array(
 
     'test_email_subject' => 'Test message from %s',
 
-    'test_email_message' => '<p>This is a test email message sent using following settings:</p>',
+    'test_email_message' => '<p>This is a test email message sent using the following settings:</p>',
 
     'test_email_sent' => 'Test Email sent',
 

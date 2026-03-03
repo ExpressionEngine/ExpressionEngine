@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -309,7 +309,10 @@ class EE_Config
                 ->all()
                 ->getDictionary('key', 'value');
 
-            $config = array_merge($site_configs, $config);
+            // If the config has already been loaded and current_site is set then the site_prefs we're loading
+            // for a different site should have the database config take precedence over the current site's config file
+            $current_site = $this->item('site_id');
+            $config = ($current_site && $current_site != $row['site_id']) ? array_merge($config, $site_configs) : array_merge($site_configs, $config);
         }
 
         // Fold in the Preferences in the Database
@@ -353,6 +356,7 @@ class EE_Config
 
         $config['email_newline_form_safe'] = $config['email_newline'];
         $config['email_newline'] = $this->setEmailNewline($config['email_newline']);
+        $config['email_crlf'] = $this->setEmailNewline($config['email_crlf'] ?? '');
 
         if ($mutating) {
             $this->config = $config;
@@ -690,6 +694,7 @@ class EE_Config
         $channel_default = array(
             'image_resize_protocol',
             'image_library_path',
+            'image_manipulation_quality',
             'word_separator',
             'use_category_name',
             'reserved_category_word',
@@ -1002,8 +1007,8 @@ class EE_Config
 
                     $prefs[$value] = $site_prefs[$value];
 
-                    // exception for email_newline, which uses backslashes, and is not a path variable
-                    if ($value != 'email_newline') {
+                    // exception for email_newline and email_crlf, which uses backslashes, and is not a path variable
+                    if (!in_array($value, ['email_newline', 'email_crlf'])) {
                         $prefs[$value] = str_replace('\\', '/', $prefs[$value]);
                     }
 

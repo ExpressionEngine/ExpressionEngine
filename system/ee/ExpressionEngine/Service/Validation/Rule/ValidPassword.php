@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -37,14 +37,17 @@ class ValidPassword extends ValidationRule
             return false;
         }
 
-        //  Make UN/PW lowercase for testing
-        $lc_user = strtolower($this->all_values['username']);
-        $lc_pass = strtolower($password);
-        $nm_pass = strtr($lc_pass, 'elos', '3105');
+        //  Username may not be set if resetting password
+        if (! empty($this->all_values['username'])) {
+            //  Make UN/PW lowercase for testing
+            $lc_user = strtolower($this->all_values['username']);
+            $lc_pass = strtolower($password);
+            $nm_pass = strtr($lc_pass, 'elos', '3105');
 
-        if ($lc_user == $lc_pass or $lc_user == strrev($lc_pass) or $lc_user == $nm_pass or $lc_user == strrev($nm_pass)) {
-            $this->last_error = 'password_based_on_username';
-            return false;
+            if ($lc_user == $lc_pass or $lc_user == strrev($lc_pass) or $lc_user == $nm_pass or $lc_user == strrev($nm_pass)) {
+                $this->last_error = 'password_based_on_username';
+                return false;
+            }
         }
 
         // Does password exist in dictionary?

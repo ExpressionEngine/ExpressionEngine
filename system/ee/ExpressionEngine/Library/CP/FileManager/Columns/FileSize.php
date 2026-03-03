@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -28,15 +28,15 @@ class FileSize extends EntryManager\Columns\Column
             return '';
         }
         $unit = 'Kb';
-        $fileSize = $file->file_size / 1024;
+        $fileSize = round($file->file_size / 1024);
         if ($fileSize >= 1000) {
-            $fileSize = $fileSize / 1024;
+            $fileSize = round($fileSize / 1024, 2);
             $unit = 'Mb';
             if ($fileSize >= 1000) {
-                $fileSize = $fileSize / 1024;
+                $fileSize = round($fileSize / 1024, 2);
                 $unit = 'Gb';
             }
         }
-        return round($fileSize) .' ' . $unit;
+        return $fileSize . ' ' . $unit;
     }
 }

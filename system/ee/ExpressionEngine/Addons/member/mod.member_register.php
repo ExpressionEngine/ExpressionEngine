@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -57,6 +57,8 @@ class Member_register extends Member
         ee()->load->library('javascript');
         ee()->load->helper('form');
 
+        $fields = [];
+
         // If not, we'll kill the custom field variables from the template
         if ($query->num_rows() == 0) {
             $reg_form = preg_replace("/{custom_fields}.*?{\/custom_fields}/s", "", $reg_form);
@@ -84,8 +86,6 @@ class Member_register extends Member
             $member_fields = ee('Model')->get('MemberField', $member_field_ids)
                 ->all()
                 ->indexBy('m_field_id');
-
-            $fields = [];
 
             if (!empty($field_chunk) || !is_null(ee()->TMPL->template_engine)) {
                 foreach ($query->result_array() as $row) {

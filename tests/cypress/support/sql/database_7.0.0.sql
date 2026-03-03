@@ -623,7 +623,7 @@ INSERT INTO `exp_global_variables` (`variable_id`, `site_id`, `variable_name`, `
 	(6, 1, 'html_close', '<p id="elapsed_time">Elapsed time: <em>{elapsed_time}</em></p><p id="memory_usage">Memory usage: <em>{memory_usage}</em></p></body>\n</html>', 0),
 	(7, 1, 'html_head', '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">\n<html xmlns="http://www.w3.org/1999/xhtml">\n<head>\n<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />\n', 0),
 	(8, 1, 'html_head_end', '</head>\n', 0),
-	(9, 1, 'js', '<!-- JS -->\n<script src="http://code.jquery.com/jquery-1.12.1.min.js" type="text/javascript"></script>\n<script src="{site_url}themes/site/default/js/onload.js" type="text/javascript"></script>', 0),
+	(9, 1, 'js', '<!-- JS -->\n<script src="http://code.jquery.com/jquery-1.12.1.min.js" type="text/javascript"></script>', 0),
 	(10, 1, 'nav_access', '<ul id="nav_access">\n	<li><a href="#navigation">Skip to navigation</a></li>\n	<li><a href="#primary_content_wrapper">Skip to content</a></li>\n</ul>', 0),
 	(11, 1, 'rss', '<!-- RSS -->\n<link href="{path=news/rss}" rel="alternate" type="application/rss+xml" title="RSS Feed" />', 0),
 	(12, 1, 'rss_links', '<h5>RSS Feeds <img src="{site_url}themes/site/default/images/rss12.gif" alt="RSS Icon" class="rssicon" /></h5>\n		<div id="news_rss">\n			<p>Subscribe to our RSS Feeds</p>\n			<ul>\n				<li><a href="{path=\'news/rss\'}">News RSS Feed</a></li>\n				<li><a href="{path=\'news/atom\'}">News ATOM Feed</a></li>\n			</ul>\n		</div>', 0),

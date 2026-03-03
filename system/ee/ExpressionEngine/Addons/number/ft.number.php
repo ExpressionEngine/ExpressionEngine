@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -52,6 +52,10 @@ class Number_ft extends Text_ft
         }
         if ($this->settings['field_step']) {
             $field['step'] = $this->settings['field_step'];
+        }
+
+        if (isset($this->settings['field_content_type']) && $this->settings['field_content_type'] == 'decimal' && (!isset($field['step']) || $field['step'] === '')) {
+            $field['step'] = 0.01;
         }
 
         if ($this->settings['datalist_items']) {

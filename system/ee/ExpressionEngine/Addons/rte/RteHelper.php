@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -195,7 +195,7 @@ class RteHelper
                         $url = '/';
                     }
                     if ($buildFullUrls) {
-                        $url = ee()->functions->create_url($url);
+                        $url = reduce_double_slashes(ee()->functions->fetch_site_index(0, 0) . $url);
                     }
                     // ensure trailing slash - TODO need to make this an option
                     // $url = rtrim($url, '/') . '/';

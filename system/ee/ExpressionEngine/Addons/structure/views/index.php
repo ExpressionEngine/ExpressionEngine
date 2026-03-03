@@ -161,7 +161,7 @@ if ($cp_asset_data or count($tabs) > 1) {
                 $specific_channel_rule = (! empty($vars['channel_rules'])) ? $vars['channel_rules'][$page['channel_id']] : 'y';
 
                 if (isset($permissions['view_view_page']) && $permissions['view_view_page'] == 'y' && isset($specific_channel_rule) && $specific_channel_rule == 'y') {
-                    echo str_repeat("\t", $indentDepth) . "\t\t\t", '<span class="control-view"><a href="', ee('CP/URL')->make('addons/settings/structure/link', array('entry_id' => $page['entry_id'])), '">', lang('view_page'), '<i class="view_icon"></i></a></span>', "\n";
+                    echo str_repeat("\t", $indentDepth) . "\t\t\t", '<span class="control-view"><a href="', ee('CP/URL')->make('addons/settings/structure/link', array('entry_id' => $page['entry_id'])), '" target="_blank">', lang('view_page'), '<i class="view_icon"></i></a></span>', "\n";
                 }
 
                 if ($permissions['view_add_page'] && $settings['show_picker'] == 'y') {
@@ -213,9 +213,9 @@ if ($cp_asset_data) {
 
     foreach ($cp_asset_data as $title => $row) :
         if ($row['split_assets'] == 'y') {
-            echo "\t\t\t", '<li><span class="listing-title"><a href="', ee('CP/URL')->make('publish/edit/entry/' . $row['entry_id'], array('channel_id' => $row['channel_id'])),'">', $row['title'], '</a></span></li>', "\n";
+            echo "\t\t\t", '<li><span class="listing-title"><a href="', ee('CP/URL')->make('publish/edit/entry/' . $row['entry_id'], array('channel_id' => $row['channel_id'])),'" target="_blank">', $row['title'], '</a></span></li>', "\n";
         } else {
-            echo "\t\t\t", '<li><span class="listing-title">', $row['title'], '</span><span class="page-listing"><a href="', ee('CP/URL')->make('publish/create/' . $row['channel_id']), '">', lang('add'), '</a> or <a href="', ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $row['channel_id'])), '">', lang('edit'), '</a></span></li>', "\n";
+            echo "\t\t\t", '<li><span class="listing-title">', $row['title'], '</span><span class="page-listing"><a href="', ee('CP/URL')->make('publish/create/' . $row['channel_id']), '" target="_blank">', lang('add'), '</a> or <a href="', ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $row['channel_id'])), '">', lang('edit'), '</a></span></li>', "\n";
         }
     endforeach;
 

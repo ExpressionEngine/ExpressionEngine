@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -661,17 +661,6 @@ $(document).ready(function(){
 					Dropdown.renderFields();
 				}
 
-			// reveal the modal
-			if ($(this).hasClass('modal-wrap')) {
-				$(this).fadeIn('slow');
-				if ($(this).find('input:visible').length) {
-					$(this).find('input:visible').focus();
-				}
-			} else {
-				$(this).removeClass('app-modal---closed')
-					.addClass('app-modal---open');
-			}
-
 			// remove viewport scroll for --side
 			if (e.linkIs) {
 				if(e.linkIs.indexOf('js-modal-link--side') !== -1){
@@ -690,7 +679,7 @@ $(document).ready(function(){
 
 			// scroll up, if needed, but only do so after a significant
 			// portion of the overlay is show so as not to disorient the user
-			if ($(this).is('.app-modal--fullscreen'))
+			if ($(this).is('.app-modal--fullscreen') || $(this).is('.modal-file'))
 			{
 				$('body').css('overflow','hidden');
 			}else if ( ! $(this).is('.modal-form-wrap, .app-modal--side'))
@@ -701,6 +690,18 @@ $(document).ready(function(){
 			} else {
 				// Remove viewport scroll
 				$('body').css('overflow','hidden');
+			}
+
+			// reveal the modal
+			if ($(this).hasClass('modal-wrap')) {
+				$(this).fadeIn('slow');
+
+				if ($(this).find('input:visible').length) {
+					$(this).find('input:visible').focus();
+				}
+			} else {
+				$(this).removeClass('app-modal---closed')
+					.addClass('app-modal---open');
 			}
 		});
 
@@ -713,7 +714,7 @@ $(document).ready(function(){
 		$('body').on('modal:close', '.modal-wrap, .modal-form-wrap, .app-modal', function(e) {
 			var modal = $(this)
 
-			if (modal.is(":visible")) {
+			if (modal.is(":visible") && !modal.hasClass('must-interact')) {
 				// fade out the overlay
 				$('.overlay').fadeOut('slow');
 

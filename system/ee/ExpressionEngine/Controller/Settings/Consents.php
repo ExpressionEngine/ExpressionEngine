@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -474,7 +474,7 @@ class Consents extends Settings
         ee()->cp->render('settings/form', $vars);
     }
 
-    private function makeNewVersion(ConsentRequest $request = null)
+    private function makeNewVersion(?ConsentRequest $request = null)
     {
         $version = ee('Model')->make('ConsentRequestVersion');
         $version->author_id = ee()->session->userdata['member_id'];

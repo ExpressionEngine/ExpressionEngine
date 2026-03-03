@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -738,6 +738,7 @@ class Member_auth extends Member
         }
 
         ee()->load->helper('email');
+
         if (! valid_email($address)) {
             return ee()->output->show_form_error(['email' => lang('invalid_email_address')], 'submission');
         }
@@ -768,6 +769,14 @@ class Member_auth extends Member
 
         $address = strip_tags($address);
 
+        // member_auth_send_reset_token_start hook allows overriding posted email address from password reset form
+        if (ee()->extensions->active_hook('member_auth_send_reset_token_start')) {
+            $address = ee()->extensions->call('member_auth_send_reset_token_start', $address);
+            if (ee()->extensions->end_script === true) {
+                return;
+            }
+        }
+
         $memberQuery = ee()->db->select('member_id, username, screen_name')
             ->where('email', $address)
             ->get('members');
@@ -781,7 +790,8 @@ class Member_auth extends Member
                 'link' => array($return, $site_name)
             );
 
-            ee()->output->show_message($data);
+            // If we have a success return link, go to that, otherwise, output the standard message.
+            ee()->output->show_message($data, true, $return_success_link);	
         }
 
         $member_id = $memberQuery->row('member_id');
@@ -814,7 +824,7 @@ class Member_auth extends Member
 
             // Make sure it's an actual URL.
             if (substr($reset_url, 0, 4) !== 'http') {
-                $reset_url = ee()->functions->fetch_site_index(0, 0) . '/' . $reset_url;
+                $reset_url = reduce_double_slashes(ee()->functions->fetch_site_index(0, 0) . '/' . $reset_url);
             }
         } else {
             $reset_url = reduce_double_slashes(ee()->functions->fetch_site_index(0, 0) . '/' . ee()->config->item('profile_trigger') . '/reset_password');
@@ -1105,8 +1115,9 @@ class Member_auth extends Member
      */
     private function getTokenExpiration()
     {
-        return ee()->localize->now - (60 * 60); // One hour
+        return ee()->localize->now - (24 * 60 * 60); // 24 hours as per email instructions
     }
+
 }
 // END CLASS
 

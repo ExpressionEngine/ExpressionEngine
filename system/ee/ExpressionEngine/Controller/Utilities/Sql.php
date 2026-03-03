@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -32,7 +32,10 @@ class Sql extends Utilities
 
             // Must select an action
             if ($action == 'none') {
-                ee()->view->set_message('issue', lang('cp_message_issue'), lang('no_action_selected'));
+                // unless just searching for table name
+                if (!empty($tables)) {
+                    ee()->view->set_message('issue', lang('cp_message_issue'), lang('no_action_selected'));
+                }
             }
             // Must be either OPTIMIZE or REPAIR
             elseif (! in_array($action, array('OPTIMIZE', 'REPAIR'))) {
@@ -174,7 +177,10 @@ class Sql extends Utilities
         $vars['table'] = $table->viewData(ee('CP/URL')->make('utilities/sql/op-results'));
 
         ee()->view->cp_page_title = lang(strtolower($action) . '_tables_results');
-        ee()->cp->set_breadcrumb(ee('CP/URL')->make('utilities/sql'), lang('sql_manager'));
+        ee()->view->cp_breadcrumbs = array(
+            ee('CP/URL')->make('utilities/sql')->compile() => lang('sql_manager'),
+            '' => lang('results')
+        );
 
         return ee()->cp->render('utilities/sql/ops', $vars);
     }

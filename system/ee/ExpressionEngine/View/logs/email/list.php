@@ -24,7 +24,7 @@
 					<a href="" class="m-link button button--default float-right" rel="modal-confirm-<?=$log->cache_id?>" title="<?=lang('delete')?>"><i class="fal fa-trash-alt"><span class="hidden"><?=lang('delete')?></span></i></a>
 					<div style="margin-bottom: 20px;">
 						<b><?=lang('date_logged')?>:</b> <?=$localize->human_time($log->cache_date)?><br>
-						<b><?=lang('username')?>:</b> <a href="<?=ee('CP/URL')->make('myaccount', array('id' => $log->member_id))?>"><?=$log->member_name?></a>,
+						<b><?=lang('username')?>:</b> <a href="<?=ee('CP/URL')->make('members/profile', array('id' => $log->member_id))?>"><?=$log->member_name?></a>,
 						<b><abbr title="<?=lang('internet_protocol')?>"><?=lang('ip')?></abbr>:</b> <?=$log->ip_address?>
 					</div>
 					<div class="list-item__body">

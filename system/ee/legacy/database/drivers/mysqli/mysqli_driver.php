@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -233,6 +233,8 @@ class CI_DB_mysqli_driver extends CI_DB
         // escape LIKE condition wildcards
         if ($like === true) {
             $str = str_replace(array('%', '_'), array('\\%', '\\_'), $str);
+            // fancy quotes can cause confusion on both sides, make them match any character
+            $str = str_replace(['“', '”', '‘', '’'], '_', $str);
         }
 
         return $str;

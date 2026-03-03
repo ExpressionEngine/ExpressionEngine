@@ -4,13 +4,13 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
 /**
  * Fake the schema class
  */
-require_once(APPPATH . 'schema/mysql_schema.php');
+require_once(SYSPATH . 'ee/installer/schema/mysql_schema.php');
 
 // EOF

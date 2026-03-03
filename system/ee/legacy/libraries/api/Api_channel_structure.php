@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -167,6 +167,7 @@ class Api_channel_structure extends Api
         $channel_title = '';
         $channel_name = '';
         $url_title_prefix = '';
+        $site_id = '';
 
         // turn our array into variables
         extract($data);
@@ -412,6 +413,7 @@ class Api_channel_structure extends Api
         $channel_title = '';
         $channel_name = '';
         $url_title_prefix = '';
+        $channel_id = '';
 
         // turn our array into variables
         extract($data);

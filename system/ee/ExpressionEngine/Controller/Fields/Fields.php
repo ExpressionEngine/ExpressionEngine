@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -720,7 +720,7 @@ class Fields extends AbstractFieldsController
         return $field;
     }
 
-    private function form(ChannelField $field = null)
+    private function form(?ChannelField $field = null)
     {
         ee()->lang->load('pro');
         if (! $field) {

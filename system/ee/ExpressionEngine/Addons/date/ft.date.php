@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -191,7 +191,7 @@ class Date_ft extends EE_Fieldtype
         }
 
         return ee('View')->make('date:publish')->render(array(
-            'has_localize_option' => (! in_array($this->field_name, $special) && $this->content_type() != 'grid'),
+            'has_localize_option' => ((! in_array($this->field_name, $special) && $this->content_type() != 'grid') OR $this->content_type() == 'pro_variables'),
             'show_localize_options' => $show_localize_options,
             'field_name' => $this->field_name,
             'value' => $custom_date,
