@@ -7,9 +7,20 @@ use PHPUnit\Framework\TestCase;
 class InstallerTemplateModelTest extends TestCase
 {
     private static $stubRoot;
+    private static $skipReason = null;
 
     public static function setUpBeforeClass(): void
     {
+        if (defined('EE_APPPATH') && strpos((string) EE_APPPATH, 'installer-template-model-stub-') === false && ! class_exists('Template_model', false)) {
+            self::$skipReason = 'EE_APPPATH is already defined for a different context; template-model stubs cannot be injected.';
+            return;
+        }
+
+        if (class_exists('Template_model', false) && ! property_exists('Template_model', 'saved')) {
+            self::$skipReason = 'Template_model was already loaded before stubs were applied.';
+            return;
+        }
+
         self::$stubRoot = sys_get_temp_dir() . '/installer-template-model-stub-' . uniqid('', true);
         $modelsDir = self::$stubRoot . '/models';
 
@@ -42,6 +53,10 @@ PHP;
 
     protected function setUp(): void
     {
+        if (self::$skipReason !== null) {
+            $this->markTestSkipped(self::$skipReason);
+        }
+
         ee()->resetMocks();
     }
 
