@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -219,9 +219,14 @@ class Runner
                 'is_system_on_before_updater' => $config->get('is_system_on_before_updater')
             ];
         }
+
+        // When updating from CLI, APP_VER is going to remain the original APP_VER
+        // so we need to set it to the new version, which is stored in the config
+        $app_ver = (REQ == 'CLI') ? $config->get('app_version') : APP_VER;
+
         $setToConfig = [
             'is_system_on' => $config->get('is_system_on_before_updater', 'n'),
-            'app_version' => APP_VER
+            'app_version' => $app_ver
         ];
         ee()->config->_update_config($setToConfig, $removeFromConfig);
 
@@ -230,7 +235,7 @@ class Runner
             ee()->load->library('logger');
         }
 
-        ee()->logger->updater('Update complete. Now running version ' . APP_VER);
+        ee()->logger->updater('Update complete. Now running version ' . $app_ver);
 
         $working_dir = $this->makeUpdaterService()->path();
         $this->logger->log('Deleting updater working directory: ' . $working_dir);
@@ -239,7 +244,7 @@ class Runner
         ee('Filesystem')->deleteDir(SYSPATH . 'ee/updater');
 
         if (REQ == 'CLI') {
-            stdout('Successfully updated to ExpressionEngine ' . APP_VER, CLI_STDOUT_SUCCESS);
+            stdout('Successfully updated to ExpressionEngine ' . $app_ver, CLI_STDOUT_SUCCESS);
         } else {
             ee()->config->config['allow_extensions'] = 'n';
 
@@ -275,7 +280,7 @@ class Runner
 
                 ee('CP/Alert')->makeBanner('update-rolledback')
                     ->asTip()
-                    ->withTitle(sprintf(lang('update_rolledback'), APP_VER))
+                    ->withTitle(sprintf(lang('update_rolledback'), $app_ver))
                     ->addToBody(sprintf(
                         lang('update_rolledback_desc'),
                         DOC_URL . 'installation/update.html'

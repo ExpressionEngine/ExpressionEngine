@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -57,7 +57,7 @@ class Table extends Html
      * @param $external
      * @return $this
      */
-    public function setNoResultsText(string $text, string $action_text = '', Url $action_link = null, bool $external = false): Table
+    public function setNoResultsText(string $text, string $action_text = '', ?Url $action_link = null, bool $external = false): Table
     {
         $arr = ['text' => $text, 'action_text' => $action_text, 'action_link' => $action_link, 'external' => $external];
         $this->set('no_results_text', $arr);
@@ -106,7 +106,7 @@ class Table extends Html
      * @param $url
      * @return $this
      */
-    public function setBaseUrl(Url $url = null): Table
+    public function setBaseUrl(?Url $url = null): Table
     {
         $this->set('base_url', $url);
         return $this;

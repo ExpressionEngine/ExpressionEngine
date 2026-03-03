@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -144,6 +144,11 @@ class Unpacker
         $this->logger->log('Moving the updater micro app into place');
 
         $source = $this->getExtractedArchivePath() . '/system/ee/installer/updater';
+
+        // Check to see if the updater directory already exists
+        if ($this->filesystem->exists(SYSPATH . 'ee/updater')) {
+            $this->filesystem->deleteDir(SYSPATH . 'ee/updater');
+        }
 
         $this->filesystem->rename($source, SYSPATH . 'ee/updater');
 

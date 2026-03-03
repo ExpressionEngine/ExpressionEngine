@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -323,7 +323,7 @@ class Rte_ft extends EE_Fieldtype
     public function save($data)
     {
         // Trim out any whitespace/empty tags
-        $data = preg_replace('/^(\s|<(\w+)>(&nbsp;|\s)*<\/\2>|<br \/>)*/', '', $data);
+        $data = preg_replace('/^(\s|<(\w+)>(&nbsp;|\s)*<\/\2>|<br \/>)*/', '', (string) $data);
         $data = preg_replace('/(\s|<(\w+)>(&nbsp;|\s)*<\/\2>|<br \/>)*$/', '', $data);
 
         // Remove any ?cachebuster:X query strings

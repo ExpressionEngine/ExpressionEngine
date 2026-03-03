@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -225,6 +225,46 @@ class CI_DB_mysqli_connection
     public function isOpen()
     {
         return isset($this->connection);
+    }
+    
+    /**
+     * List Indexes
+     *
+     * Get all indexes from a given database table and return them as an associative array.
+     *
+     * @access  public
+     * @param   string  $table  Table name
+     * @return  array
+     */
+    public function get_indexes($table = '')
+    {
+        $indexes = [];
+        ee()->load->library('logger');
+        ee()->load->helper('array');
+
+        // Check to make sure table exists
+        if (! ee()->db->table_exists($table)) {
+            ee()->logger->updater(__METHOD__ . " failed. Table '" . ee()->db->dbprefix . "$table' does not exist.", true);
+            return $indexes;
+        }
+
+        // Get indexes
+        $query = ee()->db->query("SHOW INDEX FROM " . ee()->db->dbprefix . "$table");
+
+        if($query->num_rows() == 0) {
+            ee()->logger->updater(__METHOD__ . " failed. Unable to get indexes from '" . ee()->db->dbprefix . "$table'.", true);
+            return $indexes;
+        }
+
+        foreach ($query->result_array() as $row) {
+            $index = [];
+            foreach ($row as $column => $value) {
+                $index[strtolower($column)] = $value;
+            }
+            $indexes[] = $index;
+        }
+
+        return $indexes;
     }
 
     /**

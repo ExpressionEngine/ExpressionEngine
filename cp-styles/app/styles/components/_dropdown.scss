@@ -74,6 +74,11 @@
 		border-top: 1px solid var(--ee-border);
 	}
 
+	&.active-link {
+		background-color: color(bg-dropdown-hover);
+		color: color(text-primary);
+	}
+
 	a {
 		color: color(text-primary);
 	}
@@ -342,4 +347,8 @@
       margin-bottom: 0px;
     }
   }
+}
+
+div[data-relationship-react] .dropdown {
+	overflow: visible;
 }

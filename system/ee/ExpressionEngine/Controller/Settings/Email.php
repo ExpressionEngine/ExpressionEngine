@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -270,7 +270,7 @@ class Email extends Settings
         $config = [
             'wordwrap' => ee('Security/XSS')->clean(ee('Request')->post('word_wrap')),
             'mailtype' => ee('Security/XSS')->clean(ee('Request')->post('mail_format')),
-            'newline' => ee('Security/XSS')->clean(ee('Request')->post('email_newline')),
+            'newline' => str_replace(array('\r', '\n'), array("\r", "\n"), ee('Security/XSS')->clean(ee('Request')->post('email_newline'))),
             'charset' => ee('Security/XSS')->clean(ee('Request')->post('email_charset')),
             'protocol' => ee('Security/XSS')->clean(ee('Request')->post('mail_protocol')),
             'smtp_host' => ee('Security/XSS')->clean(ee('Request')->post('smtp_server')),

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -143,6 +143,33 @@ class BooleanExpressionTest extends TestCase
         $this->expr->add(new Token\Boolean('TRUE'));
 
         $this->assertTrue($this->expr->evaluate());
+    }
+
+    public function testCanEvaluateStaysTrueForEvaluableTokens()
+    {
+        $this->expr->add(new Token\Boolean('TRUE'));
+        $this->expr->add(new Token\Operator('&&'));
+        $this->expr->add(new Token\Number(1));
+
+        $this->assertTrue($this->expr->canEvaluate());
+    }
+
+    public function testCanEvaluateTurnsFalseWhenNonEvaluableTokenIsAdded()
+    {
+        $this->expr->add(new Token\Tag('{exp:channel:entries}'));
+        $this->expr->add(new Token\Operator('&&'));
+        $this->expr->add(new Token\Boolean('TRUE'));
+
+        $this->assertFalse($this->expr->canEvaluate());
+    }
+
+    public function testStringifyReassemblesTokenStream()
+    {
+        $this->expr->add(new Token\Variable('foo'));
+        $this->expr->add(new Token\Operator('&&'));
+        $this->expr->add(new Token\StringLiteral('bar'));
+
+        $this->assertSame("foo && 'bar'", $this->expr->stringify());
     }
 
     public function truthyDataProvider()

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -37,10 +37,11 @@ class Cp extends Logs
         $this->base_url->path = 'logs/cp';
         ee()->view->cp_page_title = lang('view_cp_log');
 
-        $logs = ee('Model')->get('CpLog')->with('Site');
+        $sites = ee('Model')->get('Site');
+        $logs = ee('Model')->get('CpLog');
 
         if ($search = ee()->input->get_post('filter_by_keyword')) {
-            $logs->search(['action', 'username', 'ip_address', 'Site.site_label'], $search);
+            $logs->search(['action', 'username', 'ip_address'], $search);
         }
 
         $filters = ee('CP/Filter')
@@ -62,6 +63,7 @@ class Cp extends Logs
 
         if (! empty($this->params['filter_by_site'])) {
             $logs = $logs->filter('site_id', $this->params['filter_by_site']);
+            $sites = $sites->filter('site_id', $this->params['filter_by_site']);
         }
 
         if (! empty($this->params['filter_by_date'])) {
@@ -101,6 +103,7 @@ class Cp extends Logs
 
         $vars = array(
             'logs' => $logs,
+            'sites' => $sites->all(),
             'pagination' => $pagination,
             'form_url' => $this->base_url->compile(),
         );

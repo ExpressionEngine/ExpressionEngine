@@ -29,6 +29,10 @@
 	max-width: 550px;
 }
 
+.modal-wrap.must-interact .dialog__close {
+  display: none;
+}
+
 .modal {
 	background-color: color(bg-0);
 	margin-bottom: 40px;
@@ -171,6 +175,13 @@
 .modal-file {
   max-width: 100%;
   width: 98%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: fixed;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
 }
 
 .modal-confirm-delete-file,

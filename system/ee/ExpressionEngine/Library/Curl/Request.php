@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -31,6 +31,11 @@ abstract class Request
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_HEADER => 1,
         );
+
+        // If supported attempt to use the native root certificate store
+        if (defined('CURLSSLOPT_NATIVE_CA') && version_compare(curl_version()['version'], '7.71', '>=')) {
+            $this->config[CURLOPT_SSL_OPTIONS] = CURLSSLOPT_NATIVE_CA;
+        }
 
         foreach ($data as $key => $val) {
             if (substr($key, 0, 7) == "CURLOPT") {

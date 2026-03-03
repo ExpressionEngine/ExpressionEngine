@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -184,6 +184,9 @@ class CI_DB_utility extends CI_DB_forge
         // Next blast through the result array and build out the rows
         foreach ($query->result_array() as $row) {
             foreach ($row as $item) {
+                if (is_null($item)) {
+                    $item = '';
+                }
                 $out .= $enclosure . str_replace($enclosure, $enclosure . $enclosure, $item) . $enclosure . $delim;
             }
             $out = rtrim($out);

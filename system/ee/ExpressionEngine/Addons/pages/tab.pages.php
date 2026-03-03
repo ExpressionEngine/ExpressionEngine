@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -147,7 +147,7 @@ class Pages_tab
 
         $word_separator = ee()->config->item('word_separator') != "dash" ? '_' : '-';
         while (in_array($value, $uris)) {
-            $value = 'copy' . $word_separator . $value;
+            $value = 'copy' . $word_separator . ltrim($value, '/');
         }
         $_POST['pages__pages_uri'] = $values['pages_uri'] = $value;
 

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -87,6 +87,18 @@ class EE_Email
      * TLS Crypto Method
      */
     public $tls_crypto_method = STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT;
+
+    /**
+     * SMTP Peer Name
+     *
+     * Alternative peer name for SSL/TLS certificate verification.
+     * Useful when connecting to an SMTP host that uses a certificate
+     * for a different hostname (e.g., connecting to smtp.example.com
+     * but certificate is for smtp.examplemailservice.com).
+     *
+     * @var string
+     */
+    public $smtp_peer_name = '';
 
     /**
      * Whether to apply word-wrapping to the message body.
@@ -426,6 +438,7 @@ class EE_Email
 
         if (ee()->config->item('email_newline') !== false) {
             $config['newline'] = ee()->config->item('email_newline');
+            $config['crlf'] = ee()->config->item('email_newline');
         }
 
         if (ee()->config->item('email_crlf') !== false) {
@@ -436,6 +449,13 @@ class EE_Email
             $config['smtp_crypto'] = ee()->config->item('email_smtp_crypto');
             if (ee()->config->item('tls_crypto_method') !== false) {
                 $config['tls_crypto_method'] = ee()->config->item('tls_crypto_method');
+            }
+        }
+
+        if (ee()->config->item('smtp_peer_name') !== false) {
+            $peer_name = ee()->config->item('smtp_peer_name');
+            if (is_string($peer_name) && $peer_name !== '') {
+                $config['smtp_peer_name'] = $peer_name;
             }
         }
 
@@ -481,6 +501,16 @@ class EE_Email
      */
     public function from($from, $name = '', $return_path = null)
     {
+        // email_from_address allows overriding the from/name
+        if (ee()->extensions->active_hook('email_from_address')) {
+            $processed_address = ee()->extensions->call('email_from_address', $from, $name);
+            $from = $processed_address['from'] ?? $from;
+            $name = $processed_address['name'] ?? $name;
+            if (ee()->extensions->end_script === true) {
+                return;
+            }
+        }
+
         if (preg_match('/\<(.*)\>/', $from, $match)) {
             $from = $match[1];
         }
@@ -550,6 +580,14 @@ class EE_Email
      */
     public function to($to)
     {
+        // email_to_address hook allows overriding the to address
+        if (ee()->extensions->active_hook('email_to_address')) {
+            $to = ee()->extensions->call('email_to_address', $to);
+            if (ee()->extensions->end_script === true) {
+                return;
+            }
+        }
+
         $to = $this->_str_to_array($to);
         $to = $this->clean_email($to);
 
@@ -1688,16 +1726,40 @@ class EE_Email
             return true;
         }
 
+        $context = null;
+
+        if (! empty($this->smtp_peer_name) && is_string($this->smtp_peer_name)) {
+            $context = stream_context_create(array(
+                'ssl' => array(
+                    'peer_name' => $this->smtp_peer_name,
+                    'verify_peer' => true,
+                    'verify_peer_name' => true,
+                )
+            ));
+        }
+
         $ssl = ($this->smtp_crypto === 'ssl') ? 'ssl://' : '';
 
-        // suppress warning, we'll catch timeout error later if that happens
-        $this->_smtp_connect = @fsockopen(
-            $ssl . $this->smtp_host,
-            $this->smtp_port,
-            $errno,
-            $errstr,
-            $this->smtp_timeout
-        );
+        if ($context !== null) {
+            $errno = 0;
+            $errstr = '';
+            $this->_smtp_connect = @stream_socket_client(
+                ($ssl ? $ssl : 'tcp://') . $this->smtp_host . ':' . $this->smtp_port,
+                $errno,
+                $errstr,
+                $this->smtp_timeout,
+                STREAM_CLIENT_CONNECT,
+                $context
+            );
+        } else {
+            $this->_smtp_connect = @fsockopen(
+                $ssl . $this->smtp_host,
+                $this->smtp_port,
+                $errno,
+                $errstr,
+                $this->smtp_timeout
+            );
+        }
 
         if (! is_resource($this->_smtp_connect)) {
             $this->_set_error_message('lang:email_smtp_error', $errno . ' ' . $errstr);
@@ -2007,22 +2069,55 @@ class EE_Email
     }
 
     /**
-     * Dummy protocol: write the message out to disk (this is helpful for testing)
-     *
-     * @return bool
+     * Dummy protocol: write the email message to disk instead of sending it.
+     * This is useful for testing email functionality without actual delivery.
+     * @return bool True on successful write, false on failure.
      */
     protected function _send_with_dummy()
     {
-        $tmppath = ee()->config->item('dummy_mail_path') ?: '/tmp';
-        $tmpfname = tempnam($tmppath, "mail-");
+        $configured_path = ee()->config->item('dummy_mail_path');
+        $tmppath = SYSDIR . '/user/cache/dummy_mail';
+
+        // Determine storage path for dummy email files, prioritizing configured path if available.
+        if ($configured_path) {
+            if (strpos($configured_path, SYSPATH . '/user/') !== 0) {
+                $tmppath = SYSPATH . '/user/' . ltrim($configured_path, '/');
+            } else {
+                $tmppath = $configured_path;
+            }
+        }
+
+        // Check if directory exists and is writable, create if not present.
+        if (!is_dir($tmppath)) {
+            mkdir($tmppath, 0755, true);
+        }
+
+        if (!is_dir($tmppath)) {
+            return false; // Directory not found after creation attempt.
+        }
+
+        if (!is_really_writable($tmppath)) {
+            return false; // Directory is not writable.
+        }
+
+        // Generate a unique temporary file name for storing the email content.
+        $tmpfname = @tempnam($tmppath, "mail-");
+
+        if ($tmpfname === false) {
+            return false; // Failed to create temporary file.
+        }
+
+        // Write the email headers and body to the temporary file.
         $fp = file_put_contents($tmpfname, $this->_header_str . $this->_finalbody);
 
         if ($fp === false) {
-            return false;
+            return false; // Failed to write to file.
         }
 
+        // Set read/write permissions for the file.
         chmod($tmpfname, 0644);
 
+        // Log the location of the saved file for debugging purposes.
         $this->_set_error_message('lang:dummy_location', $tmpfname);
 
         return true;

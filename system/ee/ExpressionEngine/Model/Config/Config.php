@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license
  */
 
@@ -45,8 +45,8 @@ class Config extends Model
 
     public function set__value($value)
     {
-        // exception for email_newline, which uses backslashes, and is not a path variable
-        if ($this->key != 'email_newline') {
+        // exception for email_newline and email_crlf, which uses backslashes, and is not a path variable
+        if (!in_array($this->key, ['email_newline', 'email_crlf'])) {
             $value = str_replace('\\', '/', (string) $value);
         }
 

@@ -6,6 +6,13 @@ on:
       - '*.dev'
       - 'release/**'
       - '!release/**-alpha'
+  workflow_dispatch:
+    inputs:
+      use_cypress_dashboard:
+        type: boolean
+        description: Use Cypress Dashboard
+        required: false
+        default: false
 
 jobs:
 
@@ -37,7 +44,7 @@ jobs:
           - name: Setup PHP
             uses: shivammathur/setup-php@v2
             with:
-                php-version: '8.1'
+                php-version: '8.2'
                 extensions: dom, curl, sqlite, libxml, mbstring, zip, pcntl, pdo, mysql, bcmath, soap, intl, gd, exif, iconv, imagick
                 coverage: none
                 ini-values: error_log=/home/runner/php_errors.log, memory_limit=128M
@@ -100,64 +107,9 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: [7.4, 8.0]
-                os: [ubuntu-20.04]
-                containers: [0, 1, 2, 3, 4 , 5]
-                include:
-                  - php: 8.1
-                    os: ubuntu-latest
-                    containers: 0
-                  - php: 8.1
-                    os: ubuntu-latest
-                    containers: 1
-                  - php: 8.1
-                    os: ubuntu-latest
-                    containers: 2
-                  - php: 8.1
-                    os: ubuntu-latest
-                    containers: 3
-                  - php: 8.1
-                    os: ubuntu-latest
-                    containers: 4
-                  - php: 8.1
-                    os: ubuntu-latest
-                    containers: 5
-                  - php: 8.2
-                    os: ubuntu-latest
-                    containers: 0
-                  - php: 8.2
-                    os: ubuntu-latest
-                    containers: 1
-                  - php: 8.2
-                    os: ubuntu-latest
-                    containers: 2
-                  - php: 8.2
-                    os: ubuntu-latest
-                    containers: 3
-                  - php: 8.2
-                    os: ubuntu-latest
-                    containers: 4
-                  - php: 8.2
-                    os: ubuntu-latest
-                    containers: 5
-                  - php: 8.3
-                    os: ubuntu-latest
-                    containers: 0
-                  - php: 8.3
-                    os: ubuntu-latest
-                    containers: 1
-                  - php: 8.3
-                    os: ubuntu-latest
-                    containers: 2
-                  - php: 8.3
-                    os: ubuntu-latest
-                    containers: 3
-                  - php: 8.3
-                    os: ubuntu-latest
-                    containers: 4
-                  - php: 8.3
-                    os: ubuntu-latest
-                    containers: 5
+                php: [7.4, 8.0, 8.4]
+                os: [ubuntu-latest]
+                containers: [0, 1, 2, 3, 4, 5, 6, 7, 8]
 
         name: Cypress Tests, PHP${{ matrix.php }} - ${{ matrix.os }} ${{ matrix.containers }}
 
@@ -243,11 +195,6 @@ jobs:
                 npm install -g maildev
                 maildev &
 
-            # - name: Get Cypress Specs
-            #   run: |
-            #     echo "::set-output name=SPECS::$(node tests/cypress-split.js 4 ${{ matrix.containers }})"
-            #   id: specs
-
             # This will get a Stable Chrome version that is 2 releases back from latest, and install it
             # It gets the version from the Official Chromium Dash API
             # Get a couple releases back ensures we do not run into the issue where not all runners have the latest version
@@ -266,28 +213,32 @@ jobs:
               with:
                 chrome-version: ${{ steps.get-chrome-version.outputs.chrome_version }}
 
+            - name: Get Cypress Specs
+              if: "${{ env.CYPRESS_RECORD_KEY == '' || (github.event_name == 'workflow_dispatch' && !inputs.use_cypress_dashboard) }}"
+              env:
+                CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+              run: |
+                echo "SPECS=$(node tests/cypress-split.js 9 ${{ matrix.containers }})" >> $GITHUB_OUTPUT
+              id: specs
+
+            - name: Run Cypress Tests (without dashboard)
+              if: "${{ env.CYPRESS_RECORD_KEY == '' || (github.event_name == 'workflow_dispatch' && !inputs.use_cypress_dashboard) }}"
+              uses: cypress-io/github-action@v6
+              with:
+                spec: ${{ steps.specs.outputs.SPECS }}
+                browser: ${{ steps.setup-chrome.outputs.chrome-path }}
+                working-directory: tests/cypress
+              env:
+                CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+                DEBUG: '@cypress/github-action'
+
             - name: Run Cypress Tests
-              if: matrix.php != '5.6'
+              if: "${{ env.CYPRESS_RECORD_KEY != '' && (github.event_name != 'workflow_dispatch' || inputs.use_cypress_dashboard) }}"
               uses: cypress-io/github-action@v6
               with:
                 # spec: ${{ steps.specs.outputs.SPECS }}
                 browser: ${{ steps.setup-chrome.outputs.chrome-path }}
                 working-directory: tests/cypress
-                record: true
-                parallel: true
-                group: PHP${{ matrix.php }}
-              env:
-                CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
-                CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-            - name: Run Cypress Tests (PHP 5.6)
-              if: matrix.php == '5.6'
-              uses: cypress-io/github-action@v6
-              with:
-                browser: ${{ steps.setup-chrome.outputs.chrome-path }}
-                working-directory: tests/cypress
-                config: specPattern=cypress/integration/!(updater|pro)/**.ee6.js
                 record: true
                 parallel: true
                 group: PHP${{ matrix.php }}

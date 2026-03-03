@@ -84,6 +84,8 @@ $lang = array(
 
     'valid_url' => 'This field must contain a valid URL.',
 
+    'not_base_path' => 'This path cannot be the same as your base path.',
+
     /* Legacy form validation lib */
     'file_exists' => 'This path is either invalid or not writable.',
 

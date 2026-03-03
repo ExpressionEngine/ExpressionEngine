@@ -13,7 +13,7 @@ use Structure;
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 class Structure_core_nav_parser
@@ -229,6 +229,12 @@ class Structure_core_nav_parser
                 foreach ($channelEntry->getFields() as $field_name) {
                     // echo 'FN: ', $prefix.$field_name, '<br />';
                     $variable_row[$prefix . $field_name] = $channelEntry->$field_name;
+                }
+
+                // edit date is special in getModChannelResultsArray, so also special here
+                // not sure why is that though...
+                if (isset($variable_row[$prefix . 'edit_date'])) {
+                    $variable_row[$prefix . 'edit_date'] = $variable_row[$prefix . 'edit_date']->format('U');
                 }
 
                 foreach ($fields[$channelEntry->Channel->getId()] as $field) {
