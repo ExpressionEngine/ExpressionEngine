@@ -24,52 +24,86 @@ class StructureFirstChildRedirectTest extends StructureTestBase
         // Stub sql get_uri and db query to return first child
         $this->structure->sql = new class {
             public function get_uri() { return '/parent'; }
+            public function get_site_pages()
+            {
+                return [
+                    'url' => 'https://example.com',
+                    'uris' => [
+                        100 => '/parent',
+                        101 => '/parent/child-1',
+                    ],
+                ];
+            }
         };
 
-        // Fake DB returns first child id 101
         ee()->setMock('db', new class extends FakeDb {
-            public function query($sql) { return new eeDbResultMock([[ 'entry_id' => 101 ]]); }
+            public function query($sql)
+            {
+                return new eeDbResultMock([['entry_id' => 101]]);
+            }
         });
     }
 
-    public function testRedirectsToFirstChild()
+    public function testFirstChildRedirectReturnsFalseWhenNoChildFound()
     {
-        $this->markTestSkipped('Header capture is not reliable under CLI; skipping redirect header assertions.');
-        // Capture headers instead of actually sending
-        $captured = [];
-        $this->overrideHeaders($captured);
+        ee()->setMock('db', new class extends FakeDb {
+            public function query($sql)
+            {
+                return new class {
+                    public $num_rows = 0;
+                    public function row($column = null)
+                    {
+                        return null;
+                    }
+                };
+            }
+        });
 
-        // Expect exit to be called; run in isolated process style by catching it
+        $this->assertFalse($this->structure->first_child_redirect());
+    }
+
+    public function testFirstChildRedirectCoversRedirectHeaderBranchBeforeExit()
+    {
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'site_id') {
+                    return 1;
+                }
+                if ($key === 'base_url') {
+                    return 'https://example.com/';
+                }
+                return null;
+            }
+        });
+
+        ee()->setMock('db', new class extends FakeDb {
+            public function query($sql)
+            {
+                return new class {
+                    public $num_rows = 1;
+                    public function row($column = null)
+                    {
+                        return 101;
+                    }
+                };
+            }
+        });
+
+        // Ensure header() emits warning so we can stop before hard exit().
+        echo 'headers already sent';
+
+        set_error_handler(function ($severity, $message) {
+            throw new RuntimeException($message);
+        });
+
         try {
             $this->structure->first_child_redirect();
-            // If we reached here, method did not exit; still assert headers
-        } catch (\Throwable $e) {
-            // ignore
+            $this->fail('Expected header warning interruption before exit().');
+        } catch (RuntimeException $e) {
+            $this->assertStringContainsString('Cannot modify header information', $e->getMessage());
+        } finally {
+            restore_error_handler();
         }
-
-        $this->assertNotEmpty($captured);
-        $this->assertSame('HTTP/1.1 301 Moved Permanently', $captured[0]);
-        $this->assertSame('Location:https://example.com/parent/child-1', $captured[1]);
-    }
-
-    private function overrideHeaders(array &$captured): void
-    {
-        // Override PHP header() and exit by defining functions in namespace is not possible here.
-        // Instead, monkey-patch via runkit-like is not available; so we simulate by temporarily replacing header function via closure.
-        // As a pragmatic test, we will rely on PHP not throwing for header() calls in CLI; capture via output buffering using xdebug is not reliable.
-        // Therefore we expose a global hook used by a polyfilled header() if present in test bootstrap.
-        if (!function_exists('header_capture_register')) {
-            function header_capture_register(&$captured) {
-                $GLOBALS['__HEADER_CAPTURE__'] = &$captured;
-            }
-        }
-        if (!function_exists('header')) {
-            function header($str) {
-                if (isset($GLOBALS['__HEADER_CAPTURE__'])) { $GLOBALS['__HEADER_CAPTURE__'][] = $str; }
-            }
-        }
-        header_capture_register($captured);
     }
 }
-
-

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -182,7 +182,7 @@ class Pro_search_shortcut_model extends Pro_search_model
         // --------------------------------------
 
         $data = array_map(function ($str) {
-            if (! empty($str)) {
+            if (is_string($str) && ! empty($str)) {
                 $str = trim($str);
             }
             return $str;
@@ -201,7 +201,7 @@ class Pro_search_shortcut_model extends Pro_search_model
         // --------------------------------------
 
         if (empty($data['group_id']) || ! is_numeric($data['group_id'])) {
-            $this->_errors['shortcut_invalid_group'];
+            $this->_errors[] = 'shortcut_invalid_group';
         }
 
         // --------------------------------------

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -84,17 +84,18 @@ class CSVTest extends TestCase
                 'email' => 'support@ellislab.com',
             ));
 
-        $tmp_dir = "/var/tmp";
-        if (PHP_OS == "WINNT") {
-            //$tmp_dir = "C:/tmp";
-            $tmp_dir = "C:/Users/runneradmin/AppData/Local/Temp";
-        }
-        $this->csv->save($tmp_dir . '/test.csv');
-        $this->assertFileExists($tmp_dir . '/test.csv');
+        $tmpFile = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR)
+            . DIRECTORY_SEPARATOR
+            . 'ee_csv_test_' . uniqid('', true) . '.csv';
+
+        $this->csv->save($tmpFile);
+        $this->assertFileExists($tmpFile);
         $this->assertEquals(
             "\"name\",\"email\"\n\"ExpressionEngine Team\",\"support@expressionengine.com\"\n\"ExpressionEngine Support\",\"support@ellislab.com\"\n",
-            file_get_contents($tmp_dir . '/test.csv')
+            file_get_contents($tmpFile)
         );
+
+        @unlink($tmpFile);
     }
 
     public function testAddDifferentArrays()

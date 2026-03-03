@@ -150,6 +150,128 @@ class StructureNavParserAddEntryVarsEe4Test extends StructureTestBase
         $this->assertArrayHasKey('root:hero_image', $rows['100']);
         unset($parser);
     }
-}
 
+    public function testAddEntryVarsEe4UsesHookAndAppliesMissingStructureDefaults()
+    {
+        $parser = (new ReflectionClass(NavParser::class))->newInstanceWithoutConstructor();
+        $parser->entry_ids = ['300'];
+        $parser->rows_by_entry = [
+            '300' => [
+                '__prefix' => 'root:',
+                'root:edit_date' => new DateTimeImmutable('@1704067200'),
+            ],
+        ];
+        ee()->TMPL->var_single = [];
+        ee()->TMPL->var_pair = [];
+        ee()->TMPL->tagdata = '';
+
+        ee()->db->setRows([]);
+
+        $channelProxy = new class {
+            public function getId(){ return 1; }
+            public function __get($name){
+                if ($name === 'channel_name') { return 'blog'; }
+                if ($name === 'channel_title') { return 'Blog'; }
+                return null;
+            }
+        };
+
+        $entry = new class($channelProxy) {
+            public $entry_id = 300;
+            public $url_title = 'gamma';
+            public $title = 'Gamma';
+            public $field_id_55 = '{filedir_1}hero.jpg';
+            public $field_id_56 = 'Summary';
+            private $channel;
+
+            public function __construct($channel){ $this->channel = $channel; }
+            public function getFields(){ return ['title']; }
+            public function __get($name){
+                if ($name === 'Channel') {
+                    return $this->channel;
+                }
+                return property_exists($this, $name) ? $this->$name : null;
+            }
+        };
+
+        $channelEntries = new class([$entry]) implements IteratorAggregate {
+            private $entries;
+            public $Channel;
+
+            public function __construct($entries)
+            {
+                $this->entries = $entries;
+                $this->Channel = new class {
+                    public function getIds(){ return [1]; }
+                };
+            }
+
+            #[ReturnTypeWillChange]
+            public function getIterator()
+            {
+                return new ArrayIterator($this->entries);
+            }
+        };
+
+        $channelModel = new class {
+            public function getId(){ return 1; }
+            public function getAllCustomFields()
+            {
+                return [
+                    new class {
+                        public $field_name = 'hero_image';
+                        public $field_type = 'file';
+                        public function getId(){ return 55; }
+                    },
+                    new class {
+                        public $field_name = 'summary';
+                        public $field_type = 'text';
+                        public function getId(){ return 56; }
+                    },
+                ];
+            }
+        };
+
+        $modelMock = new class([$channelModel]) {
+            private $channels;
+
+            public function __construct($channels)
+            {
+                $this->channels = $channels;
+            }
+
+            public function get($name, $ids = null){ return $this; }
+            public function with($name){ return $this; }
+            public function all(){ return $this->channels; }
+        };
+        ee()->setMock('Model', $modelMock);
+
+        ee()->extensions->hooks['structure_get_custom_variables'] = [
+            'active' => true,
+            'return' => $channelEntries,
+        ];
+
+        $ref = new ReflectionClass($parser);
+        $method = $ref->getMethod('add_entry_vars_ee4');
+        \TestReflectionHelper::makeMethodAccessible($method);
+        $method->invoke($parser);
+
+        $row = $parser->rows_by_entry['300'];
+        $this->assertSame('Gamma', $row['root:title']);
+        $this->assertSame('1704067200', $row['root:edit_date']);
+        $this->assertSame('{filedir_1}hero.jpg', $row['root:hero_image']);
+        $this->assertSame('Summary', $row['root:summary']);
+        $this->assertSame([0], $row['root:structure__parent_id']);
+        $this->assertSame('', $row['root:structure__uri']);
+        $this->assertSame([0], $row['root:structure__template_id']);
+        $this->assertSame('n', $row['root:structure__hidden']);
+        $this->assertNull($row['root:structure__listing_channel']);
+        $this->assertSame('Blog', $row['channel']);
+        $this->assertSame('blog', $row['channel_short_name']);
+        $this->assertSame([300, ['path_variable' => true]], $row['entry_id_path']);
+        $this->assertSame(['gamma', ['path_variable' => true]], $row['url_title_path']);
+        $this->assertSame(['gamma', ['path_variable' => true]], $row['title_permalink']);
+        unset($parser);
+    }
+}
 
