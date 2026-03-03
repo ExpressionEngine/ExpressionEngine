@@ -7,7 +7,7 @@ require_once __DIR__ . '/../../../../eeObjectMock.php';
 /**
  * Base class for Cache library tests
  */
-class CacheTestBase extends \PHPUnit\Framework\TestCase
+abstract class CacheTestBase extends \PHPUnit\Framework\TestCase
 {
     /**
      * Temp directory for file-based tests

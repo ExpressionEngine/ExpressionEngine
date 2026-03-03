@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -13,15 +13,8 @@ namespace ExpressionEngine\Service\Generator;
 use ExpressionEngine\Library\Filesystem\Filesystem;
 use ExpressionEngine\Library\String\Str;
 
-class ModelGenerator
+class ModelGenerator extends AbstractGenerator
 {
-    public $name;
-    public $addon;
-    protected $filesystem;
-    protected $str;
-    protected $generatorPath;
-    protected $addonPath;
-    protected $stubPath;
     protected $className;
     protected $namespace;
     protected $modelPath;
@@ -36,26 +29,16 @@ class ModelGenerator
         $this->className = $this->str->studly($data['name']);
         $this->addon = $data['addon'];
 
-        $this->verifyAddonExists();
-
         $this->init();
 
         $addonSetupArray = require $this->addonPath . 'addon.setup.php';
         $this->namespace = $addonSetupArray['namespace'];
     }
 
-    private function verifyAddonExists()
-    {
-        if (is_null(ee('Addon')->get($this->addon))) {
-            throw new \Exception("Add-on does not exists: " . $this->addon, 1);
-        }
-    }
-
     private function init()
     {
-        $this->generatorPath = SYSPATH . 'ee/ExpressionEngine/Service/Generator';
-        $this->addonPath = SYSPATH . 'user/addons/' . $this->addon . '/';
-        $this->modelPath = SYSPATH . 'user/addons/' . $this->addon . '/Model/';
+        $this->initCommon();
+        $this->modelPath = $this->addonPath . 'Model/';
 
         // Get stub path
         $this->stubPath = $this->generatorPath . '/stubs' . '/';
@@ -72,7 +55,7 @@ class ModelGenerator
         $modelStub = $this->write('class', $this->className, $modelStub);
         $modelStub = $this->write('addon', strtolower($this->addon), $modelStub);
 
-        $this->putFile($this->className . '.php', $modelStub);
+        $this->putFile($this->className . '.php', $modelStub, 'Model');
 
         $this->addModelToAddonSetup();
     }
@@ -81,8 +64,6 @@ class ModelGenerator
     {
         try {
             $addonSetupFile = $this->filesystem->read($this->addonPath . 'addon.setup.php');
-        } catch (FilesystemException $e) {
-            return false;
         } catch (\Exception $e) {
             return false;
         }
@@ -103,29 +84,6 @@ class ModelGenerator
             $pattern = '/(,)([^,]+)$/';
             $addonSetupFile = preg_replace($pattern, ",\n    $modelsStub $2", $addonSetupFile);
             $this->filesystem->write($this->addonPath . 'addon.setup.php', $addonSetupFile, true);
-        }
-    }
-
-    private function stub($file)
-    {
-        return $this->stubPath . $file;
-    }
-
-    private function write($key, $value, $file)
-    {
-        return str_replace('{{' . $key . '}}', $value, $file);
-    }
-
-    private function putFile($name, $contents, $path = null)
-    {
-        if ($path) {
-            $path = trim($path, '/') . '/';
-        } else {
-            $path = '';
-        }
-
-        if (!$this->filesystem->exists($this->modelPath . $path . $name)) {
-            $this->filesystem->write($this->modelPath . $path . $name, $contents);
         }
     }
 }

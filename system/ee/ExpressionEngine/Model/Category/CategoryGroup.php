@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -128,7 +128,7 @@ class CategoryGroup extends StructureModel
         $sort_column = ($this->sort_order == 'a') ? 'cat_name' : 'cat_order';
 
         $categories = ee()->db
-            ->select('cat_id, parent_id, group_id, cat_name, cat_url_title')
+            ->select('*')
             ->from('categories')
             ->where('group_id', $this->getId())
             ->order_by($sort_column, 'asc')

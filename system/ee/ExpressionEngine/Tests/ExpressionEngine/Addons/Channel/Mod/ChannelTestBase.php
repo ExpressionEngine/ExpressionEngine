@@ -60,6 +60,7 @@ abstract class ChannelTestBase extends TestCase
                 'reserved_category_word' => 'category',
                 'charset' => 'UTF-8',
                 'use_category_name' => 'n',
+                'live_preview_key' => 'test-live-preview-key',
             ];
             // Functions mock
             ee()->setMock('functions', new FakeFunctions());
@@ -420,6 +421,17 @@ abstract class ChannelTestBase extends TestCase
         $this->channel->tfields = [];
         $this->channel->pfields = [];
 
+        // Provide LivePreviewToken service for live preview tests.
+        $signer = new class {
+            public function sign($data, $key = null, $algo = 'sha256') {
+                return hash_hmac($algo, $data, $key);
+            }
+        };
+        $this->setMock(
+            'LivePreviewToken',
+            new \ExpressionEngine\Service\LivePreview\LivePreviewToken(ee()->session, $signer, 'test-live-preview-key')
+        );
+
         // Define missing helper functions
         if (!function_exists('reduce_double_slashes')) {
             function reduce_double_slashes($str) {
@@ -478,7 +490,5 @@ abstract class ChannelTestBase extends TestCase
         ee()->db->setRows($rows);
     }
 }
-
-
 
 

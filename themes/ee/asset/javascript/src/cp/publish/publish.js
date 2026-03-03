@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 var isNavigatingAway = false;
@@ -173,33 +173,229 @@ $(document).ready(function () {
 	// Live Preview
 	// -------------------------------------------------------------------
 
-	var fetchPreview = function() {
+	var tokenRefreshRequest = null;
+	var tokenRefreshSkew = 30;
+
+	var base64UrlDecode = function(data) {
+		if (!data) return null;
+		data = data.replace(/-/g, '+').replace(/_/g, '/');
+		var padding = data.length % 4;
+		if (padding) {
+			data += '='.repeat(4 - padding);
+		}
+		try {
+			return atob(data);
+		} catch (e) {
+			return null;
+		}
+	};
+
+	var getTokenExp = function(token) {
+		if (!token) return null;
+		var parts = token.split('.');
+		if (parts.length < 2) return null;
+		var payload = base64UrlDecode(parts[0]);
+		if (!payload) return null;
+		try {
+			var claims = JSON.parse(payload);
+			return claims.exp || null;
+		} catch (e) {
+			return null;
+		}
+	};
+
+	var shouldRefreshToken = function(token) {
+		if (!token) return true;
+		var exp = getTokenExp(token);
+		if (!exp) return true;
+		var now = Math.floor(Date.now() / 1000);
+		return (exp - now) <= tokenRefreshSkew;
+	};
+
+	var getPreviewParams = function(preview_url) {
+		var queryIndex = preview_url.indexOf('?');
+		if (queryIndex === -1) {
+			return {};
+		}
+		var query = preview_url.substring(queryIndex + 1);
+		var params = {};
+		query.split('&').forEach(function(pair) {
+			if (!pair) return;
+			var parts = pair.split('=');
+			var key = decodeURIComponent(parts[0] || '');
+			var value = decodeURIComponent(parts.slice(1).join('=') || '');
+			if (key) {
+				params[key] = value;
+			}
+		});
+		return params;
+	};
+
+	var ensurePreviewToken = function(iframe, preview_url, token_url, done, forceRefresh) {
+		var token = $(iframe).data('token');
+		if (!token_url || (!forceRefresh && !shouldRefreshToken(token))) {
+			done();
+			return;
+		}
+
+		if (tokenRefreshRequest) {
+			tokenRefreshRequest.always(done);
+			return;
+		}
+
+		var params = getPreviewParams(preview_url);
+		var data = {};
+		if (params.from) {
+			data.from = params.from;
+		}
+		if (params.return) {
+			data.return = params.return;
+		}
+
+		tokenRefreshRequest = $.ajax({
+			type: "POST",
+			dataType: 'json',
+			url: token_url,
+			data: data,
+		}).done(function(response) {
+			if (response && response.token) {
+				$(iframe).data('token', response.token);
+			}
+		}).always(function() {
+			tokenRefreshRequest = null;
+			done();
+		});
+	};
+
+	var sendPreviewRequest = function(retrying, forceRefresh) {
 		var iframe         = $('iframe.live-preview__frame')[0],
-		    preview_url    = $(iframe).data('url');
+		    preview_url    = $(iframe).data('url'),
+		    token_url      = $(iframe).data('token-url'),
+		    preview_token  = $(iframe).data('token');
 
 		// Show that the preview is refreshing
 		$('.live-preview__preview-loader').addClass('loaded');
 
-		ajaxRequest = $.ajax({
-			type: "POST",
-			dataType: 'html',
-			url: preview_url,
-			crossDomain: true,
-			beforeSend: function(request) {
-				request.setRequestHeader("Access-Control-Allow-Origin", window.location.origin);
-			},
-			data: publishForm.serialize(),
-			complete: function(xhr) {
-				if (xhr.responseText !== undefined) {
-					iframe.contentDocument.open();
-					iframe.contentDocument.write(xhr.responseText);
+		// Save the current scroll position before updating the iframe
+		var savedScrollPosition = null;
+		try {
+			if (iframe.contentWindow && iframe.contentDocument && iframe.contentDocument.documentElement) {
+				// Try to get scroll position from contentWindow.scrollY (modern) or contentDocument.documentElement.scrollTop (fallback)
+				savedScrollPosition = iframe.contentWindow.scrollY || 
+				                      iframe.contentWindow.pageYOffset || 
+				                      iframe.contentDocument.documentElement.scrollTop || 
+				                      iframe.contentDocument.body.scrollTop || 
+				                      0;
+			}
+		} catch (e) {
+			// If we can't access the iframe content (cross-origin or not loaded), ignore
+			savedScrollPosition = null;
+		}
+
+		ensurePreviewToken(iframe, preview_url, token_url, function() {
+			preview_token = $(iframe).data('token');
+
+			ajaxRequest = $.ajax({
+				type: "POST",
+				dataType: 'html',
+				url: preview_url,
+				crossDomain: true,
+				beforeSend: function(request) {
+					request.setRequestHeader("Access-Control-Allow-Origin", window.location.origin);
+					if (preview_token) {
+						request.setRequestHeader("Authorization", "Bearer " + preview_token);
+					}
+				},
+				data: publishForm.serialize(),
+				complete: function(xhr) {
+					if (xhr.status === 403 && !retrying && token_url) {
+						sendPreviewRequest(true, true);
+						return;
+					}
+					if (xhr.responseText !== undefined) {
+						iframe.contentDocument.open();
+					
+					// Inject scroll preservation script into the HTML for Firefox compatibility
+					// This prevents Firefox from resetting scroll position during document close
+					var htmlContent = xhr.responseText;
+					if (savedScrollPosition !== null && savedScrollPosition > 0) {
+						// Inject a script that preserves scroll position immediately when document loads
+						var scrollScript = '<script>(function(){var saved=' + savedScrollPosition + ';function restore(){window.scrollTo(0,saved);document.documentElement.scrollTop=saved;document.body.scrollTop=saved;}if(document.readyState==="complete"){restore();}else{window.addEventListener("load",restore);document.addEventListener("DOMContentLoaded",restore);}requestAnimationFrame(restore);setTimeout(restore,0);setTimeout(restore,10);})();</script>';
+						// Insert before closing body tag, or at end if no body tag
+						if (htmlContent.indexOf('</body>') !== -1) {
+							htmlContent = htmlContent.replace('</body>', scrollScript + '</body>');
+						} else {
+							htmlContent = htmlContent + scrollScript;
+						}
+					}
+					
+					iframe.contentDocument.write(htmlContent);
+					
+					// Restore scroll position BEFORE close() to prevent Firefox flicker
+					// Firefox resets scroll position during close(), so we need to be more aggressive
+					if (savedScrollPosition !== null && savedScrollPosition > 0) {
+						// Function to restore scroll position
+						var restoreScroll = function() {
+							try {
+								if (iframe.contentWindow) {
+									iframe.contentWindow.scrollTo(0, savedScrollPosition);
+									// Also try setting directly on document elements for Firefox
+									if (iframe.contentDocument) {
+										if (iframe.contentDocument.documentElement) {
+											iframe.contentDocument.documentElement.scrollTop = savedScrollPosition;
+										}
+										if (iframe.contentDocument.body) {
+											iframe.contentDocument.body.scrollTop = savedScrollPosition;
+										}
+									}
+								}
+							} catch (e) {
+								// If we can't access the iframe, ignore
+							}
+						};
+
+						// Try to restore BEFORE close() - this helps prevent Firefox flicker
+						restoreScroll();
+					}
+					
+					// Close the document
 					iframe.contentDocument.close();
+
+					// Restore scroll position after content is loaded
+					if (savedScrollPosition !== null && savedScrollPosition > 0) {
+						// Use requestAnimationFrame for smoother, frame-synced restoration
+						// This is especially important for Firefox which handles iframe updates differently
+						var restoreOnFrame = function() {
+							restoreScroll();
+							requestAnimationFrame(function() {
+								restoreScroll();
+								requestAnimationFrame(function() {
+									restoreScroll();
+								});
+							});
+						};
+						
+						// Immediate restoration attempts
+						requestAnimationFrame(restoreOnFrame);
+						
+						// Also use timeouts as fallback for different rendering speeds
+						setTimeout(restoreScroll, 0);   // Immediate attempt
+						setTimeout(restoreScroll, 10);   // Very quick retry
+						setTimeout(restoreScroll, 50);   // Quick retry for fast rendering
+						setTimeout(restoreScroll, 100);  // Medium retry
+						setTimeout(restoreScroll, 200);  // Final retry for slower rendering
+					}
 				}
-				// Hide the refreshing indicator
-				$('.live-preview__preview-loader').removeClass('loaded');
-				ajaxRequest = null;
-			},
-		});
+					// Hide the refreshing indicator
+					$('.live-preview__preview-loader').removeClass('loaded');
+					ajaxRequest = null;
+				},
+			});
+		}, forceRefresh);
+	};
+
+	var fetchPreview = function() {
+		sendPreviewRequest(false, false);
 	};
 
 	$(document).on('entry:preview', function (event, wait) {
