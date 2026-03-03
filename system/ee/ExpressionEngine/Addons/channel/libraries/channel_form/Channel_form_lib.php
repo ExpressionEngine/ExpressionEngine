@@ -998,7 +998,9 @@ GRID_FALLBACK;
 
         $include_jquery = ($this->bool_string($include_jquery, true)) ? '&include_jquery=y' : '';
 
-        $this->head .= '<script type="text/javascript" charset="utf-8" src="' . ee()->functions->fetch_site_index() . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Channel', 'combo_loader') . '&' . str_replace(array('%2C', '%2F'), array(',', '/'), http_build_query($js_file_strings)) . '&v=' . max($mtime) . $use_live_url . $include_jquery . '"></script>' . "\n";
+        $query_marker = defined('QUERY_MARKER') ? QUERY_MARKER : '?';
+
+        $this->head .= '<script type="text/javascript" charset="utf-8" src="' . ee()->functions->fetch_site_index() . $query_marker . 'ACT=' . ee()->functions->fetch_action_id('Channel', 'combo_loader') . '&' . str_replace(array('%2C', '%2F'), array(',', '/'), http_build_query($js_file_strings)) . '&v=' . max($mtime) . $use_live_url . $include_jquery . '"></script>' . "\n";
 
         if ($this->bool_string(ee()->TMPL->fetch_param('include_css'), true)) {
             $this->head .= '<link rel="stylesheet" type="text/css" media="screen" href="' . URL_THEMES . 'cform/css/eecms-cform.min.css" />';
