@@ -139,15 +139,18 @@ class Runner
         ee()->load->library('progress');
 
         $db_updater = $this->makeDatabaseUpdaterService();
+        $from_version = $this->resolveFromVersionForDbTracking();
 
         if ($db_updater->hasUpdatesToRun()) {
             ee()->load->library('smartforge');
 
-            // Setup the app_db_version database config if it doesn't already exist
-            if (empty(ee()->db->where('key', 'app_db_version')->get('config')->num_rows())) {
-                ee()->db->insert('config', ['key' => 'app_db_version', 'value' => $this->versions['from']]);
-            } else {
-                ee()->db->update('config', ['value' => $this->versions['from']], ['key' => 'app_db_version']);
+            if (!is_null($from_version) && $from_version !== '') {
+                // Setup the app_db_version database config if it doesn't already exist
+                if (empty(ee()->db->where('key', 'app_db_version')->get('config')->num_rows())) {
+                    ee()->db->insert('config', ['key' => 'app_db_version', 'value' => $from_version]);
+                } else {
+                    ee()->db->update('config', ['value' => $from_version], ['key' => 'app_db_version']);
+                }
             }
 
             $step = $step ?: $db_updater->getFirstStep();
@@ -239,8 +242,12 @@ class Runner
 
         ee('Database/Restore')->restoreLineByLine($db_path);
 
-        // Restore config.app_db_version
-        ee()->db->update('config', ['value' => $this->versions['from']], ['key' => 'app_db_version']);
+        $from_version = $this->resolveFromVersionForDbTracking();
+
+        if (!is_null($from_version) && $from_version !== '') {
+            // Restore config.app_db_version
+            ee()->db->update('config', ['value' => $from_version], ['key' => 'app_db_version']);
+        }
 
         $this->setNextStep('selfDestruct[rollback]');
     }
@@ -410,11 +417,33 @@ class Runner
      */
     protected function makeDatabaseUpdaterService()
     {
+        $from_version = $this->resolveFromVersionForDbTracking();
+
         return new Service\Updater\DatabaseUpdater(
-            $this->versions['from'] ?: ee()->config->item('app_version'),
+            $from_version ?: ee()->config->item('app_version'),
             new Filesystem(),
             $this->versions['to']
         );
+    }
+
+    /**
+     * Resolve a source version used for app_db_version writes.
+     *
+     * Priority:
+     * 1) Explicit Runner::fromVersion()
+     * 2) Current configured app_version
+     */
+    protected function resolveFromVersionForDbTracking()
+    {
+        if (!is_null($this->versions['from']) && $this->versions['from'] !== '') {
+            return $this->versions['from'];
+        }
+
+        $config_version = ee()->config->item('app_version');
+
+        return ($config_version !== '' && !is_null($config_version))
+            ? $config_version
+            : null;
     }
 
     /**

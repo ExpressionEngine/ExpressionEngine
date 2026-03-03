@@ -44,7 +44,7 @@ class CommandUpdateDatabase extends Cli
     public $commandOptions = [
         'rollback'             => 'command_update_option_rollback',
         'verbose,v'            => 'command_update_option_verbose',
-        'force,y'                    => 'command_update_option_y',
+        'y'                    => 'command_update_option_y',
         'skip-cleanup'         => 'command_update_option_skip_cleanup',
         'to-version:'          => 'command_update_option_to_version',
         'from-version:'        => 'command_update_option_from_version',
@@ -119,7 +119,7 @@ class CommandUpdateDatabase extends Cli
         $this->versions['to'] = $this->option('--to-version', $appVersion);
         $this->versions['from'] = $this->option('--from-version', $databaseVersion);
 
-        if (version_compare($this->versions['from'], $this->versions['to'], '>=')) {
+        if (!$this->isRollbackRequested() && version_compare($this->versions['from'], $this->versions['to'], '>=')) {
             return $this->complete(lang('command_update_database_up_to_date') . " [version {$this->versions['from']}]");
         }
 
@@ -140,6 +140,11 @@ class CommandUpdateDatabase extends Cli
             'DOC_URL' => 'https://docs.expressionengine.com/latest/',
             'EE_APPPATH' => BASEPATH,
         ]);
+    }
+
+    protected function isRollbackRequested()
+    {
+        return (bool) $this->option('--rollback', false);
     }
 
     protected function defineConstants($constants)
@@ -308,7 +313,7 @@ class CommandUpdateDatabase extends Cli
             ->fromVersion($this->versions['from'])
             ->toVersion($this->versions['to']);
 
-        if($this->option('rollback', false)) {
+        if($this->option('--rollback', false)) {
             if (!file_exists(PATH_CACHE . 'ee_update/database.sql')) {
                 return $this->fail('Cannot restore database.  Backup not found at '. PATH_CACHE . 'ee_update/database.sql');
             }

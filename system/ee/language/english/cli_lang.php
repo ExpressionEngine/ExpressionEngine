@@ -393,6 +393,8 @@ $lang = array(
     // Lang entries for command update
     'command_update_description'                                => 'Updates ExpressionEngine',
     'command_update_summary'                                    => 'Runs all available ExpressionEngine updates',
+    'command_update_db_description'                             => 'Runs ExpressionEngine database updates only',
+    'command_update_db_summary'                                 => 'Updates the database schema and update steps without replacing files',
     'command_update_is_already_up_to_date'                      => ' is already up-to-date!',
     'command_update_new_version_available'                      => 'There is a new version of ExpressionEngine available:',
     'command_update_confirm_upgrade'                            => 'Would you like to upgrade?',
@@ -424,8 +426,8 @@ $lang = array(
     'command_update_option_force_addon_upgrades'                => 'Automatically runs all add-on updaters at end of update (advanced)',
     'command_update_option_y'                                   => 'Skip all confirmations. Don\'t do this.',
     'command_update_option_skip_cleanup'                        => 'Skip cleanup steps after update',
-    'command_update_option_to_version'                          => '',
-    'command_update_option_from_version'                        => '',
+    'command_update_option_to_version'                          => 'Target database version to upgrade to',
+    'command_update_option_from_version'                        => 'Starting database version to upgrade from',
 
     // Lang entries for command sync:file-usage
     'command_sync_file_usage_description'     => 'Syncs the file usage for all files',
