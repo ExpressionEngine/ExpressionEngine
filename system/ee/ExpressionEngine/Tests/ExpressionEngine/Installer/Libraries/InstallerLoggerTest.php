@@ -11,9 +11,15 @@ class InstallerLoggerTestMsmConfig
 class InstallerLoggerTest extends TestCase
 {
     private static $stubRoot;
+    private static $skipReason = null;
 
     public static function setUpBeforeClass(): void
     {
+        if (class_exists('EE_Logger', false) && ! property_exists('EE_Logger', 'calls')) {
+            self::$skipReason = 'EE_Logger was already loaded before test stubs were applied.';
+            return;
+        }
+
         self::$stubRoot = sys_get_temp_dir() . '/installer-logger-stub-' . uniqid('', true);
         $librariesDir = self::$stubRoot . '/libraries';
 
@@ -48,6 +54,10 @@ PHP;
 
     protected function setUp(): void
     {
+        if (self::$skipReason !== null) {
+            $this->markTestSkipped(self::$skipReason);
+        }
+
         ee()->resetMocks();
         \EE_Logger::$calls = [];
     }
