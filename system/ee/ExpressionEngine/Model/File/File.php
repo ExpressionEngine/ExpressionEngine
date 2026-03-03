@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -44,9 +44,13 @@ class File extends FileSystemEntity
     {
         if (empty($this->file_hw_original) && !empty($this->file_name)) {
             ee()->load->library('filemanager');
-            $image_dimensions = $this->actLocally(function($path) {
-                return ee()->filemanager->get_image_dimensions($path);
-            });
+            try {
+                $image_dimensions = $this->actLocally(function ($path) {
+                    return ee()->filemanager->get_image_dimensions($path);
+                });
+            } catch (\LogicException $e) {
+                return $this->file_hw_original;
+            }
             if ($image_dimensions !== false) {
                 $this->setRawProperty('file_hw_original', $image_dimensions['height'] . ' ' . $image_dimensions['width']);
             }
