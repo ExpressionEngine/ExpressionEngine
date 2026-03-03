@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -40,7 +40,7 @@ use Mockery as m;
 /**
  * Base test class for Multi Select fieldtype tests
  */
-class MultiSelectTestBase extends OptionFieldtypeTestBase
+abstract class MultiSelectTestBase extends OptionFieldtypeTestBase
 {
     protected $fieldtype;
 

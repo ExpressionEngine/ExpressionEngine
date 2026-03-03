@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -91,33 +91,21 @@ class Survey
             $postdata .= "&{$key}=" . urlencode(stripslashes($val));
         }
 
-        if (function_exists('curl_init')) {
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-            curl_setopt($ch, CURLOPT_URL, "http://{$this->_survey_url}/");
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
-
-            // silently, please
-            ob_start();
-            curl_exec($ch);
-            curl_close($ch);
-            ob_end_clean();
-        } else {
-            $fp = @fsockopen($this->_survey_url, 80, $error_num, $error_str, 5);
-
-            if (is_resource($fp)) {
-                fputs($fp, "POST / HTTP/1.0\r\n");
-                fputs($fp, "Host: {$this->_survey_url}\r\n");
-                fputs($fp, "Content-Length: " . strlen($postdata) . "\r\n");
-                fputs($fp, "Content-Type: application/x-www-form-urlencoded\r\n");
-                fputs($fp, "Connection: close\r\n\r\n");
-                fputs($fp, $postdata . "\r\n\r\n");
-            }
-
-            @fclose($fp);
+        if (! function_exists('curl_init')) {
+            return;
         }
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_URL, "https://{$this->_survey_url}/");
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
+        curl_exec($ch);
+        curl_close($ch);
     }
 }
 // END CLASS
