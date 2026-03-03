@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -12,6 +12,7 @@ namespace ExpressionEngine\Tests\Addons\Rte;
 
 // because of lowe case the class does not get autoloaded into PHPUnit
 require_once SYSPATH . 'ee/ExpressionEngine/Addons/rte/RteHelper.php';
+require_once SYSPATH . 'ee/ExpressionEngine/Boot/boot.common.php';
 
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
@@ -28,7 +29,22 @@ class RteTest extends TestCase
 
     public function tearDown(): void
     {
-        //
+        ee()->resetMocks();
+    }
+
+    public function testReplaceFileUrlsWithBareFiledirTokenDoesNotThrow()
+    {
+        ee()->setMock('file_upload_preferences_model', new class {
+            public function get_paths()
+            {
+                return [];
+            }
+        });
+
+        $data = '{filedir_7}';
+        RteHelper::replaceFileUrls($data);
+
+        $this->assertSame('{filedir_7}', $data);
     }
 
     /**

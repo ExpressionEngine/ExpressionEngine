@@ -3,7 +3,7 @@ namespace ExpressionEngine\Tests\ExpressionEngine\legacy\EE_Template;
 
 require_once __DIR__ . '/../../../eeObjectMock.php';
 
-class EE_TemplateTestBase extends \PHPUnit\Framework\TestCase
+abstract class EE_TemplateTestBase extends \PHPUnit\Framework\TestCase
 {
     protected $template;
 
