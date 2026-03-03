@@ -482,7 +482,7 @@ ul.field-nested ul {
 }
 
 // Custom styling for Categories checkbox lists
-#fieldset-cat_group {
+#fieldset-cat_group, #fieldset-field_channel_fields, #fieldset-field_channel_field_groups {
 	&.channel-statuses {
 		.checkbox-label {
 			background-color: color(bg-0);

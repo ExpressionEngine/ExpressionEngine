@@ -309,6 +309,12 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
 
           _this2.props.itemsChanged(_this2.getItemsArrayForNestable(itemsHash, nestedItems));
 
+          if (_this2.props.selectionShouldRetainItemOrder) {
+            selected = _this2.getOrderedSelection(_this2.props.selected);
+
+            _this2.props.selectionChanged(selected);
+          }
+
           if (_this2.props.reorderAjaxUrl) {
             $.ajax({
               url: _this2.props.reorderAjaxUrl,

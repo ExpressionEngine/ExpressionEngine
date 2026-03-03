@@ -222,6 +222,11 @@ class SelectList extends React.Component {
           this.getItemsArrayForNestable(itemsHash, nestedItems)
         )
 
+        if (this.props.selectionShouldRetainItemOrder) {
+          selected = this.getOrderedSelection(this.props.selected)
+          this.props.selectionChanged(selected)
+        }
+
         if (this.props.reorderAjaxUrl) {
           $.ajax({
             url: this.props.reorderAjaxUrl,

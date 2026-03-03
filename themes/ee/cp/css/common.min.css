@@ -27443,6 +27443,10 @@ input[type=button].btn-block {
   max-width: 550px;
 }
 
+.modal-wrap.must-interact .dialog__close {
+  display: none;
+}
+
 .modal {
   background-color: var(--ee-bg-0);
   margin-bottom: 40px;
@@ -30674,7 +30678,7 @@ ul.field-nested ul li ul::before {
   right: 15px;
 }
 
-#fieldset-cat_group.channel-statuses .checkbox-label {
+#fieldset-cat_group.channel-statuses .checkbox-label, #fieldset-field_channel_fields.channel-statuses .checkbox-label, #fieldset-field_channel_field_groups.channel-statuses .checkbox-label {
   background-color: var(--ee-bg-0);
   border: 1px solid var(--ee-border);
   box-shadow: 0 1px 2px 0 var(--ee-shadow-input);
@@ -30682,23 +30686,23 @@ ul.field-nested ul li ul::before {
   position: relative;
   margin-bottom: 8px;
 }
-#fieldset-cat_group.channel-statuses .checkbox-label .checkbox-label__text {
+#fieldset-cat_group.channel-statuses .checkbox-label .checkbox-label__text, #fieldset-field_channel_fields.channel-statuses .checkbox-label .checkbox-label__text, #fieldset-field_channel_field_groups.channel-statuses .checkbox-label .checkbox-label__text {
   height: 45px;
   position: relative;
   display: flex;
   align-items: center;
   padding-left: 35px;
 }
-#fieldset-cat_group.channel-statuses .checkbox-label .checkbox-label__text a {
+#fieldset-cat_group.channel-statuses .checkbox-label .checkbox-label__text a, #fieldset-field_channel_fields.channel-statuses .checkbox-label .checkbox-label__text a, #fieldset-field_channel_field_groups.channel-statuses .checkbox-label .checkbox-label__text a {
   color: var(--ee-text-primary);
 }
-#fieldset-cat_group.channel-statuses .checkbox-label input[type=checkbox] {
+#fieldset-cat_group.channel-statuses .checkbox-label input[type=checkbox], #fieldset-field_channel_fields.channel-statuses .checkbox-label input[type=checkbox], #fieldset-field_channel_field_groups.channel-statuses .checkbox-label input[type=checkbox] {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   left: 10px;
 }
-#fieldset-cat_group.channel-statuses .checkbox-label .button-group.button-group-flyout-right {
+#fieldset-cat_group.channel-statuses .checkbox-label .button-group.button-group-flyout-right, #fieldset-field_channel_fields.channel-statuses .checkbox-label .button-group.button-group-flyout-right, #fieldset-field_channel_field_groups.channel-statuses .checkbox-label .button-group.button-group-flyout-right {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
