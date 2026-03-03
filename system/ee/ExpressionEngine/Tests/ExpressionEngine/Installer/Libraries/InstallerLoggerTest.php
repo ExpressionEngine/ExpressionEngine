@@ -15,6 +15,11 @@ class InstallerLoggerTest extends TestCase
 
     public static function setUpBeforeClass(): void
     {
+        if (defined('EE_APPPATH') && strpos((string) EE_APPPATH, 'installer-logger-stub-') === false && ! class_exists('EE_Logger', false)) {
+            self::$skipReason = 'EE_APPPATH is already defined for a different context; logger stubs cannot be injected.';
+            return;
+        }
+
         if (class_exists('EE_Logger', false) && ! property_exists('EE_Logger', 'calls')) {
             self::$skipReason = 'EE_Logger was already loaded before test stubs were applied.';
             return;
@@ -59,7 +64,9 @@ PHP;
         }
 
         ee()->resetMocks();
-        \EE_Logger::$calls = [];
+        if (property_exists('EE_Logger', 'calls')) {
+            \EE_Logger::$calls = [];
+        }
     }
 
     protected function tearDown(): void
