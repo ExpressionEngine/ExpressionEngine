@@ -160,7 +160,6 @@
         </div>
 
         <?=ee('CP/Alert')->getStandard()?>
-        <!-- <JIRA Collector> -->
 
         <?php if (!isset($ee_cp_viewmode) || empty($ee_cp_viewmode)) : ?>
         <script type="text/javascript">
