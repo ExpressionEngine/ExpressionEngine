@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -292,7 +292,9 @@ class EE_Schema
 			class varchar(50) NOT NULL,
 			method varchar(50) NOT NULL,
 			csrf_exempt tinyint(1) UNSIGNED NOT NULL default 0,
-			PRIMARY KEY `action_id` (`action_id`)
+			PRIMARY KEY `action_id` (`action_id`),
+			KEY `class` (`class`),
+			KEY `method` (`method`)
 		)";
 
         // Modules table
@@ -339,7 +341,9 @@ class EE_Schema
 			ip_address varchar(45) default '0' NOT NULL,
 			word varchar(20) NOT NULL,
 			PRIMARY KEY `captcha_id` (`captcha_id`),
-			KEY `word` (`word`)
+			KEY `word` (`word`),
+			KEY `date` (`date`),
+			KEY `ip_address_date_idx` (`ip_address`, `date`)
 		)";
 
         // Password Lockout

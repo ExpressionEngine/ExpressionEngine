@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -199,15 +199,33 @@ class Stats
     }
 
     /**
+     * @deprecated 2.2.1
+     *
      * Process all stats in a separate call
      * @return null
      */
     public function sync_stats()
     {
+        // The legacy action can exist on upgraded installs. Restrict this
+        // expensive sync to authorized CP users (or CLI).
+        if (!(defined('REQ') && REQ === 'CLI')) {
+            $member_id = (int) ee()->session->userdata('member_id');
+            if ($member_id <= 0 || !ee('Permission')->can('access_data')) {
+                show_error(lang('unauthorized_access'), 403);
+                return;
+            }
+        }
 
         // Get last updated
         $site_id = ee()->config->item('site_id');
         $now = ee()->localize->now;
+        $cooldown = 30;
+        $lastAttempt = (int) ee()->cache->get('ee-stats-cache-last-attempt');
+        if ($lastAttempt > 0 && ($now - $lastAttempt) < $cooldown) {
+            return;
+        }
+        ee()->cache->save('ee-stats-cache-last-attempt', $now, $cooldown);
+
         $lastRun = ee()->cache->get('ee-stats-cache-last-run');
 
         if (!$lastRun) {

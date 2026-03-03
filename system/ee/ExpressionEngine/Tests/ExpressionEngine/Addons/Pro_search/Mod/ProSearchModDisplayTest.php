@@ -94,6 +94,38 @@ class ProSearchModDisplayTest extends ProSearchTestBase
         $this->assertStringContainsString('</form>', $result);
     }
 
+    public function testFormAddsSignedParamsWhenParamsArePresent()
+    {
+        $captured = null;
+
+        $functions = $this->getMockBuilder('stdClass')
+            ->addMethods(['fetch_action_id', 'form_declaration', 'create_url', 'redirect'])
+            ->getMock();
+        $functions->method('fetch_action_id')->willReturn('123');
+        $functions->method('create_url')->willReturn('http://example.com');
+        $functions->method('form_declaration')->willReturnCallback(function ($data) use (&$captured) {
+            $captured = $data;
+            return '<form>';
+        });
+        ee()->setMock('functions', $functions);
+
+        ee()->config->setItem('encryption_key', 'unit-test-key');
+
+        // Include one overridable param so the form emits the encoded payload.
+        ee()->TMPL->tagdata = '<input name="keywords">';
+        ee()->TMPL->tagparams = ['result_page' => 'https://example.org/search'];
+        ee()->TMPL->setMap(['result_page' => 'https://example.org/search']);
+
+        $this->mod = new Pro_search();
+        $this->mod->form();
+
+        $this->assertIsArray($captured);
+        $this->assertArrayHasKey('hidden_fields', $captured);
+        $this->assertArrayHasKey('params', $captured['hidden_fields']);
+        $this->assertArrayHasKey('sig', $captured['hidden_fields']);
+        $this->assertNotEmpty($captured['hidden_fields']['sig']);
+    }
+
     public function testShortcuts()
     {
         $rows = [
@@ -230,4 +262,3 @@ class ProSearchModDisplayTest extends ProSearchTestBase
         $this->assertIsString($result);
     }
 }
-

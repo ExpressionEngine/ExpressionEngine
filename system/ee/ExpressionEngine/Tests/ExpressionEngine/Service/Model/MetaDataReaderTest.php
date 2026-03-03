@@ -9,6 +9,7 @@ namespace ExpressionEngine\Tests\Service\Model {
     use ExpressionEngine\Service\Model\Model;
     use ExpressionEngine\Service\Model\Gateway;
     use ExpressionEngine\Service\Model\MetaDataReader;
+    use ExpressionEngine\Service\Model\SyntheticGateway;
     use PHPUnit\Framework\TestCase;
 
     class MetaDataReaderTest extends TestCase
@@ -69,13 +70,90 @@ namespace ExpressionEngine\Tests\Service\Model {
             $this->assertEquals($expected, $actual);
         }
 
-        public function getValidationRules()
+        public function testGetTablesUsesCachedValue()
         {
+            $first = $this->reader->getTables();
+            $second = $this->reader->getTables();
+
+            $this->assertSame($first, $second);
+        }
+
+        public function testGetValidationRules()
+        {
+            $expected = array(
+                'first_name' => 'required',
+                'age' => 'integer',
+            );
+
+            $this->assertEquals($expected, $this->reader->getValidationRules());
         }
 
         public function testGetRelationships()
         {
-            $this->markTestSkipped('Not implemented.');
+            $this->assertArrayHasKey('Site', $this->reader->getRelationships());
+        }
+
+        public function testGetEvents()
+        {
+            $expected = array(
+                'beforeSave' => 'before_save',
+                'afterSave' => 'after_save',
+            );
+
+            $this->assertEquals($expected, $this->reader->getEvents());
+        }
+
+        public function testGetBinaryComparisons()
+        {
+            $this->assertEquals(array('hash'), $this->reader->getBinaryComparisons());
+        }
+
+        public function testPublishesHooks()
+        {
+            $this->assertTrue($this->reader->publishesHooks());
+        }
+
+        public function testPublishesHooksReturnsFalseWhenHookIdMissing()
+        {
+            $class = __NAMESPACE__ . '\\MetaDataNoHookModelStub';
+            $reader = new MetaDataReader('NoHook', $class);
+
+            $this->assertFalse($reader->publishesHooks());
+        }
+
+        public function testGetGatewaysSynthesizesWhenOnlyTableIsDeclared()
+        {
+            $class = __NAMESPACE__ . '\\MetaDataTableOnlyModelStub';
+            $reader = new MetaDataReader('TableOnly', $class);
+
+            $gateways = $reader->getGateways();
+
+            $this->assertArrayHasKey('table_only', $gateways);
+            $this->assertInstanceOf(SyntheticGateway::class, $gateways['table_only']);
+        }
+
+        public function testGetGatewaysThrowsWhenNoGatewayAndNoTable()
+        {
+            $class = __NAMESPACE__ . '\\MetaDataNoTableNoGatewayModelStub';
+            $reader = new MetaDataReader('NoTable', $class);
+
+            $this->expectException(\Exception::class);
+            $this->expectExceptionMessage("Model '{$class}' did not declare a table.");
+            $reader->getGateways();
+        }
+
+        public function testGetTableForFieldUsesModelTableWhenDeclared()
+        {
+            $class = __NAMESPACE__ . '\\MetaDataTableNameModelStub';
+            $reader = new MetaDataReader('TableName', $class);
+
+            $this->assertEquals('model_table', $reader->getTableForField('anything'));
+        }
+
+        public function testGetTableForFieldLooksThroughGatewayFields()
+        {
+            $this->assertEquals('stub_table', $this->reader->getTableForField('age'));
+            $this->assertNull($this->reader->getTableForField('missing'));
         }
     }
 
@@ -102,10 +180,55 @@ namespace ExpressionEngine\Tests\Service\Model {
             )
         );
 
+        protected static $_validation_rules = array(
+            'first_name' => 'required',
+            'age' => 'integer',
+        );
+
+        protected static $_events = array(
+            'beforeSave' => 'before_save',
+            'afterSave' => 'after_save',
+        );
+
+        protected static $_binary_comparisons = array('hash');
+        protected static $_hook_id = 'meta_stub';
+
         protected $stub_id;
         protected $first_name;
         protected $last_name;
         protected $age;
+    }
+
+    class MetaDataNoHookModelStub extends Model
+    {
+        protected static $_primary_key = 'stub_id';
+        protected static $_hook_id = '';
+
+        protected $stub_id;
+    }
+
+    class MetaDataTableOnlyModelStub extends Model
+    {
+        protected static $_primary_key = 'id';
+        protected static $_table_name = 'table_only';
+
+        protected $id;
+        protected $name;
+    }
+
+    class MetaDataNoTableNoGatewayModelStub extends Model
+    {
+        protected static $_primary_key = 'id';
+
+        protected $id;
+    }
+
+    class MetaDataTableNameModelStub extends Model
+    {
+        protected static $_primary_key = 'id';
+        protected static $_table_name = 'model_table';
+
+        protected $id;
     }
 }
 

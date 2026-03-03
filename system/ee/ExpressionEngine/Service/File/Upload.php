@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -531,7 +531,9 @@ class Upload
                     }
                 }
 
+                // Update original file metadata with new file properties
                 $original->file_hw_original = $file->file_hw_original;
+                $original->file_size = $file->file_size;
 
                 $file->delete();
 

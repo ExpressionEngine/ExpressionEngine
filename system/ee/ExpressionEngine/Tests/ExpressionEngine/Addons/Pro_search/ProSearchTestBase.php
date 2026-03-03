@@ -211,7 +211,7 @@ if (!function_exists('pro_search_decode')) {
     require_once PATH_ADDONS . 'pro_search/helpers/pro_search_helper.php';
 }
 
-class ProSearchTestBase extends TestCase
+abstract class ProSearchTestBase extends TestCase
 {
     protected function setUp(): void
     {
