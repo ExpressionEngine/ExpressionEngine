@@ -145,6 +145,8 @@ class Runner
             ee()->load->library('smartforge');
 
             if (!is_null($from_version) && $from_version !== '') {
+                $this->persistRollbackFromVersion($from_version);
+
                 // Setup the app_db_version database config if it doesn't already exist
                 if (empty(ee()->db->where('key', 'app_db_version')->get('config')->num_rows())) {
                     ee()->db->insert('config', ['key' => 'app_db_version', 'value' => $from_version]);
@@ -242,11 +244,15 @@ class Runner
 
         ee('Database/Restore')->restoreLineByLine($db_path);
 
-        $from_version = $this->resolveFromVersionForDbTracking();
+        $from_version = $this->resolveFromVersionForRollback();
 
         if (!is_null($from_version) && $from_version !== '') {
             // Restore config.app_db_version
-            ee()->db->update('config', ['value' => $from_version], ['key' => 'app_db_version']);
+            if (empty(ee()->db->where('key', 'app_db_version')->get('config')->num_rows())) {
+                ee()->db->insert('config', ['key' => 'app_db_version', 'value' => $from_version]);
+            } else {
+                ee()->db->update('config', ['value' => $from_version], ['key' => 'app_db_version']);
+            }
         }
 
         $this->setNextStep('selfDestruct[rollback]');
@@ -444,6 +450,65 @@ class Runner
         return ($config_version !== '' && !is_null($config_version))
             ? $config_version
             : null;
+    }
+
+    /**
+     * Resolve the version to restore app_db_version to after rollback.
+     *
+     * Priority:
+     * 1) Explicit Runner::fromVersion()
+     * 2) Persisted pre-update version marker in cache
+     */
+    protected function resolveFromVersionForRollback()
+    {
+        if (!is_null($this->versions['from']) && $this->versions['from'] !== '') {
+            return $this->versions['from'];
+        }
+
+        $version_file = $this->getRollbackFromVersionPath();
+        if (!is_file($version_file) || !is_readable($version_file)) {
+            return null;
+        }
+
+        $version = @file_get_contents($version_file);
+        if ($version === false) {
+            return null;
+        }
+
+        $version = trim((string) $version);
+
+        return $version !== '' ? $version : null;
+    }
+
+    /**
+     * Persists a source database version so rollback can restore app_db_version.
+     *
+     * @param string $version
+     */
+    protected function persistRollbackFromVersion($version)
+    {
+        $version_file = $this->getRollbackFromVersionPath();
+        $directory = dirname($version_file);
+
+        if (!is_dir($directory) && !@mkdir($directory, 0755, true) && !is_dir($directory)) {
+            $this->logger->log('Unable to persist rollback database version marker. Missing directory: ' . $directory);
+
+            return;
+        }
+
+        if (@file_put_contents($version_file, $version) === false) {
+            $this->logger->log('Unable to persist rollback database version marker: ' . $version_file);
+        }
+    }
+
+    /**
+     * Gets the path for persisted app_db_version rollback metadata.
+     *
+     * @return string
+     */
+    protected function getRollbackFromVersionPath()
+    {
+        return PATH_CACHE . 'ee_update/app_db_version_before_update';
     }
 
     /**

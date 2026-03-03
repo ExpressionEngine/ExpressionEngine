@@ -54,6 +54,7 @@ class CommandUpdateDatabase extends Cli
     protected $defaultToYes;
     protected $avatarPath;
     protected $localUpdater = false;
+    protected $fromVersionOptionProvided = false;
     protected $versions = [
         'from' => null,
         'to' => null,
@@ -117,7 +118,10 @@ class CommandUpdateDatabase extends Cli
         }
 
         $this->versions['to'] = $this->option('--to-version', $appVersion);
-        $this->versions['from'] = $this->option('--from-version', $databaseVersion);
+
+        $fromVersionOption = $this->option('--from-version');
+        $this->fromVersionOptionProvided = !is_null($fromVersionOption);
+        $this->versions['from'] = $this->fromVersionOptionProvided ? $fromVersionOption : $databaseVersion;
 
         if (!$this->isRollbackRequested() && version_compare($this->versions['from'], $this->versions['to'], '>=')) {
             return $this->complete(lang('command_update_database_up_to_date') . " [version {$this->versions['from']}]");
@@ -315,12 +319,20 @@ class CommandUpdateDatabase extends Cli
 
     protected function getUpdaterRunner()
     {
+        $fromVersion = $this->versions['from'];
+
+        // On rollback, only use explicit --from-version values. Otherwise let the
+        // updater resolve the pre-update version from persisted metadata.
+        if ($this->isRollbackRequested() && ! $this->fromVersionOptionProvided) {
+            $fromVersion = null;
+        }
+
         $runner = (new \ExpressionEngine\Updater\Service\Updater\Runner)
             ->onlyUpdateDatabase()
-            ->fromVersion($this->versions['from'])
+            ->fromVersion($fromVersion)
             ->toVersion($this->versions['to']);
 
-        if($this->option('--rollback', false)) {
+        if ($this->isRollbackRequested()) {
             if (!file_exists(PATH_CACHE . 'ee_update/database.sql')) {
                 return $this->fail('Cannot restore database.  Backup not found at '. PATH_CACHE . 'ee_update/database.sql');
             }
