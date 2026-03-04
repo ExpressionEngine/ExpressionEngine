@@ -830,14 +830,24 @@ class Fluid_field_ft extends EE_Fieldtype
             ->filter(function ($field) {
                 return $field->getField()->acceptsContentType('fluid_field');
             })
-            ->map(function ($field) {
+            ->map(function ($field) use ($data) {
+                $allow_multiple = true;
+                if (isset($data['fluid_field_allow_multiple']) && array_key_exists($field->getId(), $data['fluid_field_allow_multiple'])) {
+                    $allow_multiple = in_array($data['fluid_field_allow_multiple'][$field->getId()], ['y', true, 1, '1'], true);
+                }
+
+                $required = false;
+                if (isset($data['fluid_field_required']) && array_key_exists($field->getId(), $data['fluid_field_required'])) {
+                    $required = in_array($data['fluid_field_required'][$field->getId()], ['y', true, 1, '1'], true);
+                }
+
                 return [
                     'label' => $field->field_label,
                     'value' => $field->getId(),
                     'instructions' => LD . $field->field_name . RD,
                     'toggles' => [
-                        'fluid_field_allow_multiple' => (isset($data['fluid_field_allow_multiple']) && array_key_exists($field->getId(), $data['fluid_field_allow_multiple'])) ? $data['fluid_field_allow_multiple'][$field->getId()] : true,
-                        'fluid_field_required' => (isset($data['fluid_field_required']) && array_key_exists($field->getId(), $data['fluid_field_required'])) ? $data['fluid_field_required'][$field->getId()] : false
+                        'fluid_field_allow_multiple' => $allow_multiple,
+                        'fluid_field_required' => $required
                     ]
                 ];
             });
@@ -902,14 +912,24 @@ class Fluid_field_ft extends EE_Fieldtype
             ->order('group_name')
             ->with('ChannelFields')
             ->all()
-            ->map(function ($group) {
+            ->map(function ($group) use ($data) {
+                $allow_multiple = true;
+                if (isset($data['fluid_field_group_allow_multiple']) && array_key_exists($group->getId(), $data['fluid_field_group_allow_multiple'])) {
+                    $allow_multiple = in_array($data['fluid_field_group_allow_multiple'][$group->getId()], ['y', true, 1, '1'], true);
+                }
+
+                $required = false;
+                if (isset($data['fluid_field_group_required']) && array_key_exists($group->getId(), $data['fluid_field_group_required'])) {
+                    $required = in_array($data['fluid_field_group_required'][$group->getId()], ['y', true, 1, '1'], true);
+                }
+
                 return [
                     'label' => $group->group_name,
                     'value' => $group->getId(),
                     'instructions' => LD . $group->short_name . RD,
                     'toggles' => [
-                        'fluid_field_group_allow_multiple' => (isset($data['fluid_field_group_allow_multiple']) && array_key_exists($group->getId(), $data['fluid_field_group_allow_multiple'])) ? $data['fluid_field_group_allow_multiple'][$group->getId()] : true,
-                        'fluid_field_group_required' => (isset($data['fluid_field_group_required']) && array_key_exists($group->getId(), $data['fluid_field_group_required'])) ? $data['fluid_field_group_required'][$group->getId()] : false
+                        'fluid_field_group_allow_multiple' => $allow_multiple,
+                        'fluid_field_group_required' => $required
                     ]
                 ];
             });
@@ -994,6 +1014,31 @@ class Fluid_field_ft extends EE_Fieldtype
         );
 
         $all = array_merge($defaults, $data);
+        $all['field_channel_fields'] = array_filter((array) $all['field_channel_fields'], function ($value) {
+            return is_numeric($value);
+        });
+        $all['field_channel_field_groups'] = array_filter((array) $all['field_channel_field_groups'], function ($value) {
+            return is_numeric($value);
+        });
+
+        $required_fields = array_map('strval', (array) ee('Request')->post('fluid_field_required'));
+        $allow_multiple_fields = array_map('strval', (array) ee('Request')->post('fluid_field_allow_multiple'));
+        $required_groups = array_map('strval', (array) ee('Request')->post('fluid_field_group_required'));
+        $allow_multiple_groups = array_map('strval', (array) ee('Request')->post('fluid_field_group_allow_multiple'));
+
+        $all['fluid_field_required'] = [];
+        $all['fluid_field_allow_multiple'] = [];
+        foreach ($all['field_channel_fields'] as $field_id) {
+            $all['fluid_field_required'][$field_id] = in_array((string) $field_id, $required_fields, true) ? 'y' : 'n';
+            $all['fluid_field_allow_multiple'][$field_id] = in_array((string) $field_id, $allow_multiple_fields, true) ? 'y' : 'n';
+        }
+
+        $all['fluid_field_group_required'] = [];
+        $all['fluid_field_group_allow_multiple'] = [];
+        foreach ($all['field_channel_field_groups'] as $group_id) {
+            $all['fluid_field_group_required'][$group_id] = in_array((string) $group_id, $required_groups, true) ? 'y' : 'n';
+            $all['fluid_field_group_allow_multiple'][$group_id] = in_array((string) $group_id, $allow_multiple_groups, true) ? 'y' : 'n';
+        }
 
         $fields = ee('Model')->get('ChannelField', $all['field_channel_fields'])
             ->filter('legacy_field_data', 'y')
@@ -1023,18 +1068,6 @@ class Fluid_field_ft extends EE_Fieldtype
                 return is_numeric($value);
             });
 
-            foreach ($this->settings['field_channel_fields'] as $field_id) {
-                $this->settings['fluid_field_required'][$field_id] = !empty(ee('Request')->post('fluid_field_required')) && in_array($field_id, ee('Request')->post('fluid_field_required')) ? 'y' : 'n';
-                $this->settings['fluid_field_allow_multiple'][$field_id] = !empty(ee('Request')->post('fluid_field_allow_multiple')) && in_array($field_id, ee('Request')->post('fluid_field_allow_multiple')) ? 'y' : 'n';
-            }
-
-            // Sometimes a fluid field with no fields attached to it gets saved as an empty string
-            //   rather than an empty array. In this case, we need to convert it to an array to
-            //   perform array operations on it
-            if (is_string($all['field_channel_fields']) && empty($all['field_channel_fields'])) {
-                $all['field_channel_fields'] = [];
-            }
-
             $removed_fields = (array_diff($this->settings['field_channel_fields'], $all['field_channel_fields']));
 
             if (! empty($removed_fields)) {
@@ -1062,24 +1095,21 @@ class Fluid_field_ft extends EE_Fieldtype
         }
 
         if (isset($this->settings['field_channel_field_groups'])) {
-            $this->settings['field_channel_field_groups'] = array_filter($this->settings['field_channel_fields'], function ($value) {
+            $this->settings['field_channel_field_groups'] = array_filter($this->settings['field_channel_field_groups'], function ($value) {
                 return is_numeric($value);
             });
 
-            foreach ($this->settings['field_channel_field_groups'] as $group_id) {
-                $this->settings['fluid_field_group_required'][$group_id] = !empty(ee('Request')->post('fluid_field_group_required')) && in_array($group_id, ee('Request')->post('fluid_field_group_required')) ? 'y' : 'n';
-                $this->settings['fluid_field_group_allow_multiple'][$group_id] = !empty(ee('Request')->post('fluid_field_group_allow_multiple')) && in_array($group_id, ee('Request')->post('fluid_field_group_allow_multiple')) ? 'y' : 'n';
-            }
-
             $removed_groups = (array_diff($this->settings['field_channel_field_groups'], $all['field_channel_field_groups']));
 
-            ee('Model')->get('fluid_field:FluidField')
-                ->filter('fluid_field_id', $this->field_id)
-                ->filter('field_group_id', 'IN', $removed_groups)
-                ->all()
-                ->delete();
+            if (! empty($removed_groups)) {
+                ee('Model')->get('fluid_field:FluidField')
+                    ->filter('fluid_field_id', $this->field_id)
+                    ->filter('field_group_id', 'IN', $removed_groups)
+                    ->all()
+                    ->delete();
 
-            $reindexNeeded = true;
+                $reindexNeeded = true;
+            }
         }
 
         if ($reindexNeeded) {
