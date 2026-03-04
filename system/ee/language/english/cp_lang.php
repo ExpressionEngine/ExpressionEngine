@@ -486,6 +486,8 @@ $lang = array(
 
     '404_does_not_exist_desc' => 'Sorry, we could not find the item you are trying to access in the system.',
 
+    'http_auth_header_missing' => 'HTTP Authorization Header Missing',
+
     /* Common */
     'alphadash_desc' => 'No spaces. Underscores and dashes are allowed.',
 

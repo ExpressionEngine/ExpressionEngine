@@ -23,7 +23,13 @@
 				<span class="pulse-loader"></span>
 			</div>
 
-			<iframe src="" data-url="<?=$preview_url?>" class="live-preview__frame"></iframe>
+			<iframe
+				src=""
+				data-url="<?=$preview_url?>"
+				data-token="<?=isset($preview_token) ? $preview_token : ''?>"
+				data-token-url="<?=isset($preview_token_url) ? $preview_token_url : ''?>"
+				class="live-preview__frame"
+			></iframe>
 		</div>
 	</div>
 </div>

@@ -5183,22 +5183,46 @@ class Channel
         $entry_id = ee()->input->get_post('entry_id');
         $channel_id = ee()->input->get_post('channel_id');
         $return = ee()->input->get('return') ? base64_decode(rawurldecode(ee()->input->get('return'))) : null;
-        $allowedOrigin = null;
+        $from_param = ee('Request')->get('from');
+        $from_origin = !empty($from_param) ? base64_decode(rawurldecode($from_param)) : null;
+        $origin_header = $_SERVER['HTTP_ORIGIN'] ?? null;
+        $referer_header = $_SERVER['HTTP_REFERER'] ?? null;
 
-        $allowedOrigin = base64_decode(rawurldecode(ee('Request')->get('from')));
-        if (empty($allowedOrigin)) {
-            if (!empty($return)) {
-                $allowedOrigin = substr($return, 0, strpos($return, '/', 8));
+        $normalize_origin = function ($value) {
+            if (empty($value)) {
+                return null;
             }
-            if (empty($allowedOrigin)) {
-                $configured_cp_url = explode('//', ee()->config->item('cp_url'));
-                $configured_cp_domain = explode('/', $configured_cp_url[1]);
-                $allowedOrigin = strtolower($configured_cp_domain[0]);
-                if (strpos('http', $allowedOrigin) === false) {
-                    $allowedOrigin = (ee('Request')->isEncrypted() ? 'https://' : 'http://') . $allowedOrigin;
-                }
+            $value = trim($value);
+            if (strpos($value, '//') === 0) {
+                $value = (ee('Request')->isEncrypted() ? 'https:' : 'http:') . $value;
+            } elseif (!preg_match('#^https?://#i', $value)) {
+                $value = (ee('Request')->isEncrypted() ? 'https://' : 'http://') . $value;
             }
+            $parts = parse_url($value);
+            if (!$parts || empty($parts['host'])) {
+                return null;
+            }
+            $scheme = !empty($parts['scheme']) ? strtolower($parts['scheme']) : (ee('Request')->isEncrypted() ? 'https' : 'http');
+            $host = strtolower($parts['host']);
+            if (!empty($parts['port'])) {
+                $host .= ':' . $parts['port'];
+            }
+            return $scheme . '://' . $host;
+        };
+
+        $allowedOrigin = null;
+        if (!empty($origin_header)) {
+            $allowedOrigin = $origin_header;
+        } elseif (!empty($referer_header)) {
+            $allowedOrigin = $referer_header;
+        } elseif (!empty($from_origin)) {
+            $allowedOrigin = $from_origin;
+        } elseif (!empty($return)) {
+            $allowedOrigin = $return;
+        } else {
+            $allowedOrigin = ee()->config->item('cp_url');
         }
+        $allowedOrigin = $normalize_origin($allowedOrigin);
 
         $allAllowedOrigins = [];
         $configuredUrls = ee('Model')->get('Config')
@@ -5215,18 +5239,52 @@ class Channel
 
         foreach ($configuredUrls as $configuredUrl) {
             $configuredUrl = trim($configuredUrl);
-            foreach (['https://', 'http://', '//'] as $protocol) {
-                if (strpos($configuredUrl, $protocol) === 0) {
-                    $len = strlen($protocol);
-                    $domain = substr($configuredUrl, $len, (strpos($configuredUrl, '/', $len) - $len));
-                } else {
-                    $domain = $configuredUrl;
-                }
-                $allAllowedOrigins[] = 'https://' . $domain;
-                $allAllowedOrigins[] = 'http://' . $domain;
+            if ($configuredUrl === '') {
+                continue;
+            }
+            $parsed_host = parse_url($configuredUrl, PHP_URL_HOST);
+            $parsed_port = parse_url($configuredUrl, PHP_URL_PORT);
+            $domain = $parsed_host ?: $configuredUrl;
+            $domain = strtolower(trim($domain));
+            if (strpos($domain, '/') !== false) {
+                $domain = substr($domain, 0, strpos($domain, '/'));
+            }
+            if (!empty($parsed_port) && strpos($domain, ':') === false) {
+                $domain .= ':' . $parsed_port;
+            }
+            if ($domain === '') {
+                continue;
+            }
+            $host = $domain;
+            $port = '';
+            if (strpos($domain, ':') !== false) {
+                $port = ':' . substr($domain, strpos($domain, ':') + 1);
+                $host = substr($domain, 0, strpos($domain, ':'));
+            }
+            $domains = [$domain];
+            if ($host === 'localhost' || $host === '127.0.0.1') {
+                $domains = [
+                    'localhost' . $port,
+                    '127.0.0.1' . $port
+                ];
+            }
+            foreach ($domains as $d) {
+                $allAllowedOrigins[] = 'https://' . $d;
+                $allAllowedOrigins[] = 'http://' . $d;
             }
         }
         $allAllowedOrigins = array_unique($allAllowedOrigins);
+
+        $normalized_from = $normalize_origin($from_origin);
+        if (!empty($origin_header) && !empty($normalized_from) && $normalized_from !== $allowedOrigin) {
+            ee()->lang->load('content');
+            return ee()->output->show_user_error('off', lang('preview_domain_error_instructions'), lang('preview_cannot_display'));
+        }
+
+        if (empty($allowedOrigin) || !in_array($allowedOrigin, $allAllowedOrigins, true)) {
+            ee()->lang->load('content');
+            return ee()->output->show_user_error('off', lang('preview_domain_error_instructions'), lang('preview_cannot_display'));
+        }
 
         @header('Access-Control-Allow-Origin: ' . $allowedOrigin);
         @header('Access-Control-Allow-Methods: POST, OPTIONS');
@@ -5241,9 +5299,88 @@ class Channel
             exit();
         }
 
-        if (!in_array($allowedOrigin, $allAllowedOrigins)) {
+        $channel_id = (int) $channel_id;
+        $entry_id = !empty($entry_id) ? (int) $entry_id : null;
+
+        if ($channel_id <= 0) {
             ee()->lang->load('content');
-            return ee()->output->show_user_error('off', lang('preview_domain_error_instructions'), lang('preview_cannot_display'));
+            return ee()->output->show_user_error('general', lang('unauthorized_to_edit'));
+        }
+
+        // Validate preview token
+        $request = ee('Request');
+        $auth_header = null;
+        if (is_object($request) && method_exists($request, 'header')) {
+            $auth_header = $request->header('Authorization');
+        }
+        if (empty($auth_header) && is_object($request) && method_exists($request, 'server')) {
+            $auth_header = $request->server('REDIRECT_HTTP_AUTHORIZATION');
+        }
+        if (empty($auth_header)) {
+            $auth_header = $_SERVER['HTTP_AUTHORIZATION'] ?? ($_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? null);
+        }
+
+        // Display an error if the webserver is preventing access to the Authorization header
+        if (empty($auth_header)) {
+            ee()->lang->load('cp');
+            return ee()->output->show_user_error('general', lang('http_auth_header_missing'));
+        }
+
+        $preview_token = null;
+        if (preg_match('/^\s*Bearer\s+(.+)$/i', $auth_header, $matches)) {
+            $preview_token = trim($matches[1]);
+        }
+
+        $token_origin = $from_origin ?: ($origin_header ?: ($referer_header ?: $return));
+
+        $token_context = ee('LivePreviewToken')->validateAndResolveMember(
+            $preview_token,
+            $channel_id,
+            $entry_id,
+            $token_origin,
+            $return,
+            (int) ee()->config->item('site_id')
+        );
+
+        if (!is_array($token_context)) {
+            ee()->lang->load('content');
+            return ee()->output->show_user_error('general', lang('unauthorized_to_edit'));
+        }
+
+        $member_id = (int) $token_context['member_id'];
+        $permission = $token_context['permission'];
+
+        $entry_author_id = null;
+        if (!empty($entry_id)) {
+            $entry_row = ee()->db->select('channel_id, author_id')
+                ->where('entry_id', $entry_id)
+                ->get('channel_titles');
+            if ($entry_row->num_rows() == 0) {
+                ee()->lang->load('content');
+                return ee()->output->show_user_error('general', lang('unauthorized_to_edit'));
+            }
+            $entry_channel_id = (int) $entry_row->row('channel_id');
+            $entry_author_id = (int) $entry_row->row('author_id');
+            if ($entry_channel_id !== $channel_id) {
+                ee()->lang->load('content');
+                return ee()->output->show_user_error('general', lang('unauthorized_to_edit'));
+            }
+        }
+
+        $can_edit = $permission->isSuperAdmin() ? true : $permission->can('edit_other_entries_channel_id_' . $channel_id);
+        if (! $can_edit) {
+            if (! empty($entry_id)) {
+                if (!is_null($entry_author_id) && $entry_author_id === $member_id) {
+                    $can_edit = $permission->can('edit_self_entries_channel_id_' . $channel_id);
+                }
+            } else {
+                $can_edit = $permission->can('create_entries_channel_id_' . $channel_id);
+            }
+        }
+
+        if (! $can_edit) {
+            ee()->lang->load('content');
+            return ee()->output->show_user_error('general', lang('unauthorized_to_edit'));
         }
 
         $prefer_system_preview = ee()->input->get('prefer_system_preview') == 'y';

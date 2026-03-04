@@ -340,6 +340,16 @@ $setup = [
             return new LivePreview\LivePreview(ee()->session);
         },
 
+        'LivePreviewToken' => function ($ee) {
+            $key = ee()->config->item('live_preview_key') ?: ee()->config->item('encryption_key');
+
+            return new LivePreview\LivePreviewToken(
+                ee()->session,
+                $ee->make('Encrypt', $key),
+                $key
+            );
+        },
+
         'Str' => function ($ee) {
             return new Str();
         },
