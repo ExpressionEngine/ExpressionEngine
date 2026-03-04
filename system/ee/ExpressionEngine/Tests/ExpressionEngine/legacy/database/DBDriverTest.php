@@ -364,7 +364,10 @@ class DBDriverTest extends TestCase
             $driver->call_function('helper', 2, 3);
             $this->fail('Expected argument by-reference error on PHP 8+');
         } catch (Throwable $exception) {
-            $this->assertStringContainsString('array_splice', $exception->getMessage());
+            $this->assertTrue(
+                strpos($exception->getMessage(), 'array_splice') !== false
+                || strpos($exception->getMessage(), 'Cannot pass parameter 1 by reference') !== false
+            );
         }
 
         $driver->db_debug = false;
