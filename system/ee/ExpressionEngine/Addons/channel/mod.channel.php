@@ -5480,6 +5480,12 @@ class Channel
             }
         }
 
+        // Display an error if the webserver is preventing access to the Authorization header
+        if (empty($preview_token)) {
+            ee()->lang->load('cp');
+            return ee()->output->show_user_error('general', lang('http_auth_header_missing'));
+        }
+
         $token_origin = $from_origin ?: ($origin_header ?: ($referer_header ?: $return));
 
         $token_context = ee('LivePreviewToken')->validateAndResolveMember(
