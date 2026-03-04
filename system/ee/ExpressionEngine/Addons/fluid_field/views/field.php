@@ -1,6 +1,6 @@
 <div class="fluid__item <?php if ($reorderable): ?>fluid__item--reorderable<?php endif ?>" data-field-name="<?=$field_name?>" data-field-type="<?=$field->getType()?>">
     <div class="fluid__item-content">
-        <div class="fluid__item-fieldset ">
+        <div class="fluid__item-fieldset <?php if (isset($required) && $required): ?>fluid__item-fieldset-required<?php endif ?>">
 
             <?php $this->embed('fluid_field:item-tools');?>
 
