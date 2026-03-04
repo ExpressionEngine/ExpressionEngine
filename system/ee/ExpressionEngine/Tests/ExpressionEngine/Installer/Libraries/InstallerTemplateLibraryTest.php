@@ -4,8 +4,6 @@ namespace ExpressionEngine\Tests\ExpressionEngine\Installer\Libraries;
 
 use PHPUnit\Framework\TestCase;
 
-require_once SYSPATH . 'ee/installer/libraries/Template.php';
-
 class InstallerTemplateLibraryTest extends TestCase
 {
     protected function setUp(): void
@@ -20,6 +18,8 @@ class InstallerTemplateLibraryTest extends TestCase
 
     public function testReplaceRelatedEntriesTagsTransformsRelatedAndReverseTags()
     {
+        require_once SYSPATH . 'ee/installer/libraries/Template.php';
+
         $db = new class {
             public $selectCalls = [];
             public $getCalls = [];
