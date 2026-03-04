@@ -482,18 +482,22 @@ class WizardTest extends TestCase
         $this->assertTrue($wizard->template_path_writeable('y'));
 
         @chmod(PATH_TMPL, 0555);
-        $this->assertFalse($wizard->template_path_writeable('y'));
-        $this->assertSame('unwritable_templates', $formValidation->messages['template_path_writeable']);
+        clearstatcache(true, PATH_TMPL);
+        if (! is_writable(PATH_TMPL)) {
+            $this->assertFalse($wizard->template_path_writeable('y'));
+            $this->assertSame('unwritable_templates', $formValidation->messages['template_path_writeable']);
+        } else {
+            // Some environments (notably Windows CI) do not honor chmod-style
+            // permission changes for writability checks.
+            $this->assertTrue($wizard->template_path_writeable('y'));
+        }
         @chmod(PATH_TMPL, 0755);
 
-        $wizard->root_theme_path = sys_get_temp_dir() . '/wizard-theme-root/';
-        @mkdir($wizard->root_theme_path . 'user', 0777, true);
-        @chmod($wizard->root_theme_path . 'user', 0555);
+        $wizard->root_theme_path = sys_get_temp_dir() . '/wizard-theme-root-missing-' . uniqid() . '/';
 
         $this->assertFalse($wizard->themes_user_writable('y'));
         $this->assertSame('unwritable_themes_user', $formValidation->messages['themes_user_writable']);
         $this->assertTrue($wizard->themes_user_writable('n'));
-        @chmod($wizard->root_theme_path . 'user', 0755);
     }
 
     public function testSetPathSetBaseUrlSetQstrAndIsSecure()
