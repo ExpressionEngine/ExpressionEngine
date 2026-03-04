@@ -154,6 +154,8 @@ else:
         'splitForTwo' => isset($split_for_two) ? $split_for_two : null,
         'toggles' => isset($toggles) ? $toggles : [],
         'id' => $id,
+        'virtualizationThreshold' => isset($virtualization_threshold) ? $virtualization_threshold : 100,
+        'virtualizationHeight' => isset($virtualization_height) ? $virtualization_height : 400
     ];
     ?>
 	<div data-select-react="<?=base64_encode(json_encode($component))?>" data-input-value="<?=$field_name?>" class="<?=$class?>">

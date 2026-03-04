@@ -26,12 +26,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license
  */
-var FileGrid =
-/*#__PURE__*/
-function (_React$Component) {
+var FileGrid = /*#__PURE__*/function (_React$Component) {
   _inherits(FileGrid, _React$Component);
 
   function FileGrid() {

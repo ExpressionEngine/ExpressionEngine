@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -15,12 +15,8 @@ use ExpressionEngine\Library\String\Str;
 use ExpressionEngine\Service\Generator\Enums\FieldtypeCompatibility;
 use ExpressionEngine\Service\Generator\Enums\Hooks;
 
-class AddonGenerator
+class AddonGenerator extends AbstractGenerator
 {
-    protected $filesystem;
-    protected $str;
-
-    public $name;
     public $data;
     public $slug;
     public $slug_uc;
@@ -31,10 +27,7 @@ class AddonGenerator
     public $author_url;
     public $has_cp_backend;
     public $has_publish_fields;
-
-    protected $stubPath;
-    protected $generatorPath;
-    protected $addonPath;
+    public $requireAddonExists = false;
 
     public function __construct(Filesystem $filesystem, Str $str, array $data)
     {
@@ -65,9 +58,8 @@ class AddonGenerator
 
     private function init()
     {
-        $this->generatorPath = SYSPATH . 'ee/ExpressionEngine/Service/Generator';
+        $this->initCommon();
         $this->addonPath = SYSPATH . 'user/addons/' . $this->slug . '/';
-
         $this->stubPath = $this->generatorPath . '/stubs/MakeAddon/';
 
         if (! $this->filesystem->isDir($this->addonPath)) {
@@ -158,28 +150,5 @@ class AddonGenerator
         $stub = $this->write('description', $this->description, $stub);
         $stub = $this->write('slug', $this->slug, $stub);
         $this->putFile($this->slug . '_lang.php', $stub, '/language/english');
-    }
-
-    private function stub($file)
-    {
-        return $this->stubPath . $file;
-    }
-
-    private function write($key, $value, $file)
-    {
-        return str_replace('{{' . $key . '}}', $value, $file);
-    }
-
-    private function putFile($name, $contents, $path = null)
-    {
-        if ($path) {
-            $path = trim($path, '/') . '/';
-        } else {
-            $path = '';
-        }
-
-        if (!$this->filesystem->exists($this->addonPath . $path . $name)) {
-            $this->filesystem->write($this->addonPath . $path . $name, $contents);
-        }
     }
 }

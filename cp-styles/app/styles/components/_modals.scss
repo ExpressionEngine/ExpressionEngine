@@ -29,6 +29,10 @@
 	max-width: 550px;
 }
 
+.modal-wrap.must-interact .dialog__close {
+  display: none;
+}
+
 .modal {
 	background-color: color(bg-0);
 	margin-bottom: 40px;
