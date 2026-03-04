@@ -91,7 +91,7 @@ PHP;
 
             eval('class Installer_Template {}');
         };
-        spl_autoload_register($autoload);
+        spl_autoload_register($autoload, true, true);
 
         try {
             $reflection = new \ReflectionClass(\Installer_Logger::class);
