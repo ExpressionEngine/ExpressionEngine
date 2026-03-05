@@ -105,6 +105,8 @@ context('File Manager / Upload File', () => {
     cy.wait('@table')
     cy.hasNoErrors()
 
+    page.get('file_input').find('.file-field__dropzone').invoke('show')
+
     page.dragAndDropUpload('../../LICENSE.txt')
     returnPage.get('selected_file').should('exist')
     returnPage.get('selected_file').contains("LICENSE.txt")

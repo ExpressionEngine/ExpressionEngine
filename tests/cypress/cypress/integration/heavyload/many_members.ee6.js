@@ -29,26 +29,27 @@ context('Operate the site with many members', () => {
       cy.get('[type=checkbox][name=include_in_authorlist]').check()
       cy.get('body').type('{ctrl}', {release: false}).type('s')
       cy.get('[type=checkbox][name=include_in_authorlist]').should('be.checked')
-  
+
       cy.visit('admin.php?/cp/channels/edit/1')
       cy.get('button:contains("Settings")').click()
       cy.get('[data-input-value="default_author"] .search-input__input').type('200')
       cy.get('[data-input-value="default_author"] .field-inputs [value="200"]').check()
       cy.get('body').type('{ctrl}', {release: false}).type('s')
-  
+
       cy.get('button:contains("Settings")').click()
+      cy.get('[data-input-value="default_author"] .field-inputs').scrollTo('bottom')
       cy.get('[data-input-value="default_author"] .field-inputs [value="200"]').should('be.checked')
       cy.logCPPerformance()
     })
-  
+
     it('preserves author in entry', () => {
-  
+
       cy.visit('admin.php?/cp/publish/edit/entry/1')
       cy.get('button:contains("Options")').click()
       cy.get('[data-input-value="author_id"] .search-input__input').type('200')
       cy.get('[data-input-value="author_id"] .field-inputs [value="200"]').check()
       cy.get('body').type('{ctrl}', {release: false}).type('s')
-  
+
       cy.get('button:contains("Options")').click()
       cy.get('[data-input-value="author_id"] .field-inputs [value="200"]').should('be.checked')
       cy.logCPPerformance()
@@ -126,11 +127,11 @@ context('Operate the site with many members', () => {
 
         })
       })
-      
+
     })
 
   })
 
-  
+
 
 })

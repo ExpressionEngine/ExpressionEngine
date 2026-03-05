@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -786,6 +786,14 @@ class Login extends CP_Controller
         }
 
         $address = strip_tags($address);
+
+        // cp_member_send_reset_token_start hook allows overriding posted email address from cp password reset form
+        if (ee()->extensions->active_hook('cp_member_send_reset_token_start')) {          
+            $address = ee()->extensions->call('cp_member_send_reset_token_start', $address);
+            if (ee()->extensions->end_script === true) {
+                return;
+            }
+        }
 
         // Fetch user data
         $this->db->select('member_id, username, screen_name');

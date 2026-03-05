@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -231,7 +231,12 @@ class Wizard extends CI_Controller
         $this->load->add_theme_cascade(APPPATH . 'views/');
 
         // First try the current directory, if they are running the system with an admin.php file
-        $this->base_path = substr($_SERVER['SCRIPT_FILENAME'], 0, -strlen(EESELF));
+        if (strpos($_SERVER['SCRIPT_FILENAME'], EESELF) !== false) {
+            $this->base_path = substr($_SERVER['SCRIPT_FILENAME'], 0, -strlen(EESELF));
+        } else {
+            $this->base_path = realpath(SYSPATH . '/../');
+        }
+        $this->base_path = rtrim($this->base_path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
 
         if (is_dir($this->base_path . 'themes')) {
             $this->theme_path = $this->base_path . 'themes/';

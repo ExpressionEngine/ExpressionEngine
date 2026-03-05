@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -113,9 +113,13 @@ class EE_Image_lib
          * Convert array elements into class variables
          */
         if (count($props) > 0) {
-            $intProps = ['width', 'height', 'quality', 'orig_width', 'orig_height'];
+            $intProps = [
+                'width', 'height', 'quality', 'orig_width', 'orig_height', 'x_axis', 'y_axis',
+                'wm_opacity', 'wm_x_transp', 'wm_y_transp', 'wm_font_size', 'wm_padding',
+                'wm_hor_offset', 'wm_vrt_offset', 'wm_shadow_distance'
+            ];
             foreach ($props as $key => $val) {
-                if (in_array($key, $intProps) && $val > 0) {
+                if (in_array($key, $intProps)) {
                     $this->$key = (int) $val;
                 } else {
                     $this->$key = $val;
@@ -336,6 +340,17 @@ class EE_Image_lib
         return $this->$protocol('webp');
     }
 
+    public function avif()
+    {
+        $protocol = 'image_process_' . $this->image_library;
+
+        if (preg_match('/gd2$/i', $protocol)) {
+            $protocol = 'image_process_gd';
+        }
+
+        return $this->$protocol('avif');
+    }
+
     /**
      * Image Crop
      *
@@ -474,6 +489,9 @@ class EE_Image_lib
         if ($action == 'webp') {
             $this->image_type = 18; //IMAGETYPE_WEBP
         }
+        if ($action == 'avif') {
+            $this->image_type = 19; //IMAGETYPE_AVIF
+        }
 
         //  Show the image
         if ($this->dynamic_output == true) {
@@ -524,10 +542,10 @@ class EE_Image_lib
         }
 
         // Execute the command
-        $cmd = $this->library_path . " -quality " . $this->quality;
+        $cmd = $this->library_path . " -quality " . (int) $this->quality;
 
         if ($action == 'crop') {
-            $cmd .= " -crop " . $this->width . "x" . $this->height . "+" . $this->x_axis . "+" . $this->y_axis . " " . escapeshellarg($this->full_src_path) . " " . escapeshellarg($this->full_dst_path) . " 2>&1";
+            $cmd .= " -crop " . (int) $this->width . "x" . (int) $this->height . "+" . (int) $this->x_axis . "+" . (int) $this->y_axis . " " . escapeshellarg($this->full_src_path) . " " . escapeshellarg($this->full_dst_path) . " 2>&1";
         } elseif ($action == 'rotate') {
             switch ($this->rotation_angle) {
                 case 'hor': $angle = '-flop';
@@ -536,14 +554,14 @@ class EE_Image_lib
                 case 'vrt': $angle = '-flip';
 
                     break;
-                default: $angle = '-rotate ' . $this->rotation_angle;
+                default: $angle = '-rotate ' . (float) $this->rotation_angle;
 
                     break;
             }
 
             $cmd .= " " . $angle . " " . escapeshellarg($this->full_src_path) . " " . escapeshellarg($this->full_dst_path) . " 2>&1";
         } else {  // Resize
-            $cmd .= " -resize " . $this->width . "x" . $this->height . " " . escapeshellarg($this->full_src_path) . " " . escapeshellarg($this->full_dst_path) . " 2>&1";
+            $cmd .= " -resize " . (int) $this->width . "x" . (int) $this->height . " " . escapeshellarg($this->full_src_path) . " " . escapeshellarg($this->full_dst_path) . " 2>&1";
         }
 
         $retval = 1;
@@ -604,7 +622,7 @@ class EE_Image_lib
         }
 
         if ($action == 'crop') {
-            $cmd_inner = 'pnmcut -left ' . $this->x_axis . ' -top ' . $this->y_axis . ' -width ' . $this->width . ' -height ' . $this->height;
+            $cmd_inner = 'pnmcut -left ' . (int) $this->x_axis . ' -top ' . (int) $this->y_axis . ' -width ' . (int) $this->width . ' -height ' . (int) $this->height;
         } elseif ($action == 'rotate') {
             switch ($this->rotation_angle) {
                 case 90:    $angle = 'r270';
@@ -626,7 +644,7 @@ class EE_Image_lib
 
             $cmd_inner = 'pnmflip -' . $angle . ' ';
         } else { // Resize
-            $cmd_inner = 'pnmscale -xysize ' . $this->width . ' ' . $this->height;
+            $cmd_inner = 'pnmscale -xysize ' . (int) $this->width . ' ' . (int) $this->height;
         }
 
         $cmd = $this->library_path . $cmd_in . ' ' . escapeshellarg($this->full_src_path) . ' | ' . $cmd_inner . ' | ' . $cmd_out . ' > ' . escapeshellarg($this->dest_folder . 'netpbm.tmp');
@@ -1173,6 +1191,16 @@ class EE_Image_lib
                 return imagecreatefromwebp($path);
 
                 break;
+            case 19: //IMAGETYPE_AVIF
+                if (! function_exists('imagecreatefromavif')) {
+                    $this->set_error(array('imglib_unsupported_imagecreate', 'imglib_avif_not_supported'));
+
+                    return false;
+                }
+
+                return imagecreatefromavif($path);
+
+                break;
         }
 
         $this->set_error(array('imglib_unsupported_imagecreate'));
@@ -1257,6 +1285,19 @@ class EE_Image_lib
                 }
 
                 break;
+            case 19://IMAGETYPE_AVIF
+                if (! function_exists('imageavif')) {
+                    $this->set_error(array('imglib_unsupported_imagecreate', 'imglib_avif_not_supported'));
+
+                    return false;
+                }
+                if (! @imageavif($resource, $this->full_dst_path, $this->quality)) {
+                    $this->set_error('imglib_save_failed');
+
+                    return false;
+                }
+
+                break;
             default:
                 $this->set_error(array('imglib_unsupported_imagecreate'));
 
@@ -1297,6 +1338,10 @@ class EE_Image_lib
                 break;
             case 18: //IMAGETYPE_WEBP
                 imagewebp($resource);
+
+                break;
+            case 19: //IMAGETYPE_AVIF
+                imageavif($resource);
 
                 break;
             default:
@@ -1379,7 +1424,7 @@ class EE_Image_lib
             return false;
         }
 
-        $types = array(IMAGETYPE_GIF => 'gif', IMAGETYPE_JPEG => 'jpeg', IMAGETYPE_PNG => 'png', '18' => 'webp');
+        $types = array(IMAGETYPE_GIF => 'gif', IMAGETYPE_JPEG => 'jpeg', IMAGETYPE_PNG => 'png', '18' => 'webp', '19' => 'avif');
 
         $mime = (isset($types[$vals['2']])) ? 'image/' . $types[$vals['2']] : 'image/jpg';
 

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -110,6 +110,18 @@ class Cli
         // Cache
         'cache:clear' => Commands\CommandClearCaches::class,
 
+        // Channels
+        'channels:list' => Commands\CommandChannelsList::class,
+
+        // Fields
+        'fields:list' => Commands\CommandFieldsList::class,
+
+        // Fieldtypes
+        'fieldtypes:list' => Commands\CommandFieldtypesList::class,
+
+        // Version
+        'version' => Commands\CommandVersion::class,
+
         // Config
         'config:config' => Commands\CommandConfigConfig::class,
         'config:env' => Commands\CommandConfigEnv::class,
@@ -131,6 +143,7 @@ class Cli
         'make:migration' => Commands\CommandMakeMigration::class,
         'make:model' => Commands\CommandMakeModel::class,
         'make:prolet' => Commands\CommandMakeProlet::class,
+        'make:service' => Commands\CommandMakeService::class,
         'make:sidebar' => Commands\CommandMakeSidebar::class,
         'make:template-tag' => Commands\CommandMakeTemplateTag::class,
         'make:widget' => Commands\CommandMakeWidget::class,
@@ -256,6 +269,10 @@ class Cli
             }
         }
 
+        if ($command->option('--help-json', false)) {
+            return $command->helpJson();
+        }
+
         // -------------------------------------------
         // 'cli_before_handle' hook.
         //  - Runs on every CLI request
@@ -296,6 +313,34 @@ class Cli
         }
 
         $this->output->outln($help->getHelp($this->name));
+
+        exit();
+    }
+
+    /**
+     * get command's help information in JSON format
+     * @return null
+     */
+    public function helpJson()
+    {
+        $help = new Help(new OptionFactory());
+
+        $help->setSummary($this->summary)
+            ->setDescr($this->description)
+            ->setUsage($this->usage)
+            ->setOptions($this->commandOptions);
+
+        // Build JSON structure with help information
+        $helpData = [
+            'command' => $this->name,
+            'signature' => $this->signature,
+            'summary' => $this->summary,
+            'description' => $this->description,
+            'usage' => $this->usage,
+            'options' => $this->getOptionsAsJson($this->commandOptions)
+        ];
+
+        $this->output->outln(json_encode($helpData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
         exit();
     }
@@ -647,6 +692,7 @@ class Cli
             $this->commandOptions,
             [
                 'help,h' => 'cli_option_help',
+                'help-json' => 'cli_option_help_json',
                 'options' => 'cli_option_help_options'
             ]
         );
@@ -815,5 +861,37 @@ class Cli
         }
 
         return $list;
+    }
+
+    /**
+     * Convert command options to JSON-friendly format
+     * @param array $options
+     * @return array
+     */
+    protected function getOptionsAsJson($options)
+    {
+        $jsonOptions = [];
+
+        foreach ($options as $option => $description) {
+            // Parse option string (e.g., "help,h" or "verbose")
+            $optionParts = explode(',', $option);
+            $longOption = $optionParts[0];
+            $shortOption = isset($optionParts[1]) ? $optionParts[1] : null;
+
+            // Check if option requires a value
+            $needsValue = (strpos($longOption, ':') !== false);
+            if ($needsValue) {
+                $longOption = str_replace(':', '', $longOption);
+            }
+
+            $jsonOptions[] = [
+                'long' => $longOption,
+                'short' => $shortOption,
+                'description' => $description,
+                'requires_value' => $needsValue
+            ];
+        }
+
+        return $jsonOptions;
     }
 }

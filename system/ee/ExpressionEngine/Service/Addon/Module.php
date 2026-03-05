@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -98,7 +98,10 @@ class Module extends Controller
         // without the modules folder. This is done in this order to the error message shows the new way
         if (! class_exists($object) && $useModuleFolder) {
             return $this->buildObject($method, $action, false);
+        } elseif (! class_exists($object) && isset(ee()->TMPL)) {
+            return $this->buildObject($method, false, $useModuleFolder);
         }
+
 
         return $object;
     }

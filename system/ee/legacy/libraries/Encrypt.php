@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -436,7 +436,7 @@ class EE_Encrypt
     public function sha1($str)
     {
         if (! function_exists('sha1')) {
-            return bin2hex(mhash(MHASH_SHA1, $str));
+            return bin2hex(hash('sha1', $str, true));
         } else {
             return sha1($str);
         }

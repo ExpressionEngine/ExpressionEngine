@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -221,9 +221,9 @@ class EE_Schema
 			user_agent varchar(120) NOT NULL,
 			login_state varchar(32) NULL DEFAULT NULL,
 			fingerprint varchar(40) NOT NULL,
-			sess_start int(10) unsigned DEFAULT '0' NOT NULL,
-			auth_timeout int(10) unsigned DEFAULT '0' NOT NULL,
-			last_activity int(10) unsigned DEFAULT '0' NOT NULL,
+			sess_start bigint(10) unsigned DEFAULT '0' NOT NULL,
+			auth_timeout bigint(10) unsigned DEFAULT '0' NOT NULL,
+			last_activity bigint(10) unsigned DEFAULT '0' NOT NULL,
 			can_debug char(1) NOT NULL DEFAULT 'n',
             mfa_flag ENUM('skip','show','required') NOT NULL DEFAULT 'skip',
             pro_banner_seen char(1) NOT NULL DEFAULT 'n',
@@ -237,7 +237,7 @@ class EE_Schema
         $Q[] = "CREATE TABLE exp_throttle (
 			throttle_id int(10) unsigned NOT NULL auto_increment,
 			ip_address varchar(45) default '0' NOT NULL,
-			last_activity int(10) unsigned DEFAULT '0' NOT NULL,
+			last_activity bigint(10) unsigned DEFAULT '0' NOT NULL,
 			hits int(10) unsigned NOT NULL,
 			locked_out char(1) NOT NULL default 'n',
 			PRIMARY KEY `throttle_id` (`throttle_id`),
@@ -263,7 +263,7 @@ class EE_Schema
 			last_visitor_date bigint(10) unsigned default '0' NOT NULL,
 			most_visitors mediumint(7) NOT NULL default '0',
 			most_visitor_date bigint(10) unsigned default '0' NOT NULL,
-			last_cache_clear int(10) unsigned default '0' NOT NULL,
+			last_cache_clear bigint(10) unsigned default '0' NOT NULL,
 			PRIMARY KEY `stat_id` (`stat_id`),
 			KEY `site_id` (`site_id`)
 		)";
@@ -277,7 +277,7 @@ class EE_Schema
 			in_forum char(1) NOT NULL default 'n',
 			name varchar(" . USERNAME_MAX_LENGTH . ") default '0' NOT NULL,
 			ip_address varchar(45) default '0' NOT NULL,
-			date int(10) unsigned default '0' NOT NULL,
+			date bigint(10) unsigned default '0' NOT NULL,
 			anon char(1) NOT NULL,
 			PRIMARY KEY `online_id` (`online_id`),
 			KEY `date` (`date`),
@@ -292,7 +292,9 @@ class EE_Schema
 			class varchar(50) NOT NULL,
 			method varchar(50) NOT NULL,
 			csrf_exempt tinyint(1) UNSIGNED NOT NULL default 0,
-			PRIMARY KEY `action_id` (`action_id`)
+			PRIMARY KEY `action_id` (`action_id`),
+			KEY `class` (`class`),
+			KEY `method` (`method`)
 		)";
 
         // Modules table
@@ -324,7 +326,7 @@ class EE_Schema
 
         $Q[] = "CREATE TABLE exp_security_hashes (
 			hash_id int(10) unsigned NOT NULL auto_increment,
-			date int(10) unsigned NOT NULL,
+			date bigint(10) unsigned NOT NULL,
 			session_id varchar(40) default '0' NOT NULL,
 			hash varchar(40) NOT NULL,
 			PRIMARY KEY `hash_id` (`hash_id`),
@@ -335,11 +337,13 @@ class EE_Schema
 
         $Q[] = "CREATE TABLE exp_captcha (
 			captcha_id bigint(13) unsigned NOT NULL auto_increment,
-			date int(10) unsigned NOT NULL,
+			date bigint(10) unsigned NOT NULL,
 			ip_address varchar(45) default '0' NOT NULL,
 			word varchar(20) NOT NULL,
 			PRIMARY KEY `captcha_id` (`captcha_id`),
-			KEY `word` (`word`)
+			KEY `word` (`word`),
+			KEY `date` (`date`),
+			KEY `ip_address_date_idx` (`ip_address`, `date`)
 		)";
 
         // Password Lockout
@@ -367,7 +371,7 @@ class EE_Schema
 			reset_id int(10) unsigned NOT NULL auto_increment,
 			member_id int(10) unsigned NOT NULL,
 			resetcode varchar(12) NOT NULL,
-			date int(10) NOT NULL,
+			date bigint(10) NOT NULL,
 			PRIMARY KEY `reset_id` (`reset_id`)
 		)";
 
@@ -460,12 +464,12 @@ class EE_Schema
 			ignore_list text NULL,
 			private_messages int(4) unsigned DEFAULT '0' NOT NULL,
 			accept_messages char(1) NOT NULL default 'y',
-			last_view_bulletins int(10) NOT NULL default 0,
+			last_view_bulletins bigint(10) NOT NULL default 0,
 			last_bulletin_date bigint(10) NOT NULL default 0,
 			ip_address varchar(45) default '0' NOT NULL,
 			join_date bigint(10) unsigned default '0' NOT NULL,
-			last_visit int(10) unsigned default '0' NOT NULL,
-			last_activity int(10) unsigned default '0' NOT NULL,
+			last_visit bigint(10) unsigned default '0' NOT NULL,
+			last_activity bigint(10) unsigned default '0' NOT NULL,
 			total_entries mediumint(8) unsigned NOT NULL default '0',
 			total_comments mediumint(8) unsigned NOT NULL default '0',
 			total_forum_topics mediumint(8) default '0' NOT NULL,
@@ -1307,7 +1311,7 @@ class EE_Schema
 			recipient_id int(10) unsigned NOT NULL default 0,
 			message_received char(1) NOT NULL default 'n',
 			message_read char(1) NOT NULL default 'n',
-			message_time_read int(10) unsigned NOT NULL default 0,
+			message_time_read bigint(10) unsigned NOT NULL default 0,
 			attachment_downloaded char(1) NOT NULL default 'n',
 			message_folder int(10) unsigned NOT NULL default 1,
 			message_authcode varchar(10) NOT NULL default '',
@@ -1395,7 +1399,7 @@ class EE_Schema
 			`bulletin_group` int(8) unsigned NOT NULL,
 			`bulletin_date` bigint(10) unsigned NOT NULL,
 			`hash` varchar(10) NOT NULL DEFAULT '',
-			`bulletin_expires` int(10) unsigned NOT NULL DEFAULT 0,
+			`bulletin_expires` bigint(10) unsigned NOT NULL DEFAULT 0,
 			`bulletin_message` text NOT NULL,
 			PRIMARY KEY `bulletin_id` (`bulletin_id`),
 			KEY `sender_id` (`sender_id`),
@@ -1479,7 +1483,9 @@ class EE_Schema
 			KEY `upload_location_id` (`upload_location_id`),
 			KEY `directory_id` (`directory_id`),
 			KEY `file_type` (`file_type`),
-			KEY `site_id` (`site_id`)
+			KEY `site_id` (`site_id`),
+			KEY `file_name` (`file_name`),
+			KEY `title` (`title`)
 		)";
 
         $Q[] = "CREATE TABLE `exp_file_categories` (
@@ -1550,7 +1556,7 @@ class EE_Schema
         // Developer log table
         $Q[] = "CREATE TABLE `exp_developer_log` (
 			`log_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-			`timestamp` int(10) unsigned NOT NULL,
+			`timestamp` bigint(10) unsigned NOT NULL,
 			`viewed` char(1) NOT NULL DEFAULT 'n',
 			`description` text NULL,
 			`function` varchar(100) NULL,
@@ -1576,12 +1582,11 @@ class EE_Schema
 			`user_agent` varchar(120) DEFAULT '',
 			`admin_sess` tinyint(1) DEFAULT '0',
 			`site_id` int(4) DEFAULT '1',
-			`expiration` int(10) DEFAULT '0',
-			`last_refresh` int(10) DEFAULT '0',
+			`expiration` bigint(10) DEFAULT '0',
+			`last_refresh` bigint(10) DEFAULT '0',
 			PRIMARY KEY (`remember_me_id`),
 			KEY `member_id` (`member_id`)
 		)";
-
         $Q[] = "CREATE TABLE `exp_grid_columns` (
 			`col_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`field_id` int(10) unsigned DEFAULT NULL,
@@ -1662,8 +1667,8 @@ class EE_Schema
 			`cookie_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 			`cookie_provider` varchar(50) NOT NULL,
 			`cookie_name` varchar(50) NOT NULL,
-			`cookie_lifetime` int(10) unsigned DEFAULT NULL,
-			`cookie_enforced_lifetime` int(10) unsigned DEFAULT NULL,
+			`cookie_lifetime` bigint(10) unsigned DEFAULT NULL,
+			`cookie_enforced_lifetime` bigint(10) unsigned DEFAULT NULL,
 			`cookie_title` varchar(200) NOT NULL,
 			`cookie_description` text NULL,
 			PRIMARY KEY (`cookie_id`)
@@ -1736,6 +1741,18 @@ class EE_Schema
 			`value` text,
 			PRIMARY KEY (`config_id`),
 			KEY `site_key` (`site_id`,`key`)
+		);";
+
+        // Cache table
+        // Used by the database cache driver to store cached data
+
+        $Q[] = "CREATE TABLE `exp_cache` (
+			`cache_key` varchar(255) NOT NULL,
+			`data` longtext NOT NULL,
+			`ttl` int(11) unsigned NOT NULL DEFAULT '0',
+			`created_at` int(11) unsigned NOT NULL,
+			PRIMARY KEY (`cache_key`),
+			KEY `created_at` (`created_at`)
 		);";
 
         // entry manager

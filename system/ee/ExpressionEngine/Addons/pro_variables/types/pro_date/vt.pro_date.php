@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -23,6 +23,10 @@ class Pro_date extends Pro_variables_type
             'date' => '1.0'
         )
     );
+    public $default_settings = array(
+        'localization' => 'ask',
+        'show_time' => 'y'
+    );
     // Field type to use
     protected $ft = 'date';
     /**
@@ -40,9 +44,17 @@ class Pro_date extends Pro_variables_type
      */
     public function save_settings()
     {
+        // Start with existing saved settings (if any)
+        $settings = $this->settings() ?: array();
+
+        // Ensure defaults are present and override with posted values if provided.
+        foreach ($this->default_settings as $key => $default) {
+            $settings[$key] = ee('Request')->post($key, isset($settings[$key]) ? $settings[$key] : $default);
+        }
+
         $this->setup_ft();
 
-        return $this->call_ft(__FUNCTION__, $this->settings());
+        return $this->call_ft(__FUNCTION__, $settings);
     }
 
     /**
@@ -58,6 +70,7 @@ class Pro_date extends Pro_variables_type
         $field = $this->call_ft(__FUNCTION__, $var_data);
         // Replace the entry_date back
         $this->name = $this->row('variable_name');
+
         $field = str_replace('entry_date', $this->input_name(), $field);
 
         return $field;

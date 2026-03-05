@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 if (! function_exists('xml_parser_create')) {
@@ -620,10 +620,16 @@ class XML_RPC_Message extends EE_Xmlrpc
         $this->xh[$parser_name]['valuestack'] = array();
         $this->xh[$parser_name]['isf_reason'] = 0;
 
-        xml_set_object($parser, $this);
         xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, true);
-        xml_set_element_handler($parser, 'open_tag', 'closing_tag');
-        xml_set_character_data_handler($parser, 'character_data');
+        xml_set_character_data_handler($parser, function($parser, $cdata) {
+            return $this->character_data($parser, $cdata);
+        });
+        xml_set_element_handler($parser, function($parser, $tag, $attributes) {
+            return $this->open_tag($parser, $tag, $attributes);
+        }, function($parser, $tag) {
+            return $this->closing_tag($parser, $tag);
+        });
+
         //xml_set_default_handler($parser, 'default_handler');
 
         //-------------------------------------

@@ -30,3 +30,14 @@
     }
     ?>
 <?php endif; ?>
+
+<?php if (isset($fieldset) && !empty($fieldset)) :
+    $this->embed('ee:_shared/form/fieldset', $fieldset);
+?>
+    <fieldset class="fieldset-invalid member-delete-confirm-invalid hidden" style="margin-bottom: 0;">
+        <div class="field-control">
+            <em class="ee-form-error-message"><?=lang('confirmation_toggle_required')?></em>
+        </div>
+    </fieldset>
+<?php endif; ?>
+

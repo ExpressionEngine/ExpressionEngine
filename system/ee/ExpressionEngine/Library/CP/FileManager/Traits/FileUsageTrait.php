@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -26,10 +26,14 @@ trait FileUsageTrait
         $dirsAndFilesInSubfolders = [];
         if (preg_match_all('/{filedir_(\d+)}([^\"\'\s]*)/', $data, $matches, PREG_SET_ORDER)) {
             foreach ($matches as $match) {
-                if (strpos($match[2], '/', 1) !== false) {
-                    $dirsAndFilesInSubfolders[$match[1]][] = $match[2];
+                $relativePath = $match[2] ?? '';
+                if ($relativePath === '') {
+                    continue;
+                }
+                if (strpos($relativePath, '/', 1) !== false) {
+                    $dirsAndFilesInSubfolders[$match[1]][] = $relativePath;
                 } else {
-                    $dirsAndFiles[$match[1]][] = $match[2];
+                    $dirsAndFiles[$match[1]][] = $relativePath;
                 }
             }
         }

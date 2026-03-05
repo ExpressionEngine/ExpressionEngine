@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -1970,5 +1970,23 @@ class Hooks
         'name' => 'edit_wiki_article_form_end',
         'params' => '$obj, $query',
         'library' => 'Wiki Module',
+    ];
+
+    public const UPDATER_START = [
+        'name' => 'updater_start',
+        'params' => '$runner',
+        'library' => 'Updater',
+    ];
+
+    public const UPDATER_ERROR = [
+        'name' => 'updater_error',
+        'params' => '$runner, $exception',
+        'library' => 'Updater',
+    ];
+
+    public const UPDATER_COMPLETE = [
+        'name' => 'updater_complete',
+        'params' => '',
+        'library' => 'Updater',
     ];
 }

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -553,13 +553,15 @@ class Pagination_object
             }
 
             // Determine the offset
-            if ($this->offset === 0) {
+            if ($this->offset === 0 || !is_numeric($this->offset)) {
                 $query_string = (ee()->uri->page_query_string != '') ? ee()->uri->page_query_string : ee()->uri->query_string;
-                if (preg_match("#^{$this->prefix}(\d+)|/{$this->prefix}(\d+)#", $query_string, $match)) {
+                if (preg_match("#^{$this->prefix}(\d+)$|/{$this->prefix}(\d+)$#", $query_string, $match)) {
                     $this->offset = (isset($match[2])) ? (int) $match[2] : (int) $match[1];
                     $this->basepath = reduce_double_slashes(
                         str_replace($match[0], '', $this->basepath)
                     );
+                } else {
+                    $this->offset = 0;
                 }
             }
 

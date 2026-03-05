@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -87,6 +87,17 @@ class CommandUpdate extends Cli
 
         $this->runUpgrade();
         $this->postFlightCheck();
+
+        // -------------------------------------------
+        // 'updater_complete' hook.
+        //  - added 7.5.16
+        //
+        if (ee()->extensions->active_hook('updater_complete') === true) {
+            ee()->extensions->call('updater_complete');
+        }
+        //
+        // -------------------------------------------
+
         $this->complete('command_update_success');
     }
 
@@ -344,7 +355,7 @@ class CommandUpdate extends Cli
     protected function upgradeFromLocalVersion()
     {
         if (file_exists(FCPATH . '../../.env.php') && (require FCPATH . '../../.env.php') == true) {
-            if (getenv('EE_INSTALL_MODE') !== 'TRUE') {
+            if (($_ENV['EE_INSTALL_MODE'] ?? false) !== 'TRUE') {
                 throw new \Exception("EE_INSTALL_MODE needs to be set to TRUE in .env.php to run update command");
             }
         }

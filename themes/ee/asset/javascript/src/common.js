@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -714,7 +714,7 @@ $(document).ready(function(){
 		$('body').on('modal:close', '.modal-wrap, .modal-form-wrap, .app-modal', function(e) {
 			var modal = $(this)
 
-			if (modal.is(":visible")) {
+			if (modal.is(":visible") && !modal.hasClass('must-interact')) {
 				// fade out the overlay
 				$('.overlay').fadeOut('slow');
 
