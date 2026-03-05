@@ -388,12 +388,17 @@ class FluidFieldTestCollection implements IteratorAggregate, Countable, ArrayAcc
         return $this;
     }
 
-    public function indexBy(string $property): array
+    public function indexBy($collector): array
     {
         $indexed = [];
 
         foreach ($this->items as $item) {
-            $value = isset($item->$property) ? $item->$property : null;
+            if (is_callable($collector)) {
+                $value = $collector($item);
+            } else {
+                $value = isset($item->$collector) ? $item->$collector : null;
+            }
+
             $indexed[$value] = $item;
         }
 
@@ -552,6 +557,7 @@ class FluidFieldChannelFieldStub
     public $field_id;
     public $field_name;
     public $field_label;
+    public $field_instructions;
     public $field_type;
     public $field_order;
     public $createTableCalls = 0;
@@ -559,11 +565,12 @@ class FluidFieldChannelFieldStub
     private $field;
     private $tableName;
 
-    public function __construct($id, $name, $field = null, $type = 'text', $label = 'Label', $tableName = null)
+    public function __construct($id, $name, $field = null, $type = 'text', $label = 'Label', $tableName = null, $instructions = '')
     {
         $this->field_id = $id;
         $this->field_name = $name;
         $this->field_label = $label;
+        $this->field_instructions = $instructions;
         $this->field_type = $type;
         $this->field_order = $id;
         $this->field = $field ?: new FluidFieldFacadeStub($id);
@@ -596,13 +603,15 @@ class FluidFieldGroupStub
 {
     public $group_id;
     public $group_name;
+    public $group_description;
     public $short_name;
     public $ChannelFields;
 
-    public function __construct($id, $groupName = 'Group', $shortName = 'group', $channelFields = null)
+    public function __construct($id, $groupName = 'Group', $shortName = 'group', $channelFields = null, $groupDescription = '')
     {
         $this->group_id = $id;
         $this->group_name = $groupName;
+        $this->group_description = $groupDescription;
         $this->short_name = $shortName;
         $this->ChannelFields = $channelFields ?: new FluidFieldTestCollection();
     }

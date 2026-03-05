@@ -1105,7 +1105,7 @@ class FluidFieldFtTest extends FluidFieldTestBase
         $standaloneFacade = new FluidFieldFacadeStub(1);
         $groupFacade = new FluidFieldFacadeStub(2);
 
-        $standaloneField = new FluidFieldChannelFieldStub(1, 'title', new FluidFieldFacadeStub(1));
+        $standaloneField = new FluidFieldChannelFieldStub(1, 'title', new FluidFieldFacadeStub(1), 'text', 'Label', null, 'Standalone field instructions');
         $groupField = new FluidFieldChannelFieldStub(2, 'body', $groupFacade);
         $missingGroupField = new class(3, 'summary', new FluidFieldFacadeStub(3)) extends FluidFieldChannelFieldStub {
             public function getField()
@@ -1149,8 +1149,13 @@ class FluidFieldFtTest extends FluidFieldTestBase
         $views = array_map(function ($render) {
             return $render['view'];
         }, $this->viewService->renders);
+        $standaloneInstructions = null;
         $storedGroupMissingFieldName = null;
         foreach ($this->viewService->renders as $render) {
+            if ($render['view'] === 'fluid_field:field' && isset($render['data']['instructions'])) {
+                $standaloneInstructions = $render['data']['instructions'];
+            }
+
             if ($render['view'] !== 'fluid_field:fieldgroup'
                 || !isset($render['data']['field_group_fields'])
                 || !is_array($render['data']['field_group_fields'])) {
@@ -1169,6 +1174,7 @@ class FluidFieldFtTest extends FluidFieldTestBase
         $this->assertContains('fluid_field:field', $views);
         $this->assertContains('fluid_field:fieldgroup', $views);
         $this->assertSame('fluid_content[fields][field_101][field_group_id_0][field_id_1]', $standaloneFacade->getName());
+        $this->assertSame('Standalone field instructions', $standaloneInstructions);
         $this->assertSame('fluid_content[fields][new_field_for_group_2][field_group_id_10][field_id_3]', $storedGroupMissingFieldName);
     }
 
@@ -2010,6 +2016,127 @@ class FluidFieldFtTest extends FluidFieldTestBase
 
         $this->assertCount(1, $choices);
         $this->assertSame([2], $choiceValues);
+    }
+
+    public function testDisplaySettingsUsesFieldAndGroupFilterLabelsAndIgnoresFallbackFilter()
+    {
+        $this->fieldtype->_init([
+            'id' => null,
+            'name' => 'fluid_content',
+            'content_id' => 99,
+            'content_type' => 'channel',
+        ]);
+
+        $channelField = new FluidFieldChannelFieldStub(1, 'title', new FluidFieldFacadeStub(1), 'text', 'Default Field Label');
+        $group = new FluidFieldGroupStub(10, 'Default Group Label', 'body_group');
+
+        $fieldFilter = new class {
+            public $field_id = 1;
+            public $field_group_id = null;
+            public $label = 'Filtered Field Label';
+
+            public function getId()
+            {
+                return 101;
+            }
+        };
+
+        $groupFilter = new class {
+            public $field_id = null;
+            public $field_group_id = 10;
+            public $label = 'Filtered Group Label';
+
+            public function getId()
+            {
+                return 102;
+            }
+        };
+
+        $fallbackFilter = new class {
+            public $field_id = null;
+            public $field_group_id = null;
+            public $label = 'Fallback Label';
+
+            public function getId()
+            {
+                return 103;
+            }
+        };
+
+        $this->setModelGetCallback(function ($model, $id = null) use ($channelField, $group, $fieldFilter, $groupFilter, $fallbackFilter) {
+            if ($model === 'fluid_field:FluidFieldFilter') {
+                return $this->makeModelQuery(new FluidFieldTestCollection([$fieldFilter, $groupFilter, $fallbackFilter]));
+            }
+
+            if ($model === 'ChannelField') {
+                return $this->makeModelQuery(new FluidFieldTestCollection([$channelField]));
+            }
+
+            if ($model === 'ChannelFieldGroup') {
+                return $this->makeModelQuery(new FluidFieldTestCollection([$group]));
+            }
+
+            return $this->makeModelQuery(new FluidFieldTestCollection(), null);
+        });
+
+        $result = $this->fieldtype->display_settings([]);
+        $fieldChoices = $result['field_options_fluid_field']['settings'][0]['fields']['field_channel_fields']['choices']->asArray();
+        $groupChoices = $result['field_options_fluid_field']['settings'][1]['fields']['field_channel_field_groups']['choices']->asArray();
+        $labels = array_merge(array_column($fieldChoices, 'label'), array_column($groupChoices, 'label'));
+
+        $this->assertSame('Filtered Field Label', $fieldChoices[0]['label']);
+        $this->assertSame('Filtered Group Label', $groupChoices[0]['label']);
+        $this->assertNotContains('Fallback Label', $labels);
+    }
+
+    public function testFluidFieldTestCollectionIndexBySupportsFilterKeyClosure()
+    {
+        $fieldFilter = new class {
+            public $field_id = 1;
+            public $field_group_id = null;
+
+            public function getId()
+            {
+                return 201;
+            }
+        };
+
+        $groupFilter = new class {
+            public $field_id = null;
+            public $field_group_id = 10;
+
+            public function getId()
+            {
+                return 202;
+            }
+        };
+
+        $fallbackFilter = new class {
+            public $field_id = null;
+            public $field_group_id = null;
+
+            public function getId()
+            {
+                return 203;
+            }
+        };
+
+        $indexed = (new FluidFieldTestCollection([$fieldFilter, $groupFilter, $fallbackFilter]))
+            ->indexBy(function ($filter) {
+                if (!empty($filter->field_id)) {
+                    return 'field_' . $filter->field_id;
+                }
+
+                if (!empty($filter->field_group_id)) {
+                    return 'group_' . $filter->field_group_id;
+                }
+
+                return 'id_' . $filter->getId();
+            });
+
+        $this->assertSame($fieldFilter, $indexed['field_1']);
+        $this->assertSame($groupFilter, $indexed['group_10']);
+        $this->assertSame($fallbackFilter, $indexed['id_203']);
     }
 
     public function testReplaceTotalFieldsFiltersByNameOnly()
