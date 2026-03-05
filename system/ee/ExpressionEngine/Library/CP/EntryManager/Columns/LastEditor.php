@@ -39,6 +39,10 @@ class LastEditor extends Column
 
     public function renderTableCell($data, $field_id, $entry)
     {
-        return !empty($entry->edit_member_id) ? ee('Format')->make('Text', $entry->LastEditor->getMemberName()) : '';
+        if (empty($entry->edit_member_id) || !$entry->LastEditor) {
+            return '';
+        }
+
+        return ee('Format')->make('Text', $entry->LastEditor->getMemberName());
     }
 }
