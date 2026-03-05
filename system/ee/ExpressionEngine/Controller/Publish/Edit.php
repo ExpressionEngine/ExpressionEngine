@@ -70,10 +70,18 @@ class Edit extends AbstractPublishController
         }
         $extra_filters[] = 'Columns';
 
+        $search_in = ee()->input->post('search_in');
+        if (is_null($search_in)) {
+            $search_in = ee()->input->get('search_in');
+        }
+        if (is_null($search_in)) {
+            $search_in = isset($_COOKIE['search_everywhere']) ? 'titles_and_content' : 'titles';
+        }
+
         $entry_listing = ee(
             'CP/EntryListing',
             ee()->input->get_post('filter_by_keyword'),
-            ee()->input->get_post('search_in') ?: 'titles',
+            $search_in,
             false,
             null, //ee()->input->get_post('view') ?: '',//view is not used atm
             $extra_filters

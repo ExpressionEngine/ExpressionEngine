@@ -155,15 +155,14 @@ $(document).ready(function () {
 
 	//changind the search scope
 	$('body').on('change', 'input[name="search_in"]', function() {
-
-		if ($('input[name="filter_by_keyword"]').val()!='') {
-			searchEntries('POST');
-		}
-		
 		if (!$(this).is(':checked')) {
 			setCookie("search_everywhere", true, 30);
 		} else {
 			document.cookie = "search_everywhere=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+		}
+
+		if ($('input[name="filter_by_keyword"]').val()!='') {
+			searchEntries('POST');
 		}
 
 	});
