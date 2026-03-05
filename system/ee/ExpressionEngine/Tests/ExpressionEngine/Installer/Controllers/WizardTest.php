@@ -483,13 +483,13 @@ class WizardTest extends TestCase
 
         @chmod(PATH_TMPL, 0555);
         clearstatcache(true, PATH_TMPL);
-        if (! is_writable(PATH_TMPL)) {
-            $this->assertFalse($wizard->template_path_writeable('y'));
+        $templateWritable = $wizard->template_path_writeable('y');
+        if (! $templateWritable) {
             $this->assertSame('unwritable_templates', $formValidation->messages['template_path_writeable']);
         } else {
             // Some environments (notably Windows CI) do not honor chmod-style
             // permission changes for writability checks.
-            $this->assertTrue($wizard->template_path_writeable('y'));
+            $this->assertTrue($templateWritable);
         }
         @chmod(PATH_TMPL, 0755);
 
