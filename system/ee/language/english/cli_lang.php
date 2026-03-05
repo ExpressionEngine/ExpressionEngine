@@ -10,6 +10,7 @@ $lang = array(
     'cli_option_help'                              => 'See help menu for given command',
     'cli_option_help_json'                         => 'See help menu for given command in JSON format',
     'cli_error_the_specified_addon_does_not_exist' => 'The specified add-on does not exist',
+    'cli_error_the_specified_addon_component_does_not_exist' => 'The specified add-on component does not exist: %s',
     'cli_error_cli_disabled'                       => 'The ExpressionEngine CLI is currently disabled. To use the CLI, you must enable it in the settings.',
     'cli_no_addons'                                => 'There are no add-ons available',
     'cli_table_no_results'                         => 'No results found.',
@@ -220,6 +221,18 @@ $lang = array(
     // make:template-tag options
     'command_make_template_tag_option_addon'                 => 'Folder for third-party add-on you want to add tag to.',
 
+    // Lang entries for command make:template-generator
+    'command_make_template_generator_description'                   => 'Creates a new template generator for an add-on',
+    'command_make_template_generator_summary'                       => 'This interactively generates an EE Template Generator for an existing third-party addon',
+    'command_make_template_generator_lets_build_template_generator' => 'Let\'s build a new template generator!',
+    'command_make_template_generator_ask_name'                      => 'What is the template generator name?',
+    'command_make_template_generator_ask_addon'                     => 'What add-on is this for?',
+    'command_make_template_generator_building_template_generator'   => 'Building Template Generator.',
+    'command_make_template_generator_created_successfully'          => 'Template Generator created successfully!',
+
+    // make:template-generator options
+    'command_make_template_generator_option_addon'                  => 'Short name (folder) of the third-party add-on you want to add a template generator to.',
+
     // Lang entries for command make:sidebar
     'command_make_sidebar_description'                  => 'Creates a control panel sidebar for an add-on',
     'command_make_sidebar_summary'                      => 'This generates a sidebar for an existing third-party addon',
@@ -392,6 +405,8 @@ $lang = array(
     // Lang entries for command update
     'command_update_description'                                => 'Updates ExpressionEngine',
     'command_update_summary'                                    => 'Runs all available ExpressionEngine updates',
+    'command_update_db_description'                             => 'Runs ExpressionEngine database updates only',
+    'command_update_db_summary'                                 => 'Updates the database schema and update steps without replacing files',
     'command_update_is_already_up_to_date'                      => ' is already up-to-date!',
     'command_update_new_version_available'                      => 'There is a new version of ExpressionEngine available:',
     'command_update_confirm_upgrade'                            => 'Would you like to upgrade?',
@@ -408,6 +423,12 @@ $lang = array(
     'command_update_error_updater_failed_missing_version'       => 'Updater failed because of missing version. Please update the UpgradeMap. Version: ',
     'command_update_missing_avatar_path_message'                => 'Your update process will fail without a set avatar path.',
     'command_update_enter_full_avatar_path'                     => 'Enter full avatar path',
+    'command_update_database_versions'                          => 'Your database version will be updated from %s to %s.',
+    'command_update_database_version_exceeds_app_version'       => 'Cannot upgrade database to version %s past installed version %s.',
+    'command_update_database_version_mismatch_warning'          => "The version you are choosing to upgrade from [%s] does not match your database version [%s].\nThis may cause problems with your installation.",
+    'command_update_database_up_to_date'                        => 'Your database is up to date with your install.',
+    'command_update_invalid_version_number'                     => 'is not a valid version number',
+
     // update options
     'command_update_option_rollback'                            => 'Rollback last update',
     'command_update_option_verbose'                             => 'Verbose output',
@@ -417,6 +438,8 @@ $lang = array(
     'command_update_option_force_addon_upgrades'                => 'Automatically runs all add-on updaters at end of update (advanced)',
     'command_update_option_y'                                   => 'Skip all confirmations. Don\'t do this.',
     'command_update_option_skip_cleanup'                        => 'Skip cleanup steps after update',
+    'command_update_option_to_version'                          => 'Target database version to upgrade to',
+    'command_update_option_from_version'                        => 'Starting database version to upgrade from',
 
     // Lang entries for command sync:file-usage
     'command_sync_file_usage_description'     => 'Syncs the file usage for all files',
@@ -518,6 +541,17 @@ $lang = array(
     'command_generate_templates_invalid_generator' => 'An invalid generator was supplied.',
     'separate_choices_commas' => 'Separate multiple options with commas',
     'command_generate_templates_building_templates' => 'Building templates...',
+
+    // Lang entries for command make:service
+    'command_make_service_description'          => 'Creates a new service for an add-on',
+    'command_make_service_summary'              => 'This interactively generates a service for an existing add-on',
+    'command_make_service_lets_build_service'   => 'Let\'s build your service!',
+    'command_make_service_ask_service_name'     => 'What is the service name?',
+    'command_make_service_ask_addon'            => 'What add-on is this for?',
+    'command_make_service_lets_build'           => 'Let\'s build!',
+    'command_make_service_created_successfully' => 'Your service has been created successfully!',
+    'command_make_service_option_addon'         => 'Name of add-on',
+    'command_make_service_option_singleton'     => 'Register this service as a singleton',
 
     // channels:list
     'command_channels_list_description' => 'Lists all channels in the system',

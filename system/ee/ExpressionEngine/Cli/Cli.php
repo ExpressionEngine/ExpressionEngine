@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -143,8 +143,10 @@ class Cli
         'make:migration' => Commands\CommandMakeMigration::class,
         'make:model' => Commands\CommandMakeModel::class,
         'make:prolet' => Commands\CommandMakeProlet::class,
+        'make:service' => Commands\CommandMakeService::class,
         'make:sidebar' => Commands\CommandMakeSidebar::class,
         'make:template-tag' => Commands\CommandMakeTemplateTag::class,
+        'make:template-generator' => Commands\CommandMakeTemplateGenerator::class,
         'make:widget' => Commands\CommandMakeWidget::class,
 
         // Migrate
@@ -163,6 +165,7 @@ class Cli
 
         // Update
         'update' => Commands\CommandUpdate::class,
+        'update:db' => Commands\CommandUpdateDatabase::class,
         'update:prepare' => Commands\CommandUpdatePrepare::class,
         'update:run-hook' => Commands\CommandUpdateRunHook::class,
     ];
@@ -858,6 +861,11 @@ class Cli
                     break;
             }
         }
+
+        // sort the list of addons by name
+        uasort($list, function ($a, $b) {
+            return strcasecmp($a['name'], $b['name']);
+        });
 
         return $list;
     }

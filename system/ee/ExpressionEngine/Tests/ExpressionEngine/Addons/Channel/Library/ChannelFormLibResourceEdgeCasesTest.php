@@ -157,7 +157,7 @@ class ChannelFormLibResourceEdgeCasesTest extends ChannelFormLibTestBase
 
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('_add_errors');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         $startMemory = memory_get_usage();
         $startTime = microtime(true);

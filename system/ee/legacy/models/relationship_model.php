@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -243,7 +243,7 @@ class Relationship_model extends CI_Model
     {
         if ($fluid_field_data_id) {
             list($fluid_field, $sub_field_id) = explode(',', $fluid_field_data_id);
-            $data = reset($data[$fluid_field]['fields'][$sub_field_id]);
+            $data = isset($data[$fluid_field]['fields'][$sub_field_id]) ? reset($data[$fluid_field]['fields'][$sub_field_id]) : [];
         }
 
         foreach ($grid_field_ids as $field_id) {

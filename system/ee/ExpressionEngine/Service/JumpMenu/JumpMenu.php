@@ -5,7 +5,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -21,7 +21,7 @@ class JumpMenu extends AbstractJumpMenu
             //theme
             'switchTheme' => array(
                 'icon' => 'fa-random',
-                'command' => 'switch theme light dark slate',
+                'command' => 'switch theme light dark slate contrast',
                 'dynamic' => true,
                 'addon' => false,
                 'target' => 'themes/switch'

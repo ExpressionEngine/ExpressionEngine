@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -45,6 +45,7 @@ class ChannelTitleGateway extends Gateway
     public $expiration_date;
     public $comment_expiration_date;
     public $edit_date;
+    public $edit_member_id;
     public $recent_comment_date;
     public $comment_total;
 }

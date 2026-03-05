@@ -182,6 +182,7 @@ window.Rte;
         id = id.replace(/\[/g, '_').replace(/\]/g, '');
 
         $textarea.attr('id', id);
+        $textarea.attr('class', 'rte-textarea');
 
         new Rte(id, config[0], config[1], cell);
     };

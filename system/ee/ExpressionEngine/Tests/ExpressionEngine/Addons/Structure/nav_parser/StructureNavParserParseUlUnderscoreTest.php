@@ -20,7 +20,7 @@ class StructureNavParserParseUlUnderscoreTest extends StructureTestBase
         $parser = new NavParser();
         $ref = new ReflectionClass($parser);
         $method = $ref->getMethod('parse_ul');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $vars = $method->invoke($parser, $ul);
 
         $this->assertSame('9', $vars[0]['root:entry_id']);

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -31,14 +31,14 @@ class ControllerTest extends TestCase
     public function testControllerHasRouteNamespaceProperty()
     {
         $controller = new _addon_controller_mock();
-        $this->assertObjectHasAttribute('route_namespace', $controller);
+        $this->assertObjectHasProperty('route_namespace', $controller);
         $this->assertEquals('', $controller->getRoutespaceProperty());
     }
 
     public function testControllerHasAddonNameProperty()
     {
         $controller = new _addon_controller_mock();
-        $this->assertObjectHasAttribute('addon_name', $controller);
+        $this->assertObjectHasProperty('addon_name', $controller);
         $this->assertEquals('', $controller->getAddonNameProperty());
     }
 

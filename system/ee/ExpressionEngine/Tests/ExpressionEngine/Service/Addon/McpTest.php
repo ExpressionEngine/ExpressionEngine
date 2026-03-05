@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -60,7 +60,7 @@ class McpTest extends TestCase
      */
     public function testMcpHasActionProperty(Mcp $controller): Mcp
     {
-        $this->assertObjectHasAttribute('action', $controller);
+        $this->assertObjectHasProperty('action', $controller);
         return $controller;
     }
 
@@ -71,7 +71,7 @@ class McpTest extends TestCase
      */
     public function testMcpHasIdProperty(Mcp $controller): Mcp
     {
-        $this->assertObjectHasAttribute('id', $controller);
+        $this->assertObjectHasProperty('id', $controller);
         return $controller;
     }
 

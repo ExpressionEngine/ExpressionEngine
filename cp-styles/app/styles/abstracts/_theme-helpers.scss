@@ -51,6 +51,12 @@ html.color-theme-in-transition *:after {
 	}
 }
 
+.contrast-theme, body[data-theme="contrast"] {
+	@each $name, $value in $contrast-theme {
+		--ee-#{$name}: #{$value};
+	}
+}
+
 body[data-theme="dark"] .inverted-theme {
 	@each $name, $value in $snow-theme {
 		--ee-#{$name}: #{$value};

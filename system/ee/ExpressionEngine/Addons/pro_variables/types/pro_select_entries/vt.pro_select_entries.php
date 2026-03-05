@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 if (! defined('BASEPATH')) {
@@ -31,8 +31,46 @@ class Pro_select_entries extends Pro_variables_type
         'sort'            => 'asc',
         'multiple'        => 'y',
         'separator'       => 'pipe',
-        'multi_interface' => 'select'
+        'multi_interface' => 'drag-list'
     );
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Sanitize settings before saving to database
+     */
+    public function save_settings()
+    {
+        $settings = $this->settings();
+
+        // Ensure channels, categories, and statuses are arrays and filter empty values
+        $settings['channels'] = $this->normalize_array_setting($settings['channels']);
+        $settings['categories'] = $this->normalize_array_setting($settings['categories']);
+        $settings['statuses'] = $this->normalize_array_setting($settings['statuses']);
+
+        return $settings;
+    }
+
+    // --------------------------------------------------------------------
+
+    /**
+     * Normalize array setting value
+     *
+     * Converts non-array values to arrays, filters out empty strings and null values,
+     * and re-indexes the array.
+     *
+     * @param mixed $value The value to normalize
+     * @return array Normalized array with empty values filtered out
+     */
+    protected function normalize_array_setting($value)
+    {
+        if (!is_array($value)) {
+            $value = empty($value) ? [] : [$value];
+        }
+        return array_values(array_filter($value, function($v) {
+            return $v !== '' && $v !== null;
+        }));
+    }
 
     // --------------------------------------------------------------------
 
@@ -173,6 +211,7 @@ class Pro_select_entries extends Pro_variables_type
                 $this->setting_name('sort') => array(
                     'type' => 'select',
                     'value' => $this->settings('sort'),
+                    'class' => 'sort-select',
                     'choices' => array(
                         'asc'  => lang('order_asc'),
                         'desc' => lang('order_desc')
@@ -305,19 +344,134 @@ class Pro_select_entries extends Pro_variables_type
                 )
             );
         } else {
-            //  Multiple choice
-            $data = array(
-                'name' => $this->input_name(),
-                'choices' => $choices,
-                'value' => PVUI::explode($this->settings('separator'), $var_data),
-                'multiple' => true
-            );
+            if ($this->settings('multi_interface') == 'drag-list') {
+
+                $ids = str_replace('Array', '', $var_data);
+                $ids = array_map('intval', preg_split('/[|,\s]+/', trim($ids)));
+
+                $entries = ee('Model')
+                    ->get('ChannelEntry')
+                    ->filter('entry_id', 'IN', $ids)
+                    ->all()
+                    ->indexBy('entry_id');
+
+                $channels = ee('Model')
+                    ->get('Channel')
+                    ->filter('site_id', ee()->config->item('site_id'))
+                    ->order('channel_title')
+                    ->all()
+                    ->indexBy('channel_id');
+
+                $selected = [];
+                $items = [];
+                $channels_arr = [];
+                $allowed_channels = array_filter($this->settings('channels'));
+
+                foreach ($ids as $id) {
+                    if (isset($entries[$id])) {
+                        $entry = $entries[$id];
+                        $selected[] = [
+                            'value'        => $entry->entry_id,
+                            'label'        => $entry->title,
+                            'instructions' => isset($channels[$entry->channel_id]) ? $channels[$entry->channel_id]->channel_title : '',
+                            'channel_id'   => $entry->channel_id,
+                            'can_edit'     => false,
+                            'editable'     => false,
+                        ];
+                    }
+                }
+                foreach ($query as $entry) {
+                    if (in_array($entry->channel_id, $allowed_channels)) {
+                        $items[] = [
+                            'value'        => $entry->entry_id,
+                            'label'        => $entry->title,
+                            'instructions' => isset($channels[$entry->channel_id]) ? $channels[$entry->channel_id]->channel_title : '',
+                            'channel_id'   => $entry->channel_id,
+                            'can_edit'     => false,
+                            'editable'     => false,
+                        ];
+                    }
+                }
+
+                foreach ($channels as $channel) {
+                    if (in_array($channel->channel_id, $allowed_channels)) {
+                        $channels_arr[] = [
+                            'title' => $channel->channel_title,
+                            'id'    => $channel->channel_id,
+                        ];
+                    }
+                }
+
+                $select_filters = [];
+                if (count($channels) > 1) {
+                    $select_filters[] = [
+                        'name' => 'channel_id',
+                        'title' => lang('channel'),
+                        'placeholder' => lang('filter_channels'),
+                    ];
+                }
+
+                $lang = [
+                    'relateEntry' => lang('relate_entry'),
+                    'search' => lang('search'),
+                    'channel' => lang('channel'),
+                    'remove' => lang('remove'),
+                ];
+
+                // Sanitize settings - ensure arrays and filter empty values
+                $channels = $this->normalize_array_setting($this->settings['channels']);
+                $categories = $this->normalize_array_setting($this->settings['categories']);
+                $statuses = $this->normalize_array_setting($this->settings['statuses']);
+
+                $settings = array(
+                    'channels' => $channels,
+                    'categories' => $categories,
+                    'statuses' => $statuses,
+                    'limit' => $this->settings['limit'] ? $this->settings['limit'] : 100,
+                    'order_field' => $this->settings['orderby'],
+                    'order_dir' => $this->settings['sort'],
+                    'authors' => [],
+                    'expired' => $this->settings['show_expired'] == 'y',
+                    'future' => $this->settings['show_future'] == 'y',
+                    'entry_id' => '',
+                );
+
+                $settings = json_encode($settings);
+                $settings = ee('Encrypt')->encode(
+                    $settings,
+                    ee()->config->item('session_crypt_key')
+                );
+                //  Multiple choice Relationship field
+                $data = array(
+                    'var_type' => $this->info['name'],
+                    'name' => $this->input_name(),
+                    'value' => $selected,
+                    'multiple' => true,
+                    'limit' => $this->settings('limit'),
+                    'channels' => $channels_arr,
+                    'items' => $items,
+                    'lang' => $lang,
+                    'filter_url' => ee('CP/URL')->make('publish/relationship-filter', [
+                        'settings' => $settings
+                    ])->compile(),
+                );
+            } else {
+
+                //  Multiple choice Select
+                $data = array(
+                    'name' => $this->input_name(),
+                    'choices' => $choices,
+                    'value' => PVUI::explode($this->settings('separator'), $var_data),
+                    'multiple' => true
+                );
+            }
 
             return array(array(
                 'type' => 'html',
                 'content' => PVUI::view_field($this->settings('multi_interface'), $data)
             ));
         }
+
     }
 
     // --------------------------------------------------------------------

@@ -28,6 +28,7 @@ class Updater
         $steps = new \ProgressIterator(
             [
                 'addSnippetAndVariablesVersions',
+                'addLastEditorId',
             ]
         );
 
@@ -83,7 +84,26 @@ class Updater
 
         ee()->smartforge->add_key('revision_tracker', 'snippet_id', 'snippet_id');
         ee()->smartforge->add_key('revision_tracker', 'variable_id', 'variable_id');
+    }
 
+    private function addLastEditorId()
+    {
+        if (! ee()->db->field_exists('edit_member_id', 'channel_titles')) {
+            ee()->smartforge->add_column(
+                'channel_titles',
+                [
+                    'edit_member_id' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'default' => 0,
+                        'unsigned' => true,
+                        'null' => false
+                    ]
+                ],
+                'edit_date'
+            );
+            ee()->smartforge->add_key('channel_titles', 'edit_member_id');
+        }
     }
 }
 

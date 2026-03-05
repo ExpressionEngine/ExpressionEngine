@@ -13,7 +13,7 @@ class ChannelFetchDisableParamTest extends ChannelTestBase
         // Make private method accessible
         $ref = new ReflectionClass($this->channel);
         $this->method = $ref->getMethod('_fetch_disable_param');
-        $this->method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($this->method);
     }
 
     public function testInitializesEnableArrayWithAllFeaturesEnabled()

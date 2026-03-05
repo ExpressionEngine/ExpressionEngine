@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -24,6 +24,7 @@ class ColumnFactory
         'sticky' => Columns\Sticky::class,
         'entry_date' => Columns\EntryDate::class,
         'edit_date' => Columns\EditDate::class,
+        'last_editor' => Columns\LastEditor::class,
         'expiration_date' => Columns\ExpirationDate::class,
         'channel' => Columns\ChannelName::class,
         'comments' => Columns\Comments::class,

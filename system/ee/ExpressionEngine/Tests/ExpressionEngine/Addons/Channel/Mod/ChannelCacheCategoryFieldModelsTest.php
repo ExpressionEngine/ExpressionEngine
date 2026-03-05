@@ -26,11 +26,11 @@ class ChannelCacheCategoryFieldModelsTest extends ChannelTestBase
         // Call private method via reflection
         $ref = new ReflectionClass('Channel');
         $m = $ref->getMethod('cacheCategoryFieldModels');
-        $m->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($m);
         $m->invoke($this->channel);
 
         $prop = (new ReflectionClass('Channel'))->getProperty('cat_field_models');
-        $prop->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($prop);
         $models = $prop->getValue($this->channel);
         $this->assertArrayHasKey(11, $models);
     }
@@ -59,11 +59,11 @@ class ChannelCacheCategoryFieldModelsTest extends ChannelTestBase
 
         $ref = new ReflectionClass('Channel');
         $m = $ref->getMethod('cacheCategoryFieldModels');
-        $m->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($m);
         $m->invoke($this->channel);
 
         $prop = (new ReflectionClass('Channel'))->getProperty('cat_field_models');
-        $prop->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($prop);
         $models = $prop->getValue($this->channel);
         $this->assertArrayHasKey(21, $models);
         $this->assertArrayHasKey(22, $models);

@@ -45,12 +45,53 @@ class StructureNavParserAddEntryVarsEe23Test extends StructureTestBase
         // Invoke protected method directly
         $ref = new ReflectionClass($parser);
         $method = $ref->getMethod('add_entry_vars_ee23');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $method->invoke($parser);
 
         $this->assertSame('Legacy X', $parser->rows_by_entry['200']['root:title']);
         unset($parser);
     }
-}
 
+    public function testAddEntryVarsEe23UsesDatabaseFallbackWhenHookIsInactive()
+    {
+        $parser = (new ReflectionClass(NavParser::class))->newInstanceWithoutConstructor();
+        $parser->entry_ids = ['201', '999'];
+        $parser->rows_by_entry['201'] = ['__prefix' => 'root:'];
+
+        ee()->setMock('extensions', new class {
+            public function active_hook($name) { return false; }
+            public function call($name, $arg) { return null; }
+        });
+
+        ee()->db->setRows([
+            [
+                'entry_id' => 201,
+                'title' => 'DB Row',
+                'field_group' => 0,
+                'url_title' => 'db-row',
+                'channel_id' => 1,
+            ],
+            [
+                'entry_id' => 999,
+                'title' => 'Ignored Row',
+                'field_group' => 0,
+                'url_title' => 'ignored',
+                'channel_id' => 1,
+            ],
+        ]);
+
+        ee()->TMPL->var_single = [];
+        ee()->TMPL->var_pair = [];
+        ee()->TMPL->tagdata = '';
+
+        $ref = new ReflectionClass($parser);
+        $method = $ref->getMethod('add_entry_vars_ee23');
+        \TestReflectionHelper::makeMethodAccessible($method);
+        $method->invoke($parser);
+
+        $this->assertSame('DB Row', $parser->rows_by_entry['201']['root:title']);
+        $this->assertArrayNotHasKey('999', $parser->rows_by_entry);
+        unset($parser);
+    }
+}
 

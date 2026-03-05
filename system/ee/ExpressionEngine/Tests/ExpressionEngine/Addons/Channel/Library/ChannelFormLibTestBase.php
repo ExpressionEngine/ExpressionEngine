@@ -20,6 +20,7 @@ if (!defined('PATH_ADDONS')) {
 }
 
 // Define a constant to check if we should use AllowDynamicProperties attribute (PHP 8.0+ only)
+// In PHP 8.4+, #[AllowDynamicProperties] is still needed to avoid deprecation warnings
 if (!defined('USE_ALLOW_DYNAMIC_PROPERTIES')) {
     define('USE_ALLOW_DYNAMIC_PROPERTIES', PHP_VERSION_ID >= 80000);
 }
@@ -110,6 +111,7 @@ if (!class_exists('FakeConfig')) {
 if (!class_exists('FakeFunctions')) {
     class FakeFunctions
     {
+        public $template_type = 'webpage'; // Prevent dynamic property deprecation warnings
         public function fetch_site_index($a = 0, $b = 0) { return '/'; }
         public function create_url($path = '') {
             if ($path) {
@@ -886,7 +888,7 @@ abstract class ChannelFormLibTestBase extends TestCase
     protected function getProtectedProperty($property) {
         $reflection = new ReflectionClass($this->channelFormLib);
         $prop = $reflection->getProperty($property);
-        $prop->setAccessible(true);
+        TestReflectionHelper::makePropertyAccessible($prop);
         return $prop;
     }
 

@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -893,7 +893,8 @@ abstract class EE_Fieldtype
             $data = decode_multi_field($data);
             $firstEmptyValue = null;
             if (array_key_first($field_options) === '') {
-                $firstEmptyValue = array_shift($field_options);
+                $firstEmptyValue = $field_options[''];
+                unset($field_options['']);
             }
 
             // Get keys from a multidimensional array recursively

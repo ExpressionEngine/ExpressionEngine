@@ -248,7 +248,7 @@ $lang = array(
 
     'test_email_subject' => 'Test message from %s',
 
-    'test_email_message' => '<p>This is a test email message sent using following settings:</p>',
+    'test_email_message' => '<p>This is a test email message sent using the following settings:</p>',
 
     'test_email_sent' => 'Test Email sent',
 
@@ -865,9 +865,19 @@ $lang = array(
 
     'banishment_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location for locked out members.',
 
+    'throttling_allow_settings' => 'Allow Settings',
+
     'enable_throttling' => 'Enable throttling?',
 
     'enable_throttling_desc' => 'When enabled, members will be locked out of the system when they meet the lock out requirement.',
+
+    'throttle_ignore_logged_in' => 'Ignore Logged in Requests',
+
+    'throttle_ignore_logged_in_desc' => 'Ignore requests for throttling by logged in members.',
+
+    'throttling_allowed_ips' => 'Allowed IPs',
+
+    'throttling_allowed_ips_desc' => 'Enter 1 IP Address per line to allow a bypass of the Throttling',
 
     'lockout_time' => 'Lockout time',
 

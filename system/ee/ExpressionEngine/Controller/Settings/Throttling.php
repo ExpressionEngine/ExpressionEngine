@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -43,7 +43,7 @@ class Throttling extends Settings
                     'fields' => array(
                         'banish_masked_ips' => array('type' => 'yes_no')
                     )
-                )
+                ),
             ),
             'throttling_limit_settings' => array(
                 array(
@@ -91,6 +91,15 @@ class Throttling extends Settings
                     'title' => 'banishment_message',
                     'fields' => array(
                         'banishment_message' => array('type' => 'textarea')
+                    )
+                )
+            ),
+            'throttling_allow_settings' => array(
+                array(
+                    'title' => 'throttling_allowed_ips',
+                    'desc' => 'throttling_allowed_ips_desc',
+                    'fields' => array(
+                        'throttling_allowed_ips' => array('type' => 'textarea')
                     )
                 )
             )

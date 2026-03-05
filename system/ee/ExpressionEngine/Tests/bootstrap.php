@@ -1,7 +1,8 @@
 <?php
 
-// Report all errors
-error_reporting(E_ALL);
+// Keep strict runtime checks without letting vendor deprecations break
+// isolated-process result serialization on newer PHP versions.
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
 ini_set('display_errors', 1);
 
 $project_base = realpath(dirname(__FILE__) . '/../../../') . '/';
@@ -54,6 +55,7 @@ function lang($str)
 }
 
 require_once 'eeObjectMock.php';
+require_once 'TestReflectionHelper.php';
 
 // Helper functions for testing - only define if not already loaded by EE
 // Note: remove_invisible_characters is defined in boot.common.php when EE is fully loaded

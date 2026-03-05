@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -76,6 +76,10 @@ class Profile extends CP_Controller
             'cp.validatePasswordUrl' => ee('CP/URL', 'login/validate_password')->compile(),
             'lang.password_icon' => lang('password_icon')
         ]);
+
+        ee()->cp->add_js_script(array(
+            'file' => array('cp/confirm_remove', 'cp/members/members'),
+        ));
 
         $this->breadcrumbs = array(
             ee('CP/URL')->make('members')->compile() => lang('members'),
@@ -272,6 +276,23 @@ class Profile extends CP_Controller
                                 'margin_left' => true
                             )
                         );
+
+                        $vars['fieldset'] = [
+                            'group' => 'delete-confirm',
+                            'setting' => [
+                                'title' => '',
+                                'desc' => lang('move_toggle_to_confirm'),
+                                'attrs' => [
+                                    'class' => 'member-delete-confirm',
+                                ],
+                                'fields' => [
+                                    'confirm' => [
+                                        'type' => 'toggle',
+                                        'value' => 0,
+                                    ]
+                                ]
+                            ]
+                        ];
 
                         $heirs_view = ee('View')->make('members/delete_confirm')->render($vars);
                     }

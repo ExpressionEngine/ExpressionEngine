@@ -39,6 +39,7 @@ context('Upload Sync', () => {
   }
 
   before(function() {
+    Cypress.config('numTestsKeptInMemory', 0)
 
     cy.task('db:seed');
 
