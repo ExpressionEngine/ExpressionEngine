@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -309,7 +309,10 @@ class EE_Config
                 ->all()
                 ->getDictionary('key', 'value');
 
-            $config = array_merge($site_configs, $config);
+            // If the config has already been loaded and current_site is set then the site_prefs we're loading
+            // for a different site should have the database config take precedence over the current site's config file
+            $current_site = $this->item('site_id');
+            $config = ($current_site && $current_site != $row['site_id']) ? array_merge($config, $site_configs) : array_merge($site_configs, $config);
         }
 
         // Fold in the Preferences in the Database
@@ -691,6 +694,7 @@ class EE_Config
         $channel_default = array(
             'image_resize_protocol',
             'image_library_path',
+            'image_manipulation_quality',
             'word_separator',
             'use_category_name',
             'reserved_category_word',

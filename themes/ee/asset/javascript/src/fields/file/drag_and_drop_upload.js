@@ -18,7 +18,7 @@ function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input ==
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license
  */
 var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {

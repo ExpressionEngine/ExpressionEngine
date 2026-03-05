@@ -8,7 +8,7 @@ class ChannelFormLibEncodeEeTagsTest extends ChannelFormLibTestBase
     {
         $reflection = new ReflectionClass($this->channelFormLib);
         $method = $reflection->getMethod('encode_ee_tags');
-        $method->setAccessible(true);
+        TestReflectionHelper::makeMethodAccessible($method);
         return $method;
     }
 

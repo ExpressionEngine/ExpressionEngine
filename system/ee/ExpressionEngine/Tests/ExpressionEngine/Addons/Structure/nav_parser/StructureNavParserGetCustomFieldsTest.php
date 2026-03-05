@@ -18,7 +18,7 @@ class StructureNavParserGetCustomFieldsTest extends StructureTestBase
         $parser = new NavParser();
         $ref = new ReflectionClass($parser);
         $method = $ref->getMethod('get_custom_fields');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
         $fields = $method->invoke($parser);
         $this->assertArrayHasKey(1, $fields);
         $this->assertArrayHasKey(2, $fields);

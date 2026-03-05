@@ -7,7 +7,7 @@ class StructureGetListingDataTest extends StructureTestBase
     public function testGetListingDataReturnsRowObjectWhenFound()
     {
         ee()->setMock('db', new class extends FakeDb {
-            public function get_where($table, $where)
+            public function get_where($table, $where = null, $limit = null, $offset = null)
             {
                 $rows = [ ['entry_id' => 77, 'channel_id' => 9, 'template_id' => 2, 'uri' => 'item'] ];
                 return new class($rows) {
@@ -34,7 +34,7 @@ class StructureGetListingDataTest extends StructureTestBase
     public function testGetListingDataReturnsFalseWhenNotFound()
     {
         ee()->setMock('db', new class extends FakeDb {
-            public function get_where($table, $where)
+            public function get_where($table, $where = null, $limit = null, $offset = null)
             {
                 return new class([]) {
                     public $num_rows = 0;

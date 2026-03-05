@@ -86,7 +86,7 @@ class StructureGetChannelTypeTest extends StructureTestBase
 	{
 		// Simulate cached value
 		$ref = new ReflectionProperty($this->structure, 'channel_type');
-		$ref->setAccessible(true);
+		\TestReflectionHelper::makePropertyAccessible($ref);
 		$ref->setValue($this->structure, 'listing');
 
 		ee()->setMock('input', new class {

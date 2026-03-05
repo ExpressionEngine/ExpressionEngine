@@ -3,9 +3,65 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
+
+// Helper function to flatten nested items for virtualization
+function flattenItemsForVirtualization(items, depth = 0) {
+  let flattened = []
+
+  if (!items || !Array.isArray(items)) {
+    return flattened
+  }
+
+  items.forEach(item => {
+    if (item.section) {
+      flattened.push({
+        ...item,
+        depth: depth,
+        isSection: true
+      })
+      return
+    }
+
+    const flatItem = {
+      ...item,
+      depth: depth,
+      hasChildren: !!(item.children && item.children.length > 0),
+      originalChildren: item.children,
+      children: null
+    }
+
+    flattened.push(flatItem)
+
+    if (item.children && item.children.length > 0) {
+      const childrenFlattened = flattenItemsForVirtualization(item.children, depth + 1)
+      flattened = flattened.concat(childrenFlattened)
+    }
+  })
+
+  return flattened
+}
+
+// Helper function to calculate item height for virtualization
+function getVirtualItemHeight(item) {
+  let height = 40
+
+  if (item.instructions) {
+    height += 20
+  }
+
+  if (item.toggles && Object.keys(item.toggles).length > 0) {
+    height += 10
+  }
+
+  if (item.isSection) {
+    height = 35
+  }
+
+  return height
+}
 
 class SelectList extends React.Component {
   static defaultProps = {
@@ -404,10 +460,25 @@ class SelectList extends React.Component {
     return item
   }
 
+  shouldUseVirtualization() {
+    // Use virtualization threshold, default to 100 items
+    const threshold = this.props.virtualizationThreshold !== undefined ? this.props.virtualizationThreshold : 100
+    const totalCount = SelectList.countItems(this.props.items)
+
+    // Don't virtualize if reorderable or nestableReorder is active
+    if (this.props.reorderable || this.props.nestableReorder) {
+      return false
+    }
+
+    return totalCount > threshold
+  }
+
   render () {
     let props = this.props
     let shouldShowToggleAll = (props.multi || ! props.selectable) && props.toggleAll !== null
     var values = props.selected.length ? props.selected.map(item => item.value) : [];
+    const useVirtualization = this.shouldUseVirtualization()
+    const flattenedItems = useVirtualization ? flattenItemsForVirtualization(props.items) : null
 
     return (
       <div className={((props.tooMany) ? ' lots-of-checkboxes' : '')}
@@ -438,14 +509,14 @@ class SelectList extends React.Component {
           </div>
           </div>
         }
-        <FieldInputs nested={props.nested} tooMany={props.tooMany} splitForTwo={props.splitForTwo} list={props.items} selectedItems={props.selected} handle={this.handleSelect}>
+        <FieldInputs nested={props.nested} tooMany={props.tooMany} splitForTwo={props.splitForTwo} list={props.items} selectedItems={props.selected} handle={this.handleSelect} useVirtualization={useVirtualization} flattenedItems={flattenedItems} virtualizationHeight={props.virtualizationHeight || 400}>
           { ! props.loading && props.items.length == 0 &&
             <NoResults text={props.noResults} />
           }
           {props.loading &&
             <Loading text={EE.lang.loading} />
           }
-          { ! props.loading && props.items.map((item, index) =>
+          { ! props.loading && ! useVirtualization && props.items.map((item, index) =>
             <SelectItem key={item.value ? item.value : item.section}
               item={item}
               name={props.name}
@@ -465,6 +536,25 @@ class SelectList extends React.Component {
               toggleChanged={props.toggleChanged}
             />
           )}
+          { ! props.loading && useVirtualization &&
+            <VirtualizedItemList
+              items={flattenedItems}
+              name={props.name}
+              selected={props.selected}
+              disabledChoices={props.disabledChoices}
+              multi={props.multi}
+              selectable={props.selectable}
+              removable={props.removable}
+              unremovableChoices={props.unremovableChoices}
+              editable={props.editable}
+              handleSelect={this.handleSelect}
+              handleRemove={props.handleRemove}
+              groupToggle={props.groupToggle}
+              toggles={props.toggles}
+              state={this.state}
+              toggleChanged={props.toggleChanged}
+            />
+          }
         </FieldInputs>
         { ! props.multi && props.tooMany && props.selected[0] &&
           <SelectedItem item={this.getFullItem(props.selected[0])}
@@ -541,6 +631,25 @@ function FieldInputs (props) {
     )
   }
 
+  // Add scrolling styles when virtualization is active
+  const virtualizationStyle = props.useVirtualization ? {
+    height: `${props.virtualizationHeight}px`,
+    overflow: 'auto',
+    position: 'relative'
+  } : {}
+
+  // If not nested and virtualization is active, wrap children in ul.field-nested for CSS compatibility
+  if (props.useVirtualization) {
+    return (
+      <div className={'field-inputs lots-of-checkboxes__items' + divClass} style={virtualizationStyle}>
+        <ul className="field-nested">
+          {props.children}
+        </ul>
+      </div>
+    )
+  }
+
+  // Regular non-virtualized rendering
   return (
     <div className={'field-inputs lots-of-checkboxes__items' + divClass}>
       {props.children}
@@ -600,6 +709,8 @@ class SelectItem extends React.Component {
       )
     }
 
+    // For virtualized items, don't apply inline padding
+    // CSS will handle indentation via data-depth attribute
     let listItem = (
       <label className={'checkbox-label'}
           data-id={props.reorderable && ! props.nested ? props.item.value : null}>
@@ -737,5 +848,155 @@ class ListOfSelectedCategories extends React.Component {
     }
 
     return listItem
+  }
+}
+
+// Virtualized Item List Component - renders only visible items for performance
+class VirtualizedItemList extends React.Component {
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      scrollTop: 0
+    }
+
+    this.containerRef = React.createRef()
+    this.scrollHandler = null
+  }
+
+  componentDidMount() {
+    // Find the scrollable parent container (the outer <div> with field-inputs)
+    if (this.containerRef.current) {
+      this.scrollContainer = this.containerRef.current.closest('.field-inputs')
+
+      if (this.scrollContainer) {
+        // Debounce scroll handler for better performance
+        this.scrollHandler = () => {
+          if (this.scrollTimeout) {
+            clearTimeout(this.scrollTimeout)
+          }
+
+          this.scrollTimeout = setTimeout(() => {
+            this.handleScroll()
+          }, 16) // ~60fps
+        }
+
+        this.scrollContainer.addEventListener('scroll', this.scrollHandler)
+      }
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.scrollContainer && this.scrollHandler) {
+      this.scrollContainer.removeEventListener('scroll', this.scrollHandler)
+    }
+
+    if (this.scrollTimeout) {
+      clearTimeout(this.scrollTimeout)
+    }
+  }
+
+  handleScroll = () => {
+    const scrollTop = this.scrollContainer ? this.scrollContainer.scrollTop : 0
+
+    this.setState({
+      scrollTop: scrollTop
+    })
+  }
+
+  getVisibleRange() {
+    const scrollTop = this.state.scrollTop
+    const containerHeight = 400 // Default container height
+    const itemHeight = 40 // Base item height
+    const overscan = 10 // Render extra items above/below viewport
+
+    const startIndex = Math.max(0, Math.floor(scrollTop / itemHeight) - overscan)
+    const visibleCount = Math.ceil(containerHeight / itemHeight) + (overscan * 2)
+    const endIndex = Math.min(this.props.items.length - 1, startIndex + visibleCount)
+
+    return { startIndex, endIndex }
+  }
+
+  getTotalHeight() {
+    let totalHeight = 0
+
+    for (let i = 0; i < this.props.items.length; i++) {
+      totalHeight += getVirtualItemHeight(this.props.items[i])
+    }
+
+    return totalHeight
+  }
+
+  getOffsetTop(startIndex) {
+    let offset = 0
+
+    for (let i = 0; i < startIndex; i++) {
+      offset += getVirtualItemHeight(this.props.items[i])
+    }
+
+    return offset
+  }
+
+  render() {
+    const { startIndex, endIndex } = this.getVisibleRange()
+    const totalHeight = this.getTotalHeight()
+    const offsetTop = this.getOffsetTop(startIndex)
+    const visibleItems = this.props.items.slice(startIndex, endIndex + 1)
+
+    // Return virtualization structure without wrapping <ul>
+    // Parent FieldInputs component provides the <ul> wrapper and handles scrolling
+    return (
+      <>
+        <div
+          ref={this.containerRef}
+          style={{
+            height: `${totalHeight}px`,
+            position: 'relative',
+            width: '100%'
+          }}
+        >
+          <div
+            style={{
+              position: 'absolute',
+              top: `${offsetTop}px`,
+              left: 0,
+              right: 0
+            }}
+          >
+            {visibleItems.map((item, localIndex) => {
+              const globalIndex = startIndex + localIndex
+              return (
+                <li
+                  key={item.value ? item.value : item.section}
+                  className="nestable-item"
+                  data-id={item.value}
+                  data-depth={item.depth || 0}
+                >
+                  <SelectItem
+                    item={item}
+                    name={this.props.name}
+                    selected={this.props.selected}
+                    disabledChoices={this.props.disabledChoices}
+                    multi={this.props.multi}
+                    nested={false}
+                    selectable={this.props.selectable}
+                    reorderable={false}
+                    removable={this.props.removable && ( ! this.props.unremovableChoices || ! this.props.unremovableChoices.includes(item.value))}
+                    editable={this.props.editable}
+                    handleSelect={this.props.handleSelect}
+                    handleRemove={(e, item) => this.props.handleRemove(e, item)}
+                    groupToggle={this.props.groupToggle}
+                    toggles={this.props.toggles}
+                    state={this.props.state}
+                    toggleChanged={this.props.toggleChanged}
+                    depth={item.depth}
+                  />
+                </li>
+              )
+            })}
+          </div>
+        </div>
+      </>
+    )
   }
 }

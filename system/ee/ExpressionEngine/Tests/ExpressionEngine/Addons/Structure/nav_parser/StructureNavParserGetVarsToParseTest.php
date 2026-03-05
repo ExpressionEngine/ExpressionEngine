@@ -23,7 +23,7 @@ class StructureNavParserGetVarsToParseTest extends StructureTestBase
         $parser = new NavParser();
         $ref = new ReflectionClass($parser);
         $method = $ref->getMethod('get_vars_to_parse');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($method);
 
         $result = $method->invoke($parser, 'prefix:', [
             'title' => 1,
@@ -39,6 +39,57 @@ class StructureNavParserGetVarsToParseTest extends StructureTestBase
         $this->assertContains(3, $fieldIds);
         unset($parser);
     }
-}
 
+    public function testGetVarsToParseHandlesModifierAndSkipsUnknownTags()
+    {
+        ee()->TMPL->var_single = [
+            'prefix:field_one:uppercase format="yes"',
+            'prefix:unknown',
+        ];
+        ee()->TMPL->var_pair = [
+            'other:ignore' => ['limit' => '1'],
+            'prefix:unknown_pair' => ['limit' => '2'],
+        ];
+        ee()->TMPL->tagdata = '{prefix:unknown_pair}{/prefix:unknown_pair}';
+
+        $parser = new NavParser();
+        $ref = new ReflectionClass($parser);
+        $method = $ref->getMethod('get_vars_to_parse');
+        \TestReflectionHelper::makeMethodAccessible($method);
+
+        $result = $method->invoke($parser, 'prefix:', [
+            'field_one' => 2,
+        ]);
+
+        $this->assertCount(1, $result);
+        $this->assertSame('uppercase', $result[0]['modifier']);
+        $this->assertSame(2, $result[0]['field_id']);
+        $this->assertSame('prefix:field_one:uppercase format="yes"', $result[0]['replace']);
+        $this->assertSame(['format' => 'yes'], $result[0]['params']);
+        unset($parser);
+    }
+
+    public function testGetVarsToParseSupportsSpaceTagNameBranch()
+    {
+        ee()->TMPL->var_single = [];
+        ee()->TMPL->var_pair = [
+            ' ' => ['flag' => 'y'],
+        ];
+        ee()->TMPL->tagdata = '{ }payload{/}';
+
+        $parser = new NavParser();
+        $ref = new ReflectionClass($parser);
+        $method = $ref->getMethod('get_vars_to_parse');
+        \TestReflectionHelper::makeMethodAccessible($method);
+
+        $result = $method->invoke($parser, '', [
+            '' => 77,
+        ]);
+
+        $this->assertCount(1, $result);
+        $this->assertSame(77, $result[0]['field_id']);
+        $this->assertSame('payload', $result[0]['tagdata']);
+        unset($parser);
+    }
+}
 

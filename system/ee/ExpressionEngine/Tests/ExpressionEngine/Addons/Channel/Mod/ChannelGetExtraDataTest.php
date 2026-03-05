@@ -13,10 +13,10 @@ class ChannelGetExtraDataTest extends ChannelTestBase
         };
         $refObj = new ReflectionObject($this->channel);
         $propChunks = $refObj->getProperty('chunks');
-        $propChunks->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($propChunks);
         $propChunks->setValue($this->channel, [[ $field ]]);
         $propEntryIds = $refObj->getProperty('entry_ids');
-        $propEntryIds->setAccessible(true);
+        \TestReflectionHelper::makePropertyAccessible($propEntryIds);
         $propEntryIds->setValue($this->channel, [7]);
 
         // DB returns extra columns for entry_id=7
@@ -24,7 +24,7 @@ class ChannelGetExtraDataTest extends ChannelTestBase
 
         $ref = new ReflectionClass($this->channel);
         $m = $ref->getMethod('getExtraData');
-        $m->setAccessible(true);
+        \TestReflectionHelper::makeMethodAccessible($m);
 
         $original = [['entry_id'=>7, 'title'=>'T']];
         $merged = $m->invoke($this->channel, $original);

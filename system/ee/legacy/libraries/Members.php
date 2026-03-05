@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -370,13 +370,19 @@ class Members
             $image_path = $this->config->slash_item('photo_path');
         }
 
+        // Keep member image resizing aligned with configured manipulation quality,
+        // with 75 retained as the safe legacy default.
+        $imageQuality = 75;
+        if (is_int(ee()->config->item('image_manipulation_quality')) && 0 < ee()->config->item('image_manipulation_quality') && ee()->config->item('image_manipulation_quality') <= 100) {
+            $imageQuality = ee()->config->item('image_manipulation_quality');
+        }
         $config = array(
             'image_library' => $this->config->item('image_resize_protocol'),
             'libpath' => $this->config->item('image_library_path'),
             'maintain_ratio' => true,
             'master_dim' => $axis,
             'source_image' => $image_path . $filename,
-            'quality' => 75,
+            'quality' => $imageQuality,
             'width' => $max_width,
             'height' => $max_height
         );

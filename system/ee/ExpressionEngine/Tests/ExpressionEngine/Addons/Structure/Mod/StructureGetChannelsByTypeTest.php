@@ -13,7 +13,7 @@ class StructureGetChannelsByTypeTest extends StructureTestBase
 
 		ee()->setMock('db', new class($rows) extends FakeDb {
 			public $rows; public function __construct($r){$this->rows=$r;}
-			public function get_where($table, $where) { return new eeDbResultMock($this->rows); }
+			public function get_where($table, $where = null, $limit = null, $offset = null) { return new eeDbResultMock($this->rows); }
 		});
 
 		$result = $this->structure->get_channels_by_type('page');
@@ -26,7 +26,7 @@ class StructureGetChannelsByTypeTest extends StructureTestBase
 	public function testUnknownTypeReturnsEmptyArray()
 	{
 		ee()->setMock('db', new class extends FakeDb {
-			public function get_where($table, $where) { return new eeDbResultMock([]); }
+			public function get_where($table, $where = null, $limit = null, $offset = null) { return new eeDbResultMock([]); }
 		});
 		$result = $this->structure->get_channels_by_type('unknown');
 		$this->assertSame([], $result);
@@ -37,7 +37,7 @@ class StructureGetChannelsByTypeTest extends StructureTestBase
 		$rows = [ ['channel_id' => 12, 'type' => 'Page'] ];
 		ee()->setMock('db', new class($rows) extends FakeDb {
 			public $rows; public function __construct($r){$this->rows=$r;}
-			public function get_where($table, $where) { return new eeDbResultMock($this->rows); }
+			public function get_where($table, $where = null, $limit = null, $offset = null) { return new eeDbResultMock($this->rows); }
 		});
 		$result = $this->structure->get_channels_by_type('Page');
 		$this->assertCount(1, $result);
