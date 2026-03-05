@@ -482,8 +482,6 @@ class ChannelEntry extends ContentModel
         $this->evaluateConditionalFields();
 
         $this->updateFilesUsage();
-
-        $this->setProperty('edit_member_id', isset(ee()->session) ? ee()->session->userdata('member_id') : 0);
     }
 
     public function onAfterSave()
@@ -574,11 +572,31 @@ class ChannelEntry extends ContentModel
     public function onBeforeInsert()
     {
         $this->ensureStatusSynced(true);
+
+        $member_id = $this->getActiveMemberId();
+        if ($member_id > 0) {
+            $this->setProperty('edit_member_id', $member_id);
+
+            return;
+        }
+
+        if (!empty($this->author_id)) {
+            $this->setProperty('edit_member_id', (int) $this->author_id);
+        }
     }
 
     public function onBeforeUpdate($changed)
     {
         $this->ensureStatusSynced(isset($changed['status']));
+
+        if (! $this->shouldUpdateLastEditor($changed)) {
+            return;
+        }
+
+        $member_id = $this->getActiveMemberId();
+        if ($member_id > 0) {
+            $this->setProperty('edit_member_id', $member_id);
+        }
     }
 
     private function ensureStatusSynced($update_by_name)
@@ -594,6 +612,30 @@ class ChannelEntry extends ContentModel
                 ->first();
             $this->markAsDirty('status_id');
         }
+    }
+
+    private function shouldUpdateLastEditor($changed)
+    {
+        if (!is_array($changed)) {
+            return false;
+        }
+
+        $non_editor_fields = [
+            'comment_total',
+            'recent_comment_date',
+            'edit_member_id',
+        ];
+
+        return !empty(array_diff(array_keys($changed), $non_editor_fields));
+    }
+
+    private function getActiveMemberId()
+    {
+        if (!isset(ee()->session)) {
+            return 0;
+        }
+
+        return (int) ee()->session->userdata('member_id');
     }
 
     public function onAfterUpdate($changed)
