@@ -1,17 +1,17 @@
-// Snow Light Theme
+// Accessibility contrast Theme
 // -------------------------------------------------------------------
 
-// Base Variables - Snow Light Theme
+// Base Variables - Accessibility contrast Theme
 
-// Base Colors - Snow Light Theme
+// Base Colors - Accessibility contrast Theme
 $brand-primary: #5D63F1;
-$brand-success: #00C571;
+$brand-success: #008739;
 $brand-warning: #FFB40B;
 $brand-danger: #FA5252;
 
-// Base Grays - Snow Light Theme
+// Base Grays - Accessibility contrast Theme
 $gray-blank: #FFFFFF;
-$gray-0: desaturate(lighten($brand-primary, 32), 52);
+$gray-0: #FDFDFE;
 $gray-5: darken($gray-0, 3);
 $gray-10: darken($gray-0, 7);
 $gray-20: desaturate(darken($gray-0, 15), 15);
@@ -21,29 +21,29 @@ $gray-50: desaturate(darken($gray-0, 55), 15);
 $gray-60: desaturate(darken($gray-0, 80), 15);
 $gray-70: darken($gray-0, 90);
 
-// Base Text - Snow Light Theme
+// Base Text - Accessibility contrast Theme
 $text-primary: $gray-70;
 $text-normal: $gray-70;
-$text-secondary: $gray-40;
-$text-tertiary: $gray-50;
+$text-secondary: #686988;
+$text-tertiary: #4D4E71;
 $text-placeholder: $gray-30;
 $text-selection: inherit;
 $text-selection-bg: lighten($brand-primary, 25%);
 $link: $brand-primary;
 $link-hover: darken($link, 15%);
 
-// #Details - Snow Light Theme
-$snow-theme: (
+// #Details - Accessibility contrast Theme
+$contrast-theme: (
 
   brand-primary: $brand-primary,
   brand-success: $brand-success,
   brand-warning: $brand-warning,
   brand-danger: $brand-danger,
 
-  accent: $brand-primary,
+  accent: #515AE7,
   accent-dark: darken($brand-primary, 15%),
 	accent-medium: lighten($brand-primary, 20%),
-	accent-light: lighten($brand-primary, 30%),
+  accent-light: $gray-0,
 
   // Grays
   gray-blank: $gray-blank,
@@ -59,19 +59,19 @@ $snow-theme: (
 
 	// Semantic
 	success-dark: darken($brand-success, 15%),
-  success: $brand-success,
+  success: #007B2E,
   success-light: lighten($brand-success, 55%),
   warning-dark: darken($brand-warning, 15%),
-  warning: $brand-warning,
+  warning: #9F6300,
 	warning-light: lighten($brand-warning, 42%),
   error-dark: darken($brand-danger, 15%),
-	error: $brand-danger,
-	error-light: lighten($brand-danger, 30%),
+  error: #CC2331,
+  error-light: #FEE7E7,
 	security-caution: $brand-warning,
-	danger: $brand-danger,
+  danger: #DA333B,
 	keyboard-focus: lighten($brand-primary, 20%),
 	notification: #fa5252,
-  notification-generic: lighten($brand-primary, 30%),
+  notification-generic: #EDEDFF,
 
   // Text
   text-primary: $text-primary,
@@ -81,7 +81,7 @@ $snow-theme: (
   text-placeholder: $text-placeholder,
   text-selection: $text-selection,
   text-selection-bg: $text-selection-bg,
-  link: $link,
+  link: #515AE7,
   link-hover: $link-hover,
 
 	// Background
@@ -120,7 +120,7 @@ $snow-theme: (
 	button-primary-hover-bg: darken($brand-primary, 10%),
   button-primary-hover-border: darken($brand-primary, 10%),
 
-  button-secondary-color: $brand-primary,
+  button-secondary-color: #4754DF,
 	button-secondary-bg: lighten($brand-primary, 28%),
   button-secondary-border: lighten($brand-primary, 28%),
 	button-secondary-hover-bg: lighten($brand-primary, 24%),
@@ -154,7 +154,7 @@ $snow-theme: (
   button-warning-hover-border: darken($brand-warning, 10%),
 
 	button-danger-color: #ffffff,
-	button-danger-bg: $brand-danger,
+	button-danger-bg: #DF3035,
   button-danger-border: $brand-danger,
 	button-danger-hover-bg: darken($brand-danger, 10%),
   button-danger-hover-border: darken($brand-danger, 10%),
@@ -180,14 +180,14 @@ $snow-theme: (
   input-jump-bg: $gray-blank,
 
   // Sidebar
-  sidebar-text: desaturate(darken($gray-0, 40), 15),
+  sidebar-text: #2A2C3C,
   sidebar-text-primary: $text-normal,
   sidebar-text-faded: $text-secondary,
-  sidebar-text-active: $link,
-  sidebar-icon-active: $link,
-  sidebar-bg-active: $gray-0,
+  sidebar-text-active: #575FEC,
+  sidebar-icon-active: #575FEC,
+  sidebar-bg-active: #f7f7fb,
   sidebar-bg: $gray-blank,
-  sidebar-title-text: desaturate(darken($gray-0, 40), 15),
+  sidebar-title-text: #707294,
   sidebar-title-bg: $gray-blank,
   sidebar-title-border-bottom: $gray-10,
   sidebar-bottom-bg: $gray-blank,
@@ -238,7 +238,7 @@ $snow-theme: (
   slider-value-bg: lighten($brand-primary, 30%),
 
   // EE Update Indicators
-  ee-update: $brand-primary,
+  ee-update: #000,
   ee-update-bg: lighten($brand-primary, 30%),
   ee-update-dev: $brand-warning,
   ee-update-dev-bg: $gray-blank,
