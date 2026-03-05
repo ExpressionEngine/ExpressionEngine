@@ -24,7 +24,7 @@ class EE_Throttling
     /** ----------------------------------------------*/
     public function run()
     {
-        if (ee()->config->item('enable_throttling') != 'y') {
+        if (! $this->should_throttle()) {
             return;
         }
 
@@ -45,6 +45,27 @@ class EE_Throttling
         $this->throttle_ip_check();
         $this->throttle_check();
         $this->throttle_update();
+    }
+
+    public function should_throttle(): bool
+    {
+        $return = false;
+        if (ee()->config->item('enable_throttling') == 'y') {
+            $return = true;
+            if (ee()->config->item('throttling_allowed_ips') != '') {
+                $ips = explode(',', ee()->config->item('throttling_allowed_ips'));
+                if ($ips && is_array($ips) && count($ips) >= 1) {
+                    foreach ($ips AS $ip) {
+                        if (filter_var($ip, FILTER_VALIDATE_IP) && $ip == ee()->input->ip_address()) {
+                            $return = false;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        return $return;
     }
 
     /** ----------------------------------------------
