@@ -50,6 +50,8 @@ $lang = array(
 
     'slate' => 'Slate',
 
+    'contrast' => 'Contrast',
+
     'jump_menu_item' => 'Jump Menu',
 
     'jump_menu_input' => 'Jump To...',
