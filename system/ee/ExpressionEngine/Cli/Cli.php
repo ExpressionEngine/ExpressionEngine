@@ -165,6 +165,7 @@ class Cli
 
         // Update
         'update' => Commands\CommandUpdate::class,
+        'update:db' => Commands\CommandUpdateDatabase::class,
         'update:prepare' => Commands\CommandUpdatePrepare::class,
         'update:run-hook' => Commands\CommandUpdateRunHook::class,
     ];

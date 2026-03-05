@@ -23,6 +23,7 @@ class DatabaseUpdater
     use SteppableTrait;
 
     protected $from_version;
+    protected $to_version;
     protected $filesystem;
     protected $update_files_path;
 
@@ -33,9 +34,10 @@ class DatabaseUpdater
      * @param	Filesystem	$filesystem		Filesystem lib object so we can
      *   traverse the update files directory
      */
-    public function __construct($from_version, Filesystem $filesystem)
+    public function __construct($from_version, Filesystem $filesystem, $to_version = null)
     {
         $this->from_version = $from_version;
+        $this->to_version = $to_version;
         $this->filesystem = $filesystem;
         $this->update_files_path = SYSPATH . 'ee/installer/updates/';
 
@@ -91,6 +93,11 @@ class DatabaseUpdater
         $updater = new $class();
         $updater->do_update();
         unset($updater);
+
+        ee()->db->update('config',
+            ['value' => $this->getVersionForFilename($filename)],
+            ['key' => 'app_db_version']
+        );
     }
 
     /**
@@ -130,7 +137,9 @@ class DatabaseUpdater
             $filename = pathinfo($filename);
             $version = $this->getVersionForFilename($filename['basename']);
 
-            if (version_compare($version, $this->from_version, '>')) {
+            if (version_compare($version, $this->from_version, '>')
+                && (is_null($this->to_version) || version_compare($version, $this->to_version, '<='))
+            ) {
                 $update_files[] = $filename['basename'];
             }
         }
