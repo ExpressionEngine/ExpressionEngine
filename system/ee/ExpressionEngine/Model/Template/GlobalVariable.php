@@ -359,7 +359,7 @@ class GlobalVariable extends FileSyncedModel
         // Create the new version
         $version = ee('Model')->make('RevisionTracker');
         $version->GlobalVariable = $this;
-        $version->item_table = 'exp_snippets';
+        $version->item_table = 'exp_global_variables';
         $version->item_field = 'variable_data';
         $version->item_data = $this->variable_data;
         $version->item_date = ee()->localize->now;

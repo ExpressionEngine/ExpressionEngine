@@ -48,6 +48,7 @@ class Updater
                     'name' => 'item_id',
                     'type' => 'int',
                     'constraint' => 10,
+                    'unsigned' => true,
                     'null' => true,
                     'default' => null
                 ]
@@ -60,6 +61,7 @@ class Updater
                     'variable_id' => array(
                         'type' => 'int',
                         'constraint' => 10,
+                        'unsigned' => true,
                         'null' => true,
                         'default' => null
                     )
@@ -74,6 +76,7 @@ class Updater
                     'snippet_id' => array(
                         'type' => 'int',
                         'constraint' => 10,
+                        'unsigned' => true,
                         'null' => true,
                         'default' => null
                     )
