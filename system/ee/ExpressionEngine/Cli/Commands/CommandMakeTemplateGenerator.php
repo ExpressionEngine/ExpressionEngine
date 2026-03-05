@@ -27,13 +27,13 @@ class CommandMakeTemplateGenerator extends Cli
      * signature of command
      * @var string
      */
-    public $signature = 'make:template_generator';
+    public $signature = 'make:template-generator';
 
     /**
      * How to use command
      * @var string
      */
-    public $usage = 'php eecli.php make:template_generator --addon=my_existing_addon';
+    public $usage = 'php eecli.php make:template-generator --addon=my_existing_addon';
 
     /**
      * options available for use in command

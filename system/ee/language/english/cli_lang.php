@@ -228,6 +228,9 @@ $lang = array(
     'command_make_template_generator_building_template_generator'   => 'Building Template Generator.',
     'command_make_template_generator_created_successfully'          => 'Template Generator created successfully!',
 
+    // make:template-generator options
+    'command_make_template_generator_option_addon'                  => 'Short name (folder) of the third-party add-on you want to add a template generator to.',
+
     // Lang entries for command make:sidebar
     'command_make_sidebar_description'                  => 'Creates a control panel sidebar for an add-on',
     'command_make_sidebar_summary'                      => 'This generates a sidebar for an existing third-party addon',
