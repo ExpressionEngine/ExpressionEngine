@@ -122,6 +122,21 @@ class FileUpdater
     }
 
     /**
+     * Make sure that the installer files are in the right place
+     */
+    public function setupInstallerFiles()
+    {
+        $source = $this->configs['archive_path'] . '/system/ee/installer';
+        $destination = SYSPATH . 'ee/installer';
+
+        if($this->filesystem->exists($destination) || !$this->filesystem->exists($source)) {
+            return;
+        }
+
+        $this->move($source, $destination);
+    }
+
+    /**
      * Verifies the newly-moved files made it over intact
      */
     public function verifyNewFiles()

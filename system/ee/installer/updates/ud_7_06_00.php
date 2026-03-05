@@ -28,6 +28,7 @@ class Updater
         $steps = new \ProgressIterator(
             [
                 'addFluidFieldFilterTable',
+                'addLastEditorId',
             ]
         );
 
@@ -105,6 +106,26 @@ class Updater
         ee()->dbforge->add_key(['fluid_field_id', 'field_id']);
         ee()->dbforge->add_key(['fluid_field_id', 'field_group_id']);
         ee()->smartforge->create_table('fluid_field_filters');
+    }
+
+    private function addLastEditorId()
+    {
+        if (! ee()->db->field_exists('edit_member_id', 'channel_titles')) {
+            ee()->smartforge->add_column(
+                'channel_titles',
+                [
+                    'edit_member_id' => [
+                        'type' => 'int',
+                        'constraint' => 10,
+                        'default' => 0,
+                        'unsigned' => true,
+                        'null' => false
+                    ]
+                ],
+                'edit_date'
+            );
+            ee()->smartforge->add_key('channel_titles', 'edit_member_id');
+        }
     }
 }
 

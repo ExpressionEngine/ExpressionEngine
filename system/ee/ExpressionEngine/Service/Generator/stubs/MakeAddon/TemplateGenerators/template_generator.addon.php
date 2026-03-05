@@ -1,0 +1,3 @@
+'templateGenerators' => [
+{{generator_name}}
+    ],
