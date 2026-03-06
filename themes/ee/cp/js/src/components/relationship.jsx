@@ -339,9 +339,9 @@ class Relationship extends React.Component {
                             this.state.selected.map((item) => {
                                 return (
                                     <li className="list-item">
-    									{this.state.selected.length > 1 &&
-    									<div class="list-item__handle"><i class="fal fa-bars"></i></div>
-    									}
+                                        {this.state.selected.length > 1 &&
+                                        <div class="list-item__handle"><i class="fal fa-bars"></i></div>
+                                        }
                                         <div className="list-item__content">
                                             <div class="list-item__title">{item.label} {this.state.selected.length > 10 && <small className="meta-info ml-s float-right"> {item.instructions}</small>}</div>
                                             {this.state.selected.length <= 10 &&

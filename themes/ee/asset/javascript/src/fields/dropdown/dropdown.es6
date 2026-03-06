@@ -34,7 +34,7 @@ class Dropdown extends React.Component {
     $('div[data-dropdown-react]', context).each(function () {
       let props = JSON.parse(window.atob($(this).data('dropdownReact')))
       props.name = $(this).data('inputValue')
-      
+
       // In the case a Dropdown has been dynamically created, allow an initial
       // value to be set other than the one in the initial config
       if ($(this).data('initialValue')) {
@@ -159,13 +159,13 @@ class Dropdown extends React.Component {
 
     return (
       <>
-        {this.props.id && 
+        {this.props.id &&
           <output class="sr-only" id={this.props.id}>{this.props.accessabilityText}</output>
         }
         <div className={"select button-segment" + (tooMany ? ' select--resizable' : '') + (this.state.open ? ' select--open' : '')}>
           <div className={"select__button js-dropdown-toggle"} onClick={this.toggleOpen} tabIndex="0">
             <label className={'select__button-label' + (this.state.selected ? ' act' : '')}>
-              {selected && 
+              {selected &&
                 <span>{(selected.sectionLabel && !this.props.ignoreSectionLabel) ? selected.sectionLabel + ' / ' : ''}
                   <span dangerouslySetInnerHTML={{__html: selected.label}}></span>
                   {this.props.name == 'condition-rule-field' && <span className="short-name">{`{${selected.value}}`}</span>}
@@ -181,7 +181,7 @@ class Dropdown extends React.Component {
               />
             </label>
 
-            {selected && this.props.name.includes('[condition_field_id]') && 
+            {selected && this.props.name.includes('[condition_field_id]') &&
               <span className="tooltiptext">
                 {`${selected.label.replace(/<.*/g, "")} ${selected.label.match(/(?:\{).+?(?:\})/g)}`}
               </span>
