@@ -20,6 +20,15 @@ class DbBackup extends Utilities
 {
     protected $base_url = 'utilities/db-backup';
 
+    public function __construct()
+    {
+        parent::__construct();
+        if (! ee('Permission')->can('access_sql_manager')) {
+            show_error(lang('unauthorized_access'), 403);
+        }
+
+    }
+
     public function index()
     {
         $sort_col = ee('Request')->get('sort_col') ?: 'bm.id';
