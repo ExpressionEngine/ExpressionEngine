@@ -13,6 +13,10 @@ namespace ExpressionEngine\Tests\Controllers\Categories {
 use ExpressionEngine\Controller\Categories\Categories;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 class CategoriesTest extends TestCase
 {
     private $controller;
@@ -318,6 +322,15 @@ class CategoriesTestDbResult
     }
 }
 
+}
+
+namespace ExpressionEngine\Controller\Categories {
+    if (! function_exists(__NAMESPACE__ . '\show_error')) {
+        function show_error($message, $code = 500)
+        {
+            throw new \Exception($message, $code);
+        }
+    }
 }
 
 namespace {
