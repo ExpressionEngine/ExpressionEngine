@@ -9,6 +9,6 @@ $id = isset($id) ? $id : '';
 ?>
 <button type="button" class="toggle-btn <?=$on_off?> <?=(isset($yes_no) && $yes_no) ? 'yes_no' : ''?> <?=($disabled) ? 'disabled' : ''?> <?=$class?>" data-toggle-for="<?=$field_name?>" data-state="<?=$on_off?>" role="switch" aria-checked="<?=$true_false?>" alt="<?=$on_off?>">
 	<span class="sr-only"><?=$field_name?> <?=lang('toggle_buton')?></span>
-	<input id="<?=$id?>"type="hidden" name="<?=$field_name?>" value="<?=form_prep($value, $field_name)?>"<?php if (isset($group_toggle)): ?> data-group-toggle='<?=json_encode($group_toggle)?>'<?php endif ?>>
+	<input id="<?=$id?>" type="hidden" name="<?=$field_name?>" value="<?=form_prep($value, $field_name)?>"<?php if (isset($group_toggle)): ?> data-group-toggle='<?=json_encode($group_toggle)?>'<?php endif ?>>
 	<span class="slider"></span>
 </button>

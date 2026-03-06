@@ -328,7 +328,7 @@ else: ?>
                 <?php endforeach ?>
 
                 <?php if (!empty($data)): ?>
-                    <th class="grid-field__column-remove" aria-label="remove_btn"></th>
+                    <th class="grid-field__column-remove" aria-label="<?=lang('remove_btn')?>"></th>
                 <?php endif ?>
         </thead>
     <?php endif ?>
