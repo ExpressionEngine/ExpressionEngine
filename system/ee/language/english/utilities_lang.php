@@ -6,8 +6,6 @@ $lang = array(
 
     /* Menu */
 
-    'backup_database' => 'Back Up Database',
-
     'backups' => 'Backups',
 
     'remove_backup' => 'Remove Backup',
@@ -15,6 +13,8 @@ $lang = array(
     'verify_remove_backup' => 'Verify Remove Backup',
 
     'confirm_remove_backup' => 'Confirm Removal',
+
+    'backup_not_found' => 'Backup not found',
 
     'confirm_delete_desc' => 'Are you sure you want to remove this backup?',
 
