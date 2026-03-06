@@ -74,7 +74,10 @@ $(document).ready(function () {
 					$('div.tab-open .layout-item-wrapper .custom-drag-placeholder').remove();
 				}
 
-				if ($(ui.draggable).has('.field-option-required')) {
+				if (
+					$(ui.draggable).has('.field-option-required').length > 0 ||
+					$(ui.draggable).find('.field-option-required-custom-field input:checked').length > 0
+				) {
 					var tab = $(this).closest('.tab-bar__tab');
 					if ($(tab).find('.tab-off').length > 0) {
 						$(tab).find('.tab-off').trigger('click');
@@ -198,7 +201,12 @@ $(document).ready(function () {
 		var index = tabs.find('.tab-bar__tab').index(tab);
 		var tabContents = sheets.filter('.' + $(tab).attr('rel'));
 
-		if (EE.publish_layout[index].visible && tabContents.has('.field-option-required').length > 0) {
+		var hasRequiredField = (
+			tabContents.has('.field-option-required').length > 0 ||
+			tabContents.find('.field-option-required-custom-field input:checked').length > 0
+		);
+
+		if (EE.publish_layout[index].visible && hasRequiredField) {
 			$('body').prepend(EE.alert.required.replace('%s', tab.text()));
 			return;
 		}
@@ -388,7 +396,7 @@ $(document).ready(function () {
 		var tab = getTabIndex();
 		var field = getFieldIndex(this);
 
-		EE.publish_layout[tab].fields[field].required = ! EE.publish_layout[tab].fields[field].required;
+		EE.publish_layout[tab].fields[field].required = $(this).is(':checked');
 	});
 
 

@@ -78,7 +78,7 @@ class Layout
             'collapse' => false,
             'htmlbuttons' => false,
             'width' => '100',
-            'required_condition' => true
+            'required_condition' => false
         );
 
         $layout_fields = array('enable_versioning', 'comment_system_enabled');

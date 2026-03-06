@@ -96,7 +96,7 @@ class FieldDisplay
 
     public function isRequired()
     {
-        return $this->field->getItem('field_required') == 'y';
+        return get_bool_from_string($this->field->getItem('field_required'));
     }
 
     public function collapse()
@@ -116,12 +116,12 @@ class FieldDisplay
 
     public function required()
     {
-        return $this->field->setItem('field_required', true);
+        return $this->field->setItem('field_required', 'y');
     }
 
     public function notRequired()
     {
-        return $this->field->setItem('field_required', false);
+        return $this->field->setItem('field_required', 'n');
     }
 
     public function titleIsHidden()
