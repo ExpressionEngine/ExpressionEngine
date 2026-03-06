@@ -91,6 +91,14 @@ class DbBackup extends Utilities
     public function download()
     {
         $path = ee('Database/Backup', PATH_CACHE)->getBackup(ee()->input->get('id'));
+        if($path) {
+            ee('CP/Alert')->makeInline('shared-form')
+                ->asSuccess()
+                ->withTitle(lang('backup_not_found'))
+                ->defer();
+
+            ee()->functions->redirect(ee('CP/URL')->make($this->base_url));
+        }
 
         header('Content-Type: application/octet-stream');
         header("Content-Transfer-Encoding: Binary");
