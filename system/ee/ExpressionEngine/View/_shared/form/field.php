@@ -6,7 +6,10 @@ $class = (isset($field['class'])) ? $field['class'] : '';
 $class .= ($margin_top) ? ' add-mrg-top' : '';
 $class .= ($margin_left) ? ' add-mrg-left' : '';
 
-$accessability_id = isset($accessability_id) ? 'label_for_field_' . $accessability_id : '';
+$accessability_id = (isset($accessability_id) && $accessability_id !== '')
+    ? 'label_for_field_' . $accessability_id
+    : '';
+$accessability_attr = ($accessability_id !== '') ? ' id="' . $accessability_id . '"' : '';
 
 // Check for a field name override
 if (isset($field['name'])) {
@@ -66,7 +69,7 @@ case 'text':
         <div class="<?=$class?>" <?=isset($field['group']) ? ' data-group="' . $field['group'] . '"' : ''?>>
     <?php endif ?>
 
-            <input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?> id="<?=$accessability_id?>">
+            <input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?><?=$accessability_attr?>>
 
     <?php if (!empty($class)): ?>
         </div>
@@ -86,20 +89,20 @@ case 'number':
         <div class="<?=$class?>" <?=isset($field['group']) ? ' data-group="' . $field['group'] . '"' : ''?>>
     <?php endif ?>
 
-            <input type="number" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?> id="<?=$accessability_id?>">
+            <input type="number" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?><?=$accessability_attr?>>
 
     <?php if (!empty($class)): ?>
         </div>
     <?php endif ?>
 <?php break;
 case 'file': ?>
-    <input type="file" name="<?=$field_name?>"<?=$attrs?> class="<?=$class?>" id="<?=$accessability_id?>">
+    <input type="file" name="<?=$field_name?>"<?=$attrs?> class="<?=$class?>"<?=$accessability_attr?>>
 <?php break;
 case 'password': ?>
-    <input type="password" name="<?=$field_name?>" value="<?=$value?>" autocomplete="<?=($field_name=='verify_password' || $field_name=='password_confirm' ? 'current' : 'new')?>-password"<?=$attrs?> class="<?=$class?>" id="<?=$accessability_id?>">
+    <input type="password" name="<?=$field_name?>" value="<?=$value?>" autocomplete="<?=($field_name=='verify_password' || $field_name=='password_confirm' ? 'current' : 'new')?>-password"<?=$attrs?> class="<?=$class?>"<?=$accessability_attr?>>
 <?php break;
 case 'hidden': ?>
-    <input type="hidden" name="<?=$field_name?>" value="<?=$value?>" id="<?=$accessability_id?>">
+    <input type="hidden" name="<?=$field_name?>" value="<?=$value?>"<?=$accessability_attr?>>
 <?php break;
 
 case 'radio_block':
@@ -175,7 +178,7 @@ case 'textarea':
     if ($class): ?>
         <div class="<?=$class?>" <?=isset($field['group']) ? ' data-group="' . $field['group'] . '"' : ''?>>
     <?php endif ?>
-            <textarea name="<?=$field_name?>" <?=(isset($field['cols']) ? "cols=\"{$field['cols']}\"" : "")?> <?=(isset($field['rows']) ? "rows=\"{$field['rows']}\"" : "")?> <?=$attrs?> id="<?=$accessability_id?>"><?=(isset($field['kill_pipes']) && $field['kill_pipes'] === true) ? str_replace('|', NL, $value) : $value?></textarea>
+            <textarea name="<?=$field_name?>" <?=(isset($field['cols']) ? "cols=\"{$field['cols']}\"" : "")?> <?=(isset($field['rows']) ? "rows=\"{$field['rows']}\"" : "")?> <?=$attrs?><?=$accessability_attr?>><?=(isset($field['kill_pipes']) && $field['kill_pipes'] === true) ? str_replace('|', NL, $value) : $value?></textarea>
     <?php if ($margin_top or $margin_left): ?>
         </div>
     <?php endif ?>

@@ -74,10 +74,15 @@ if (is_array($setting_group)) {
 }
 
 $fieldset_id = '';
-$accessability_id = '';
+$label_target_accessability_id = '';
 if (isset($setting['fields']) && !empty($setting['fields'])) {
-    $fieldset_id = ' id="fieldset-' . implode('-', array_keys($setting['fields'])) . '"';
-    $accessability_id = implode('-', array_keys($setting['fields']));
+    $field_keys = array_keys($setting['fields']);
+    $fieldset_id = ' id="fieldset-' . implode('-', $field_keys) . '"';
+    $first_field_key = reset($field_keys);
+    $first_field = $setting['fields'][$first_field_key];
+    $label_target_accessability_id = (is_array($first_field) && isset($first_field['name']))
+        ? $first_field['name']
+        : $first_field_key;
 }
 
 // Grids have to be in a div for an overflow bug in Firefox
@@ -85,10 +90,10 @@ $element = ($grid) ? 'div' : 'fieldset';
 $legend = ($grid) ? '' : '<legend class="sr-only">' . lang('neutral_legend') . '</legend>'?>
 <<?=$element?> <?=$fieldset_id?> class="<?=$fieldset_classes?>" <?php if ($setting_group): ?> data-group="<?=$setting_group?>"<?php endif ?><?php if (isset($setting['attrs'])): foreach ($setting['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; endif; ?>>
     <?=$legend?>
-	<div class="field-instruct <?=($grid) ? form_error_class(array_keys($setting['fields'])) : '' ?>">
-		<?php if (isset($setting['title'])): ?>
-		<label for="label_for_field_<?=$accessability_id?>"><?=lang($setting['title'])?></label>
-		<?php endif; ?>
+		<div class="field-instruct <?=($grid) ? form_error_class(array_keys($setting['fields'])) : '' ?>">
+			<?php if (isset($setting['title'])): ?>
+			<label<?php if ($label_target_accessability_id !== ''): ?> for="label_for_field_<?=$label_target_accessability_id?>"<?php endif; ?>><?=lang($setting['title'])?></label>
+			<?php endif; ?>
 		<?php if (isset($setting['desc']) && !empty($setting['desc'])): ?>
 		<em><?=lang($setting['desc'])?></em>
 		<?php endif; ?>
@@ -99,21 +104,24 @@ $legend = ($grid) ? '' : '<legend class="sr-only">' . lang('neutral_legend') . '
 		<p><?=$setting['example']?></p>
 		<?php endif; ?>
 	</div>
-	<div class="field-control">
-		<?php
-            $count = 0;
-            $values = [];
-            if (isset($setting['fields']) && !empty($setting['fields'])) {
-                foreach ($setting['fields'] as $field_name => $field) {
-                    $field_name = isset($field['name'])
-                        ? $field['name'] : $field_name;
-                    $vars = array(
-                        'field_name' => $field_name,
-                        'field' => $field,
-                        'setting' => $setting,
-                        'grid' => $grid,
-                        'accessability_id' => $accessability_id,
-                    );
+		<div class="field-control">
+			<?php
+	            $count = 0;
+	            $values = [];
+	            if (isset($setting['fields']) && !empty($setting['fields'])) {
+	                foreach ($setting['fields'] as $field_name => $field) {
+	                    $raw_field_name = $field_name;
+	                    $field_name = isset($field['name'])
+	                        ? $field['name'] : $raw_field_name;
+	                    $field_accessability_id = isset($field['name'])
+	                        ? $field['name'] : $raw_field_name;
+	                    $vars = array(
+	                        'field_name' => $field_name,
+	                        'field' => $field,
+	                        'setting' => $setting,
+	                        'grid' => $grid,
+	                        'accessability_id' => $field_accessability_id,
+	                    );
 
                     // If there are multiple fields with the same name, such as
                     // radio options with fields in between, persist the value

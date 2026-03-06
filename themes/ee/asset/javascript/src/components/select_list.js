@@ -583,8 +583,10 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
         item: this.getFullItem(props.selected[0]),
         clearSelection: this.clearSelection,
         selectionRemovable: props.selectionRemovable
-      }), !props.jsonify && props.selectable && props.selected.length == 0 && React.createElement("input", {
-        id: props.id,
+      }), props.id && React.createElement("output", {
+        className: "sr-only",
+        id: props.id
+      }, EE.lang.associated_label_info), !props.jsonify && props.selectable && props.selected.length == 0 && React.createElement("input", {
         type: "hidden",
         name: props.multi ? props.name + '[]' : props.name,
         value: "",
@@ -593,7 +595,6 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
         }
       }), !props.jsonify && props.selectable && props.selected.map(function (item) {
         return React.createElement("input", {
-          id: props.id,
           type: "hidden",
           key: item.value,
           name: props.multi ? props.name + '[]' : props.name,
@@ -604,7 +605,6 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
         });
       }), this.state.toggles.length != 0 && this.state.toggles.map(function (toggle) {
         return React.createElement("input", {
-          id: props.id,
           type: "hidden",
           key: toggle.name + '[' + toggle.value + ']',
           name: props.multi ? toggle.name + '[]' : toggle.name,
@@ -614,7 +614,6 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
           }
         });
       }), props.jsonify && props.selectable && React.createElement("input", {
-        id: props.id,
         type: "hidden",
         name: props.name,
         value: JSON.stringify(values),
@@ -730,10 +729,7 @@ function FieldInputs(props) {
   if (props.nested) {
     return React.createElement(React.Fragment, null, React.createElement("ul", {
       className: 'field-inputs lots-of-checkboxes__items field-nested' + divClass
-    }, props.children), props.ariaLabel && React.createElement("output", {
-      "class": "sr-only",
-      id: props.ariaLabel
-    }, EE.lang.associated_label_info));
+    }, props.children));
   } // Add scrolling styles when virtualization is active
 
 
