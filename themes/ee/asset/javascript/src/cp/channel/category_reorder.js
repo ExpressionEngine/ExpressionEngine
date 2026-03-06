@@ -26,10 +26,11 @@ $(document).ready(function() {
 		collapsedClass: 'dd-collapsed',
 		maxDepth: 10
 	}).on('change', function() {
+		var serializedOrder = $('.js-nestable-categories').nestable('serialize');
 
 		$.ajax({
 			url: EE.cat.reorder_url,
-			data: {'order': $('.js-nestable-categories').nestable('serialize') },
+			data: {'order_json': JSON.stringify(serializedOrder)},
 			type: 'POST',
 			dataType: 'json',
 			error: function(xhr, text, error) {

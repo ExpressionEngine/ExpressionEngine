@@ -79,6 +79,8 @@ class CategoriesTest extends TestCase
 
     public function testReorderSucceedsWithoutCallingHookWhenInactive(): void
     {
+        ee()->setMock('input', new CategoriesTestInput($this->validOrderPayload(), null));
+
         $this->controller->reorder(5);
 
         $this->assertSame([['payload' => null, 'error' => false]], $this->output->responses);
@@ -120,6 +122,36 @@ class CategoriesTest extends TestCase
         $this->assertSame([], $this->extensions->calls);
     }
 
+    public function testReorderSucceedsWithJsonPayloadWithoutCallingHookWhenInactive(): void
+    {
+        ee()->setMock('input', new CategoriesTestInput(null, $this->validOrderPayloadJson()));
+
+        $this->controller->reorder(5);
+
+        $this->assertSame([['payload' => null, 'error' => false]], $this->output->responses);
+        $this->assertSame([], $this->extensions->calls);
+        $this->assertSame([
+            [
+                ['cat_id' => 1, 'parent_id' => 0, 'cat_order' => 2],
+                ['cat_id' => 2, 'parent_id' => 0, 'cat_order' => 1],
+            ],
+        ], $this->db->updateBatchCalls);
+    }
+
+    public function testReorderRejectsMalformedJsonPayloadWithoutCallingHook(): void
+    {
+        $this->extensions->activeHooks = ['category_reorder_end' => true];
+        ee()->setMock('input', new CategoriesTestInput(null, '{"id":'));
+
+        $this->controller->reorder(5);
+
+        $this->assertSame([
+            ['payload' => ['error' => 'Category reorder payload was invalid. No changes were saved.'], 'error' => true],
+        ], $this->output->responses);
+        $this->assertSame([], $this->extensions->calls);
+        $this->assertSame([], $this->db->updateBatchCalls);
+    }
+
     public function testReorderRejectsIncompletePayloadWithoutCallingHook(): void
     {
         $this->extensions->activeHooks = ['category_reorder_end' => true];
@@ -148,6 +180,11 @@ class CategoriesTest extends TestCase
                 ],
             ],
         ];
+    }
+
+    private function validOrderPayloadJson(): string
+    {
+        return json_encode($this->validOrderPayload()) ?: '[]';
     }
 }
 
@@ -196,20 +233,22 @@ class CategoriesTestModelQuery
 
 class CategoriesTestInput
 {
-    private $order;
+    private $postData = [];
 
-    public function __construct(array $order)
+    public function __construct(?array $order = null, $order_json = null)
     {
-        $this->order = $order;
+        if (! is_null($order)) {
+            $this->postData['order'] = $order;
+        }
+
+        if (! is_null($order_json)) {
+            $this->postData['order_json'] = $order_json;
+        }
     }
 
     public function post($key)
     {
-        if ($key === 'order') {
-            return $this->order;
-        }
-
-        return null;
+        return $this->postData[$key] ?? null;
     }
 }
 

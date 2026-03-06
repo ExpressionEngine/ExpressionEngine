@@ -131,7 +131,29 @@ class Categories extends AbstractCategoriesController
             ->filter('group_id', $group_id)
             ->first();
 
-        $new_order = ee()->input->post('order');
+        $new_order = null;
+        $new_order_json = ee()->input->post('order_json');
+
+        if ($new_order_json !== false && $new_order_json !== null && $new_order_json !== '') {
+            if (! is_string($new_order_json)) {
+                ee()->output->send_ajax_response(array(
+                    'error' => 'Category reorder payload was invalid. No changes were saved.'
+                ), true);
+                return;
+            }
+
+            $decoded_order = json_decode($new_order_json, true);
+            if (json_last_error() !== JSON_ERROR_NONE || ! is_array($decoded_order) || empty($decoded_order)) {
+                ee()->output->send_ajax_response(array(
+                    'error' => 'Category reorder payload was invalid. No changes were saved.'
+                ), true);
+                return;
+            }
+
+            $new_order = $decoded_order;
+        } else {
+            $new_order = ee()->input->post('order');
+        }
 
         if (! $is_ajax_request or ! $cat_group or empty($new_order) or ! is_array($new_order)) {
             show_error(lang('unauthorized_access'), 403);
