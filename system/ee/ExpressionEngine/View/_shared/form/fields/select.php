@@ -2,6 +2,7 @@
 $too_many = isset($too_many) ? $too_many : 8;
 $class = isset($class) ? $class : '';
 $id = isset($id) ? $id : '';
+$id_attr = ($id !== '') ? ' id="' . $id . '"' : '';
 
 if (count($choices) == 0) {
     if (isset($no_results)): ?>
@@ -59,9 +60,11 @@ if ($count <= $too_many
     ?>
 	<div class="fields-select <?=$class?>" data-input-value="<?=$field_name?>">
 		<?php if ($multi) : ?>
-		<input type="hidden" name="<?=$field_name?>" id="<?=$id?>"/>
+		<input type="hidden" name="<?=$field_name?>"<?=$id_attr?>/>
         <?php else: ?>
+        <?php if ($id !== ''): ?>
         <output id="<?=$id?>" class="sr-only"><?=lang('associated_label_info')?></output>
+        <?php endif; ?>
 		<?php endif; ?>
 		<?php if (! isset($scalar) && $multi) {
         $field_name .= '[]';

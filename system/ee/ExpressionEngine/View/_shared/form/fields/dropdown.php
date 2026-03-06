@@ -4,6 +4,7 @@ $empty_text = isset($empty_text) ? $empty_text : lang('choose_wisely');
 $field_disabled = isset($field_disabled) ? $field_disabled : false;
 $class = isset($class) ? $class : '';
 $id = isset($id) ? $id : '';
+$id_attr = ($id !== '') ? ' id="' . $id . '"' : '';
 $accessability_text = lang('associated_label_info');
 
 $react = '';
@@ -40,7 +41,9 @@ if ($field_disabled) {
 <div <?=$react?> class="<?=$class?>">
 	<div class="<?=$sub_class?>">
 		<div class="select">
-			<output id="<?=$id?>" class="sr-only"><?=lang('associated_label_info')?></output>
+            <?php if ($id !== ''): ?>
+			<output<?=$id_attr?> class="sr-only"><?=lang('associated_label_info')?></output>
+            <?php endif; ?>
 			<div class="select__button">
 				<label class="select__button-label">
 				<?=$display_text?>

@@ -84,9 +84,10 @@ if (isset($setting['fields']) && !empty($setting['fields'])) {
         ? $first_field['name']
         : $first_field_key;
 }
+$field_accessability_counts = [];
 
 // Grids have to be in a div for an overflow bug in Firefox
-$element = ($grid) ? 'div' : 'fieldset'; 
+$element = ($grid) ? 'div' : 'fieldset';
 $legend = ($grid) ? '' : '<legend class="sr-only">' . lang('neutral_legend') . '</legend>'?>
 <<?=$element?> <?=$fieldset_id?> class="<?=$fieldset_classes?>" <?php if ($setting_group): ?> data-group="<?=$setting_group?>"<?php endif ?><?php if (isset($setting['attrs'])): foreach ($setting['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; endif; ?>>
     <?=$legend?>
@@ -115,6 +116,14 @@ $legend = ($grid) ? '' : '<legend class="sr-only">' . lang('neutral_legend') . '
 	                        ? $field['name'] : $raw_field_name;
 	                    $field_accessability_id = isset($field['name'])
 	                        ? $field['name'] : $raw_field_name;
+	                    if ($field_accessability_id !== '') {
+	                        if (! isset($field_accessability_counts[$field_accessability_id])) {
+	                            $field_accessability_counts[$field_accessability_id] = 1;
+	                        } else {
+	                            $field_accessability_counts[$field_accessability_id]++;
+	                            $field_accessability_id .= '_' . $field_accessability_counts[$field_accessability_id];
+	                        }
+	                    }
 	                    $vars = array(
 	                        'field_name' => $field_name,
 	                        'field' => $field,
