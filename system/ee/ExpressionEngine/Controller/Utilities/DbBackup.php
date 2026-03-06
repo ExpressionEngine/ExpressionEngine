@@ -42,7 +42,7 @@ class DbBackup extends Utilities
             'class' => 'backup_manager'
         ]);
 
-        $vars['cp_page_title'] = lang('bm.title');
+        $vars['cp_page_title'] = lang('backups');
         $table->setColumns([
             'file_name' => ['sort' => false],
             'date' => ['sort' => false],
@@ -124,14 +124,21 @@ class DbBackup extends Utilities
 
         $form = $form->toArray();
 
-        if (!empty($_POST) && ee()->input->post('confirm') == 'y') {
-            ee('Database/Backup', PATH_CACHE)->deleteBackup($path);
-            ee('CP/Alert')->makeInline('shared-form')
-                ->asSuccess()
-                ->withTitle(lang('backup_deleted'))
-                ->defer();
+        if (!empty($_POST)) {
+            if(ee()->input->post('confirm') == 'y') {
+                ee('Database/Backup', PATH_CACHE)->deleteBackup($path);
+                ee('CP/Alert')->makeInline('shared-form')
+                    ->asSuccess()
+                    ->withTitle(lang('backup_deleted'))
+                    ->defer();
+                ee()->functions->redirect(ee('CP/URL')->make($this->base_url));
+            } else {
+                ee('CP/Alert')->makeInline('shared-form')
+                    ->asWarning()
+                    ->withTitle(lang('must_confirm_removal'))
+                    ->now();
+            }
 
-            ee()->functions->redirect(ee('CP/URL')->make($this->base_url));
         }
 
         $vars = [

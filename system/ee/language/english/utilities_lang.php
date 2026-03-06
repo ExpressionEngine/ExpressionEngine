@@ -16,6 +16,8 @@ $lang = array(
 
     'backup_not_found' => 'Backup not found',
 
+    'must_confirm_removal' => 'You must confirm removal to proceed',
+
     'confirm_delete_desc' => 'Are you sure you want to remove this backup?',
 
     'backup_deleted' => 'Backup Deleted',
