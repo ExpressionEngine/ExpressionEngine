@@ -114,11 +114,15 @@ class Categories extends AbstractCategoriesController
         ee()->cp->render('channels/cat/list', $data);
     }
 
-    /**
+     /**
      * AJAX end point for reordering categories on catList page
      */
     public function reorder($group_id)
     {
+        $this->new_order_reference = array();
+
+        $is_ajax_request = (defined('AJAX_REQUEST') && AJAX_REQUEST);
+
         if (! ee('Permission')->can('edit_categories')) {
             show_error(lang('unauthorized_access'), 403);
         }
@@ -127,12 +131,9 @@ class Categories extends AbstractCategoriesController
             ->filter('group_id', $group_id)
             ->first();
 
-        $cat_group->sort_order = 'c';
-        $cat_group->save();
-
         $new_order = ee()->input->post('order');
 
-        if (! AJAX_REQUEST or ! $cat_group or empty($new_order)) {
+        if (! $is_ajax_request or ! $cat_group or empty($new_order) or ! is_array($new_order)) {
             show_error(lang('unauthorized_access'), 403);
         }
 
@@ -144,25 +145,89 @@ class Categories extends AbstractCategoriesController
             $this->flattenCategoryTree($category, 0, $order);
             $order++;
         }
+        $category_rows = ee()->db
+            ->select('cat_id, parent_id, cat_order')
+            ->from('categories')
+            ->where('group_id', (int) $group_id)
+            ->get()
+            ->result_array();
+
+        $db_ids = array_column($category_rows, 'cat_id');
+        $db_ids = array_map('intval', $db_ids);
+        $payload_ids = array_map('intval', array_keys($this->new_order_reference));
+        $missing_in_payload = array_values(array_diff($db_ids, $payload_ids));
+
+        if (! empty($missing_in_payload)) {
+            ee()->output->send_ajax_response(array(
+                'error' => 'Category reorder payload was incomplete. No changes were saved.'
+            ), true);
+            return;
+        }
 
         // Compare all categories to what we got back from
         // Nestable to see if any parent IDs or orderings
         // changed; if so, ONLY update those categories
-        foreach ($cat_group->getCategories() as $category) {
-            $new_category = $this->new_order_reference[$category->cat_id];
+        $changed_rows = array();
+        foreach ($category_rows as $category) {
+            $cat_id = (int) $category['cat_id'];
+            $new_category = $this->new_order_reference[$cat_id] ?? null;
+            if (! is_array($new_category)) {
+                continue;
+            }
 
-            if (
-                $category->parent_id != $new_category['parent_id'] or
-                $category->cat_order != $new_category['order']
-            ) {
-                $category->parent_id = $new_category['parent_id'];
-                $category->cat_order = $new_category['order'];
-                $category->save();
+            $new_parent_id = (is_array($new_category) && array_key_exists('parent_id', $new_category))
+                ? (int) $new_category['parent_id']
+                : null;
+            $new_order_value = (is_array($new_category) && array_key_exists('order', $new_category))
+                ? (int) $new_category['order']
+                : null;
+
+            $old_parent_id = (int) $category['parent_id'];
+            $old_order_value = (int) $category['cat_order'];
+            $changed = (
+                $old_parent_id != $new_parent_id or
+                $old_order_value != $new_order_value
+            );
+
+            if ($changed) {
+                $changed_rows[] = array(
+                    'cat_id' => $cat_id,
+                    'parent_id' => $new_parent_id,
+                    'cat_order' => $new_order_value
+                );
             }
         }
 
+        $batch_chunk_size = 500;
+        ee()->db->trans_start();
+        ee()->db->where('group_id', (int) $group_id);
+        ee()->db->update('category_groups', array('sort_order' => 'c'));
+
+        if (! empty($changed_rows)) {
+            $chunks = array_chunk($changed_rows, $batch_chunk_size);
+            foreach ($chunks as $chunk) {
+                ee()->db->update_batch('categories', $chunk, 'cat_id');
+            }
+        }
+        ee()->db->trans_complete();
+
+        if (ee()->db->trans_status() === false) {
+            ee()->output->send_ajax_response(array(
+                'error' => 'Unable to save category reorder changes.'
+            ), true);
+            return;
+        }
+
+        // -------------------------------------------
+        // 'category_reorder_end' hook.
+        //
+        if (ee()->extensions->active_hook('category_reorder_end') === true) {
+            ee()->extensions->call('category_reorder_end', $changed_rows, (int) $group_id);
+        }
+        //
+        // -------------------------------------------
+
         ee()->output->send_ajax_response(null);
-        exit;
     }
 
     /**
@@ -171,17 +236,22 @@ class Categories extends AbstractCategoriesController
      */
     private function flattenCategoryTree($category, $parent_id, $order)
     {
-        $this->new_order_reference[$category['id']] = array(
-            'parent_id' => $parent_id,
-            'order' => $order
+        if (! is_array($category) || ! array_key_exists('id', $category) || $category['id'] === '' || is_null($category['id'])) {
+            return;
+        }
+
+        $category_id = (int) $category['id'];
+        $this->new_order_reference[$category_id] = array(
+            'parent_id' => (int) $parent_id,
+            'order' => (int) $order
         );
 
         // Has children? Flatten them to same array
-        if (isset($category['children'])) {
-            $order = 1;
+        if (isset($category['children']) && is_array($category['children'])) {
+            $child_order = 1;
             foreach ($category['children'] as $child) {
-                $this->flattenCategoryTree($child, $category['id'], $order);
-                $order++;
+                $this->flattenCategoryTree($child, $category_id, $child_order);
+                $child_order++;
             }
         }
     }
