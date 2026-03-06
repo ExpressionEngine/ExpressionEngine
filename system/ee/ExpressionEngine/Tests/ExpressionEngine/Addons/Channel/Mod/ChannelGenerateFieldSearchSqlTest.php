@@ -172,6 +172,144 @@ class ChannelGenerateFieldSearchSqlTest extends ChannelTestBase
         $this->assertStringContainsString('exp_channel_data_field_123.field_id_123 LIKE \'%custom search%\'', $result);
     }
 
+    public function testGeneratesSqlForMemberFieldSingleId()
+    {
+        $this->channel->msfields = [
+            1 => [
+                'member_field_in_channel' => 321
+            ]
+        ];
+
+        $searchFields = ['member_field_in_channel' => '4'];
+        $result = $this->method->invoke($this->channel, $searchFields, [], []);
+
+        $this->assertStringContainsString('exp_member_relationships AS mr', $result);
+        $this->assertStringContainsString('mr.field_id = 321', $result);
+        $this->assertStringContainsString('mr.child_id IN (4)', $result);
+    }
+
+    public function testGeneratesSqlForMemberFieldOrList()
+    {
+        $this->channel->msfields = [
+            1 => [
+                'member_field_in_channel' => 321
+            ]
+        ];
+
+        $searchFields = ['member_field_in_channel' => '4|7'];
+        $result = $this->method->invoke($this->channel, $searchFields, [], []);
+
+        $this->assertStringContainsString('mr.child_id IN (4,7)', $result);
+        $this->assertStringNotContainsString('HAVING COUNT(DISTINCT mr.child_id)', $result);
+    }
+
+    public function testGeneratesSqlForMemberFieldAndList()
+    {
+        $this->channel->msfields = [
+            1 => [
+                'member_field_in_channel' => 321
+            ]
+        ];
+
+        $searchFields = ['member_field_in_channel' => '4&&7'];
+        $result = $this->method->invoke($this->channel, $searchFields, [], []);
+
+        $this->assertStringContainsString('mr.child_id IN (4,7)', $result);
+        $this->assertStringContainsString('GROUP BY mr.parent_id HAVING COUNT(DISTINCT mr.child_id) = 2', $result);
+    }
+
+    public function testGeneratesSqlForMemberFieldNegation()
+    {
+        $this->channel->msfields = [
+            1 => [
+                'member_field_in_channel' => 321
+            ]
+        ];
+
+        $searchFields = ['member_field_in_channel' => 'not 4'];
+        $result = $this->method->invoke($this->channel, $searchFields, [], []);
+
+        $this->assertStringContainsString('NOT', $result);
+        $this->assertStringContainsString('mr.child_id IN (4)', $result);
+    }
+
+    public function testGeneratesSqlForMemberFieldIsEmpty()
+    {
+        $this->channel->msfields = [
+            1 => [
+                'member_field_in_channel' => 321
+            ]
+        ];
+
+        $searchFields = ['member_field_in_channel' => 'IS_EMPTY'];
+        $result = $this->method->invoke($this->channel, $searchFields, [], []);
+
+        $this->assertStringContainsString('NOT EXISTS (SELECT 1 FROM exp_member_relationships AS mr', $result);
+    }
+
+    public function testGeneratesSqlForMemberFieldNotIsEmpty()
+    {
+        $this->channel->msfields = [
+            1 => [
+                'member_field_in_channel' => 321
+            ]
+        ];
+
+        $searchFields = ['member_field_in_channel' => 'not IS_EMPTY'];
+        $result = $this->method->invoke($this->channel, $searchFields, [], []);
+
+        $this->assertStringContainsString('EXISTS (SELECT 1 FROM exp_member_relationships AS mr', $result);
+        $this->assertStringNotContainsString('NOT EXISTS', $result);
+    }
+
+    public function testSkipsUnknownMemberFields()
+    {
+        $this->channel->msfields = [
+            1 => [
+                'member_field_in_channel' => 321
+            ]
+        ];
+
+        $searchFields = ['other_member_field' => '4'];
+        $result = $this->method->invoke($this->channel, $searchFields, [], []);
+
+        $this->assertEquals('', $result);
+    }
+
+    public function testHandlesMemberFieldSearchAcrossMultipleSites()
+    {
+        $this->channel->msfields = [
+            1 => [
+                'member_field_in_channel' => 321
+            ],
+            2 => [
+                'member_field_in_channel' => 654
+            ]
+        ];
+
+        $siteIds = ['site1' => 1, 'site2' => 2];
+        $searchFields = ['member_field_in_channel' => '4'];
+        $result = $this->method->invoke($this->channel, $searchFields, [], $siteIds);
+
+        $this->assertStringContainsString('mr.field_id = 321', $result);
+        $this->assertStringContainsString('mr.field_id = 654', $result);
+        $this->assertStringContainsString(' OR ', $result);
+    }
+
+    public function testIgnoresNonNumericMemberFieldTokens()
+    {
+        $this->channel->msfields = [
+            1 => [
+                'member_field_in_channel' => 321
+            ]
+        ];
+
+        $searchFields = ['member_field_in_channel' => 'abc|xyz'];
+        $result = $this->method->invoke($this->channel, $searchFields, [], []);
+
+        $this->assertEquals('', $result);
+    }
+
     public function testLogsWarningsForFieldTypes()
     {
         // Set up special field types

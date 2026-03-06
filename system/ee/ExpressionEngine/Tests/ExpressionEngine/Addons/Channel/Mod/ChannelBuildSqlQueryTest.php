@@ -208,6 +208,39 @@ class ChannelBuildSqlQueryTest extends ChannelTestBase
         $this->assertIsString($this->channel->sql);
     }
 
+    public function testMemberFieldSearchBuildsSqlUsingMemberRelationships()
+    {
+        $this->channel->sql = '';
+        $this->channel->msfields = [
+            1 => [
+                'member_field_in_channel' => 321
+            ]
+        ];
+
+        // build_sql_query consumes TMPL->search_fields directly.
+        ee()->TMPL->search_fields = [
+            'member_field_in_channel' => '4'
+        ];
+
+        $capturingDb = new class extends FakeDb {
+            public $queries = [];
+
+            public function query($sql)
+            {
+                $this->queries[] = $sql;
+                return new eeDbResultMock([]);
+            }
+        };
+
+        $this->setMock('db', $capturingDb);
+
+        $result = $this->channel->build_sql_query();
+
+        $this->assertEquals('', $result);
+        $this->assertNotEmpty($capturingDb->queries);
+        $this->assertStringContainsString('exp_member_relationships', $capturingDb->queries[0]);
+    }
+
     // ===== URL PARSING TESTS =====
 
     public function testHandlesYearMonthDayFormat()

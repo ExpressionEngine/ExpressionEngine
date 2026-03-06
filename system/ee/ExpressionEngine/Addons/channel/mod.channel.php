@@ -666,20 +666,23 @@ class Channel
                 // We're goign to repeat the search on each site
                 // so store the terms in a temp.  FIXME Necessary?
                 $terms = $search_terms;
+                $search_column_name = null;
+                $field_sql = '';
+                $is_member_field = false;
+                $member_field_id = 0;
                 if (in_array($field_name, ['title', 'url_title'])) {
                     $table = 't';
                     $search_column_name = $table . '.' . $field_name;
+                } elseif (isset($this->msfields[$site_id][$field_name])) {
+                    $is_member_field = true;
+                    $member_field_id = (int) $this->msfields[$site_id][$field_name];
                 } elseif (! isset($this->cfields[$site_id][$field_name])) {
                     continue;
                 }
 
-                // If fields_sql isn't empty then this isn't a first
-                // loop and we have terms that need to be ored together.
-                if ($fields_sql !== '') {
-                    $fields_sql .= ' OR ';
-                }
-
-                if (!isset($search_column_name)) {
+                if ($is_member_field) {
+                    $field_sql = $this->_generate_member_field_search_sql($terms, $member_field_id);
+                } elseif (!isset($search_column_name)) {
                     $field_id = $this->cfields[$site_id][$field_name];
                     $table = (isset($legacy_fields[$field_id])) ? "wd" : "exp_channel_data_field_{$field_id}";
                     $search_column_name = $table . '.field_id_' . $this->cfields[$site_id][$field_name];
@@ -694,8 +697,25 @@ class Channel
                     }
                 }
 
-                $fields_sql .= ee()->channel_model->field_search_sql($terms, $search_column_name, $site_id);
-                unset($search_column_name);
+                if ($is_member_field && $field_sql === '') {
+                    continue;
+                }
+
+                if ($field_sql === '') {
+                    $field_sql = ee()->channel_model->field_search_sql($terms, $search_column_name, $site_id);
+                }
+
+                if ($field_sql === '') {
+                    continue;
+                }
+
+                // If fields_sql isn't empty then this isn't a first
+                // loop and we have terms that need to be ored together.
+                if ($fields_sql !== '') {
+                    $fields_sql .= ' OR ';
+                }
+
+                $fields_sql .= $field_sql;
             } // foreach($sites as $site_id)
             if (! empty($fields_sql)) {
                 $sql .= ' AND (' . $fields_sql . ')';
@@ -703,6 +723,142 @@ class Channel
         }
 
         return $sql;
+    }
+
+    /**
+     * Generate SQL for member channel field search.
+     *
+     * Member channel fields are relationship-based and store data in
+     * exp_member_relationships, so search operations need to be translated to
+     * EXISTS/NOT EXISTS checks instead of string matching on channel data.
+     *
+     * @param   string  $terms      Search terms from search: parameter
+     * @param   int     $field_id   Member field ID
+     * @return  string
+     */
+    private function _generate_member_field_search_sql($terms, $field_id)
+    {
+        $terms = trim($terms);
+
+        if ($terms === '') {
+            return '';
+        }
+
+        // Keep parity with regular field search where "=" indicates exact match.
+        if (strncmp($terms, '=', 1) === 0) {
+            $terms = trim(substr($terms, 1));
+        }
+
+        $not = false;
+        if (strncasecmp($terms, 'not ', 4) === 0) {
+            $not = true;
+            $terms = trim(substr($terms, 4));
+        }
+
+        if ($terms === '') {
+            return '';
+        }
+
+        $uses_and = (strpos($terms, '&&') !== false);
+        $parts = $uses_and ? explode('&&', $terms) : explode('|', $terms);
+
+        $member_ids = array();
+        $has_is_empty = false;
+
+        foreach ($parts as $part) {
+            $part = trim($part);
+
+            if ($part === '') {
+                continue;
+            }
+
+            if (strcasecmp($part, 'IS_EMPTY') === 0) {
+                $has_is_empty = true;
+                continue;
+            }
+
+            // Member search only supports exact numeric IDs.
+            if (ctype_digit($part)) {
+                $member_ids[$part] = (int) $part;
+            }
+        }
+
+        $base_where = $this->_member_field_search_base_where($field_id);
+
+        if ($has_is_empty && empty($member_ids)) {
+            return $not
+                ? "EXISTS (SELECT 1 FROM exp_member_relationships AS mr WHERE {$base_where})"
+                : "NOT EXISTS (SELECT 1 FROM exp_member_relationships AS mr WHERE {$base_where})";
+        }
+
+        if (empty($member_ids)) {
+            return '';
+        }
+
+        $member_ids = array_values($member_ids);
+        $clauses = array();
+        $clauses[] = $this->_member_field_id_search_sql($field_id, $member_ids, $uses_and);
+
+        if ($has_is_empty) {
+            $clauses[] = "NOT EXISTS (SELECT 1 FROM exp_member_relationships AS mr WHERE {$base_where})";
+        }
+
+        $sql = '(' . implode($uses_and ? ' AND ' : ' OR ', $clauses) . ')';
+
+        if ($not) {
+            return '(NOT ' . $sql . ')';
+        }
+
+        return $sql;
+    }
+
+    /**
+     * Generate EXISTS SQL for member IDs in a member channel field.
+     *
+     * @param   int     $field_id
+     * @param   array   $member_ids
+     * @param   bool    $match_all  Require all IDs (&&) instead of any (|)
+     * @return  string
+     */
+    private function _member_field_id_search_sql($field_id, $member_ids, $match_all = false)
+    {
+        if (empty($member_ids)) {
+            return '';
+        }
+
+        $base_where = $this->_member_field_search_base_where($field_id);
+        $member_ids = array_map('intval', $member_ids);
+        $member_ids_sql = implode(',', $member_ids);
+
+        $sql = "EXISTS (SELECT 1 FROM exp_member_relationships AS mr
+                    WHERE {$base_where}
+                    AND mr.child_id IN ({$member_ids_sql})";
+
+        if ($match_all) {
+            $sql .= ' GROUP BY mr.parent_id HAVING COUNT(DISTINCT mr.child_id) = ' . count($member_ids);
+        }
+
+        $sql .= ')';
+
+        return $sql;
+    }
+
+    /**
+     * Base WHERE clause for top-level member channel field relationships.
+     *
+     * @param   int $field_id
+     * @return  string
+     */
+    private function _member_field_search_base_where($field_id)
+    {
+        $field_id = (int) $field_id;
+
+        return "mr.parent_id = t.entry_id
+                AND mr.field_id = {$field_id}
+                AND mr.grid_field_id = 0
+                AND mr.grid_col_id = 0
+                AND mr.grid_row_id = 0
+                AND mr.fluid_field_data_id = 0";
     }
 
     /**
