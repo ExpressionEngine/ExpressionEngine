@@ -27443,6 +27443,10 @@ input[type=button].btn-block {
   max-width: 550px;
 }
 
+.modal-wrap.must-interact .dialog__close {
+  display: none;
+}
+
 .modal {
   background-color: var(--ee-bg-0);
   margin-bottom: 40px;
@@ -31942,6 +31946,22 @@ fieldset .field-control #eye {
 }
 .corner-ribbon.expired {
   background: var(--ee-warning);
+}
+.corner-ribbon table {
+  margin: 0;
+  border: none;
+  background: none;
+  font-size: inherit;
+}
+.corner-ribbon table td {
+  padding: 0;
+}
+.corner-ribbon table td .txt-only a {
+  color: #f0f0f0 !important;
+  background: none !important;
+  font-style: normal !important;
+  font-weight: bold;
+  line-height: 24px;
 }
 
 .license-status-badge {

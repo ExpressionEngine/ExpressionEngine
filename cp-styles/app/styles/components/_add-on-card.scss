@@ -281,6 +281,27 @@
   &.expired {
     background: color(warning);
   }
+
+  table {
+    margin: 0;
+    border: none;
+    background: none;
+    font-size: inherit;
+
+    td {
+      padding: 0;
+
+      .txt-only {
+        a {
+          color: #f0f0f0 !important;
+          background: none !important;
+          font-style: normal !important;
+          font-weight: bold;
+          line-height: 24px;
+        }
+      }
+    }
+  }
 }
 
 
