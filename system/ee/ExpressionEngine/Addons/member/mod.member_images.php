@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -354,7 +354,9 @@ class Member_images extends Member
     {
         if (ee()->input->get_post('avatar') === false or
             ee()->input->get_post('folder') === false) {
-            return ee()->functions->redirect(ee()->input->get_post('referrer'));
+            return ee()->functions->redirect(
+                $this->_get_referrer_redirect(ee()->input->get_post('referrer'))
+            );
         }
 
         $folder = ee()->security->sanitize_filename(ee()->input->get_post('folder'));
@@ -397,6 +399,64 @@ class Member_images extends Member
                 'lang:message' => lang('avatar_updated')
             )
         );
+    }
+
+    /**
+     * Resolve redirect target for member image actions.
+     *
+     * Allows internal paths and same-origin absolute URLs only.
+     * Falls back to edit_avatar when input is missing or invalid.
+     *
+     * @param string|null $referrer
+     * @return string
+     */
+    private function _get_referrer_redirect($referrer = null)
+    {
+        $fallback = $this->_member_path('edit_avatar');
+
+        if (! is_string($referrer)) {
+            return $fallback;
+        }
+
+        $referrer = trim($referrer);
+
+        if ($referrer === '' || strpos($referrer, '//') === 0) {
+            return $fallback;
+        }
+
+        if (! preg_match('#^https?://#i', $referrer)) {
+            return ee()->functions->create_url(ltrim($referrer, '/'));
+        }
+
+        $site_url = ee()->config->item('site_url');
+
+        if (! (is_string($site_url) && $site_url !== '')) {
+            $site_url = ee()->functions->create_url('');
+        }
+
+        $site_parts = @parse_url($site_url);
+        $referrer_parts = @parse_url($referrer);
+
+        if (! is_array($site_parts) || ! is_array($referrer_parts)) {
+            return $fallback;
+        }
+
+        if (! isset($site_parts['host']) || ! isset($referrer_parts['host'])) {
+            return $fallback;
+        }
+
+        if (strtolower($site_parts['host']) !== strtolower($referrer_parts['host'])) {
+            return $fallback;
+        }
+
+        $site_port = isset($site_parts['port']) ? (int) $site_parts['port'] : null;
+        $referrer_port = isset($referrer_parts['port']) ? (int) $referrer_parts['port'] : null;
+
+        if (! is_null($site_port) && $site_port !== $referrer_port) {
+            return $fallback;
+        }
+
+        return $referrer;
     }
 
     /**

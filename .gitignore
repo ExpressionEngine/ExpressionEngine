@@ -6,10 +6,12 @@ env_local.rb
 *.swp
 node_modules/
 .vscode/
+.cursor/
 cypress.env.json
 phpcs.ruleset.xml
 .phpunit.result.cache
 .tool-versions
+
 
 system/user/addons/*
 !system/user/addons/index.html

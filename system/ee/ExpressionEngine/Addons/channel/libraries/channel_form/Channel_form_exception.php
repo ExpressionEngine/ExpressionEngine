@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -24,7 +24,7 @@ class Channel_form_exception extends Exception
             $message = implode("</li>\n<li>", $message);
         }
 
-        parent::__construct($message);
+        parent::__construct((string) $message);
         $this->_type = $type;
     }
 

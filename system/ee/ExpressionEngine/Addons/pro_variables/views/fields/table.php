@@ -18,6 +18,12 @@
     <?php endforeach; ?>
     </tbody>
 </table>
-<ul class="toolbar">
-    <li class="add"><a href="" title="<?=lang('add_row')?>"></a></li>
-</ul>
+<div class="pro-table-add-row-wrapper">
+    <ul class="toolbar">
+        <li class="add">
+            <a href="" title="<?=lang('add_row')?>" class="button button--primary button--with-shortcut">
+                <i class="fas fa-plus"></i> <?=lang('add_row')?>
+            </a>
+        </li>
+    </ul>
+</div>

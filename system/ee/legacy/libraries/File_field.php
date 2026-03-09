@@ -4,7 +4,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -543,7 +543,15 @@ class File_field
 
         // Query for files based on file ID
         if (! empty($file_ids)) {
-            $file_ids = ee()->file_model->get_files_by_id($data)->result_array();
+            $files = ee('Model')->get('File')
+                ->with('UploadDestination')
+                ->filter('file_id', 'IN', $file_ids)
+                ->all();
+            $files_as_array = array();
+            foreach ($files as $file) {
+                $files_as_array[] = array_merge($file->toArray(), array('model_object' => $file));
+            }
+            $file_ids = $files_as_array;
         }
 
         // Merge our results into our cached array
@@ -830,13 +838,22 @@ class File_field
         }
 
         if (strpos((string) $data, 'file:') !== false) {
-            if (preg_match_all('/{file\:(\d+)\:url}/', (string) $data, $matches, PREG_SET_ORDER)) {
+            if (preg_match_all('/{file\:(\d+)\:([_a-z]+)}/', (string) $data, $matches, PREG_SET_ORDER)) {
                 $file_ids = [];
                 foreach ($matches as $match) {
                     $file_ids[] = $match[1];
                 }
                 $files = ee('Model')->get('File', $file_ids)->with('UploadDestination')->all();
+                $fields = null;
                 foreach ($files as $file) {
+                    if (empty($fields)) {
+                        // Get a list of fields from the model including width and height available through accessors
+                        $fields = array_merge(['width', 'height'], $file->getFields());
+                    }
+
+                    foreach ($fields as $field) {
+                        $data = str_replace('{file:' . $file->file_id . ':' . $field . '}', (string) $file->$field, $data);
+                    }
                     $data = str_replace('{file:' . $file->file_id . ':url}', (string) $file->getAbsoluteURL(), $data);
                 }
             }

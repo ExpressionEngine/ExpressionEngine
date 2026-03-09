@@ -3,7 +3,7 @@
  * ExpressionEngine (https://expressionengine.com)
  *
  * @link      https://expressionengine.com/
- * @copyright Copyright (c) 2003-2023, Packet Tide, LLC (https://www.packettide.com)
+ * @copyright Copyright (c) 2003-2026, Packet Tide, LLC (https://www.packettide.com)
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
@@ -157,7 +157,9 @@ $(document).ready(function () {
 
 		var search = $('input[name="filter_by_keyword"]').serialize();
 
-		searchEntries('GET', $(this).attr('href') + '&' + search)
+		if (typeof($(this).attr('href'))!='undefined' && $(this).attr('href')!='' && $(this).attr('href')!='#') {
+			searchEntries('GET', $(this).attr('href') + '&' + search)
+		}
 
 		event.preventDefault();
 	});
