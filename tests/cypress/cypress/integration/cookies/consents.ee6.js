@@ -279,5 +279,40 @@ context('Cookie Consents', () => {
 
     });
 
+    it('supports submit_to targets in consent form', function() {
+        cy.clearCookies()
+        cy.visit('index.php/consents/form')
+        cy.get('#cookieConsentForm')
+            .should('have.attr', 'action')
+            .and('include', '/consents/form')
+        cy.intercept('POST', '**/consents/form').as('currentSubmit')
+        cy.get('[name=submit]').click()
+        cy.wait('@currentSubmit')
+        cy.visit('index.php/about/contact')
+        cy.getCookie('exp_tracker').should('exist')
+
+        cy.clearCookies()
+        cy.visit('index.php/consents/form_site_index')
+        cy.get('#cookieConsentForm').invoke('attr', 'action').then((action) => {
+            expect(action).to.match(/\/index\.php\/?$/)
+        })
+        cy.intercept('POST', '**/index.php').as('siteIndexSubmit')
+        cy.get('[name=submit]').click()
+        cy.wait('@siteIndexSubmit')
+        cy.visit('index.php/about/contact')
+        cy.getCookie('exp_tracker').should('exist')
+
+        cy.clearCookies()
+        cy.visit('index.php/consents/form_action_id')
+        cy.get('#cookieConsentForm').invoke('attr', 'action').then((action) => {
+            expect(action).to.match(/\/index\.php\?ACT=\d+$/)
+        })
+        cy.intercept('POST', /\/index\.php\?ACT=\d+$/).as('actionIdSubmit')
+        cy.get('[name=submit]').click()
+        cy.wait('@actionIdSubmit')
+        cy.visit('index.php/about/contact')
+        cy.getCookie('exp_tracker').should('exist')
+    });
+
 
 })

@@ -63,13 +63,17 @@ class Consent
 
         $vars[] = ['consents' => $consents];
         $tagdata = ee()->TMPL->parse_variables(ee()->TMPL->tagdata, $vars);
+        $action_id = ee()->functions->fetch_action_id('Consent', 'submitConsent');
 
         $form = [
-            'action' => ee()->functions->fetch_current_uri(),
+            'action' => $this->getFormAction(
+                ee()->TMPL->fetch_param('submit_to'),
+                $action_id
+            ),
             'id' => ee()->TMPL->form_id,
             'class' => ee()->TMPL->form_class,
             'hidden_fields' => [
-                'ACT' => ee()->functions->fetch_action_id('Consent', 'submitConsent'),
+                'ACT' => $action_id,
                 'RET' => ee('Encrypt')->encode(ee()->TMPL->fetch_param('return', ee()->uri->uri_string())),
                 'consent_names' => ee('Encrypt')->encode(json_encode($requests->pluck('consent_name'))),
             ]
@@ -260,6 +264,28 @@ class Consent
         }
 
         ee()->session->set_flashdata($key, $data);
+    }
+
+    /**
+     * Determine form action URL from submit_to parameter.
+     *
+     * @param string|null $submit_to submit target parameter
+     * @param int|string $action_id  action ID for direct POST target
+     * @return string
+     */
+    private function getFormAction($submit_to, $action_id)
+    {
+        $submit_to = strtolower(trim((string) $submit_to));
+
+        if ($submit_to === 'site_index') {
+            return ee()->functions->fetch_site_index();
+        }
+
+        if ($submit_to === 'action_id') {
+            return ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id;
+        }
+
+        return ee()->functions->fetch_current_uri();
     }
 
     /**
