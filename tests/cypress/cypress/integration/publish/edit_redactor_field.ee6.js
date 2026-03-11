@@ -5,6 +5,26 @@ import { setupRedactorFixture, navigateToPublishEditPage } from '../../support/r
 
 const page = new Edit;
 
+function selectTextInEditor(editor) {
+    editor.find('p').first().then(($p) => {
+        const el = $p[0]
+        const textNode = el.firstChild || el
+
+        cy.window().then((win) => {
+            const range = win.document.createRange()
+            const sel = win.getSelection()
+            const len = (textNode.textContent || '').length
+
+            range.setStart(textNode, 0)
+            range.setEnd(textNode, len)
+            sel.removeAllRanges()
+            sel.addRange(range)
+
+            cy.wrap($p).trigger('mouseup', { force: true })
+        })
+    })
+}
+
 context('Publish Page - Edit Entry with Redactor Field', () => {
     setupRedactorFixture()
 
@@ -56,7 +76,8 @@ context('Publish Page - Edit Entry with Redactor Field', () => {
             const editor = fieldset.find('.rx-content')
             
             // Select text in the paragraph
-            editor.find('p').type('{selectall}')
+            cy.wait(150)
+            selectTextInEditor(editor)
             
             // Click Bold button
             cy.get('a[data-name="bold"]').click()
@@ -72,7 +93,8 @@ context('Publish Page - Edit Entry with Redactor Field', () => {
             const fieldset = cy.get('label:contains("Redactor")').parents('fieldset')
             const editor = fieldset.find('.rx-content')
             
-            editor.find('p').type('{selectall}')
+            cy.wait(150)
+            selectTextInEditor(editor)
             cy.get('a[data-name="italic"]').click()
             cy.hasNoErrors()
             
@@ -85,7 +107,8 @@ context('Publish Page - Edit Entry with Redactor Field', () => {
             const fieldset = cy.get('label:contains("Redactor")').parents('fieldset')
             const editor = fieldset.find('.rx-content')
             
-            editor.find('p').type('{selectall}')
+            cy.wait(150)
+            selectTextInEditor(editor)
             cy.get('a[data-name="deleted"]').click()
             cy.hasNoErrors()
             
@@ -102,7 +125,8 @@ context('Publish Page - Edit Entry with Redactor Field', () => {
                   .and('not.be.disabled')
                   .clear()
                   .type('Link');
-            editor.find('p').type('{selectall}');
+            cy.wait(150)
+            selectTextInEditor(editor)
 
             cy.get('a[data-name="link"]').click();
 
@@ -153,11 +177,12 @@ context('Publish Page - Edit Entry with Redactor Field', () => {
                   .and('not.be.disabled')
                   .clear()
                   .type('Test content');
-            editor.find('p').type('{selectall}')
+            cy.wait(150)
+            selectTextInEditor(editor)
             
-            cy.get('a[data-name="bold"]').click()
+            cy.get('.rx-toolbox-container a[data-name="bold"]').click()
             cy.wait(200)
-            cy.get('a[data-name="italic"]').click()
+            cy.get('.rx-toolbox-container a[data-name="italic"]').click()
             cy.hasNoErrors()
             
             editor.invoke('html').then((html) => {
