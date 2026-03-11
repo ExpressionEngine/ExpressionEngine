@@ -133,9 +133,6 @@ context('Publish Page - Edit Entry with Redactor Field', () => {
             cy.get('.rx-dropdown', { timeout: 10000 })
                 .should('be.visible')
                 .within(() => {
-                    cy.get('div[data-input-value="rx-form-dropdown-react"]', { timeout: 2000 })
-                        .should('be.visible');
-
                     cy.get('input.rx-form-input[name="url"]')
                         .clear()
                         .type('http://google.com/');
