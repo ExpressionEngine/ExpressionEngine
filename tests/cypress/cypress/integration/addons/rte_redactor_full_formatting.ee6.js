@@ -80,7 +80,7 @@ context('RTE Toolset Edit Page - Redactor Full - Formatting', () => {
         })
     })
 
-    describe.only('Disabled Buttons Exclusion', function() {
+    describe('Disabled Buttons Exclusion', function() {
         it('Disables specific buttons and verifies they are excluded from publish edit page', function() {
             // Ensure all toolbars are enabled first
 
@@ -162,7 +162,6 @@ context('RTE Toolset Edit Page - Redactor Full - Formatting', () => {
                     .should('have.attr', 'disabled')
             })
             
-            // Save the changes
             saveToolset()
             
             // Navigate to publish edit page
@@ -191,28 +190,36 @@ context('RTE Toolset Edit Page - Redactor Full - Formatting', () => {
             cy.wait(300)
             
             // Select a specific word using JavaScript to trigger context bar
-            // getRedactorField().find('.rx-content p').first().then($p => {
-            //     const el = $p[0]
-            //     const text = el.textContent
-            //     const wordStart = text.indexOf('word')
-            //     const wordEnd = wordStart + 4 // 'word' is 4 characters
+            getRedactorField().find('.rx-content p').first().then(($p) => {
+                const el = $p[0];
+                const text = el.textContent;
+                const targetWord = 'word';
+                const wordStart = text.indexOf(targetWord);
                 
-            //     // Create a range for the word
-            //     const range = document.createRange()
-            //     const textNode = el.firstChild
-            //     range.setStart(textNode, wordStart)
-            //     range.setEnd(textNode, wordEnd)
-                
-            //     // Apply the selection
-            //     const sel = window.getSelection()
-            //     sel.removeAllRanges()
-            //     sel.addRange(range)
-            // })
-            // cy.wait(500)
-            
-            // Context bar should appear when text is selected
-            // cy.get('.rx-context', { timeout: 10000 }).should('be.visible')
-            // cy.get('.rx-context').find('[data-name="bold"]').should('not.exist')
+                if (wordStart === -1) throw new Error(`Word "${targetWord}" not found in text: ${text}`);
+
+                const wordEnd = wordStart + targetWord.length;
+
+                cy.window().then((win) => {
+                    const range = win.document.createRange();
+                    const sel = win.getSelection();
+                    
+                    const textNode = el.firstChild;
+
+                    range.setStart(textNode, wordStart);
+                    range.setEnd(textNode, wordEnd);
+
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+
+                    cy.wrap($p).trigger('mouseup', { force: true });
+                });
+            });
+
+            cy.get('.rx-context', { timeout: 10000 }).should('be.visible');
+
+            cy.get('.rx-context').find('[data-name="bold"]').should('not.exist');
+
             
             // Verify Formatting options dropdown does NOT contain h1 and h2
             getRedactorField().find('.rx-toolbar a[data-name="format"]').click()

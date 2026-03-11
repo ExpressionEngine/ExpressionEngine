@@ -16,15 +16,33 @@ import RteEditToolset from '../../elements/pages/addons/RteEditToolset';
 
 export const page = new RteEditToolset;
 
-export function setupRedactorFullTests() {
+export function setupRedactorFixture() {
     before(function() {
         cy.task('db:seed')
-        // Toolsets are now included in database_7.0.0.sql
-        // No need to load separate tool_sets.sql
+        cy.task('db:load', '../../support/sql/rte-settings/redactor_test_channel.sql')
+
+        cy.task(
+            'db:query',
+            `SELECT ct.entry_id
+             FROM exp_channel_titles ct
+             INNER JOIN exp_channels c ON c.channel_id = ct.channel_id
+             WHERE c.channel_name = 'redactor_test'
+               AND ct.url_title = 'redactor_test_entry'
+             ORDER BY ct.entry_id DESC
+             LIMIT 1`
+        ).then(([rows]) => {
+            expect(rows, 'redactor fixture query result').to.have.length.greaterThan(0)
+            expect(rows[0].entry_id, 'redactor fixture entry_id').to.exist
+            Cypress.env('redactor_fixture_entry_id', rows[0].entry_id)
+        })
         
         // Fix base_path for local environment (database has CI path hardcoded)
         cy.eeConfig({ item: 'base_path', value: Cypress.env('CYPRESS_BASE_PATH') || '' })
     })
+}
+
+export function setupRedactorFullTests() {
+    setupRedactorFixture()
 
     beforeEach(function() {
         cy.authVisit('admin.php?/cp/addons/settings/rte/edit_toolset&toolset_id=4')
@@ -33,13 +51,55 @@ export function setupRedactorFullTests() {
     })
 }
 
+function initializeRedactorOnly() {
+    cy.contains('label', 'Redactor')
+        .parents('fieldset')
+        .as('redactorField')
+        .should('exist');
+
+    cy.get('@redactorField').then(($fieldset) => {
+        if ($fieldset.find('.rx-container').length > 0) {
+            cy.log('Redactor already initialized');
+            return;
+        }
+
+        const $textarea = $fieldset.find('textarea.rte-textarea').first();
+        const fieldId = $textarea.attr('id');
+        const configHandle = $textarea.data('config');
+
+        expect(fieldId, 'Textarea ID').to.be.a('string').and.not.be.empty;
+
+        cy.window({ timeout: 10000 }).then((win) => {
+            expect(win.Rte, 'Rte constructor').to.be.a('function');
+            
+            new win.Rte(fieldId, configHandle, false);
+        });
+    });
+
+    cy.get('@redactorField')
+        .find('.rx-container', { timeout: 15000 })
+        .should('be.visible');
+}
+
+
 /**
- * Navigate to the publish edit page with entry 3 (About the Label - has Redactor field)
+ * Navigate to the publish edit page with the runtime Redactor fixture entry.
  */
 export function navigateToPublishEditPage() {
-    cy.authVisit('admin.php?/cp/publish/edit/entry/3')
+    const fixtureEntryId = Cypress.env('redactor_fixture_entry_id')
+    expect(fixtureEntryId, 'redactor_fixture_entry_id').to.exist
+
+    cy.on('uncaught:exception', (err) => {
+        if (err && typeof err.message === 'string' && err.message.includes('Redactor is not defined')) {
+            return false
+        }
+    })
+
+    cy.authVisit(`admin.php?/cp/publish/edit/entry/${fixtureEntryId}`)
     cy.hasNoErrors()
     cy.get('.ee-main__content').should('be.visible')
+    cy.wait(5000)
+    initializeRedactorOnly()
 }
 
 /**

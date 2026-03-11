@@ -34,31 +34,37 @@ function ensureToggleEnabled(toggleSelector) {
 
 // Helper: Type text and select it in the editor
 function typeAndSelectText() {
-    getRedactorField().find('div.rx-content, [contenteditable="true"]').first().then($el => {
-        const el = $el[0]
+    getRedactorField().find('.rx-content').clear().type('Test word for selection')
+    cy.wait(300)
+    getRedactorField().find('.rx-content p').first().then(($p) => {
+        const el = $p[0];
+        const text = el.textContent;
+        const targetWord = 'word';
+        const wordStart = text.indexOf(targetWord);
         
-        // Focus and ensure content
-        el.focus()
-        el.innerHTML = 'Test word for selection'
-        
-        const range = document.createRange()
-        const sel = window.getSelection()
-        
-        // Select text content
-        if (el.firstChild) {
-            range.setStart(el.firstChild, 0)
-            range.setEnd(el.firstChild, el.firstChild.length)
-            sel.removeAllRanges()
-            sel.addRange(range)
-        }
-        
-        // Trigger events RedactorX listens to
-        $el.trigger('mousedown')
-        $el.trigger('mouseup')
-        $el.trigger('click')
-    })
-    cy.wait(1000)
+        if (wordStart === -1) throw new Error(`Word "${targetWord}" not found in text: ${text}`);
+
+        const wordEnd = wordStart + targetWord.length;
+
+        cy.window().then((win) => {
+            const range = win.document.createRange();
+            const sel = win.getSelection();
+            
+            const textNode = el.firstChild;
+
+            range.setStart(textNode, wordStart);
+            range.setEnd(textNode, wordEnd);
+
+            sel.removeAllRanges();
+            sel.addRange(range);
+
+            cy.wrap($p).trigger('mouseup', { force: true });
+        });
+    });
+
+    cy.get('.rx-context', { timeout: 10000 }).should('be.visible');
 }
+
 
 // Helper: Verify buttons exist in container on publish page
 function verifyButtonsInContainer(containerSelector, dataNames) {

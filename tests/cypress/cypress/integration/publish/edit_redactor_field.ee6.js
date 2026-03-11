@@ -1,19 +1,15 @@
 /// <reference types="Cypress" />
 
 import Edit from '../../elements/pages/publish/Edit';
+import { setupRedactorFixture, navigateToPublishEditPage } from '../../support/rte/redactor-full-setup';
 
 const page = new Edit;
 
 context('Publish Page - Edit Entry with Redactor Field', () => {
-    before(function(){
-        cy.task('db:seed')
-    })
+    setupRedactorFixture()
 
     beforeEach(function(){
-        // Entry 3 = "About the Label" in About channel, has Redactor field
-        cy.authVisit('admin.php?/cp/publish/edit/entry/3');
-        cy.hasNoErrors()
-        cy.get('.ee-main__content').should('be.visible')
+        navigateToPublishEditPage()
     })
 
     describe('Page Load and Redactor Field Display', function() {
@@ -47,10 +43,13 @@ context('Publish Page - Edit Entry with Redactor Field', () => {
     describe('Toolbar Functionality', function() {
         beforeEach(function() {
             // Clear field before each test
-            const fieldset = cy.get('label:contains("Redactor")').parents('fieldset')
-            const editor = fieldset.find('.rx-content')
-            editor.clear().type('Test content')
-        })
+            const fieldset = cy.get('label:contains("Redactor")').parents('fieldset');
+            fieldset.find('.rx-content')
+                .should('be.visible')
+                .and('not.be.disabled')
+                .clear()
+                .type('Test content');
+                    })
 
         it('Can apply Bold formatting', function() {
             const fieldset = cy.get('label:contains("Redactor")').parents('fieldset')
@@ -95,27 +94,37 @@ context('Publish Page - Edit Entry with Redactor Field', () => {
             })
         })
 
-        // it('Can insert links', function() {
-        //     const fieldset = cy.get('label:contains("Redactor")').parents('fieldset')
-        //     const editor = fieldset.find('.rx-content')
-            
-        //     editor.clear().type('Link text')
-        //     editor.find('p').type('{selectall}')
-            
-        //     cy.get('a[data-name="link"]').click()
-        //     cy.hasNoErrors()
-            
-        //     // Link dialog should appear or link should be inserted
-        //     cy.get('body').then($body => {
-        //         if ($body.find('.rx-modal').length > 0) {
-        //             cy.get('.rx-modal').should('be.visible')
-        //         } else {
-        //             editor.invoke('html').then((html) => {
-        //                 expect(html).to.include('<a')
-        //             })
-        //         }
-        //     })
-        // })
+        it('Can insert links via dropdown', function() {
+            const fieldset = cy.get('label:contains("Redactor")').parents('fieldset');
+            const editor = fieldset.find('.rx-content');
+
+            editor.should('be.visible')
+                  .and('not.be.disabled')
+                  .clear()
+                  .type('Link');
+            editor.find('p').type('{selectall}');
+
+            cy.get('a[data-name="link"]').click();
+
+            cy.get('.rx-dropdown', { timeout: 10000 })
+                .should('be.visible')
+                .within(() => {
+                    cy.get('div[data-input-value="rx-form-dropdown-react"]')
+                        .should('be.visible');
+
+                    cy.get('input.rx-form-input[name="url"]')
+                        .clear()
+                        .type('http://google.com/');
+
+                    cy.get('input.rx-form-input[name="text"]')
+                        .should('have.value', 'Link');
+
+                    cy.get('button[name="insert"]').click();
+                });
+
+            editor.should('contain.html', '<a href="http://google.com/">Link</a>');
+        });
+
 
         it('Can toggle HTML source view', function() {
             cy.get('a[data-name="html"]').click()
@@ -140,7 +149,10 @@ context('Publish Page - Edit Entry with Redactor Field', () => {
             const fieldset = cy.get('label:contains("Redactor")').parents('fieldset')
             const editor = fieldset.find('.rx-content')
             
-            editor.clear().type('Formatted text')
+            editor.should('be.visible')
+                  .and('not.be.disabled')
+                  .clear()
+                  .type('Test content');
             editor.find('p').type('{selectall}')
             
             cy.get('a[data-name="bold"]').click()
