@@ -669,19 +669,18 @@ class Channel
                 $search_column_name = null;
                 $field_sql = '';
                 $is_member_field = false;
-                $member_field_id = 0;
+                $member_field_context = null;
                 if (in_array($field_name, ['title', 'url_title'])) {
                     $table = 't';
                     $search_column_name = $table . '.' . $field_name;
-                } elseif (isset($this->msfields[$site_id][$field_name])) {
+                } elseif (($member_field_context = $this->_resolve_member_search_context($field_name, $site_id)) !== false) {
                     $is_member_field = true;
-                    $member_field_id = (int) $this->msfields[$site_id][$field_name];
                 } elseif (! isset($this->cfields[$site_id][$field_name])) {
                     continue;
                 }
 
                 if ($is_member_field) {
-                    $field_sql = $this->_generate_member_field_search_sql($terms, $member_field_id);
+                    $field_sql = $this->_generate_member_field_search_sql($terms, $member_field_context);
                 } elseif (!isset($search_column_name)) {
                     $field_id = $this->cfields[$site_id][$field_name];
                     $table = (isset($legacy_fields[$field_id])) ? "wd" : "exp_channel_data_field_{$field_id}";
@@ -733,10 +732,10 @@ class Channel
      * EXISTS/NOT EXISTS checks instead of string matching on channel data.
      *
      * @param   string  $terms      Search terms from search: parameter
-     * @param   int     $field_id   Member field ID
+     * @param   array   $member_field_context
      * @return  string
      */
-    private function _generate_member_field_search_sql($terms, $field_id)
+    private function _generate_member_field_search_sql($terms, $member_field_context)
     {
         $terms = trim($terms);
 
@@ -783,7 +782,7 @@ class Channel
             }
         }
 
-        $base_where = $this->_member_field_search_base_where($field_id);
+        $base_where = $this->_member_field_search_base_where($member_field_context);
 
         if ($has_is_empty && empty($member_ids)) {
             return $not
@@ -797,7 +796,7 @@ class Channel
 
         $member_ids = array_values($member_ids);
         $clauses = array();
-        $clauses[] = $this->_member_field_id_search_sql($field_id, $member_ids, $uses_and);
+        $clauses[] = $this->_member_field_id_search_sql($member_field_context, $member_ids, $uses_and);
 
         if ($has_is_empty) {
             $clauses[] = "NOT EXISTS (SELECT 1 FROM exp_member_relationships AS mr WHERE {$base_where})";
@@ -815,18 +814,18 @@ class Channel
     /**
      * Generate EXISTS SQL for member IDs in a member channel field.
      *
-     * @param   int     $field_id
+     * @param   array   $member_field_context
      * @param   array   $member_ids
      * @param   bool    $match_all  Require all IDs (&&) instead of any (|)
      * @return  string
      */
-    private function _member_field_id_search_sql($field_id, $member_ids, $match_all = false)
+    private function _member_field_id_search_sql($member_field_context, $member_ids, $match_all = false)
     {
         if (empty($member_ids)) {
             return '';
         }
 
-        $base_where = $this->_member_field_search_base_where($field_id);
+        $base_where = $this->_member_field_search_base_where($member_field_context);
         $member_ids = array_map('intval', $member_ids);
         $member_ids_sql = implode(',', $member_ids);
 
@@ -846,12 +845,40 @@ class Channel
     /**
      * Base WHERE clause for top-level member channel field relationships.
      *
-     * @param   int $field_id
+     * @param   array $member_field_context
      * @return  string
      */
-    private function _member_field_search_base_where($field_id)
+    private function _member_field_search_base_where($member_field_context)
     {
-        $field_id = (int) $field_id;
+        $field_id = (int) $member_field_context['field_id'];
+
+        if ($member_field_context['type'] === 'grid_member') {
+            $grid_field_id = (int) $member_field_context['grid_field_id'];
+            $grid_col_id = (int) $member_field_context['grid_col_id'];
+
+            return "mr.parent_id = t.entry_id
+                AND mr.field_id = {$field_id}
+                AND mr.grid_field_id = {$grid_field_id}
+                AND mr.grid_col_id = {$grid_col_id}
+                AND mr.grid_row_id > 0
+                AND mr.fluid_field_data_id = 0";
+        }
+
+        if ($member_field_context['type'] === 'fluid_member') {
+            $fluid_field_id = (int) $member_field_context['fluid_field_id'];
+
+            return "mr.parent_id = t.entry_id
+                AND mr.field_id = {$field_id}
+                AND mr.grid_field_id = 0
+                AND mr.grid_col_id = 0
+                AND mr.grid_row_id = 0
+                AND mr.fluid_field_data_id IN (
+                    SELECT ffd.id
+                    FROM exp_fluid_field_data AS ffd
+                    WHERE ffd.fluid_field_id = {$fluid_field_id}
+                    AND ffd.field_id = {$field_id}
+                )";
+        }
 
         return "mr.parent_id = t.entry_id
                 AND mr.field_id = {$field_id}
@@ -859,6 +886,89 @@ class Channel
                 AND mr.grid_col_id = 0
                 AND mr.grid_row_id = 0
                 AND mr.fluid_field_data_id = 0";
+    }
+
+    /**
+     * Resolve member search context for top-level, Grid, or Fluid fields.
+     *
+     * Supported syntaxes:
+     * - search:member_field="4"
+     * - search:grid_field:member_col="4"
+     * - search:fluid_field:member_field="4"
+     *
+     * @param   string  $field_name
+     * @param   int     $site_id
+     * @return  array|bool
+     */
+    private function _resolve_member_search_context($field_name, $site_id)
+    {
+        if (isset($this->msfields[$site_id][$field_name])) {
+            return array(
+                'type' => 'member',
+                'field_id' => (int) $this->msfields[$site_id][$field_name]
+            );
+        }
+
+        if (strpos($field_name, ':') === false) {
+            return false;
+        }
+
+        list($parent_field_name, $child_field_name) = explode(':', $field_name, 2);
+
+        // search:grid_field:member_col="4"
+        if (isset($this->gfields[$site_id][$parent_field_name])) {
+            $grid_field_id = (int) $this->gfields[$site_id][$parent_field_name];
+            $grid_col_id = $this->_resolve_grid_member_column_id($grid_field_id, $child_field_name);
+
+            if ($grid_col_id !== false) {
+                return array(
+                    'type' => 'grid_member',
+                    'field_id' => (int) $grid_col_id,
+                    'grid_field_id' => $grid_field_id,
+                    'grid_col_id' => (int) $grid_col_id
+                );
+            }
+        }
+
+        // search:fluid_field:member_field="4"
+        if (isset($this->ffields[$site_id][$parent_field_name]) && isset($this->msfields[$site_id][$child_field_name])) {
+            return array(
+                'type' => 'fluid_member',
+                'field_id' => (int) $this->msfields[$site_id][$child_field_name],
+                'fluid_field_id' => (int) $this->ffields[$site_id][$parent_field_name]
+            );
+        }
+
+        return false;
+    }
+
+    /**
+     * Resolve a Grid column short name to col_id when the column is member type.
+     *
+     * @param   int     $grid_field_id
+     * @param   string  $column_name
+     * @return  int|bool
+     */
+    private function _resolve_grid_member_column_id($grid_field_id, $column_name)
+    {
+        $query = ee()->db
+            ->select('col_id, col_type')
+            ->from('grid_columns')
+            ->where('field_id', (int) $grid_field_id)
+            ->where('col_name', $column_name)
+            ->get();
+
+        if ($query->num_rows() === 0) {
+            return false;
+        }
+
+        $column = $query->row_array();
+
+        if (! isset($column['col_type']) || $column['col_type'] !== 'member') {
+            return false;
+        }
+
+        return (int) $column['col_id'];
     }
 
     /**

@@ -188,6 +188,79 @@ class ChannelGenerateFieldSearchSqlTest extends ChannelTestBase
         $this->assertStringContainsString('mr.child_id IN (4)', $result);
     }
 
+    public function testGeneratesSqlForMemberFieldInGridColumn()
+    {
+        $this->channel->gfields = [
+            1 => [
+                'team_grid' => 200
+            ]
+        ];
+
+        $this->setDbRows([
+            [
+                'col_id' => 44,
+                'col_type' => 'member',
+                'field_id' => 200,
+                'col_name' => 'assignee'
+            ]
+        ]);
+
+        $searchFields = ['team_grid:assignee' => '4'];
+        $result = $this->method->invoke($this->channel, $searchFields, [], []);
+
+        $this->assertStringContainsString('mr.field_id = 44', $result);
+        $this->assertStringContainsString('mr.grid_field_id = 200', $result);
+        $this->assertStringContainsString('mr.grid_col_id = 44', $result);
+        $this->assertStringContainsString('mr.grid_row_id > 0', $result);
+        $this->assertStringContainsString('mr.child_id IN (4)', $result);
+    }
+
+    public function testGeneratesSqlForMemberFieldInFluidField()
+    {
+        $this->channel->ffields = [
+            1 => [
+                'content_blocks' => 777
+            ]
+        ];
+        $this->channel->msfields = [
+            1 => [
+                'featured_member' => 888
+            ]
+        ];
+
+        $searchFields = ['content_blocks:featured_member' => '4'];
+        $result = $this->method->invoke($this->channel, $searchFields, [], []);
+
+        $this->assertStringContainsString('mr.field_id = 888', $result);
+        $this->assertStringContainsString('exp_fluid_field_data AS ffd', $result);
+        $this->assertStringContainsString('ffd.fluid_field_id = 777', $result);
+        $this->assertStringContainsString('ffd.field_id = 888', $result);
+        $this->assertStringContainsString('mr.child_id IN (4)', $result);
+    }
+
+    public function testSkipsGridColumnMemberSearchWhenColumnIsNotMemberType()
+    {
+        $this->channel->gfields = [
+            1 => [
+                'team_grid' => 200
+            ]
+        ];
+
+        $this->setDbRows([
+            [
+                'col_id' => 44,
+                'col_type' => 'text',
+                'field_id' => 200,
+                'col_name' => 'assignee'
+            ]
+        ]);
+
+        $searchFields = ['team_grid:assignee' => '4'];
+        $result = $this->method->invoke($this->channel, $searchFields, [], []);
+
+        $this->assertEquals('', $result);
+    }
+
     public function testGeneratesSqlForMemberFieldOrList()
     {
         $this->channel->msfields = [

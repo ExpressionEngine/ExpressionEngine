@@ -241,6 +241,88 @@ class ChannelBuildSqlQueryTest extends ChannelTestBase
         $this->assertStringContainsString('exp_member_relationships', $capturingDb->queries[0]);
     }
 
+    public function testGridMemberFieldSearchBuildsSqlUsingMemberRelationships()
+    {
+        $this->channel->sql = '';
+        $this->channel->gfields = [
+            1 => [
+                'team_grid' => 200
+            ]
+        ];
+
+        ee()->TMPL->search_fields = [
+            'team_grid:assignee' => '4'
+        ];
+
+        $capturingDb = new class extends FakeDb {
+            public $queries = [];
+
+            public function query($sql)
+            {
+                $this->queries[] = $sql;
+                return new eeDbResultMock([]);
+            }
+        };
+
+        $capturingDb->setRows([
+            [
+                'col_id' => 44,
+                'col_type' => 'member',
+                'field_id' => 200,
+                'col_name' => 'assignee'
+            ]
+        ]);
+
+        $this->setMock('db', $capturingDb);
+
+        $result = $this->channel->build_sql_query();
+
+        $this->assertEquals('', $result);
+        $this->assertNotEmpty($capturingDb->queries);
+        $this->assertStringContainsString('exp_member_relationships', $capturingDb->queries[0]);
+        $this->assertStringContainsString('mr.grid_field_id = 200', $capturingDb->queries[0]);
+        $this->assertStringContainsString('mr.grid_col_id = 44', $capturingDb->queries[0]);
+    }
+
+    public function testFluidMemberFieldSearchBuildsSqlUsingMemberRelationships()
+    {
+        $this->channel->sql = '';
+        $this->channel->ffields = [
+            1 => [
+                'content_blocks' => 777
+            ]
+        ];
+        $this->channel->msfields = [
+            1 => [
+                'featured_member' => 888
+            ]
+        ];
+
+        ee()->TMPL->search_fields = [
+            'content_blocks:featured_member' => '4'
+        ];
+
+        $capturingDb = new class extends FakeDb {
+            public $queries = [];
+
+            public function query($sql)
+            {
+                $this->queries[] = $sql;
+                return new eeDbResultMock([]);
+            }
+        };
+
+        $this->setMock('db', $capturingDb);
+
+        $result = $this->channel->build_sql_query();
+
+        $this->assertEquals('', $result);
+        $this->assertNotEmpty($capturingDb->queries);
+        $this->assertStringContainsString('exp_member_relationships', $capturingDb->queries[0]);
+        $this->assertStringContainsString('exp_fluid_field_data', $capturingDb->queries[0]);
+        $this->assertStringContainsString('ffd.fluid_field_id = 777', $capturingDb->queries[0]);
+    }
+
     // ===== URL PARSING TESTS =====
 
     public function testHandlesYearMonthDayFormat()
