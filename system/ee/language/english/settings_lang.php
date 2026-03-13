@@ -865,9 +865,19 @@ $lang = array(
 
     'banishment_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location for locked out members.',
 
+    'throttling_allow_settings' => 'Allow Settings',
+
     'enable_throttling' => 'Enable throttling?',
 
     'enable_throttling_desc' => 'When enabled, members will be locked out of the system when they meet the lock out requirement.',
+
+    'throttle_ignore_logged_in' => 'Ignore Logged in Requests',
+
+    'throttle_ignore_logged_in_desc' => 'Ignore requests for throttling by logged in members.',
+
+    'throttling_allowed_ips' => 'Allowed IPs',
+
+    'throttling_allowed_ips_desc' => 'Enter 1 IP Address per line to allow a bypass of the Throttling',
 
     'lockout_time' => 'Lockout time',
 

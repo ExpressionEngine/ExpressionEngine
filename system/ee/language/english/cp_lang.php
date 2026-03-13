@@ -40,6 +40,8 @@ $lang = array(
 
     'slate_theme' => 'Slate Theme',
 
+    'contrast_theme' => 'Contrast Theme',
+
     'dark' => 'Dark',
 
     'light' => 'Light',
@@ -47,6 +49,8 @@ $lang = array(
     'snow' => 'Snow',
 
     'slate' => 'Slate',
+
+    'contrast' => 'Contrast',
 
     'jump_menu_item' => 'Jump Menu',
 

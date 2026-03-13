@@ -146,6 +146,7 @@ class Cli
         'make:service' => Commands\CommandMakeService::class,
         'make:sidebar' => Commands\CommandMakeSidebar::class,
         'make:template-tag' => Commands\CommandMakeTemplateTag::class,
+        'make:template-generator' => Commands\CommandMakeTemplateGenerator::class,
         'make:widget' => Commands\CommandMakeWidget::class,
 
         // Migrate
@@ -164,6 +165,7 @@ class Cli
 
         // Update
         'update' => Commands\CommandUpdate::class,
+        'update:db' => Commands\CommandUpdateDatabase::class,
         'update:prepare' => Commands\CommandUpdatePrepare::class,
         'update:run-hook' => Commands\CommandUpdateRunHook::class,
     ];
@@ -859,6 +861,11 @@ class Cli
                     break;
             }
         }
+
+        // sort the list of addons by name
+        uasort($list, function ($a, $b) {
+            return strcasecmp($a['name'], $b['name']);
+        });
 
         return $list;
     }

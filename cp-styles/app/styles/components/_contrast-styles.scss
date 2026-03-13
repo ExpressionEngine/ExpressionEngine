@@ -1,0 +1,26 @@
+body[data-theme="contrast"] {
+  .navigation-submenu {
+    .dropdown__item {
+      &:hover {
+        background-color: var(--ee-sidebar-bg-active);
+      }
+    }
+  }
+
+  .ee-sidebar__section-label {
+    opacity: 1;
+    font-weight: 600;
+  }
+
+  .jump-menu__link:hover,
+  .jump-menu__link.jump-menu__link--active,
+  .ee-sidebar__items .ee-sidebar__version:hover,
+  .dropdown__link:hover,
+  .select__dropdown-item:hover,
+  .button__within-dropdown:hover,
+  .dropdown__link:focus,
+  .select__dropdown-item:focus,
+  .button__within-dropdown:focus {
+    background: #F0F0FF;
+  }
+}
