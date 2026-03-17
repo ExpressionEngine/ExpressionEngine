@@ -56,6 +56,58 @@
   </div>
 </div>
 
+<div class="panel updater-subscribe hidden">
+  <div class="panel-heading" style="text-align: center;">
+    <h3><?=lang('updater_subscribe_title')?></h3>
+  </div>
+  <div class="panel-body">
+    <p><?=lang('updater_subscribe_desc')?></p>
+
+    <form id="updater-subscribe-form"
+      data-error-invalid-email="<?=lang('updater_subscribe_invalid_email')?>"
+      data-error-submit="<?=lang('updater_subscribe_submit_error')?>">
+      <fieldset class="fieldset">
+        <div class="field-instruct">
+          <label for="updater-subscribe-email"><?=lang('updater_subscribe_email_label')?></label>
+        </div>
+        <div class="field-control">
+          <input type="email" name="email" id="updater-subscribe-email" autocomplete="email" required>
+        </div>
+      </fieldset>
+
+      <fieldset class="fieldset">
+        <label class="checkbox-label" for="updater-subscribe-marketing">
+          <input type="checkbox" name="marketing_opt_in" id="updater-subscribe-marketing" value="y">
+          <?=lang('updater_subscribe_marketing_label')?>
+        </label>
+      </fieldset>
+
+      <div class="alert alert--attention app-notice---error hidden js-updater-subscribe-error">
+        <div class="alert__icon">
+          <i class="fas fa-info-circle fa-fw"></i>
+        </div>
+        <div class="alert__content">
+          <div class="alert__title">
+            <p><?=lang('updater_subscribe_error_title')?></p>
+          </div>
+          <div class="alert-notice">
+            <p class="js-updater-subscribe-error-text"></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-ctrls">
+        <button class="button button--primary" type="submit">
+          <?=lang('updater_subscribe_submit')?>
+        </button>
+        <button class="button button--default js-updater-subscribe-skip" type="button">
+          <?=lang('updater_subscribe_skip')?>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
 
 <?=ee()->javascript->get_global()
     . ee()->view->script_tag('jquery/jquery.js')
