@@ -330,6 +330,7 @@ class Pro_search_words
             $words = array_map('preg_quote', $words);
         }
 
+        $str = str_replace('<', ' <', $str); //inject some whitespace between tags to prevent concatenation
         $str = preg_replace('/<br\s?\/?>/iu', ' ', (string) $str);
         $str = strip_tags($str);
         $str = html_entity_decode($str, ENT_QUOTES, 'UTF-8');
