@@ -8,30 +8,141 @@
 
 .fluid__item {
 	display: flex;
-	margin-bottom: 10px;
-  background-color: color(bg-blank);
-	// padding-bottom: 10px;
-	border: 1px solid color(fluid-item-border);
-  position: static;
-  width: 100%;
-   // overflow-x: auto;
+	margin-bottom: 12px;
+	background-color: color(bg-blank);
+	border: 1px solid color(border-dark);
+	border-radius: $border-radius-base;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+	position: static;
+	width: 100%;
+	transition: box-shadow 0.2s ease, border-color 0.2s ease;
 
-  .fluid__item-fieldset {
-    padding: 10px 15px 5px 15px;
-    position: relative;
+	&:hover {
+		box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+		border-color: color(text-tertiary);
+	}
 
-    .icon--reorder {
-      display: none;
-    }
+	.fluid__item-fieldset {
+		padding: 4px 12px;
+		position: relative;
+		background-color: color(bg-5);
+		border-bottom: 1px solid color(border);
+		border-radius: $border-radius-base $border-radius-base 0 0;
+		display: flex;
+		align-items: center;
+		min-height: 32px;
 
-    .field-instruct {
-      padding-right: 55px;
-    }
-  }
+		.icon--reorder {
+			display: none;
+		}
 
-  .fluid__item-field {
-    padding: 15px 20px;
-    border-top: 1px solid var(--ee-border);
+		.field-instruct {
+			padding-right: 55px;
+			margin: 0;
+			display: flex;
+			align-items: center;
+
+			label {
+				font-weight: 600;
+				font-size: 12px;
+				margin: 0;
+				line-height: 1;
+			}
+
+			em {
+				margin-left: 8px;
+				font-size: 11px;
+				color: color(text-secondary);
+				line-height: 1;
+			}
+		}
+	}
+
+	.fluid__item-field {
+		padding: 8px 12px;
+		background-color: color(bg-blank);
+		border-radius: 0 0 $border-radius-base $border-radius-base;
+		margin-bottom: 0 !important; // Override .fieldset-faux margin
+
+		// Fix for extra spacing around specific fields like image upload
+		> *:first-child {
+			margin-top: 0 !important;
+		}
+		> *:last-child {
+			margin-bottom: 0 !important;
+		}
+
+		// Force inner wrappers to not have excessive bottom margins
+		> div, > p, > fieldset, > textarea {
+			&:not(.field-instruct) {
+				margin-bottom: 0 !important;
+			}
+		}
+
+		// Reduce file dropzone margin
+		.file-field__dropzone {
+			margin-top: 5px !important;
+		}
+
+		// Reduce RTE editor min-height inside fluid fields to prevent massive blank spaces
+		.ck.ck-editor__main > .ck-editor__editable,
+		.redactor-editor {
+			min-height: 100px !important;
+		}
+	}
+
+	// Specific styling for Field Groups
+	&[data-field-type="field_group"] {
+		border-left: 3px solid color(brand-primary);
+
+		.fluid__item-fieldset {
+			background-color: color(bg-10);
+			border-bottom: 1px solid color(border-dark);
+		}
+
+		.fluid__item-field {
+			padding: 6px 12px;
+			border-top: none;
+			border-bottom: 1px solid color(border);
+			margin-bottom: 0 !important;
+
+			&:last-child {
+				border-bottom: none;
+			}
+
+			.field-instruct {
+				margin-bottom: 2px;
+				margin-top: 0 !important;
+				display: block; // Reset flex for nested fields if needed
+
+				label {
+					font-weight: 600;
+					font-size: 11px;
+					color: color(text-normal);
+					text-transform: uppercase;
+					letter-spacing: 0.5px;
+				}
+
+				em {
+					font-size: 10px;
+					margin-left: 0;
+					display: block;
+					margin-top: 2px;
+				}
+			}
+
+			// Aggressively remove bottom margins from all inner wrappers
+			> div, > p, > fieldset, > textarea {
+				&:not(.field-instruct) {
+					margin-bottom: 0 !important;
+				}
+			}
+
+			// Reduce file dropzone margin
+			.file-field__dropzone {
+				margin-top: 5px !important;
+			}
+		}
 	}
 }
 
@@ -55,13 +166,26 @@
 			// cursor: move;
 
       em {
-        margin-left: 22px;
+        margin-left: 8px;
       }
 
       .icon--reorder {
-        margin-right: 5px;
-        color: color(text-secondary);
-        display: inline-block;
+        margin-right: 8px;
+        color: color(text-tertiary);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: grab;
+        padding: 2px 4px;
+        border-radius: 3px;
+        background-color: rgba(0,0,0,0.04);
+        transition: background-color 0.2s, color 0.2s;
+        height: 20px;
+        
+        &:hover {
+            background-color: rgba(0,0,0,0.1);
+            color: color(text-primary);
+        }
       }
 		}
 	}
@@ -102,14 +226,17 @@
 }
 
 .fluid__item-tools {
-	// flex: 0 1;
-	// padding: $s-s 0 0 0;
-	transition: opacity 100ms ease;
+	transition: opacity 200ms ease;
 	position: absolute;
 	top: 50%;
 	right: 15px;
 	transform: translateY(-50%);
 	z-index: 1;
+	opacity: 0.5;
+
+	.fluid__item:hover & {
+		opacity: 1;
+	}
 
 	.dropdown {
 		max-height: 90vh;
@@ -123,6 +250,7 @@
 
 	&.has-open-dropdown {
 		z-index: 200;
+		opacity: 1;
 	}
 }
 
