@@ -190,6 +190,9 @@ class Grid_ft extends EE_Fieldtype
             'row_counter' => isset($this->settings['row_counter'])
                 ? get_bool_from_string($this->settings['row_counter'])
                 : false,
+            'tools_position' => isset($this->settings['tools_position'])
+                ? get_bool_from_string($this->settings['tools_position'])
+                : false,
         ));
         $grid->loadAssets();
         $grid->setNoResultsText(
@@ -634,6 +637,16 @@ class Grid_ft extends EE_Fieldtype
                                 'value' => isset($data['row_counter']) ? $data['row_counter'] : 'n'
                             )
                         )
+                    ),
+                    array(
+                        'title' => 'grid_tools_position_title',
+                        'desc' => 'grid_tools_position_desc',
+                        'fields' => array(
+                            'tools_position' => array(
+                                'type' => 'yes_no',
+                                'value' => isset($data['tools_position']) ? $data['tools_position'] : 'n'
+                            )
+                        )
                     )
                 )
             ),
@@ -799,6 +812,7 @@ class Grid_ft extends EE_Fieldtype
             'allow_reorder' => empty($data['allow_reorder']) ? 'y' : $data['allow_reorder'],
             'vertical_layout' => empty($data['vertical_layout']) ? 'n' : $data['vertical_layout'],
             'row_counter' => empty($data['row_counter']) ? 'n' : $data['row_counter'],
+            'tools_position' => empty($data['tools_position']) ? 'n' : $data['tools_position'],
         );
     }
 
