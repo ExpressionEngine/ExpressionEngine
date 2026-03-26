@@ -282,7 +282,7 @@ class Consent
         }
 
         if ($submit_to === 'action_id') {
-            return ee()->functions->fetch_site_index(0, 0) . QUERY_MARKER . 'ACT=' . $action_id;
+            return ee()->functions->fetch_site_index() . QUERY_MARKER . 'ACT=' . $action_id;
         }
 
         return ee()->functions->fetch_current_uri();
