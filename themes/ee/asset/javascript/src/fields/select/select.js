@@ -1,8 +1,8 @@
 "use strict";
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -40,7 +40,7 @@ var SelectField = /*#__PURE__*/function (_React$Component) {
 
     _classCallCheck(this, SelectField);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(SelectField).call(this, props)); // This code is for the page channels->edit->Category
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(SelectField).call(this, props));
 
     _defineProperty(_assertThisInitialized(_this), "selectionChanged", function (selected) {
       _this.setState({
@@ -65,37 +65,99 @@ var SelectField = /*#__PURE__*/function (_React$Component) {
       $(event.target).closest('[data-id]').trigger('select:removeItem', [item]);
     });
 
-    if (_this.props.name == 'cat_group') {
-      props.selected = _this.categorySelected(props.selected, props.items);
+    _this.props.items = SelectList.formatItems(props.items);
+
+    var _selected = SelectList.formatItems(props.selected, null, props.multi); // Toggle-enabled select fields need full item metadata in "selected"
+    // so SelectList can synthesize hidden toggle inputs on initial render.
+
+
+    if (props.toggles && props.toggles.length) {
+      _selected = _this.normalizeSelectedForToggles(props.selected, _selected, _this.props.items);
     }
 
-    _this.props.items = SelectList.formatItems(props.items);
     _this.state = {
-      selected: SelectList.formatItems(props.selected, null, props.multi),
+      selected: _selected,
       editing: props.editing || false
     };
     return _this;
   }
 
   _createClass(SelectField, [{
-    key: "categorySelected",
-    // Check and update selected items to get toggles elements
-    // we are using toggles on the select_list.js
-    value: function categorySelected(selected, items) {
-      var catArr = [];
-      items.filter(function (item) {
-        selected.map(function (el) {
-          if (el == item.value) {
-            catArr.push(item);
+    key: "valuesMatch",
+    value: function valuesMatch(value1, value2) {
+      return value1 == value2 || String(value1) === String(value2);
+    }
+  }, {
+    key: "selectedValueFromRaw",
+    value: function selectedValueFromRaw(item) {
+      if (item && _typeof(item) === 'object' && item.value !== undefined) {
+        return item.value;
+      }
+
+      return item;
+    }
+  }, {
+    key: "findItemByValue",
+    value: function findItemByValue(items, value) {
+      for (var index = 0; index < items.length; index++) {
+        var item = items[index];
+
+        if (item.section) {
+          continue;
+        }
+
+        if (this.valuesMatch(item.value, value)) {
+          return item;
+        }
+
+        if (item.children && item.children.length) {
+          var child = this.findItemByValue(item.children, value);
+
+          if (child) {
+            return child;
           }
-        });
+        }
+      }
+
+      return null;
+    }
+  }, {
+    key: "normalizeSelectedForToggles",
+    value: function normalizeSelectedForToggles(rawSelected, formattedSelected, items) {
+      var _this2 = this;
+
+      if (!Array.isArray(rawSelected) || rawSelected.length === 0) {
+        return formattedSelected;
+      }
+
+      var normalized = [];
+      var seen = {};
+      rawSelected.forEach(function (rawItem) {
+        var selectedValue = _this2.selectedValueFromRaw(rawItem);
+
+        var selectedItem = _this2.findItemByValue(items, selectedValue);
+
+        if (!selectedItem) {
+          selectedItem = formattedSelected.find(function (item) {
+            return _this2.valuesMatch(item.value, selectedValue);
+          });
+        }
+
+        if (selectedItem) {
+          var key = String(selectedItem.value);
+
+          if (!seen[key]) {
+            normalized.push(selectedItem);
+            seen[key] = true;
+          }
+        }
       });
-      return catArr;
+      return normalized.length ? normalized : formattedSelected;
     }
   }, {
     key: "render",
     value: function render() {
-      var _this2 = this;
+      var _this3 = this;
 
       var tooManyLimit = typeof this.props.tooManyLimit !== 'undefined' && this.props.tooManyLimit !== null ? this.props.tooManyLimit : SelectList.defaultProps.tooManyLimit;
       var selectItem = React.createElement(FilterableSelectList, _extends({}, this.props, {
@@ -105,7 +167,7 @@ var SelectField = /*#__PURE__*/function (_React$Component) {
         reorderable: this.props.reorderable || this.state.editing,
         removable: this.props.removable || this.state.editing,
         handleRemove: function handleRemove(e, item) {
-          return _this2.handleRemove(e, item);
+          return _this3.handleRemove(e, item);
         },
         editable: this.props.editable || this.state.editing,
         toggleChanged: this.toggleChanged
@@ -121,7 +183,7 @@ var SelectField = /*#__PURE__*/function (_React$Component) {
         }, React.createElement(Toggle, {
           on: this.props.editing,
           handleToggle: function handleToggle(toggle) {
-            return _this2.setEditingMode(toggle);
+            return _this3.setEditingMode(toggle);
           }
         })));
       }

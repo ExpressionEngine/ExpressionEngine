@@ -82,25 +82,92 @@ class SelectList extends React.Component {
     // increment this variable which is set as a key on the root element,
     // telling React to destroy it and start anew
     this.version = 0
-    var toggles = [];
-    var values = props.selected.length ? props.selected.map(item => item.value) : [];
-    if (props.selectable && props.items.length != 0 && props.selected.length != 0 && props.toggles && props.toggles.length != 0) {
-      props.items.filter(item => values.includes(item.value)).forEach(item => {
-        props.toggles.filter(toggle => {
-          if (item.toggles[toggle] == true) {
-            toggles.push({
-              [toggle]: item.value,
-              'name': toggle,
-              'value': item.value
-            });
-          }
-        })
-      });
-    }
 
     this.state ={
-      toggles: toggles
+      toggles: this.collectInitialToggleInputs(props)
     }
+  }
+
+  valuesMatch(value1, value2) {
+    return value1 == value2 || String(value1) === String(value2)
+  }
+
+  selectedValue(item) {
+    if (item && typeof item === 'object' && item.value !== undefined) {
+      return item.value
+    }
+
+    return item
+  }
+
+  getSelectedValues(selected) {
+    if (!Array.isArray(selected)) {
+      return []
+    }
+
+    return selected
+      .map(item => this.selectedValue(item))
+      .filter(value => value !== undefined && value !== null && value !== '')
+  }
+
+  findSelectedItems(items, selectedValues) {
+    let selectedItems = []
+
+    items.forEach(item => {
+      if (item.section) {
+        return
+      }
+
+      if (selectedValues.some(value => this.valuesMatch(value, item.value))) {
+        selectedItems.push(item)
+      }
+
+      if (item.children && item.children.length) {
+        selectedItems = selectedItems.concat(this.findSelectedItems(item.children, selectedValues))
+      }
+    })
+
+    return selectedItems
+  }
+
+  collectInitialToggleInputs(props) {
+    let toggles = []
+    let selectedValues = this.getSelectedValues(props.selected)
+
+    if (!props.selectable
+      || !Array.isArray(props.items)
+      || props.items.length === 0
+      || selectedValues.length === 0
+      || !props.toggles
+      || props.toggles.length === 0) {
+      return toggles
+    }
+
+    let selectedItems = this.findSelectedItems(props.items, selectedValues)
+    let seen = {}
+
+    selectedItems.forEach(item => {
+      if (!item.toggles) {
+        return
+      }
+
+      props.toggles.forEach(toggle => {
+        if (item.toggles[toggle] == true) {
+          let key = toggle + ':' + String(item.value)
+          if (seen[key]) {
+            return
+          }
+          seen[key] = true
+          toggles.push({
+            [toggle]: item.value,
+            'name': toggle,
+            'value': item.value
+          })
+        }
+      })
+    })
+
+    return toggles
   }
 
   static formatItems (items, parent, multi) {

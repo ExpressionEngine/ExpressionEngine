@@ -1,8 +1,8 @@
 "use strict";
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -217,32 +217,99 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
     });
 
     _this.version = 0;
-    var toggles = [];
-    var values = props.selected.length ? props.selected.map(function (item) {
-      return item.value;
-    }) : [];
-
-    if (props.selectable && props.items.length != 0 && props.selected.length != 0 && props.toggles && props.toggles.length != 0) {
-      props.items.filter(function (item) {
-        return values.includes(item.value);
-      }).forEach(function (item) {
-        props.toggles.filter(function (toggle) {
-          if (item.toggles[toggle] == true) {
-            var _toggles$push;
-
-            toggles.push((_toggles$push = {}, _defineProperty(_toggles$push, toggle, item.value), _defineProperty(_toggles$push, 'name', toggle), _defineProperty(_toggles$push, 'value', item.value), _toggles$push));
-          }
-        });
-      });
-    }
-
     _this.state = {
-      toggles: toggles
+      toggles: _this.collectInitialToggleInputs(props)
     };
     return _this;
   }
 
   _createClass(SelectList, [{
+    key: "valuesMatch",
+    value: function valuesMatch(value1, value2) {
+      return value1 == value2 || String(value1) === String(value2);
+    }
+  }, {
+    key: "selectedValue",
+    value: function selectedValue(item) {
+      if (item && _typeof(item) === 'object' && item.value !== undefined) {
+        return item.value;
+      }
+
+      return item;
+    }
+  }, {
+    key: "getSelectedValues",
+    value: function getSelectedValues(selected) {
+      var _this2 = this;
+
+      if (!Array.isArray(selected)) {
+        return [];
+      }
+
+      return selected.map(function (item) {
+        return _this2.selectedValue(item);
+      }).filter(function (value) {
+        return value !== undefined && value !== null && value !== '';
+      });
+    }
+  }, {
+    key: "findSelectedItems",
+    value: function findSelectedItems(items, selectedValues) {
+      var _this3 = this;
+
+      var selectedItems = [];
+      items.forEach(function (item) {
+        if (item.section) {
+          return;
+        }
+
+        if (selectedValues.some(function (value) {
+          return _this3.valuesMatch(value, item.value);
+        })) {
+          selectedItems.push(item);
+        }
+
+        if (item.children && item.children.length) {
+          selectedItems = selectedItems.concat(_this3.findSelectedItems(item.children, selectedValues));
+        }
+      });
+      return selectedItems;
+    }
+  }, {
+    key: "collectInitialToggleInputs",
+    value: function collectInitialToggleInputs(props) {
+      var toggles = [];
+      var selectedValues = this.getSelectedValues(props.selected);
+
+      if (!props.selectable || !Array.isArray(props.items) || props.items.length === 0 || selectedValues.length === 0 || !props.toggles || props.toggles.length === 0) {
+        return toggles;
+      }
+
+      var selectedItems = this.findSelectedItems(props.items, selectedValues);
+      var seen = {};
+      selectedItems.forEach(function (item) {
+        if (!item.toggles) {
+          return;
+        }
+
+        props.toggles.forEach(function (toggle) {
+          if (item.toggles[toggle] == true) {
+            var _toggles$push;
+
+            var _key2 = toggle + ':' + String(item.value);
+
+            if (seen[_key2]) {
+              return;
+            }
+
+            seen[_key2] = true;
+            toggles.push((_toggles$push = {}, _defineProperty(_toggles$push, toggle, item.value), _defineProperty(_toggles$push, 'name', toggle), _defineProperty(_toggles$push, 'value', item.value), _toggles$push));
+          }
+        });
+      });
+      return toggles;
+    }
+  }, {
     key: "componentDidMount",
     value: function componentDidMount() {
       if (this.props.nestableReorder) {
@@ -265,7 +332,7 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "bindSortable",
     value: function bindSortable() {
-      var _this2 = this;
+      var _this4 = this;
 
       var selector = this.props.nested ? '.field-nested' : '.field-inputs';
       $(selector, this.container).sortable({
@@ -303,21 +370,21 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
 
           var items = ui.item.closest('.field-inputs').find('> [data-id]').toArray();
 
-          var itemsHash = _this2.getItemsHash(_this2.props.items);
+          var itemsHash = _this4.getItemsHash(_this4.props.items);
 
           var nestedItems = getNestedItems(items);
 
-          _this2.props.itemsChanged(_this2.getItemsArrayForNestable(itemsHash, nestedItems));
+          _this4.props.itemsChanged(_this4.getItemsArrayForNestable(itemsHash, nestedItems));
 
-          if (_this2.props.selectionShouldRetainItemOrder) {
-            selected = _this2.getOrderedSelection(_this2.props.selected);
+          if (_this4.props.selectionShouldRetainItemOrder) {
+            selected = _this4.getOrderedSelection(_this4.props.selected);
 
-            _this2.props.selectionChanged(selected);
+            _this4.props.selectionChanged(selected);
           }
 
-          if (_this2.props.reorderAjaxUrl) {
+          if (_this4.props.reorderAjaxUrl) {
             $.ajax({
-              url: _this2.props.reorderAjaxUrl,
+              url: _this4.props.reorderAjaxUrl,
               data: {
                 'order': nestedItems
               },
@@ -333,7 +400,7 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "bindNestable",
     value: function bindNestable() {
-      var _this3 = this;
+      var _this5 = this;
 
       // Make sure the draggable container is positioned relatively so that the nestable drag item is positioned correctly
       this.container.parentNode.style.position = 'relative';
@@ -353,17 +420,17 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
         if (!$(event.target).data("nestable")) return; // React will not be able to handle Nestable changing a node's children,
         // so force a full re-render if it happens
 
-        _this3.version++;
+        _this5.version++;
 
-        var itemsHash = _this3.getItemsHash(_this3.props.items);
+        var itemsHash = _this5.getItemsHash(_this5.props.items);
 
         var nestableData = $(event.target).nestable('serialize');
 
-        _this3.props.itemsChanged(_this3.getItemsArrayForNestable(itemsHash, nestableData));
+        _this5.props.itemsChanged(_this5.getItemsArrayForNestable(itemsHash, nestableData));
 
-        if (_this3.props.reorderAjaxUrl) {
+        if (_this5.props.reorderAjaxUrl) {
           $.ajax({
-            url: _this3.props.reorderAjaxUrl,
+            url: _this5.props.reorderAjaxUrl,
             data: {
               'order': nestableData
             },
@@ -376,26 +443,26 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "getItemsHash",
     value: function getItemsHash(items) {
-      var _this4 = this;
+      var _this6 = this;
 
       var itemsHash = {};
       items.forEach(function (item) {
         itemsHash[item.value] = item;
-        if (item.children) itemsHash = Object.assign(itemsHash, _this4.getItemsHash(item.children));
+        if (item.children) itemsHash = Object.assign(itemsHash, _this6.getItemsHash(item.children));
       });
       return itemsHash;
     }
   }, {
     key: "getItemsArrayForNestable",
     value: function getItemsArrayForNestable(itemsHash, nestable, parent) {
-      var _this5 = this;
+      var _this7 = this;
 
       var items = [];
       nestable.forEach(function (orderedItem) {
         var item = itemsHash[orderedItem.id];
         var newItem = Object.assign({}, item);
         newItem.parent = parent ? parent : null;
-        newItem.children = orderedItem.children ? _this5.getItemsArrayForNestable(itemsHash, orderedItem.children, newItem) : null;
+        newItem.children = orderedItem.children ? _this7.getItemsArrayForNestable(itemsHash, orderedItem.children, newItem) : null;
         items.push(newItem);
       });
       return items;
@@ -404,14 +471,14 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
     key: "getOrderedSelection",
     // Orders the selection array based on the items' order in the list
     value: function getOrderedSelection(selected) {
-      var _this6 = this;
+      var _this8 = this;
 
       orderedSelection = [];
       return selected.sort(function (a, b) {
-        a = _this6.props.initialItems.findIndex(function (item) {
+        a = _this8.props.initialItems.findIndex(function (item) {
           return item.value == a.value;
         });
-        b = _this6.props.initialItems.findIndex(function (item) {
+        b = _this8.props.initialItems.findIndex(function (item) {
           return item.value == b.value;
         });
         return a < b ? -1 : 1;
@@ -447,14 +514,14 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "getFlattenedChildrenOfItem",
     value: function getFlattenedChildrenOfItem(item) {
-      var _this7 = this;
+      var _this9 = this;
 
       var items = [];
       item.children.forEach(function (child) {
         items.push(child);
 
         if (child.children) {
-          items = items.concat(_this7.getFlattenedChildrenOfItem(child));
+          items = items.concat(_this9.getFlattenedChildrenOfItem(child));
         }
       });
       return items;
@@ -490,7 +557,7 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
   }, {
     key: "render",
     value: function render() {
-      var _this8 = this;
+      var _this10 = this;
 
       var props = this.props;
       var shouldShowToggleAll = (props.multi || !props.selectable) && props.toggleAll !== null;
@@ -502,7 +569,7 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
       return React.createElement("div", {
         className: props.tooMany ? ' lots-of-checkboxes' : '',
         ref: function ref(container) {
-          _this8.container = container;
+          _this10.container = container;
         },
         key: this.version
       }, props.tooMany && React.createElement("div", {
@@ -520,17 +587,17 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
           placeholder: filter.placeholder,
           items: filter.items,
           onSelect: function onSelect(value) {
-            return _this8.filterChange(filter.name, value);
+            return _this10.filterChange(filter.name, value);
           }
         });
       }), React.createElement(FilterSearch, {
         onSearch: function onSearch(e) {
-          return _this8.filterChange('search', e.target.value);
+          return _this10.filterChange('search', e.target.value);
         }
       }))), shouldShowToggleAll && props.tooMany && React.createElement(FilterToggleAll, {
         checkAll: props.toggleAll,
         onToggleAll: function onToggleAll(check) {
-          return _this8.handleToggleAll(check);
+          return _this10.handleToggleAll(check);
         }
       }))), React.createElement(FieldInputs, {
         nested: props.nested,
@@ -559,13 +626,13 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
           reorderable: props.reorderable,
           removable: props.removable && (!props.unremovableChoices || !props.unremovableChoices.includes(item.value)),
           editable: props.editable,
-          handleSelect: _this8.handleSelect,
+          handleSelect: _this10.handleSelect,
           handleRemove: function handleRemove(e, item) {
             return props.handleRemove(e, item);
           },
           groupToggle: props.groupToggle,
           toggles: props.toggles,
-          state: _this8.state,
+          state: _this10.state,
           toggleChanged: props.toggleChanged
         });
       }), !props.loading && useVirtualization && React.createElement(VirtualizedItemList, {
@@ -593,7 +660,7 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
         name: props.multi ? props.name + '[]' : props.name,
         value: "",
         ref: function ref(input) {
-          _this8.input = input;
+          _this10.input = input;
         }
       }), !props.jsonify && props.selectable && props.selected.map(function (item) {
         return React.createElement("input", {
@@ -602,7 +669,7 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
           name: props.multi ? props.name + '[]' : props.name,
           value: item.value,
           ref: function ref(input) {
-            _this8.input = input;
+            _this10.input = input;
           }
         });
       }), this.state.toggles.length != 0 && this.state.toggles.map(function (toggle) {
@@ -612,7 +679,7 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
           name: props.multi ? toggle.name + '[]' : toggle.name,
           value: toggle.value,
           ref: function ref(input) {
-            _this8.input = input;
+            _this10.input = input;
           }
         });
       }), props.jsonify && props.selectable && React.createElement("input", {
@@ -620,7 +687,7 @@ var SelectList = /*#__PURE__*/function (_React$Component) {
         name: props.name,
         value: JSON.stringify(values),
         ref: function ref(input) {
-          _this8.input = input;
+          _this10.input = input;
         }
       }));
     }
@@ -822,7 +889,7 @@ var SelectItem = /*#__PURE__*/function (_React$Component2) {
   }, {
     key: "render",
     value: function render() {
-      var _this9 = this;
+      var _this11 = this;
 
       var props = this.props;
       var checked = this.checked(props.item.value);
@@ -876,11 +943,11 @@ var SelectItem = /*#__PURE__*/function (_React$Component2) {
           href: "",
           className: 'button button--default extra-flyout-button flyout-' + toggleName + (props.item.toggles[toggleName] == true ? ' active' : ''),
           onClick: function onClick(e) {
-            return _this9.bindToggleChange(e, props.item);
+            return _this11.bindToggleChange(e, props.item);
           },
           disabled: checked ? false : true,
           "data-toggle-name": toggleName
-        }, EE.lang[toggleName], " ", props.item.toggles[toggleName] == true ? _this9.toggleOn() : _this9.toggleOff());
+        }, EE.lang[toggleName], " ", props.item.toggles[toggleName] == true ? _this11.toggleOn() : _this11.toggleOff());
       }), props.editable && React.createElement("a", {
         href: "",
         className: "button button--default flyout-edit flyout-edit-icon",
@@ -1031,32 +1098,32 @@ var VirtualizedItemList = /*#__PURE__*/function (_React$Component5) {
   _inherits(VirtualizedItemList, _React$Component5);
 
   function VirtualizedItemList(props) {
-    var _this10;
+    var _this12;
 
     _classCallCheck(this, VirtualizedItemList);
 
-    _this10 = _possibleConstructorReturn(this, _getPrototypeOf(VirtualizedItemList).call(this, props));
+    _this12 = _possibleConstructorReturn(this, _getPrototypeOf(VirtualizedItemList).call(this, props));
 
-    _defineProperty(_assertThisInitialized(_this10), "handleScroll", function () {
-      var scrollTop = _this10.scrollContainer ? _this10.scrollContainer.scrollTop : 0;
+    _defineProperty(_assertThisInitialized(_this12), "handleScroll", function () {
+      var scrollTop = _this12.scrollContainer ? _this12.scrollContainer.scrollTop : 0;
 
-      _this10.setState({
+      _this12.setState({
         scrollTop: scrollTop
       });
     });
 
-    _this10.state = {
+    _this12.state = {
       scrollTop: 0
     };
-    _this10.containerRef = React.createRef();
-    _this10.scrollHandler = null;
-    return _this10;
+    _this12.containerRef = React.createRef();
+    _this12.scrollHandler = null;
+    return _this12;
   }
 
   _createClass(VirtualizedItemList, [{
     key: "componentDidMount",
     value: function componentDidMount() {
-      var _this11 = this;
+      var _this13 = this;
 
       // Find the scrollable parent container (the outer <div> with field-inputs)
       if (this.containerRef.current) {
@@ -1065,12 +1132,12 @@ var VirtualizedItemList = /*#__PURE__*/function (_React$Component5) {
         if (this.scrollContainer) {
           // Debounce scroll handler for better performance
           this.scrollHandler = function () {
-            if (_this11.scrollTimeout) {
-              clearTimeout(_this11.scrollTimeout);
+            if (_this13.scrollTimeout) {
+              clearTimeout(_this13.scrollTimeout);
             }
 
-            _this11.scrollTimeout = setTimeout(function () {
-              _this11.handleScroll();
+            _this13.scrollTimeout = setTimeout(function () {
+              _this13.handleScroll();
             }, 16); // ~60fps
           };
 
@@ -1132,7 +1199,7 @@ var VirtualizedItemList = /*#__PURE__*/function (_React$Component5) {
   }, {
     key: "render",
     value: function render() {
-      var _this12 = this;
+      var _this14 = this;
 
       var _this$getVisibleRange = this.getVisibleRange(),
           startIndex = _this$getVisibleRange.startIndex,
@@ -1166,23 +1233,23 @@ var VirtualizedItemList = /*#__PURE__*/function (_React$Component5) {
           "data-depth": item.depth || 0
         }, React.createElement(SelectItem, {
           item: item,
-          name: _this12.props.name,
-          selected: _this12.props.selected,
-          disabledChoices: _this12.props.disabledChoices,
-          multi: _this12.props.multi,
+          name: _this14.props.name,
+          selected: _this14.props.selected,
+          disabledChoices: _this14.props.disabledChoices,
+          multi: _this14.props.multi,
           nested: false,
-          selectable: _this12.props.selectable,
+          selectable: _this14.props.selectable,
           reorderable: false,
-          removable: _this12.props.removable && (!_this12.props.unremovableChoices || !_this12.props.unremovableChoices.includes(item.value)),
-          editable: _this12.props.editable,
-          handleSelect: _this12.props.handleSelect,
+          removable: _this14.props.removable && (!_this14.props.unremovableChoices || !_this14.props.unremovableChoices.includes(item.value)),
+          editable: _this14.props.editable,
+          handleSelect: _this14.props.handleSelect,
           handleRemove: function handleRemove(e, item) {
-            return _this12.props.handleRemove(e, item);
+            return _this14.props.handleRemove(e, item);
           },
-          groupToggle: _this12.props.groupToggle,
-          toggles: _this12.props.toggles,
-          state: _this12.props.state,
-          toggleChanged: _this12.props.toggleChanged,
+          groupToggle: _this14.props.groupToggle,
+          toggles: _this14.props.toggles,
+          state: _this14.props.state,
+          toggleChanged: _this14.props.toggleChanged,
           depth: item.depth
         }));
       }))));
