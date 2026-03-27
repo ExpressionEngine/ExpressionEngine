@@ -121,9 +121,9 @@ class Relationships_ft_cp
         $this->all_categories = array(
             '--' => array(
                 'name' => lang('any_category'),
-                'children' => array_replace(...array_map(function ($hierarchy) use ($categories) {
+                'children' => !empty($hierarchyGroups) ? array_replace(...array_map(function ($hierarchy) use ($categories) {
                     return $this->buildCategoryList(0, $hierarchy, $categories);
-                }, $hierarchyGroups))
+                }, $hierarchyGroups)) : []
             )
         );
 
