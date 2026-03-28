@@ -22,7 +22,7 @@
 </head>
 <body data-theme="light">
 <script>
-	var currentTheme = localStorage.getItem('theme');
+	var currentTheme = localStorage.getItem('theme') ?? '<?=ee()->config->item('cp_theme') ?: 'light'?>';
 
 	if (currentTheme) {
 		document.body.dataset.theme = currentTheme

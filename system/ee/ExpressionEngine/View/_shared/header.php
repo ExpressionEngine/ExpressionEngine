@@ -41,7 +41,7 @@
     </head>
     <body data-ee-version="<?=APP_VER?>" id="top"<?php echo isset($body_class) ? ' class="' . $body_class . '"' : ''; ?>>
         <script type="text/javascript">
-        var currentTheme = localStorage.getItem('theme');
+        var currentTheme = localStorage.getItem('theme') ?? '<?=ee()->config->item('cp_theme') ?: 'light'?>';
 
         // Restore the currently selected theme
         // This is at the top of the body to prevent the default theme from flashing
