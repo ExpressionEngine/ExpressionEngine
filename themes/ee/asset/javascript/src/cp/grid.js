@@ -1048,6 +1048,60 @@ EE.grid_settings = function(root, settings) {
 	return new Grid.Settings(root, settings);
 };
 
+function getGridMovableRows($tbody) {
+	return $tbody.children('tr')
+		.not('.grid-blank-row')
+		.not('.no-results')
+		.not('.tbl-action')
+		.not('.hidden');
+}
+
+function updateGridMoveButtons($scope) {
+	var $tbodies;
+
+	if (! $scope || $scope.length === 0) {
+		$tbodies = $('.grid-field .grid-field__table > tbody');
+	} else if ($scope.is('tbody')) {
+		$tbodies = $scope;
+	} else if ($scope.is('.grid-field')) {
+		$tbodies = $scope.find('.grid-field__table > tbody');
+	} else {
+		$tbodies = $scope.find('.grid-field__table > tbody');
+	}
+
+	$tbodies.each(function() {
+		var $rows = getGridMovableRows($(this));
+
+		$rows.find('.js-grid-move-up, .js-grid-move-down')
+			.prop('disabled', false)
+			.attr('aria-disabled', 'false');
+
+		if ($rows.length === 0) {
+			return;
+		}
+
+		$rows.first().find('.js-grid-move-up')
+			.prop('disabled', true)
+			.attr('aria-disabled', 'true');
+
+		$rows.last().find('.js-grid-move-down')
+			.prop('disabled', true)
+			.attr('aria-disabled', 'true');
+	});
+}
+
+function applyGridMoveRow($tbody) {
+	var $grid = $tbody.closest('.grid-field');
+	var gridInstance = $grid.data('GridInstance');
+
+	if (gridInstance && typeof(gridInstance._updateRowCounter) === 'function') {
+		gridInstance._updateRowCounter();
+	}
+
+	$(document).trigger('entry:preview');
+	updateGridMoveButtons($tbody);
+}
+
 if (typeof _ !== 'undefined' && EE.grid_cache !== 'undefined') {
 	_.each(EE.grid_cache, function(args) {
 		Grid.bind.apply(Grid, args);
@@ -1057,6 +1111,7 @@ if (typeof _ !== 'undefined' && EE.grid_cache !== 'undefined') {
 $(document).ready(function () {
 	FluidField.on('grid', 'add', function(el) {
   		EE.grid($('div', el));
+		updateGridMoveButtons($('div', el));
 	});
 
 	// Toggle grid item
@@ -1086,6 +1141,7 @@ $(document).ready(function () {
 
 		// Hide the dropdown menu
 		$('.js-dropdown-toggle.dropdown-open').trigger('click');
+		updateGridMoveButtons($(this).parents('tbody'));
 
 		return false;
 	});
@@ -1100,9 +1156,67 @@ $(document).ready(function () {
 
 		// Hide the dropdown menu
 		$('.js-dropdown-toggle.dropdown-open').trigger('click');
+		updateGridMoveButtons($(this).parents('tbody'));
 
 		return false;
 	});
+
+	// Move row up
+	$('body').on('click', '.grid-field .js-grid-move-up', function(event) {
+		event.preventDefault();
+
+		var $row = $(this).closest('tr');
+		var $tbody = $row.closest('tbody');
+		var $rows = getGridMovableRows($tbody);
+		var currentIndex = $rows.index($row);
+
+		if (currentIndex <= 0) {
+			return false;
+		}
+
+		$row.insertBefore($rows.eq(currentIndex - 1));
+		applyGridMoveRow($tbody);
+
+		return false;
+	});
+
+	// Move row down
+	$('body').on('click', '.grid-field .js-grid-move-down', function(event) {
+		event.preventDefault();
+
+		var $row = $(this).closest('tr');
+		var $tbody = $row.closest('tbody');
+		var $rows = getGridMovableRows($tbody);
+		var currentIndex = $rows.index($row);
+
+		if (currentIndex === -1 || currentIndex >= ($rows.length - 1)) {
+			return false;
+		}
+
+		$row.insertAfter($rows.eq(currentIndex + 1));
+		applyGridMoveRow($tbody);
+
+		return false;
+	});
+
+	// Keep button state in sync when rows are added/removed/sorted
+	$('body').on('grid:addRow', '.grid-field', function() {
+		updateGridMoveButtons($(this));
+	});
+
+	$('body').on('click', '.grid-field [rel="remove_row"]', function() {
+		var $tbody = $(this).closest('tbody');
+
+		window.setTimeout(function() {
+			updateGridMoveButtons($tbody);
+		}, 0);
+	});
+
+	$('body').on('sortstop', '.grid-field .grid-field__table > tbody', function() {
+		updateGridMoveButtons($(this));
+	});
+
+	updateGridMoveButtons($('.grid-field'));
 });
 
 function checkGridWidthForResize() {

@@ -861,6 +861,10 @@ $lang = array(
 
     'expand_all' => 'Expand All',
 
+    'move_row_up' => 'Move row up',
+
+    'move_row_down' => 'Move row down',
+
     'creating_new_in_rel' => 'Creating new entry in <b>#to_channel#</b> for a relationship with <b>#from_channel#</b>',
 
     'creating_member_in_rel' => 'Creating new member for a relationship with <b>#from_channel#</b>',
