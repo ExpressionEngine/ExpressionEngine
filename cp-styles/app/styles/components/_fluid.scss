@@ -1,9 +1,8 @@
 
 .fluid {
-	padding: $s-s $s-s 5px;
-	background: color(bg-0);
-	border: 1px solid color(border);
-	border-radius: $border-radius-base;
+	padding: 0;
+	background: transparent;
+	border: none;
 }
 
 .fluid__item {
@@ -101,7 +100,7 @@
 		}
 
 		.fluid__item-field {
-			padding: 6px 12px;
+			padding: 10px 12px 14px;
 			border-top: none;
 			border-bottom: 1px solid color(border);
 			margin-bottom: 0 !important;
