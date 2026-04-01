@@ -544,21 +544,28 @@ class Fluid_field_parser
 
                     $parsed = $tag->parse($field, $meta);
                     $frontEditLink = '';
-                    $hasManualFrontEdit = strpos($my_tagdata, '{frontedit_link') !== false;
+                    $normalizedFluidFieldName = preg_replace('/^' . preg_quote((string) $this->_prefix, '/') . '/', '', (string) $fluid_field_name);
+                    $manualFluidFieldNames = array_unique(array_filter([
+                        'fluid_field',
+                        $normalizedFluidFieldName,
+                    ]));
+                    $manualFluidFieldNamesPattern = implode('|', array_map(function ($name) {
+                        return preg_quote($name, '/');
+                    }, $manualFluidFieldNames));
+                    $manualFluidLinkPattern = '/\{frontedit_link\b(?:(?!\}).)*(?:field_name\s*=\s*[\'"@](?:' . $manualFluidFieldNamesPattern . ')[\'"@]|field_id\s*=\s*[\'"@]' . preg_quote((string) $fluid_field_id, '/') . '[\'"@])(?:(?!\}).)*\}/si';
+                    $hasManualFrontEdit = preg_match($manualFluidLinkPattern, $my_tagdata) === 1;
 
                     if (!$frontedit_disabled && !$hasManualFrontEdit) {
-                        $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLink(
+                        $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLinkWithParams(
                             $channel_row['site_id'],
                             $channel_row['channel_id'],
                             $entry_id,
-                            $fluid_field_id
+                            $fluid_field_id,
+                            [
+                                'fluid_item_field_id' => $fluid_field->ChannelField->field_id,
+                                'fluid_item_data_id' => $fluid_field->getId(),
+                            ]
                         );
-
-                        if (!empty($frontEditLink)) {
-                            $frontEditLink = rtrim($frontEditLink, '}')
-                                . ' fluid_item_field_id=@' . $fluid_field->ChannelField->field_id . '@'
-                                . ' fluid_item_data_id=@' . $fluid_field->getId() . '@}';
-                        }
                     }
 
                     $chunk_output .= $frontEditLink . $parsed;

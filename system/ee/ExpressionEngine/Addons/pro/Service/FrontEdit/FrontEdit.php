@@ -28,13 +28,47 @@ class FrontEdit
      */
     public function entryFieldEditLink($site_id, $channel_id, $entry_id, $field_id_or_name)
     {
+        return $this->entryFieldEditLinkWithParams($site_id, $channel_id, $entry_id, $field_id_or_name);
+    }
+
+    /**
+     * Get edit link for entry field with optional extra params
+     *
+     * @param int $site_id Site id
+     * @param int $channel_id Channel id
+     * @param int $entry_id Entry id
+     * @param string $field_id_or_name Field ID or short name of the field is not custom
+     * @param array $extra Optional params to include in frontedit_link token
+     */
+    public function entryFieldEditLinkWithParams($site_id, $channel_id, $entry_id, $field_id_or_name, array $extra = [])
+    {
         if ($this->fronteditIsDisabled()) {
             return '';
         }
         if (!is_numeric($site_id) || !is_numeric($channel_id) || !is_numeric($entry_id)) {
             return '';
         }
-        return '{frontedit_link site_id=@' . $site_id . '@ channel_id=@' . $channel_id . '@ entry_id=@' . $entry_id . '@ field_id=@' . $field_id_or_name . '@}';
+
+        $params = [
+            'site_id' => $site_id,
+            'channel_id' => $channel_id,
+            'entry_id' => $entry_id,
+            'field_id' => $field_id_or_name,
+        ];
+
+        foreach ($extra as $key => $value) {
+            if ($value === null || $value === '') {
+                continue;
+            }
+            $params[$key] = $value;
+        }
+
+        $parts = [];
+        foreach ($params as $key => $value) {
+            $parts[] = $key . '=@' . (string) $value . '@';
+        }
+
+        return '{frontedit_link ' . implode(' ', $parts) . '}';
     }
 
     /**

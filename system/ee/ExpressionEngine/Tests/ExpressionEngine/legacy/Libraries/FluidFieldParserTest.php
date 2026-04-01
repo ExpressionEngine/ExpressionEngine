@@ -1355,7 +1355,7 @@ class FluidFieldParserTest extends \PHPUnit\Framework\TestCase
         ee()->setMock('fluid_field:Tag', $tagMock);
         ee()->setMock('api_channel_fields', $this->buildApiChannelFieldsMock([]));
 
-        $fluidField = $this->makeFluidFieldDouble(101, 'text', 'title');
+        $fluidField = $this->makeFluidFieldDouble(9001, 'text', 'title');
         $fluidField->entry_id = 5;
         $fluidField->fluid_field_id = 11;
         $fluidField->group = null;
@@ -1382,6 +1382,223 @@ class FluidFieldParserTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(1, $tagMock->parseCalls[0]['meta']['fluid:content:count']);
         $this->assertSame(5, $tagMock->parseCalls[0]['field']->items['row']['entry_id']);
         $this->assertSame('alpha', $tagMock->parseCalls[0]['field']->items['row']['field_id_101']);
+    }
+
+    public function testParsePrependsScopedFrontEditLinkForFluidItemWhenNoManualFluidLinkExists(): void
+    {
+        $variablesParser = new class {
+            public function extractVariables($tagdata)
+            {
+                return [
+                    'var_single' => [],
+                    'var_pair' => ['fluid:content:title' => []],
+                ];
+            }
+        };
+
+        $functions = new class {
+            public function prep_conditionals($tagdata, $cond)
+            {
+                return $tagdata;
+            }
+        };
+
+        $tagMock = new class {
+            public function parse($field, $meta = [])
+            {
+                return '[parsed:' . $meta['fluid:content:current_field_name'] . ']';
+            }
+
+            public function setTag($tag)
+            {
+                return $this;
+            }
+        };
+
+        $frontEditMock = new class {
+            public $calls = [];
+
+            public function entryFieldEditLinkWithParams($site_id, $channel_id, $entry_id, $field_id, array $extra = [])
+            {
+                $this->calls[] = compact('site_id', 'channel_id', 'entry_id', 'field_id', 'extra');
+
+                return '{frontedit_link site_id=@' . $site_id . '@ channel_id=@' . $channel_id . '@ entry_id=@' . $entry_id . '@ field_id=@' . $field_id . '@ fluid_item_field_id=@' . $extra['fluid_item_field_id'] . '@ fluid_item_data_id=@' . $extra['fluid_item_data_id'] . '@}';
+            }
+        };
+
+        ee()->setMock('Variables/Parser', $variablesParser);
+        ee()->setMock('functions', $functions);
+        ee()->setMock('fluid_field:Tag', $tagMock);
+        ee()->setMock('pro:FrontEdit', $frontEditMock);
+        ee()->setMock('api_channel_fields', $this->buildApiChannelFieldsMock([]));
+
+        $fluidField = $this->makeFluidFieldDouble(9001, 'text', 'title');
+        $fluidField->entry_id = 5;
+        $fluidField->fluid_field_id = 11;
+        $fluidField->group = null;
+        $fluidField->order = 1;
+        $fluidField->field_data_id = 200;
+        $fluidField->field_id = 101;
+
+        $parser = $this->makeParser();
+        $this->setPrivateProperty($parser, '_prefix', 'fluid:');
+        $this->setPrivateProperty($parser, 'fluid_fields', [11 => 'content']);
+        $this->setPrivateProperty($parser, 'data', new Collection([$fluidField]));
+
+        $result = $parser->parse(
+            ['entry_id' => 5, 'site_id' => 1, 'channel_id' => 2],
+            11,
+            [],
+            '{fluid:content:title}Body{/fluid:content:title}'
+        );
+
+        $this->assertSame('{frontedit_link site_id=@1@ channel_id=@2@ entry_id=@5@ field_id=@11@ fluid_item_field_id=@101@ fluid_item_data_id=@9001@}[parsed:title]', $result);
+        $this->assertCount(1, $frontEditMock->calls);
+        $this->assertSame(11, $frontEditMock->calls[0]['field_id']);
+        $this->assertSame(101, $frontEditMock->calls[0]['extra']['fluid_item_field_id']);
+        $this->assertSame(9001, $frontEditMock->calls[0]['extra']['fluid_item_data_id']);
+    }
+
+    public function testParseSkipsAutoFluidFrontEditWhenManualFluidFrontEditLinkExists(): void
+    {
+        $variablesParser = new class {
+            public function extractVariables($tagdata)
+            {
+                return [
+                    'var_single' => [],
+                    'var_pair' => ['fluid:content:title' => []],
+                ];
+            }
+        };
+
+        $functions = new class {
+            public function prep_conditionals($tagdata, $cond)
+            {
+                return $tagdata;
+            }
+        };
+
+        $tagMock = new class {
+            public function parse($field, $meta = [])
+            {
+                return '[parsed:' . $meta['fluid:content:current_field_name'] . ']';
+            }
+
+            public function setTag($tag)
+            {
+                return $this;
+            }
+        };
+
+        $frontEditMock = new class {
+            public $calls = 0;
+
+            public function entryFieldEditLinkWithParams($site_id, $channel_id, $entry_id, $field_id, array $extra = [])
+            {
+                $this->calls++;
+                return '{frontedit_link}';
+            }
+        };
+
+        ee()->setMock('Variables/Parser', $variablesParser);
+        ee()->setMock('functions', $functions);
+        ee()->setMock('fluid_field:Tag', $tagMock);
+        ee()->setMock('pro:FrontEdit', $frontEditMock);
+        ee()->setMock('api_channel_fields', $this->buildApiChannelFieldsMock([]));
+
+        $fluidField = $this->makeFluidFieldDouble(9002, 'text', 'title');
+        $fluidField->entry_id = 5;
+        $fluidField->fluid_field_id = 11;
+        $fluidField->group = null;
+        $fluidField->order = 1;
+        $fluidField->field_data_id = 200;
+        $fluidField->field_id = 101;
+
+        $parser = $this->makeParser();
+        $this->setPrivateProperty($parser, '_prefix', 'fluid:');
+        $this->setPrivateProperty($parser, 'fluid_fields', [11 => 'content']);
+        $this->setPrivateProperty($parser, 'data', new Collection([$fluidField]));
+
+        $result = $parser->parse(
+            ['entry_id' => 5, 'site_id' => 1, 'channel_id' => 2],
+            11,
+            [],
+            '{fluid:content:title}{frontedit_link entry_id="@5@" field_name="content"}Body{/fluid:content:title}'
+        );
+
+        $this->assertSame('[parsed:title]', $result);
+        $this->assertSame(0, $frontEditMock->calls);
+    }
+
+    public function testParseDoesNotTreatNonFluidManualFrontEditAsFluidManualLink(): void
+    {
+        $variablesParser = new class {
+            public function extractVariables($tagdata)
+            {
+                return [
+                    'var_single' => [],
+                    'var_pair' => ['fluid:content:title' => []],
+                ];
+            }
+        };
+
+        $functions = new class {
+            public function prep_conditionals($tagdata, $cond)
+            {
+                return $tagdata;
+            }
+        };
+
+        $tagMock = new class {
+            public function parse($field, $meta = [])
+            {
+                return '[parsed:' . $meta['fluid:content:current_field_name'] . ']';
+            }
+
+            public function setTag($tag)
+            {
+                return $this;
+            }
+        };
+
+        $frontEditMock = new class {
+            public $calls = [];
+
+            public function entryFieldEditLinkWithParams($site_id, $channel_id, $entry_id, $field_id, array $extra = [])
+            {
+                $this->calls[] = compact('site_id', 'channel_id', 'entry_id', 'field_id', 'extra');
+                return '{frontedit_link auto="y"}';
+            }
+        };
+
+        ee()->setMock('Variables/Parser', $variablesParser);
+        ee()->setMock('functions', $functions);
+        ee()->setMock('fluid_field:Tag', $tagMock);
+        ee()->setMock('pro:FrontEdit', $frontEditMock);
+        ee()->setMock('api_channel_fields', $this->buildApiChannelFieldsMock([]));
+
+        $fluidField = $this->makeFluidFieldDouble(9003, 'text', 'title');
+        $fluidField->entry_id = 5;
+        $fluidField->fluid_field_id = 11;
+        $fluidField->group = null;
+        $fluidField->order = 1;
+        $fluidField->field_data_id = 200;
+        $fluidField->field_id = 101;
+
+        $parser = $this->makeParser();
+        $this->setPrivateProperty($parser, '_prefix', 'fluid:');
+        $this->setPrivateProperty($parser, 'fluid_fields', [11 => 'content']);
+        $this->setPrivateProperty($parser, 'data', new Collection([$fluidField]));
+
+        $result = $parser->parse(
+            ['entry_id' => 5, 'site_id' => 1, 'channel_id' => 2],
+            11,
+            [],
+            '{fluid:content:title}{frontedit_link field_name="title"}Body{/fluid:content:title}'
+        );
+
+        $this->assertSame('{frontedit_link auto="y"}[parsed:title]', $result);
+        $this->assertCount(1, $frontEditMock->calls);
     }
 
     public function testParseAddsEvaluatedSingleVariablesAndSkipsUnsupportedSingles(): void

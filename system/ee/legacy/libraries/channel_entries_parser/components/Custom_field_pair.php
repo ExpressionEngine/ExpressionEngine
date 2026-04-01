@@ -116,6 +116,7 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 
             $ft = $ft_api->setup_handler($field_id, true);
             $ft_name = $ft_api->field_type;
+            // Keep a stable fieldtype reference; nested parser calls can mutate $ft_api->field_type.
             $isFluidField = ($ft_name === 'fluid_field');
 
             if ($ft) {
