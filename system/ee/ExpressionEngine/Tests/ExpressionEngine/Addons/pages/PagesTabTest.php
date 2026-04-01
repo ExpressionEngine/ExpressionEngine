@@ -209,6 +209,80 @@ class PagesTabTest extends PagesTestBase
         $this->assertSame('no-templates', $settings['pages_template_id']['string_override']);
     }
 
+    public function testDisplayUsesDefaultTemplateWhenEditingEntryWithoutExistingPageUri(): void
+    {
+        ee()->setMock('lang', new class {
+            public function loadfile($file)
+            {
+            }
+            public function load($file)
+            {
+            }
+        });
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'site_id') {
+                    return 1;
+                }
+                if ($key === 'site_url') {
+                    return 'https://example.com/';
+                }
+                if ($key === 'site_pages') {
+                    return [1 => ['uris' => [], 'templates' => []]];
+                }
+                return null;
+            }
+        });
+        ee()->setMock('db', new class {
+            public function select($field)
+            {
+                return $this;
+            }
+            public function where($field, $value)
+            {
+                return $this;
+            }
+            public function get($table)
+            {
+                return new eeDbResultMock([['configuration_value' => '21']]);
+            }
+        });
+        ee()->setMock('template_model', new class {
+            public function get_templates($siteId)
+            {
+                return new class {
+                    public function result()
+                    {
+                        return [
+                            (object) ['group_name' => 'site', 'template_id' => 21, 'template_name' => 'default'],
+                        ];
+                    }
+                    public function num_rows()
+                    {
+                        return 1;
+                    }
+                };
+            }
+        });
+        ee()->setMock('load', new class {
+            public function model($name)
+            {
+            }
+        });
+        ee()->setMock('api_channel_fields', new class {
+            public function set_settings($key, $value)
+            {
+            }
+        });
+
+        $tab = new Pages_tab();
+        $settings = $tab->display(5, 44);
+
+        $this->assertSame('', $settings['pages_uri']['field_data']);
+        $this->assertSame(21, $settings['pages_template_id']['selected']);
+    }
+
     public function testCloneDataReturnsUnchangedWhenUriEmpty(): void
     {
         $entry = new PagesTabChannelEntryStub(10);
@@ -320,6 +394,48 @@ class PagesTabTest extends PagesTestBase
         });
         $tab->validate(new PagesTabChannelEntryStub(7), ['pages_uri' => '/x', 'pages_template_id' => 2]);
         $this->assertTrue($captured2->defined['whenURI']('pages_template_id', '', [], $rule));
+    }
+
+    public function testValidateWhenUriRuleSkipsForExamplePlaceholder(): void
+    {
+        $captured = (object) ['defined' => []];
+        ee()->setMock('Validation', new class($captured) {
+            private $captured;
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+            public function make($rules)
+            {
+                return new class($this->captured) {
+                    private $captured;
+                    public function __construct($captured)
+                    {
+                        $this->captured = $captured;
+                    }
+                    public function defineRule($name, $closure)
+                    {
+                        $this->captured->defined[$name] = $closure;
+                    }
+                    public function validate($values)
+                    {
+                        return true;
+                    }
+                };
+            }
+        });
+        $_POST = ['pages__pages_uri' => 'example_uri'];
+
+        $tab = new Pages_tab();
+        $tab->validate(new PagesTabChannelEntryStub(7), ['pages_uri' => '/x', 'pages_template_id' => 2]);
+
+        $rule = new class {
+            public function skip()
+            {
+                return 'SKIPPED';
+            }
+        };
+        $this->assertSame('SKIPPED', $captured->defined['whenURI']('pages_template_id', '', [], $rule));
     }
 
     public function testValidationClosuresCoverErrorAndSuccessPaths(): void
