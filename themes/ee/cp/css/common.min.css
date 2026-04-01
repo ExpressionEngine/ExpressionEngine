@@ -48524,6 +48524,11 @@ a.ck.ck-button.ck-on {
   display: flex;
   align-items: center;
 }
+@media (max-width: 700px) {
+  .fluid__item .fluid__item-fieldset .field-instruct {
+    flex-wrap: wrap;
+  }
+}
 .fluid__item .fluid__item-fieldset .field-instruct label {
   font-weight: 600;
   font-size: 12px;
@@ -48535,6 +48540,14 @@ a.ck.ck-button.ck-on {
   font-size: 11px;
   color: var(--ee-text-secondary);
   line-height: 1;
+  margin-top: 0;
+}
+@media (max-width: 700px) {
+  .fluid__item .fluid__item-fieldset .field-instruct em {
+    width: 100%;
+    margin-top: 5px;
+    margin-left: 30px;
+  }
 }
 .fluid__item .fluid__item-field {
   padding: 8px 12px;

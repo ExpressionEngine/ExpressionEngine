@@ -41,6 +41,10 @@
 			display: flex;
 			align-items: center;
 
+			@include m-custom-down(700px) {
+				flex-wrap: wrap;
+			}
+
 			label {
 				font-weight: 600;
 				font-size: 12px;
@@ -53,6 +57,13 @@
 				font-size: 11px;
 				color: color(text-secondary);
 				line-height: 1;
+				margin-top: 0;
+
+				@include m-custom-down(700px) {
+					width: 100%;
+					margin-top: 5px;
+					margin-left: 30px;
+				}
 			}
 		}
 	}
