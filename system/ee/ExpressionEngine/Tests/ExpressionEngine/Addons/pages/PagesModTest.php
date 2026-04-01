@@ -141,4 +141,111 @@ class PagesModTest extends PagesTestBase
         $sites = $captured->filterValues[0];
         $this->assertSame(1, count(array_keys($sites, 'current', true)));
     }
+
+    public function testLoadSitePagesKeepsFirstSiteWhenKeysCollide(): void
+    {
+        $captured = (object) ['setItems' => []];
+
+        ee()->setMock('TMPL', new class {
+            public function fetch_param($key, $default = '')
+            {
+                return 'alpha|beta';
+            }
+        });
+        ee()->setMock('config', new class($captured) {
+            private $captured;
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+            public function item($key)
+            {
+                return $key === 'site_short_name' ? 'current' : null;
+            }
+            public function set_item($key, $value)
+            {
+                $this->captured->setItems[] = [$key, $value];
+            }
+        });
+        ee()->setMock('Model', new class {
+            public function get($entity)
+            {
+                return new class {
+                    public function fields(...$fields)
+                    {
+                        return $this;
+                    }
+                    public function filter($field, $value)
+                    {
+                        return $this;
+                    }
+                    public function all()
+                    {
+                        return [
+                            (object) ['site_pages' => [1 => ['uris' => [100 => '/alpha'], 'templates' => [100 => 9]]]],
+                            (object) ['site_pages' => [1 => ['uris' => [100 => '/beta-override'], 'templates' => [100 => 10]]]],
+                        ];
+                    }
+                };
+            }
+        });
+
+        (new Pages())->load_site_pages();
+
+        $merged = $captured->setItems[0][1];
+        $this->assertSame('/alpha', $merged[1]['uris'][100]);
+        $this->assertSame(9, $merged[1]['templates'][100]);
+    }
+
+    public function testLoadSitePagesSetsEmptyArrayWhenNoSiteProvidesArrayPages(): void
+    {
+        $captured = (object) ['setItems' => []];
+
+        ee()->setMock('TMPL', new class {
+            public function fetch_param($key, $default = '')
+            {
+                return '';
+            }
+        });
+        ee()->setMock('config', new class($captured) {
+            private $captured;
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+            public function item($key)
+            {
+                return $key === 'site_short_name' ? 'current' : null;
+            }
+            public function set_item($key, $value)
+            {
+                $this->captured->setItems[] = [$key, $value];
+            }
+        });
+        ee()->setMock('Model', new class {
+            public function get($entity)
+            {
+                return new class {
+                    public function fields(...$fields)
+                    {
+                        return $this;
+                    }
+                    public function filter($field, $value)
+                    {
+                        return $this;
+                    }
+                    public function all()
+                    {
+                        return [
+                            (object) ['site_pages' => null],
+                            (object) ['site_pages' => 'invalid'],
+                        ];
+                    }
+                };
+            }
+        });
+
+        (new Pages())->load_site_pages();
+        $this->assertSame([], $captured->setItems[0][1]);
+    }
 }
