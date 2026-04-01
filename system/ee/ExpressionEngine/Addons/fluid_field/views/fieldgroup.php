@@ -1,4 +1,19 @@
-<div class="fluid__item <?php if ($reorderable) : ?>fluid__item--reorderable<?php endif ?>" data-field-name="<?= $field_group->short_name ?>" data-field-type="field_group">
+<?php
+    $field_ids = [];
+    $fluid_data_ids = [];
+
+    foreach ($field_group_fields as $field) {
+        $field_ids[] = (string) $field->getId();
+        $fluid_data_id = $field->getItem('fluid_field_data_id');
+        if (!is_null($fluid_data_id) && $fluid_data_id !== '') {
+            $fluid_data_ids[] = (string) $fluid_data_id;
+        }
+    }
+
+    $field_id_list = implode(',', array_unique($field_ids));
+    $fluid_data_id_list = implode(',', array_unique($fluid_data_ids));
+?>
+<div class="fluid__item <?php if ($reorderable) : ?>fluid__item--reorderable<?php endif ?>" data-field-name="<?= $field_group->short_name ?>" data-field-type="field_group" data-fluid-id="<?= $fluid_field_id ?>" data-field-id="<?= htmlspecialchars($field_id_list, ENT_QUOTES, 'UTF-8') ?>" data-fluid-data-id="<?= htmlspecialchars($fluid_data_id_list, ENT_QUOTES, 'UTF-8') ?>">
     <div class="fluid__item-content">
         <div class="fluid__item-fieldset ">
 

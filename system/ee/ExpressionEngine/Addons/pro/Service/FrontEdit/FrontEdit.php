@@ -296,7 +296,7 @@ class FrontEdit
                     . $elementId
                     . '" data-editableurl="'
                     . $fieldEditUrl
-                    . '" data-entry_id="ENTRY_ID" data-site_id="SITE_ID" data-size="WINDOW_SIZE" title="FIELD_NAME">'
+                    . 'EDITABLE_URL_EXTRA" data-entry_id="ENTRY_ID" data-site_id="SITE_ID" data-size="WINDOW_SIZE"FLUID_ITEM_FIELD_ID_ATTRFLUID_ITEM_DATA_ID_ATTR title="FIELD_NAME">'
                     . '<img src="' . $pencilUrl . '" width="24px" height="24px" alt="' . $altText . '" style="cursor:pointer !important; filter: drop-shadow(0 1px 3px rgba(0,0,0,.20)) !important; vertical-align: bottom !important; border-radius: 0 !important; width: unset !important;" />'
                     . '</span>';
         $frontEditPermission = [];
@@ -304,7 +304,7 @@ class FrontEdit
         if (preg_match_all("/{\s*frontedit_link\s+.*\}/sU", $output, $tags)) {
             foreach ($tags[0] as $tag) {
                 $replace = [];
-                if (preg_match_all("/([a-zA-Z]+(?:_id|_name|lass)*)=[\"\'@]([a-zA-Z0-9_-]+)[\"\'@]/s", $tag, $params)) {
+                if (preg_match_all("/([a-zA-Z][a-zA-Z0-9_]*)=[\"\'@]([^\"\'@}]*)[\"\'@]/s", $tag, $params)) {
                     $replace['class'] = '';
                     foreach ($params[1] as $i => $key) {
                         $replace[$key] = $params[2][$i];
@@ -344,9 +344,23 @@ class FrontEdit
                         }
 
                         $keyGen = $this->randomKeyGen();
+                        $editableUrlExtra = '';
+                        $fluidItemFieldIdAttr = '';
+                        $fluidItemDataIdAttr = '';
+
+                        if (isset($replace['fluid_item_field_id']) && $replace['fluid_item_field_id'] !== '') {
+                            $editableUrlExtra .= '&amp;fluid_item_field_id=' . rawurlencode($replace['fluid_item_field_id']);
+                            $fluidItemFieldIdAttr = ' data-fluid_item_field_id="' . htmlspecialchars($replace['fluid_item_field_id'], ENT_QUOTES, 'UTF-8') . '"';
+                        }
+
+                        if (isset($replace['fluid_item_data_id']) && $replace['fluid_item_data_id'] !== '') {
+                            $editableUrlExtra .= '&amp;fluid_item_data_id=' . rawurlencode($replace['fluid_item_data_id']);
+                            $fluidItemDataIdAttr = ' data-fluid_item_data_id="' . htmlspecialchars($replace['fluid_item_data_id'], ENT_QUOTES, 'UTF-8') . '"';
+                        }
+
                         $editLink = str_replace(
-                            ['SITE_ID', 'CHANNEL_ID', 'ENTRY_ID', 'FIELD_ID', 'KEYGEN', 'FIELD_NAME', 'WINDOW_SIZE', 'MARKER_CLASS'],
-                            [$replace['site_id'], $replace['channel_id'], $replace['entry_id'], $replace['field_id'], $keyGen, $fieldName, $windowSize, $replace['class']],
+                            ['SITE_ID', 'CHANNEL_ID', 'ENTRY_ID', 'FIELD_ID', 'KEYGEN', 'FIELD_NAME', 'WINDOW_SIZE', 'MARKER_CLASS', 'EDITABLE_URL_EXTRA', 'FLUID_ITEM_FIELD_ID_ATTR', 'FLUID_ITEM_DATA_ID_ATTR'],
+                            [$replace['site_id'], $replace['channel_id'], $replace['entry_id'], $replace['field_id'], $keyGen, $fieldName, $windowSize, $replace['class'], $editableUrlExtra, $fluidItemFieldIdAttr, $fluidItemDataIdAttr],
                             $element
                         );
                     } else {

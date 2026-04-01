@@ -1,4 +1,8 @@
-<div class="fluid__item <?php if ($reorderable): ?>fluid__item--reorderable<?php endif ?>" data-field-name="<?=$field_name?>" data-field-type="<?=$field->getType()?>">
+<?php
+    $fluid_data_id = $field->getItem('fluid_field_data_id');
+    $fluid_data_id = is_null($fluid_data_id) ? '' : (string) $fluid_data_id;
+?>
+<div class="fluid__item <?php if ($reorderable): ?>fluid__item--reorderable<?php endif ?>" data-field-name="<?=$field_name?>" data-field-type="<?=$field->getType()?>" data-fluid-id="<?=$fluid_field_id?>" data-field-id="<?=$field->getId()?>" data-fluid-data-id="<?=htmlspecialchars($fluid_data_id, ENT_QUOTES, 'UTF-8')?>">
     <div class="fluid__item-content">
         <div class="fluid__item-fieldset ">
 

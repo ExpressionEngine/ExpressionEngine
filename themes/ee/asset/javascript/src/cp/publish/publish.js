@@ -43,6 +43,103 @@ $(document).ready(function () {
 		return result;
 	};
 
+	var splitFluidDataAttr = function(value) {
+		if (!value) {
+			return [];
+		}
+
+		return value.toString().split(',').map(function(item) {
+			return item.trim();
+		}).filter(function(item) {
+			return item !== '';
+		});
+	};
+
+	var fluidItemMatches = function(item, attrName, needle) {
+		if (!needle) {
+			return false;
+		}
+
+		return splitFluidDataAttr($(item).attr(attrName)).indexOf(String(needle)) !== -1;
+	};
+
+	var scopeFrontEditFluidItem = function() {
+		if (typeof URLSearchParams === 'undefined') {
+			return;
+		}
+
+		var search = window.location.search || '';
+		if (!search) {
+			return;
+		}
+
+		var params = new URLSearchParams(search),
+			fluidItemFieldId = params.get('fluid_item_field_id'),
+			fluidItemDataId = params.get('fluid_item_data_id'),
+			topFieldId = params.get('field_id');
+
+		if (!fluidItemFieldId || !topFieldId) {
+			return;
+		}
+
+		var topField = publishForm.find('[data-field_id="' + topFieldId + '"]');
+		if (!topField.length) {
+			return;
+		}
+
+		var fluidRoots = topField.find('.fluid');
+		if (!fluidRoots.length) {
+			return;
+		}
+
+		var didScope = false;
+
+		fluidRoots.each(function() {
+			if (didScope) {
+				return;
+			}
+
+			var root = $(this),
+				allItems = root.find('.js-sorting-container > .fluid__item');
+
+			if (!allItems.length) {
+				return;
+			}
+
+			var fieldMatches = allItems.filter(function() {
+				return fluidItemMatches(this, 'data-field-id', fluidItemFieldId);
+			});
+
+			if (!fieldMatches.length) {
+				return;
+			}
+
+			var target = fieldMatches.first();
+
+			if (fluidItemDataId) {
+				var exactMatches = fieldMatches.filter(function() {
+					return fluidItemMatches(this, 'data-fluid-data-id', fluidItemDataId);
+				});
+
+				if (exactMatches.length) {
+					target = exactMatches.first();
+				}
+			}
+
+			allItems.not(target).addClass('fluid__item--frontedit-hidden').css('display', 'none').attr('aria-hidden', 'true');
+			target.css('display', '').removeClass('fluid__item--collapsed').attr('aria-hidden', 'false');
+
+			var targetElement = target.get(0);
+			if (targetElement && typeof targetElement.scrollIntoView === 'function') {
+				targetElement.scrollIntoView({block: 'start', behavior: 'smooth'});
+			}
+
+			didScope = true;
+		});
+	};
+
+	scopeFrontEditFluidItem();
+
 	if (EE.publish.title_focus == true) {
 		publishForm.find("input[name=title]").focus();
 	}
