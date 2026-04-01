@@ -48503,7 +48503,7 @@ a.ck.ck-button.ck-on {
 }
 .fluid__item:hover {
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
-  border-color: var(--ee-text-tertiary);
+  border-color: var(--ee-button-primary-border);
 }
 .fluid__item .fluid__item-fieldset {
   padding: 4px 12px;
@@ -48547,6 +48547,7 @@ a.ck.ck-button.ck-on {
     width: 100%;
     margin-top: 5px;
     margin-left: 30px;
+    font-size: 10px;
   }
 }
 .fluid__item .fluid__item-field {

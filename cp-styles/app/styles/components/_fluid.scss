@@ -18,7 +18,7 @@
 
 	&:hover {
 		box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
-		border-color: color(text-tertiary);
+		border-color: var(--ee-button-primary-border);
 	}
 
 	.fluid__item-fieldset {
@@ -63,6 +63,7 @@
 					width: 100%;
 					margin-top: 5px;
 					margin-left: 30px;
+					font-size: 10px;
 				}
 			}
 		}
