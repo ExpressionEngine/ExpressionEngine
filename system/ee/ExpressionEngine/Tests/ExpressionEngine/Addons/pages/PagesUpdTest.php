@@ -112,6 +112,63 @@ class PagesUpdTest extends PagesTestBase
         $this->assertContains('pages', $captured->migrations);
     }
 
+    public function testInstallSkipsSitePagesAlterWhenColumnAlreadyExists(): void
+    {
+        $captured = (object) [
+            'queries' => [],
+            'layoutAdds' => [],
+            'moduleSaves' => 0,
+            'migrations' => [],
+        ];
+
+        $upd = $this->makeUpdater($captured);
+
+        ee()->setMock('db', new class($captured) {
+            public $char_set = 'utf8mb4';
+            public $dbcollat = 'utf8mb4_unicode_ci';
+            public $data_cache = [];
+            private $captured;
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+            public function field_exists($field, $table)
+            {
+                return true;
+            }
+            public function escape_str($value)
+            {
+                return $value;
+            }
+            public function query($sql)
+            {
+                $this->captured->queries[] = $sql;
+                return true;
+            }
+        });
+        ee()->setMock('load', new class {
+            public function library($name)
+            {
+            }
+        });
+        ee()->setMock('layout', new class($captured) {
+            private $captured;
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+            public function add_layout_tabs($tabs, $shortname)
+            {
+                $this->captured->layoutAdds[] = [$tabs, $shortname];
+            }
+        });
+
+        $this->assertTrue($upd->install());
+        $querySql = implode("\n", $captured->queries);
+        $this->assertStringNotContainsString('ALTER TABLE `exp_sites` ADD `site_pages` TEXT NOT NULL', $querySql);
+        $this->assertStringContainsString('CREATE TABLE `exp_pages_configuration`', $querySql);
+    }
+
     public function testUninstallDropsConfigurationTableAndRemovesTabs(): void
     {
         $captured = (object) [
@@ -229,6 +286,115 @@ class PagesUpdTest extends PagesTestBase
         $layout = unserialize($row['field_layout']);
         $this->assertArrayHasKey('pages__pages_uri', $layout['publish']);
         $this->assertArrayHasKey('pages__pages_template_id', $layout['publish']);
+    }
+
+    public function testUpdateAtVersion21SkipsLegacyBranchButRuns22Migration(): void
+    {
+        $captured = (object) [
+            'where' => [],
+            'updates' => [],
+            'layoutUpdates' => [],
+        ];
+        $upd = $this->makeUpdater();
+        $upd->version = '2.2.0';
+
+        ee()->setMock('db', new class($captured) {
+            private $captured;
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+            public function where($field, $value)
+            {
+                $this->captured->where[] = [$field, $value];
+                return $this;
+            }
+            public function update($table, $data)
+            {
+                $this->captured->updates[] = [$table, $data];
+                return true;
+            }
+            public function get($table)
+            {
+                return new eeDbResultMock([
+                    [
+                        'layout_id' => 2,
+                        'field_layout' => serialize([
+                            'publish' => [
+                                'pages_uri' => ['visible' => true],
+                                'pages_template_id' => ['visible' => true],
+                            ],
+                        ]),
+                    ],
+                ]);
+            }
+            public function update_batch($table, $rows, $key)
+            {
+                $this->captured->layoutUpdates[] = [$table, $rows, $key];
+                return true;
+            }
+        });
+        ee()->setMock('load', new class {
+            public function library($name)
+            {
+            }
+        });
+
+        $this->assertTrue($upd->update('2.1'));
+        $this->assertSame([], $captured->where);
+        $this->assertSame([], $captured->updates);
+        $this->assertNotEmpty($captured->layoutUpdates);
+    }
+
+    public function testUpdateAtVersion22SkipsLegacyAnd22Migrations(): void
+    {
+        $captured = (object) [
+            'where' => [],
+            'updates' => [],
+            'getCalls' => 0,
+            'layoutUpdates' => 0,
+        ];
+        $upd = $this->makeUpdater();
+        $upd->version = '2.2.0';
+
+        ee()->setMock('db', new class($captured) {
+            private $captured;
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+            public function where($field, $value)
+            {
+                $this->captured->where[] = [$field, $value];
+                return $this;
+            }
+            public function update($table, $data)
+            {
+                $this->captured->updates[] = [$table, $data];
+                return true;
+            }
+            public function get($table)
+            {
+                $this->captured->getCalls++;
+                return new eeDbResultMock([]);
+            }
+            public function update_batch($table, $rows, $key)
+            {
+                $this->captured->layoutUpdates++;
+                return true;
+            }
+        });
+        ee()->setMock('load', new class {
+            public function library($name)
+            {
+            }
+        });
+
+        $this->assertTrue($upd->update('2.2'));
+        $this->assertSame([], $captured->where);
+        $this->assertSame([], $captured->updates);
+        $this->assertSame(0, $captured->getCalls);
+        $this->assertSame(0, $captured->layoutUpdates);
     }
 
     public function testDo22UpdateReturnsEarlyWhenNoLayouts(): void
