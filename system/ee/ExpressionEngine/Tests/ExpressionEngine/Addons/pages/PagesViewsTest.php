@@ -188,6 +188,7 @@ class PagesViewsTest extends PagesTestBase
 
         $this->assertStringContainsString('<table>generated</table>', $output);
         $this->assertCount(2, $renderer->table->rows);
+        $this->assertNotEmpty($renderer->table->headings);
     }
 
     public function testPagePartialRendersWithAndWithoutChildren(): void
@@ -265,8 +266,14 @@ class PagesViewsTest extends PagesTestBase
 
         $this->assertStringContainsString('all_pages', $output);
         $this->assertStringContainsString('pagination', $output);
+        $this->assertStringContainsString('data-search="pages"', $output);
+        $this->assertStringContainsString('channels-pages-create', $output);
         $this->assertNotEmpty($renderer->embedded);
         $this->assertNotEmpty($captured->modals);
+        $this->assertSame('modal-confirm-remove', $renderer->modals[0]['name']);
+        $this->assertSame('remove', $renderer->modals[0]['hidden']['bulk_action']);
+        $this->assertSame('cp://addons/settings/pages', $renderer->modals[0]['form_url']);
+        $this->assertSame('remove', $captured->modals[0][0]);
     }
 
     public function testIndexViewRendersWithoutBulkActionsWhenNoRows(): void
@@ -357,7 +364,13 @@ class PagesViewsTest extends PagesTestBase
             'pages' => $treeWithChildren,
         ]);
         $this->assertStringContainsString('all_pages', $withChildren);
+        $this->assertStringContainsString('select_all', $withChildren);
+        $this->assertStringContainsString('data-search="pages"', $withChildren);
         $this->assertNotEmpty($renderer->embedded);
+        $withChildrenEmbeds = array_map(function ($item) {
+            return $item[0];
+        }, $renderer->embedded);
+        $this->assertContains('pages:_page', $withChildrenEmbeds);
 
         $rendererNoChildren = new PagesViewRendererStub();
         $treeWithoutChildren = new PagesViewTreeStub([]);
@@ -366,6 +379,72 @@ class PagesViewsTest extends PagesTestBase
             'pages' => $treeWithoutChildren,
         ]);
         $this->assertStringContainsString('no_found', $withoutChildren);
+        $this->assertStringNotContainsString('select_all', $withoutChildren);
+        $withoutChildrenEmbeds = array_map(function ($item) {
+            return $item[0];
+        }, $rendererNoChildren->embedded);
+        $this->assertNotContains('pages:_page', $withoutChildrenEmbeds);
         $this->assertNotEmpty($captured->modals);
+    }
+
+    public function testPagePartialEscapesConfirmTitleAndRendersChildList(): void
+    {
+        ee()->setMock('CP/URL', new class {
+            public function make($path)
+            {
+                return 'cp://' . $path;
+            }
+        });
+
+        $renderer = new PagesViewRendererStub();
+        $file = __DIR__ . '/../../../../Addons/pages/views/_page.php';
+        $page = new PagesViewPageNodeStub(
+            12,
+            'Parent <Unsafe>',
+            '/parent',
+            [new PagesViewPageNodeStub(13, 'Child', '/parent/child')]
+        );
+
+        $output = $renderer->renderFile($file, ['page' => $page]);
+
+        $this->assertStringContainsString('data-confirm="page: <b>Parent <Unsafe></b>"', $output);
+        $this->assertStringContainsString('publish/edit/entry/12', $output);
+        $this->assertCount(1, $renderer->embedded);
+    }
+
+    public function testNestedViewLowercasesChannelSearchTokenWithSpaces(): void
+    {
+        ee()->setMock('menu', new class {
+            public function generate_menu()
+            {
+                return ['channels' => ['create' => ['News Feed' => 'cp://create/news-feed']]];
+            }
+        });
+        ee()->setMock('CP/Alert', new class {
+            public function getAllInlines()
+            {
+                return '';
+            }
+        });
+        ee()->setMock('CP/URL', new class {
+            public function make($path)
+            {
+                return 'cp://' . $path;
+            }
+        });
+        ee()->setMock('CP/Modal', new class {
+            public function addModal($name, $modal)
+            {
+            }
+        });
+
+        $renderer = new PagesViewRendererStub();
+        $file = __DIR__ . '/../../../../Addons/pages/views/nested.php';
+        $output = $renderer->renderFile($file, [
+            'base_url' => 'cp://addons/settings/pages',
+            'pages' => new PagesViewTreeStub([]),
+        ]);
+
+        $this->assertStringContainsString('data-search="news feed"', $output);
     }
 }
