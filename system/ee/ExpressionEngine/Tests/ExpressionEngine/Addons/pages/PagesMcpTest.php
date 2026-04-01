@@ -152,6 +152,77 @@ class PagesMcpTest extends PagesTestBase
         $this->assertSame(2, $captured->treeList[1]['parent_id']);
     }
 
+    public function testGetPagesTreeEscapesTitlesAndSkipsRootUri(): void
+    {
+        $captured = (object) ['treeList' => null];
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'site_id') {
+                    return 1;
+                }
+                if ($key === 'site_pages') {
+                    return [
+                        1 => [
+                            'uris' => [
+                                1 => '/',
+                                2 => '/about',
+                            ],
+                        ],
+                    ];
+                }
+                return null;
+            }
+        });
+        ee()->setMock('Model', new class {
+            public function get($entity, $ids = [])
+            {
+                return new class {
+                    public function fields(...$fields)
+                    {
+                        return $this;
+                    }
+                    public function all()
+                    {
+                        return new class {
+                            public function getDictionary($key, $value)
+                            {
+                                return [
+                                    1 => 'Home',
+                                    2 => 'About <Unsafe>',
+                                ];
+                            }
+                        };
+                    }
+                };
+            }
+        });
+        ee()->setMock('load', new class {
+            public function library($name)
+            {
+            }
+        });
+        ee()->setMock('tree', new class($captured) {
+            private $captured;
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+            public function from_list($list)
+            {
+                $this->captured->treeList = $list;
+                return $list;
+            }
+        });
+
+        $mcp = (new ReflectionClass(Pages_mcp::class))->newInstanceWithoutConstructor();
+        $tree = $this->invokePrivate($mcp, 'getPagesTree');
+
+        $this->assertIsArray($tree);
+        $this->assertCount(1, $captured->treeList);
+        $this->assertSame('About &lt;Unsafe&gt;', $captured->treeList[0]['title']);
+    }
+
     public function testIndexRendersFlatViewAndLogsMissingEntries(): void
     {
         $captured = (object) ['tableData' => [], 'logged' => [], 'js' => [], 'cpJs' => []];
@@ -301,7 +372,124 @@ class PagesMcpTest extends PagesTestBase
         $this->assertSame('pages_manager', $result['heading']);
         $this->assertSame('INDEX_BODY', $result['body']);
         $this->assertCount(1, $captured->tableData);
+        $row = array_values($captured->tableData[0]);
+        $this->assertSame(100, $row[3]['value']);
+        $this->assertStringContainsString('Entry One', $row[3]['data']['confirm']);
+        $this->assertSame('cp://publish/edit/entry/100', (string) $row[2]['toolbar_items']['edit']['href']);
         $this->assertNotEmpty($captured->logged);
+        $this->assertSame('lang.remove_confirm', $captured->js[0][0]);
+        $this->assertStringContainsString('### pages', $captured->js[0][1]);
+        $this->assertSame(['file' => ['cp/confirm_remove']], $captured->cpJs[0]);
+    }
+
+    public function testIndexEscapesCheckboxConfirmTitle(): void
+    {
+        $captured = (object) ['tableData' => []];
+        $mcp = (new ReflectionClass(Pages_mcp::class))->newInstanceWithoutConstructor();
+        $mcp->homepage_display = 'not_nested';
+
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'site_id') {
+                    return 1;
+                }
+                if ($key === 'site_pages') {
+                    return [1 => ['uris' => [100 => '/one']]];
+                }
+                return null;
+            }
+        });
+        ee()->setMock('Model', new class {
+            public function get($entity, $ids = [])
+            {
+                return new class {
+                    public function fields(...$fields)
+                    {
+                        return $this;
+                    }
+                    public function all()
+                    {
+                        return new class {
+                            public function getDictionary($key, $value)
+                            {
+                                return [100 => 'Entry <Unsafe>'];
+                            }
+                        };
+                    }
+                };
+            }
+        });
+        ee()->setMock('CP/URL', new class {
+            public function make($path)
+            {
+                return new PagesMcpUrlResultStub($path);
+            }
+        });
+        ee()->setMock('CP/Table', new class($captured) {
+            private $captured;
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+            public function setColumns($columns)
+            {
+                return $this;
+            }
+            public function setNoResultsText($text)
+            {
+                return $this;
+            }
+            public function setData($data)
+            {
+                $this->captured->tableData = $data;
+                return $this;
+            }
+            public function viewData($baseUrl)
+            {
+                return ['base_url' => $baseUrl, 'limit' => 20, 'page' => 1, 'total_rows' => 1];
+            }
+        });
+        ee()->setMock('CP/Pagination', new class {
+            public function perPage($count)
+            {
+                return $this;
+            }
+            public function currentPage($page)
+            {
+                return $this;
+            }
+            public function render($baseUrl)
+            {
+                return 'pagination';
+            }
+        });
+        ee()->setMock('View', new class {
+            public function make($view)
+            {
+                return new class {
+                    public function render($vars = [])
+                    {
+                        return 'BODY';
+                    }
+                };
+            }
+        });
+        ee()->setMock('javascript', new class {
+            public function set_global($key, $value)
+            {
+            }
+        });
+        ee()->setMock('cp', new class {
+            public function add_js_script($config)
+            {
+            }
+        });
+
+        $mcp->index();
+        $row = array_values($captured->tableData[0]);
+        $confirm = $row[3]['data']['confirm'];
+        $this->assertStringContainsString('Entry &lt;Unsafe&gt;', $confirm);
     }
 
     public function testIndexHandlesSitePagesDisabledWithoutModelLookup(): void
@@ -851,6 +1039,120 @@ class PagesMcpTest extends PagesTestBase
         $this->assertSame('cp://addons/settings/pages', $captured->redirects[0]);
     }
 
+    public function testDeletePassesSelectionAsIdMapToPagesModel(): void
+    {
+        $captured = (object) ['ids' => null];
+        $mcp = (new ReflectionClass(Pages_mcp::class))->newInstanceWithoutConstructor();
+        $_POST = ['selection' => [11, 12]];
+
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'site_id') {
+                    return 1;
+                }
+                if ($key === 'site_pages') {
+                    return [1 => ['uris' => [11 => '/a', 12 => '/b']]];
+                }
+                return null;
+            }
+        });
+        ee()->setMock('load', new class {
+            public function model($name)
+            {
+            }
+        });
+        ee()->setMock('pages_model', new class($captured) {
+            private $captured;
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+            public function delete_site_pages($ids)
+            {
+                $this->captured->ids = $ids;
+                return false;
+            }
+        });
+
+        $this->invokePrivate($mcp, 'delete');
+        $this->assertSame([11 => 11, 12 => 12], $captured->ids);
+    }
+
+    public function testDeleteDoesNotRedirectWhenNoPagesDeleted(): void
+    {
+        $captured = (object) ['redirects' => []];
+        $mcp = (new ReflectionClass(Pages_mcp::class))->newInstanceWithoutConstructor();
+        $_POST = ['selection' => [11]];
+
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'site_id') {
+                    return 1;
+                }
+                if ($key === 'site_pages') {
+                    return [1 => ['uris' => [11 => '/a']]];
+                }
+                return null;
+            }
+        });
+        ee()->setMock('load', new class {
+            public function model($name)
+            {
+            }
+        });
+        ee()->setMock('pages_model', new class {
+            public function delete_site_pages($ids)
+            {
+                return false;
+            }
+        });
+        ee()->setMock('CP/Alert', new class {
+            public function makeInline($name)
+            {
+                return new class {
+                    public function asSuccess()
+                    {
+                        return $this;
+                    }
+                    public function withTitle($title)
+                    {
+                        return $this;
+                    }
+                    public function addToBody($body)
+                    {
+                        return $this;
+                    }
+                    public function defer()
+                    {
+                        return $this;
+                    }
+                };
+            }
+        });
+        ee()->setMock('CP/URL', new class {
+            public function make($path)
+            {
+                return new PagesMcpUrlResultStub($path);
+            }
+        });
+        ee()->setMock('functions', new class($captured) {
+            private $captured;
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+            public function redirect($url)
+            {
+                $this->captured->redirects[] = (string) $url;
+            }
+        });
+
+        $this->invokePrivate($mcp, 'delete');
+        $this->assertSame([], $captured->redirects);
+    }
+
     public function testSettingsBuildsFormAndSavesPostValues(): void
     {
         $captured = (object) ['updated' => [], 'messages' => [], 'redirects' => [], 'viewVars' => null];
@@ -990,6 +1292,7 @@ class PagesMcpTest extends PagesTestBase
         $this->assertArrayNotHasKey('template_channel_3', $captured->updated[0]);
         $this->assertNotEmpty($captured->messages);
         $this->assertNotEmpty($captured->redirects);
+        $this->assertSame('cp://addons/settings/pages/settings', $captured->redirects[0]);
     }
 
     public function testSettingsRendersFormWithoutPostAndUsesConfigDefaults(): void
