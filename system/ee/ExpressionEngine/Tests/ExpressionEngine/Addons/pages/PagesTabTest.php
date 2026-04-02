@@ -881,6 +881,68 @@ class PagesTabTest extends PagesTestBase
         $this->assertSame(1, $captured->saved);
     }
 
+    public function testDeleteWithUnknownIdsLeavesSitePagesUnchanged(): void
+    {
+        $captured = (object) ['saved' => 0, 'savedPages' => null];
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'site_id') {
+                    return 1;
+                }
+                if ($key === 'site_pages') {
+                    return [
+                        1 => [
+                            'uris' => [2 => '/a', 3 => '/b'],
+                            'templates' => [2 => 20, 3 => 30],
+                        ],
+                    ];
+                }
+                return null;
+            }
+        });
+        ee()->setMock('Model', new class($captured) {
+            private $captured;
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+            public function get($entity, $id = null)
+            {
+                return new class($this->captured) {
+                    private $captured;
+                    public function __construct($captured)
+                    {
+                        $this->captured = $captured;
+                    }
+                    public function first()
+                    {
+                        return new class($this->captured) {
+                            private $captured;
+                            public $site_pages = [];
+                            public function __construct($captured)
+                            {
+                                $this->captured = $captured;
+                            }
+                            public function save()
+                            {
+                                $this->captured->saved++;
+                                $this->captured->savedPages = $this->site_pages;
+                            }
+                        };
+                    }
+                };
+            }
+        });
+
+        $tab = new Pages_tab();
+        $tab->delete([999]);
+
+        $this->assertSame(1, $captured->saved);
+        $this->assertSame('/a', $captured->savedPages[1]['uris'][2]);
+        $this->assertSame(30, $captured->savedPages[1]['templates'][3]);
+    }
+
     public function testRenderTableCellAndTableColumnConfig(): void
     {
         ee()->setMock('config', new class {
