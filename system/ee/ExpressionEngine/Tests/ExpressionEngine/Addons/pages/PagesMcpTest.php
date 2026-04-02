@@ -1446,4 +1446,44 @@ class PagesMcpTest extends PagesTestBase
         $this->assertTrue($result);
         $this->assertSame(0, $captured->updated);
     }
+
+    public function testSaveSettingsAcceptsNumericStringsForAllowedKeys(): void
+    {
+        $captured = (object) ['payload' => null];
+        $mcp = (new ReflectionClass(Pages_mcp::class))->newInstanceWithoutConstructor();
+        $_POST = [
+            'homepage_display' => 'not_nested',
+            'default_channel' => '01',
+            'template_channel_2' => '12',
+            'template_channel_3' => '00',
+            'template_channel_4' => '0',
+            'other_key' => '8',
+        ];
+
+        ee()->setMock('load', new class {
+            public function model($name)
+            {
+            }
+        });
+        ee()->setMock('pages_model', new class($captured) {
+            private $captured;
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+            public function update_pages_configuration($data)
+            {
+                $this->captured->payload = $data;
+            }
+        });
+
+        $result = $this->invokePrivate($mcp, 'saveSettings');
+        $this->assertTrue($result);
+        $this->assertSame('not_nested', $captured->payload['homepage_display']);
+        $this->assertSame('01', $captured->payload['default_channel']);
+        $this->assertSame('12', $captured->payload['template_channel_2']);
+        $this->assertArrayNotHasKey('template_channel_3', $captured->payload);
+        $this->assertArrayNotHasKey('template_channel_4', $captured->payload);
+        $this->assertArrayNotHasKey('other_key', $captured->payload);
+    }
 }
