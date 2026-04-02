@@ -142,6 +142,72 @@ class PagesModelTest extends PagesTestBase
         $this->assertSame(1, $captured->siteSaved);
     }
 
+    public function testUpdatePagesConfigurationWithEmptyDataOnlyDeletesExistingRows(): void
+    {
+        $captured = (object) ['calls' => []];
+        $model = $this->makeModel($captured, []);
+
+        $model->update_pages_configuration([]);
+
+        $this->assertContains(['delete', 'pages_configuration'], $captured->calls);
+        $insertCalls = array_filter($captured->calls, function ($call) {
+            return $call[0] === 'insert';
+        });
+        $this->assertSame([], array_values($insertCalls));
+    }
+
+    public function testDeleteSitePagesReturnsZeroAndPersistsWhenIdsDoNotMatch(): void
+    {
+        $captured = (object) ['calls' => [], 'setItems' => [], 'siteSaved' => 0];
+        $model = $this->makeModel($captured, []);
+        $sitePages = [
+            1 => [
+                'uris' => [10 => '/a'],
+                'templates' => [10 => 2],
+            ],
+        ];
+        $model = $this->modelWithFetchPages($model, $sitePages);
+
+        ee()->setMock('Model', new class($captured) {
+            private $captured;
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+            public function get($entity, $id = null)
+            {
+                return new class($this->captured) {
+                    private $captured;
+                    public function __construct($captured)
+                    {
+                        $this->captured = $captured;
+                    }
+                    public function first()
+                    {
+                        return new class($this->captured) {
+                            private $captured;
+                            public $site_pages;
+                            public function __construct($captured)
+                            {
+                                $this->captured = $captured;
+                            }
+                            public function save()
+                            {
+                                $this->captured->siteSaved++;
+                            }
+                        };
+                    }
+                };
+            }
+        });
+
+        $deleted = $model->delete_site_pages([99 => 99]);
+
+        $this->assertSame(0, $deleted);
+        $this->assertSame('/a', $captured->setItems[0][1][1]['uris'][10]);
+        $this->assertSame(1, $captured->siteSaved);
+    }
+
     private function makeModel($captured, array $rows): Pages_model
     {
         $db = new class($captured, $rows) {
