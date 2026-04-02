@@ -432,6 +432,57 @@ class PagesUpdTest extends PagesTestBase
         $this->assertSame(0, $captured->updateBatchCalls);
     }
 
+    public function testDo22UpdateDoesNotDoublePrefixAlreadyMigratedKeys(): void
+    {
+        $upd = $this->makeUpdater();
+        $captured = (object) ['rows' => null];
+
+        ee()->setMock('db', new class($captured) {
+            private $captured;
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+            public function get($table)
+            {
+                return new eeDbResultMock([
+                    [
+                        'layout_id' => 5,
+                        'field_layout' => serialize([
+                            'publish' => [
+                                'pages__pages_uri' => ['visible' => true],
+                                'pages__pages_template_id' => ['visible' => true],
+                                'title' => ['visible' => true],
+                            ],
+                            'sidebar' => [
+                                'pages_uri' => ['visible' => true],
+                            ],
+                        ]),
+                    ],
+                ]);
+            }
+            public function update_batch($table, $rows, $key)
+            {
+                $this->captured->rows = $rows;
+                return true;
+            }
+        });
+        ee()->setMock('load', new class {
+            public function library($name)
+            {
+            }
+        });
+
+        $this->assertTrue($this->invokePrivate($upd, '_do_22_update'));
+
+        $layout = unserialize($captured->rows[0]['field_layout']);
+        $this->assertArrayHasKey('pages__pages_uri', $layout['publish']);
+        $this->assertArrayHasKey('pages__pages_template_id', $layout['publish']);
+        $this->assertArrayNotHasKey('pages__pages__pages_uri', $layout['publish']);
+        $this->assertArrayHasKey('pages__pages_uri', $layout['sidebar']);
+        $this->assertArrayNotHasKey('pages_uri', $layout['sidebar']);
+    }
+
     private function makeUpdater($captured = null): Pages_upd
     {
         if ($captured === null) {
