@@ -81,6 +81,11 @@ namespace ExpressionEngine\Tests\ExpressionEngine\legacy\Libraries {
                 {
                     return $this->fieldId;
                 }
+
+                public function replace_tag($data, $params = [], $tagdata = '')
+                {
+                    return $tagdata;
+                }
             };
 
             $apiChannelFields = new class($fieldType) {
