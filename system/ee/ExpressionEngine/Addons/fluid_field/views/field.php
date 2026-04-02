@@ -1,4 +1,5 @@
 <?php
+    $fluid_field_id = isset($fluid_field_id) ? (string) $fluid_field_id : '';
     $fluid_data_id = $field->getItem('fluid_field_data_id');
     $fluid_data_id = is_null($fluid_data_id) ? '' : (string) $fluid_data_id;
 ?>

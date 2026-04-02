@@ -1,4 +1,5 @@
 <?php
+    $fluid_field_id = isset($fluid_field_id) ? (string) $fluid_field_id : '';
     $field_ids = [];
     $fluid_data_ids = [];
 
