@@ -503,6 +503,7 @@ class Fluid_field_parser
                     $prevField = ($firstInGroup) ? ($g > 0 && isset($groups[$g - 1]) ? $groups[$g - 1]['fields'][count($groups[$g - 1]['fields']) - 1] : null) : $group['fields'][$fieldCount - 1];
                     $nextField = ($lastInGroup) ? ($g < $total_groups && isset($groups[$g + 1]) ? $groups[$g + 1]['fields'][0] : null) : $group['fields'][$fieldCount + 1];
 
+                    $currentFluidSubFieldId = $fluid_field->ChannelField->field_id ?? $fluid_field->field_id ?? null;
                     $meta = [
                         $fluid_field_name . ':first' => (int) ($g == 0 && $firstInGroup),
                         $fluid_field_name . ':last' => (int) (($g + 1) == $total_groups && $lastInGroup),
@@ -513,7 +514,7 @@ class Fluid_field_parser
                         $fluid_field_name . ':count_in_group' => $fieldCount + 1,
                         $fluid_field_name . ':index_in_group' => $fieldCount,
                         $fluid_field_name . ':current_field_name' => $field_name,
-                        $fluid_field_name . ':current_field_id' => $fluid_field->ChannelField->field_id,
+                        $fluid_field_name . ':current_field_id' => $currentFluidSubFieldId,
                         $fluid_field_name . ':current_field_data_id' => $fluid_field->getId(),
                         $fluid_field_name . ':next_field_name' => ($nextField) ? $nextField->ChannelField->field_name : null,
                         $fluid_field_name . ':prev_field_name' => ($prevField) ? $prevField->ChannelField->field_name : null,
@@ -573,7 +574,7 @@ class Fluid_field_parser
                             $entry_id,
                             $fluid_field_id,
                             [
-                                'fluid_item_field_id' => $fluid_field->ChannelField->field_id,
+                                'fluid_item_field_id' => $currentFluidSubFieldId,
                                 'fluid_item_data_id' => $fluid_field->getId(),
                             ]
                         );
