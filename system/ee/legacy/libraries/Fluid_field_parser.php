@@ -557,6 +557,7 @@ class Fluid_field_parser
                     $manualFieldNamePattern = '/\bfield_name\s*=\s*([\'"@])(?:' . $manualFluidFieldNamesPattern . ')\1/i';
                     $manualFieldIdPattern = '/\bfield_id\s*=\s*([\'"@])' . preg_quote((string) $fluid_field_id, '/') . '\1/i';
                     $hasManualFrontEdit = false;
+                    $hasFrontEditContext = isset($channel_row['site_id'], $channel_row['channel_id']);
 
                     if (preg_match_all($manualFrontEditTokenPattern, $my_tagdata, $manualFrontEditTokens)) {
                         foreach ($manualFrontEditTokens[0] as $manualFrontEditToken) {
@@ -567,7 +568,7 @@ class Fluid_field_parser
                         }
                     }
 
-                    if (!$frontedit_disabled && !$hasManualFrontEdit) {
+                    if (!$frontedit_disabled && !$hasManualFrontEdit && $hasFrontEditContext) {
                         $frontEditLink = ee('pro:FrontEdit')->entryFieldEditLinkWithParams(
                             $channel_row['site_id'],
                             $channel_row['channel_id'],
