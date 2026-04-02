@@ -1523,7 +1523,15 @@ class FluidFieldParserTest extends \PHPUnit\Framework\TestCase
             ['entry_id' => 5, 'site_id' => 1, 'channel_id' => 2],
             11,
             [],
-            '{fluid:content:title}{frontedit_link entry_id="@5@" field_name="content"}Body{/fluid:content:title}'
+            '{fluid:content:title}
+                {frontedit_link
+                    entry_id="{entry_id}"
+                    field_name="content"
+                    fluid_item_field_id="{fluid:content:current_field_id}"
+                    fluid_item_data_id="{fluid:content:current_field_data_id}"
+                }
+                Body
+            {/fluid:content:title}'
         );
 
         $this->assertSame('[parsed:title]', $result);
