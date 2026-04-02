@@ -296,9 +296,16 @@ class PagesViewsTest extends PagesTestBase
                 return 'cp://' . $path;
             }
         });
-        ee()->setMock('CP/Modal', new class {
+        $captured = (object) ['modals' => []];
+        ee()->setMock('CP/Modal', new class($captured) {
+            private $captured;
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
             public function addModal($name, $modal)
             {
+                $this->captured->modals[] = [$name, $modal];
             }
         });
 
@@ -318,6 +325,7 @@ class PagesViewsTest extends PagesTestBase
         }, $renderer->embedded);
         $this->assertContains('ee:_shared/table', $embedNames);
         $this->assertNotContains('ee:_shared/form/bulk-action-bar', $embedNames);
+        $this->assertSame('remove', $captured->modals[0][0]);
     }
 
     public function testNestedViewRendersWithChildrenAndWithoutChildren(): void
