@@ -114,7 +114,7 @@ class Categories extends AbstractCategoriesController
         ee()->cp->render('channels/cat/list', $data);
     }
 
-     /**
+    /**
      * AJAX end point for reordering categories on catList page
      */
     public function reorder($group_id)
@@ -179,6 +179,8 @@ class Categories extends AbstractCategoriesController
         $payload_ids = array_map('intval', array_keys($this->new_order_reference));
         $missing_in_payload = array_values(array_diff($db_ids, $payload_ids));
 
+        // Reject partial payloads (for example, truncated requests) to avoid
+        // writing a partially reordered tree.
         if (! empty($missing_in_payload)) {
             ee()->output->send_ajax_response(array(
                 'error' => 'Category reorder payload was incomplete. No changes were saved.'
@@ -225,6 +227,8 @@ class Categories extends AbstractCategoriesController
         ee()->db->where('group_id', (int) $group_id);
         ee()->db->update('category_groups', array('sort_order' => 'c'));
 
+        // Keep this path fast for large category trees by using batched SQL
+        // updates instead of per-row model save() calls.
         if (! empty($changed_rows)) {
             $chunks = array_chunk($changed_rows, $batch_chunk_size);
             foreach ($chunks as $chunk) {
