@@ -474,11 +474,13 @@ class UploadDestination extends StructureModel
     {
         foreach ($nestedMap as $key => $val) {
             $flatKey = rtrim($keyPrefix . $key, '/');
-            if (! isset($flatMap[$flatKey])) {
-                $flatMap[$flatKey] = $flatKey;
-            }
             if (is_array($val)) {
-                $flatMap[$flatKey] = $this->flattenDirectoryMap($flatMap, $val, $flatKey . '/');
+                if ($val !== [] && ! isset($flatMap[$flatKey])) {
+                    $flatMap[$flatKey] = $flatKey;
+                }
+                $this->flattenDirectoryMap($flatMap, $val, $flatKey . '/');
+            } elseif (! isset($flatMap[$flatKey])) {
+                $flatMap[$flatKey] = $flatKey;
             }
         }
     }
