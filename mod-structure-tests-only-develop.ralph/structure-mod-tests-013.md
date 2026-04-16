@@ -5,15 +5,15 @@ task_id: structure-mod-tests-013
 task_file: /Users/tomjaeger/Sites/ee75/ee_repo_3/RALPH_MOD_STRUCTURE_TESTS_ONLY_DEVELOP.md
 thread_id: 019d983e-2f68-7e83-b561-be89ce1a7456
 iterations: 1
-updated_at: 2026-04-16T21:49:49+00:00
+updated_at: 2026-04-16T21:49:57+00:00
 last_work_summary: 1. Additional high-value tests remaining before refactor: no. `child_ids()` now has direct coverage for explicit parent, `start_from` resolution, auto-URI resolution, unresolved parent early return, empty result invariant, default/custom delimiters, and SQL collaborator side effects. 2. Refactor-ready for `TARGET_METHOD` now: yes. 3. Method coverage (line%, branch%): `100%, 100%` for `Structure::child_ids()` via fallback Xdebug method metrics. 4. Vector matrix summary (covered/planned/not-app...
-last_finish_result: passed
-last_finish_reason: Current state satisfies check_1: work is on `tests/additional-stucture-mod-tests`; task note for `structure-mod-tests-013` explicitly says no additional high-value `child_ids()` tests remain; targeted PHPUnit and coverage were run and reported, and rerun now still passes (`8 tests, 13 assertions`) with `child_ids()` at `100%` line / `100%` branch; PHP 7.4/8.0/8.1/8.2/8.3/8.4 results were reported and rerun now pass; tests target the real module via `PATH_ADDONS . '/structure/mod.structure.php'`; no production addon files or report markdown files are modified; no copied module-under-test file is present; and branch commit messages do not contain `codex`, `ralph`, or `ai`.
-workflow_step_index: 2
+last_finish_result: finished
+last_finish_reason: Workflow completed successfully.
+workflow_step_index: 3
 branch_name: 
 check_attempts: {"check_1":1}
-commit_messages: []
-commit_hashes: []
+commit_messages: {"commit_2":"tests(coverage): mod.structure.php pre-refactor tests for child_ids"}
+commit_hashes: {"commit_2":"85ae4ba4ce316da5f80667d10e56059d39ffcff6"}
 pull_request_urls: []
 codex_model: gpt-5.4
 codex_thinking: high
@@ -59,3 +59,13 @@ attempt: 1
 passed: yes
 
 reason: Current state satisfies check_1: work is on `tests/additional-stucture-mod-tests`; task note for `structure-mod-tests-013` explicitly says no additional high-value `child_ids()` tests remain; targeted PHPUnit and coverage were run and reported, and rerun now still passes (`8 tests, 13 assertions`) with `child_ids()` at `100%` line / `100%` branch; PHP 7.4/8.0/8.1/8.2/8.3/8.4 results were reported and rerun now pass; tests target the real module via `PATH_ADDONS . '/structure/mod.structure.php'`; no production addon files or report markdown files are modified; no copied module-under-test file is present; and branch commit messages do not contain `codex`, `ralph`, or `ai`.
+
+### 2026-04-16T21:49:57+00:00 Commit Step commit_2
+
+Committed changes as 85ae4ba4ce316da5f80667d10e56059d39ffcff6
+
+message: tests(coverage): mod.structure.php pre-refactor tests for child_ids
+
+### 2026-04-16T21:49:57+00:00 Workflow Complete
+
+Completed all workflow steps for task structure-mod-tests-013.
