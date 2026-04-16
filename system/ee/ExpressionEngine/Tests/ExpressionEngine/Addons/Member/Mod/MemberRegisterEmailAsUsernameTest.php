@@ -2,45 +2,13 @@
 
 use PHPUnit\Framework\TestCase;
 
+require_once SYSPATH . 'ee/ExpressionEngine/Boot/boot.common.php';
+require_once APPPATH . 'helpers/string_helper.php';
 require_once PATH_ADDONS . 'member/mod.member.php';
 require_once PATH_ADDONS . 'member/mod.member_register.php';
 
 if (! defined('USERNAME_MAX_LENGTH')) {
     define('USERNAME_MAX_LENGTH', 75);
-}
-
-if (! function_exists('trim_nbs')) {
-    function trim_nbs($str)
-    {
-        return trim(str_replace("\xc2\xa0", ' ', (string) $str));
-    }
-}
-
-if (! function_exists('get_bool_from_string')) {
-    function get_bool_from_string($value)
-    {
-        if (is_bool($value) || is_null($value)) {
-            return $value;
-        }
-
-        switch (strtolower((string) $value)) {
-            case 'true':
-            case 'yes':
-            case 'y':
-            case 'on':
-            case '1':
-                return true;
-
-            case 'false':
-            case 'no':
-            case 'n':
-            case 'off':
-            case '0':
-                return false;
-        }
-
-        return null;
-    }
 }
 
 class MemberRegisterEmailAsUsernameConfigMock
@@ -201,6 +169,21 @@ class MemberRegisterEmailAsUsernameTest extends TestCase
         ]);
 
         $_POST['username'] = '';
+        $_POST['email'] = "o'!@x.io";
+
+        $result = $this->callPrivateMethod('_apply_email_as_username_fallback', array(true));
+
+        $this->assertTrue($result);
+        $this->assertSame('o@x.io', $_POST['username']);
+    }
+
+    public function testApplyEmailAsUsernameFallbackTreatsWhitespaceUsernameAsBlank()
+    {
+        $this->setBaseMocks([
+            'un_min_len' => 3,
+        ]);
+
+        $_POST['username'] = '   ';
         $_POST['email'] = "o'!@x.io";
 
         $result = $this->callPrivateMethod('_apply_email_as_username_fallback', array(true));

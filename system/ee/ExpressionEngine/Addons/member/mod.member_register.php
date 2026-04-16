@@ -661,7 +661,9 @@ class Member_register extends Member
 
     private function _apply_email_as_username_fallback($email_as_username)
     {
-        if (!$email_as_username || $_POST['username'] !== '' || empty($_POST['email'])) {
+        $username = trim_nbs((string) ($_POST['username'] ?? ''));
+
+        if (!$email_as_username || $username !== '' || empty($_POST['email'])) {
             return true;
         }
 
