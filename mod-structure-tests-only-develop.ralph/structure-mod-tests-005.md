@@ -5,15 +5,15 @@ task_id: structure-mod-tests-005
 task_file: /Users/tomjaeger/Sites/ee75/ee_repo_3/RALPH_MOD_STRUCTURE_TESTS_ONLY_DEVELOP.md
 thread_id: 019d97fc-e7b2-7e00-8eb2-4edd5ad4ab35
 iterations: 1
-updated_at: 2026-04-16T20:37:54+00:00
+updated_at: 2026-04-16T20:38:01+00:00
 last_work_summary: 1. Additional high-value tests remaining before refactor: `no`. I added the remaining useful collaborator-locking assertions for `siblings()` and the method is now pinned beyond raw branch coverage. 2. Refactor-ready for `TARGET_METHOD` now: `yes`. 3. Method coverage (line%, branch%): `100% line`, `100% branch` for `Structure::siblings()` at [mod.structure.php](/Users/tomjaeger/Sites/ee75/ee_repo_3/system/ee/ExpressionEngine/Addons/structure/mod.structure.php:364). Measured as `46/46` executa...
-last_finish_result: passed
-last_finish_reason: On branch tests/additional-stucture-mod-tests, task note for structure-mod-tests-005 explicitly says no additional high-value siblings() tests remain before refactor, reports 100% line and 100% branch coverage (46/46 lines, 34/34 branches), includes PHPUnit and coverage commands/results, reports PHP 7.4/8.0/8.1/8.2/8.3/8.4 as pass, and confirms the real module is loaded via PATH_ADDONS . '/structure/mod.structure.php'. Current branch/worktree show no edits under system/ee/ExpressionEngine/Addons/structure/ and no changes to the two report markdown files; only the real mod.structure.php exists, so no copied/shadow module file was created. Existing branch commit messages do not contain codex, ralph, or ai, and there is no violating commit recorded for this task.
-workflow_step_index: 2
+last_finish_result: finished
+last_finish_reason: Workflow completed successfully.
+workflow_step_index: 3
 branch_name: 
 check_attempts: {"check_1":1}
-commit_messages: []
-commit_hashes: []
+commit_messages: {"commit_2":"tests(coverage): mod.structure.php pre-refactor tests for siblings"}
+commit_hashes: {"commit_2":"f72498cb7264360049b38c95953e2e306b1f89b3"}
 pull_request_urls: []
 codex_model: gpt-5.4
 codex_thinking: high
@@ -69,3 +69,13 @@ attempt: 1
 passed: yes
 
 reason: On branch tests/additional-stucture-mod-tests, task note for structure-mod-tests-005 explicitly says no additional high-value siblings() tests remain before refactor, reports 100% line and 100% branch coverage (46/46 lines, 34/34 branches), includes PHPUnit and coverage commands/results, reports PHP 7.4/8.0/8.1/8.2/8.3/8.4 as pass, and confirms the real module is loaded via PATH_ADDONS . '/structure/mod.structure.php'. Current branch/worktree show no edits under system/ee/ExpressionEngine/Addons/structure/ and no changes to the two report markdown files; only the real mod.structure.php exists, so no copied/shadow module file was created. Existing branch commit messages do not contain codex, ralph, or ai, and there is no violating commit recorded for this task.
+
+### 2026-04-16T20:38:01+00:00 Commit Step commit_2
+
+Committed changes as f72498cb7264360049b38c95953e2e306b1f89b3
+
+message: tests(coverage): mod.structure.php pre-refactor tests for siblings
+
+### 2026-04-16T20:38:01+00:00 Workflow Complete
+
+Completed all workflow steps for task structure-mod-tests-005.
