@@ -150,6 +150,27 @@ class StructureSitemapTest extends StructureTestBase
 		$this->assertStringNotContainsString('/open', $text2);
 	}
 
+	public function testExplicitEmptyStatusRemovesAllPages()
+	{
+		$sitePages = [
+			'uris' => [
+				2 => '/about',
+				3 => '/draft-page'
+			]
+		];
+		$pages = [
+			['entry_id' => 2, 'title' => 'About', 'status' => 'open', 'depth' => 1, 'parent_id' => 1],
+			['entry_id' => 3, 'title' => 'Draft', 'status' => 'draft', 'depth' => 1, 'parent_id' => 1],
+		];
+		$this->setSitemapEnvironment($sitePages, $pages);
+		$this->setTemplateParams([
+			'mode' => 'text',
+			'status' => '',
+		]);
+
+		$this->assertSame('', $this->structure->sitemap());
+	}
+
 	public function testCssIdNoneRemovesIdButKeepsClass()
 	{
 		$sitePages = [ 'uris' => [ 2 => '/about' ] ];
@@ -321,5 +342,4 @@ class StructureSitemapTest extends StructureTestBase
 		$this->assertStringContainsString('<loc>/base/a</loc>', $xml);
 	}
 }
-
 

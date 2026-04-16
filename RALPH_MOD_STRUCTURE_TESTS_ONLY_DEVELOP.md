@@ -92,8 +92,8 @@ Hard rule:
 ## Tasks
 - [finished] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=__construct in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-001 -->
 - [finished] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=nav in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-002 -->
-- [in progress] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=entries in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-003 -->
-- [not started] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=sitemap in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-004 -->
+- [finished] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=entries in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-003 -->
+- [in progress] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=sitemap in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-004 -->
 - [not started] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=siblings in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-005 -->
 - [not started] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=traverse in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-006 -->
 - [not started] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=breadcrumb in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-007 -->
@@ -135,6 +135,7 @@ Hard rule:
 - [not started] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=remove_last_segment in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-043 -->
 - [not started] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=nav_basic in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-044 -->
 - [not started] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=nav_advanced in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-045 -->
+
 
 
 
