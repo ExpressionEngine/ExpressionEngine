@@ -2,44 +2,6 @@
 
 require_once __DIR__ . '/PagesTestBase.php';
 
-if (!function_exists('form_open')) {
-    function form_open($action, $attrs = '', $hidden = [])
-    {
-        return '<form action="' . $action . '">';
-    }
-}
-if (!function_exists('form_close')) {
-    function form_close()
-    {
-        return '</form>';
-    }
-}
-if (!function_exists('form_hidden')) {
-    function form_hidden($name, $value = '')
-    {
-        return '<input type="hidden" name="' . $name . '" value="' . $value . '">';
-    }
-}
-if (!function_exists('form_submit')) {
-    function form_submit($data = [])
-    {
-        $value = is_array($data) && isset($data['value']) ? $data['value'] : 'submit';
-        return '<button>' . $value . '</button>';
-    }
-}
-if (!function_exists('form_dropdown')) {
-    function form_dropdown($name, $options = [], $value = '', $extra = '')
-    {
-        return '<select name="' . $name . '"></select>';
-    }
-}
-if (!function_exists('form_label')) {
-    function form_label($label, $id = '')
-    {
-        return '<label for="' . $id . '">' . $label . '</label>';
-    }
-}
-
 if (!class_exists('PagesViewPageNodeStub')) {
     class PagesViewPageNodeStub
     {
@@ -160,6 +122,8 @@ class PagesViewsTest extends PagesTestBase
         ]);
 
         $this->assertStringContainsString('delete[]', $output);
+        $this->assertStringContainsString('foo', $output);
+        $this->assertStringContainsString('csrf_token', $output);
         $this->assertStringContainsString('pages_delete_question', $output);
         $this->assertStringContainsString('action_can_not_be_undone', $output);
     }

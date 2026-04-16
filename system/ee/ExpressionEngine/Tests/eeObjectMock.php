@@ -136,6 +136,11 @@ class eeSingletonLoadMock
         // Return empty array for testing - no additional package paths needed
         return [];
     }
+
+    public function is_loaded($class = null)
+    {
+        return false;
+    }
 }
 
 class eeSingletonConfigMock
