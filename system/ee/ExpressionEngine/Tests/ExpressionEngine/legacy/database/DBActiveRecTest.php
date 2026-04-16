@@ -105,9 +105,154 @@ class DBActiveRecTest extends TestCase
             $this->assertContains('db_invalid_query', $driver->displayErrorKeys);
         }
 
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Invalid function type: BAD');
-        $driver->_max_min_avg_sum('score', '', 'BAD');
+        $this->runBadTypeValidationInChildProcess();
+    }
+
+    private function runBadTypeValidationInChildProcess(): void
+    {
+        $scriptPath = tempnam(sys_get_temp_dir(), 'db-active-rec-bad-type-');
+        if ($scriptPath === false) {
+            $this->fail('Unable to create temporary child script for DBActiveRec BAD type validation.');
+        }
+
+        file_put_contents($scriptPath, $this->buildBadTypeChildScript());
+
+        $testsRoot = realpath(dirname(__DIR__, 3)) ?: dirname(__DIR__, 3);
+        $command = escapeshellarg(PHP_BINARY)
+            . ' ' . escapeshellarg($scriptPath)
+            . ' ' . escapeshellarg($testsRoot);
+
+        $output = [];
+        $exitCode = 0;
+        exec($command, $output, $exitCode);
+
+        @unlink($scriptPath);
+
+        $this->assertSame(
+            0,
+            $exitCode,
+            "DBActiveRec BAD type child process failed:\n" . implode("\n", $output)
+        );
+
+        $payload = json_decode((string) end($output), true);
+        $this->assertIsArray($payload, 'Expected JSON payload from DBActiveRec BAD type child process.');
+        $this->assertSame('ok', $payload['status'] ?? null);
+        $this->assertStringContainsString('Invalid function type: BAD', (string) ($payload['message'] ?? ''));
+    }
+
+    private function buildBadTypeChildScript(): string
+    {
+        return <<<'PHP'
+<?php
+$rootArg = $argv[1] ?? getcwd();
+$testsRoot = rtrim((string) $rootArg, '/\\');
+
+if (substr($testsRoot, -strlen('/system/ee/ExpressionEngine/Tests')) !== '/system/ee/ExpressionEngine/Tests') {
+    $candidate = $testsRoot . '/system/ee/ExpressionEngine/Tests';
+    if (is_dir($candidate)) {
+        $testsRoot = $candidate;
+    }
+}
+
+$legacyRoot = dirname($testsRoot, 2) . '/legacy/database';
+$driverPath = $legacyRoot . '/DB_driver.php';
+$activeRecPath = $legacyRoot . '/DB_active_rec.php';
+
+if (!is_file($driverPath) || !is_file($activeRecPath)) {
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'Unable to locate DB driver files',
+        'driver' => $driverPath,
+        'active_record' => $activeRecPath,
+    ]);
+    exit(1);
+}
+
+if (! function_exists('show_error')) {
+    function show_error($message)
+    {
+        throw new RuntimeException((string) $message);
+    }
+}
+
+if (! function_exists('load_class')) {
+    function load_class($class, $directory = 'libraries')
+    {
+        if ($class === 'Lang') {
+            return new class {
+                public function load($file)
+                {
+                }
+
+                public function line($key)
+                {
+                    return $key;
+                }
+            };
+        }
+
+        if ($class === 'Exceptions') {
+            return new class {
+                public function show_error($heading, $message)
+                {
+                    throw new RuntimeException($heading . ':' . implode('|', (array) $message));
+                }
+            };
+        }
+
+        return new stdClass();
+    }
+}
+
+if (! function_exists('log_message')) {
+    function log_message($level, $message)
+    {
+        return;
+    }
+}
+
+require_once $driverPath;
+require_once $activeRecPath;
+
+class DBActiveRecBadTypeHarness extends CI_DB_active_record
+{
+    public function __construct($params = [])
+    {
+        parent::__construct($params);
+    }
+}
+
+try {
+    $driver = new DBActiveRecBadTypeHarness([]);
+    $driver->_max_min_avg_sum('score', '', 'BAD');
+    echo json_encode([
+        'status' => 'error',
+        'message' => 'Expected RuntimeException for invalid function type was not thrown',
+    ]);
+    exit(1);
+} catch (RuntimeException $exception) {
+    if (strpos($exception->getMessage(), 'Invalid function type: BAD') === false) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => $exception->getMessage(),
+        ]);
+        exit(1);
+    }
+
+    echo json_encode([
+        'status' => 'ok',
+        'message' => $exception->getMessage(),
+    ]);
+    exit(0);
+} catch (Throwable $exception) {
+    echo json_encode([
+        'status' => 'error',
+        'message' => $exception->getMessage(),
+        'class' => get_class($exception),
+    ]);
+    exit(1);
+}
+PHP;
     }
 
     public function testAliasCreationAndWhereFamilyBranches(): void
