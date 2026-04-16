@@ -351,6 +351,25 @@ class StructureBreadcrumbTest extends StructureTestBase
         $this->assertStringNotContainsString('Title 2', $html);
     }
 
+    public function testBreadcrumbWrapsHereLabelWhenHereAsTitleIsDisabled()
+    {
+        $sitePages = [ 'uris' => [ 1 => '/', 2 => '/about' ] ];
+        $this->setSqlStub($sitePages, '/about');
+        $this->setNsetStub([
+            2 => ['left' => 4, 'right' => 5, 'entry_id' => 2],
+        ]);
+        $this->setDbRows([]);
+        $this->setTemplateParams([
+            'uri' => '/about',
+            'here_as_title' => 'no',
+            'wrap_here' => 'strong',
+        ]);
+
+        $html = $this->structure->breadcrumb();
+        $this->assertStringContainsString('<strong>Here</strong>', $html);
+        $this->assertStringNotContainsString('Title 2', $html);
+    }
+
     public function testBreadcrumbWithWrapHereOnly()
     {
         $sitePages = [ 'uris' => [ 1 => '/', 2 => '/about' ] ];
@@ -412,6 +431,31 @@ class StructureBreadcrumbTest extends StructureTestBase
         $this->assertStringNotContainsString('Here', $html);
         $this->assertStringNotContainsString('Title 2', $html);
         $this->assertStringContainsString('<a href="">Home</a>', $html);
+    }
+
+    public function testBreadcrumbDefaultsHomeEntryToZeroAndSkipsHomepageAncestorRow()
+    {
+        $sitePages = [ 'uris' => [ 0 => '/', 2 => '/about', 3 => '/about/team' ] ];
+        $this->setSqlStub($sitePages, '/about/team', false, [3 => 'Team']);
+        $this->setNsetStub([
+            3 => ['left' => 6, 'right' => 7, 'entry_id' => 3],
+        ]);
+        $this->setDbRows([
+            ['entry_id' => 0, 'title' => 'Hidden Home'],
+            ['entry_id' => 2, 'title' => 'About'],
+        ]);
+        $this->setTemplateParams([
+            'uri' => '/about/team',
+            'here_as_title' => 'yes',
+            'rename_home' => 'Root',
+            'home_link' => '/',
+        ]);
+
+        $html = $this->structure->breadcrumb();
+        $this->assertStringContainsString('<a href="/">Root</a>', $html);
+        $this->assertStringNotContainsString('Hidden Home', $html);
+        $this->assertStringContainsString('About', $html);
+        $this->assertStringContainsString('Team', $html);
     }
 
     public function testBreadcrumbWithEmptyCustomTitles()
@@ -484,7 +528,6 @@ class StructureBreadcrumbTest extends StructureTestBase
         $this->assertEquals(4, substr_count($html, '&raquo;'));
     }
 }
-
 
 
 
