@@ -176,7 +176,7 @@ class ProSearchCollectionModelTest extends ProSearchTestBase
         if ($parentClass && $parentClass->hasMethod('get_all')) {
             // Get the parent's get_all method
             $parentMethod = $parentClass->getMethod('get_all');
-            $parentMethod->setAccessible(true);
+            \TestReflectionHelper::makeAccessible($parentMethod);
             
             // Call parent::get_all() directly to get fresh data
             // This bypasses the static cache in the child class
@@ -263,7 +263,7 @@ class ProSearchCollectionModelTest extends ProSearchTestBase
         
         // Let's use reflection to call _get_by_attr() directly with our fresh data
         $getByAttrMethod = $reflection->getMethod('_get_by_attr');
-        $getByAttrMethod->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($getByAttrMethod);
         
         // Call _get_by_attr() with our fresh $all data
         // get_by_param('news|blog') would call explode and then _get_by_attr(['news', 'blog'], 'collection_name', true, null)

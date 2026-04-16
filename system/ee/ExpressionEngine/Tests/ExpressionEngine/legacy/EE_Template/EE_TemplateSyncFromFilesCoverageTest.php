@@ -27,7 +27,7 @@ class EE_TemplateSyncFromFilesCoverageGroupsCollectionStub implements \IteratorA
         $this->groups = $groups;
     }
 
-    public function getIterator()
+    public function getIterator(): \Traversable
     {
         return new \ArrayIterator($this->groups);
     }

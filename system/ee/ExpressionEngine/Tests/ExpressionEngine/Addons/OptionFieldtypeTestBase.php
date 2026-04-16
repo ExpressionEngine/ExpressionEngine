@@ -98,11 +98,11 @@ abstract class OptionFieldtypeTestBase extends TestCase
      */
     protected function setupCommonFieldtypeMocks($fieldtype, $settings = [])
     {
-        // Basic fieldtype properties - use error suppression to avoid PHP 8.2+ deprecation warnings
-        @$fieldtype->field_name = $this->mockFieldName;
-        @$fieldtype->field_id = $this->mockFieldId;
-        @$fieldtype->settings = array_merge($this->getDefaultFieldtypeSettings(), $settings);
-        @$fieldtype->settings_vars = $this->getDefaultFieldtypeSettings();
+        $this->seedFieldtypeIdentity(
+            $fieldtype,
+            array_merge($this->getDefaultFieldtypeSettings(), $settings),
+            $this->getDefaultFieldtypeSettings()
+        );
 
         // Common fieldtype behaviors
         $fieldtype->shouldReceive('accepts_content_type')->andReturn(true);
@@ -539,7 +539,7 @@ abstract class OptionFieldtypeTestBase extends TestCase
      */
     protected function getMockFieldtypeWithSettingsForMulti($settings = [])
     {
-        $fieldtype = m::mock()->makePartial();
+        $fieldtype = m::mock(\stdClass::class)->makePartial();
 
         // Mark display settings as configured to prevent base class override
         $this->markDisplaySettingsConfigured($fieldtype);
@@ -715,7 +715,7 @@ abstract class OptionFieldtypeTestBase extends TestCase
      */
     protected function getMockFieldtypeWithSettings($settings = [])
     {
-        $fieldtype = m::mock()->makePartial();
+        $fieldtype = m::mock(\stdClass::class)->makePartial();
         $fieldtype->shouldReceive('display_field')->andReturn('<div>Mock display</div>');
         $fieldtype->shouldReceive('grid_display_field')->andReturn('<div>Mock grid display</div>');
 
@@ -869,12 +869,23 @@ abstract class OptionFieldtypeTestBase extends TestCase
 
         $fieldtype->shouldReceive('allowsAccessToProtectedMethods')->andReturn(true);
 
-        @$fieldtype->field_name = $this->mockFieldName;
-        @$fieldtype->field_id = $this->mockFieldId;
-        @$fieldtype->settings = $storedSettings;
-        @$fieldtype->settings_vars = [];
+        $this->seedFieldtypeIdentity($fieldtype, $storedSettings, []);
 
         return $fieldtype;
+    }
+
+    protected function seedFieldtypeIdentity($fieldtype, array $settings, array $settingsVars = [])
+    {
+        $assign = function ($property, $value) use ($fieldtype) {
+            if (property_exists($fieldtype, $property) || $fieldtype instanceof \stdClass) {
+                $fieldtype->$property = $value;
+            }
+        };
+
+        $assign('field_name', $this->mockFieldName);
+        $assign('field_id', $this->mockFieldId);
+        $assign('settings', $settings);
+        $assign('settings_vars', $settingsVars);
     }
 
     /**

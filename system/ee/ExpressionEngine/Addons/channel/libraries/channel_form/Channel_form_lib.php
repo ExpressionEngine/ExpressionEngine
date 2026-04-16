@@ -998,7 +998,9 @@ GRID_FALLBACK;
 
         $include_jquery = ($this->bool_string($include_jquery, true)) ? '&include_jquery=y' : '';
 
-        $this->head .= '<script type="text/javascript" charset="utf-8" src="' . ee()->functions->fetch_site_index() . QUERY_MARKER . 'ACT=' . ee()->functions->fetch_action_id('Channel', 'combo_loader') . '&' . str_replace(array('%2C', '%2F'), array(',', '/'), http_build_query($js_file_strings)) . '&v=' . max($mtime) . $use_live_url . $include_jquery . '"></script>' . "\n";
+        $query_marker = defined('QUERY_MARKER') ? QUERY_MARKER : '?';
+
+        $this->head .= '<script type="text/javascript" charset="utf-8" src="' . ee()->functions->fetch_site_index() . $query_marker . 'ACT=' . ee()->functions->fetch_action_id('Channel', 'combo_loader') . '&' . str_replace(array('%2C', '%2F'), array(',', '/'), http_build_query($js_file_strings)) . '&v=' . max($mtime) . $use_live_url . $include_jquery . '"></script>' . "\n";
 
         if ($this->bool_string(ee()->TMPL->fetch_param('include_css'), true)) {
             $this->head .= '<link rel="stylesheet" type="text/css" media="screen" href="' . URL_THEMES . 'cform/css/eecms-cform.min.css" />';
@@ -1889,7 +1891,7 @@ GRID_FALLBACK;
     {
         $selected = array();
 
-        if ($this->entry->entry_id or ! empty($this->channel->deft_category)) {
+        if ((isset($this->entry) && $this->entry->entry_id) or ! empty($this->channel->deft_category)) {
             $selected = $this->entry->Categories->pluck('cat_id');
         }
 
@@ -2062,7 +2064,9 @@ GRID_FALLBACK;
             $query->filter('url_title', $url_title);
         }
 
-        $query->filter('ChannelEntry.channel_id', $this->channel->channel_id);
+        if (isset($this->channel) && isset($this->channel->channel_id)) {
+            $query->filter('ChannelEntry.channel_id', $this->channel->channel_id);
+        }
         $query->filter('ChannelEntry.site_id', $this->site_id);
 
         $entry = $query->first();
@@ -2126,8 +2130,8 @@ GRID_FALLBACK;
             // and now into safecracker legacy format. Good grief, why does it
             // group them by column name?
             foreach ($rows as $row) {
-                $site_id = $row['site_id'];
-                $channel_id = $row['channel_id'];
+                $site_id = $row['site_id'] ?? null;
+                $channel_id = $row['channel_id'] ?? null;
 
                 unset(
                     $row['site_id'],
@@ -2136,19 +2140,22 @@ GRID_FALLBACK;
                 );
 
                 foreach ($row as $column => $value) {
+                    $site_key = $site_id ?? '';
+                    $channel_key = $channel_id ?? '';
+
                     if (! isset($this->settings[$column])) {
                         $this->settings[$column] = array();
                     }
 
-                    if (! isset($this->settings[$column][$site_id])) {
-                        $this->settings[$column][$site_id] = array();
+                    if (! isset($this->settings[$column][$site_key])) {
+                        $this->settings[$column][$site_key] = array();
                     }
 
                     if ($column == 'allow_guest_posts') {
                         $value = $this->bool_string($value);
                     }
 
-                    $this->settings[$column][$site_id][$channel_id] = $value;
+                    $this->settings[$column][$site_key][$channel_key] = $value;
                 }
             }
         }
@@ -2381,7 +2388,7 @@ GRID_FALLBACK;
 
     public function get_field($field_name)
     {
-        return $this->custom_fields[$field_name];
+        return (isset($this->custom_fields[$field_name])) ? $this->custom_fields[$field_name] : null;
     }
 
     /**
@@ -2443,6 +2450,10 @@ GRID_FALLBACK;
     {
         $field = $this->get_field($field_name);
         $options = array();
+
+        if (! $field) {
+            return $options;
+        }
 
         $field_data = (is_array($this->entry('field_id_' . $field->field_id)))
             ? $this->entry('field_id_' . $field->field_id) : explode('|', (string) $this->entry('field_id_' . $field->field_id));
@@ -2995,8 +3006,24 @@ GRID_FALLBACK;
      */
     public function unserialize($data, $base64_decode = false)
     {
+        if ($data === null) {
+            return array();
+        }
+
         if ($base64_decode) {
-            $data = base64_decode((string) $data);
+            $decoded = base64_decode((string) $data);
+            if ($decoded === false) {
+                return array();
+            }
+            $data = $decoded;
+        }
+
+        if (! is_string($data)) {
+            $data = (string) $data;
+        }
+
+        if ($data === '') {
+            return array();
         }
 
         $data = @unserialize($data);

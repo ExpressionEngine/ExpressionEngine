@@ -365,7 +365,7 @@ class FactoryTest extends TestCase
     {
         $reflection = new \ReflectionClass($object);
         $prop = $reflection->getProperty($property);
-        $prop->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($prop);
         return $prop->getValue($object);
     }
 }

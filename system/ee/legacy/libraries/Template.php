@@ -338,7 +338,8 @@ class EE_Template
                 'webmaster_email'
             ) as $site_var
         ) {
-            ee()->config->_global_vars[$site_var] = stripslashes(ee()->config->item($site_var));
+            $site_var_value = ee()->config->item($site_var);
+            ee()->config->_global_vars[$site_var] = stripslashes((string) $site_var_value);
         }
 
         $seg_array = ee()->uri->segment_array();
@@ -610,12 +611,12 @@ class EE_Template
 
         // cleanup of leftover/undeclared embed variables
         // don't worry with undeclared embed: vars in conditionals as the conditionals processor will handle that adequately
-        if (strpos($this->template, LD . 'embed:') !== false) {
+        if (strpos((string) $this->template, LD . 'embed:') !== false) {
             $this->template = preg_replace('/' . LD . 'embed:([^!]+?)' . RD . '/', '', $this->template);
         }
 
         // Preload Replacements
-        if (strpos($this->template, 'preload_replace') !== false) {
+        if (strpos((string) $this->template, 'preload_replace') !== false) {
             if (preg_match_all("/" . LD . "preload_replace:(.+?)=([\"\'])([^\\2]*?)\\2" . RD . "/i", $this->template, $matches)) {
                 $this->log_item("Processing Preload Text Replacements: " . trim(implode('|', $matches[1])));
 
@@ -661,7 +662,7 @@ class EE_Template
         $this->template = $this->parse_nocache($this->template);
 
         // Smite Our Enemies:  Advanced Conditionals
-        if (strpos($this->template, LD . 'if') !== false) {
+        if (strpos((string) $this->template, LD . 'if') !== false) {
             $this->log_item("Processing Advanced Conditionals");
             $this->template = $this->advanced_conditionals($this->template);
         }
@@ -917,7 +918,7 @@ class EE_Template
     protected function _cleanup_layout_tags()
     {
         // cleanup of leftover/undeclared layout variables
-        if (strpos($this->final_template, LD . 'layout:') !== false) {
+        if (strpos((string) $this->final_template, LD . 'layout:') !== false) {
             $this->final_template = preg_replace('/' . LD . 'layout:([^!]+?)' . RD . '/', '', $this->final_template);
         }
     }
@@ -1074,7 +1075,7 @@ class EE_Template
         // Match all {embed=bla/bla} tags
         $matches = array();
 
-        if (strpos($parent_template, LD . 'embed') === false || !preg_match_all("/(" . LD . "embed\s*=)(.*?)" . RD . "/s", $parent_template, $matches)) {
+        if (strpos((string) $parent_template, LD . 'embed') === false || !preg_match_all("/(" . LD . "embed\s*=)(.*?)" . RD . "/s", $parent_template, $matches)) {
             return $parent_template;
         }
 
@@ -1497,7 +1498,7 @@ class EE_Template
 
         $this->log_item(" - Beginning Tag Processing - ");
 
-        while (is_int(strpos($this->template, LD . 'exp:'))) {
+        while (is_int(strpos((string) $this->template, LD . 'exp:'))) {
             // Initialize values between loops
             $this->tag_data = array();
             $this->var_single = array();
@@ -3358,7 +3359,7 @@ class EE_Template
      */
     public function parse_nocache($str)
     {
-        if (strpos($str, '{NOCACHE') === false) {
+        if (strpos((string) $str, '{NOCACHE') === false) {
             return $str;
         }
 
@@ -3397,7 +3398,8 @@ class EE_Template
 
                 if ($class == 'comment') {
                     $comment = new $fqcn();
-                    $str = str_replace($match[0][$i], $comment->form(true, ee()->functions->cached_captcha), $str);
+                    $comment_form = $comment->form(true, ee()->functions->cached_captcha);
+                    $str = str_replace($match[0][$i], (string) ($comment_form ?? ''), $str);
                 }
 
                 $str = str_replace('{PREVIEW_TEMPLATE}', $match[2][$i], $str);

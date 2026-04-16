@@ -14,27 +14,27 @@ class EE_TemplateExitPathCoverageTest extends TestCase
 
     public function testExitLineCoverageForFindLayoutTooLate()
     {
-        $this->runScenarioAndAppendCoverage(self::SCENARIO_FIND_LAYOUT_TOO_LATE, [882]);
+        $this->runScenarioAndAppendCoverage(self::SCENARIO_FIND_LAYOUT_TOO_LATE, [883]);
     }
 
     public function testExitLineCoverageForFindLayoutMultiple()
     {
-        $this->runScenarioAndAppendCoverage(self::SCENARIO_FIND_LAYOUT_MULTIPLE, [896]);
+        $this->runScenarioAndAppendCoverage(self::SCENARIO_FIND_LAYOUT_MULTIPLE, [897]);
     }
 
     public function testExitLineCoverageForShow404()
     {
-        $this->runScenarioAndAppendCoverage(self::SCENARIO_SHOW_404, [2428]);
+        $this->runScenarioAndAppendCoverage(self::SCENARIO_SHOW_404, [2429]);
     }
 
     public function testExitLineCoverageForProcessSubTemplatesLoopPrevention()
     {
-        $this->runScenarioAndAppendCoverage(self::SCENARIO_SUB_TEMPLATES_LOOP, [1162]);
+        $this->runScenarioAndAppendCoverage(self::SCENARIO_SUB_TEMPLATES_LOOP, [1163]);
     }
 
     public function testExitLineCoverageForParseTemplateUriPostInstallMessageBranch()
     {
-        $this->runScenarioAndAppendCoverage(self::SCENARIO_PARSE_TEMPLATE_URI, [2222]);
+        $this->runScenarioAndAppendCoverage(self::SCENARIO_PARSE_TEMPLATE_URI, [2223]);
     }
 
     private function runScenarioAndAppendCoverage(string $scenario, array $expectedLines): void
@@ -214,7 +214,7 @@ switch ($scenario) {
         $template = new EE_Template();
         $template->template = '{exp:channel:entries}{layout="layouts/main"}';
         $method = new ReflectionMethod($template, '_find_layout');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($method);
         $method->invoke($template);
         break;
 
@@ -222,7 +222,7 @@ switch ($scenario) {
         $template = new EE_Template();
         $template->template = '{layout="layouts/main"}{layout="layouts/secondary"}';
         $method = new ReflectionMethod($template, '_find_layout');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($method);
         $method->invoke($template);
         break;
 

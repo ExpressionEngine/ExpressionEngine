@@ -24,6 +24,7 @@ class ChannelParseCategoryFieldsTest extends ChannelTestBase
         // api_channel_fields methods used in parseCategoryFields
         $this->setMock('api_channel_fields', new class {
             public $field_types = [];
+            public $field_type = '';
             public function include_handler($name){ return true; }
             public function setup_handler($name, $bool){ return new class {}; }
         });
@@ -44,6 +45,7 @@ class ChannelParseCategoryFieldsTest extends ChannelTestBase
         // Ensure api_channel_fields supports include_handler/setup_handler
         $this->setMock('api_channel_fields', new class {
             public $field_types = [];
+            public $field_type = '';
             public function include_handler($name){ return true; }
             public function setup_handler($name, $bool){ return new class {}; }
         });
@@ -70,5 +72,4 @@ class ChannelParseCategoryFieldsTest extends ChannelTestBase
         $this->assertStringEndsWith('PARSED', $out);
     }
 }
-
 

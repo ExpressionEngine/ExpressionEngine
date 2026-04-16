@@ -370,7 +370,16 @@ class Set
         }
 
         $data = json_decode(file_get_contents($this->path . '/channel_set.json'));
+        if (! is_object($data)) {
+            $this->result->addError(lang('channel_set_invalid'));
+
+            return;
+        }
+
         $field_groups = (isset($data->field_groups)) ? $data->field_groups : [];
+        $upload_destinations = (isset($data->upload_destinations)) ? $data->upload_destinations : [];
+        $category_groups = (isset($data->category_groups)) ? $data->category_groups : [];
+        $channels = (isset($data->channels)) ? $data->channels : [];
 
         // Pre-4.0 sets will have status groups, post-4.0 sets will only have statuses
         $status_groups = isset($data->status_groups) ? $data->status_groups : [];
@@ -388,13 +397,13 @@ class Set
         }
 
         try {
-            $this->loadUploadDestinations($data->upload_destinations);
+            $this->loadUploadDestinations($upload_destinations);
             $this->loadFieldsAndGroups($field_groups);
             $this->loadStatusGroups($status_groups);
             $this->loadStatuses($statuses);
-            $this->loadCategoryGroups($data->category_groups);
+            $this->loadCategoryGroups($category_groups);
             $this->loadCategoryFields();
-            $this->loadChannels($data->channels);
+            $this->loadChannels($channels);
         } catch (\Exception $e) {
             $this->result->addError($e->getMessage());
         }
@@ -638,7 +647,20 @@ class Set
      */
     private function loadStatuses($statuses)
     {
-        $existing_statuses = ee('Model')->get('Status')->all()->pluck('status');
+        $existing_statuses = [];
+        $status_query = ee('Model')->get('Status');
+        if (is_object($status_query) && method_exists($status_query, 'all')) {
+            $existing = $status_query->all();
+            if (is_object($existing) && method_exists($existing, 'pluck')) {
+                $existing = $existing->pluck('status');
+            }
+
+            if ($existing instanceof \Traversable) {
+                $existing_statuses = iterator_to_array($existing, false);
+            } elseif (is_array($existing)) {
+                $existing_statuses = $existing;
+            }
+        }
 
         // Keep track of statuses brought in by this single call to map them
         // to old channel sets that contain status groups

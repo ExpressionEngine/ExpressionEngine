@@ -22,12 +22,12 @@ class ChannelGenerateCategoryFieldSqlTest extends ChannelTestBase
     private function setupMocks()
     {
         // Mock TMPL for site_ids
-        @$this->channel->TMPL = new class {
+        $this->channel->TMPL = new class {
             public $site_ids = ['1', '2'];
         };
 
         // Mock config for profiler
-        @$this->channel->config = new class {
+        $this->channel->config = new class {
             public function item($key) {
                 return $key === 'show_profiler' ? 'n' : false;
             }

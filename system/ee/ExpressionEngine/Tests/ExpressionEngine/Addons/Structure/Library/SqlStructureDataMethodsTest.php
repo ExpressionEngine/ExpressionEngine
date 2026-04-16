@@ -385,6 +385,7 @@ class SqlStructureDataMethodsTest extends TestCase
     {
         ee()->setMock('db', new class($this) {
             private $test;
+            public $table;
             public function __construct($test)
             {
                 $this->test = $test;
@@ -1327,7 +1328,7 @@ class SqlStructureDataMethodsTest extends TestCase
         };
 
         $rm = new ReflectionMethod($sql, '_get_structure_channel_ids');
-        $rm->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($rm);
         $ids = $rm->invoke($sql, true, true);
 
         $this->assertSame('2,3,9', $ids);
