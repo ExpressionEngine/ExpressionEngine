@@ -31,6 +31,24 @@ class StructureSaefSelectTest extends StructureTestBase
         $this->assertFalse($this->structure->saef_select());
     }
 
+    public function testReturnsFalseWhenTypeParamIsNullWithoutLoadingFormHelper()
+    {
+        $loader = new class {
+            public array $helpers = [];
+
+            public function helper($name)
+            {
+                $this->helpers[] = $name;
+            }
+        };
+
+        ee()->setMock('load', $loader);
+        $this->setTemplateParams(['type' => null]);
+
+        $this->assertFalse($this->structure->saef_select());
+        $this->assertSame([], $loader->helpers);
+    }
+
     public function testUnknownTypeBuildsEmptyDropdown()
     {
         $this->setTemplateParams(['type' => 'unknown']);
@@ -105,6 +123,5 @@ class StructureSaefSelectTest extends StructureTestBase
         $this->assertStringContainsString('<option value="0" selected>Choose Parent</option>', $html);
     }
 }
-
 
 
