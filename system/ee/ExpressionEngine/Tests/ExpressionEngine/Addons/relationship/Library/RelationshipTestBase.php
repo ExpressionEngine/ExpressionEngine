@@ -41,6 +41,9 @@ if (!defined('PATH_MOD')) {
 if (!defined('REQ')) {
     define('REQ', 'CP');
 }
+if (!function_exists('form_dropdown')) {
+    require_once APPPATH . 'helpers/form_helper.php';
+}
 
 // Ensure eeObjectMock system works with our mocks
 
@@ -156,13 +159,6 @@ abstract class RelationshipTestBase extends TestCase
                 $this->cache[$class][$key] = $value;
             }
         });
-
-        // Mock form helper functions
-        if (!function_exists('set_value')) {
-            function set_value($field, $default = '') {
-                return $default;
-            }
-        }
 
         // Mock global lang() function
         if (!function_exists('lang')) {

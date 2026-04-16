@@ -91,19 +91,10 @@ require_once __DIR__ . '/../../../../../Addons/structure/ft.structure.php';
 use PHPUnit\Framework\TestCase;
 
 if (!function_exists('form_dropdown')) {
-    function form_dropdown($name, $options, $selected = null)
-    {
-        $html = '<select name="' . htmlspecialchars($name, ENT_QUOTES, 'UTF-8') . '">';
-        $selectedValues = is_array($selected) ? array_map('strval', $selected) : [(string) $selected];
-        foreach ((array) $options as $value => $label) {
-            $isSelected = in_array((string) $value, $selectedValues, true) ? ' selected' : '';
-            $html .= '<option value="' . htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8') . '"' . $isSelected . '>'
-                . htmlspecialchars((string) $label, ENT_QUOTES, 'UTF-8') . '</option>';
-        }
-        $html .= '</select>';
-
-        return $html;
+    if (!defined('REQ')) {
+        define('REQ', 'CP');
     }
+    require_once APPPATH . 'helpers/form_helper.php';
 }
 
 class StructureFtSqlStub
