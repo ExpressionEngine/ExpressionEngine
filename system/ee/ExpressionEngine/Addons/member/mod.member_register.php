@@ -9,7 +9,6 @@
  */
 
 use ExpressionEngine\Service\Member\Member as Mbr;
-use ExpressionEngine\Service\Validation\Rule\ValidUsername;
 
 /**
  * Member Management Register
@@ -291,7 +290,7 @@ class Member_register extends Member
         // Handle our protected data if any. This contains our extra params.
         $protected = ee()->functions->handle_protected();
 
-        $emailAsUsername = get_bool_from_string($protected['email_as_username'] ?? 'n');
+        $email_as_username = get_bool_from_string($protected['email_as_username'] ?? 'n');
 
         // Determine where we need to return to in case of success or error.
         $return_link = ee()->functions->determine_return();
@@ -342,9 +341,9 @@ class Member_register extends Member
             }
         }
 
-        $fallbackResult = $this->_apply_email_as_username_fallback($emailAsUsername);
-        if ($fallbackResult !== true) {
-            return $fallbackResult;
+        $fallback_result = $this->_apply_email_as_username_fallback($email_as_username);
+        if ($fallback_result !== true) {
+            return $fallback_result;
         }
 
         if ($_POST['screen_name'] == '') {
@@ -660,9 +659,9 @@ class Member_register extends Member
         return ee()->functions->redirect($return_link);
     }
 
-    private function _apply_email_as_username_fallback($emailAsUsername)
+    private function _apply_email_as_username_fallback($email_as_username)
     {
-        if (!$emailAsUsername || $_POST['username'] !== '' || empty($_POST['email'])) {
+        if (!$email_as_username || $_POST['username'] !== '' || empty($_POST['email'])) {
             return true;
         }
 
@@ -677,19 +676,19 @@ class Member_register extends Member
 
     private function _derive_email_as_username_fallback($email)
     {
-        return trim_nbs(ValidUsername::stripDisallowedCharacters($email));
+        return trim_nbs(preg_replace("/[\|'\"!<>\{\}]/", '', (string) $email));
     }
 
     private function _is_valid_email_as_username_fallback($username)
     {
         $username = (string) $username;
-        $minLength = (int) ee()->config->item('un_min_len');
+        $min_length = (int) ee()->config->item('un_min_len');
 
         if ($username === '') {
             return false;
         }
 
-        if (strlen($username) < $minLength) {
+        if (strlen($username) < $min_length) {
             return false;
         }
 
@@ -697,7 +696,7 @@ class Member_register extends Member
             return false;
         }
 
-        return !ValidUsername::containsDisallowedCharacters($username);
+        return preg_match("/[\|'\"!<>\{\}]/", $username) !== 1;
     }
 
     private function _do_form_query()
