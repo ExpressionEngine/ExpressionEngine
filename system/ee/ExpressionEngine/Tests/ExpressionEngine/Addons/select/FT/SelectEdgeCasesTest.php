@@ -545,8 +545,24 @@ class SelectEdgeCasesTest extends SelectTestBase
             'binary' => 0b11111111
         ];
 
+        $stringifiedNumericTests = array_map(function ($value) {
+            if (is_float($value) && is_nan($value)) {
+                return 'NAN';
+            }
+
+            if ($value === INF) {
+                return 'INF';
+            }
+
+            if ($value === -INF) {
+                return '-INF';
+            }
+
+            return (string) $value;
+        }, $numericTests);
+
         $fieldtype = $this->getMockFieldtypeWithSettings([
-            'field_options' => array_map('strval', $numericTests)
+            'field_options' => $stringifiedNumericTests
         ]);
 
         $data = 'integer';
