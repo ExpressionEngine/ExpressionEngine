@@ -5,15 +5,15 @@ task_id: structure-mod-tests-018
 task_file: /Users/tomjaeger/Sites/ee75/ee_repo_3/RALPH_MOD_STRUCTURE_TESTS_ONLY_DEVELOP.md
 thread_id: 019d986d-a251-7121-a727-13c6bf5e838c
 iterations: 2
-updated_at: 2026-04-16T23:03:08+00:00
+updated_at: 2026-04-16T23:03:17+00:00
 last_work_summary: 1. Additional high-value tests remaining before refactor: no 2. Refactor-ready for `TARGET_METHOD` now: yes 3. Method coverage (`line%`, `branch%`) - `100.0%` line - `100.0%` branch - Line coverage came from the fallback method report on `/tmp/structure-order-entries-clover.xml`. - Branch coverage came from a direct Xdebug branch-check probe against `Structure->order_entries()` using the six PHPUnit-covered scenarios, which reported `8/8` covered branch edges. 4. Vector matrix summary (`cover...
-last_finish_result: passed
-last_finish_reason: Verified on `tests/additional-stucture-mod-tests`. Current task work is limited to the `StructureOrderEntriesTest.php` test file plus task-note files; there are no modified production add-on files under `system/ee/ExpressionEngine/Addons/structure/`, no changes to the two protected report markdown files, and no alternate/copied `mod.structure.php` file present. The task note reports no additional high-value pre-refactor vectors remaining, targeted PHPUnit was run and passes (`6 tests, 6 assertions`), coverage was run and reported for `order_entries` at `100.0%` line and `100.0%` branch (`8/8` branch edges via the recorded Xdebug probe), the PHP 7.4/8.0/8.1/8.2/8.3/8.4 matrix results were reported, and the real module target was confirmed via `PATH_ADDONS . 'structure/mod.structure.php'`. No task commit messages are recorded, so there is no commit-message violation.
-workflow_step_index: 2
+last_finish_result: finished
+last_finish_reason: Workflow completed successfully.
+workflow_step_index: 3
 branch_name: 
 check_attempts: {"check_1":2}
-commit_messages: []
-commit_hashes: []
+commit_messages: {"commit_2":"tests(coverage): mod.structure.php pre-refactor tests for order_entries"}
+commit_hashes: {"commit_2":"2f9bd330c5311686e0b11c4fdbdda702307a9abf"}
 pull_request_urls: []
 codex_model: gpt-5.4
 codex_thinking: high
@@ -160,3 +160,13 @@ attempt: 2
 passed: yes
 
 reason: Verified on `tests/additional-stucture-mod-tests`. Current task work is limited to the `StructureOrderEntriesTest.php` test file plus task-note files; there are no modified production add-on files under `system/ee/ExpressionEngine/Addons/structure/`, no changes to the two protected report markdown files, and no alternate/copied `mod.structure.php` file present. The task note reports no additional high-value pre-refactor vectors remaining, targeted PHPUnit was run and passes (`6 tests, 6 assertions`), coverage was run and reported for `order_entries` at `100.0%` line and `100.0%` branch (`8/8` branch edges via the recorded Xdebug probe), the PHP 7.4/8.0/8.1/8.2/8.3/8.4 matrix results were reported, and the real module target was confirmed via `PATH_ADDONS . 'structure/mod.structure.php'`. No task commit messages are recorded, so there is no commit-message violation.
+
+### 2026-04-16T23:03:17+00:00 Commit Step commit_2
+
+Committed changes as 2f9bd330c5311686e0b11c4fdbdda702307a9abf
+
+message: tests(coverage): mod.structure.php pre-refactor tests for order_entries
+
+### 2026-04-16T23:03:17+00:00 Workflow Complete
+
+Completed all workflow steps for task structure-mod-tests-018.
