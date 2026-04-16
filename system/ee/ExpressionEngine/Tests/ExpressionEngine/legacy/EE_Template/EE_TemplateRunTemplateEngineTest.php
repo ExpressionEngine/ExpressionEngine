@@ -18,6 +18,21 @@ require_once SYSPATH . 'ee/ExpressionEngine/Tests/TestReflectionHelper.php';
  */
 class EE_TemplateRunTemplateEngineTest extends EE_TemplateTestBase
 {
+    private function setUriAndOutputMocks()
+    {
+        $uriMock = new \stdClass();
+        $uriMock->uri_string = 'blog/index';
+        ee()->setMock('uri', $uriMock);
+
+        $outputMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['set_output'])
+            ->getMock();
+        $outputMock->method('set_output')->willReturnSelf();
+        ee()->setMock('output', $outputMock);
+
+        return $outputMock;
+    }
+
     /**
      * Test run_template_engine method exists and has correct signature
      */
@@ -50,6 +65,90 @@ class EE_TemplateRunTemplateEngineTest extends EE_TemplateTestBase
 
         $typeProperty->setValue($this->template, 'static');
         $this->assertEquals('static', $typeProperty->getValue($this->template));
+    }
+
+    public function testRunTemplateEngineProcessesDynamicTemplatesAndGarbageCollectionPath()
+    {
+        $outputMock = $this->setUriAndOutputMocks();
+        $outputMock->expects($this->once())
+            ->method('set_output')
+            ->with('{tag}');
+
+        $channelSetMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['garbageCollect'])
+            ->getMock();
+        $channelSetMock->expects($this->once())
+            ->method('garbageCollect');
+        ee()->setMock('ChannelSet', $channelSetMock);
+
+        $templateMock = $this->getMockBuilder(\EE_Template::class)
+            ->onlyMethods([
+                '_garbage_collect_cache',
+                'fetch_and_parse',
+                'parse_globals',
+                'log_item'
+            ])
+            ->getMock();
+        $templateMock->expects($this->once())
+            ->method('_garbage_collect_cache');
+        $templateMock->method('log_item')->willReturn(null);
+        $templateMock->expects($this->once())
+            ->method('fetch_and_parse')
+            ->with('blog', 'index', false)
+            ->willReturnCallback(function() use ($templateMock) {
+                $templateMock->template_type = 'webpage';
+                $templateMock->final_template = 'raw-dynamic-template';
+            });
+        $templateMock->expects($this->once())
+            ->method('parse_globals')
+            ->with('raw-dynamic-template')
+            ->willReturn('CFORM-ENCODE-LEFT-BRACKETtagCFORM-ENCODE-RIGHT-BRACKET');
+
+        srand(4); // First rand(1,10) call returns 1 for deterministic garbage-collection coverage.
+        $templateMock->run_template_engine('blog', 'index');
+
+        $this->assertSame('{tag}', $templateMock->final_template);
+        $this->assertSame('webpage', ee()->output->out_type);
+    }
+
+    public function testRunTemplateEngineUsesStaticTemplateRestorePath()
+    {
+        $outputMock = $this->setUriAndOutputMocks();
+        $outputMock->expects($this->once())
+            ->method('set_output')
+            ->with('{static}');
+
+        $templateMock = $this->getMockBuilder(\EE_Template::class)
+            ->onlyMethods([
+                '_garbage_collect_cache',
+                'fetch_and_parse',
+                'restore_xml_declaration',
+                'parse_globals',
+                'log_item'
+            ])
+            ->getMock();
+        $templateMock->expects($this->never())
+            ->method('_garbage_collect_cache');
+        $templateMock->method('log_item')->willReturn(null);
+        $templateMock->expects($this->once())
+            ->method('fetch_and_parse')
+            ->with('static_group', 'xml_page', false)
+            ->willReturnCallback(function() use ($templateMock) {
+                $templateMock->template_type = 'static';
+                $templateMock->final_template = 'raw-static-template';
+            });
+        $templateMock->expects($this->once())
+            ->method('restore_xml_declaration')
+            ->with('raw-static-template')
+            ->willReturn('CFORM-ENCODE-LEFT-BRACKETstaticCFORM-ENCODE-RIGHT-BRACKET');
+        $templateMock->expects($this->never())
+            ->method('parse_globals');
+
+        srand(5); // First rand(1,10) call returns 2, so the garbage-collection branch is skipped.
+        $templateMock->run_template_engine('static_group', 'xml_page');
+
+        $this->assertSame('{static}', $templateMock->final_template);
+        $this->assertSame('static', ee()->output->out_type);
     }
 
     /**

@@ -71,7 +71,8 @@ class eeSingletonMock
         $this->mock = $mock;
 
         // Override with static mocks if set
-        $overridable = ['db', 'config', 'functions', 'TMPL', 'session', 'load', 'logger', 'dbforge', 'input', 'lang', 'typography', 'extensions', 'core', 'uri', 'Model', 'channel_form_lib', 'email'];
+        $overridable = ['db', 'config', 'functions', 'TMPL', 'session', 'load', 'logger', 'dbforge', 'input', 'lang', 'typography', 'extensions', 'core', 'uri', 'Model', 'legacy_api', 'channel_form_lib', 'email'];
+
         foreach ($overridable as $prop) {
             if (array_key_exists($prop, self::$mocks)) {
                 @$this->$prop = self::$mocks[$prop];
