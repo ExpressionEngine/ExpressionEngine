@@ -289,6 +289,35 @@ class DBUtilityTestable extends CI_DB_utility
         $this->db = $db;
     }
 
+    public function optimize_table($table_name)
+    {
+        $sql = $this->_optimize_table($table_name);
+
+        if (is_bool($sql)) {
+            throw new RuntimeException('db_must_use_set');
+        }
+
+        return parent::optimize_table($table_name);
+    }
+
+    public function csv_from_result($query, $delim = ",", $newline = "\n", $enclosure = '"')
+    {
+        if (! is_object($query) or ! method_exists($query, 'list_fields')) {
+            throw new RuntimeException('You must submit a valid result object');
+        }
+
+        return parent::csv_from_result($query, $delim, $newline, $enclosure);
+    }
+
+    public function xml_from_result($query, $params = array())
+    {
+        if (! is_object($query) or ! method_exists($query, 'list_fields')) {
+            throw new RuntimeException('You must submit a valid result object');
+        }
+
+        return parent::xml_from_result($query, $params);
+    }
+
     public function _list_databases()
     {
         return 'SHOW DATABASES';

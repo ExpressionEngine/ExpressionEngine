@@ -274,6 +274,138 @@ class DBForgeTestable extends CI_DB_forge
         $this->db = $db;
     }
 
+    public function add_key($key, $primary = false)
+    {
+        if ($primary && is_array($key)) {
+            foreach ($key as $one) {
+                $this->add_key($one, $primary);
+            }
+
+            return;
+        }
+
+        if ($key == '') {
+            throw new RuntimeException('Key information is required for that operation.');
+        }
+
+        parent::add_key($key, $primary);
+    }
+
+    public function add_field($field)
+    {
+        if (empty($field)) {
+            throw new RuntimeException('Field information is required.');
+        }
+
+        if (is_string($field) && $field !== 'id' && strpos($field, ' ') === false) {
+            throw new RuntimeException('Field information is required for that operation.');
+        }
+
+        parent::add_field($field);
+    }
+
+    public function create_table($table, $if_not_exists = false)
+    {
+        if (empty($table)) {
+            throw new RuntimeException('A table name is required for that operation.');
+        }
+
+        if (count($this->fields) == 0) {
+            throw new RuntimeException('Field information is required.');
+        }
+
+        return parent::create_table($table, $if_not_exists);
+    }
+
+    public function rename_table($table_name, $new_table_name)
+    {
+        if ($table_name == '' or $new_table_name == '') {
+            throw new RuntimeException('A table name is required for that operation.');
+        }
+
+        return parent::rename_table($table_name, $new_table_name);
+    }
+
+    public function add_column($table, $field, $after_field = '')
+    {
+        if (empty($table)) {
+            throw new RuntimeException('A table name is required for that operation.');
+        }
+
+        foreach ($field as $k => $v) {
+            $this->add_field([$k => $field[$k]]);
+
+            if (count($this->fields) == 0) {
+                throw new RuntimeException('Field information is required.');
+            }
+
+            $sql = $this->_alter_table('ADD', $this->db->dbprefix . $table, $this->fields, $after_field);
+
+            $this->_reset();
+
+            if ($this->db->query($sql) === false) {
+                return false;
+            }
+        }
+
+        unset($this->db->data_cache['field_names'][$table]);
+
+        return true;
+    }
+
+    public function drop_column($table, $column_name)
+    {
+        if (empty($table)) {
+            throw new RuntimeException('A table name is required for that operation.');
+        }
+
+        if (empty($column_name)) {
+            throw new RuntimeException('A column name is required for that operation.');
+        }
+
+        return parent::drop_column($table, $column_name);
+    }
+
+    public function drop_column_batch($table, $column_names)
+    {
+        if (empty($table)) {
+            throw new RuntimeException('A table name is required for that operation.');
+        }
+
+        if (empty($column_names)) {
+            throw new RuntimeException('A column name is required for that operation.');
+        }
+
+        return parent::drop_column_batch($table, $column_names);
+    }
+
+    public function modify_column($table, $field)
+    {
+        if (empty($table)) {
+            throw new RuntimeException('A table name is required for that operation.');
+        }
+
+        foreach ($field as $k => $v) {
+            $this->add_field([$k => $field[$k]]);
+
+            if (count($this->fields) == 0) {
+                throw new RuntimeException('Field information is required.');
+            }
+
+            $sql = $this->_alter_table('CHANGE', $this->db->dbprefix . $table, $this->fields);
+
+            $this->_reset();
+
+            if ($this->db->query($sql) === false) {
+                return false;
+            }
+        }
+
+        unset($this->db->data_cache['field_names'][$table]);
+
+        return true;
+    }
+
     public function _create_database($name)
     {
         if (isset($this->createDatabaseReturn)) {

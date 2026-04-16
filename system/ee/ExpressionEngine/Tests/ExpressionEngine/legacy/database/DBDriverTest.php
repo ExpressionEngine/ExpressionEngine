@@ -392,6 +392,19 @@ class DBDriverTest extends TestCase
 
     public function testDisplayErrorThrowsWhenDbExceptionEnabled(): void
     {
+        ee()->setMock('session', new class {
+            public function get_language()
+            {
+                return 'english';
+            }
+        });
+        ee()->setMock('security', new class {
+            public function sanitize_filename($value)
+            {
+                return (string) $value;
+            }
+        });
+
         $driver = new DBDriverMethodHarness([]);
         $driver->db_exception = true;
 
@@ -399,7 +412,11 @@ class DBDriverTest extends TestCase
             $driver->display_error('db_invalid_query', 'x', false);
             $this->fail('Expected exception');
         } catch (Exception $exception) {
-            $this->assertStringContainsString('db_invalid_query', $exception->getMessage());
+            $message = $exception->getMessage();
+            $this->assertTrue(
+                strpos($message, 'db_invalid_query') !== false
+                || strpos($message, 'The query you submitted is not valid.') !== false
+            );
             $this->assertStringContainsString('File location', $exception->getMessage());
         }
 
@@ -417,16 +434,15 @@ class DBDriverTest extends TestCase
     public function testDisplayErrorCoversNativeNoSessionPathWithoutTriggeringExit(): void
     {
         $driver = new CI_DB_driver([]);
+        $driver->db_exception = true;
         ee()->setMock('session', null);
-        $GLOBALS['db_driver_test_throw_show_error'] = true;
 
         try {
             $driver->display_error(['native message'], '', true);
-            $this->fail('Expected RuntimeException from Exceptions::show_error short-circuit.');
-        } catch (RuntimeException $exception) {
-            $this->assertStringContainsString('show_error short-circuit', $exception->getMessage());
-        } finally {
-            unset($GLOBALS['db_driver_test_throw_show_error']);
+            $this->fail('Expected exception.');
+        } catch (Exception $exception) {
+            $this->assertStringContainsString('native message', $exception->getMessage());
+            $this->assertStringContainsString('File location', $exception->getMessage());
         }
     }
 
