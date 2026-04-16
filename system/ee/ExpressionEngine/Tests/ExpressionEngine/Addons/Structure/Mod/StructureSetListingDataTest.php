@@ -64,6 +64,120 @@ class StructureSetListingDataTest extends StructureTestBase
         $this->assertNotEmpty($captured->queries);
     }
 
+    public function testSetListingDataUsesProvidedSitePagesAndSkipsSqlFetch()
+    {
+        $captured = (object) [
+            'site_pages_update_data' => null,
+            'insert_data' => null,
+            'queries' => [],
+        ];
+        $sqlState = (object) [
+            'get_site_pages_calls' => 0,
+            'update_root_node_calls' => 0,
+        ];
+
+        ee()->config->items['site_id'] = 4;
+
+        ee()->setMock('extensions', new class {
+            public function active_hook($name) { return false; }
+            public function call($name, $listing = null) { return $listing; }
+        });
+
+        ee()->setMock('db', new class($captured) extends FakeDb {
+            private $cap;
+
+            public function __construct($cap)
+            {
+                $this->cap = $cap;
+            }
+
+            public function escape_str($str)
+            {
+                return addslashes($str);
+            }
+
+            public function update_string($table, $data, $where)
+            {
+                if ($table === 'exp_sites') {
+                    $this->cap->site_pages_update_data = $data;
+                }
+
+                return 'UPDATE ' . $table;
+            }
+
+            public function insert_string($table, $data)
+            {
+                $this->cap->insert_data = $data;
+
+                return 'INSERT ' . $table;
+            }
+
+            public function get_where($table, $where = null, $limit = null, $offset = null)
+            {
+                return new eeDbResultMock([]);
+            }
+
+            public function query($sql)
+            {
+                $this->cap->queries[] = $sql;
+
+                return new eeDbResultMock([]);
+            }
+        });
+
+        $this->structure->sql = new class($sqlState) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function get_site_pages()
+            {
+                $this->state->get_site_pages_calls++;
+
+                return ['url' => '/', 'uris' => [], 'templates' => []];
+            }
+
+            public function update_root_node()
+            {
+                $this->state->update_root_node_calls++;
+            }
+        };
+
+        $providedSitePages = [
+            'url' => '/',
+            'uris' => [11 => '/existing'],
+            'templates' => [11 => 2],
+        ];
+        $data = [
+            'entry_id' => 99,
+            'template_id' => 12,
+            'parent_uri' => '/parent',
+            'uri' => 'child',
+            'listing_cid' => 6,
+        ];
+
+        $this->structure->set_listing_data($data, $providedSitePages);
+
+        $this->assertSame(0, $sqlState->get_site_pages_calls);
+        $this->assertSame(1, $sqlState->update_root_node_calls);
+        $this->assertNotNull($captured->site_pages_update_data);
+
+        $decoded = unserialize(base64_decode($captured->site_pages_update_data['site_pages']));
+        $this->assertSame('/existing', $decoded[4]['uris'][11]);
+        $this->assertSame('/parent/child', $decoded[4]['uris'][99]);
+        $this->assertSame(2, $decoded[4]['templates'][11]);
+        $this->assertSame(12, $decoded[4]['templates'][99]);
+
+        $this->assertIsArray($captured->insert_data);
+        $this->assertSame(4, $captured->insert_data['site_id']);
+        $this->assertArrayNotHasKey('listing_cid', $captured->insert_data);
+        $this->assertArrayNotHasKey('parent_uri', $captured->insert_data);
+        $this->assertNotEmpty($captured->queries);
+    }
+
     public function testSetListingDataUsesUpdatePathWhenRowAlreadyExists()
     {
         $captured = (object) ['update_data' => null, 'where' => null, 'queries' => []];
