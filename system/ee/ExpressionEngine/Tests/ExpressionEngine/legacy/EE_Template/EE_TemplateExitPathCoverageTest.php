@@ -52,11 +52,13 @@ class EE_TemplateExitPathCoverageTest extends TestCase
 
         file_put_contents($scriptPath, $this->childScript());
 
+        $testsRoot = realpath(dirname(__DIR__, 3)) ?: dirname(__DIR__, 3);
+
         $command = escapeshellarg(PHP_BINARY)
             . ' ' . escapeshellarg($scriptPath)
             . ' ' . escapeshellarg($scenario)
             . ' ' . escapeshellarg($coveragePath)
-            . ' ' . escapeshellarg(getcwd());
+            . ' ' . escapeshellarg($testsRoot);
 
         exec($command, $output, $exitCode);
 
@@ -122,12 +124,23 @@ class EE_TemplateExitPathCoverageTest extends TestCase
 <?php
 $scenario = $argv[1] ?? '';
 $coveragePath = $argv[2] ?? '';
-$repoRoot = $argv[3] ?? getcwd();
+$rootArg = $argv[3] ?? getcwd();
 
-chdir($repoRoot);
+$testsRoot = rtrim((string) $rootArg, '/\\');
+if (substr($testsRoot, -strlen('/system/ee/ExpressionEngine/Tests')) !== '/system/ee/ExpressionEngine/Tests') {
+    $candidate = $testsRoot . '/system/ee/ExpressionEngine/Tests';
+    if (is_dir($candidate)) {
+        $testsRoot = $candidate;
+    }
+}
 
-require_once getcwd() . '/system/ee/ExpressionEngine/Tests/bootstrap.php';
-require_once getcwd() . '/system/ee/ExpressionEngine/Tests/ExpressionEngine/legacy/EE_Template/test_helpers.php';
+if (!is_file($testsRoot . '/bootstrap.php')) {
+    fwrite(STDERR, "Unable to locate test bootstrap at {$testsRoot}/bootstrap.php\n");
+    exit(255);
+}
+
+require_once $testsRoot . '/bootstrap.php';
+require_once $testsRoot . '/ExpressionEngine/legacy/EE_Template/test_helpers.php';
 require_once SYSPATH . 'ee/legacy/libraries/Template.php';
 
 if (!function_exists('strip_quotes')) {
