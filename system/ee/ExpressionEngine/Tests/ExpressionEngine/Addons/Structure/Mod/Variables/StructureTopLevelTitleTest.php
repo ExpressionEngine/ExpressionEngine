@@ -86,6 +86,19 @@ class StructureTopLevelTitleTest extends StructureTestBase
         $this->assertEquals('Home', $result);
     }
 
+    public function testTopLevelTitleWithRootUriStoredAsSingleSlashReturnsEmptyString()
+    {
+        $sitePages = ['uris' => [1 => '/', 2 => '/about/', 3 => '/contact/']];
+        $this->setSqlStub($sitePages);
+        $this->setUriStub('/');
+        $this->setDbRows([
+            ['entry_id' => 1, 'title' => 'Home']
+        ]);
+
+        $result = $this->structure->top_level_title();
+        $this->assertSame('', $result);
+    }
+
     public function testTopLevelTitleWithSingleSegment()
     {
         $sitePages = ['uris' => [1 => '/', 2 => '/about/', 3 => '/contact/']];
@@ -275,5 +288,4 @@ class StructureTopLevelTitleTest extends StructureTestBase
         $this->assertEquals('About Us', $result);
     }
 }
-
 
