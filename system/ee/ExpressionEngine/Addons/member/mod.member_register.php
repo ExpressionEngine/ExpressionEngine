@@ -9,6 +9,7 @@
  */
 
 use ExpressionEngine\Service\Member\Member as Mbr;
+use ExpressionEngine\Service\Validation\Rule\ValidUsername;
 
 /**
  * Member Management Register
@@ -341,9 +342,9 @@ class Member_register extends Member
             }
         }
 
-        // Allow username to fall back to the submitted email when enabled
-        if ($emailAsUsername && $_POST['username'] === '' && !empty($_POST['email'])) {
-            $_POST['username'] = trim_nbs(ee()->input->post('email'));
+        $fallbackResult = $this->_apply_email_as_username_fallback($emailAsUsername);
+        if ($fallbackResult !== true) {
+            return $fallbackResult;
         }
 
         if ($_POST['screen_name'] == '') {
@@ -657,6 +658,46 @@ class Member_register extends Member
         );
 
         return ee()->functions->redirect($return_link);
+    }
+
+    private function _apply_email_as_username_fallback($emailAsUsername)
+    {
+        if (!$emailAsUsername || $_POST['username'] !== '' || empty($_POST['email'])) {
+            return true;
+        }
+
+        $_POST['username'] = $this->_derive_email_as_username_fallback(ee()->input->post('email'));
+
+        if (!$this->_is_valid_email_as_username_fallback($_POST['username'])) {
+            return ee()->output->show_form_error(array('email' => lang('mbr_email_cannot_be_used_as_username')), 'submission');
+        }
+
+        return true;
+    }
+
+    private function _derive_email_as_username_fallback($email)
+    {
+        return trim_nbs(ValidUsername::stripDisallowedCharacters($email));
+    }
+
+    private function _is_valid_email_as_username_fallback($username)
+    {
+        $username = (string) $username;
+        $minLength = (int) ee()->config->item('un_min_len');
+
+        if ($username === '') {
+            return false;
+        }
+
+        if (strlen($username) < $minLength) {
+            return false;
+        }
+
+        if (strlen($username) > USERNAME_MAX_LENGTH) {
+            return false;
+        }
+
+        return !ValidUsername::containsDisallowedCharacters($username);
     }
 
     private function _do_form_query()

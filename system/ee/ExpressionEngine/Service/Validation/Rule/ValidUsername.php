@@ -17,12 +17,24 @@ use ExpressionEngine\Service\Validation\ValidationRule;
  */
 class ValidUsername extends ValidationRule
 {
+    public const DISALLOWED_CHARACTERS_PATTERN = "/[\|'\"!<>\{\}]/";
+
     protected $last_error = '';
+
+    public static function containsDisallowedCharacters($username)
+    {
+        return preg_match(self::DISALLOWED_CHARACTERS_PATTERN, (string) $username) === 1;
+    }
+
+    public static function stripDisallowedCharacters($username)
+    {
+        return preg_replace(self::DISALLOWED_CHARACTERS_PATTERN, '', (string) $username);
+    }
 
     public function validate($key, $username)
     {
         $username = (string) $username;
-        if (preg_match("/[\|'\"!<>\{\}]/", $username)) {
+        if (self::containsDisallowedCharacters($username)) {
             $this->last_error = 'invalid_characters_in_username';
             return false;
         }
