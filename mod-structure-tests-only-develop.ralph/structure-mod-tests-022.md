@@ -5,15 +5,15 @@ task_id: structure-mod-tests-022
 task_file: /Users/tomjaeger/Sites/ee75/ee_repo_3/RALPH_MOD_STRUCTURE_TESTS_ONLY_DEVELOP.md
 thread_id: 019d989e-fbb9-71c0-a8d5-a1a346a2f180
 iterations: 1
-updated_at: 2026-04-16T23:40:22+00:00
+updated_at: 2026-04-16T23:40:33+00:00
 last_work_summary: 1. Additional high-value tests remaining before refactor: no. 2. Refactor-ready for `TARGET_METHOD` now: yes. 3. Method coverage (line%, branch%): `100.00%`, `100.00%` for `Structure::set_listing_data()` via Xdebug processed coverage (`19/19` executable lines, `8/8` branch nodes; uncovered lines `[]`, uncovered branches `[]`). 4. Vector matrix summary (covered/planned/not-applicable): covered = happy-path insert, provided-`site_pages` branch, existing-row update branch, hook-active failure pa...
-last_finish_result: passed
-last_finish_reason: Verified on branch tests/additional-stucture-mod-tests. Current task note for structure-mod-tests-022 explicitly reports no additional high-value tests remain for set_listing_data, targeted PHPUnit passed, coverage ran with 100.00% line and 100.00% branch coverage, PHP 7.4/8.0/8.1/8.2/8.3/8.4 all reported pass, and tests were confirmed to load the real module via PATH_ADDONS . '/structure/mod.structure.php'. Git diff/status show no modifications under system/ee/ExpressionEngine/Addons/structure/ and no changes to the two report markdown files; repo scan shows no alternate mod.structure.php copy. Branch commit subjects are clean and contain none of codex, ralph, or ai.
-workflow_step_index: 2
+last_finish_result: finished
+last_finish_reason: Workflow completed successfully.
+workflow_step_index: 3
 branch_name: 
 check_attempts: {"check_1":1}
-commit_messages: []
-commit_hashes: []
+commit_messages: {"commit_2":"tests(coverage): mod.structure.php pre-refactor tests for set_listing_data"}
+commit_hashes: {"commit_2":"7b73a0382552e3114f06806418eb65e0f004ae31"}
 pull_request_urls: []
 codex_model: gpt-5.4
 codex_thinking: high
@@ -57,3 +57,13 @@ attempt: 1
 passed: yes
 
 reason: Verified on branch tests/additional-stucture-mod-tests. Current task note for structure-mod-tests-022 explicitly reports no additional high-value tests remain for set_listing_data, targeted PHPUnit passed, coverage ran with 100.00% line and 100.00% branch coverage, PHP 7.4/8.0/8.1/8.2/8.3/8.4 all reported pass, and tests were confirmed to load the real module via PATH_ADDONS . '/structure/mod.structure.php'. Git diff/status show no modifications under system/ee/ExpressionEngine/Addons/structure/ and no changes to the two report markdown files; repo scan shows no alternate mod.structure.php copy. Branch commit subjects are clean and contain none of codex, ralph, or ai.
+
+### 2026-04-16T23:40:33+00:00 Commit Step commit_2
+
+Committed changes as 7b73a0382552e3114f06806418eb65e0f004ae31
+
+message: tests(coverage): mod.structure.php pre-refactor tests for set_listing_data
+
+### 2026-04-16T23:40:33+00:00 Workflow Complete
+
+Completed all workflow steps for task structure-mod-tests-022.
