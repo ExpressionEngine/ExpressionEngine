@@ -1177,7 +1177,7 @@ class EE_TemplateParsingTest extends EE_TemplateTestBase
     private function setModifiedVars(array $modifiedVars)
     {
         $property = new \ReflectionProperty(\EE_Template::class, 'modified_vars');
-        $property->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($property);
         $property->setValue($this->template, $modifiedVars);
     }
 }

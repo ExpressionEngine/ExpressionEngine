@@ -196,6 +196,31 @@ class WizardLoadStub
     }
 }
 
+class WizardTestProxy extends \Wizard
+{
+    public $config;
+    public $input;
+    public $load;
+    public $logger;
+    public $update_notices;
+    private $proxyProperties = [];
+
+    public function __set($name, $value)
+    {
+        $this->proxyProperties[$name] = $value;
+    }
+
+    public function __get($name)
+    {
+        return $this->proxyProperties[$name] ?? null;
+    }
+
+    public function __isset($name)
+    {
+        return isset($this->proxyProperties[$name]);
+    }
+}
+
 class WizardTest extends TestCase
 {
     protected function setUp(): void
@@ -1350,8 +1375,9 @@ class WizardTest extends TestCase
     public function testDoInstallReturnsInstallFormWhenValidationFails()
     {
         $wizard = $this->newWizard();
-        $wizard->config->config_path = tempnam(sys_get_temp_dir(), 'wizard-install-config-');
+        $configPath = tempnam(sys_get_temp_dir(), 'wizard-install-config-');
         $wizard->config = new WizardConfigStub(['index_page' => EESELF]);
+        $wizard->config->config_path = $configPath;
 
         $load = new WizardLoadStub();
         ee()->setMock('load', $load);
@@ -1389,6 +1415,8 @@ class WizardTest extends TestCase
 
         $_SERVER['HTTP_HOST'] = 'example.test';
         $_SERVER['PHP_SELF'] = '/admin.php';
+        $_SERVER['SERVER_PORT'] = '80';
+        $_SERVER['HTTPS'] = 'off';
 
         $this->assertNull($this->invokePrivate($wizard, 'do_install'));
 
@@ -1397,7 +1425,7 @@ class WizardTest extends TestCase
         }, $load->viewCalls);
 
         $this->assertContains('install_form', $views);
-        @unlink($wizard->config->config_path);
+        @unlink($configPath);
     }
 
     public function testDoInstallCollectsDatabaseErrorsAfterValidationPasses()
@@ -2185,7 +2213,7 @@ class WizardTest extends TestCase
         );
         file_put_contents(
             $schemaPath,
-            "<?php\nclass EE_Schema {\npublic function sql_find_like() { return 'SELECT 1'; }\npublic function install_tables_and_data() { return true; }\n}\n"
+            "<?php\nclass EE_Schema {\npublic \$version;\npublic \$userdata;\npublic \$theme_path;\npublic \$now;\npublic \$year;\npublic \$month;\npublic \$day;\npublic \$default_entry;\npublic function sql_find_like() { return 'SELECT 1'; }\npublic function install_tables_and_data() { return true; }\n}\n"
         );
 
         $wizard = $this->newWizard();
@@ -3510,7 +3538,7 @@ class WizardTest extends TestCase
 
     private function newWizard(): \Wizard
     {
-        $reflection = new \ReflectionClass(\Wizard::class);
+        $reflection = new \ReflectionClass(WizardTestProxy::class);
         $wizard = $reflection->newInstanceWithoutConstructor();
 
         $wizard->config = new WizardConfigStub(['index_page' => EESELF]);
@@ -3533,7 +3561,9 @@ class WizardTest extends TestCase
     private function invokePrivate($object, string $method, ...$args)
     {
         $reflection = new \ReflectionMethod($object, $method);
-        $reflection->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $reflection->setAccessible(true);
+        }
 
         return $reflection->invokeArgs($object, $args);
     }
@@ -3541,14 +3571,18 @@ class WizardTest extends TestCase
     private function setProperty($object, string $property, $value): void
     {
         $reflection = new \ReflectionProperty($object, $property);
-        $reflection->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $reflection->setAccessible(true);
+        }
         $reflection->setValue($object, $value);
     }
 
     private function getProperty($object, string $property)
     {
         $reflection = new \ReflectionProperty($object, $property);
-        $reflection->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $reflection->setAccessible(true);
+        }
 
         return $reflection->getValue($object);
     }

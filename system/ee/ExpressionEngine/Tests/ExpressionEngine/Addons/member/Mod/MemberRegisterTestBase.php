@@ -103,7 +103,9 @@ abstract class MemberRegisterTestBase extends TestCase
     protected function callPrivateMethod($method, array $args = [])
     {
         $reflection = new ReflectionMethod($this->subject, $method);
-        $reflection->setAccessible(true);
+        if (PHP_VERSION_ID < 80100) {
+            $reflection->setAccessible(true);
+        }
 
         return $reflection->invokeArgs($this->subject, $args);
     }
@@ -722,6 +724,7 @@ abstract class MemberRegisterTestBase extends TestCase
                 $service = $this;
                 $member = new class($service, $data) {
                     private $service;
+                    private $data = [];
                     public $member_id = 1001;
                     public $password = '';
                     public $saved = false;
@@ -730,9 +733,17 @@ abstract class MemberRegisterTestBase extends TestCase
                     {
                         $this->service = $service;
                         foreach ($data as $key => $value) {
-                            $this->$key = $value;
+                            $this->data[$key] = $value;
                         }
                         $this->password = $data['password'] ?? '';
+                    }
+                    public function __get($name)
+                    {
+                        return $this->data[$name] ?? null;
+                    }
+                    public function __set($name, $value)
+                    {
+                        $this->data[$name] = $value;
                     }
                     public function validate()
                     {

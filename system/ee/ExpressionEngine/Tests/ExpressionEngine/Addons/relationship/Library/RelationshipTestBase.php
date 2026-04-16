@@ -101,7 +101,7 @@ abstract class RelationshipTestBase extends TestCase
         foreach ($properties as $property) {
             if ($reflection->hasProperty($property)) {
                 $prop = $reflection->getProperty($property);
-                $prop->setAccessible(true);
+                \TestReflectionHelper::makeAccessible($prop);
                 $prop->setValue($this->relationships_ft_cp, null);
             }
         }

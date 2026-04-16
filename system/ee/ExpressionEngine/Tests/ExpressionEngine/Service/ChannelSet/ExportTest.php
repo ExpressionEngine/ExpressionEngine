@@ -298,7 +298,7 @@ class ExportTest extends TestCase
         
         $reflection = new \ReflectionClass($export);
         $zipProp = $reflection->getProperty('zip');
-        $zipProp->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($zipProp);
         $zipProp->setValue($export, $zipMock);
 
         $result = self::call('exportFieldGroup', $export, $group);
@@ -307,7 +307,7 @@ class ExportTest extends TestCase
         
         // Verify fields were exported (check private fields array)
         $fieldsProp = $reflection->getProperty('fields');
-        $fieldsProp->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($fieldsProp);
         $fields = $fieldsProp->getValue($export);
         $this->assertArrayHasKey(1, $fields);
         $this->assertArrayHasKey(2, $fields);
@@ -327,7 +327,7 @@ class ExportTest extends TestCase
         
         // Pre-populate field_groups to simulate already exported
         $fieldGroupsProp = $reflection->getProperty('field_groups');
-        $fieldGroupsProp->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($fieldGroupsProp);
         $fieldGroupsProp->setValue($export, [10 => new \StdClass()]);
 
         $result = self::call('exportFieldGroup', $export, $group);
@@ -354,7 +354,7 @@ class ExportTest extends TestCase
         $export = new Export();
         $reflection = new \ReflectionClass($export);
         $channelsProp = $reflection->getProperty('channels');
-        $channelsProp->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($channelsProp);
         $channelsProp->setValue($export, [
             1 => (object)['channel_title' => 'Channel One'],
             2 => (object)['channel_title' => 'Channel Two']
@@ -472,7 +472,7 @@ class ExportTest extends TestCase
         
         $reflection = new \ReflectionClass($export);
         $zipProp = $reflection->getProperty('zip');
-        $zipProp->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($zipProp);
         $zipProp->setValue($export, $zipMock);
 
         $result = self::call('exportFluidFieldField', $export, $field);

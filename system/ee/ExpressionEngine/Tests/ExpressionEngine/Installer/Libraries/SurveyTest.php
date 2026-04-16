@@ -40,7 +40,33 @@ namespace {
     if (! function_exists('directory_map')) {
         function directory_map($source_dir, $directory_depth = 0)
         {
-            return ['sample_addon'];
+            if (array_key_exists('survey_directory_map_return', $GLOBALS)) {
+                return $GLOBALS['survey_directory_map_return'];
+            }
+
+            if ($fp = @opendir($source_dir)) {
+                $filedata = [];
+                $new_depth = $directory_depth - 1;
+                $source_dir = rtrim($source_dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+
+                while (false !== ($file = readdir($fp))) {
+                    if (! trim($file, '.')) {
+                        continue;
+                    }
+
+                    if (($directory_depth < 1 || $new_depth > 0) && @is_dir($source_dir . $file)) {
+                        $filedata[$file] = directory_map($source_dir . $file . DIRECTORY_SEPARATOR, $new_depth);
+                    } else {
+                        $filedata[] = $file;
+                    }
+                }
+
+                closedir($fp);
+
+                return $filedata;
+            }
+
+            return false;
         }
     }
 
@@ -95,12 +121,14 @@ class SurveyTest extends TestCase
         $GLOBALS['survey_curl_options'] = [];
         $GLOBALS['survey_curl_executed'] = false;
         $GLOBALS['survey_curl_closed'] = false;
+        $GLOBALS['survey_directory_map_return'] = ['sample_addon'];
     }
 
     protected function tearDown(): void
     {
         $_POST = $this->postBackup;
         $_SERVER = $this->serverBackup;
+        unset($GLOBALS['survey_directory_map_return']);
         ee()->resetMocks();
     }
 

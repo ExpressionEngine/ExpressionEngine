@@ -127,7 +127,7 @@ class StructureNestedsetAdapterEeTest extends TestCase
         $this->assertStringContainsString("UNLOCK TABLES", $sql);
     }
 
-    private function result(array $rows, $numRows, array $rowProperty = null)
+    private function result(array $rows, $numRows, ?array $rowProperty = null)
     {
         return new class($rows, $numRows, $rowProperty) {
             private $rows;
