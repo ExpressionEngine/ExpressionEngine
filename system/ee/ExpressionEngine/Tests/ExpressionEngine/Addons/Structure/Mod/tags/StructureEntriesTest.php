@@ -249,6 +249,37 @@ class StructureEntriesTest extends StructureTestBase
         $this->assertSame('41|42', ee()->TMPL->tagparams['fixed_order']);
     }
 
+    public function testEntriesRunsRealMethodAndSkipsChildLookupForNonNumericParentId()
+    {
+        $this->structure->sql = new class {
+            public function get_child_entries($parent_id, $cat, $include_hidden)
+            {
+                throw new Exception('get_child_entries should not be called for non-numeric parent_id');
+            }
+        };
+
+        $this->structure->enable = [
+            'categories' => false,
+            'category_fields' => false,
+            'custom_fields' => false,
+            'member_data' => false,
+            'pagination' => false,
+            'relationships' => false,
+            'relationship_custom_fields' => false,
+            'relationship_categories' => false,
+        ];
+
+        $this->setTemplateParams([
+            'parent_id' => 'not-a-number',
+            'dynamic' => 'no',
+        ]);
+
+        $this->structure->entries();
+
+        $this->assertArrayNotHasKey('fixed_order', ee()->TMPL->tagparams);
+        $this->assertArrayNotHasKey('entry_id', ee()->TMPL->tagparams);
+    }
+
     public function testEntriesRunsRealMethodWithDynamicCategoryAndNoResults()
     {
         ee()->setMock('uri', new class {
@@ -300,5 +331,91 @@ class StructureEntriesTest extends StructureTestBase
 
         $this->assertSame('news', $captured->cat);
         $this->assertSame('-1', ee()->TMPL->tagparams['entry_id']);
+    }
+
+    public function testEntriesRunsRealMethodWithDynamicUriWithoutCategoryTrigger()
+    {
+        ee()->setMock('uri', new class {
+            private $segs = ['blog', 'archive', '2026'];
+            public $uri_string = 'blog/archive/2026';
+            public function total_segments()
+            {
+                return count($this->segs);
+            }
+            public function segment($i)
+            {
+                return $this->segs[$i - 1] ?? null;
+            }
+        });
+
+        $captured = (object) ['cat' => null, 'include_hidden' => null];
+        $this->structure->sql = new class($captured) {
+            private $captured;
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+            public function get_child_entries($parent_id, $cat, $include_hidden)
+            {
+                $this->captured->cat = $cat;
+                $this->captured->include_hidden = $include_hidden;
+
+                return [17];
+            }
+        };
+
+        $this->structure->enable = [
+            'categories' => false,
+            'category_fields' => false,
+            'custom_fields' => false,
+            'member_data' => false,
+            'pagination' => false,
+            'relationships' => false,
+            'relationship_custom_fields' => false,
+            'relationship_categories' => false,
+        ];
+
+        $this->setTemplateParams([
+            'parent_id' => 33,
+            'dynamic' => 'yes',
+        ]);
+        $this->structure->cat_trigger = 'category';
+
+        $this->structure->entries();
+
+        $this->assertSame('', $captured->cat);
+        $this->assertSame('n', $captured->include_hidden);
+        $this->assertSame('17', ee()->TMPL->tagparams['fixed_order']);
+    }
+
+    public function testEntriesRunsRealMethodSetsNoResultsWhenChildLookupReturnsEmptyArray()
+    {
+        $this->structure->sql = new class {
+            public function get_child_entries($parent_id, $cat, $include_hidden)
+            {
+                return [];
+            }
+        };
+
+        $this->structure->enable = [
+            'categories' => false,
+            'category_fields' => false,
+            'custom_fields' => false,
+            'member_data' => false,
+            'pagination' => false,
+            'relationships' => false,
+            'relationship_custom_fields' => false,
+            'relationship_categories' => false,
+        ];
+
+        $this->setTemplateParams([
+            'parent_id' => 91,
+            'dynamic' => 'no',
+        ]);
+
+        $this->structure->entries();
+
+        $this->assertSame('-1', ee()->TMPL->tagparams['entry_id']);
+        $this->assertArrayNotHasKey('fixed_order', ee()->TMPL->tagparams);
     }
 }
