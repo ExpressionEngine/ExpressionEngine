@@ -497,6 +497,224 @@ class StructureSetDataTest extends StructureTestBase
         $this->assertStringContainsString("UPDATE exp_structure SET hidden = 'y' WHERE entry_id = 100", $queries);
     }
 
+    public function testSetDataUpdatesRootListingUrisWhenChangedStateKeepsTreeAdjustments()
+    {
+        ee()->setMock('extensions', new class {
+            public function active_hook($hook)
+            {
+                return false;
+            }
+
+            public function call($hook, ...$args)
+            {
+                return null;
+            }
+        });
+        ee()->setMock('db', new class extends FakeDb {
+            public function query($sql)
+            {
+                if (strpos($sql, 'SELECT listing_cid FROM exp_structure WHERE entry_id = 100') !== false) {
+                    return new eeDbResultMock([['listing_cid' => 0]]);
+                }
+
+                if (strpos($sql, 'SELECT entry_id, url_title FROM exp_channel_titles WHERE channel_id = 9 AND site_id = 1') !== false) {
+                    return new eeDbResultMock([
+                        ['entry_id' => 701, 'url_title' => 'listing-one'],
+                    ]);
+                }
+
+                if (strpos($sql, 'SELECT entry_id FROM exp_channel_titles WHERE channel_id = 9') !== false) {
+                    return new eeDbResultMock([
+                        ['entry_id' => 701],
+                    ]);
+                }
+
+                return new eeDbResultMock([]);
+            }
+
+            public function escape_str($str)
+            {
+                return addslashes($str);
+            }
+        });
+
+        $structure = new StructureSetDataBranchFixture();
+        $structure->changedValue = 'self';
+        $structure->sql = new class {
+            public function get_site_pages($cache_bust = false, $force = false)
+            {
+                return [
+                    'url' => '/',
+                    'uris' => [
+                        100 => '/',
+                        701 => '/listing-one/',
+                    ],
+                    'templates' => [
+                        100 => 2,
+                        701 => 8,
+                    ],
+                ];
+            }
+
+            public function get_settings()
+            {
+                return ['add_trailing_slash' => 'n'];
+            }
+
+            public function update_root_node()
+            {
+            }
+
+            public function get_channel_listing_entries($channel)
+            {
+                return [];
+            }
+        };
+        $structure->nset = new class {
+            public function getNode($entryId)
+            {
+                if ($entryId === 100) {
+                    return ['id' => 100, 'right' => 3, 'listing_cid' => 0];
+                }
+
+                return false;
+            }
+
+            public function newLastChild($right, $extra)
+            {
+            }
+
+            public function getTree($entryId)
+            {
+                return [
+                    ['entry_id' => 100],
+                ];
+            }
+
+            public function moveToLastChild($node, $parent)
+            {
+            }
+        };
+
+        $data = [
+            'channel_id' => 7,
+            'entry_id' => 100,
+            'uri' => '/new-root',
+            'structure_uri' => 'new-root',
+            'template_id' => 2,
+            'listing_cid' => 9,
+            'parent_id' => 0,
+            'hidden' => 'n',
+        ];
+
+        $structure->set_data($data);
+
+        $sitePages = $structure->setSitePagesCalls[0][1];
+        $this->assertSame('/new-root/listing-one/', $sitePages['uris'][701]);
+        $this->assertSame('/new-root', $sitePages['uris'][100]);
+    }
+
+    public function testSetDataCreatesNewNodeUsingParentRightWhenParentUriIsMissing()
+    {
+        ee()->setMock('extensions', new class {
+            public function active_hook($hook)
+            {
+                return false;
+            }
+
+            public function call($hook, ...$args)
+            {
+                return null;
+            }
+        });
+
+        $captured = (object) ['newLastChildRight' => null, 'newNodeExtra' => null];
+
+        $structure = new StructureSetDataBranchFixture();
+        $structure->changedValue = false;
+        $structure->sql = new class {
+            public function get_site_pages($cache_bust = false, $force = false)
+            {
+                return [
+                    'url' => '/',
+                    'uris' => [],
+                    'templates' => [],
+                ];
+            }
+
+            public function get_settings()
+            {
+                return ['add_trailing_slash' => 'n'];
+            }
+
+            public function update_root_node()
+            {
+            }
+
+            public function get_channel_listing_entries($channel)
+            {
+                return [];
+            }
+        };
+        $structure->nset = new class($captured) {
+            private $cap;
+            private $nodes;
+
+            public function __construct($cap)
+            {
+                $this->cap = $cap;
+                $this->nodes = [
+                    10 => ['id' => 10, 'right' => 12],
+                ];
+            }
+
+            public function getNode($entryId)
+            {
+                return $this->nodes[$entryId] ?? false;
+            }
+
+            public function newLastChild($right, $extra)
+            {
+                $this->cap->newLastChildRight = $right;
+                $this->cap->newNodeExtra = $extra;
+                $this->nodes[$extra['entry_id']] = [
+                    'id' => $extra['entry_id'],
+                    'right' => $right + 1,
+                    'listing_cid' => $extra['listing_cid'],
+                    'parent_id' => $extra['parent_id'],
+                    'channel_id' => $extra['channel_id'],
+                    'hidden' => $extra['hidden'],
+                ];
+            }
+
+            public function getTree($entryId)
+            {
+                return [];
+            }
+
+            public function moveToLastChild($node, $parent)
+            {
+            }
+        };
+
+        $data = [
+            'channel_id' => 7,
+            'entry_id' => 111,
+            'uri' => '/child',
+            'structure_uri' => 'child',
+            'template_id' => 4,
+            'listing_cid' => 0,
+            'parent_id' => 10,
+            'hidden' => 'n',
+        ];
+
+        $structure->set_data($data);
+
+        $this->assertSame(12, $captured->newLastChildRight);
+        $this->assertSame(10, $captured->newNodeExtra['parent_id']);
+        $this->assertSame('/child', $structure->setSitePagesCalls[0][1]['uris'][111]);
+    }
+
     public function testSetDataCoversUnchangedNodeListingCidBranch()
     {
         ee()->setMock('extensions', new class {
@@ -583,5 +801,223 @@ class StructureSetDataTest extends StructureTestBase
 
         $this->assertNotEmpty($structure->setListingsCalls);
         $this->assertSame(501, $structure->setListingsCalls[0][0]['entry_id']);
+    }
+
+    public function testSetDataCoversUnchangedNodeListingHooks()
+    {
+        ee()->setMock('extensions', new class {
+            public function active_hook($hook)
+            {
+                return in_array($hook, ['structure_listing_parent', 'structure_before_save_listing'], true);
+            }
+
+            public function call($hook, ...$args)
+            {
+                if ($hook === 'structure_listing_parent') {
+                    return 10;
+                }
+
+                if ($hook === 'structure_before_save_listing') {
+                    $listing = $args[0];
+                    $listing['uri'] = 'hooked-uri';
+
+                    return $listing;
+                }
+
+                return null;
+            }
+        });
+        ee()->setMock('db', new class extends FakeDb {
+            public function query($sql)
+            {
+                if (strpos($sql, 'SELECT entry_id, url_title FROM exp_channel_titles WHERE channel_id = 9 AND site_id = 1') !== false) {
+                    return new eeDbResultMock([
+                        ['entry_id' => 801, 'url_title' => 'plain-title'],
+                    ]);
+                }
+
+                return new eeDbResultMock([]);
+            }
+
+            public function escape_str($str)
+            {
+                return addslashes($str);
+            }
+        });
+
+        $structure = new StructureSetDataBranchFixture();
+        $structure->changedValue = false;
+        $structure->sql = new class {
+            public function get_site_pages($cache_bust = false, $force = false)
+            {
+                return [
+                    'url' => '/',
+                    'uris' => [
+                        10 => '/hook-parent/',
+                        100 => '/root/',
+                    ],
+                    'templates' => [100 => 2],
+                ];
+            }
+
+            public function get_settings()
+            {
+                return ['add_trailing_slash' => 'n'];
+            }
+
+            public function update_root_node()
+            {
+            }
+
+            public function get_channel_listing_entries($channel)
+            {
+                return [];
+            }
+        };
+        $structure->nset = new class {
+            public function getNode($entryId)
+            {
+                if ($entryId === 100) {
+                    return ['id' => 100, 'right' => 3, 'listing_cid' => 9];
+                }
+
+                return false;
+            }
+
+            public function newLastChild($right, $extra)
+            {
+            }
+
+            public function getTree($entryId)
+            {
+                return [];
+            }
+
+            public function moveToLastChild($node, $parent)
+            {
+            }
+        };
+
+        $data = [
+            'channel_id' => 7,
+            'entry_id' => 100,
+            'uri' => '/root',
+            'structure_uri' => 'root',
+            'template_id' => 2,
+            'listing_cid' => 9,
+            'parent_id' => 0,
+            'hidden' => 'n',
+        ];
+
+        $structure->set_data($data);
+
+        $this->assertSame('hooked-uri', $structure->setListingsCalls[0][0]['uri']);
+        $this->assertSame(10, $structure->setListingsCalls[0][0]['parent_id']);
+        $this->assertSame('/hook-parent/plain-title/', $structure->setSitePagesCalls[0][1]['uris'][801]);
+    }
+
+    public function testSetDataUsesExistingListingOverridesWhenNodeIsUnchanged()
+    {
+        ee()->setMock('extensions', new class {
+            public function active_hook($hook)
+            {
+                return false;
+            }
+
+            public function call($hook, ...$args)
+            {
+                return null;
+            }
+        });
+        ee()->setMock('db', new class extends FakeDb {
+            public function query($sql)
+            {
+                if (strpos($sql, 'SELECT entry_id, url_title FROM exp_channel_titles WHERE channel_id = 9 AND site_id = 1') !== false) {
+                    return new eeDbResultMock([
+                        ['entry_id' => 901, 'url_title' => 'fallback-title'],
+                    ]);
+                }
+
+                return new eeDbResultMock([]);
+            }
+
+            public function escape_str($str)
+            {
+                return addslashes($str);
+            }
+        });
+
+        $structure = new StructureSetDataBranchFixture();
+        $structure->changedValue = false;
+        $structure->sql = new class {
+            public function get_site_pages($cache_bust = false, $force = false)
+            {
+                return [
+                    'url' => '/',
+                    'uris' => [100 => '/root/'],
+                    'templates' => [100 => 2],
+                ];
+            }
+
+            public function get_settings()
+            {
+                return ['add_trailing_slash' => 'n'];
+            }
+
+            public function update_root_node()
+            {
+            }
+
+            public function get_channel_listing_entries($channel)
+            {
+                return [
+                    901 => [
+                        'template_id' => 12,
+                        'uri' => 'override-uri',
+                    ],
+                ];
+            }
+        };
+        $structure->nset = new class {
+            public function getNode($entryId)
+            {
+                if ($entryId === 100) {
+                    return ['id' => 100, 'right' => 3, 'listing_cid' => 9];
+                }
+
+                return false;
+            }
+
+            public function newLastChild($right, $extra)
+            {
+            }
+
+            public function getTree($entryId)
+            {
+                return [];
+            }
+
+            public function moveToLastChild($node, $parent)
+            {
+            }
+        };
+
+        $data = [
+            'channel_id' => 7,
+            'entry_id' => 100,
+            'uri' => '/root',
+            'structure_uri' => 'root',
+            'template_id' => 2,
+            'listing_cid' => 9,
+            'parent_id' => 0,
+            'hidden' => 'n',
+        ];
+
+        $structure->set_data($data);
+
+        $this->assertSame('override-uri', $structure->setListingsCalls[0][0]['uri']);
+        $this->assertSame(12, $structure->setListingsCalls[0][0]['template_id']);
+        $this->assertSame('/root/override-uri/', $structure->setSitePagesCalls[0][1]['uris'][901]);
+        $this->assertSame(12, $structure->setSitePagesCalls[0][1]['templates'][901]);
     }
 }
