@@ -24,6 +24,40 @@ namespace ExpressionEngine\Controller\Files {
     {
     }
 
+    /**
+     * Captures force_download() calls without terminating the test run.
+     */
+    class FileDownloadRecorder
+    {
+        /** @var array<int, array<string, string>> */
+        public static $calls = [];
+
+        /**
+         * Clear recorded downloads between tests.
+         *
+         * @return void
+         */
+        public static function reset(): void
+        {
+            self::$calls = [];
+        }
+
+        /**
+         * Store the download payload for assertions.
+         *
+         * @param string $filename
+         * @param string $data
+         * @return void
+         */
+        public static function record($filename, $data): void
+        {
+            self::$calls[] = [
+                'filename' => (string) $filename,
+                'data' => (string) $data,
+            ];
+        }
+    }
+
     if (! function_exists(__NAMESPACE__ . '\lang')) {
         /**
          * Return the language key for predictable test assertions.
@@ -69,6 +103,20 @@ namespace ExpressionEngine\Controller\Files {
         }
     }
 
+    if (! function_exists(__NAMESPACE__ . '\force_download')) {
+        /**
+         * Record the requested download instead of sending a response.
+         *
+         * @param string $filename
+         * @param string $data
+         * @return void
+         */
+        function force_download($filename, $data)
+        {
+            FileDownloadRecorder::record($filename, $data);
+        }
+    }
+
     if (! function_exists(__NAMESPACE__ . '\bool_config_item')) {
         /**
          * Read boolean config values from the test ee() container.
@@ -110,6 +158,7 @@ namespace ExpressionEngine\Controller\Files {
 namespace ExpressionEngine\Tests\Controllers\Files {
 
 use ExpressionEngine\Controller\Files\FileShow404Exception;
+use ExpressionEngine\Controller\Files\FileDownloadRecorder;
 use ExpressionEngine\Controller\Files\FileShowErrorException;
 use ExpressionEngine\Model\File\File as FileModel;
 use ExpressionEngine\Service\Validation\Result as ValidationResult;
@@ -122,7 +171,7 @@ if (! defined('AJAX_REQUEST')) {
 require_once APPPATH . 'core/Controller.php';
 
 /**
- * Behavioral coverage for Files\File::view().
+ * Behavioral coverage for Files\File controller actions under test.
  */
 class FileTest extends TestCase
 {
@@ -155,6 +204,7 @@ class FileTest extends TestCase
         ee()->config->resetConfig();
         ee()->config->setItem('site_id', 1);
         ee()->config->setItem('file_manager_compatibility_mode', 'n');
+        FileDownloadRecorder::reset();
 
         $this->controller = (new \ReflectionClass(TestableFileController::class))
             ->newInstanceWithoutConstructor();
@@ -190,6 +240,7 @@ class FileTest extends TestCase
      */
     protected function tearDown(): void
     {
+        FileDownloadRecorder::reset();
         ee()->resetMocks();
         ee()->config->resetConfig();
     }
@@ -397,6 +448,100 @@ class FileTest extends TestCase
         $this->assertSame('resize_width', $this->formValidation->rules[0][0]);
         $this->assertSame('resize_height', $this->formValidation->rules[1][0]);
         $this->assertCount(1, $this->cp->renderCalls);
+    }
+
+    /**
+     * Assert download() exits through the missing-file error branch.
+     *
+     * @return void
+     */
+    public function testDownloadShowsNoFileErrorWhenModelLookupReturnsNothing()
+    {
+        $this->bindFileToModel(null);
+
+        $this->expectException(FileShowErrorException::class);
+        $this->expectExceptionMessage('no_file');
+
+        try {
+            $this->controller->download(26);
+        } finally {
+            $this->assertSame([
+                ['UploadDestination'],
+            ], $this->lastModelQuery()->withCalls);
+            $this->assertSame([
+                ['site_id', 'IN', [1, 0]],
+            ], $this->lastModelQuery()->filterCalls);
+            $this->assertSame([], $this->load->helpers);
+            $this->assertSame([], FileDownloadRecorder::$calls);
+        }
+    }
+
+    /**
+     * Assert download() rejects members without file access.
+     *
+     * @return void
+     */
+    public function testDownloadShowsUnauthorizedErrorWhenMemberCannotAccessFile()
+    {
+        $filesystem = new FilesystemRecorder('restricted-bytes');
+        $file = new TestFileModel([
+            'memberHasAccess' => false,
+            'UploadDestination' => new UploadDestinationStub([
+                'filesystem' => $filesystem,
+            ]),
+        ]);
+        $this->bindFileToModel($file);
+
+        $this->expectException(FileShowErrorException::class);
+        $this->expectExceptionCode(403);
+        $this->expectExceptionMessage('unauthorized_access');
+
+        try {
+            $this->controller->download(27);
+        } finally {
+            $this->assertCount(1, $file->memberAccessChecks);
+            $this->assertSame(ee()->session->getMember(), $file->memberAccessChecks[0]);
+            $this->assertSame([], $this->load->helpers);
+            $this->assertSame([], $filesystem->reads);
+            $this->assertSame([], FileDownloadRecorder::$calls);
+        }
+    }
+
+    /**
+     * Assert download() loads the helper, reads the file, and forwards bytes.
+     *
+     * @return void
+     */
+    public function testDownloadForcesTheResolvedFilesystemBytes()
+    {
+        $filesystem = new FilesystemRecorder('banner-bytes');
+        $file = new TestFileModel([
+            'file_name' => 'hero.jpg',
+            'absolutePath' => '/var/www/html/hero.jpg',
+            'UploadDestination' => new UploadDestinationStub([
+                'filesystem' => $filesystem,
+            ]),
+        ]);
+        $this->bindFileToModel($file);
+
+        $this->controller->download(28);
+
+        $this->assertSame([
+            ['UploadDestination'],
+        ], $this->lastModelQuery()->withCalls);
+        $this->assertSame([
+            ['site_id', 'IN', [1, 0]],
+        ], $this->lastModelQuery()->filterCalls);
+        $this->assertCount(1, $file->memberAccessChecks);
+        $this->assertSame(ee()->session->getMember(), $file->memberAccessChecks[0]);
+        $this->assertSame(['download'], $this->load->helpers);
+        $this->assertSame(['/var/www/html/hero.jpg'], $filesystem->reads);
+        $this->assertSame([
+            [
+                'filename' => 'hero.jpg',
+                'data' => 'banner-bytes',
+            ],
+        ], FileDownloadRecorder::$calls);
     }
 
     /**
@@ -1019,6 +1164,9 @@ class LoadRecorder
     /** @var array<int, string> */
     public $libraries = [];
 
+    /** @var array<int, string> */
+    public $helpers = [];
+
     /**
      * Record the requested library name.
      *
@@ -1028,6 +1176,17 @@ class LoadRecorder
     public function library($library)
     {
         $this->libraries[] = $library;
+    }
+
+    /**
+     * Record the requested helper name.
+     *
+     * @param string $helper
+     * @return void
+     */
+    public function helper($helper)
+    {
+        $this->helpers[] = $helper;
     }
 }
 
@@ -1242,6 +1401,9 @@ class TestFileModel extends FileModel
     /** @var UploadDestinationStub */
     public $UploadDestination;
 
+    /** @var array<int, object> */
+    public $memberAccessChecks = [];
+
     /** @var int */
     public $file_id = 99;
 
@@ -1292,6 +1454,8 @@ class TestFileModel extends FileModel
      */
     public function memberHasAccess($member)
     {
+        $this->memberAccessChecks[] = $member;
+
         return $this->memberHasAccess;
     }
 
@@ -1397,6 +1561,9 @@ class UploadDestinationStub
     /** @var bool */
     private $existsValue;
 
+    /** @var FilesystemRecorder */
+    private $filesystem;
+
     /**
      * Seed upload destination state.
      *
@@ -1406,6 +1573,7 @@ class UploadDestinationStub
     public function __construct(array $attributes = [])
     {
         $this->existsValue = $attributes['exists'] ?? true;
+        $this->filesystem = $attributes['filesystem'] ?? new FilesystemRecorder('file-bytes');
         $dimensionsCount = $attributes['dimensionsCount'] ?? 0;
         $this->FileDimensions = new FileDimensionsStub($dimensionsCount);
 
@@ -1448,6 +1616,52 @@ class UploadDestinationStub
     public function getFileDimensions()
     {
         return $this->FileDimensions;
+    }
+
+    /**
+     * Return the configured filesystem double.
+     *
+     * @return FilesystemRecorder
+     */
+    public function getFilesystem()
+    {
+        return $this->filesystem;
+    }
+}
+
+/**
+ * Records filesystem reads for download assertions.
+ */
+class FilesystemRecorder
+{
+    /** @var array<int, string> */
+    public $reads = [];
+
+    /** @var string */
+    private $contents;
+
+    /**
+     * Store the bytes returned for any read() call.
+     *
+     * @param string $contents
+     * @return void
+     */
+    public function __construct($contents)
+    {
+        $this->contents = $contents;
+    }
+
+    /**
+     * Record the requested path and return the configured bytes.
+     *
+     * @param string $path
+     * @return string
+     */
+    public function read($path)
+    {
+        $this->reads[] = $path;
+
+        return $this->contents;
     }
 }
 
