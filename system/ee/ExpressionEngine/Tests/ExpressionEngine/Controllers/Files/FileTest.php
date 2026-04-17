@@ -204,6 +204,8 @@ class FileTest extends TestCase
         ee()->config->resetConfig();
         ee()->config->setItem('site_id', 1);
         ee()->config->setItem('file_manager_compatibility_mode', 'n');
+        $_POST = [];
+        $_GET = [];
         FileDownloadRecorder::reset();
 
         $this->controller = (new \ReflectionClass(TestableFileController::class))
@@ -240,6 +242,8 @@ class FileTest extends TestCase
      */
     protected function tearDown(): void
     {
+        $_POST = [];
+        $_GET = [];
         FileDownloadRecorder::reset();
         ee()->resetMocks();
         ee()->config->resetConfig();
@@ -451,6 +455,274 @@ class FileTest extends TestCase
     }
 
     /**
+     * Assert modify() rejects actions that view() cannot route to directly.
+     *
+     * @return void
+     *
+     * @throws \ReflectionException
+     */
+    public function testModifyShowsUnauthorizedErrorForUnknownAction()
+    {
+        $this->expectException(FileShowErrorException::class);
+        $this->expectExceptionCode(403);
+        $this->expectExceptionMessage('unauthorized_access');
+
+        $this->invokeModify(new TestFileModel(), 'flip');
+    }
+
+    /**
+     * Assert modify() rejects non-image files before any image work happens.
+     *
+     * @return void
+     */
+    public function testViewShowsNotAnImageErrorWhenModifyTargetsANonImage()
+    {
+        $this->setModifyRequest('rotate');
+        $file = new TestFileModel([
+            'isImage' => false,
+        ]);
+        $this->bindFileToModel($file);
+
+        $this->expectException(FileShowErrorException::class);
+        $this->expectExceptionMessage('not_an_image');
+
+        try {
+            $this->controller->view(29);
+        } finally {
+            $this->assertSame([], $this->load->libraries);
+            $this->assertSame([], $this->alerts->records);
+        }
+    }
+
+    /**
+     * Assert modify() raises a 404 and includes missing-directory guidance.
+     *
+     * @return void
+     */
+    public function testViewShowsModifyNotFoundAlertWhenFileAndDirectoryAreMissing()
+    {
+        $this->setModifyRequest('crop');
+        $file = new TestFileModel([
+            'exists' => false,
+            'UploadDestination' => new UploadDestinationStub([
+                'exists' => false,
+                'id' => 55,
+                'server_path' => '/missing/modify',
+            ]),
+        ]);
+        $this->bindFileToModel($file);
+
+        $this->expectException(FileShow404Exception::class);
+
+        try {
+            $this->controller->view(30);
+        } finally {
+            $this->assertCount(1, $this->alerts->records);
+            $this->assertSame('standard', $this->alerts->records[0]->type);
+            $this->assertSame('file_not_found', $this->alerts->records[0]->title);
+            $this->assertCount(3, $this->alerts->records[0]->body);
+            $this->assertSame([], $this->cp->renderCalls);
+        }
+    }
+
+    /**
+     * Assert crop validation failures surface the inline modify alert.
+     *
+     * @return void
+     */
+    public function testViewShowsModifyAlertWhenCropValidationFails()
+    {
+        $this->setModifyRequest('crop');
+        $this->formValidation->errorsExist = true;
+        $file = new TestFileModel();
+        $this->bindFileToModel($file);
+
+        $this->controller->view(31);
+
+        $this->assertSame(['image_lib', 'form_validation'], $this->load->libraries);
+        $this->assertSame([
+            ['crop_width', 'lang:width', 'trim|is_natural_no_zero|required'],
+            ['crop_height', 'lang:height', 'trim|is_natural_no_zero|required'],
+            ['crop_x', 'lang:x_axis', 'trim|numeric|required'],
+            ['crop_y', 'lang:y_axis', 'trim|numeric|required'],
+        ], $this->formValidation->rules);
+        $this->assertCount(1, $this->alerts->records);
+        $this->assertSame('inline', $this->alerts->records[0]->type);
+        $this->assertSame('file-modify', $this->alerts->records[0]->name);
+        $this->assertSame('issue', $this->alerts->records[0]->state);
+        $this->assertSame('crop_file_error', $this->alerts->records[0]->title);
+        $this->assertSame(['crop_file_error_desc'], $this->alerts->records[0]->body);
+    }
+
+    /**
+     * Assert crop failures from the legacy filemanager stay inline.
+     *
+     * @return void
+     */
+    public function testViewShowsModifyAlertWhenCropFilemanagerFails()
+    {
+        $this->setModifyRequest('crop', [
+            'crop_width' => 25,
+            'crop_height' => 15,
+            'crop_x' => 3,
+            'crop_y' => 4,
+        ]);
+        $this->formValidation->runResult = true;
+        $filemanager = new FileManagerRecorder();
+        $filemanager->cropResponse = ['errors' => 'crop failed'];
+        ee()->setMock('filemanager', $filemanager);
+        $file = new TestFileModel();
+        $this->bindFileToModel($file);
+
+        $this->controller->view(32);
+
+        $this->assertSame(['/var/www/html/banner.png', 'local'], $filemanager->cropCalls[0]);
+        $this->assertCount(1, $this->alerts->records);
+        $this->assertSame('issue', $this->alerts->records[0]->state);
+        $this->assertSame('crop_file_error', $this->alerts->records[0]->title);
+        $this->assertSame(['crop failed'], $this->alerts->records[0]->body);
+    }
+
+    /**
+     * Assert rotate failures surface the correct inline alert and delegate.
+     *
+     * @return void
+     */
+    public function testViewShowsModifyAlertWhenRotateFilemanagerFails()
+    {
+        $this->setModifyRequest('rotate', [
+            'rotate' => '90_r',
+        ]);
+        $this->formValidation->runResult = true;
+        $filemanager = new FileManagerRecorder();
+        $filemanager->rotateResponse = ['errors' => 'rotate failed'];
+        ee()->setMock('filemanager', $filemanager);
+        $file = new TestFileModel();
+        $this->bindFileToModel($file);
+
+        $this->controller->view(33);
+
+        $this->assertSame([
+            ['rotate', 'lang:rotate', 'required'],
+        ], $this->formValidation->rules);
+        $this->assertSame(['/var/www/html/banner.png', 'local'], $filemanager->rotateCalls[0]);
+        $this->assertCount(1, $this->alerts->records);
+        $this->assertSame('issue', $this->alerts->records[0]->state);
+        $this->assertSame('crop_file_error', $this->alerts->records[0]->title);
+        $this->assertSame(['rotate failed'], $this->alerts->records[0]->body);
+    }
+
+    /**
+     * Assert resize fills a missing width, saves metadata, and regenerates thumbs.
+     *
+     * @return void
+     */
+    public function testViewResizesAndRegeneratesThumbnailsWhenWidthIsMissing()
+    {
+        $this->setModifyRequest('resize', [
+            'resize_width' => '',
+            'resize_height' => 50,
+        ]);
+        $this->formValidation->runResult = true;
+        $filemanager = new FileManagerRecorder();
+        $filemanager->resizeResponse = [
+            'dimensions' => ['height' => 50, 'width' => 100],
+            'file_info' => ['size' => 4096],
+        ];
+        ee()->setMock('filemanager', $filemanager);
+        $file = new TestFileModel([
+            'isWritable' => false,
+            'UploadDestination' => new UploadDestinationStub([
+                'dimensionsCount' => 2,
+            ]),
+        ]);
+        $this->bindFileToModel($file);
+
+        $this->controller->view(34);
+
+        $this->assertSame(100.0, (float) $_POST['resize_width']);
+        $this->assertSame(['/var/www/html/banner.png', 'local'], $filemanager->resizeCalls[0]);
+        $this->assertSame('50 100', $file->file_hw_original);
+        $this->assertSame(4096, $file->file_size);
+        $this->assertSame(1, $file->saveCalls);
+        $this->assertCount(1, $filemanager->createThumbCalls);
+        $this->assertSame('/var/www/html/banner.png', $filemanager->createThumbCalls[0][0]);
+        $this->assertSame('/var/www/html/images', $filemanager->createThumbCalls[0][1]['server_path']);
+        $this->assertCount(2, $filemanager->createThumbCalls[0][1]['dimensions']);
+        $this->assertTrue($filemanager->createThumbCalls[0][2]);
+        $this->assertFalse($filemanager->createThumbCalls[0][3]);
+        $this->assertCount(3, $this->alerts->records);
+        $this->assertSame('file_not_writable', $this->alerts->records[0]->title);
+        $this->assertSame('crop_file_success', $this->alerts->records[1]->title);
+        $this->assertSame(['crop_file_success_desc'], $this->alerts->records[1]->body);
+        $this->assertSame('shared-form', $this->alerts->records[2]->name);
+    }
+
+    /**
+     * Assert resize fills a missing height before delegating to filemanager.
+     *
+     * @return void
+     */
+    public function testViewResizesWhenHeightIsMissing()
+    {
+        $this->setModifyRequest('resize', [
+            'resize_width' => 60,
+            'resize_height' => '',
+        ]);
+        $this->formValidation->runResult = true;
+        $filemanager = new FileManagerRecorder();
+        $filemanager->resizeResponse = [
+            'dimensions' => ['height' => 30, 'width' => 60],
+            'file_info' => ['size' => 5120],
+        ];
+        ee()->setMock('filemanager', $filemanager);
+        $file = new TestFileModel();
+        $this->bindFileToModel($file);
+
+        $this->controller->view(35);
+
+        $this->assertSame(30.0, (float) $_POST['resize_height']);
+        $this->assertSame(['/var/www/html/banner.png', 'local'], $filemanager->resizeCalls[0]);
+        $this->assertSame('30 60', $file->file_hw_original);
+        $this->assertSame(5120, $file->file_size);
+        $this->assertSame(1, $file->saveCalls);
+        $this->assertCount(1, $this->alerts->records);
+        $this->assertSame('success', $this->alerts->records[0]->state);
+        $this->assertSame('crop_file_success', $this->alerts->records[0]->title);
+    }
+
+    /**
+     * Assert the AJAX validation path delegates to run_ajax().
+     *
+     * @return void
+     *
+     * @runInSeparateProcess
+     */
+    public function testViewRunsAjaxValidationDuringModify()
+    {
+        define('ExpressionEngine\\Controller\\Files\\AJAX_REQUEST', true);
+
+        $this->setModifyRequest('rotate', [
+            'rotate' => '180',
+        ]);
+        $this->formValidation->runAjaxThrows = true;
+        $file = new TestFileModel();
+        $this->bindFileToModel($file);
+
+        $this->expectException(FileModifyAjaxInterceptedException::class);
+        $this->expectExceptionMessage('ajax');
+
+        try {
+            $this->controller->view(36);
+        } finally {
+            $this->assertSame(1, $this->formValidation->ajaxCalls);
+            $this->assertSame([
+                ['rotate', 'lang:rotate', 'required'],
+            ], $this->formValidation->rules);
+        }
+    }
+
+    /**
      * Assert download() exits through the missing-file error branch.
      *
      * @return void
@@ -591,6 +863,37 @@ class FileTest extends TestCase
 
         return $result;
     }
+
+    /**
+     * Route a modify action through the request double and $_POST.
+     *
+     * @param string $action
+     * @param array<string, mixed> $post
+     * @param array<string, mixed> $get
+     * @return void
+     */
+    private function setModifyRequest(string $action, array $post = [], array $get = []): void
+    {
+        $_POST = array_merge(['action' => $action], $post);
+        $_GET = $get;
+        ee()->setMock('Request', new RequestRecorder($_POST, $_GET));
+    }
+
+    /**
+     * Invoke the private modify() method for unreachable guard coverage.
+     *
+     * @param TestFileModel $file
+     * @param string $action
+     * @return void
+     *
+     * @throws \ReflectionException
+     */
+    private function invokeModify(TestFileModel $file, string $action): void
+    {
+        $method = new \ReflectionMethod(\ExpressionEngine\Controller\Files\File::class, 'modify');
+        $method->setAccessible(true);
+        $method->invoke($this->controller, $file, $action);
+    }
 }
 
 /**
@@ -680,6 +983,13 @@ class TestableFileController extends \ExpressionEngine\Controller\Files\File
  * Raised when saveFileAndRedirect() is intentionally intercepted.
  */
 class FileRedirectInterceptedException extends \RuntimeException
+{
+}
+
+/**
+ * Raised when the AJAX validation branch is intentionally intercepted.
+ */
+class FileModifyAjaxInterceptedException extends \RuntimeException
 {
 }
 
@@ -1329,6 +1639,18 @@ class FormValidationRecorder
     /** @var array<int, array<int, string>> */
     public $rules = [];
 
+    /** @var bool */
+    public $runResult = false;
+
+    /** @var bool */
+    public $errorsExist = false;
+
+    /** @var int */
+    public $ajaxCalls = 0;
+
+    /** @var bool */
+    public $runAjaxThrows = false;
+
     /**
      * Capture a validation rule.
      *
@@ -1349,7 +1671,7 @@ class FormValidationRecorder
      */
     public function run()
     {
-        return false;
+        return $this->runResult;
     }
 
     /**
@@ -1359,7 +1681,7 @@ class FormValidationRecorder
      */
     public function errors_exist()
     {
-        return false;
+        return $this->errorsExist;
     }
 
     /**
@@ -1369,6 +1691,94 @@ class FormValidationRecorder
      */
     public function run_ajax()
     {
+        $this->ajaxCalls++;
+
+        if ($this->runAjaxThrows) {
+            throw new FileModifyAjaxInterceptedException('ajax');
+        }
+    }
+}
+
+/**
+ * Records legacy filemanager manipulation calls.
+ */
+class FileManagerRecorder
+{
+    /** @var array<int, array<int, string>> */
+    public $cropCalls = [];
+
+    /** @var array<int, array<int, string>> */
+    public $rotateCalls = [];
+
+    /** @var array<int, array<int, string>> */
+    public $resizeCalls = [];
+
+    /** @var array<int, array<int, mixed>> */
+    public $createThumbCalls = [];
+
+    /** @var array<string, mixed> */
+    public $cropResponse = [];
+
+    /** @var array<string, mixed> */
+    public $rotateResponse = [];
+
+    /** @var array<string, mixed> */
+    public $resizeResponse = [];
+
+    /**
+     * Record crop arguments and return the configured response.
+     *
+     * @param string $path
+     * @param string $filesystem
+     * @return array<string, mixed>
+     */
+    public function _do_crop($path, $filesystem)
+    {
+        $this->cropCalls[] = [$path, $filesystem];
+
+        return $this->cropResponse;
+    }
+
+    /**
+     * Record rotate arguments and return the configured response.
+     *
+     * @param string $path
+     * @param string $filesystem
+     * @return array<string, mixed>
+     */
+    public function _do_rotate($path, $filesystem)
+    {
+        $this->rotateCalls[] = [$path, $filesystem];
+
+        return $this->rotateResponse;
+    }
+
+    /**
+     * Record resize arguments and return the configured response.
+     *
+     * @param string $path
+     * @param string $filesystem
+     * @return array<string, mixed>
+     */
+    public function _do_resize($path, $filesystem)
+    {
+        $this->resizeCalls[] = [$path, $filesystem];
+
+        return $this->resizeResponse;
+    }
+
+    /**
+     * Record thumbnail regeneration arguments.
+     *
+     * @param string $path
+     * @param array<string, mixed> $config
+     * @param bool $regenerate
+     * @param bool $all
+     * @return void
+     */
+    public function create_thumb($path, array $config, $regenerate, $all)
+    {
+        $this->createThumbCalls[] = [$path, $config, (bool) $regenerate, (bool) $all];
     }
 }
 
@@ -1421,6 +1831,9 @@ class TestFileModel extends FileModel
 
     /** @var string */
     public $file_hw_original = '100 200';
+
+    /** @var int */
+    public $saveCalls = 0;
 
     /**
      * Seed the file double with behavior flags.
@@ -1538,6 +1951,18 @@ class TestFileModel extends FileModel
     public function getFilesystem()
     {
         return $this->filesystem;
+    }
+
+    /**
+     * Record save() calls without touching persistence.
+     *
+     * @return bool
+     */
+    public function save()
+    {
+        $this->saveCalls++;
+
+        return true;
     }
 }
 
