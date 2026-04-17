@@ -5,15 +5,15 @@ task_id: structure-mod-tests-028
 task_file: /Users/tomjaeger/Sites/ee75/ee_repo_3/RALPH_MOD_STRUCTURE_TESTS_ONLY_DEVELOP.md
 thread_id: 019d98d7-edb3-75c2-8606-901e6b6420b4
 iterations: 1
-updated_at: 2026-04-17T00:39:12+00:00
+updated_at: 2026-04-17T00:39:20+00:00
 last_work_summary: 1. Additional high-value tests remaining before refactor: no. Existing coverage already exercises the method’s observable vectors: empty input, flat nodes, nested recursion, empty `children`, custom starting `lft`, pre-seeded `$data`, sibling crumb reset, and nested-set invariants. 2. Refactor-ready for TARGET_METHOD now: yes. 3. Method coverage (line%, branch%): `100.00% line` (`15/15`) and `100.00% branch` (`6/6`) for [`nestedsortable_to_nestedset`]( /Users/tomjaeger/Sites/ee75/ee_repo_3/...
-last_finish_result: passed
-last_finish_reason: Current state satisfies check_1 against the configured baseline 7.dev: the task note records work on tests/additional-stucture-mod-tests, explicitly says no additional high-value tests remain for nestedsortable_to_nestedset, reports 100.00% line coverage (15/15) and 100.00% branch coverage (6/6), reports PHPUnit OK (9 tests, 48 assertions), reports the coverage command and method percentages, reports PHP 7.4/8.0/8.1/8.2/8.3/8.4 as passing, and confirms the real module was loaded via PATH_ADDONS . 'structure/mod.structure.php'. Git diff vs 7.dev shows no edits under system/ee/ExpressionEngine/Addons/structure/ and no changes to the two report markdown files, and no copied mod.structure.php-style alternate module file is present. Commit subjects on 7.dev..HEAD do not contain codex, ralph, or ai as standalone terms.
-workflow_step_index: 2
+last_finish_result: finished
+last_finish_reason: Workflow completed successfully.
+workflow_step_index: 3
 branch_name: 
 check_attempts: {"check_1":1}
-commit_messages: []
-commit_hashes: []
+commit_messages: {"commit_2":"tests(coverage): mod.structure.php pre-refactor tests for nestedsortable_to_nestedset"}
+commit_hashes: {"commit_2":"cabce832376dd5610e125a210659f85f0679f3b0"}
 pull_request_urls: []
 codex_model: gpt-5.4
 codex_thinking: high
@@ -77,3 +77,13 @@ attempt: 1
 passed: yes
 
 reason: Current state satisfies check_1 against the configured baseline 7.dev: the task note records work on tests/additional-stucture-mod-tests, explicitly says no additional high-value tests remain for nestedsortable_to_nestedset, reports 100.00% line coverage (15/15) and 100.00% branch coverage (6/6), reports PHPUnit OK (9 tests, 48 assertions), reports the coverage command and method percentages, reports PHP 7.4/8.0/8.1/8.2/8.3/8.4 as passing, and confirms the real module was loaded via PATH_ADDONS . 'structure/mod.structure.php'. Git diff vs 7.dev shows no edits under system/ee/ExpressionEngine/Addons/structure/ and no changes to the two report markdown files, and no copied mod.structure.php-style alternate module file is present. Commit subjects on 7.dev..HEAD do not contain codex, ralph, or ai as standalone terms.
+
+### 2026-04-17T00:39:20+00:00 Commit Step commit_2
+
+Committed changes as cabce832376dd5610e125a210659f85f0679f3b0
+
+message: tests(coverage): mod.structure.php pre-refactor tests for nestedsortable_to_nestedset
+
+### 2026-04-17T00:39:20+00:00 Workflow Complete
+
+Completed all workflow steps for task structure-mod-tests-028.
