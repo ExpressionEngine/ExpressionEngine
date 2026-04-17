@@ -119,8 +119,8 @@ Hard rule:
 - [finished] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=create_uri in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-027 -->
 - [finished] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=nestedsortable_to_nestedset in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-028 -->
 - [finished] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=get_site_pages_query in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-029 -->
-- [in progress] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=get_channel_type in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-030 -->
-- [not started] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=get_structure_channels in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-031 -->
+- [finished] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=get_channel_type in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-030 -->
+- [in progress] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=get_structure_channels in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-031 -->
 - [not started] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=get_channels_by_type in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-032 -->
 - [not started] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=has_changed in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-033 -->
 - [not started] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=delete_data_by_channel in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-034 -->
@@ -135,6 +135,7 @@ Hard rule:
 - [not started] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=remove_last_segment in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-043 -->
 - [not started] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=nav_basic in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-044 -->
 - [not started] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=nav_advanced in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-045 -->
+
 
 
 
