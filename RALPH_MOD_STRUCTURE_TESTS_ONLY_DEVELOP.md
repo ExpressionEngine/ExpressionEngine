@@ -131,10 +131,11 @@ Hard rule:
 - [finished] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=get_data_cids in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-039 -->
 - [finished] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=debug in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-040 -->
 - [finished] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=get_data in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-041 -->
-- [in progress] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=get_site_pages in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-042 -->
-- [not started] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=remove_last_segment in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-043 -->
+- [finished] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=get_site_pages in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-042 -->
+- [in progress] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=remove_last_segment in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-043 -->
 - [not started] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=nav_basic in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-044 -->
 - [not started] Add high-value pre-refactor PHPUnit tests for TARGET_METHOD=nav_advanced in system/ee/ExpressionEngine/Addons/structure/mod.structure.php (develop baseline) without production code changes. <!-- ralph:id=structure-mod-tests-045 -->
+
 
 
 
