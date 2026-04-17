@@ -62,6 +62,57 @@ class StructureFirstChildRedirectTest extends StructureTestBase
         $this->assertFalse($this->structure->first_child_redirect());
     }
 
+    public function testFirstChildRedirectSkipsQueryWhenCurrentUriDoesNotMatchASitePage()
+    {
+        $this->structure->sql = new class {
+            public function get_uri()
+            {
+                return '/missing-parent';
+            }
+
+            public function get_site_pages()
+            {
+                return [
+                    'url' => 'https://example.com',
+                    'uris' => [
+                        100 => '/parent',
+                        101 => '/parent/child-1',
+                    ],
+                ];
+            }
+        };
+
+        ee()->setMock('db', new class extends FakeDb {
+            public function query($sql)
+            {
+                throw new RuntimeException('DB query should not run when the current URI is unmapped.');
+            }
+        });
+
+        $this->assertNull($this->structure->first_child_redirect());
+    }
+
+    public function testFirstChildRedirectExitsInSubprocessAfterSendingRedirectHeaders()
+    {
+        $outputFile = sys_get_temp_dir() . '/structure-first-child-redirect-' . uniqid('', true) . '.json';
+        $script = dirname(__DIR__, 5) . '/support/structure_first_child_redirect_subprocess.php';
+        $command = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($script) . ' ' . escapeshellarg($outputFile) . ' 2>&1';
+
+        exec($command, $output, $exitCode);
+
+        $this->assertSame(0, $exitCode, implode("\n", $output));
+        $this->assertFileExists($outputFile);
+
+        $result = json_decode(file_get_contents($outputFile), true);
+        @unlink($outputFile);
+
+        $this->assertIsArray($result);
+        $this->assertFalse($result['returned']);
+        $this->assertSame(1, $result['lines']['1044']);
+        $this->assertSame(1, $result['lines']['1045']);
+        $this->assertSame(1, $result['lines']['1046']);
+    }
+
     public function testFirstChildRedirectCoversRedirectHeaderBranchBeforeExit()
     {
         ee()->setMock('config', new class {

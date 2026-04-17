@@ -82,6 +82,19 @@ class StructureGetChannelTypeTest extends StructureTestBase
 		$this->assertSame('listing', $type);
 	}
 
+	public function testMethodArgumentIsIgnoredInFavorOfPostedChannelId()
+	{
+		ee()->setMock('input', new class {
+			public function get_post($key) { return 77; }
+		});
+
+		$this->setDbRows([
+			['entry_id' => 100, 'listing_cid' => 77],
+		]);
+
+		$this->assertSame('listing', $this->structure->get_channel_type(999));
+	}
+
 	public function testPresetChannelTypeSkipsDbCheck()
 	{
 		// Simulate cached value
@@ -113,5 +126,4 @@ class StructureGetChannelTypeTest extends StructureTestBase
 		$this->assertSame('static', $this->structure->get_channel_type());
 	}
 }
-
 
