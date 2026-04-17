@@ -1095,6 +1095,71 @@ class FileTest extends TestCase
     }
 
     /**
+     * Assert renderRotateForm() renders all rotation choices with no default selection.
+     *
+     * @return void
+     */
+    public function testRenderRotateFormBuildsRotationChoicesWithoutPostedValue()
+    {
+        $view = new ViewFactoryRecorder();
+
+        ee()->setMock('View', $view);
+        ee()->setMock('Request', new RequestRecorder());
+
+        $output = $this->makeRotateController()->renderRotateFormForTest(new \stdClass());
+
+        $this->assertSame('rendered:_shared/form/section', $output);
+        $this->assertCount(1, $view->renders);
+        $this->assertSame('_shared/form/section', $view->renders[0]['view']);
+        $this->assertSame([
+            [
+                'title' => 'rotation',
+                'desc' => 'rotation_desc',
+                'fields' => [
+                    'rotate' => [
+                        'type' => 'radio',
+                        'choices' => [
+                            '270' => '90_degrees_right',
+                            '90' => '90_degrees_left',
+                            'vrt' => 'flip_vertically',
+                            'hor' => 'flip_horizontally',
+                        ],
+                        'value' => null,
+                    ],
+                ],
+            ],
+        ], $view->renders[0]['vars']['settings']);
+        $this->assertNull($view->renders[0]['vars']['name']);
+    }
+
+    /**
+     * Assert renderRotateForm() preserves the posted rotation value in the radio field.
+     *
+     * @return void
+     */
+    public function testRenderRotateFormUsesPostedRotationValue()
+    {
+        $view = new ViewFactoryRecorder();
+
+        ee()->setMock('View', $view);
+        ee()->setMock('Request', new RequestRecorder([
+            'rotate' => 'vrt',
+        ]));
+
+        $this->makeRotateController()->renderRotateFormForTest(new \stdClass());
+
+        $settings = $view->renders[0]['vars']['settings'];
+
+        $this->assertSame('vrt', $settings[0]['fields']['rotate']['value']);
+        $this->assertSame([
+            '270' => '90_degrees_right',
+            '90' => '90_degrees_left',
+            'vrt' => 'flip_vertically',
+            'hor' => 'flip_horizontally',
+        ], $settings[0]['fields']['rotate']['choices']);
+    }
+
+    /**
      * Assert download() exits through the missing-file error branch.
      *
      * @return void
@@ -1301,6 +1366,17 @@ class FileTest extends TestCase
     }
 
     /**
+     * Create a controller double that exposes the real renderRotateForm() implementation.
+     *
+     * @return RotateFormFileController
+     */
+    private function makeRotateController(): RotateFormFileController
+    {
+        return (new \ReflectionClass(RotateFormFileController::class))
+            ->newInstanceWithoutConstructor();
+    }
+
+    /**
      * Build a file stub for renderManipulationsForm() data.
      *
      * @param array<int, ManipulationStub> $manipulations
@@ -1481,6 +1557,23 @@ class CropFormFileController extends \ExpressionEngine\Controller\Files\File
     public function renderCropFormForTest($file, array $info)
     {
         return parent::renderCropForm($file, $info);
+    }
+}
+
+/**
+ * Exposes the real renderRotateForm() implementation for targeted tests.
+ */
+class RotateFormFileController extends \ExpressionEngine\Controller\Files\File
+{
+    /**
+     * Call the parent implementation through a public test seam.
+     *
+     * @param mixed $file
+     * @return string
+     */
+    public function renderRotateFormForTest($file)
+    {
+        return parent::renderRotateForm($file);
     }
 }
 
