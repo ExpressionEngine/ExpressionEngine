@@ -5,15 +5,15 @@ task_id: structure-mod-tests-036
 task_file: /Users/tomjaeger/Sites/ee75/ee_repo_3/RALPH_MOD_STRUCTURE_TESTS_ONLY_DEVELOP.md
 thread_id: 019d9917-7532-7832-bbe9-647123fde615
 iterations: 1
-updated_at: 2026-04-17T01:46:45+00:00
+updated_at: 2026-04-17T01:46:54+00:00
 last_work_summary: 1. Additional high-value tests remaining before refactor: `no`. 2. Refactor-ready for `TARGET_METHOD` now: `yes`. 3. Method coverage (line%, branch%): `100.0% line (14/14)`, `100.0% branch (3/3)`. Supplemental path evidence from the raw Xdebug artifact: `2/2` paths. 4. Vector matrix summary (covered/planned/not-applicable): happy path `covered`; branches `covered`; failures `covered`; boundary values `covered` (malformed channel lookup array, missing parent row); collaborator side effects `co...
-last_finish_result: passed
-last_finish_reason: On `tests/additional-stucture-mod-tests`, the branch/worktree satisfies the gate: no production addon files or report markdown files are modified, no alternate `mod.structure.php` exists, the task note explicitly reports no additional high-value pre-refactor vectors remain for `get_pid_for_listing_entry`, confirms the real module path via `PATH_ADDONS . '/structure/mod.structure.php'`, reports PHPUnit plus the 7.4/8.0/8.1/8.2/8.3/8.4 matrix as passing, and reports `100.0%` line coverage with raw coverage evidence showing `3/3` branches and `2/2` paths hit. No commit subject in `7.dev..HEAD` contains `codex`, `ralph`, or `ai`.
-workflow_step_index: 2
+last_finish_result: finished
+last_finish_reason: Workflow completed successfully.
+workflow_step_index: 3
 branch_name: 
 check_attempts: {"check_1":1}
-commit_messages: []
-commit_hashes: []
+commit_messages: {"commit_2":"tests(coverage): mod.structure.php pre-refactor tests for get_pid_for_listing_entry"}
+commit_hashes: {"commit_2":"a32b81d260fed7073d29921b8269696b6a664628"}
 pull_request_urls: []
 codex_model: gpt-5.4
 codex_thinking: high
@@ -71,3 +71,13 @@ attempt: 1
 passed: yes
 
 reason: On `tests/additional-stucture-mod-tests`, the branch/worktree satisfies the gate: no production addon files or report markdown files are modified, no alternate `mod.structure.php` exists, the task note explicitly reports no additional high-value pre-refactor vectors remain for `get_pid_for_listing_entry`, confirms the real module path via `PATH_ADDONS . '/structure/mod.structure.php'`, reports PHPUnit plus the 7.4/8.0/8.1/8.2/8.3/8.4 matrix as passing, and reports `100.0%` line coverage with raw coverage evidence showing `3/3` branches and `2/2` paths hit. No commit subject in `7.dev..HEAD` contains `codex`, `ralph`, or `ai`.
+
+### 2026-04-17T01:46:54+00:00 Commit Step commit_2
+
+Committed changes as a32b81d260fed7073d29921b8269696b6a664628
+
+message: tests(coverage): mod.structure.php pre-refactor tests for get_pid_for_listing_entry
+
+### 2026-04-17T01:46:54+00:00 Workflow Complete
+
+Completed all workflow steps for task structure-mod-tests-036.
