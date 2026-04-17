@@ -28,7 +28,8 @@ class StructureSaefSelectTest extends StructureTestBase
     public function testReturnsFalseWhenTypeParamIsNullWithoutLoadingFormHelper()
     {
         $loader = new class {
-            public array $helpers = [];
+            /** @var array */
+            public $helpers = [];
 
             public function helper($name)
             {

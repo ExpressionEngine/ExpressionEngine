@@ -30,6 +30,7 @@ $returned = false;
 $output = '';
 $target = realpath(PATH_ADDONS . 'structure/mod.structure.php');
 $linesToTrack = array_flip(range(2102, 2109));
+$xdebugAvailable = function_exists('xdebug_start_code_coverage') && function_exists('xdebug_get_code_coverage');
 
 if ($mode === 'aggregate') {
     $returnFile = sys_get_temp_dir() . '/structure-debug-return-' . uniqid('', true) . '.json';
@@ -95,8 +96,13 @@ if ($mode === 'aggregate') {
     exit(0);
 }
 
-register_shutdown_function(function () use (&$returned, &$output, $outputFile, $target, $linesToTrack) {
-    $coverage = xdebug_get_code_coverage();
+register_shutdown_function(function () use (&$returned, &$output, $outputFile, $target, $linesToTrack, $xdebugAvailable) {
+    $coverage = [];
+
+    if ($xdebugAvailable) {
+        $coverage = xdebug_get_code_coverage();
+    }
+
     $fileCoverage = $coverage[$target] ?? ['lines' => [], 'functions' => []];
     $functionCoverage = $fileCoverage['functions']['Structure->debug'] ?? ['branches' => [], 'paths' => []];
     $bufferedOutput = $output;
@@ -109,6 +115,7 @@ register_shutdown_function(function () use (&$returned, &$output, $outputFile, $
     file_put_contents($outputFile, json_encode([
         'returned' => $returned,
         'output' => $bufferedOutput,
+        'xdebug_available' => $xdebugAvailable,
         'lines' => array_intersect_key($fileCoverage['lines'] ?? [], $linesToTrack),
         'branches' => $functionCoverage['branches'],
         'paths' => $functionCoverage['paths'],
@@ -120,7 +127,30 @@ $setUp->invoke($test);
 $structure = $structureProperty->getValue($test);
 
 ob_start();
-xdebug_start_code_coverage(XDEBUG_CC_UNUSED | XDEBUG_CC_DEAD_CODE | XDEBUG_CC_BRANCH_CHECK);
+
+if ($xdebugAvailable) {
+    $coverageFlags = 0;
+
+    if (defined('XDEBUG_CC_UNUSED')) {
+        $coverageFlags |= XDEBUG_CC_UNUSED;
+    }
+
+    if (defined('XDEBUG_CC_DEAD_CODE')) {
+        $coverageFlags |= XDEBUG_CC_DEAD_CODE;
+    }
+
+    if (defined('XDEBUG_CC_BRANCH_CHECK')) {
+        $coverageFlags |= XDEBUG_CC_BRANCH_CHECK;
+    }
+
+    if ($coverageFlags > 0) {
+        xdebug_start_code_coverage($coverageFlags);
+    }
+
+    if ($coverageFlags === 0) {
+        xdebug_start_code_coverage();
+    }
+}
 
 if ($mode === 'die') {
     $structure->debug(['shutdown' => 'yes'], true);
