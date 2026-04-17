@@ -135,11 +135,23 @@ jobs:
                   coverage: none
 
             - name: Install PHPLint dependencies
-              working-directory: .github/phplint
-              run: composer install --no-progress --prefer-dist --optimize-autoloader --no-interaction
+              shell: bash
+              run: |
+                if [ -d ".github/phplint" ]; then
+                  cd .github/phplint
+                  composer install --no-progress --prefer-dist --optimize-autoloader --no-interaction
+                  echo "PHPLINT_BIN=.github/phplint/vendor/bin/phplint" >> "$GITHUB_ENV"
+                  exit 0
+                fi
+
+                cd system/ee/ExpressionEngine/Tests
+                composer install --no-progress --prefer-dist --optimize-autoloader --no-interaction
+                composer require overtrue/phplint --dev --no-progress --prefer-dist --no-interaction
+                echo "PHPLINT_BIN=system/ee/ExpressionEngine/Tests/vendor/bin/phplint" >> "$GITHUB_ENV"
 
             - name: Run PHPLint
-              run: ./.github/phplint/vendor/bin/phplint --no-configuration ./ --exclude=system/ee/ExpressionEngine/Tests/vendor --exclude=system/ee/installer/config/config_tmpl.php --exclude=system/ee/ExpressionEngine/Service/Generator/stubs --exclude=system/ee/vendor-build/symfony/polyfill-mbstring --exclude=system/ee/vendor-build/symfony/polyfill-ctype --exclude=vendor-bin --exclude=vendor
+              shell: bash
+              run: ./"$PHPLINT_BIN" --no-configuration ./ --exclude=system/ee/ExpressionEngine/Tests/vendor --exclude=system/ee/installer/config/config_tmpl.php --exclude=system/ee/ExpressionEngine/Service/Generator/stubs --exclude=system/ee/vendor-build/symfony/polyfill-mbstring --exclude=system/ee/vendor-build/symfony/polyfill-ctype --exclude=vendor-bin --exclude=vendor
 
     php-tests:
         if: github.event.pull_request.draft == false
