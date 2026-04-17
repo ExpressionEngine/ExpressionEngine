@@ -5,15 +5,15 @@ task_id: structure-mod-tests-023
 task_file: /Users/tomjaeger/Sites/ee75/ee_repo_3/RALPH_MOD_STRUCTURE_TESTS_ONLY_DEVELOP.md
 thread_id: 019d98aa-f534-7741-8e21-fdb47be3131a
 iterations: 1
-updated_at: 2026-04-16T23:52:26+00:00
+updated_at: 2026-04-16T23:52:33+00:00
 last_work_summary: 1. Additional high-value tests remaining before refactor: no. I added the remaining worthwhile pre-refactor vectors for `set_listings()`: invalid hook override fallback and the `parent_id`-missing payload invariant. 2. Refactor-ready for TARGET_METHOD now: yes. 3. Method coverage (line%, branch%): `100.00%`, `100.00%` for `Structure::set_listings()` from the Xdebug coverage artifact (`16/16` executable lines, `16/16` executable branches). 4. Vector matrix summary (covered/planned/not-applicab...
-last_finish_result: passed
-last_finish_reason: Verified on `tests/additional-stucture-mod-tests`. Current worktree changes for task `structure-mod-tests-023` are limited to `system/ee/ExpressionEngine/Tests/ExpressionEngine/Addons/Structure/Mod/StructureSetListingsTest.php` plus Ralph task-note files; no files under `system/ee/ExpressionEngine/Addons/structure/` were modified, no alternate `mod.structure.php` copy exists, and the two report markdown files were not modified. The task note explicitly reports no additional high-value pre-refactor vectors remain for `set_listings()`, targeted PHPUnit passed (`OK (4 tests, 14 assertions)`), coverage was run and reported at `100.00%` line / `100.00%` branch for `Structure::set_listings()`, PHP 7.4/8.0/8.1/8.2/8.3/8.4 were all reported pass, and the tests were confirmed to load the real module via `PATH_ADDONS . '/structure/mod.structure.php'`. I also reran the targeted PHPUnit and coverage commands locally and both passed. Branch commit subjects on `origin/7.dev..HEAD` contain none of `codex`, `ralph`, or `ai`.
-workflow_step_index: 2
+last_finish_result: finished
+last_finish_reason: Workflow completed successfully.
+workflow_step_index: 3
 branch_name: 
 check_attempts: {"check_1":1}
-commit_messages: []
-commit_hashes: []
+commit_messages: {"commit_2":"tests(coverage): mod.structure.php pre-refactor tests for set_listings"}
+commit_hashes: {"commit_2":"57bc8635d8a3c93d01e16b836b17ed24f8db8e1f"}
 pull_request_urls: []
 codex_model: gpt-5.4
 codex_thinking: high
@@ -59,3 +59,13 @@ attempt: 1
 passed: yes
 
 reason: Verified on `tests/additional-stucture-mod-tests`. Current worktree changes for task `structure-mod-tests-023` are limited to `system/ee/ExpressionEngine/Tests/ExpressionEngine/Addons/Structure/Mod/StructureSetListingsTest.php` plus Ralph task-note files; no files under `system/ee/ExpressionEngine/Addons/structure/` were modified, no alternate `mod.structure.php` copy exists, and the two report markdown files were not modified. The task note explicitly reports no additional high-value pre-refactor vectors remain for `set_listings()`, targeted PHPUnit passed (`OK (4 tests, 14 assertions)`), coverage was run and reported at `100.00%` line / `100.00%` branch for `Structure::set_listings()`, PHP 7.4/8.0/8.1/8.2/8.3/8.4 were all reported pass, and the tests were confirmed to load the real module via `PATH_ADDONS . '/structure/mod.structure.php'`. I also reran the targeted PHPUnit and coverage commands locally and both passed. Branch commit subjects on `origin/7.dev..HEAD` contain none of `codex`, `ralph`, or `ai`.
+
+### 2026-04-16T23:52:33+00:00 Commit Step commit_2
+
+Committed changes as 57bc8635d8a3c93d01e16b836b17ed24f8db8e1f
+
+message: tests(coverage): mod.structure.php pre-refactor tests for set_listings
+
+### 2026-04-16T23:52:33+00:00 Workflow Complete
+
+Completed all workflow steps for task structure-mod-tests-023.
