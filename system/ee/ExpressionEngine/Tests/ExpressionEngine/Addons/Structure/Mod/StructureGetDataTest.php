@@ -25,4 +25,24 @@ class StructureGetDataTest extends StructureTestBase
 		};
 		$this->assertSame([], $this->structure->get_data());
 	}
+
+	public function testGetDataDelegatesOnEachInvocationWithoutCaching()
+	{
+		$sql = new class {
+			public $calls = 0;
+
+			public function get_data()
+			{
+				$this->calls++;
+
+				return [10 => ['title' => 'Home']];
+			}
+		};
+
+		$this->structure->sql = $sql;
+
+		$this->assertSame([10 => ['title' => 'Home']], $this->structure->get_data());
+		$this->assertSame([10 => ['title' => 'Home']], $this->structure->get_data());
+		$this->assertSame(2, $sql->calls);
+	}
 }
