@@ -1160,6 +1160,75 @@ class FileTest extends TestCase
     }
 
     /**
+     * Assert renderResizeForm() falls back to the file dimensions when nothing is posted.
+     *
+     * @return void
+     */
+    public function testRenderResizeFormBuildsConstraintFieldsFromFileDimensions()
+    {
+        $view = new ViewFactoryRecorder();
+
+        ee()->setMock('View', $view);
+        ee()->setMock('Request', new RequestRecorder());
+
+        $output = $this->makeResizeController()->renderResizeFormForTest(
+            new \stdClass(),
+            ['width' => 1920, 'height' => 1080]
+        );
+
+        $this->assertSame('rendered:_shared/form/section', $output);
+        $this->assertCount(1, $view->renders);
+        $this->assertSame('_shared/form/section', $view->renders[0]['view']);
+        $this->assertSame([
+            [
+                'title' => 'constraints',
+                'desc' => 'crop_constraints_desc',
+                'fields' => [
+                    'resize_width' => [
+                        'type' => 'short-text',
+                        'label' => 'resize_width',
+                        'value' => 1920,
+                    ],
+                    'resize_height' => [
+                        'type' => 'short-text',
+                        'label' => 'resize_height',
+                        'value' => 1080,
+                    ],
+                ],
+            ],
+        ], $view->renders[0]['vars']['settings']);
+        $this->assertNull($view->renders[0]['vars']['name']);
+    }
+
+    /**
+     * Assert renderResizeForm() preserves posted width and height values.
+     *
+     * @return void
+     */
+    public function testRenderResizeFormUsesPostedConstraintValues()
+    {
+        $view = new ViewFactoryRecorder();
+
+        ee()->setMock('View', $view);
+        ee()->setMock('Request', new RequestRecorder([
+            'resize_width' => '640',
+            'resize_height' => '360',
+        ]));
+
+        $this->makeResizeController()->renderResizeFormForTest(
+            new \stdClass(),
+            ['width' => 1920, 'height' => 1080]
+        );
+
+        $settings = $view->renders[0]['vars']['settings'];
+
+        $this->assertSame('640', $settings[0]['fields']['resize_width']['value']);
+        $this->assertSame('360', $settings[0]['fields']['resize_height']['value']);
+        $this->assertSame('short-text', $settings[0]['fields']['resize_width']['type']);
+        $this->assertSame('short-text', $settings[0]['fields']['resize_height']['type']);
+    }
+
+    /**
      * Assert download() exits through the missing-file error branch.
      *
      * @return void
@@ -1377,6 +1446,17 @@ class FileTest extends TestCase
     }
 
     /**
+     * Create a controller double that exposes the real renderResizeForm() implementation.
+     *
+     * @return ResizeFormFileController
+     */
+    private function makeResizeController(): ResizeFormFileController
+    {
+        return (new \ReflectionClass(ResizeFormFileController::class))
+            ->newInstanceWithoutConstructor();
+    }
+
+    /**
      * Build a file stub for renderManipulationsForm() data.
      *
      * @param array<int, ManipulationStub> $manipulations
@@ -1574,6 +1654,24 @@ class RotateFormFileController extends \ExpressionEngine\Controller\Files\File
     public function renderRotateFormForTest($file)
     {
         return parent::renderRotateForm($file);
+    }
+}
+
+/**
+ * Exposes the real renderResizeForm() implementation for targeted tests.
+ */
+class ResizeFormFileController extends \ExpressionEngine\Controller\Files\File
+{
+    /**
+     * Call the parent implementation through a public test seam.
+     *
+     * @param mixed $file
+     * @param array<string, mixed> $info
+     * @return string
+     */
+    public function renderResizeFormForTest($file, array $info)
+    {
+        return parent::renderResizeForm($file, $info);
     }
 }
 
