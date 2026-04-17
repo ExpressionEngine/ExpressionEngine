@@ -199,8 +199,7 @@ class ChannelFormLibEntryFormTest extends ChannelFormLibTestBase
         $assignedChannelsMock = new class {
             public function pluck() { return []; } // No channels assigned
         };
-        // Suppress deprecation warning for PHP 8.2+ dynamic property creation
-        @$mockMember->assignedChannels = $assignedChannelsMock;
+        $mockMember->assignedChannels = $assignedChannelsMock;
 
         $this->setMock('Permission', new class {
             public function isSuperAdmin() { return false; }
@@ -614,11 +613,6 @@ class ChannelFormLibEntryFormTest extends ChannelFormLibTestBase
                 ['category_id' => 1, 'category_name' => 'News'],
                 ['category_id' => 2, 'category_name' => 'Events']
             ];
-        };
-
-        // Mock selected categories
-        @$this->channelFormLib->get_selected_cats = function() {
-            return [1];
         };
 
         try {

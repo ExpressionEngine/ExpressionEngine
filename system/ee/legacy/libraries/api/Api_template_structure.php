@@ -240,8 +240,10 @@ class Api_template_structure extends Api
             $template_type = reset($template_type);
         }
 
-        if (isset($this->file_extensions[$template_type])) {
-            return implode('', array_filter([$this->file_extensions[$template_type], $engine]));
+        $template_type_key = $template_type ?? '';
+
+        if (isset($this->file_extensions[$template_type_key])) {
+            return implode('', array_filter([$this->file_extensions[$template_type_key], $engine]));
         } else {
             // Check custom template types for a file extension
             // -------------------------------------------
@@ -256,8 +258,8 @@ class Api_template_structure extends Api
             // -------------------------------------------
 
             if (isset($template_types) && !empty($template_types)) {
-                if (isset($template_types[$template_type]['template_file_extension'])) {
-                    return implode('', array_filter([$template_types[$template_type]['template_file_extension'], $engine]));
+                if (isset($template_types[$template_type_key]['template_file_extension'])) {
+                    return implode('', array_filter([$template_types[$template_type_key]['template_file_extension'], $engine]));
                 }
             }
         }

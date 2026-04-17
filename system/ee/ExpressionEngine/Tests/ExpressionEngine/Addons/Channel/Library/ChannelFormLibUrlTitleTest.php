@@ -465,7 +465,6 @@ class ChannelFormLibUrlTitleTest extends ChannelFormLibTestBase
                     'valid' => 'char',
                     123 => 'invalid', // numeric key
                     'another' => 456, // numeric value
-                    null => 'null_key',
                     'null_value' => null
                 ];
             }
@@ -522,7 +521,6 @@ class ChannelFormLibUrlTitleTest extends ChannelFormLibTestBase
                 if ($hook === 'foreign_character_conversion_array') {
                     return [
                         'valid' => 'good',
-                        null => 'null_key', // invalid key
                         'another' => null,  // invalid value
                         123 => 'numeric_key', // invalid key type
                         'special_chars' => '[special]', // regex special chars

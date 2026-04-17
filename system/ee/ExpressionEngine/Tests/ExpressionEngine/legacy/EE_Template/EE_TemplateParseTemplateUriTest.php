@@ -482,4 +482,288 @@ class EE_TemplateParseTemplateUriTest extends EE_TemplateTestBase
         $parameters = $reflection->getParameters();
         $this->assertCount(0, $parameters);
     }
+
+    public function testParseTemplateUriProcessesPostInstallTemplateWhenDefaultTemplateMissing()
+    {
+        $uriMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['segment'])
+            ->getMock();
+        $uriMock->method('segment')->willReturn(false);
+        $uriMock->segments = [];
+        ee()->setMock('uri', $uriMock);
+
+        $dbMock = new \FakeDb();
+        $dbMock->setRows([
+            [
+                'site_id' => 1,
+                'template_name' => 'post_install_message_template',
+                'template_data' => 'post-install-template',
+            ],
+        ]);
+        ee()->setMock('db', $dbMock);
+
+        $outputMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['set_output', '_display'])
+            ->getMock();
+        $outputMock->method('set_output')->willReturnSelf();
+        $outputMock->method('_display')->willThrowException(new \RuntimeException('displayed'));
+        ee()->setMock('output', $outputMock);
+
+        $templateMock = $this->getMockBuilder(\EE_Template::class)
+            ->onlyMethods(['fetch_template', 'parse', 'parse_globals'])
+            ->getMock();
+        $templateMock->method('fetch_template')
+            ->with('', 'index', true)
+            ->willReturn(false);
+        $templateMock->method('parse')
+            ->willReturnCallback(function($tmpl) use ($templateMock) {
+                $templateMock->final_template = $tmpl;
+            });
+        $templateMock->method('parse_globals')
+            ->willReturn('global-parsed-template');
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('displayed');
+
+        $templateMock->parse_template_uri();
+    }
+
+    public function testParseTemplateUriHandlesDuplicateGroupsAndKeepsTemplateSegment()
+    {
+        $uriMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['segment'])
+            ->getMock();
+        $uriMock->method('segment')->willReturnCallback(function($n) {
+            if ($n === 1) {
+                return 'group';
+            }
+            if ($n === 2) {
+                return 'article';
+            }
+            if ($n === 3) {
+                return 'extra';
+            }
+
+            return false;
+        });
+        $uriMock->segments = ['group', 'article', 'extra'];
+        $uriMock->uri_string = 'group/article/extra';
+        ee()->setMock('uri', $uriMock);
+
+        $dbMock = new \FakeDb();
+        $dbMock->setRows([
+            ['group_id' => 1, 'group_name' => 'group', 'site_id' => 1],
+            ['group_id' => 2, 'group_name' => 'group', 'site_id' => 1],
+            ['group_id' => 1, 'template_name' => 'article', 'count' => 1],
+        ]);
+        ee()->setMock('db', $dbMock);
+
+        $templateMock = $this->getMockBuilder(\EE_Template::class)
+            ->onlyMethods(['fetch_template'])
+            ->getMock();
+        $templateMock->expects($this->once())
+            ->method('fetch_template')
+            ->with('group', 'article', false)
+            ->willReturn('group-article');
+
+        $result = $templateMock->parse_template_uri();
+
+        $this->assertSame('group-article', $result);
+        $this->assertSame('extra', $uriMock->query_string);
+    }
+
+    public function testParseTemplateUriCreatesMissingTemplateForInvalidGroupWhenStrictUrlsEnabled()
+    {
+        ee()->config->setItem('strict_urls', 'y');
+        ee()->config->setItem('save_tmpl_files', 'y');
+
+        $uriMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['segment'])
+            ->getMock();
+        $uriMock->method('segment')->willReturnCallback(function($n) {
+            if ($n === 1) {
+                return 'newgroup';
+            }
+            if ($n === 2) {
+                return 'newtemplate';
+            }
+
+            return false;
+        });
+        $uriMock->segments = ['newgroup', 'newtemplate'];
+        $uriMock->uri_string = 'newgroup/newtemplate';
+        ee()->setMock('uri', $uriMock);
+
+        $dbMock = new \FakeDb();
+        $dbMock->setRows([]);
+        ee()->setMock('db', $dbMock);
+
+        $templateMock = $this->getMockBuilder(\EE_Template::class)
+            ->onlyMethods(['_create_from_file', 'fetch_template'])
+            ->getMock();
+        $templateMock->expects($this->once())
+            ->method('_create_from_file')
+            ->with('newgroup', 'newtemplate')
+            ->willReturn(true);
+        $templateMock->expects($this->once())
+            ->method('fetch_template')
+            ->with('newgroup', 'newtemplate', false)
+            ->willReturn('created-from-file');
+
+        $result = $templateMock->parse_template_uri();
+
+        $this->assertSame('created-from-file', $result);
+    }
+
+    public function testParseTemplateUriReturnsFalseWhenNoDefaultOrPostInstallTemplateExists()
+    {
+        $uriMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['segment'])
+            ->getMock();
+        $uriMock->method('segment')->willReturn(false);
+        $uriMock->segments = [];
+        ee()->setMock('uri', $uriMock);
+
+        $dbMock = new \FakeDb();
+        $dbMock->setRows([]);
+        ee()->setMock('db', $dbMock);
+
+        $templateMock = $this->getMockBuilder(\EE_Template::class)
+            ->onlyMethods(['fetch_template'])
+            ->getMock();
+        $templateMock->expects($this->once())
+            ->method('fetch_template')
+            ->with('', 'index', true)
+            ->willReturn(false);
+
+        $this->assertFalse($templateMock->parse_template_uri());
+    }
+
+    public function testParseTemplateUriPostInstallTemplatePathBuildsResponseBeforeExit()
+    {
+        $uriMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['segment'])
+            ->getMock();
+        $uriMock->method('segment')->willReturn(false);
+        $uriMock->segments = [];
+        ee()->setMock('uri', $uriMock);
+
+        $dbMock = new \FakeDb();
+        $dbMock->setRows([
+            [
+                'site_id' => 1,
+                'template_name' => 'post_install_message_template',
+                'template_data' => 'post-install-template',
+            ],
+        ]);
+        ee()->setMock('db', $dbMock);
+
+        $outputMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['set_output', '_display'])
+            ->getMock();
+        $outputMock->method('set_output')->willReturnSelf();
+        $outputMock->method('_display')->willThrowException(new \RuntimeException('displayed-before-exit'));
+        ee()->setMock('output', $outputMock);
+
+        $templateMock = $this->getMockBuilder(\EE_Template::class)
+            ->onlyMethods(['fetch_template', 'parse', 'parse_globals'])
+            ->getMock();
+        $templateMock->method('fetch_template')->willReturn(false);
+        $templateMock->method('parse')->willReturnCallback(function($tmpl) use ($templateMock) {
+            $templateMock->final_template = $tmpl;
+        });
+        $templateMock->method('parse_globals')->willReturn('global-parsed-template');
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('displayed-before-exit');
+        $templateMock->parse_template_uri();
+    }
+
+    public function testParseTemplateUriCreatesTemplateFromFileForMissingTemplateInValidGroup()
+    {
+        ee()->config->setItem('save_tmpl_files', 'y');
+
+        $uriMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['segment'])
+            ->getMock();
+        $uriMock->method('segment')->willReturnCallback(function($n) {
+            if ($n === 1) {
+                return 'docs';
+            }
+            if ($n === 2) {
+                return 'missing-template';
+            }
+
+            return false;
+        });
+        $uriMock->segments = ['docs', 'missing-template'];
+        $uriMock->uri_string = 'docs/missing-template';
+        ee()->setMock('uri', $uriMock);
+
+        $dbMock = new \FakeDb();
+        $dbMock->setRows([
+            ['group_id' => 9, 'group_name' => 'docs', 'site_id' => 1],
+            ['group_id' => 9, 'template_name' => 'missing-template', 'count' => 0],
+        ]);
+        ee()->setMock('db', $dbMock);
+
+        $templateMock = $this->getMockBuilder(\EE_Template::class)
+            ->onlyMethods(['_create_from_file', 'fetch_template'])
+            ->getMock();
+        $templateMock->expects($this->once())
+            ->method('_create_from_file')
+            ->with('docs', 'missing-template')
+            ->willReturn(true);
+        $templateMock->expects($this->once())
+            ->method('fetch_template')
+            ->with('docs', 'missing-template', false)
+            ->willReturn('created-missing-template');
+
+        $result = $templateMock->parse_template_uri();
+
+        $this->assertSame('created-missing-template', $result);
+    }
+
+    public function testParseTemplateUriUsesDefaultGroupTemplateAndQueryStringRemainder()
+    {
+        ee()->config->setItem('strict_urls', 'n');
+
+        $uriMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['segment'])
+            ->getMock();
+        $uriMock->method('segment')->willReturnCallback(function($n) {
+            if ($n === 1) {
+                return 'about';
+            }
+            if ($n === 2) {
+                return 'details';
+            }
+
+            return false;
+        });
+        $uriMock->segments = ['about', 'details'];
+        $uriMock->uri_string = 'about/details';
+        $uriMock->query_string = '';
+        ee()->setMock('uri', $uriMock);
+
+        $dbMock = new \FakeDb();
+        $dbMock->setRows([
+            ['group_name' => 'site_default', 'group_id' => 5, 'is_site_default' => 'y', 'site_id' => 1],
+            ['group_id' => 5, 'template_name' => 'about', 'count' => 1],
+        ]);
+        ee()->setMock('db', $dbMock);
+
+        $templateMock = $this->getMockBuilder(\EE_Template::class)
+            ->onlyMethods(['fetch_template'])
+            ->getMock();
+        $templateMock->expects($this->once())
+            ->method('fetch_template')
+            ->with('site_default', 'about', false)
+            ->willReturn('default-group-about');
+
+        $result = $templateMock->parse_template_uri();
+
+        $this->assertSame('default-group-about', $result);
+        $this->assertSame('details', $uriMock->query_string);
+    }
 }

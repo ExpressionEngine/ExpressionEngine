@@ -3,16 +3,10 @@
 require_once __DIR__ . '/../StructureTestBase.php';
 
 if (!function_exists('form_dropdown')) {
-    function form_dropdown($name, $options, $selected)
-    {
-        $html = '<select name="' . $name . '">';
-        foreach ($options as $value => $label) {
-            $sel = ($value === $selected) ? ' selected' : '';
-            $html .= '<option value="' . $value . '"' . $sel . '>' . $label . '</option>';
-        }
-        $html .= '</select>';
-        return $html;
+    if (!defined('REQ')) {
+        define('REQ', 'CP');
     }
+    require_once APPPATH . 'helpers/form_helper.php';
 }
 
 class StructureSaefSelectTest extends StructureTestBase
@@ -53,7 +47,8 @@ class StructureSaefSelectTest extends StructureTestBase
     {
         $this->setTemplateParams(['type' => 'unknown']);
         $html = $this->structure->saef_select();
-        $this->assertStringContainsString('<select name="structure_unknown_id">', $html);
+        $this->assertStringContainsString('<select', $html);
+        $this->assertStringContainsString('name="structure_unknown_id"', $html);
     }
 
     public function testTemplateTypeBuildsDropdownWithSelectedFromSitePages()
@@ -75,8 +70,9 @@ class StructureSaefSelectTest extends StructureTestBase
         $this->setTemplateParams(['type' => 'template', 'entry_id' => 55]);
         $html = $this->structure->saef_select();
 
-        $this->assertStringContainsString('<select name="structure_template_id">', $html);
-        $this->assertStringContainsString('<option value="2" selected>site/page</option>', $html);
+        $this->assertStringContainsString('<select', $html);
+        $this->assertStringContainsString('name="structure_template_id"', $html);
+        $this->assertStringContainsString('<option value="2" selected="selected">site/page</option>', $html);
     }
 
     public function testTemplateTypeWithNoTemplatesStillRendersChooseTemplate()
@@ -107,8 +103,9 @@ class StructureSaefSelectTest extends StructureTestBase
         $this->setTemplateParams(['type' => 'parent', 'entry_id' => 99]);
         $html = $this->structure->saef_select();
 
-        $this->assertStringContainsString('<select name="structure_parent_id">', $html);
-        $this->assertStringContainsString('<option value="11" selected>-- About</option>', $html);
+        $this->assertStringContainsString('<select', $html);
+        $this->assertStringContainsString('name="structure_parent_id"', $html);
+        $this->assertStringContainsString('<option value="11" selected="selected">-- About</option>', $html);
         $this->assertStringContainsString('<option value="12">---- Team</option>', $html);
     }
 
@@ -120,8 +117,6 @@ class StructureSaefSelectTest extends StructureTestBase
         };
         $this->setTemplateParams(['type' => 'parent', 'entry_id' => 99]);
         $html = $this->structure->saef_select();
-        $this->assertStringContainsString('<option value="0" selected>Choose Parent</option>', $html);
+        $this->assertStringContainsString('<option value="0" selected="selected">Choose Parent</option>', $html);
     }
 }
-
-

@@ -36,7 +36,7 @@ class ChannelFetchDynamicParamsTest extends ChannelTestBase
             public function get($k){ return null; }
         });
         // Initialize required dynamic param whitelist
-        $ref = new ReflectionClass($this->channel);
+        $ref = new ReflectionClass(Channel::class);
         $prop = $ref->getProperty('_dynamic_parameters');
         \TestReflectionHelper::makePropertyAccessible($prop);
         $prop->setValue($this->channel, array('channel', 'entry_id', 'category', 'orderby',
@@ -70,7 +70,7 @@ class ChannelFetchDynamicParamsTest extends ChannelTestBase
             }
             public function get($k){ return null; }
         });
-        $ref = new ReflectionClass($this->channel);
+        $ref = new ReflectionClass(Channel::class);
         $prop = $ref->getProperty('_dynamic_parameters');
         \TestReflectionHelper::makePropertyAccessible($prop);
         $prop->setValue($this->channel, array('channel', 'entry_id', 'category', 'orderby',
@@ -94,7 +94,7 @@ class ChannelFetchDynamicParamsTest extends ChannelTestBase
             public $search_fields = [];
             public function fetch_param($key){ return $key==='dynamic_parameters' ? 'not_a_param' : null; }
         });
-        $ref = new ReflectionClass($this->channel);
+        $ref = new ReflectionClass(Channel::class);
         $prop = $ref->getProperty('_dynamic_parameters');
         \TestReflectionHelper::makePropertyAccessible($prop);
         $prop->setValue($this->channel, array('channel', 'entry_id', 'category', 'orderby',
