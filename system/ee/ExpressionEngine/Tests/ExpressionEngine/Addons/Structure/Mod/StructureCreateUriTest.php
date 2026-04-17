@@ -10,6 +10,12 @@ class StructureCreateUriTest extends StructureTestBase
 		$this->assertSame('my-title', $result);
 	}
 
+	public function testCreateUriUsesUrlTitleWhenSubmittedUriIsStringZero()
+	{
+		$result = $this->structure->create_uri('0', 'fallback-title');
+		$this->assertSame('fallback-title', $result);
+	}
+
 	public function testCreateUriStripsInvalidCharacters()
 	{
 		$result = $this->structure->create_uri('Hello World!@#$', 'fallback');
@@ -75,6 +81,11 @@ class StructureCreateUriTest extends StructureTestBase
 		$result = $this->structure->create_uri('a b_c-d.e', '');
 		$this->assertSame('ab_c-d.e', $result);
 	}
-}
 
+	public function testCreateUriWhitespaceOnlyInputDoesNotFallbackAndSanitizesToEmpty()
+	{
+		$result = $this->structure->create_uri('   ', 'fallback-title');
+		$this->assertSame('', $result);
+	}
+}
 
