@@ -1,0 +1,288 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e5]: 
+    - generic [ref=e6]:
+      - paragraph [ref=e7]: ExpressionEngine Pro License Error.
+      - paragraph [ref=e8]:
+        - text: Since this site has multiple members, it will also require a purchased license. Please buy a license before launching. Thanks!
+        - text: Please verify your
+        - link "Site License Key" [ref=e9] [cursor=pointer]:
+          - /url: http://ee_repo_2.test/admin.php?/cp/settings/general#fieldset-site_license_key
+        - text: and visit
+        - link "Licenses" [ref=e10] [cursor=pointer]:
+          - /url: https://expressionengine.com/store/licenses
+        - text: section at ExpressionEngine.com
+    - link "" [ref=e11] [cursor=pointer]:
+      - /url: "#"
+      - generic [ref=e12]: 
+  - generic [ref=e14]:
+    - navigation [ref=e15]:
+      - link " EE REPO 2" [ref=e16] [cursor=pointer]:
+        - /url: http://ee_repo_2.test/
+        - generic [ref=e17]:
+          - generic [ref=e18]: 
+          - text: EE REPO 2
+      - generic [ref=e19]:
+        - link " Overview" [ref=e20] [cursor=pointer]:
+          - /url: admin.php?/cp/homepage
+          - generic [ref=e21]: 
+          - text: Overview
+        - generic [ref=e22]:
+          - generic [ref=e23]: Content
+          - link " Entries" [ref=e24] [cursor=pointer]:
+            - /url: admin.php?/cp/publish/edit
+            - generic [ref=e25]: 
+            - text: Entries
+          - text:  + +
+          - link " Files" [ref=e26] [cursor=pointer]:
+            - /url: admin.php?/cp/files
+            - generic [ref=e27]: 
+            - text: Files
+          - link " Categories" [ref=e28] [cursor=pointer]:
+            - /url: admin.php?/cp/categories
+            - generic [ref=e29]: 
+            - text: Categories
+        - generic [ref=e30]:
+          - generic [ref=e31]: Members
+          - link " Members" [ref=e32] [cursor=pointer]:
+            - /url: admin.php?/cp/members
+            - generic [ref=e33]: 
+            - text: Members
+          - link " Roles" [ref=e34] [cursor=pointer]:
+            - /url: admin.php?/cp/members/roles
+            - generic [ref=e35]: 
+            - text: Roles
+        - generic [ref=e36]:
+          - generic [ref=e37]: Developer
+          - link " Channels" [ref=e38] [cursor=pointer]:
+            - /url: admin.php?/cp/channels
+            - generic [ref=e39]: 
+            - text: Channels
+          - link " Fields" [ref=e40] [cursor=pointer]:
+            - /url: admin.php?/cp/fields
+            - generic [ref=e41]: 
+            - text: Fields
+          - link " Templates" [ref=e42] [cursor=pointer]:
+            - /url: admin.php?/cp/design
+            - generic [ref=e43]: 
+            - text: Templates
+          - link " Tools" [ref=e44] [cursor=pointer]:
+            - /url: admin.php?/cp/utilities
+            - generic [ref=e45]: 
+            - text: Tools
+          - link " Add-Ons" [ref=e46] [cursor=pointer]:
+            - /url: admin.php?/cp/addons
+            - generic [ref=e47]: 
+            - text: Add-Ons
+          - link " Settings" [ref=e48] [cursor=pointer]:
+            - /url: admin.php?/cp/settings
+            - generic [ref=e49]: 
+            - text: Settings
+        - generic [ref=e50]:
+          - link "ExpressionEngine 7.5.21" [ref=e51] [cursor=pointer]:
+            - /url: ""
+            - generic [ref=e52]:
+              - text: ExpressionEngine
+              - generic [ref=e53]: 7.5.21
+          - link " Pro" [ref=e55] [cursor=pointer]:
+            - /url: ""
+            - generic [ref=e56]: 
+            - text: Pro
+    - main [ref=e57]:
+      - generic [ref=e58]:
+        - text: 
+        - generic [ref=e59]:
+          - generic [ref=e60]: 
+          - textbox "Jump To..." [ref=e61]
+          - generic [ref=e62]: ⌘J
+        - generic [ref=e63]:
+          - button "localcursor" [ref=e64] [cursor=pointer]:
+            - img "localcursor" [ref=e65]
+          - text:    +
+      - generic [ref=e66]:
+        - link "🎉 ExpressionEngine 7.5.21" [ref=e67] [cursor=pointer]:
+          - /url: https://docs.expressionengine.com/v7/installation/changelog.html#version-7521
+          - text: 🎉 ExpressionEngine
+          - strong [ref=e68]: 7.5.21
+        - link " Release Notes…" [ref=e69] [cursor=pointer]:
+          - /url: https://docs.expressionengine.com/v7/installation/changelog.html#version-7521
+          - generic [ref=e70]: 
+          - text: Release Notes…
+        - generic [ref=e71]:
+          - link " ExpressionEngine 7.5.0 7.5 is a major step forward in helping developers be successful faster. Removing the guess work, simplifying template code, and much more! Read the blog post…" [ref=e72] [cursor=pointer]:
+            - /url: https://expressionengine.com/blog/expressionengine-7.5
+            - generic [ref=e73]: 
+            - heading "ExpressionEngine 7.5.0" [level=6] [ref=e74]
+            - paragraph [ref=e75]: 7.5 is a major step forward in helping developers be successful faster. Removing the guess work, simplifying template code, and much more! Read the blog post…
+          - link " Code Generators Making development easier and more fun. Build your dreams in ExpressionEngine faster than ever before…" [ref=e76] [cursor=pointer]:
+            - /url: https://expressionengine.com/blog/7.5-code-generators
+            - generic [ref=e77]: 
+            - heading "Code Generators" [level=6] [ref=e78]
+            - paragraph [ref=e79]: Making development easier and more fun. Build your dreams in ExpressionEngine faster than ever before…
+          - link " Form Validation In 7.5 form validation has been standardized and expanded across even more tags. You also have more flexibility to handle errors inline with your forms!" [ref=e80] [cursor=pointer]:
+            - /url: https://expressionengine.com/blog/ee75-inline-form-validation-errors-everywhere
+            - generic [ref=e81]: 
+            - heading "Form Validation" [level=6] [ref=e82]
+            - paragraph [ref=e83]: In 7.5 form validation has been standardized and expanded across even more tags. You also have more flexibility to handle errors inline with your forms!
+          - link " Cool Little Additions Dramatically simplified templates for field groups in Fluid, new channel:fields tags and a bunch more!" [ref=e84] [cursor=pointer]:
+            - /url: https://expressionengine.com/blog/expressionengine-7.5-all-the-cool-little-additions
+            - generic [ref=e85]: 
+            - heading "Cool Little Additions" [level=6] [ref=e86]
+            - paragraph [ref=e87]: Dramatically simplified templates for field groups in Fluid, new channel:fields tags and a bunch more!
+        - link " Close banner icon" [ref=e88] [cursor=pointer]:
+          - /url: admin.php?/cp/homepage/dismiss-banner
+          - text: 
+          - generic [ref=e89]: Close banner icon
+      - generic [ref=e91]:
+        - heading "EE REPO 2" [level=1] [ref=e93]
+        - link "" [ref=e95] [cursor=pointer]:
+          - /url: admin.php?/cp/pro/dashboard/layout/2
+      - generic [ref=e98]:
+        - generic [ref=e99]:
+          - generic [ref=e100]:
+            - heading "ExpressionEngine News" [level=2] [ref=e101]
+            - link "RSS" [ref=e102] [cursor=pointer]:
+              - /url: https://expressionengine.com/blog/rss-feed/cpnews/
+          - list [ref=e103]:
+            - listitem [ref=e104]:
+              - link "ExpressionEngine 6 to Enter Legacy Status at the End of 2025 12/3/2025" [ref=e105] [cursor=pointer]:
+                - /url: http://ee_repo_2.test/index.php?URL=https%3A%2F%2Fexpressionengine.com%2Fblog%2Fexpressionengine-6-to-enter-legacy-status-at-the-end-of-2025
+                - text: ExpressionEngine 6 to Enter Legacy Status at the End of 2025
+                - generic [ref=e106]: 12/3/2025
+            - listitem [ref=e107]:
+              - 'link "CartThrob 9.0.0 is Here: What You Need to Know 11/3/2025" [ref=e108] [cursor=pointer]':
+                - /url: http://ee_repo_2.test/index.php?URL=https%3A%2F%2Fexpressionengine.com%2Fblog%2Fcartthrob-9.0.0-is-here-what-you-need-to-know
+                - text: "CartThrob 9.0.0 is Here: What You Need to Know"
+                - generic [ref=e109]: 11/3/2025
+            - listitem [ref=e110]:
+              - link "ExpressionEngine Conference 2025 Recap 10/29/2025" [ref=e111] [cursor=pointer]:
+                - /url: http://ee_repo_2.test/index.php?URL=https%3A%2F%2Fexpressionengine.com%2Fblog%2Fexpressionengine-conference-2025-recap
+                - text: ExpressionEngine Conference 2025 Recap
+                - generic [ref=e112]: 10/29/2025
+            - listitem [ref=e113]:
+              - link "Join Us in London for EEConf 2025 9/18/2025" [ref=e114] [cursor=pointer]:
+                - /url: http://ee_repo_2.test/index.php?URL=https%3A%2F%2Fexpressionengine.com%2Fblog%2Fexpressionengine-conference-2025
+                - text: Join Us in London for EEConf 2025
+                - generic [ref=e115]: 9/18/2025
+            - listitem [ref=e116]:
+              - 'link "Expresso Store 6 is Here: Rebuilt, Refined, and Ready for ExpressionEngine 7 7/15/2025" [ref=e117] [cursor=pointer]':
+                - /url: http://ee_repo_2.test/index.php?URL=https%3A%2F%2Fexpressionengine.com%2Fblog%2Fexpresso-store-6-is-here-rebuilt-refined-and-ready-for-expressionengine-7
+                - text: "Expresso Store 6 is Here: Rebuilt, Refined, and Ready for ExpressionEngine 7"
+                - generic [ref=e118]: 7/15/2025
+            - listitem [ref=e119]:
+              - link "CartThrob &amp; Expresso Store Join ExpressionEngine 2/26/2025" [ref=e120] [cursor=pointer]:
+                - /url: http://ee_repo_2.test/index.php?URL=https%3A%2F%2Fexpressionengine.com%2Fblog%2Fcartthrob-expresso-store-join-expressionengine
+                - text: CartThrob &amp; Expresso Store Join ExpressionEngine
+                - generic [ref=e121]: 2/26/2025
+        - generic [ref=e122]:
+          - generic [ref=e123]:
+            - heading "Members" [level=2] [ref=e124]
+            - link "View All" [ref=e126] [cursor=pointer]:
+              - /url: admin.php?/cp/members
+          - list [ref=e127]:
+            - listitem [ref=e128]:
+              - link "localcursor 4/3/2026 7:05 PM" [ref=e129] [cursor=pointer]:
+                - /url: admin.php?/cp/members/profile/settings&id=2
+                - generic [ref=e130]:
+                  - text: localcursor
+                  - generic [ref=e131]: 4/3/2026 7:05 PM
+            - listitem [ref=e132]:
+              - link "tjaeger 4/3/2026 6:29 PM" [ref=e133] [cursor=pointer]:
+                - /url: admin.php?/cp/members/profile/settings&id=1
+                - generic [ref=e134]:
+                  - text: tjaeger
+                  - generic [ref=e135]: 4/3/2026 6:29 PM
+        - generic [ref=e136]:
+          - generic [ref=e137]:
+            - heading "Recent Entries" [level=2] [ref=e138]
+            - link "View All" [ref=e139] [cursor=pointer]:
+              - /url: admin.php?/cp/publish/edit
+          - list [ref=e140]:
+            - listitem [ref=e141]:
+              - link "Copy of Copy of Copy of Copy of Copy of test new 4/3/2026" [ref=e142] [cursor=pointer]:
+                - /url: admin.php?/cp/publish/edit/entry/10
+                - text: Copy of Copy of Copy of Copy of Copy of test new
+                - generic [ref=e143]: 4/3/2026
+            - listitem [ref=e144]:
+              - link "Copy of Copy of Copy of Copy of test new 4/3/2026" [ref=e145] [cursor=pointer]:
+                - /url: admin.php?/cp/publish/edit/entry/9
+                - text: Copy of Copy of Copy of Copy of test new
+                - generic [ref=e146]: 4/3/2026
+            - listitem [ref=e147]:
+              - link "Copy of Copy of Copy of test new 4/3/2026" [ref=e148] [cursor=pointer]:
+                - /url: admin.php?/cp/publish/edit/entry/8
+                - text: Copy of Copy of Copy of test new
+                - generic [ref=e149]: 4/3/2026
+            - listitem [ref=e150]:
+              - link "Copy of Copy of test new 4/3/2026" [ref=e151] [cursor=pointer]:
+                - /url: admin.php?/cp/publish/edit/entry/7
+                - text: Copy of Copy of test new
+                - generic [ref=e152]: 4/3/2026
+            - listitem [ref=e153]:
+              - link "Copy of test new 4/3/2026" [ref=e154] [cursor=pointer]:
+                - /url: admin.php?/cp/publish/edit/entry/6
+                - text: Copy of test new
+                - generic [ref=e155]: 4/3/2026
+            - listitem [ref=e156]:
+              - link "Copy of Copy of Copy of test blog 4/3/2026" [ref=e157] [cursor=pointer]:
+                - /url: admin.php?/cp/publish/edit/entry/4
+                - text: Copy of Copy of Copy of test blog
+                - generic [ref=e158]: 4/3/2026
+            - listitem [ref=e159]:
+              - link "Copy of Copy of test blog 4/3/2026" [ref=e160] [cursor=pointer]:
+                - /url: admin.php?/cp/publish/edit/entry/3
+                - text: Copy of Copy of test blog
+                - generic [ref=e161]: 4/3/2026
+        - generic [ref=e162]:
+          - generic [ref=e163]:
+            - heading "Recent Templates" [level=2] [ref=e164]
+            - link "View All" [ref=e165] [cursor=pointer]:
+              - /url: admin.php?/cp/design
+          - list [ref=e166]:
+            - listitem [ref=e167]:
+              - link "pro-dashboard-widgets/index 4/3/2026" [ref=e168] [cursor=pointer]:
+                - /url: admin.php?/cp/design/template/edit/2
+                - text: pro-dashboard-widgets/index
+                - generic [ref=e169]: 4/3/2026
+            - listitem [ref=e170]:
+              - link "pro-dashboard-widgets/sample-widget 4/3/2026" [ref=e171] [cursor=pointer]:
+                - /url: admin.php?/cp/design/template/edit/1
+                - text: pro-dashboard-widgets/sample-widget
+                - generic [ref=e172]: 4/3/2026
+        - generic [ref=e173]:
+          - text: 
+          - heading "ExpressionEngine Support" [level=2] [ref=e175]
+          - paragraph [ref=e176]: Get direct, fast, unlimited support from the same team that builds your favorite CMS.
+          - paragraph [ref=e177]:
+            - link "Learn More" [ref=e178] [cursor=pointer]:
+              - /url: https://expressionengine.com/support
+      - generic [ref=e180]:
+        - heading "/cp/homepage" [level=1] [ref=e181]
+        - generic [ref=e182]:
+          - generic [ref=e184]:
+            - button "0.1392s Load" [ref=e185] [cursor=pointer]
+            - button "Variables" [ref=e186] [cursor=pointer]
+            - button "54 Queries" [ref=e187] [cursor=pointer]
+            - button "3.09MB Templates" [ref=e188] [cursor=pointer]
+          - generic [ref=e190]:
+            - heading "Performance" [level=2] [ref=e191]
+            - list [ref=e192]:
+              - listitem [ref=e193]: "Memory Usage: 3.33MB of 1024M"
+              - listitem [ref=e194]: "Database Execution Time: 0.0297"
+              - listitem [ref=e195]: "Total Execution Time: 0.1392"
+          - generic [ref=e197]:
+            - heading "Model" [level=2] [ref=e198]
+            - list [ref=e199]:
+              - listitem [ref=e200]: "Query Counts: Select=32, Count=6, Update=1"
+              - listitem [ref=e201]: "Query Time By Type (ms): Select=28.4591, Count=4.8988, Update=1.3881"
+              - listitem [ref=e202]: "Make Count: 3"
+              - listitem [ref=e203]: "Make Time (ms): 0.387"
+              - listitem [ref=e204]: "Hydration Time (ms): 14.7018"
+              - listitem [ref=e205]: "Hydrate Fast Path Count: 357"
+              - listitem [ref=e206]: "Hydrate Fallback Count: 0"
+              - listitem [ref=e207]: "Extra Data Time (ms): 0.0072"
+              - listitem [ref=e208]: "Association Materialized Count: 10"
+              - listitem [ref=e209]: "Validator Materialized Count: 0"
+              - listitem [ref=e210]: "Memory Delta: 2.35MB"
+  - text:    
+  - text:    *

@@ -1,0 +1,22 @@
+- main [ref=e2]:
+  - generic [ref=e3]:
+    - img "ExpressionEngine" [ref=e5]
+    - generic [ref=e31]:
+      - heading "Log into EE REPO 2" [level=1] [ref=e32]
+      - generic [ref=e33]:
+        - group [ref=e34]:
+          - generic [ref=e36]: Username / email
+          - textbox "Username / email" [active] [ref=e37]
+        - group [ref=e38]:
+          - generic [ref=e40]:
+            - text: Password –
+            - link "Remind me" [ref=e41] [cursor=pointer]:
+              - /url: admin.php?/cp/login/forgotten_password_form
+          - textbox "Password – Remind me" [ref=e42]
+          - img "Show or hide password icon" [ref=e43] [cursor=pointer]
+        - group [ref=e44]:
+          - generic [ref=e45]:
+            - checkbox "Keep me logged in." [ref=e46] [cursor=pointer]: 
+            - generic [ref=e47] [cursor=pointer]: Keep me logged in.
+        - group [ref=e48]:
+          - button "Log In" [ref=e49] [cursor=pointer]

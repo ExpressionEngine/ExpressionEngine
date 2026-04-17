@@ -1,0 +1,300 @@
+- generic [ref=e1]:
+  - generic [ref=e3]:
+    - navigation [ref=e4]:
+      - link " EE REPO 2" [ref=e5] [cursor=pointer]:
+        - /url: http://ee_repo_2.test/
+        - generic [ref=e6]:
+          - generic [ref=e7]: 
+          - text: EE REPO 2
+      - generic [ref=e8]:
+        - link " Overview" [ref=e9] [cursor=pointer]:
+          - /url: admin.php?/cp/homepage
+          - generic [ref=e10]: 
+          - text: Overview
+        - generic [ref=e11]:
+          - generic [ref=e12]: Content
+          - link " Entries" [ref=e13] [cursor=pointer]:
+            - /url: admin.php?/cp/publish/edit
+            - generic [ref=e14]: 
+            - text: Entries
+          - link " Files" [ref=e15] [cursor=pointer]:
+            - /url: admin.php?/cp/files
+            - generic [ref=e16]: 
+            - text: Files
+          - link " Categories" [ref=e17] [cursor=pointer]:
+            - /url: admin.php?/cp/categories
+            - generic [ref=e18]: 
+            - text: Categories
+        - generic [ref=e19]:
+          - generic [ref=e20]: Members
+          - link " Members" [ref=e21] [cursor=pointer]:
+            - /url: admin.php?/cp/members
+            - generic [ref=e22]: 
+            - text: Members
+          - link " Roles" [ref=e23] [cursor=pointer]:
+            - /url: admin.php?/cp/members/roles
+            - generic [ref=e24]: 
+            - text: Roles
+        - generic [ref=e25]:
+          - generic [ref=e26]: Developer
+          - link " Channels" [ref=e27] [cursor=pointer]:
+            - /url: admin.php?/cp/channels
+            - generic [ref=e28]: 
+            - text: Channels
+          - link " Fields" [ref=e29] [cursor=pointer]:
+            - /url: admin.php?/cp/fields
+            - generic [ref=e30]: 
+            - text: Fields
+          - link " Templates" [ref=e31] [cursor=pointer]:
+            - /url: admin.php?/cp/design
+            - generic [ref=e32]: 
+            - text: Templates
+          - link " Tools" [ref=e33] [cursor=pointer]:
+            - /url: admin.php?/cp/utilities
+            - generic [ref=e34]: 
+            - text: Tools
+          - link " Add-Ons" [ref=e35] [cursor=pointer]:
+            - /url: admin.php?/cp/addons
+            - generic [ref=e36]: 
+            - text: Add-Ons
+          - link " Settings" [ref=e37] [cursor=pointer]:
+            - /url: admin.php?/cp/settings
+            - generic [ref=e38]: 
+            - text: Settings
+        - generic [ref=e39]:
+          - link "ExpressionEngine 7.5.21" [ref=e40] [cursor=pointer]:
+            - /url: ""
+            - generic [ref=e41]:
+              - text: ExpressionEngine
+              - generic [ref=e42]: 7.5.21
+          - link " Pro" [ref=e44] [cursor=pointer]:
+            - /url: ""
+            - generic [ref=e45]: 
+            - text: Pro
+    - main [ref=e46]:
+      - generic [ref=e47]:
+        - link "" [ref=e48] [cursor=pointer]:
+          - /url: ""
+          - generic [ref=e49]: 
+        - list [ref=e51]:
+          - listitem [ref=e52]:
+            - link "EE REPO 2 " [ref=e53] [cursor=pointer]:
+              - /url: admin.php
+              - generic [ref=e54]: EE REPO 2
+              - generic [ref=e55]: 
+            - text: ">"
+          - listitem [ref=e56]:
+            - generic [ref=e57]: Entries
+        - generic [ref=e58]:
+          - generic [ref=e59]: 
+          - textbox "Jump To..." [ref=e60]
+          - generic [ref=e61]: ⌘J
+        - generic [ref=e62]:
+          - button "localcursor" [ref=e63] [cursor=pointer]:
+            - img "localcursor" [ref=e64]
+          - text:    +
+      - generic [ref=e69]:
+        - generic [ref=e70]:
+          - heading "Entries" [level=3] [ref=e72]
+          - button "New " [ref=e74] [cursor=pointer]
+        - generic [ref=e75]:
+          - generic [ref=e76]:
+            - button "Channel " [ref=e78] [cursor=pointer]
+            - button "Category " [ref=e80] [cursor=pointer]
+            - button "Status " [ref=e82] [cursor=pointer]
+            - button "Date " [ref=e84] [cursor=pointer]
+            - button "Author " [ref=e86] [cursor=pointer]
+          - generic [ref=e87]:
+            - generic [ref=e89]:
+              - generic [ref=e90]: filter_by_keyword
+              - textbox "filter_by_keyword" [active] [ref=e91]:
+                - /placeholder: Search
+              - generic [ref=e92]: 
+              - generic [ref=e93]:
+                - generic:
+                  - checkbox "Search Titles Only" [checked] [ref=e94] [cursor=pointer]: 
+                  - generic [ref=e96] [cursor=pointer]: Search Titles Only
+            - generic [ref=e98]:
+              - button " " [ref=e99] [cursor=pointer]:
+                - generic [ref=e100]: 
+                - text: 
+              - text:                 
+            - button "show (25) " [ref=e103] [cursor=pointer]:
+              - text: show
+              - generic [ref=e104]: (25)
+              - text: 
+        - table [ref=e106]:
+          - rowgroup [ref=e107]:
+            - row "ID# Title Date  Author Status Select All Files" [ref=e108]:
+              - columnheader "ID#" [ref=e109]:
+                - link "ID#" [ref=e110] [cursor=pointer]:
+                  - /url: admin.php?/cp/publish/edit&search_in=titles&perpage=25&sort_col=column_entry_id&sort_dir=asc
+              - columnheader "Title" [ref=e111]:
+                - link "Title" [ref=e112] [cursor=pointer]:
+                  - /url: admin.php?/cp/publish/edit&search_in=titles&perpage=25&sort_col=column_title&sort_dir=asc
+              - columnheader "Date " [ref=e113]:
+                - link "Date " [ref=e114] [cursor=pointer]:
+                  - /url: admin.php?/cp/publish/edit&search_in=titles&perpage=25&sort_col=column_entry_date&sort_dir=asc
+              - columnheader "Author" [ref=e115]:
+                - link "Author" [ref=e116] [cursor=pointer]:
+                  - /url: admin.php?/cp/publish/edit&search_in=titles&perpage=25&sort_col=author&sort_dir=asc
+              - columnheader "Status" [ref=e117]:
+                - link "Status" [ref=e118] [cursor=pointer]:
+                  - /url: admin.php?/cp/publish/edit&search_in=titles&perpage=25&sort_col=column_status&sort_dir=asc
+              - columnheader "Select All Files" [ref=e119]:
+                - generic [ref=e120]: Select All Files
+                - checkbox "Select All Files" [ref=e121] [cursor=pointer]: 
+          - rowgroup [ref=e122]:
+            - row "10 Copy of Copy of Copy of Copy of Copy of test new 4/3/2026 6:34 PM tjaeger Open Select Row" [ref=e123]:
+              - cell "10" [ref=e124]
+              - cell "Copy of Copy of Copy of Copy of Copy of test new" [ref=e125]:
+                - link "Copy of Copy of Copy of Copy of Copy of test new" [ref=e126] [cursor=pointer]:
+                  - /url: admin.php?/cp/publish/edit/entry/10
+              - cell "4/3/2026 6:34 PM" [ref=e127]
+              - cell "tjaeger" [ref=e128]
+              - cell "Open" [ref=e129]:
+                - generic [ref=e130]: Open
+              - cell "Select Row" [ref=e131]:
+                - generic [ref=e132]: Select Row
+                - checkbox "Select Row" [ref=e133] [cursor=pointer]: 
+            - row "9 Copy of Copy of Copy of Copy of test new 4/3/2026 6:34 PM tjaeger Open Select Row" [ref=e134]:
+              - cell "9" [ref=e135]
+              - cell "Copy of Copy of Copy of Copy of test new" [ref=e136]:
+                - link "Copy of Copy of Copy of Copy of test new" [ref=e137] [cursor=pointer]:
+                  - /url: admin.php?/cp/publish/edit/entry/9
+              - cell "4/3/2026 6:34 PM" [ref=e138]
+              - cell "tjaeger" [ref=e139]
+              - cell "Open" [ref=e140]:
+                - generic [ref=e141]: Open
+              - cell "Select Row" [ref=e142]:
+                - generic [ref=e143]: Select Row
+                - checkbox "Select Row" [ref=e144] [cursor=pointer]: 
+            - row "8 Copy of Copy of Copy of test new 4/3/2026 6:34 PM tjaeger Open Select Row" [ref=e145]:
+              - cell "8" [ref=e146]
+              - cell "Copy of Copy of Copy of test new" [ref=e147]:
+                - link "Copy of Copy of Copy of test new" [ref=e148] [cursor=pointer]:
+                  - /url: admin.php?/cp/publish/edit/entry/8
+              - cell "4/3/2026 6:34 PM" [ref=e149]
+              - cell "tjaeger" [ref=e150]
+              - cell "Open" [ref=e151]:
+                - generic [ref=e152]: Open
+              - cell "Select Row" [ref=e153]:
+                - generic [ref=e154]: Select Row
+                - checkbox "Select Row" [ref=e155] [cursor=pointer]: 
+            - row "7 Copy of Copy of test new 4/3/2026 6:34 PM tjaeger Open Select Row" [ref=e156]:
+              - cell "7" [ref=e157]
+              - cell "Copy of Copy of test new" [ref=e158]:
+                - link "Copy of Copy of test new" [ref=e159] [cursor=pointer]:
+                  - /url: admin.php?/cp/publish/edit/entry/7
+              - cell "4/3/2026 6:34 PM" [ref=e160]
+              - cell "tjaeger" [ref=e161]
+              - cell "Open" [ref=e162]:
+                - generic [ref=e163]: Open
+              - cell "Select Row" [ref=e164]:
+                - generic [ref=e165]: Select Row
+                - checkbox "Select Row" [ref=e166] [cursor=pointer]: 
+            - row "6 Copy of test new 4/3/2026 6:34 PM tjaeger Open Select Row" [ref=e167]:
+              - cell "6" [ref=e168]
+              - cell "Copy of test new" [ref=e169]:
+                - link "Copy of test new" [ref=e170] [cursor=pointer]:
+                  - /url: admin.php?/cp/publish/edit/entry/6
+              - cell "4/3/2026 6:34 PM" [ref=e171]
+              - cell "tjaeger" [ref=e172]
+              - cell "Open" [ref=e173]:
+                - generic [ref=e174]: Open
+              - cell "Select Row" [ref=e175]:
+                - generic [ref=e176]: Select Row
+                - checkbox "Select Row" [ref=e177] [cursor=pointer]: 
+            - row "4 Copy of Copy of Copy of test blog 4/3/2026 6:34 PM tjaeger Open Select Row" [ref=e178]:
+              - cell "4" [ref=e179]
+              - cell "Copy of Copy of Copy of test blog" [ref=e180]:
+                - link "Copy of Copy of Copy of test blog" [ref=e181] [cursor=pointer]:
+                  - /url: admin.php?/cp/publish/edit/entry/4
+              - cell "4/3/2026 6:34 PM" [ref=e182]
+              - cell "tjaeger" [ref=e183]
+              - cell "Open" [ref=e184]:
+                - generic [ref=e185]: Open
+              - cell "Select Row" [ref=e186]:
+                - generic [ref=e187]: Select Row
+                - checkbox "Select Row" [ref=e188] [cursor=pointer]: 
+            - row "3 Copy of Copy of test blog 4/3/2026 6:34 PM tjaeger Open Select Row" [ref=e189]:
+              - cell "3" [ref=e190]
+              - cell "Copy of Copy of test blog" [ref=e191]:
+                - link "Copy of Copy of test blog" [ref=e192] [cursor=pointer]:
+                  - /url: admin.php?/cp/publish/edit/entry/3
+              - cell "4/3/2026 6:34 PM" [ref=e193]
+              - cell "tjaeger" [ref=e194]
+              - cell "Open" [ref=e195]:
+                - generic [ref=e196]: Open
+              - cell "Select Row" [ref=e197]:
+                - generic [ref=e198]: Select Row
+                - checkbox "Select Row" [ref=e199] [cursor=pointer]: 
+            - row "2 Copy of test blog 4/3/2026 6:34 PM tjaeger Open Select Row" [ref=e200]:
+              - cell "2" [ref=e201]
+              - cell "Copy of test blog" [ref=e202]:
+                - link "Copy of test blog" [ref=e203] [cursor=pointer]:
+                  - /url: admin.php?/cp/publish/edit/entry/2
+              - cell "4/3/2026 6:34 PM" [ref=e204]
+              - cell "tjaeger" [ref=e205]
+              - cell "Open" [ref=e206]:
+                - generic [ref=e207]: Open
+              - cell "Select Row" [ref=e208]:
+                - generic [ref=e209]: Select Row
+                - checkbox "Select Row" [ref=e210] [cursor=pointer]: 
+            - row "5 test new 4/3/2026 6:34 PM tjaeger Open Select Row" [ref=e211]:
+              - cell "5" [ref=e212]
+              - cell "test new" [ref=e213]:
+                - link "test new" [ref=e214] [cursor=pointer]:
+                  - /url: admin.php?/cp/publish/edit/entry/5
+              - cell "4/3/2026 6:34 PM" [ref=e215]
+              - cell "tjaeger" [ref=e216]
+              - cell "Open" [ref=e217]:
+                - generic [ref=e218]: Open
+              - cell "Select Row" [ref=e219]:
+                - generic [ref=e220]: Select Row
+                - checkbox "Select Row" [ref=e221] [cursor=pointer]: 
+            - row "1 test blog 4/3/2026 6:33 PM tjaeger Open Select Row" [ref=e222]:
+              - cell "1" [ref=e223]
+              - cell "test blog" [ref=e224]:
+                - link "test blog" [ref=e225] [cursor=pointer]:
+                  - /url: admin.php?/cp/publish/edit/entry/1
+              - cell "4/3/2026 6:33 PM" [ref=e226]
+              - cell "tjaeger" [ref=e227]
+              - cell "Open" [ref=e228]:
+                - generic [ref=e229]: Open
+              - cell "Select Row" [ref=e230]:
+                - generic [ref=e231]: Select Row
+                - checkbox "Select Row" [ref=e232] [cursor=pointer]: 
+        - text: 
+      - generic [ref=e234]:
+        - heading "/cp/publish/edit" [level=1] [ref=e235]
+        - generic [ref=e236]:
+          - generic [ref=e238]:
+            - button "0.1872s Load" [ref=e239] [cursor=pointer]
+            - button "Variables" [ref=e240] [cursor=pointer]
+            - button "48 Queries" [ref=e241] [cursor=pointer]
+          - generic [ref=e243]:
+            - heading "Performance" [level=2] [ref=e244]
+            - list [ref=e245]:
+              - listitem [ref=e246]: "Memory Usage: 3.14MB of 1024M"
+              - listitem [ref=e247]: "Database Execution Time: 0.0313"
+              - listitem [ref=e248]: "Total Execution Time: 0.1872"
+  - text:            
+  - generic [ref=e249]:
+    - link " View All" [ref=e251] [cursor=pointer]:
+      - /url: admin.php?/cp/publish/edit
+      - generic [ref=e252]: 
+      - text: View All
+    - generic [ref=e254]:
+      - link "Blog" [ref=e255] [cursor=pointer]:
+        - /url: admin.php?/cp/publish/edit&filter_by_channel=1
+      - link "+" [ref=e256] [cursor=pointer]:
+        - /url: admin.php?/cp/publish/create/1
+        - generic [ref=e257]: +
+    - generic [ref=e258]:
+      - link "News" [ref=e259] [cursor=pointer]:
+        - /url: admin.php?/cp/publish/edit&filter_by_channel=2
+      - link "+" [ref=e260] [cursor=pointer]:
+        - /url: admin.php?/cp/publish/create/2
+        - generic [ref=e261]: +
+  - text:  *

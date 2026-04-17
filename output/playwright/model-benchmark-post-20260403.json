@@ -1,0 +1,119 @@
+{
+    "generated_at": "2026-04-03T19:05:56+00:00",
+    "runs": 5,
+    "base_url": "http://ee_repo_2.test/admin.php",
+    "routes": {
+        "homepage": {
+            "samples": [
+                {
+                    "run": 1,
+                    "load_s": 0.2019,
+                    "total_s": 0.2019,
+                    "db_s": 0.0322,
+                    "memory_mb": 3.61,
+                    "queries": 51,
+                    "snapshot": ".playwright-cli/page-2026-04-03T19-05-48-044Z.yml"
+                },
+                {
+                    "run": 2,
+                    "load_s": 0.1964,
+                    "total_s": 0.1964,
+                    "db_s": 0.0264,
+                    "memory_mb": 3.61,
+                    "queries": 51,
+                    "snapshot": ".playwright-cli/page-2026-04-03T19-05-49-119Z.yml"
+                },
+                {
+                    "run": 3,
+                    "load_s": 0.2067,
+                    "total_s": 0.2067,
+                    "db_s": 0.0318,
+                    "memory_mb": 3.61,
+                    "queries": 51,
+                    "snapshot": ".playwright-cli/page-2026-04-03T19-05-49-971Z.yml"
+                },
+                {
+                    "run": 4,
+                    "load_s": 0.197,
+                    "total_s": 0.197,
+                    "db_s": 0.027,
+                    "memory_mb": 3.61,
+                    "queries": 51,
+                    "snapshot": ".playwright-cli/page-2026-04-03T19-05-50-892Z.yml"
+                },
+                {
+                    "run": 5,
+                    "load_s": 0.1904,
+                    "total_s": 0.1904,
+                    "db_s": 0.0297,
+                    "memory_mb": 3.61,
+                    "queries": 51,
+                    "snapshot": ".playwright-cli/page-2026-04-03T19-05-51-720Z.yml"
+                }
+            ],
+            "median": {
+                "load_s": 0.197,
+                "total_s": 0.197,
+                "db_s": 0.0297,
+                "memory_mb": 3.61,
+                "queries": 51
+            }
+        },
+        "entries": {
+            "samples": [
+                {
+                    "run": 1,
+                    "load_s": 0.1814,
+                    "total_s": 0.1814,
+                    "db_s": 0.0294,
+                    "memory_mb": 3.06,
+                    "queries": 47,
+                    "snapshot": ".playwright-cli/page-2026-04-03T19-05-52-614Z.yml"
+                },
+                {
+                    "run": 2,
+                    "load_s": 0.1848,
+                    "total_s": 0.1848,
+                    "db_s": 0.0272,
+                    "memory_mb": 3.06,
+                    "queries": 49,
+                    "snapshot": ".playwright-cli/page-2026-04-03T19-05-53-484Z.yml"
+                },
+                {
+                    "run": 3,
+                    "load_s": 0.1669,
+                    "total_s": 0.1669,
+                    "db_s": 0.022,
+                    "memory_mb": 3.06,
+                    "queries": 47,
+                    "snapshot": ".playwright-cli/page-2026-04-03T19-05-54-310Z.yml"
+                },
+                {
+                    "run": 4,
+                    "load_s": 0.1739,
+                    "total_s": 0.1739,
+                    "db_s": 0.028,
+                    "memory_mb": 3.06,
+                    "queries": 47,
+                    "snapshot": ".playwright-cli/page-2026-04-03T19-05-55-192Z.yml"
+                },
+                {
+                    "run": 5,
+                    "load_s": 0.169,
+                    "total_s": 0.169,
+                    "db_s": 0.0239,
+                    "memory_mb": 3.06,
+                    "queries": 47,
+                    "snapshot": ".playwright-cli/page-2026-04-03T19-05-56-080Z.yml"
+                }
+            ],
+            "median": {
+                "load_s": 0.1739,
+                "total_s": 0.1739,
+                "db_s": 0.0272,
+                "memory_mb": 3.06,
+                "queries": 47
+            }
+        }
+    }
+}
