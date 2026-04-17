@@ -12,6 +12,11 @@
             "email": "developers@ellislab.com"
         }
     ],
+    "config": {
+        "platform": {
+            "php": "7.3.33"
+        }
+    },
     "autoload": {
         "psr-4": {
             "ExpressionEngine\\Tests\\": "",

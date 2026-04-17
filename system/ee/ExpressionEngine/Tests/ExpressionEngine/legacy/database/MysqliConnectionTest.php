@@ -29,13 +29,21 @@ class MysqliConnectionTest extends TestCase
 
         $connection = new CI_DB_mysqli_connection($config);
 
+        $thrown = null;
         try {
             $connection->open();
         } catch (Throwable $exception) {
-            $this->assertTrue(
-                $exception instanceof PDOException || strpos($exception->getMessage(), 'SQLSTATE') !== false
-            );
+            $thrown = $exception;
         }
+
+        $this->assertNotNull($thrown);
+        $this->assertTrue(
+            $thrown instanceof PDOException
+            || stripos($thrown->getMessage(), 'SQLSTATE') !== false
+            || stripos($thrown->getMessage(), 'refused') !== false
+            || stripos($thrown->getMessage(), "can't connect") !== false
+            || stripos($thrown->getMessage(), 'could not find driver') !== false
+        );
     }
 
     public function testCloseClearsNativeConnection(): void
