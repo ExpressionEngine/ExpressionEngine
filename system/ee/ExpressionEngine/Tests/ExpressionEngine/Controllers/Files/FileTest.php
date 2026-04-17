@@ -897,6 +897,204 @@ class FileTest extends TestCase
     }
 
     /**
+     * Assert renderManipulationsForm() builds manipulation rows, watermark labels, and view links.
+     *
+     * @return void
+     */
+    public function testRenderManipulationsFormBuildsManipulationRowsWithWatermarksAndViewLinks()
+    {
+        $view = new ViewFactoryRecorder();
+        $tables = new TableServiceRecorder();
+
+        ee()->setMock('View', $view);
+        ee()->setMock('CP/Table', $tables);
+
+        $file = $this->makeManipulationFile(
+            [
+                new ManipulationStub([
+                    'short_name' => 'hero_small',
+                    'resize_type' => 'constrain',
+                    'width' => 320,
+                    'height' => 240,
+                    'watermark_id' => 5,
+                    'watermark_name' => 'Brand mark',
+                ]),
+                new ManipulationStub([
+                    'short_name' => 'hero_square',
+                    'resize_type' => 'crop',
+                    'width' => 150,
+                    'height' => 150,
+                    'watermark_id' => 0,
+                ]),
+            ],
+            [
+                'hero_small' => 'https://example.com/manipulations/hero_small',
+                'hero_square' => 'https://example.com/manipulations/hero_square',
+            ]
+        );
+
+        $output = $this->makeManipulationController()->renderManipulationsFormForTest($file);
+
+        $this->assertSame('rendered:_shared/form/section', $output);
+        $this->assertCount(1, $tables->tables);
+        $this->assertSame([
+            'short_name' => [
+                'encode' => false,
+                'attrs' => [
+                    'width' => '40%',
+                ],
+            ],
+            'type',
+            'watermark',
+            'view' => [
+                'encode' => false,
+            ],
+        ], $tables->tables[0]['columns']);
+        $this->assertSame([
+            [
+                'attrs' => [],
+                'columns' => [
+                    'hero_small',
+                    'constrain, 320px by 240px',
+                    'Brand mark',
+                    '<a href="https://example.com/manipulations/hero_small" target="_blank"><i class="fal fa-eye"></i></a>',
+                ],
+            ],
+            [
+                'attrs' => [],
+                'columns' => [
+                    'hero_square',
+                    'crop, 150px by 150px',
+                    '',
+                    '<a href="https://example.com/manipulations/hero_square" target="_blank"><i class="fal fa-eye"></i></a>',
+                ],
+            ],
+        ], $tables->tables[0]['data']);
+        $this->assertSame(['hero_small', 'hero_square'], $file->manipulationUrlCalls);
+        $this->assertCount(2, $view->renders);
+        $this->assertSame('ee:_shared/table', $view->renders[0]['view']);
+        $this->assertSame($tables->tables[0], $view->renders[0]['vars']);
+        $this->assertSame('_shared/form/section', $view->renders[1]['view']);
+        $this->assertSame('existing_file_manipulations_desc', $view->renders[1]['vars']['settings'][0]['desc']);
+        $this->assertSame('rendered:ee:_shared/table', $view->renders[1]['vars']['settings'][0]['fields']['usage_tables']['content']);
+    }
+
+    /**
+     * Assert renderManipulationsForm() still renders an empty table section with no manipulations.
+     *
+     * @return void
+     */
+    public function testRenderManipulationsFormRendersEmptyTableWhenNoManipulationsExist()
+    {
+        $view = new ViewFactoryRecorder();
+        $tables = new TableServiceRecorder();
+
+        ee()->setMock('View', $view);
+        ee()->setMock('CP/Table', $tables);
+
+        $file = $this->makeManipulationFile([]);
+
+        $output = $this->makeManipulationController()->renderManipulationsFormForTest($file);
+
+        $this->assertSame('rendered:_shared/form/section', $output);
+        $this->assertCount(1, $tables->tables);
+        $this->assertSame([], $tables->tables[0]['data']);
+        $this->assertSame([], $file->manipulationUrlCalls);
+        $this->assertCount(2, $view->renders);
+        $this->assertSame('ee:_shared/table', $view->renders[0]['view']);
+        $this->assertSame($tables->tables[0], $view->renders[0]['vars']);
+        $this->assertSame('_shared/form/section', $view->renders[1]['view']);
+        $this->assertSame('rendered:ee:_shared/table', $view->renders[1]['vars']['settings'][0]['fields']['usage_tables']['content']);
+    }
+
+    /**
+     * Assert renderCropForm() falls back to image dimensions and zero coordinates.
+     *
+     * @return void
+     */
+    public function testRenderCropFormUsesImageInfoDefaultsWhenRequestValuesAreMissing()
+    {
+        $view = new ViewFactoryRecorder();
+
+        ee()->setMock('View', $view);
+        ee()->setMock('Request', new RequestRecorder());
+
+        $output = $this->makeCropController()->renderCropFormForTest(
+            new \stdClass(),
+            ['width' => 640, 'height' => 480]
+        );
+
+        $this->assertSame('rendered:_shared/form/section', $output);
+        $this->assertCount(1, $view->renders);
+        $this->assertSame('_shared/form/section', $view->renders[0]['view']);
+        $this->assertSame([
+            [
+                'title' => 'constraints',
+                'desc' => 'crop_constraints_desc',
+                'fields' => [
+                    'crop_width' => [
+                        'type' => 'short-text',
+                        'label' => 'crop_width',
+                        'value' => 640,
+                    ],
+                    'crop_height' => [
+                        'type' => 'short-text',
+                        'label' => 'crop_height',
+                        'value' => 480,
+                    ],
+                ],
+            ],
+            [
+                'title' => 'coordinates',
+                'desc' => 'coordiantes_desc',
+                'fields' => [
+                    'crop_x' => [
+                        'type' => 'short-text',
+                        'label' => 'x_axis',
+                        'value' => 0,
+                    ],
+                    'crop_y' => [
+                        'type' => 'short-text',
+                        'label' => 'y_axis',
+                        'value' => 0,
+                    ],
+                ],
+            ],
+        ], $view->renders[0]['vars']['settings']);
+        $this->assertNull($view->renders[0]['vars']['name']);
+    }
+
+    /**
+     * Assert renderCropForm() prefers posted crop values over image defaults.
+     *
+     * @return void
+     */
+    public function testRenderCropFormUsesPostedConstraintAndCoordinateValues()
+    {
+        $view = new ViewFactoryRecorder();
+
+        ee()->setMock('View', $view);
+        ee()->setMock('Request', new RequestRecorder([
+            'crop_width' => '320',
+            'crop_height' => '180',
+            'crop_x' => '14',
+            'crop_y' => '28',
+        ]));
+
+        $this->makeCropController()->renderCropFormForTest(
+            new \stdClass(),
+            ['width' => 640, 'height' => 480]
+        );
+
+        $settings = $view->renders[0]['vars']['settings'];
+
+        $this->assertSame('320', $settings[0]['fields']['crop_width']['value']);
+        $this->assertSame('180', $settings[0]['fields']['crop_height']['value']);
+        $this->assertSame('14', $settings[1]['fields']['crop_x']['value']);
+        $this->assertSame('28', $settings[1]['fields']['crop_y']['value']);
+    }
+
+    /**
      * Assert download() exits through the missing-file error branch.
      *
      * @return void
@@ -1081,6 +1279,45 @@ class FileTest extends TestCase
     }
 
     /**
+     * Create a controller double that exposes the real renderManipulationsForm() implementation.
+     *
+     * @return ManipulationFormFileController
+     */
+    private function makeManipulationController(): ManipulationFormFileController
+    {
+        return (new \ReflectionClass(ManipulationFormFileController::class))
+            ->newInstanceWithoutConstructor();
+    }
+
+    /**
+     * Create a controller double that exposes the real renderCropForm() implementation.
+     *
+     * @return CropFormFileController
+     */
+    private function makeCropController(): CropFormFileController
+    {
+        return (new \ReflectionClass(CropFormFileController::class))
+            ->newInstanceWithoutConstructor();
+    }
+
+    /**
+     * Build a file stub for renderManipulationsForm() data.
+     *
+     * @param array<int, ManipulationStub> $manipulations
+     * @param array<string, string> $manipulationUrls
+     * @return ManipulationFileStub
+     */
+    private function makeManipulationFile(array $manipulations, array $manipulationUrls = []): ManipulationFileStub
+    {
+        return new ManipulationFileStub(
+            new UploadDestinationStub([
+                'FileDimensions' => new ManipulationCollectionStub($manipulations),
+            ]),
+            $manipulationUrls
+        );
+    }
+
+    /**
      * Build a file stub for renderUsageForm() entry and category data.
      *
      * @param array<int, UsageEntryStub> $entries
@@ -1209,6 +1446,41 @@ class UsageFormFileController extends \ExpressionEngine\Controller\Files\File
     public function renderUsageFormForTest($file)
     {
         return parent::renderUsageForm($file);
+    }
+}
+
+/**
+ * Exposes the real renderManipulationsForm() implementation for targeted tests.
+ */
+class ManipulationFormFileController extends \ExpressionEngine\Controller\Files\File
+{
+    /**
+     * Call the parent implementation through a public test seam.
+     *
+     * @param mixed $file
+     * @return string
+     */
+    public function renderManipulationsFormForTest($file)
+    {
+        return parent::renderManipulationsForm($file);
+    }
+}
+
+/**
+ * Exposes the real renderCropForm() implementation for targeted tests.
+ */
+class CropFormFileController extends \ExpressionEngine\Controller\Files\File
+{
+    /**
+     * Call the parent implementation through a public test seam.
+     *
+     * @param mixed $file
+     * @param array<string, mixed> $info
+     * @return string
+     */
+    public function renderCropFormForTest($file, array $info)
+    {
+        return parent::renderCropForm($file, $info);
     }
 }
 
@@ -1367,11 +1639,12 @@ class RequestRecorder
      * Return a configured POST value.
      *
      * @param string $key
+     * @param mixed $default
      * @return mixed
      */
-    public function post($key)
+    public function post($key, $default = null)
     {
-        return $this->post[$key] ?? null;
+        return $this->post[$key] ?? $default;
     }
 
     /**
@@ -2345,6 +2618,120 @@ class UsageCategoryStub
             'group_name' => $attributes['group_name'],
             'can_edit_categories' => $attributes['can_edit_categories'],
         ];
+    }
+}
+
+/**
+ * File stub for renderManipulationsForm() coverage.
+ */
+class ManipulationFileStub
+{
+    /** @var UploadDestinationStub */
+    public $UploadDestination;
+
+    /** @var array<int, string> */
+    public $manipulationUrlCalls = [];
+
+    /** @var array<string, string> */
+    private $manipulationUrls;
+
+    /**
+     * Store the upload destination and per-manipulation URLs.
+     *
+     * @param UploadDestinationStub $uploadDestination
+     * @param array<string, string> $manipulationUrls
+     * @return void
+     */
+    public function __construct(UploadDestinationStub $uploadDestination, array $manipulationUrls = [])
+    {
+        $this->UploadDestination = $uploadDestination;
+        $this->manipulationUrls = $manipulationUrls;
+    }
+
+    /**
+     * Record the short name lookup and return a predictable URL.
+     *
+     * @param string $shortName
+     * @return string
+     */
+    public function getAbsoluteManipulationURL($shortName)
+    {
+        $shortName = (string) $shortName;
+        $this->manipulationUrlCalls[] = $shortName;
+
+        return $this->manipulationUrls[$shortName] ?? 'compiled:files/manipulation/' . $shortName;
+    }
+}
+
+/**
+ * Manipulation stub for renderManipulationsForm() coverage.
+ */
+class ManipulationStub
+{
+    /** @var string */
+    public $short_name;
+
+    /** @var string */
+    public $resize_type;
+
+    /** @var int */
+    public $width;
+
+    /** @var int */
+    public $height;
+
+    /** @var int */
+    public $watermark_id;
+
+    /** @var object */
+    public $Watermark;
+
+    /**
+     * Store manipulation attributes used by the controller.
+     *
+     * @param array<string, mixed> $attributes
+     * @return void
+     */
+    public function __construct(array $attributes)
+    {
+        $this->short_name = $attributes['short_name'];
+        $this->resize_type = $attributes['resize_type'];
+        $this->width = $attributes['width'];
+        $this->height = $attributes['height'];
+        $this->watermark_id = $attributes['watermark_id'] ?? 0;
+        $this->Watermark = (object) [
+            'wm_name' => $attributes['watermark_name'] ?? '',
+        ];
+    }
+}
+
+/**
+ * Iterable manipulation collection for renderManipulationsForm() coverage.
+ */
+class ManipulationCollectionStub implements \IteratorAggregate
+{
+    /** @var array<int, ManipulationStub> */
+    private $items;
+
+    /**
+     * Store the configured manipulation rows.
+     *
+     * @param array<int, ManipulationStub> $items
+     * @return void
+     */
+    public function __construct(array $items)
+    {
+        $this->items = array_values($items);
+    }
+
+    /**
+     * Return the configured manipulation iterator.
+     *
+     * @return \Traversable
+     */
+    public function getIterator(): \Traversable
+    {
+        return new \ArrayIterator($this->items);
     }
 }
 
