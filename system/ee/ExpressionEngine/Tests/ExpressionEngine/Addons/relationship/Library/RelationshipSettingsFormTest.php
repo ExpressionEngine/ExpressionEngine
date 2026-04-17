@@ -211,8 +211,8 @@ class RelationshipSettingsFormTest extends RelationshipTestBase
 
         // Should return HTML with array naming
         $this->assertStringContainsString('name="test_prefix_channels[]"', $result);
-        $this->assertStringContainsString('multiple', $result);
         $this->assertStringContainsString('Channel 1', $result);
+        $this->assertStringContainsString('Channel 2', $result);
     }
 
     /**

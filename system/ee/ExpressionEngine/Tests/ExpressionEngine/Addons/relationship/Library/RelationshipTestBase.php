@@ -41,8 +41,35 @@ if (!defined('PATH_MOD')) {
 if (!defined('REQ')) {
     define('REQ', 'CP');
 }
-if (!function_exists('form_dropdown')) {
-    require_once APPPATH . 'helpers/form_helper.php';
+if (!function_exists('bool_config_item')) {
+    function bool_config_item($item)
+    {
+        return ee()->config->item($item) === 'y';
+    }
+}
+if (!defined('CSRF_TOKEN')) {
+    define('CSRF_TOKEN', 'test_csrf_token');
+}
+if (!function_exists('validation_errors')) {
+    function validation_errors()
+    {
+        return '';
+    }
+}
+if (!function_exists('remove_invisible_characters')) {
+    function remove_invisible_characters($str, $url_encoded = true)
+    {
+        return $str;
+    }
+}
+if (!function_exists('get_mimes')) {
+    function get_mimes()
+    {
+        return [];
+    }
+}
+if (!function_exists('set_value')) {
+    require_once SYSPATH . 'ee/legacy/helpers/form_helper.php';
 }
 
 // Ensure eeObjectMock system works with our mocks
