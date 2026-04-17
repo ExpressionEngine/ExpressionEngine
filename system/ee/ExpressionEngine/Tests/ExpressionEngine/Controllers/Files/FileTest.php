@@ -723,6 +723,180 @@ class FileTest extends TestCase
     }
 
     /**
+     * Assert renderUsageForm() builds the usage payload with edit-other links and status fallbacks.
+     *
+     * @return void
+     */
+    public function testRenderUsageFormBuildsUsagePayloadWithEditOtherLinksAndFallbacks()
+    {
+        $permission = new PermissionRecorder([
+            'edit_other_entries_channel_id_5' => true,
+            'edit_categories' => false,
+        ]);
+        $view = new ViewFactoryRecorder();
+        $tables = new TableServiceRecorder();
+
+        ee()->setMock('Permission', $permission);
+        ee()->setMock('View', $view);
+        ee()->setMock('CP/Table', $tables);
+
+        $file = $this->makeUsageFile(
+            [
+                new UsageEntryStub([
+                    'title' => 'Allowed & linked',
+                    'site_id' => 1,
+                    'channel_id' => 5,
+                    'author_id' => 99,
+                    'entry_id' => 101,
+                    'channel_title' => 'News',
+                    'status' => 'open',
+                    'status_tag' => new UsageStatusStub('<span class="status">Open</span>'),
+                ]),
+                new UsageEntryStub([
+                    'title' => 'Remote & plain',
+                    'site_id' => 2,
+                    'channel_id' => 8,
+                    'author_id' => 7,
+                    'entry_id' => 102,
+                    'channel_title' => 'Pages',
+                    'status' => 'closed',
+                ]),
+            ],
+            [
+                new UsageCategoryStub([
+                    'cat_name' => 'General & plain',
+                    'cat_id' => 11,
+                    'group_id' => 4,
+                    'group_name' => 'Topics',
+                    'can_edit_categories' => 'writer|',
+                ]),
+            ]
+        );
+
+        $output = $this->makeUsageController()->renderUsageFormForTest($file);
+
+        $this->assertSame('rendered:_shared/form/section', $output);
+        $this->assertCount(2, $tables->tables);
+        $this->assertSame(\ExpressionEngine\Library\CP\Table::COL_STATUS, $tables->tables[0]['columns']['status']['type']);
+        $this->assertStringContainsString('compiled:publish/edit/entry/101', $tables->tables[0]['data'][0]['columns'][0]);
+        $this->assertStringContainsString('Allowed &amp; linked', $tables->tables[0]['data'][0]['columns'][0]);
+        $this->assertSame('<span class="status">Open</span>', $tables->tables[0]['data'][0]['columns'][2]);
+        $this->assertStringNotContainsString('<a href=', $tables->tables[0]['data'][1]['columns'][0]);
+        $this->assertStringContainsString('Remote &amp; plain', $tables->tables[0]['data'][1]['columns'][0]);
+        $this->assertSame('closed', $tables->tables[0]['data'][1]['columns'][2]);
+        $this->assertStringNotContainsString('<a href=', $tables->tables[1]['data'][0]['columns'][0]);
+        $this->assertStringContainsString('General &amp; plain', $tables->tables[1]['data'][0]['columns'][0]);
+        $this->assertCount(2, $view->renders);
+        $this->assertSame('ee:_shared/file/usage-tab', $view->renders[0]['view']);
+        $this->assertSame($tables->tables[0], $view->renders[0]['vars']['entries']);
+        $this->assertSame($tables->tables[1], $view->renders[0]['vars']['categories']);
+        $this->assertSame('_shared/form/section', $view->renders[1]['view']);
+        $this->assertSame('rendered:ee:_shared/file/usage-tab', $view->renders[1]['vars']['settings'][0]['fields']['usage_tables']['content']);
+    }
+
+    /**
+     * Assert renderUsageForm() links self-editable entries and role-matched categories only.
+     *
+     * @return void
+     */
+    public function testRenderUsageFormBuildsSelfEditAndRoleMatchedLinks()
+    {
+        $permission = new PermissionRecorder([
+            'edit_other_entries_channel_id_7' => false,
+            'edit_self_entries_channel_id_7' => true,
+            'edit_categories' => true,
+        ], ['writer']);
+        $tables = new TableServiceRecorder();
+
+        ee()->setMock('Permission', $permission);
+        ee()->setMock('View', new ViewFactoryRecorder());
+        ee()->setMock('CP/Table', $tables);
+
+        $file = $this->makeUsageFile(
+            [
+                new UsageEntryStub([
+                    'title' => 'Own entry',
+                    'site_id' => 1,
+                    'channel_id' => 7,
+                    'author_id' => 7,
+                    'entry_id' => 201,
+                    'channel_title' => 'Articles',
+                    'status' => 'draft',
+                ]),
+                new UsageEntryStub([
+                    'title' => 'Not mine',
+                    'site_id' => 1,
+                    'channel_id' => 7,
+                    'author_id' => 8,
+                    'entry_id' => 202,
+                    'channel_title' => 'Articles',
+                    'status' => 'draft',
+                ]),
+            ],
+            [
+                new UsageCategoryStub([
+                    'cat_name' => 'Writer category',
+                    'cat_id' => 21,
+                    'group_id' => 9,
+                    'group_name' => 'Assignable',
+                    'can_edit_categories' => 'writer|admin|',
+                ]),
+                new UsageCategoryStub([
+                    'cat_name' => 'Locked category',
+                    'cat_id' => 22,
+                    'group_id' => 9,
+                    'group_name' => 'Assignable',
+                    'can_edit_categories' => 'publisher|',
+                ]),
+            ]
+        );
+
+        $this->makeUsageController()->renderUsageFormForTest($file);
+
+        $this->assertStringContainsString('compiled:publish/edit/entry/201', $tables->tables[0]['data'][0]['columns'][0]);
+        $this->assertStringNotContainsString('<a href=', $tables->tables[0]['data'][1]['columns'][0]);
+        $this->assertStringContainsString('compiled:categories/edit/9/21', $tables->tables[1]['data'][0]['columns'][0]);
+        $this->assertStringNotContainsString('<a href=', $tables->tables[1]['data'][1]['columns'][0]);
+        $this->assertSame(['writer', 'admin'], $permission->roleChecks[0]);
+        $this->assertSame(['publisher'], $permission->roleChecks[1]);
+    }
+
+    /**
+     * Assert renderUsageForm() lets super admins edit categories without role checks.
+     *
+     * @return void
+     */
+    public function testRenderUsageFormLetsSuperAdminsEditCategoriesWithoutRoleChecks()
+    {
+        $permission = new PermissionRecorder([
+            'edit_categories' => false,
+        ], [], true);
+        $tables = new TableServiceRecorder();
+
+        ee()->setMock('Permission', $permission);
+        ee()->setMock('View', new ViewFactoryRecorder());
+        ee()->setMock('CP/Table', $tables);
+
+        $file = $this->makeUsageFile([], [
+            new UsageCategoryStub([
+                'cat_name' => 'Super admin category',
+                'cat_id' => 31,
+                'group_id' => 12,
+                'group_name' => 'Protected',
+                'can_edit_categories' => '',
+            ]),
+        ]);
+
+        $this->makeUsageController()->renderUsageFormForTest($file);
+
+        $this->assertStringContainsString('compiled:categories/edit/12/31', $tables->tables[1]['data'][0]['columns'][0]);
+        $this->assertSame([], $permission->roleChecks);
+        $this->assertSame([], array_values(array_filter($permission->canCalls, function ($permissionName) {
+            return $permissionName === 'edit_categories';
+        })));
+    }
+
+    /**
      * Assert download() exits through the missing-file error branch.
      *
      * @return void
@@ -894,6 +1068,48 @@ class FileTest extends TestCase
         $method->setAccessible(true);
         $method->invoke($this->controller, $file, $action);
     }
+
+    /**
+     * Create a controller double that exposes the real renderUsageForm() implementation.
+     *
+     * @return UsageFormFileController
+     */
+    private function makeUsageController(): UsageFormFileController
+    {
+        return (new \ReflectionClass(UsageFormFileController::class))
+            ->newInstanceWithoutConstructor();
+    }
+
+    /**
+     * Build a file stub for renderUsageForm() entry and category data.
+     *
+     * @param array<int, UsageEntryStub> $entries
+     * @param array<int, UsageCategoryStub> $categories
+     * @return object
+     */
+    private function makeUsageFile(array $entries, array $categories): object
+    {
+        return new class($entries, $categories) {
+            /** @var array<int, UsageEntryStub> */
+            public $FileEntries;
+
+            /** @var array<int, UsageCategoryStub> */
+            public $FileCategories;
+
+            /**
+             * Store the usage data collections.
+             *
+             * @param array<int, UsageEntryStub> $entries
+             * @param array<int, UsageCategoryStub> $categories
+             * @return void
+             */
+            public function __construct(array $entries, array $categories)
+            {
+                $this->FileEntries = $entries;
+                $this->FileCategories = $categories;
+            }
+        };
+    }
 }
 
 /**
@@ -980,6 +1196,23 @@ class TestableFileController extends \ExpressionEngine\Controller\Files\File
 }
 
 /**
+ * Exposes the real renderUsageForm() implementation for targeted tests.
+ */
+class UsageFormFileController extends \ExpressionEngine\Controller\Files\File
+{
+    /**
+     * Call the parent implementation through a public test seam.
+     *
+     * @param mixed $file
+     * @return string
+     */
+    public function renderUsageFormForTest($file)
+    {
+        return parent::renderUsageForm($file);
+    }
+}
+
+/**
  * Raised when saveFileAndRedirect() is intentionally intercepted.
  */
 class FileRedirectInterceptedException extends \RuntimeException
@@ -1001,15 +1234,31 @@ class PermissionRecorder
     /** @var array<string, bool> */
     private $permissions;
 
+    /** @var array<int, string> */
+    private $roles;
+
+    /** @var bool */
+    private $superAdmin;
+
+    /** @var array<int, string> */
+    public $canCalls = [];
+
+    /** @var array<int, array<int, string>> */
+    public $roleChecks = [];
+
     /**
      * Store permission answers by key.
      *
      * @param array<string, bool> $permissions
+     * @param array<int, string> $roles
+     * @param bool $superAdmin
      * @return void
      */
-    public function __construct(array $permissions)
+    public function __construct(array $permissions, array $roles = [], $superAdmin = false)
     {
         $this->permissions = $permissions;
+        $this->roles = $roles;
+        $this->superAdmin = (bool) $superAdmin;
     }
 
     /**
@@ -1020,7 +1269,32 @@ class PermissionRecorder
      */
     public function can($permission)
     {
+        $this->canCalls[] = $permission;
+
         return $this->permissions[$permission] ?? true;
+    }
+
+    /**
+     * Return the configured super admin state.
+     *
+     * @return bool
+     */
+    public function isSuperAdmin()
+    {
+        return $this->superAdmin;
+    }
+
+    /**
+     * Return whether any requested role is assigned.
+     *
+     * @param array<int, string> $roles
+     * @return bool
+     */
+    public function hasAnyRole(array $roles)
+    {
+        $this->roleChecks[] = $roles;
+
+        return count(array_intersect($roles, $this->roles)) > 0;
     }
 }
 
@@ -1051,6 +1325,17 @@ class SessionRecorder
     public function getMember()
     {
         return $this->member;
+    }
+
+    /**
+     * Return member userdata values used by renderUsageForm().
+     *
+     * @param string $key
+     * @return mixed
+     */
+    public function userdata($key)
+    {
+        return $this->member->$key ?? null;
     }
 }
 
@@ -1558,7 +1843,7 @@ class UrlValue
 }
 
 /**
- * Returns a predictable byte string for file sizes.
+ * Returns predictable formatters for the requested value type.
  */
 class FormatRecorder
 {
@@ -1567,11 +1852,45 @@ class FormatRecorder
      *
      * @param string $type
      * @param mixed $value
-     * @return ByteValue
+     * @return ByteValue|TextValue
      */
     public function make($type, $value)
     {
+        if ($type === 'Text') {
+            return new TextValue($value);
+        }
+
         return new ByteValue($value);
+    }
+}
+
+/**
+ * Formats plain text for HTML output assertions.
+ */
+class TextValue
+{
+    /** @var mixed */
+    private $value;
+
+    /**
+     * Store the original text value.
+     *
+     * @param mixed $value
+     * @return void
+     */
+    public function __construct($value)
+    {
+        $this->value = $value;
+    }
+
+    /**
+     * Return the text with HTML entities encoded.
+     *
+     * @return string
+     */
+    public function convertToEntities()
+    {
+        return htmlspecialchars((string) $this->value, ENT_QUOTES, 'UTF-8');
     }
 }
 
@@ -1779,6 +2098,253 @@ class FileManagerRecorder
     public function create_thumb($path, array $config, $regenerate, $all)
     {
         $this->createThumbCalls[] = [$path, $config, (bool) $regenerate, (bool) $all];
+    }
+}
+
+/**
+ * Records CP table definitions and sequential view payload requests.
+ */
+class TableServiceRecorder
+{
+    /** @var array<int, array<string, mixed>> */
+    public $tables = [];
+
+    /** @var int */
+    private $tableIndex = -1;
+
+    /** @var int */
+    private $viewIndex = 0;
+
+    /**
+     * Start a new table definition and store the requested columns.
+     *
+     * @param array<string, mixed> $columns
+     * @return self
+     */
+    public function setColumns($columns)
+    {
+        $this->tableIndex++;
+        $this->tables[$this->tableIndex] = [
+            'columns' => $columns,
+            'data' => [],
+        ];
+
+        return $this;
+    }
+
+    /**
+     * Store table rows for the current table.
+     *
+     * @param array<int, array<string, mixed>> $data
+     * @return self
+     */
+    public function setData($data)
+    {
+        $this->tables[$this->tableIndex]['data'] = $data;
+
+        return $this;
+    }
+
+    /**
+     * Return the next stored table payload.
+     *
+     * @return array<string, mixed>
+     */
+    public function viewData()
+    {
+        $table = $this->tables[$this->viewIndex] ?? [
+            'columns' => [],
+            'data' => [],
+        ];
+        $this->viewIndex++;
+
+        return $table;
+    }
+}
+
+/**
+ * Records view renders and returns predictable template output.
+ */
+class ViewFactoryRecorder
+{
+    /** @var array<int, array<string, mixed>> */
+    public $renders = [];
+
+    /**
+     * Return a template recorder for the requested view.
+     *
+     * @param string $view
+     * @return ViewTemplateRecorder
+     */
+    public function make($view)
+    {
+        return new ViewTemplateRecorder($this, $view);
+    }
+}
+
+/**
+ * Captures view render arguments for assertions.
+ */
+class ViewTemplateRecorder
+{
+    /** @var ViewFactoryRecorder */
+    private $factory;
+
+    /** @var string */
+    private $view;
+
+    /**
+     * Store the owning factory and view name.
+     *
+     * @param ViewFactoryRecorder $factory
+     * @param string $view
+     * @return void
+     */
+    public function __construct(ViewFactoryRecorder $factory, $view)
+    {
+        $this->factory = $factory;
+        $this->view = $view;
+    }
+
+    /**
+     * Record the render arguments and return a deterministic string.
+     *
+     * @param array<string, mixed> $vars
+     * @return string
+     */
+    public function render($vars = [])
+    {
+        $this->factory->renders[] = [
+            'view' => $this->view,
+            'vars' => $vars,
+        ];
+
+        return 'rendered:' . $this->view;
+    }
+}
+
+/**
+ * Entry stub for renderUsageForm() coverage.
+ */
+class UsageEntryStub
+{
+    /** @var string */
+    public $title;
+
+    /** @var int */
+    public $site_id;
+
+    /** @var int */
+    public $channel_id;
+
+    /** @var int */
+    public $author_id;
+
+    /** @var int */
+    public $entry_id;
+
+    /** @var string */
+    public $status;
+
+    /** @var object */
+    public $Channel;
+
+    /** @var UsageStatusStub|null */
+    private $statusTag;
+
+    /**
+     * Store entry attributes used by the controller.
+     *
+     * @param array<string, mixed> $attributes
+     * @return void
+     */
+    public function __construct(array $attributes)
+    {
+        $this->title = $attributes['title'];
+        $this->site_id = $attributes['site_id'];
+        $this->channel_id = $attributes['channel_id'];
+        $this->author_id = $attributes['author_id'];
+        $this->entry_id = $attributes['entry_id'];
+        $this->status = $attributes['status'];
+        $this->statusTag = $attributes['status_tag'] ?? null;
+        $this->Channel = (object) [
+            'channel_title' => $attributes['channel_title'],
+        ];
+    }
+
+    /**
+     * Return the configured status object.
+     *
+     * @return UsageStatusStub|null
+     */
+    public function getStatus()
+    {
+        return $this->statusTag;
+    }
+}
+
+/**
+ * Status stub for renderUsageForm() tag rendering.
+ */
+class UsageStatusStub
+{
+    /** @var string */
+    private $tag;
+
+    /**
+     * Store the rendered tag.
+     *
+     * @param string $tag
+     * @return void
+     */
+    public function __construct($tag)
+    {
+        $this->tag = $tag;
+    }
+
+    /**
+     * Return the configured status tag markup.
+     *
+     * @return string
+     */
+    public function renderTag()
+    {
+        return $this->tag;
+    }
+}
+
+/**
+ * Category stub for renderUsageForm() coverage.
+ */
+class UsageCategoryStub
+{
+    /** @var string */
+    public $cat_name;
+
+    /** @var int */
+    public $cat_id;
+
+    /** @var int */
+    public $group_id;
+
+    /** @var object */
+    public $CategoryGroup;
+
+    /**
+     * Store category attributes used by the controller.
+     *
+     * @param array<string, mixed> $attributes
+     * @return void
+     */
+    public function __construct(array $attributes)
+    {
+        $this->cat_name = $attributes['cat_name'];
+        $this->cat_id = $attributes['cat_id'];
+        $this->group_id = $attributes['group_id'];
+        $this->CategoryGroup = (object) [
+            'group_name' => $attributes['group_name'],
+            'can_edit_categories' => $attributes['can_edit_categories'],
+        ];
     }
 }
 
