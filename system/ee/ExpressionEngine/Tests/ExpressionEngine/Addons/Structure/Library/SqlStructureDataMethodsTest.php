@@ -1,7 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../../../../eeObjectMock.php';
-require_once __DIR__ . '/../../../../../Addons/structure/sql.structure.php';
+require_once PATH_ADDONS . 'structure/sql.structure.php';
 require_once __DIR__ . '/../../../../../Addons/structure/Conduit/StaticCache.php';
 
 use ExpressionEngine\Structure\Conduit\StaticCache;
@@ -2765,6 +2765,405 @@ class SqlStructureDataMethodsTest extends TestCase
 
         $this->assertArrayHasKey(5, $data);
         $this->assertSame('https://example.test/page?hook=1', $data[5]['uri']);
+    }
+
+    public function testGetSelectiveDataCoversSubModeAllDepthAndSiteUrlOverride()
+    {
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'site_id') {
+                    return 1;
+                }
+                if ($key === 'base_url') {
+                    return 'https://example.test/';
+                }
+                return null;
+            }
+        });
+        ee()->setMock('TMPL', new class {
+            public $cache_timestamp = '';
+        });
+        ee()->setMock('localize', (object) ['now' => 1700000000]);
+        ee()->setMock('session', (object) ['cache' => ['structure' => []]]);
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+            public function call($name, ...$args)
+            {
+                return $args[0] ?? null;
+            }
+        });
+        ee()->setMock('functions', new class {
+            public function create_page_url($base, $uri, $trailing_slash = false)
+            {
+                $prefix = $base !== '' ? rtrim($base, '/') . '/' : '{base_url}/';
+
+                return $prefix . trim($uri, '/');
+            }
+        });
+        ee()->setMock('db', new class($this) {
+            private $test;
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+            public function query($sql)
+            {
+                return $this->test->result([
+                    ['entry_id' => 10, 'parent_id' => 0, 'lft' => 1, 'rgt' => 4, 'title' => 'Branch', 'entry_date' => 0, 'expiration_date' => 0, 'status' => 'open', 'hidden' => 'n'],
+                    ['entry_id' => 11, 'parent_id' => 10, 'lft' => 2, 'rgt' => 3, 'title' => 'Leaf', 'entry_date' => 0, 'expiration_date' => 0, 'status' => 'open', 'hidden' => 'n'],
+                ], 2);
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_parent_id($entry_id, $default = 'home')
+            {
+                return 10;
+            }
+            public function get_settings()
+            {
+                return ['add_trailing_slash' => 'y'];
+            }
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return [
+                    'url' => 'https://ignored.test/',
+                    'uris' => [10 => '/branch/', 11 => '/branch/leaf/'],
+                    'templates' => [10 => 1, 11 => 1],
+                ];
+            }
+            public function is_listing_entry($entry_id)
+            {
+                return false;
+            }
+        };
+        $sql->site_id = 1;
+
+        $data = $sql->get_selective_data(
+            1,
+            11,
+            10,
+            'sub',
+            'all',
+            -1,
+            'open',
+            [],
+            [],
+            false,
+            'Overview',
+            'yes',
+            'yes',
+            'no',
+            'no',
+            'no'
+        );
+
+        $this->assertArrayHasKey(11, $data);
+        $this->assertSame('https://example.test/branch/leaf', $data[11]['uri']);
+    }
+
+    public function testGetSelectiveDataCoversActiveBranchPruneBeforeExpansion()
+    {
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'site_id') {
+                    return 1;
+                }
+                if ($key === 'base_url') {
+                    return 'https://example.test/';
+                }
+                return null;
+            }
+        });
+        ee()->setMock('TMPL', new class {
+            public $cache_timestamp = '';
+        });
+        ee()->setMock('localize', (object) ['now' => 1700000000]);
+        ee()->setMock('session', (object) ['cache' => ['structure' => []]]);
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+            public function call($name, ...$args)
+            {
+                return $args[0] ?? null;
+            }
+        });
+        ee()->setMock('functions', new class {
+            public function create_page_url($base, $uri, $trailing_slash = false)
+            {
+                return rtrim($base, '/') . '/' . trim($uri, '/');
+            }
+        });
+        ee()->setMock('db', new class($this) {
+            private $test;
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+            public function query($sql)
+            {
+                return $this->test->result([
+                    ['entry_id' => 10, 'parent_id' => 0, 'lft' => 1, 'rgt' => 8, 'title' => 'Root', 'entry_date' => 0, 'expiration_date' => 0, 'status' => 'open', 'hidden' => 'n'],
+                    ['entry_id' => 11, 'parent_id' => 10, 'lft' => 2, 'rgt' => 7, 'title' => 'Active', 'entry_date' => 0, 'expiration_date' => 0, 'status' => 'open', 'hidden' => 'n'],
+                    ['entry_id' => 12, 'parent_id' => 11, 'lft' => 3, 'rgt' => 6, 'title' => 'Grandchild', 'entry_date' => 0, 'expiration_date' => 0, 'status' => 'open', 'hidden' => 'n'],
+                    ['entry_id' => 13, 'parent_id' => 12, 'lft' => 4, 'rgt' => 5, 'title' => 'Great Grandchild', 'entry_date' => 0, 'expiration_date' => 0, 'status' => 'open', 'hidden' => 'n'],
+                ], 4);
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_parent_id($entry_id, $default = 'home')
+            {
+                return 0;
+            }
+            public function get_settings()
+            {
+                return ['add_trailing_slash' => 'y'];
+            }
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return [
+                    'url' => 'https://example.test/',
+                    'uris' => [10 => '/root/', 11 => '/root/active/', 12 => '/root/active/grandchild/', 13 => '/root/active/grandchild/great-grandchild/'],
+                    'templates' => [10 => 1, 11 => 1, 12 => 1, 13 => 1],
+                ];
+            }
+            public function is_listing_entry($entry_id)
+            {
+                return false;
+            }
+        };
+        $sql->site_id = 1;
+
+        $data = $sql->get_selective_data(
+            1,
+            11,
+            10,
+            'sub',
+            2,
+            -1,
+            'open',
+            [],
+            [],
+            false,
+            'Overview',
+            'yes',
+            'yes',
+            'no',
+            'no',
+            'yes'
+        );
+
+        $this->assertArrayHasKey(11, $data);
+        $this->assertArrayHasKey(12, $data);
+        $this->assertArrayNotHasKey(13, $data);
+    }
+
+    public function testGetSelectiveDataCoversActiveGrandchildExpansionPath()
+    {
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'site_id') {
+                    return 1;
+                }
+                if ($key === 'base_url') {
+                    return 'https://example.test/';
+                }
+                return null;
+            }
+        });
+        ee()->setMock('TMPL', new class {
+            public $cache_timestamp = '';
+        });
+        ee()->setMock('localize', (object) ['now' => 1700000000]);
+        ee()->setMock('session', (object) ['cache' => ['structure' => []]]);
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+            public function call($name, ...$args)
+            {
+                return $args[0] ?? null;
+            }
+        });
+        ee()->setMock('functions', new class {
+            public function create_page_url($base, $uri, $trailing_slash = false)
+            {
+                return rtrim($base, '/') . '/' . trim($uri, '/');
+            }
+        });
+        ee()->setMock('db', new class($this) {
+            private $test;
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+            public function query($sql)
+            {
+                return $this->test->result([
+                    ['entry_id' => 10, 'parent_id' => 0, 'lft' => 1, 'rgt' => 10, 'title' => 'Root', 'entry_date' => 0, 'expiration_date' => 0, 'status' => 'open', 'hidden' => 'n'],
+                    ['entry_id' => 11, 'parent_id' => 10, 'lft' => 2, 'rgt' => 9, 'title' => 'Branch', 'entry_date' => 0, 'expiration_date' => 0, 'status' => 'open', 'hidden' => 'n'],
+                    ['entry_id' => 12, 'parent_id' => 11, 'lft' => 3, 'rgt' => 6, 'title' => 'Current', 'entry_date' => 0, 'expiration_date' => 0, 'status' => 'open', 'hidden' => 'n'],
+                    ['entry_id' => 14, 'parent_id' => 12, 'lft' => 4, 'rgt' => 5, 'title' => 'Expanded Child', 'entry_date' => 0, 'expiration_date' => 0, 'status' => 'open', 'hidden' => 'n'],
+                    ['entry_id' => 13, 'parent_id' => 11, 'lft' => 7, 'rgt' => 8, 'title' => 'Sibling Child', 'entry_date' => 0, 'expiration_date' => 0, 'status' => 'open', 'hidden' => 'n'],
+                ], 4);
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_parent_id($entry_id, $default = 'home')
+            {
+                return 10;
+            }
+            public function get_settings()
+            {
+                return ['add_trailing_slash' => 'y'];
+            }
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return [
+                    'url' => 'https://example.test/',
+                    'uris' => [10 => '/root/', 11 => '/root/branch/', 12 => '/root/branch/current/', 13 => '/root/branch/sibling-child/', 14 => '/root/branch/current/expanded-child/'],
+                    'templates' => [10 => 1, 11 => 1, 12 => 1, 13 => 1, 14 => 1],
+                ];
+            }
+            public function is_listing_entry($entry_id)
+            {
+                return false;
+            }
+        };
+        $sql->site_id = 1;
+
+        $data = $sql->get_selective_data(
+            1,
+            12,
+            10,
+            'sub',
+            1,
+            -1,
+            'open',
+            [],
+            [],
+            false,
+            'Overview',
+            'yes',
+            'yes',
+            'no',
+            'no',
+            'yes'
+        );
+
+        $this->assertArrayHasKey(12, $data);
+        $this->assertArrayHasKey(13, $data);
+        $this->assertArrayHasKey(14, $data);
+    }
+
+    public function testGetSelectiveDataReturnsEmptyWhenIncludeFilterRemovesRoot()
+    {
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'site_id') {
+                    return 1;
+                }
+                return null;
+            }
+        });
+        ee()->setMock('TMPL', new class {
+            public $cache_timestamp = '';
+        });
+        ee()->setMock('localize', (object) ['now' => 1700000000]);
+        ee()->setMock('session', (object) ['cache' => ['structure' => []]]);
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+            public function call($name, ...$args)
+            {
+                return $args[0] ?? null;
+            }
+        });
+        ee()->setMock('db', new class($this) {
+            private $test;
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+            public function query($sql)
+            {
+                return $this->test->result([
+                    ['entry_id' => 0, 'parent_id' => 0, 'lft' => 1, 'rgt' => 4, 'title' => 'Global Root', 'entry_date' => 0, 'expiration_date' => 0, 'status' => 'open', 'hidden' => 'n'],
+                    ['entry_id' => 10, 'parent_id' => 0, 'lft' => 2, 'rgt' => 3, 'title' => 'Branch Root', 'entry_date' => 0, 'expiration_date' => 0, 'status' => 'open', 'hidden' => 'n'],
+                ], 2);
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_parent_id($entry_id, $default = 'home')
+            {
+                return 0;
+            }
+            public function get_settings()
+            {
+                return ['add_trailing_slash' => 'y'];
+            }
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return [
+                    'url' => 'https://example.test/',
+                    'uris' => [10 => '/branch-root/'],
+                    'templates' => [10 => 1],
+                ];
+            }
+            public function is_listing_entry($entry_id)
+            {
+                return false;
+            }
+        };
+        $sql->site_id = 1;
+
+        $data = $sql->get_selective_data(
+            1,
+            10,
+            10,
+            'sub',
+            1,
+            -1,
+            'open',
+            [11],
+            [],
+            false,
+            'Overview',
+            'yes',
+            'yes',
+            'no',
+            'no',
+            'yes'
+        );
+
+        $this->assertSame([], $data);
     }
 
     public function testCleanupCheckCoversOrphanMismatchListingAndDuplicateFlows()
