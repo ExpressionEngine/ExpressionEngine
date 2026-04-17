@@ -248,7 +248,7 @@ class ResponseTest extends TestCase
     private function readProperty(Response $response, $property)
     {
         $reflection = new \ReflectionProperty(Response::class, $property);
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($reflection);
 
         return $reflection->getValue($response);
     }

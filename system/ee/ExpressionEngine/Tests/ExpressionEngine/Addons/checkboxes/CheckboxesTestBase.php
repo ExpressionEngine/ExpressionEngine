@@ -43,7 +43,7 @@ abstract class CheckboxesTestBase extends OptionFieldtypeTestBase
      */
     protected function createMockFieldtype()
     {
-        $fieldtype = m::mock();
+        $fieldtype = m::mock(\stdClass::class);
 
         // Checkboxes-specific display settings (must be set before common mocks)
         $fieldtype->shouldReceive('display_settings')->withAnyArgs()->andReturn(['field_options_checkboxes' => []]);
@@ -107,7 +107,7 @@ abstract class CheckboxesTestBase extends OptionFieldtypeTestBase
     protected function getMockFieldtypeWithSettings($settings = [])
     {
         // Create mock and mark display settings as configured BEFORE calling base class methods
-        $fieldtype = m::mock()->makePartial();
+        $fieldtype = m::mock(\stdClass::class)->makePartial();
 
         // Mark as configured to prevent base class from setting up display_settings
         $this->markDisplaySettingsConfigured($fieldtype);

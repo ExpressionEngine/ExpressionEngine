@@ -292,7 +292,7 @@ class ProSearchFilterDistanceTest extends ProSearchTestBase
         // Use reflection to check if _results is set
         $reflection = new \ReflectionClass($this->filter);
         $resultsProperty = $reflection->getProperty('_results');
-        $resultsProperty->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($resultsProperty);
         $results = $resultsProperty->getValue($this->filter);
         
         // If results are populated, fixed_order should return true
@@ -370,7 +370,7 @@ class ProSearchFilterDistanceTest extends ProSearchTestBase
         // Use reflection to set _results directly since the filter() might not populate it correctly
         $reflection = new \ReflectionClass($this->filter);
         $resultsProperty = $reflection->getProperty('_results');
-        $resultsProperty->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($resultsProperty);
         $resultsProperty->setValue($this->filter, [1 => 5.234]); // Set _results directly
         
         $rows = [

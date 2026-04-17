@@ -609,6 +609,7 @@ class SelectEdgeCasesTest extends SelectTestBase
         ]);
 
         $testCases = [
+            // Legacy array-key casting behavior collapses null and empty string paths
             ['input' => '', 'expected' => ''],
             ['input' => null, 'expected' => ''], // Mock returns empty string for null input
             ['input' => 'null', 'expected' => 'null'], // Mock doesn't map 'null' to 'Null Option' in this setup

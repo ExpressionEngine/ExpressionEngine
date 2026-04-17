@@ -15,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
 require_once SYSPATH . 'ee/ExpressionEngine/Tests/TestReflectionHelper.php';
+require_once __DIR__ . '/test_helpers.php';
 
 // Bootstrap minimal EE environment
 if (!defined('APP_VER')) {
@@ -230,6 +231,23 @@ class EE_TemplateProcessingTest extends TestCase
         $this->assertContains('var3', $result[0]);
     }
 
+    public function testChunkGlobalsArrayCreatesNewChunkWhenMaxLengthExceeded()
+    {
+        $reflection = new \ReflectionMethod($this->template, 'chunkGlobalsArray');
+        \TestReflectionHelper::makeMethodAccessible($reflection);
+
+        $first = str_repeat('a', 20000);
+        $second = str_repeat('b', 20000);
+        $tail = 'tail';
+
+        $result = $reflection->invoke($this->template, [$first, $second, $tail]);
+
+        $this->assertCount(2, $result);
+        $this->assertContains($first, $result[0]);
+        $this->assertContains($second, $result[0]);
+        $this->assertSame([$tail], $result[1]);
+    }
+
     /**
      * Test _find_layout method - Layout tag detection
      */
@@ -241,6 +259,70 @@ class EE_TemplateProcessingTest extends TestCase
         $result = $reflection->invoke($this->template);
 
         $this->assertNull($result);
+    }
+
+    public function testFindLayoutReturnsTagAndRemovesItFromTemplate()
+    {
+        $reflection = new \ReflectionMethod($this->template, '_find_layout');
+        \TestReflectionHelper::makeMethodAccessible($reflection);
+
+        $this->template->template = '{layout="layouts/main"}{exp:channel:entries}';
+        $result = $reflection->invoke($this->template);
+
+        $this->assertIsArray($result);
+        $this->assertSame('{layout="layouts/main"}', $result[0]);
+        $this->assertSame('"layouts/main"', $result[2]);
+        $this->assertSame('{exp:channel:entries}', $this->template->template);
+    }
+
+    public function testFindLayoutTriggersFatalErrorWhenLayoutAppearsAfterExpTag()
+    {
+        $reflection = new \ReflectionMethod($this->template, '_find_layout');
+        \TestReflectionHelper::makeMethodAccessible($reflection);
+
+        ee()->config->setItem('debug', 1);
+        $langMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['line'])
+            ->getMock();
+        $langMock->method('line')->with('error_layout_too_late')->willReturn('layout too late');
+        ee()->setMock('lang', $langMock);
+
+        $outputMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['fatal_error'])
+            ->getMock();
+        $outputMock->method('fatal_error')->willThrowException(new \RuntimeException('layout-too-late'));
+        ee()->setMock('output', $outputMock);
+
+        $this->template->template = '{exp:channel:entries}{layout="layouts/main"}';
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('layout-too-late');
+        $reflection->invoke($this->template);
+    }
+
+    public function testFindLayoutTriggersFatalErrorWhenMultipleLayoutsFound()
+    {
+        $reflection = new \ReflectionMethod($this->template, '_find_layout');
+        \TestReflectionHelper::makeMethodAccessible($reflection);
+
+        ee()->config->setItem('debug', 1);
+        $langMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['line'])
+            ->getMock();
+        $langMock->method('line')->with('error_multiple_layouts')->willReturn('multiple layouts');
+        ee()->setMock('lang', $langMock);
+
+        $outputMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['fatal_error'])
+            ->getMock();
+        $outputMock->method('fatal_error')->willThrowException(new \RuntimeException('multiple-layouts'));
+        ee()->setMock('output', $outputMock);
+
+        $this->template->template = '{layout="layouts/main"}{layout="layouts/secondary"}';
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('multiple-layouts');
+        $reflection->invoke($this->template);
     }
 
     /**
@@ -289,6 +371,203 @@ class EE_TemplateProcessingTest extends TestCase
     }
 
     /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function testProcessLayoutTemplateThrowsWhenLayoutParamsUseReservedContentsName()
+    {
+        $reflection = new \ReflectionMethod(\EE_Template::class, 'process_layout_template');
+        \TestReflectionHelper::makeMethodAccessible($reflection);
+
+        ee()->setMock('Variables/Parser', new class {
+            public function getFullTag($template, $tag)
+            {
+                return $tag;
+            }
+
+            public function parseTagParameters($str)
+            {
+                return ['contents' => 'reserved'];
+            }
+        });
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('layout_contents_reserved');
+
+        $layout = ['{layout="layouts/main" contents="reserved"}', '{layout=', '"layouts/main" contents="reserved"'];
+        $reflection->invoke($this->template, 'Body', $layout);
+    }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function testProcessLayoutTemplateThrowsWhenLayoutSetUsesReservedContentsName()
+    {
+        $reflection = new \ReflectionMethod(\EE_Template::class, 'process_layout_template');
+        \TestReflectionHelper::makeMethodAccessible($reflection);
+
+        ee()->setMock('Variables/Parser', new class {
+            public function getFullTag($template, $tag)
+            {
+                if (strpos($tag, '{layout:set') === 0) {
+                    $start = strpos($template, '{layout:set');
+                    $end = strpos($template, '}', $start);
+                    return substr($template, $start, $end - $start + 1);
+                }
+
+                return $tag;
+            }
+
+            public function parseTagParameters($str)
+            {
+                $params = [];
+                if (preg_match_all('/([a-zA-Z_]+)\s*=\s*"([^"]*)"/', $str, $matches, PREG_SET_ORDER)) {
+                    foreach ($matches as $match) {
+                        $params[$match[1]] = $match[2];
+                    }
+                }
+
+                return $params;
+            }
+        });
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('layout_contents_reserved');
+
+        $layout = ['{layout="layouts/main"}', '{layout=', '"layouts/main"'];
+        $template = 'Body {layout:set name="contents" value="unsafe"}';
+        $reflection->invoke($this->template, $template, $layout);
+    }
+
+    public function testProcessLayoutTemplateParsesSettersAndInjectsLayoutContents()
+    {
+        $reflection = new \ReflectionMethod(\EE_Template::class, 'process_layout_template');
+        \TestReflectionHelper::makeMethodAccessible($reflection);
+
+        $variablesParser = new class {
+            public function getFullTag($template, $tag)
+            {
+                $start = strpos($template, $tag);
+                if ($start === false) {
+                    return $tag;
+                }
+
+                $openEnd = strpos($template, '}', $start);
+                if ($openEnd === false) {
+                    return $tag;
+                }
+
+                $openingTag = substr($template, $start, $openEnd - $start + 1);
+                if (strpos($openingTag, '{layout:set') !== 0) {
+                    return $openingTag;
+                }
+
+                // For layout:set tags EE expects just the opening tag text here.
+                return $openingTag;
+            }
+
+            public function parseTagParameters($str)
+            {
+                $params = [];
+                if (preg_match_all('/([a-zA-Z_]+)\s*=\s*"([^"]*)"/', $str, $matches, PREG_SET_ORDER)) {
+                    foreach ($matches as $match) {
+                        $params[$match[1]] = $match[2];
+                    }
+                }
+
+                return $params;
+            }
+        };
+        ee()->setMock('Variables/Parser', $variablesParser);
+
+        $templateMock = $this->getMockBuilder(\EE_Template::class)
+            ->onlyMethods(['fetch_and_parse', 'process_sub_templates', '_get_fetch_data'])
+            ->getMock();
+
+        $templateMock->method('fetch_and_parse')
+            ->willReturnCallback(function () use ($templateMock) {
+                $templateMock->template = 'LAYOUT[{layout:contents}]';
+                $templateMock->templates_sofar = '|1:layouts/main|';
+                return null;
+            });
+        $templateMock->method('process_sub_templates')
+            ->willReturnCallback(function ($template) {
+                return $template . '|sub';
+            });
+        $templateMock->method('_get_fetch_data')
+            ->willReturn(['layouts', 'main', 1]);
+
+        $templateMock->layout_vars = [];
+        $templateMock->templates_sofar = '|1:layouts/main|';
+
+        $template = 'Body {layout:set name="title"}Title{/layout:set}{layout:set:append name="crumbs"}A{/layout:set:append}{layout:set:prepend name="crumbs"}Z{/layout:set:prepend}{layout:set:prepend name="tags"}first{/layout:set:prepend}';
+        $layout = ['{layout="layouts/main" theme="news"}', '{layout=', '"layouts/main" theme="news"'];
+
+        $result = $reflection->invoke($templateMock, $template, $layout);
+
+        $this->assertStringContainsString('LAYOUT[Body', $result);
+        $this->assertStringEndsWith('|sub', $result);
+        $this->assertEquals('news', $templateMock->layout_vars['theme']);
+        $this->assertEquals('Title', $templateMock->layout_vars['title']);
+        $this->assertEquals(['Z', 'A'], $templateMock->layout_vars['crumbs']);
+        $this->assertEquals(['first'], $templateMock->layout_vars['tags']);
+    }
+
+    public function testProcessLayoutTemplateReturnsEarlyWhenFetchDataCannotBeResolved()
+    {
+        $reflection = new \ReflectionMethod(\EE_Template::class, 'process_layout_template');
+        \TestReflectionHelper::makeMethodAccessible($reflection);
+
+        $variablesParser = new class {
+            public function getFullTag($template, $tag)
+            {
+                $start = strpos($template, $tag);
+                if ($start === false) {
+                    return $tag;
+                }
+
+                $openEnd = strpos($template, '}', $start);
+                if ($openEnd === false) {
+                    return $tag;
+                }
+
+                return substr($template, $start, $openEnd - $start + 1);
+            }
+
+            public function parseTagParameters($str)
+            {
+                if (strpos($str, 'bad="1"') !== false) {
+                    return false;
+                }
+
+                $params = [];
+                if (preg_match_all('/([a-zA-Z_]+)\s*=\s*"([^"]*)"/', $str, $matches, PREG_SET_ORDER)) {
+                    foreach ($matches as $match) {
+                        $params[$match[1]] = $match[2];
+                    }
+                }
+
+                return $params;
+            }
+        };
+        ee()->setMock('Variables/Parser', $variablesParser);
+
+        $templateMock = $this->getMockBuilder(\EE_Template::class)
+            ->onlyMethods(['_get_fetch_data'])
+            ->getMock();
+        $templateMock->method('_get_fetch_data')->willReturn(null);
+
+        $template = 'Body {layout:set name="title" value="x"}';
+        $layout = ['{layout="invalid" bad="1"}', '{layout=', '"invalid" bad="1"'];
+
+        $result = $reflection->invoke($templateMock, $template, $layout);
+
+        $this->assertStringContainsString('Body', $result);
+        $this->assertStringNotContainsString('layout:set', $result);
+    }
+
+    /**
      * Test process_sub_templates method - Embed processing
      */
     public function testProcessSubTemplatesReturnsTemplateWhenNoEmbeds()
@@ -329,4 +608,3 @@ class EE_TemplateProcessingTest extends TestCase
         $this->assertTrue($reflection->isStatic() === false);
     }
 }
-

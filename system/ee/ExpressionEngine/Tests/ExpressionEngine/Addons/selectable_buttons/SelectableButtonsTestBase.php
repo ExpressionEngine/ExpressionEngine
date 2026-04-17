@@ -56,7 +56,7 @@ abstract class SelectableButtonsTestBase extends OptionFieldtypeTestBase
     protected function createMockFieldtype()
     {
         // Create mock first and mark display settings as configured
-        $fieldtype = m::mock()->makePartial()->shouldIgnoreMissing();
+        $fieldtype = m::mock(\stdClass::class)->makePartial()->shouldIgnoreMissing();
         $this->markDisplaySettingsConfigured($fieldtype);
 
         // Set up display settings for selectable_buttons BEFORE calling base class methods
@@ -223,7 +223,7 @@ abstract class SelectableButtonsTestBase extends OptionFieldtypeTestBase
                 return implode(', ', $mappedValues);
             } else {
                 // Handle single value
-                if (isset($fieldtype->settings['value_label_pairs']) && isset($fieldtype->settings['value_label_pairs'][$data])) {
+                if ($data !== null && isset($fieldtype->settings['value_label_pairs']) && isset($fieldtype->settings['value_label_pairs'][$data])) {
                     $data = $fieldtype->settings['value_label_pairs'][$data];
                 }
 

@@ -173,7 +173,7 @@ class RelationshipsFtCpErrorHandlingTest extends RelationshipTestBase
 
         $reflection = new ReflectionClass($this->relationships_ft_cp);
         $method = $reflection->getMethod('buildCategoryList');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($method);
 
         // This should work with null coalescing operator, but let's see what happens
         $result = $method->invoke($this->relationships_ft_cp, 0, $hierarchy, $categories);
@@ -195,7 +195,7 @@ class RelationshipsFtCpErrorHandlingTest extends RelationshipTestBase
 
         $reflection = new ReflectionClass($this->relationships_ft_cp);
         $method = $reflection->getMethod('buildCategoryList');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($method);
 
         // This should work but access $hierarchy[0] which doesn't exist, using ?? [] should handle it
         $result = $method->invoke($this->relationships_ft_cp, 0, $hierarchy, $categories);

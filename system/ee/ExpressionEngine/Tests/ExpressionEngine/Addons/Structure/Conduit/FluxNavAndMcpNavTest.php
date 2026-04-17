@@ -245,7 +245,7 @@ class FluxNavAndMcpNavTest extends TestCase
     private function invokeProtected($object, $method)
     {
         $rm = new ReflectionMethod($object, $method);
-        $rm->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($rm);
         return $rm->invoke($object);
     }
 }

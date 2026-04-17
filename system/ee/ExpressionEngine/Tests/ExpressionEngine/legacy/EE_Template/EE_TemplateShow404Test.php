@@ -2,6 +2,7 @@
 namespace ExpressionEngine\Tests\ExpressionEngine\legacy\EE_Template;
 
 require_once __DIR__ . '/EE_TemplateTestBase.php';
+require_once __DIR__ . '/test_helpers.php';
 require_once SYSPATH . 'ee/legacy/libraries/Template.php';
 
 class EE_TemplateShow404Test extends EE_TemplateTestBase
@@ -73,5 +74,56 @@ class EE_TemplateShow404Test extends EE_TemplateTestBase
 
         $parameters = $reflection->getParameters();
         $this->assertCount(0, $parameters);
+    }
+
+    public function testShow404ProcessesConfiguredTemplateBeforeExit()
+    {
+        ee()->config->setItem('site_404', 'errors/not_found');
+
+        $outputMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['set_output', '_display'])
+            ->getMock();
+        $outputMock->expects($this->once())
+            ->method('set_output')
+            ->with('parsed-404-template')
+            ->willReturnSelf();
+        $outputMock->method('_display')
+            ->willThrowException(new \RuntimeException('displayed-404-template'));
+        ee()->setMock('output', $outputMock);
+
+        $templateMock = $this->getMockBuilder(\EE_Template::class)
+            ->onlyMethods(['fetch_and_parse', 'parse_globals'])
+            ->getMock();
+        $templateMock->expects($this->once())
+            ->method('fetch_and_parse')
+            ->with('errors', 'not_found');
+        $templateMock->expects($this->once())
+            ->method('parse_globals')
+            ->with('raw-404-template')
+            ->willReturn('parsed-404-template');
+        $templateMock->final_template = 'raw-404-template';
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('displayed-404-template');
+        $templateMock->show_404();
+    }
+
+    public function testShow404CallsGlobalShow404WhenTemplateNotConfigured()
+    {
+        ee()->config->setItem('site_404', '');
+
+        $uriMock = new \stdClass();
+        $uriMock->uri_string = 'missing/page';
+        ee()->setMock('uri', $uriMock);
+
+        $thrown = null;
+        try {
+            $this->template->show_404();
+        } catch (\Throwable $e) {
+            $thrown = $e;
+        }
+
+        $this->assertNotNull($thrown);
+        $this->assertContains($thrown->getMessage(), ['', '404 redirect requested']);
     }
 }

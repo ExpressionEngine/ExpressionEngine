@@ -86,6 +86,19 @@ class EE_TemplateParseLayoutVariablesTest extends EE_TemplateTestBase
         $this->assertEquals('Test Title - ', $result);
     }
 
+    public function testParseLayoutVariablesTreatsEmptyDeclaredPairAsEmptyArray()
+    {
+        $layoutVars = [
+            'items' => '',
+        ];
+
+        $template = '{layout:items}{value}{/layout:items}';
+
+        $result = $this->template->parseLayoutVariables($template, $layoutVars);
+
+        $this->assertSame('', $result);
+    }
+
     /**
      * Test parseLayoutVariables sets up conditionals
      */
@@ -216,6 +229,37 @@ class EE_TemplateParseLayoutVariablesTest extends EE_TemplateTestBase
         $this->assertEquals($expected, $result);
     }
 
+    public function testParseLayoutVariablesParsesModifiedIndexVariables()
+    {
+        $variablesParserMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['parseModifiedVariables'])
+            ->getMock();
+        $variablesParserMock->expects($this->once())
+            ->method('parseModifiedVariables')
+            ->with(
+                $this->stringContains("{layout:titles[1]:length index='1'}"),
+                $this->callback(function($modifiedVars) {
+                    return isset($modifiedVars['layout:titles[1]']) && $modifiedVars['layout:titles[1]'] === 'Beta';
+                })
+            )
+            ->willReturn('Length:4');
+        ee()->setMock('Variables/Parser', $variablesParserMock);
+
+        $templateMock = $this->getMockBuilder(\EE_Template::class)
+            ->onlyMethods(['_parse_var_pair', '_parse_var_single', 'log_item'])
+            ->getMock();
+        $templateMock->method('_parse_var_pair')->willReturnArgument(2);
+        $templateMock->method('_parse_var_single')->willReturnArgument(2);
+        $templateMock->method('log_item');
+
+        $result = $templateMock->parseLayoutVariables(
+            "Length:{layout:titles:length index='1'}",
+            ['titles' => ['Alpha', 'Beta']]
+        );
+
+        $this->assertSame('Length:4', $result);
+    }
+
     /**
      * Test parseLayoutVariables with malformed layout tags
      */
@@ -277,4 +321,3 @@ class EE_TemplateParseLayoutVariablesTest extends EE_TemplateTestBase
         $this->assertTrue(empty($conditionals['layout:footer'])); // Empty string is falsy
     }
 }
-
