@@ -625,6 +625,52 @@ class SqlStructureDataMethodsTest extends TestCase
         ], $fixture->captured->gets);
     }
 
+    /**
+     * Lock the channel-name lookup query contract for matching channels.
+     *
+     * @return void
+     */
+    public function testGetChannelNameByChannelIdBuildsChannelLookupQueryAndReturnsChannelName()
+    {
+        $fixture = $this->makeChannelNameByChannelIdDb([
+            ['channel_name' => 'pages'],
+        ]);
+        ee()->setMock('db', $fixture->db);
+
+        $sql = $this->makeSql();
+
+        $this->assertSame('pages', $sql->get_channel_name_by_channel_id('2'));
+        $this->assertSame([
+            [
+                'table' => 'channels',
+                'fields' => ['channel_name'],
+                'where' => ['channel_id' => '2'],
+            ],
+        ], $fixture->captured->gets);
+    }
+
+    /**
+     * Preserve the null fallback when the channel lookup misses.
+     *
+     * @return void
+     */
+    public function testGetChannelNameByChannelIdReturnsNullWhenLookupMisses()
+    {
+        $fixture = $this->makeChannelNameByChannelIdDb([]);
+        ee()->setMock('db', $fixture->db);
+
+        $sql = $this->makeSql();
+
+        $this->assertNull($sql->get_channel_name_by_channel_id(5));
+        $this->assertSame([
+            [
+                'table' => 'channels',
+                'fields' => ['channel_name'],
+                'where' => ['channel_id' => 5],
+            ],
+        ], $fixture->captured->gets);
+    }
+
     public function testGetChannelTypeReturnsFalseForNonNumericChannelWithoutQueryingDb()
     {
         $db = new class {
@@ -4799,6 +4845,78 @@ class SqlStructureDataMethodsTest extends TestCase
                 $this->where = [];
 
                 return $this->test->result($rows, $numRows);
+            }
+        };
+
+        return (object) [
+            'captured' => $captured,
+            'db' => $db,
+        ];
+    }
+
+    /**
+     * Build a fluent DB mock for get_channel_name_by_channel_id() lookups.
+     *
+     * @param array $rows
+     * @return object
+     */
+    private function makeChannelNameByChannelIdDb(array $rows)
+    {
+        $captured = (object) ['gets' => []];
+
+        $db = new class($this, $captured, $rows) {
+            private $test;
+            private $captured;
+            private $rows;
+            private $table;
+            private $fields = [];
+            private $where = [];
+
+            public function __construct($test, $captured, $rows)
+            {
+                $this->test = $test;
+                $this->captured = $captured;
+                $this->rows = $rows;
+            }
+
+            public function select($field)
+            {
+                $this->fields[] = $field;
+
+                return $this;
+            }
+
+            public function from($table)
+            {
+                $this->table = $table;
+
+                return $this;
+            }
+
+            public function where($field, $value = null)
+            {
+                $this->where[$field] = $value;
+
+                return $this;
+            }
+
+            public function get($table = null)
+            {
+                if ($table !== null) {
+                    $this->table = $table;
+                }
+
+                $this->captured->gets[] = [
+                    'table' => $this->table,
+                    'fields' => $this->fields,
+                    'where' => $this->where,
+                ];
+
+                $this->table = null;
+                $this->fields = [];
+                $this->where = [];
+
+                return $this->test->result($this->rows);
             }
         };
 
