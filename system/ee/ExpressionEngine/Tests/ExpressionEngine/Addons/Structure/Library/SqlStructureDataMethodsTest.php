@@ -188,6 +188,16 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertSame([20 => 20], $sql->get_listing_entry_ids());
     }
 
+    public function testIsListingEntryReturnsFalseWhenEntryIdIsMissing()
+    {
+        StaticCache::set('listing_ids', [20 => 20]);
+        StaticCache::set('listing_ids_empty', 'false');
+
+        $sql = $this->makeSql();
+
+        $this->assertFalse($sql->is_listing_entry(21));
+    }
+
     public function testGetOverviewCachesEmptyResultsWithoutRepeatQueries()
     {
         $db = new class($this) {
