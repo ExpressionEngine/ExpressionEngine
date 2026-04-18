@@ -2041,6 +2041,149 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertContains('root_home', $result[1]['ids']);
     }
 
+    public function testAddAttributesUsesDashSeparatorCssIdFallbackAndHomeSlugId()
+    {
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'word_separator') {
+                    return 'dash';
+                }
+                return null;
+            }
+        });
+        ee()->setMock('TMPL', new FakeTemplate());
+        ee()->TMPL->setMap([
+            'css_id' => 'none',
+            'current_class' => 'off',
+            'has_children_class' => 'no',
+            'add_unique_ids' => 'on',
+        ]);
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_single_path($entry_id)
+            {
+                return [];
+            }
+            public function get_parent_id($entry_id, $default = 'home')
+            {
+                return 0;
+            }
+            public function get_listing_entry_ids()
+            {
+                return [];
+            }
+        };
+
+        $pages = [
+            1 => [
+                'entry_id' => 1,
+                'depth' => 1,
+                'parent_id' => 0,
+                'lft' => 1,
+                'rgt' => 2,
+                'slug' => '/',
+                'classes' => [],
+                'ids' => [],
+                'hidden' => 'n',
+            ],
+        ];
+
+        $result = $sql->add_attributes($pages, 1, 'main', 'no');
+
+        $this->assertContains('first', $result[1]['classes']);
+        $this->assertContains('last', $result[1]['classes']);
+        $this->assertContains('nav-home', $result[1]['ids']);
+        $this->assertNotContains('here', $result[1]['classes']);
+        $this->assertNotContains('level-1', $result[1]['classes']);
+    }
+
+    public function testAddAttributesKeepsHiddenLastChildWhenOverrideEnabled()
+    {
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'word_separator') {
+                    return 'underscore';
+                }
+                return null;
+            }
+        });
+        ee()->setMock('TMPL', new FakeTemplate());
+        ee()->TMPL->setMap([
+            'css_id' => 'root',
+            'add_level_classes' => 'yes',
+            'current_class' => 'here',
+            'has_children_class' => 'no',
+            'add_unique_ids' => 'entry_id',
+        ]);
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_single_path($entry_id)
+            {
+                return [];
+            }
+            public function get_parent_id($entry_id, $default = 'home')
+            {
+                return 0;
+            }
+            public function get_listing_entry_ids()
+            {
+                return [];
+            }
+        };
+
+        $pages = [
+            1 => [
+                'entry_id' => 1,
+                'depth' => 1,
+                'parent_id' => 0,
+                'lft' => 1,
+                'rgt' => 6,
+                'slug' => '/parent/',
+                'classes' => [],
+                'ids' => [],
+                'hidden' => 'n',
+            ],
+            2 => [
+                'entry_id' => 2,
+                'depth' => 2,
+                'parent_id' => 1,
+                'lft' => 2,
+                'rgt' => 3,
+                'slug' => '/parent/visible/',
+                'classes' => [],
+                'ids' => [],
+                'hidden' => 'n',
+            ],
+            3 => [
+                'entry_id' => 3,
+                'depth' => 2,
+                'parent_id' => 1,
+                'lft' => 4,
+                'rgt' => 5,
+                'slug' => '/parent/hidden/',
+                'classes' => [],
+                'ids' => [],
+                'hidden' => 'y',
+            ],
+        ];
+
+        $result = $sql->add_attributes($pages, 99, 'sub', 'yes');
+
+        $this->assertArrayHasKey(3, $result);
+        $this->assertContains('last', $result[3]['classes']);
+        $this->assertContains('level_2', $result[3]['classes']);
+        $this->assertContains('root_3', $result[3]['ids']);
+        $this->assertNotContains('last', $result[2]['classes']);
+    }
+
     public function testGenerateNavCoversRenameOverviewAndCssIdNoneBranches()
     {
         ee()->setMock('config', new class {
