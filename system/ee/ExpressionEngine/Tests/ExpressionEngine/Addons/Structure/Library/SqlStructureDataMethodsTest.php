@@ -5594,6 +5594,338 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertTrue($vals['validation_action_enabled']);
     }
 
+    public function testCleanupCheckReturnsZeroCountsWhenStructureAndSitePagesAreEmpty()
+    {
+        ee()->setMock('db', new class($this) {
+            private $test;
+
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+
+            public function get_where($table, $where = null, $limit = null, $offset = null)
+            {
+                return $this->test->result([], 0);
+            }
+
+            public function query($sql)
+            {
+                return $this->test->result([], 0);
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return [
+                    'url' => 'https://example.test/',
+                    'uris' => [],
+                    'templates' => [],
+                ];
+            }
+        };
+        $sql->site_id = 1;
+
+        $vals = $sql->cleanup_check();
+
+        $this->assertSame(0, $vals['total_site_pages_entries']);
+        $this->assertSame(0, $vals['total_structure_entries']);
+        $this->assertSame(0, $vals['total_site_pages_duplicates']);
+        $this->assertSame(0, $vals['ee_orphans']);
+        $this->assertSame(0, $vals['site_pages_orphans']);
+        $this->assertSame(0, $vals['site_pages_listing_orphans']);
+        $this->assertSame(0, $vals['structure_orphans']);
+        $this->assertSame(0, $vals['structure_listing_orphans']);
+        $this->assertSame(0, $vals['duplicate_rights']);
+        $this->assertSame(0, $vals['duplicate_lefts']);
+        $this->assertFalse($vals['validation_action_enabled']);
+        $this->assertSame([], $vals['site_pages_duplicates']);
+        $this->assertSame([], $vals['site_pages_uri_duplicates']);
+        $this->assertSame([], $vals['mismatch_url_entries']);
+        $this->assertSame([], $vals['template_id_errors']);
+        $this->assertSame([], $vals['orphaned_entries']);
+    }
+
+    public function testCleanupCheckLeavesMatchingRootAndListingEntriesClean()
+    {
+        ee()->setMock('general_helper', new class {
+            public function cpURL($section, $method, $params = [])
+            {
+                return 'cp://' . $section . '/' . $method . '/' . ($params['entry_id'] ?? '0');
+            }
+        });
+
+        ee()->setMock('db', new class($this) {
+            private $test;
+
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+
+            public function select($fields = '*')
+            {
+                return $this;
+            }
+
+            public function get_where($table, $where = null, $limit = null, $offset = null)
+            {
+                if ($table === 'structure') {
+                    return $this->test->result([
+                        ['entry_id' => 300, 'listing_cid' => 9, 'structure_url_title' => '/', 'template_id' => 5],
+                    ], 1);
+                }
+
+                if ($table === 'channel_titles' && isset($where['channel_id'])) {
+                    return $this->test->result([
+                        ['entry_id' => 301, 'title' => 'Child', 'url_title' => 'child'],
+                    ], 1);
+                }
+
+                if ($table === 'channel_titles' && isset($where['entry_id'])) {
+                    if ((int) $where['entry_id'] === 300) {
+                        return $this->test->result([
+                            ['entry_id' => 300, 'title' => 'Home', 'url_title' => 'home', 'channel_id' => 2],
+                        ], 1);
+                    }
+
+                    return $this->test->result([], 0);
+                }
+
+                if ($table === 'structure_listings' && isset($where['entry_id'])) {
+                    if ((int) $where['entry_id'] === 301) {
+                        return $this->test->result([
+                            ['entry_id' => 301, 'uri' => 'child', 'template_id' => 6],
+                        ], 1);
+                    }
+
+                    return $this->test->result([], 0);
+                }
+
+                return $this->test->result([], 0);
+            }
+
+            public function query($sql)
+            {
+                return $this->test->result([], 0);
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return [
+                    'url' => 'https://example.test/',
+                    'uris' => [
+                        300 => '/',
+                        301 => '/child/',
+                    ],
+                    'templates' => [300 => 5, 301 => 6],
+                ];
+            }
+
+            public function is_valid_template($template_id)
+            {
+                return in_array((int) $template_id, [5, 6], true);
+            }
+        };
+        $sql->site_id = 1;
+
+        $vals = $sql->cleanup_check();
+
+        $this->assertSame(2, $vals['total_site_pages_entries']);
+        $this->assertSame(2, $vals['total_structure_entries']);
+        $this->assertSame(0, $vals['total_site_pages_duplicates']);
+        $this->assertSame(0, $vals['ee_orphans']);
+        $this->assertSame(0, $vals['site_pages_orphans']);
+        $this->assertSame(0, $vals['site_pages_listing_orphans']);
+        $this->assertSame(0, $vals['structure_orphans']);
+        $this->assertSame(0, $vals['structure_listing_orphans']);
+        $this->assertSame(0, $vals['duplicate_rights']);
+        $this->assertSame(0, $vals['duplicate_lefts']);
+        $this->assertFalse($vals['validation_action_enabled']);
+        $this->assertSame([], $vals['site_pages_duplicates']);
+        $this->assertSame([], $vals['site_pages_uri_duplicates']);
+        $this->assertSame([], $vals['mismatch_url_entries']);
+        $this->assertSame([], $vals['template_id_errors']);
+        $this->assertSame([], $vals['orphaned_entries']);
+    }
+
+    public function testCleanupCheckMarksSitePagesOnlyListingEntriesAsListingOrphans()
+    {
+        ee()->setMock('general_helper', new class {
+            public function cpURL($section, $method, $params = [])
+            {
+                return 'cp://' . $section . '/' . $method . '/' . ($params['entry_id'] ?? '0');
+            }
+        });
+
+        ee()->setMock('db', new class($this) {
+            private $test;
+
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+
+            public function get_where($table, $where = null, $limit = null, $offset = null)
+            {
+                if ($table === 'structure') {
+                    return $this->test->result([], 0);
+                }
+
+                if ($table === 'channel_titles' && isset($where['entry_id']) && (int) $where['entry_id'] === 400) {
+                    return $this->test->result([
+                        ['entry_id' => 400, 'title' => 'Listing Orphan', 'url_title' => 'listing-orphan', 'channel_id' => 8],
+                    ], 1);
+                }
+
+                if ($table === 'structure_listings' && isset($where['entry_id']) && (int) $where['entry_id'] === 400) {
+                    return $this->test->result([
+                        ['entry_id' => 400, 'uri' => 'listing-orphan', 'template_id' => 9],
+                    ], 1);
+                }
+
+                return $this->test->result([], 0);
+            }
+
+            public function query($sql)
+            {
+                return $this->test->result([], 0);
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return [
+                    'url' => 'https://example.test/',
+                    'uris' => [
+                        400 => '/listing-orphan/',
+                    ],
+                    'templates' => [400 => 9],
+                ];
+            }
+        };
+        $sql->site_id = 1;
+
+        $vals = $sql->cleanup_check();
+
+        $this->assertSame(1, $vals['total_site_pages_entries']);
+        $this->assertSame(0, $vals['total_structure_entries']);
+        $this->assertSame(1, $vals['structure_orphans']);
+        $this->assertSame(0, $vals['structure_listing_orphans']);
+        $this->assertTrue($vals['validation_action_enabled']);
+        $this->assertSame(1, $vals['orphaned_entries'][400]['ee']);
+        $this->assertSame(1, $vals['orphaned_entries'][400]['site_pages']);
+        $this->assertSame(1, $vals['orphaned_entries'][400]['is_listing']);
+        $this->assertSame(0, $vals['orphaned_entries'][400]['structure']);
+        $this->assertSame('cp://publish/edit/400', $vals['orphaned_entries'][400]['ee_url']);
+    }
+
+    public function testCleanupCheckNormalizesNestedAndRootListingUris()
+    {
+        ee()->setMock('general_helper', new class {
+            public function cpURL($section, $method, $params = [])
+            {
+                return 'cp://' . $section . '/' . $method . '/' . ($params['entry_id'] ?? '0');
+            }
+        });
+
+        ee()->setMock('db', new class($this) {
+            private $test;
+
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+
+            public function select($fields = '*')
+            {
+                return $this;
+            }
+
+            public function get_where($table, $where = null, $limit = null, $offset = null)
+            {
+                if ($table === 'structure') {
+                    return $this->test->result([
+                        ['entry_id' => 500, 'listing_cid' => 10, 'structure_url_title' => 'child', 'template_id' => 5],
+                    ], 1);
+                }
+
+                if ($table === 'channel_titles' && isset($where['channel_id']) && (int) $where['channel_id'] === 10) {
+                    return $this->test->result([
+                        ['entry_id' => 501, 'title' => 'Root Listing', 'url_title' => 'root-listing'],
+                    ], 1);
+                }
+
+                if ($table === 'channel_titles' && isset($where['entry_id']) && (int) $where['entry_id'] === 500) {
+                    return $this->test->result([
+                        ['entry_id' => 500, 'title' => 'Nested Parent', 'url_title' => 'nested-parent', 'channel_id' => 4],
+                    ], 1);
+                }
+
+                if ($table === 'structure_listings' && isset($where['entry_id']) && (int) $where['entry_id'] === 501) {
+                    return $this->test->result([
+                        ['entry_id' => 501, 'uri' => '/', 'template_id' => 6],
+                    ], 1);
+                }
+
+                return $this->test->result([], 0);
+            }
+
+            public function query($sql)
+            {
+                return $this->test->result([], 0);
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return [
+                    'url' => 'https://example.test/',
+                    'uris' => [
+                        500 => '/nested/path/child/',
+                        501 => '/',
+                    ],
+                    'templates' => [500 => 5, 501 => 6],
+                ];
+            }
+
+            public function is_valid_template($template_id)
+            {
+                return in_array((int) $template_id, [5, 6], true);
+            }
+        };
+        $sql->site_id = 1;
+
+        $vals = $sql->cleanup_check();
+
+        $this->assertSame([], $vals['mismatch_url_entries']);
+        $this->assertSame([], $vals['template_id_errors']);
+        $this->assertSame([], $vals['orphaned_entries']);
+        $this->assertFalse($vals['validation_action_enabled']);
+        $this->assertSame(2, $vals['total_structure_entries']);
+    }
+
     private function makeSql()
     {
         $sql = (new ReflectionClass('Sql_structure'))->newInstanceWithoutConstructor();
