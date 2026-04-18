@@ -2733,6 +2733,142 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertSame('n', $assets['Flat Assets']['split_assets']);
     }
 
+    public function testGetCpAssetDataReturnsSortedMixedAssetRows()
+    {
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_structure_channels($type = '', $channel_id = '', $order = '', $selector = false)
+            {
+                if ($type === 'asset') {
+                    return [
+                        7 => ['channel_id' => 7, 'channel_title' => 'Zeta Assets', 'split_assets' => 'n'],
+                        9 => ['channel_id' => 9, 'channel_title' => 'Split Assets', 'split_assets' => 'y'],
+                    ];
+                }
+
+                return [];
+            }
+            public function get_split_assets()
+            {
+                return [
+                    9 => [
+                        201 => ['title' => 'Beta Asset', 'entry_id' => 201],
+                        305 => ['title' => 'Gamma Asset', 'entry_id' => 305],
+                    ],
+                ];
+            }
+        };
+
+        $assets = $sql->get_cp_asset_data();
+
+        $this->assertSame(['Beta Asset', 'Gamma Asset', 'Zeta Assets'], array_keys($assets));
+        $this->assertSame([
+            'title' => 'Beta Asset',
+            'channel_id' => 9,
+            'entry_id' => 201,
+            'split_assets' => 'y',
+        ], $assets['Beta Asset']);
+        $this->assertSame([
+            'title' => 'Zeta Assets',
+            'channel_id' => 7,
+            'split_assets' => 'n',
+        ], $assets['Zeta Assets']);
+    }
+
+    public function testGetCpAssetDataReturnsEmptyArrayWhenAssetChannelsAreEmpty()
+    {
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_structure_channels($type = '', $channel_id = '', $order = '', $selector = false)
+            {
+                return [];
+            }
+            public function get_split_assets()
+            {
+                return [];
+            }
+        };
+
+        $this->assertSame([], $sql->get_cp_asset_data());
+    }
+
+    public function testGetCpAssetDataReturnsEmptyArrayWhenAssetChannelsAreEmptyTraversable()
+    {
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_structure_channels($type = '', $channel_id = '', $order = '', $selector = false)
+            {
+                return new ArrayIterator([]);
+            }
+            public function get_split_assets()
+            {
+                return [];
+            }
+        };
+
+        $this->assertSame([], $sql->get_cp_asset_data());
+    }
+
+    public function testGetCpAssetDataReturnsEmptyArrayWhenSplitChannelHasNoEntries()
+    {
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_structure_channels($type = '', $channel_id = '', $order = '', $selector = false)
+            {
+                if ($type === 'asset') {
+                    return [
+                        14 => ['channel_id' => 14, 'channel_title' => 'Split Assets', 'split_assets' => 'y'],
+                    ];
+                }
+
+                return [];
+            }
+            public function get_split_assets()
+            {
+                return [
+                    14 => [],
+                ];
+            }
+        };
+
+        $this->assertSame([], $sql->get_cp_asset_data());
+    }
+
+    public function testGetCpAssetDataReturnsEmptyArrayWhenSplitChannelHasEmptyTraversableEntries()
+    {
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_structure_channels($type = '', $channel_id = '', $order = '', $selector = false)
+            {
+                if ($type === 'asset') {
+                    return [
+                        21 => ['channel_id' => 21, 'channel_title' => 'Split Assets', 'split_assets' => 'y'],
+                    ];
+                }
+
+                return [];
+            }
+            public function get_split_assets()
+            {
+                return [
+                    21 => new ArrayIterator([]),
+                ];
+            }
+        };
+
+        $this->assertSame([], $sql->get_cp_asset_data());
+    }
+
     public function testGetStructureChannelIdsReturnsStringWhenRequested()
     {
         $sql = new class extends Sql_structure {
