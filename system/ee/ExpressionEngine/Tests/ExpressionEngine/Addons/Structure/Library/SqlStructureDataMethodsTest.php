@@ -4549,6 +4549,74 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertStringContainsString('UPDATE exp_structure SET rgt = 13 WHERE site_id = 0', $queryText);
     }
 
+    public function testCleanupIgnoresUnsupportedModeWithoutMutatingStructureData()
+    {
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'structure_nav_history') {
+                    return 'n';
+                }
+
+                return null;
+            }
+        });
+
+        $captured = (object) ['queries' => [], 'getSitePagesCalls' => 0, 'generateCalls' => 0, 'setSitePages' => []];
+        ee()->setMock('db', new class($captured) {
+            private $captured;
+
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+
+            public function query($sql)
+            {
+                $this->captured->queries[] = $sql;
+
+                return null;
+            }
+        });
+
+        $sql = new class($captured) extends Sql_structure {
+            private $captured;
+
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                $this->captured->getSitePagesCalls++;
+
+                return ['url' => 'https://example.test/', 'uris' => [], 'templates' => []];
+            }
+
+            public function generate_site_pages_array()
+            {
+                $this->captured->generateCalls++;
+
+                return ['url' => 'https://example.test/', 'uris' => [], 'templates' => []];
+            }
+
+            public function set_site_pages($site_id, $site_pages)
+            {
+                $this->captured->setSitePages[] = [$site_id, $site_pages];
+
+                return true;
+            }
+        };
+        $sql->site_id = 1;
+
+        $this->assertTrue($sql->cleanup('unsupported-mode'));
+        $this->assertSame([], $captured->queries);
+        $this->assertSame(0, $captured->getSitePagesCalls);
+        $this->assertSame(0, $captured->generateCalls);
+        $this->assertSame([], $captured->setSitePages);
+    }
+
     public function testGenerateSitePagesArrayCoversRootListingAndTemplatePreserveBranch()
     {
         $originalGet = $_GET;
