@@ -1396,6 +1396,77 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertFalse($sql->get_listing_channel(20));
     }
 
+    /**
+     * Verifies get_listing_parent() scopes the lookup to Structure rows for the site.
+     *
+     * @return void
+     */
+    public function testGetListingParentUsesStructureTableAndSiteFilter()
+    {
+        $captured = (object) [
+            'selects' => [],
+            'tables' => [],
+            'where' => [],
+            'get_calls' => 0,
+            'get_args' => [],
+        ];
+
+        ee()->setMock('db', new class($this, $captured) {
+            private $test;
+            private $captured;
+
+            public function __construct($test, $captured)
+            {
+                $this->test = $test;
+                $this->captured = $captured;
+            }
+
+            public function select($fields = '*')
+            {
+                $this->captured->selects[] = $fields;
+
+                return $this;
+            }
+
+            public function from($table)
+            {
+                $this->captured->tables[] = $table;
+
+                return $this;
+            }
+
+            public function where($field, $value = null)
+            {
+                $this->captured->where[] = [$field, $value];
+
+                return $this;
+            }
+
+            public function get($table = null)
+            {
+                $this->captured->get_calls++;
+                $this->captured->get_args[] = $table;
+
+                return $this->test->result([
+                    ['entry_id' => 42],
+                ], 1);
+            }
+        });
+
+        $sql = $this->makeSql();
+        $sql->site_id = 9;
+
+        $this->assertSame(42, $sql->get_listing_parent(77));
+        $this->assertSame(['entry_id'], $captured->selects);
+        $this->assertSame(['structure'], $captured->tables);
+        $this->assertSame([
+            ['listing_cid', 77],
+            ['site_id', 9],
+        ], $captured->where);
+        $this->assertSame(1, $captured->get_calls);
+        $this->assertSame([null], $captured->get_args);
+    }
+
     public function testCreateCustomTitlesExercisesPrivateTitleHelpers()
     {
         StaticCache::clear();
