@@ -50,7 +50,7 @@ class SqlStructureUtilityMethodsTest extends TestCase
         $this->assertSame(0, $sql->get_parent_uri_depth(null));
     }
 
-    public function testReindexAtOneCreatesOneBasedCopies()
+    public function testReindexAtOnePreservesOriginalKeysWhileAddingOneBasedCopies()
     {
         $sql = new SqlStructureUtilityFixture();
         $rows = [
@@ -58,10 +58,56 @@ class SqlStructureUtilityMethodsTest extends TestCase
             ['entry_id' => 11],
         ];
 
-        $reindexed = $sql->reindex_at_one($rows);
+        $this->assertSame([
+            0 => ['entry_id' => 10],
+            1 => ['entry_id' => 10],
+            2 => ['entry_id' => 11],
+        ], $sql->reindex_at_one($rows));
+    }
 
-        $this->assertSame(10, $reindexed[1]['entry_id']);
-        $this->assertSame(11, $reindexed[2]['entry_id']);
+    public function testReindexAtOneReturnsEmptyArrayForEmptyInput()
+    {
+        $sql = new SqlStructureUtilityFixture();
+
+        $this->assertSame([], $sql->reindex_at_one([]));
+    }
+
+    public function testReindexAtOneWarnsAndReturnsOriginalValueForNonIterableInput()
+    {
+        $sql = new SqlStructureUtilityFixture();
+        $warning = null;
+
+        set_error_handler(function ($number, $message) use (&$warning) {
+            $warning = [$number, $message];
+
+            return true;
+        });
+
+        try {
+            $result = $sql->reindex_at_one(null);
+        } finally {
+            restore_error_handler();
+        }
+
+        $this->assertNull($result);
+        $this->assertSame(E_WARNING, $warning[0]);
+        $this->assertStringContainsString('foreach', $warning[1]);
+    }
+
+    public function testReindexAtOneAddsOneBasedCopiesWithoutRemovingSparseKeys()
+    {
+        $sql = new SqlStructureUtilityFixture();
+        $rows = [
+            5 => ['entry_id' => 50],
+            9 => ['entry_id' => 90],
+        ];
+
+        $this->assertSame([
+            5 => ['entry_id' => 50],
+            9 => ['entry_id' => 90],
+            1 => ['entry_id' => 50],
+            2 => ['entry_id' => 90],
+        ], $sql->reindex_at_one($rows));
     }
 
     public function testGetUriAndThemeUrlAndSiteId()
