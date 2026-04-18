@@ -1,7 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../../../../eeObjectMock.php';
-require_once __DIR__ . '/../../../../../Addons/structure/sql.structure.php';
+require_once PATH_ADDONS . 'structure/sql.structure.php';
 
 use PHPUnit\Framework\TestCase;
 
@@ -32,6 +32,21 @@ class SqlStructureUtilityMethodsTest extends TestCase
     protected function setUp(): void
     {
         ee()->resetMocks();
+    }
+
+    /**
+     * Confirm the test exercises the real add-on file from PATH_ADDONS.
+     *
+     * @return void
+     */
+    public function testSqlStructureLoadsFromPathAddonsTargetFile(): void
+    {
+        $reflection = new ReflectionClass('Sql_structure');
+
+        $this->assertSame(
+            realpath(PATH_ADDONS . 'structure/sql.structure.php'),
+            $reflection->getFileName()
+        );
     }
 
     public function testStringUtilityMethods()
@@ -226,6 +241,334 @@ class SqlStructureUtilityMethodsTest extends TestCase
         $this->assertFalse($sql->module_is_installed());
         $this->assertFalse($sql->get_module_id());
         $this->assertFalse($sql->extension_is_installed());
+    }
+
+    /**
+     * It returns true from cached module rows without querying or saving again.
+     *
+     * @return void
+     */
+    public function testModuleIsInstalledReturnsTrueFromCachedModuleRowsWithoutQueryingDatabase(): void
+    {
+        $moduleRows = [(object) ['module_id' => 55]];
+        $captured = (object) [
+            'query_count' => 0,
+            'saved' => [],
+        ];
+
+        ee()->setMock('cache', new class($moduleRows, $captured) {
+            private $moduleRows;
+            private $captured;
+
+            /**
+             * Store the cached rows and capture state for the fake cache.
+             *
+             * @param array $moduleRows
+             * @param object $captured
+             * @return void
+             */
+            public function __construct(array $moduleRows, object $captured)
+            {
+                $this->moduleRows = $moduleRows;
+                $this->captured = $captured;
+            }
+
+            /**
+             * Return the pre-populated cache value for the Structure module id lookup.
+             *
+             * @param string $key
+             * @return array
+             */
+            public function get($key): array
+            {
+                return $this->moduleRows;
+            }
+
+            /**
+             * Record any unexpected save attempt for later assertions.
+             *
+             * @param string $key
+             * @param mixed $value
+             * @return bool
+             */
+            public function save($key, $value): bool
+            {
+                $this->captured->saved[] = [$key, $value];
+
+                return true;
+            }
+        });
+        ee()->setMock('db', new class($captured) {
+            private $captured;
+
+            /**
+             * Store shared capture state for database assertions.
+             *
+             * @param object $captured
+             * @return void
+             */
+            public function __construct(object $captured)
+            {
+                $this->captured = $captured;
+            }
+
+            /**
+             * Count any unexpected query that slips past the populated cache.
+             *
+             * @param string $sql
+             * @return object
+             */
+            public function query($sql)
+            {
+                $this->captured->query_count++;
+
+                throw new RuntimeException('Database should not be queried when module rows are cached.');
+            }
+        });
+
+        $sql = new SqlStructureUtilityFixture();
+
+        $this->assertTrue($sql->module_is_installed());
+        $this->assertSame(0, $captured->query_count);
+        $this->assertSame([], $captured->saved);
+    }
+
+    /**
+     * It queries and caches populated module rows on a cache miss before returning true.
+     *
+     * @return void
+     */
+    public function testModuleIsInstalledQueriesAndCachesModuleRowsOnCacheMiss(): void
+    {
+        $moduleRows = [(object) ['module_id' => 55]];
+        $captured = (object) [
+            'saved' => [],
+            'queries' => [],
+        ];
+
+        ee()->setMock('cache', new class($captured) {
+            private $captured;
+
+            /**
+             * Store shared capture state for cache assertions.
+             *
+             * @param object $captured
+             * @return void
+             */
+            public function __construct(object $captured)
+            {
+                $this->captured = $captured;
+            }
+
+            /**
+             * Simulate a cache miss for the Structure module id lookup.
+             *
+             * @param string $key
+             * @return bool
+             */
+            public function get($key): bool
+            {
+                return false;
+            }
+
+            /**
+             * Capture the saved module rows for later assertions.
+             *
+             * @param string $key
+             * @param mixed $value
+             * @return bool
+             */
+            public function save($key, $value): bool
+            {
+                $this->captured->saved[] = [$key, $value];
+
+                return true;
+            }
+        });
+        ee()->setMock('db', new class($moduleRows, $captured) {
+            private $moduleRows;
+            private $captured;
+
+            /**
+             * Store the fake database result rows and capture state.
+             *
+             * @param array $moduleRows
+             * @param object $captured
+             * @return void
+             */
+            public function __construct(array $moduleRows, object $captured)
+            {
+                $this->moduleRows = $moduleRows;
+                $this->captured = $captured;
+            }
+
+            /**
+             * Return the module id query result for the cache-miss path.
+             *
+             * @param string $sql
+             * @return object
+             */
+            public function query($sql)
+            {
+                $this->captured->queries[] = $sql;
+
+                return new class($this->moduleRows) {
+                    private $rows;
+
+                    /**
+                     * Store module rows returned from the fake query.
+                     *
+                     * @param array $rows
+                     * @return void
+                     */
+                    public function __construct(array $rows)
+                    {
+                        $this->rows = $rows;
+                    }
+
+                    /**
+                     * Return the canned module rows.
+                     *
+                     * @return array
+                     */
+                    public function result(): array
+                    {
+                        return $this->rows;
+                    }
+                };
+            }
+        });
+
+        $sql = new SqlStructureUtilityFixture();
+
+        $this->assertTrue($sql->module_is_installed());
+        $this->assertSame(
+            ["SELECT module_id FROM exp_modules WHERE module_name = 'Structure'"],
+            $captured->queries
+        );
+        $this->assertSame(
+            [['/Structure/module_id_query', $moduleRows]],
+            $captured->saved
+        );
+    }
+
+    /**
+     * It caches empty module rows on a cache miss before returning false.
+     *
+     * @return void
+     */
+    public function testModuleIsInstalledCachesEmptyResultsAndReturnsFalseWhenModuleIsMissing(): void
+    {
+        $moduleRows = [];
+        $captured = (object) [
+            'saved' => [],
+            'queries' => [],
+        ];
+
+        ee()->setMock('cache', new class($captured) {
+            private $captured;
+
+            /**
+             * Store shared capture state for cache assertions.
+             *
+             * @param object $captured
+             * @return void
+             */
+            public function __construct(object $captured)
+            {
+                $this->captured = $captured;
+            }
+
+            /**
+             * Simulate a cache miss for the missing-module path.
+             *
+             * @param string $key
+             * @return bool
+             */
+            public function get($key): bool
+            {
+                return false;
+            }
+
+            /**
+             * Capture the saved empty module rows for later assertions.
+             *
+             * @param string $key
+             * @param mixed $value
+             * @return bool
+             */
+            public function save($key, $value): bool
+            {
+                $this->captured->saved[] = [$key, $value];
+
+                return true;
+            }
+        });
+        ee()->setMock('db', new class($moduleRows, $captured) {
+            private $moduleRows;
+            private $captured;
+
+            /**
+             * Store the fake database result rows and capture state.
+             *
+             * @param array $moduleRows
+             * @param object $captured
+             * @return void
+             */
+            public function __construct(array $moduleRows, object $captured)
+            {
+                $this->moduleRows = $moduleRows;
+                $this->captured = $captured;
+            }
+
+            /**
+             * Return the empty module id query result for the cache-miss path.
+             *
+             * @param string $sql
+             * @return object
+             */
+            public function query($sql)
+            {
+                $this->captured->queries[] = $sql;
+
+                return new class($this->moduleRows) {
+                    private $rows;
+
+                    /**
+                     * Store module rows returned from the fake query.
+                     *
+                     * @param array $rows
+                     * @return void
+                     */
+                    public function __construct(array $rows)
+                    {
+                        $this->rows = $rows;
+                    }
+
+                    /**
+                     * Return the canned module rows.
+                     *
+                     * @return array
+                     */
+                    public function result(): array
+                    {
+                        return $this->rows;
+                    }
+                };
+            }
+        });
+
+        $sql = new SqlStructureUtilityFixture();
+
+        $this->assertFalse($sql->module_is_installed());
+        $this->assertSame(
+            ["SELECT module_id FROM exp_modules WHERE module_name = 'Structure'"],
+            $captured->queries
+        );
+        $this->assertSame(
+            [['/Structure/module_id_query', $moduleRows]],
+            $captured->saved
+        );
     }
 
     public function testIsValidTemplateAndDuplicateListingUri()
