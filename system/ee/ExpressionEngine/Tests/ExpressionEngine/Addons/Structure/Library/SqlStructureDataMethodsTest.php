@@ -1042,6 +1042,140 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertSame([10 => 'Blog Headline', 30 => 'Listing Lede'], $withListings);
     }
 
+    public function testCreateCustomTitlesIgnoresMissingListingChannelsWhenListingsRequested()
+    {
+        StaticCache::clear();
+
+        ee()->setMock('TMPL', new class {
+            public function fetch_param($key, $default = false)
+            {
+                if ($key === 'channel:title') {
+                    return 'blog:headline|listing:lede';
+                }
+
+                return $default;
+            }
+        });
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+            public function call($name, $value)
+            {
+                return $value;
+            }
+        });
+        ee()->setMock('load', new class {
+            public function library($name)
+            {
+            }
+        });
+        ee()->setMock('legacy_api', new class {
+            public function instantiate($name)
+            {
+            }
+        });
+        ee()->setMock('api_channel_fields', new class {
+            public function fetch_custom_channel_fields($customTitles)
+            {
+                return [
+                    'custom_channel_fields' => [
+                        0 => ['headline' => 12, 'lede' => 14],
+                    ]
+                ];
+            }
+        });
+        ee()->setMock('db', new class($this) {
+            private $test;
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+            public function query($sql)
+            {
+                if (strpos($sql, 'SELECT channel_id, channel_name FROM exp_channels') !== false) {
+                    return $this->test->result([
+                        ['channel_id' => 2, 'channel_name' => 'blog'],
+                        ['channel_id' => 9, 'channel_name' => 'listing'],
+                    ], 2);
+                }
+
+                return $this->test->result([]);
+            }
+        });
+        ee()->setMock('Model', new class {
+            public $channelIds = [];
+            public function get($model)
+            {
+                if ($model !== 'ChannelEntry') {
+                    return new class {
+                        public function __call($name, $args)
+                        {
+                            return $this;
+                        }
+                        public function all()
+                        {
+                            return [];
+                        }
+                    };
+                }
+
+                return new class($this) {
+                    private $parent;
+                    public function __construct($parent)
+                    {
+                        $this->parent = $parent;
+                    }
+                    public function fields(...$args)
+                    {
+                        return $this;
+                    }
+                    public function filter($field, $operator, $value)
+                    {
+                        if ($field === 'channel_id' && $operator === 'IN') {
+                            $this->parent->channelIds = $value;
+                        }
+
+                        return $this;
+                    }
+                    public function all()
+                    {
+                        $entries = [
+                            (object) ['entry_id' => 10, 'channel_id' => 2, 'site_id' => 1, 'title' => 'Default Blog', 'field_id_12' => 'Blog Headline'],
+                            (object) ['entry_id' => 30, 'channel_id' => 9, 'site_id' => 1, 'title' => 'Default Listing', 'field_id_14' => 'Listing Lede'],
+                        ];
+
+                        return array_values(array_filter($entries, function ($entry) {
+                            return in_array($entry->channel_id, $this->parent->channelIds, true);
+                        }));
+                    }
+                };
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_structure_channels($type = '', $channel_id = '', $order = '', $selector = false)
+            {
+                if ($type === 'listing') {
+                    return false;
+                }
+
+                return [2 => ['channel_id' => 2]];
+            }
+        };
+        $sql->site_id = 1;
+        $sql->cache = [];
+
+        $titles = $sql->create_custom_titles(true);
+
+        $this->assertSame([10 => 'Blog Headline'], $titles);
+        $this->assertSame([2], ee()->Model->channelIds);
+    }
+
     public function testCreateCustomTitlesReturnsFalseWhenNoSqlFieldsMatch()
     {
         StaticCache::clear();
