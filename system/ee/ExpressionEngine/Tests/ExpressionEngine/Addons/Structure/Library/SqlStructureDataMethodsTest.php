@@ -188,6 +188,33 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertSame([20 => 20], $sql->get_listing_entry_ids());
     }
 
+    public function testGetOverviewCachesEmptyResultsWithoutRepeatQueries()
+    {
+        $db = new class($this) {
+            private $test;
+            public $overviewQueries = 0;
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+            public function query($sql)
+            {
+                if (strpos($sql, 'FROM exp_structure AS node') !== false && strpos($sql, 'GROUP BY node.lft') !== false) {
+                    $this->overviewQueries++;
+                }
+
+                return $this->test->result([], 0);
+            }
+        };
+        ee()->setMock('db', $db);
+
+        $sql = $this->makeSql();
+
+        $this->assertSame([], $sql->get_overview(999));
+        $this->assertSame([], $sql->get_overview(999));
+        $this->assertSame(1, $db->overviewQueries);
+    }
+
     public function testStructureChannelsAndCategoryAndChannelLookupMethods()
     {
         ee()->setMock('config', new class {
