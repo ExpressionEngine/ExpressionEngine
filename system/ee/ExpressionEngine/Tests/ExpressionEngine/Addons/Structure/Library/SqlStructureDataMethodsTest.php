@@ -215,6 +215,112 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertSame(1, $db->overviewQueries);
     }
 
+    public function testGetParentIdUsesDistinctCacheKeysPerDefault()
+    {
+        $sqlHelper = new class {
+            public $calls = [];
+            public function row($sql)
+            {
+                $this->calls[] = $sql;
+
+                if (strpos($sql, 'SELECT parent_id FROM exp_structure WHERE entry_id = 21') !== false) {
+                    return ['parent_id' => 0];
+                }
+
+                if (strpos($sql, 'SELECT entry_id FROM exp_structure WHERE lft = 2') !== false) {
+                    return ['entry_id' => 2];
+                }
+
+                return null;
+            }
+        };
+        ee()->setMock('sql_helper', $sqlHelper);
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+
+            public function get_listing_entry_ids()
+            {
+                return [];
+            }
+        };
+        $sql->site_id = 1;
+
+        $this->assertSame(2, $sql->get_parent_id(21));
+        $this->assertSame(0, $sql->get_parent_id(21, 'root'));
+        $this->assertSame([
+            'SELECT parent_id FROM exp_structure WHERE entry_id = 21 AND site_id = 1',
+            'SELECT entry_id FROM exp_structure WHERE lft = 2 AND site_id = 1',
+            'SELECT parent_id FROM exp_structure WHERE entry_id = 21 AND site_id = 1',
+        ], $sqlHelper->calls);
+    }
+
+    public function testGetParentIdReturnsCachedValueWithoutRequerying()
+    {
+        $sqlHelper = new class {
+            public $calls = [];
+            public function row($sql)
+            {
+                $this->calls[] = $sql;
+
+                if (strpos($sql, 'SELECT parent_id FROM exp_structure WHERE entry_id = 31') !== false) {
+                    return ['parent_id' => 9];
+                }
+
+                return null;
+            }
+        };
+        ee()->setMock('sql_helper', $sqlHelper);
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+
+            public function get_listing_entry_ids()
+            {
+                return [];
+            }
+        };
+        $sql->site_id = 1;
+
+        $this->assertSame(9, $sql->get_parent_id(31));
+        $this->assertSame(9, $sql->get_parent_id(31));
+        $this->assertSame([
+            'SELECT parent_id FROM exp_structure WHERE entry_id = 31 AND site_id = 1',
+        ], $sqlHelper->calls);
+    }
+
+    /**
+     * Verify the home-page lookup queries the live Structure table for the current site.
+     *
+     * @return void
+     */
+    public function testGetHomePageIdUsesCurrentSiteHomeQuery()
+    {
+        $sqlHelper = new class {
+            public $calls = [];
+
+            public function row($sql)
+            {
+                $this->calls[] = $sql;
+
+                return ['entry_id' => 42];
+            }
+        };
+        ee()->setMock('sql_helper', $sqlHelper);
+
+        $sql = $this->makeSql();
+        $sql->site_id = 7;
+
+        $this->assertSame(42, $sql->get_home_page_id());
+        $this->assertSame([
+            'SELECT entry_id FROM exp_structure WHERE lft = 2 AND site_id = 7',
+        ], $sqlHelper->calls);
+    }
+
     public function testStructureChannelsAndCategoryAndChannelLookupMethods()
     {
         ee()->setMock('config', new class {
