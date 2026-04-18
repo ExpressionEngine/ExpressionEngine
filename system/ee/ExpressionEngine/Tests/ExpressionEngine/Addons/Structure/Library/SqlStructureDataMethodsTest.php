@@ -215,6 +215,48 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertSame(1, $db->overviewQueries);
     }
 
+    public function testGetHomeNodeCachesFetchedNode()
+    {
+        $sqlHelper = new class {
+            public $calls = [];
+
+            public function row($sql)
+            {
+                $this->calls[] = $sql;
+
+                return ['entry_id' => 0, 'lft' => 1, 'rgt' => 20];
+            }
+        };
+        ee()->setMock('sql_helper', $sqlHelper);
+
+        $sql = $this->makeSql();
+
+        $this->assertSame(['entry_id' => 0, 'lft' => 1, 'rgt' => 20], $sql->get_home_node());
+        $this->assertSame(['entry_id' => 0, 'lft' => 1, 'rgt' => 20], StaticCache::get('get_home_node'));
+        $this->assertSame(['SELECT * FROM exp_structure WHERE entry_id = 0'], $sqlHelper->calls);
+    }
+
+    public function testGetHomeNodeReturnsCachedNodeWithoutQueryingSqlHelper()
+    {
+        $sqlHelper = new class {
+            public $calls = 0;
+
+            public function row($sql)
+            {
+                $this->calls++;
+
+                return ['entry_id' => 999];
+            }
+        };
+        ee()->setMock('sql_helper', $sqlHelper);
+        StaticCache::set('get_home_node', ['entry_id' => 0, 'lft' => 1, 'rgt' => 20]);
+
+        $sql = $this->makeSql();
+
+        $this->assertSame(['entry_id' => 0, 'lft' => 1, 'rgt' => 20], $sql->get_home_node());
+        $this->assertSame(0, $sqlHelper->calls);
+    }
+
     public function testGetParentIdUsesDistinctCacheKeysPerDefault()
     {
         $sqlHelper = new class {
