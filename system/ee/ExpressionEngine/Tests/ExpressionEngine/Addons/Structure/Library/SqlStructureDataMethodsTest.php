@@ -257,6 +257,45 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertSame(0, $sqlHelper->calls);
     }
 
+    public function testGetPageTitleReturnsFalseForNonNumericEntryIdWithoutTouchingDb()
+    {
+        $db = new class {
+            public $whereCalls = 0;
+            public $limitCalls = 0;
+            public $getCalls = 0;
+
+            public function where($field, $value = null)
+            {
+                $this->whereCalls++;
+
+                return $this;
+            }
+
+            public function limit($n)
+            {
+                $this->limitCalls++;
+
+                return $this;
+            }
+
+            public function get($table = null)
+            {
+                $this->getCalls++;
+
+                throw new RuntimeException('get_page_title() should not query the database for non-numeric entry IDs.');
+            }
+        };
+        ee()->setMock('db', $db);
+
+        $sql = $this->makeSql();
+
+        $this->assertFalse($sql->get_page_title('not-an-id'));
+        $this->assertSame(0, $db->whereCalls);
+        $this->assertSame(0, $db->limitCalls);
+        $this->assertSame(0, $db->getCalls);
+        $this->assertFalse(StaticCache::get('structure_page_title_not-an-id'));
+    }
+
     public function testGetParentIdUsesDistinctCacheKeysPerDefault()
     {
         $sqlHelper = new class {
