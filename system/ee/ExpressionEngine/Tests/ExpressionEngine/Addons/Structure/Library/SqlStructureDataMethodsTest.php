@@ -1050,6 +1050,35 @@ class SqlStructureDataMethodsTest extends TestCase
         $sql->update_root_node();
     }
 
+    public function testGetEntryTitleAcceptsNumericStringEntryIds()
+    {
+        $db = new class($this) {
+            private $test;
+            public $queries = [];
+
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+
+            public function query($sql)
+            {
+                $this->queries[] = $sql;
+
+                return $this->test->result([['title' => 'String Title']], 1);
+            }
+        };
+        ee()->setMock('db', $db);
+
+        $sql = $this->makeSql();
+
+        $this->assertSame('String Title', $sql->get_entry_title('7'));
+        $this->assertSame(
+            ['SELECT title FROM exp_channel_titles WHERE entry_id = 7'],
+            $db->queries
+        );
+    }
+
     public function testNegativeBranchesForLookupMethods()
     {
         ee()->setMock('config', new class {
@@ -1140,6 +1169,32 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertSame('n', $sql->get_hidden_state(5));
         $this->assertNull($sql->get_entry_title(5));
         $this->assertFalse($sql->get_pid_for_listing_entry(5));
+    }
+
+    public function testGetEntryTitleSkipsDatabaseQueryForNonNumericEntryIds()
+    {
+        $db = new class($this) {
+            private $test;
+            public $queries = [];
+
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+
+            public function query($sql)
+            {
+                $this->queries[] = $sql;
+
+                return $this->test->result([['title' => 'Unexpected Title']], 1);
+            }
+        };
+        ee()->setMock('db', $db);
+
+        $sql = $this->makeSql();
+
+        $this->assertNull($sql->get_entry_title('bad-7'));
+        $this->assertSame([], $db->queries);
     }
 
     public function testSitePagesAndListingChannelAdditionalBranches()
