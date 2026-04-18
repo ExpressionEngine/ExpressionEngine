@@ -2230,6 +2230,100 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertStringContainsString('<li class="first"><a href="/top/">Top</a></li>', $htmlRecursiveYes);
     }
 
+    public function testGenerateNavUsesCustomTitlesWithoutWrapperAndFallsBackToEntryId()
+    {
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'word_separator') {
+                    return 'dash';
+                }
+                return null;
+            }
+        });
+        ee()->setMock('TMPL', new FakeTemplate());
+        ee()->TMPL->setMap([
+            'encode_titles' => 'no',
+            'add_span' => 'no',
+            'include_ul' => 'no',
+        ]);
+
+        $sql = new class extends Sql_structure {
+            public $capturedEntryId;
+            public function __construct()
+            {
+            }
+            public function add_attributes($pages, $entry_id, $mode, $override_hidden_state = "no")
+            {
+                $this->capturedEntryId = $entry_id;
+
+                return [
+                    10 => ['entry_id' => 10, 'title' => 'Parent', 'uri' => '/parent/', 'depth' => 1, 'classes' => [], 'ids' => []],
+                    11 => ['entry_id' => 11, 'title' => 'Child', 'uri' => '/parent/child/', 'depth' => 2, 'classes' => [], 'ids' => []],
+                ];
+            }
+            public function create_custom_titles($include_listings = false)
+            {
+                return [
+                    10 => 'Custom <Parent>',
+                    11 => 'Custom Child',
+                ];
+            }
+        };
+
+        $html = $sql->generate_nav([], false, 42, 'sub', false, 'Overview', 'yes', 'no', 1);
+
+        $this->assertSame(42, $sql->capturedEntryId);
+        $this->assertStringNotContainsString('<ul id=', $html);
+        $this->assertStringContainsString('<li><a href="/parent/">Custom <Parent></a>', $html);
+        $this->assertStringContainsString('<li><a href="/parent/child/">Custom Child</a></li>', $html);
+    }
+
+    public function testGenerateNavCoversLevelMismatchAndRecursiveOverviewRenameString()
+    {
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'word_separator') {
+                    return 'dash';
+                }
+                return null;
+            }
+        });
+        ee()->setMock('TMPL', new FakeTemplate());
+        ee()->TMPL->setMap([
+            'encode_titles' => 'yes',
+            'add_span' => 'no',
+            'include_ul' => 'yes',
+            'wrap_start' => '',
+            'wrap_end' => '',
+        ]);
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function add_attributes($pages, $entry_id, $mode, $override_hidden_state = "no")
+            {
+                return [
+                    1 => ['entry_id' => 1, 'title' => 'Top', 'uri' => '/top/', 'depth' => 1, 'classes' => [], 'ids' => []],
+                    2 => ['entry_id' => 2, 'title' => 'Child', 'uri' => '/top/child/', 'depth' => 2, 'classes' => [], 'ids' => []],
+                ];
+            }
+            public function create_custom_titles($include_listings = false)
+            {
+                return false;
+            }
+        };
+
+        $htmlLevelMismatch = $sql->generate_nav([], 1, 1, 'sub', true, 'Overview', 'no', 'no', 99);
+        $this->assertStringNotContainsString('<li class="first"><a href="/top/">Overview</a></li>', $htmlLevelMismatch);
+
+        $htmlRecursiveRename = $sql->generate_nav([], 1, 1, 'sub', true, 'Browse', 'no', 'yes', 99);
+        $this->assertStringContainsString('<ul id="nav-sub">', $htmlRecursiveRename);
+        $this->assertStringContainsString('<li class="first"><a href="/top/">Browse</a></li>', $htmlRecursiveRename);
+    }
+
     public function testGetSelectiveDataCoversResultFlowAndUrlGeneration()
     {
         ee()->setMock('config', new class {
