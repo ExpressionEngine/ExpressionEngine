@@ -558,6 +558,57 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertSame(0, $db->queryCalls);
     }
 
+    public function testGetDefaultTemplateReturnsFalseWhenNumericChannelHasNoMatchingStructureChannel()
+    {
+        $captured = (object) ['queries' => []];
+
+        ee()->setMock('db', new class($captured, $this) {
+            private $captured;
+            private $test;
+
+            public function __construct($captured, $test)
+            {
+                $this->captured = $captured;
+                $this->test = $test;
+            }
+
+            public function query($sql)
+            {
+                $this->captured->queries[] = $sql;
+
+                return $this->test->result([], 0);
+            }
+        });
+
+        $sql = $this->makeSql();
+        $sql->site_id = 7;
+
+        $this->assertFalse($sql->get_default_template('0'));
+        $this->assertSame([
+            "SELECT template_id FROM exp_structure_channels WHERE channel_id = '0' AND site_id = '7' LIMIT 1",
+        ], $captured->queries);
+    }
+
+    public function testGetDefaultTemplateReturnsFalseForNonNumericChannelWithoutQueryingDb()
+    {
+        $db = new class {
+            public $queryCalls = 0;
+
+            public function query($sql)
+            {
+                $this->queryCalls++;
+
+                throw new RuntimeException('get_default_template() should not query the database for non-numeric channel IDs.');
+            }
+        };
+        ee()->setMock('db', $db);
+
+        $sql = $this->makeSql();
+
+        $this->assertFalse($sql->get_default_template('not-a-channel'));
+        $this->assertSame(0, $db->queryCalls);
+    }
+
     public function testGetStructureChannelsBuildsExpectedQueryForAllOptionalFilters()
     {
         $captured = (object) ['queries' => []];
