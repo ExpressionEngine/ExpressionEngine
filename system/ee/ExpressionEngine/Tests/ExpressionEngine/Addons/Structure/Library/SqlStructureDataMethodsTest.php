@@ -507,6 +507,97 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertSame(0, $sql->get_page_count());
     }
 
+    public function testGetStructureChannelsBuildsExpectedQueryForAllOptionalFilters()
+    {
+        $captured = (object) ['queries' => []];
+
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'site_id') {
+                    return 7;
+                }
+
+                return null;
+            }
+        });
+        ee()->setMock('db', new class($captured, $this) {
+            private $captured;
+            private $test;
+
+            public function __construct($captured, $test)
+            {
+                $this->captured = $captured;
+                $this->test = $test;
+            }
+
+            public function query($sql)
+            {
+                $this->captured->queries[] = $sql;
+
+                return $this->test->result([
+                    ['channel_id' => 9, 'channel_title' => 'Alpha', 'site_id' => 7, 'template_id' => 11, 'type' => 'page', 'split_assets' => 'n', 'show_in_page_selector' => 'y'],
+                    ['channel_id' => 12, 'channel_title' => 'Beta', 'site_id' => 7, 'template_id' => 15, 'type' => 'page', 'split_assets' => 'y', 'show_in_page_selector' => 'y'],
+                ], 2);
+            }
+        });
+
+        $channels = $this->makeSql()->get_structure_channels('page', 9, 'alpha', true);
+        $queryText = implode("\n", $captured->queries);
+
+        $this->assertSame([9, 12], array_keys($channels));
+        $this->assertSame('Alpha', $channels[9]['channel_title']);
+        $this->assertSame('y', $channels[12]['split_assets']);
+        $this->assertStringContainsString("WHERE ec.site_id = '7'", $queryText);
+        $this->assertStringContainsString("AND esc.type = 'page'", $queryText);
+        $this->assertStringContainsString("AND esc.channel_id = '9'", $queryText);
+        $this->assertStringContainsString("AND esc.show_in_page_selector = 'y'", $queryText);
+        $this->assertStringContainsString('ORDER BY ec.channel_title', $queryText);
+    }
+
+    public function testGetStructureChannelsUsesBaseQueryWhenFiltersAreEmpty()
+    {
+        $captured = (object) ['queries' => []];
+
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'site_id') {
+                    return 3;
+                }
+
+                return null;
+            }
+        });
+        ee()->setMock('db', new class($captured, $this) {
+            private $captured;
+            private $test;
+
+            public function __construct($captured, $test)
+            {
+                $this->captured = $captured;
+                $this->test = $test;
+            }
+
+            public function query($sql)
+            {
+                $this->captured->queries[] = $sql;
+
+                return $this->test->result([], 0);
+            }
+        });
+
+        $result = $this->makeSql()->get_structure_channels('', '', '', false);
+        $queryText = implode("\n", $captured->queries);
+
+        $this->assertFalse($result);
+        $this->assertStringContainsString("WHERE ec.site_id = '3'", $queryText);
+        $this->assertStringNotContainsString('AND esc.type =', $queryText);
+        $this->assertStringNotContainsString('AND esc.channel_id =', $queryText);
+        $this->assertStringNotContainsString('AND esc.show_in_page_selector =', $queryText);
+        $this->assertStringNotContainsString('ORDER BY ec.channel_title', $queryText);
+    }
+
     public function testSitePagesTemplateAndListingMethods()
     {
         ee()->setMock('config', new class {
