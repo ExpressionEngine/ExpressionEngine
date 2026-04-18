@@ -1009,6 +1009,85 @@ class SqlStructureUtilityMethodsTest extends TestCase
         $this->assertFalse($sql->is_duplicate_listing_uri(10, 'child', 5));
     }
 
+    public function testIsDuplicateListingUriBuildsDuplicateLookupAndCountsRegexMatches()
+    {
+        $db = new class {
+            public $getWhereCalls = [];
+            public $queries = [];
+            public function get_where($table, $where = null, $limit = null, $offset = null)
+            {
+                $this->getWhereCalls[] = [$table, $where, $limit, $offset];
+
+                return new class {
+                    public $num_rows = 1;
+                };
+            }
+            public function query($sql)
+            {
+                $this->queries[] = $sql;
+
+                return new class {
+                    public $num_rows = 2;
+                };
+            }
+        };
+
+        ee()->setMock('db', $db);
+        $sql = new SqlStructureUtilityFixture();
+
+        $this->assertSame(3, $sql->is_duplicate_listing_uri(10, 'child', 5));
+        $this->assertSame([
+            [
+                'structure_listings',
+                ['uri' => 'child', 'parent_id' => 5, 'entry_id !=' => 10],
+                null,
+                null,
+            ],
+        ], $db->getWhereCalls);
+        $this->assertSame(
+            ["SELECT * FROM exp_structure_listings WHERE parent_id=5 AND uri REGEXP '^child.[0-9]'"],
+            $db->queries
+        );
+    }
+
+    public function testIsDuplicateListingUriReturnsFalseWithoutRunningRegexCountWhenNoDuplicateExists()
+    {
+        $db = new class {
+            public $getWhereCalls = [];
+            public $queries = [];
+            public function get_where($table, $where = null, $limit = null, $offset = null)
+            {
+                $this->getWhereCalls[] = [$table, $where, $limit, $offset];
+
+                return new class {
+                    public $num_rows = 0;
+                };
+            }
+            public function query($sql)
+            {
+                $this->queries[] = $sql;
+
+                return new class {
+                    public $num_rows = 99;
+                };
+            }
+        };
+
+        ee()->setMock('db', $db);
+        $sql = new SqlStructureUtilityFixture();
+
+        $this->assertFalse($sql->is_duplicate_listing_uri(10, 'child', 5));
+        $this->assertSame([
+            [
+                'structure_listings',
+                ['uri' => 'child', 'parent_id' => 5, 'entry_id !=' => 10],
+                null,
+                null,
+            ],
+        ], $db->getWhereCalls);
+        $this->assertSame([], $db->queries);
+    }
+
     public function testUserAccessCoversSettingsAndDbBranches()
     {
         ee()->setMock('config', new class {
