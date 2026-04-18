@@ -2120,6 +2120,59 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertSame(['channel_id' => 7, 'template_id' => 21], $sql->get_channel_data(7));
     }
 
+    public function testGetChannelDataBuildsExpectedQueryAndReturnsSqlHelperRow()
+    {
+        $captured = (object) ['sql' => null];
+
+        ee()->setMock('sql_helper', new class($captured) {
+            private $captured;
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+            public function row($sql)
+            {
+                $this->captured->sql = $sql;
+
+                return ['channel_id' => 42, 'template_id' => 88];
+            }
+        });
+
+        $sql = $this->makeSql();
+        $sql->site_id = 9;
+
+        $this->assertSame(['channel_id' => 42, 'template_id' => 88], $sql->get_channel_data(42));
+        $this->assertStringContainsString('SELECT * FROM exp_structure_channels', $captured->sql);
+        $this->assertStringContainsString('WHERE channel_id = 42', $captured->sql);
+        $this->assertStringContainsString('AND site_id = 9', $captured->sql);
+    }
+
+    public function testGetChannelDataReturnsNullWhenSqlHelperHasNoMatch()
+    {
+        $captured = (object) ['sql' => null];
+
+        ee()->setMock('sql_helper', new class($captured) {
+            private $captured;
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+            public function row($sql)
+            {
+                $this->captured->sql = $sql;
+
+                return null;
+            }
+        });
+
+        $sql = $this->makeSql();
+        $sql->site_id = 4;
+
+        $this->assertNull($sql->get_channel_data(0));
+        $this->assertStringContainsString('WHERE channel_id = 0', $captured->sql);
+        $this->assertStringContainsString('AND site_id = 4', $captured->sql);
+    }
+
     public function testGetSinglePathUsesListingParentAndUrlHookOverride()
     {
         $captured = (object) ['queries' => [], 'hookUrls' => []];
