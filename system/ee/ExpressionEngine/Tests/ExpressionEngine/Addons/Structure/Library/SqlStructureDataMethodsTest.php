@@ -1195,6 +1195,34 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertFalse($sql->get_listing_channel(10));
     }
 
+    public function testGetSitePagesOverrideSlashBypassesTrailingSlashNormalization()
+    {
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'site_id') {
+                    return 1;
+                }
+                if ($key === 'site_pages') {
+                    return [1 => ['url' => '/', 'uris' => [4 => '//double//slash//', 5 => '/'], 'templates' => []]];
+                }
+
+                return null;
+            }
+        });
+
+        $sql = new SqlStructureSettingsFixture();
+        $sql->site_id = 1;
+        $sql->settingsFixture = ['add_trailing_slash' => 'y'];
+
+        $normalizedPages = $sql->get_site_pages();
+        $overridePages = $sql->get_site_pages(false, true);
+
+        $this->assertSame('/double/slash/', $normalizedPages['uris'][4]);
+        $this->assertSame('//double//slash', $overridePages['uris'][4]);
+        $this->assertSame('/', $overridePages['uris'][5]);
+    }
+
     public function testAdditionalBranchesForHighThresholdSqlMethods()
     {
         StaticCache::clear();
