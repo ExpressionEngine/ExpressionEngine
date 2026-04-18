@@ -1220,6 +1220,42 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertFalse($sql->get_pid_for_listing_entry(5));
     }
 
+    public function testGetChannelListingEntriesAcceptsNumericStringsAndKeysRowsByEntryId()
+    {
+        $captured = (object) ['queries' => []];
+
+        ee()->setMock('db', new class($this, $captured) {
+            private $test;
+            private $captured;
+
+            public function __construct($test, $captured)
+            {
+                $this->test = $test;
+                $this->captured = $captured;
+            }
+
+            public function query($sql)
+            {
+                $this->captured->queries[] = $sql;
+
+                return $this->test->result([
+                    ['entry_id' => 11, 'uri' => 'listing-a', 'template_id' => 2],
+                    ['entry_id' => 17, 'uri' => 'listing-b', 'template_id' => 5],
+                ], 2);
+            }
+        });
+
+        $sql = $this->makeSql();
+
+        $this->assertSame([
+            11 => ['entry_id' => 11, 'uri' => 'listing-a', 'template_id' => 2],
+            17 => ['entry_id' => 17, 'uri' => 'listing-b', 'template_id' => 5],
+        ], $sql->get_channel_listing_entries('4'));
+        $this->assertSame([
+            'SELECT * FROM exp_structure_listings WHERE channel_id = 4 AND site_id = 1 limit 99999999',
+        ], $captured->queries);
+    }
+
     /**
      * Ensure split asset channels are queried once and mapped by channel.
      *
