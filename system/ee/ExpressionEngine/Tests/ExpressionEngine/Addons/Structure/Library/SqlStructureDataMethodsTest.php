@@ -672,6 +672,55 @@ class SqlStructureDataMethodsTest extends TestCase
     }
 
     /**
+     * Lock the listing-channel query contract for explicit and default channel filters.
+     *
+     * @dataProvider listingChannelDataProvider
+     * @param mixed $channelId
+     * @param array $rows
+     * @return void
+     */
+    public function testGetListingChannelDataBuildsChannelTitlesQueryAndPreservesResultRows($channelId, array $rows)
+    {
+        $fixture = $this->makeListingChannelDataDb($rows);
+        ee()->setMock('db', $fixture->db);
+
+        $sql = $this->makeSql();
+
+        $this->assertSame($rows, $sql->get_listing_channel_data($channelId));
+        $this->assertSame([
+            [
+                'table' => 'channel_titles',
+                'fields' => ['*'],
+                'where' => ['channel_id' => $channelId],
+            ],
+        ], $fixture->captured->gets);
+    }
+
+    /**
+     * Provide explicit and default channel filters for listing lookups.
+     *
+     * @return array
+     */
+    public function listingChannelDataProvider()
+    {
+        return [
+            'explicit-channel-id' => [
+                'channelId' => 4,
+                'rows' => [
+                    ['entry_id' => 7, 'uri' => 'alpha'],
+                    ['entry_id' => 8, 'uri' => 'beta'],
+                ],
+            ],
+            'default-false-channel-id' => [
+                'channelId' => false,
+                'rows' => [
+                    ['entry_id' => 0, 'uri' => 'fallback'],
+                ],
+            ],
+        ];
+    }
+
+    /**
      * Lock the structure table lookup and root-row subtraction contract.
      *
      * @return void
@@ -5499,6 +5548,78 @@ class SqlStructureDataMethodsTest extends TestCase
             }
 
             public function select($field)
+            {
+                $this->fields[] = $field;
+
+                return $this;
+            }
+
+            public function from($table)
+            {
+                $this->table = $table;
+
+                return $this;
+            }
+
+            public function where($field, $value = null)
+            {
+                $this->where[$field] = $value;
+
+                return $this;
+            }
+
+            public function get($table = null)
+            {
+                if ($table !== null) {
+                    $this->table = $table;
+                }
+
+                $this->captured->gets[] = [
+                    'table' => $this->table,
+                    'fields' => $this->fields,
+                    'where' => $this->where,
+                ];
+
+                $this->table = null;
+                $this->fields = [];
+                $this->where = [];
+
+                return $this->test->result($this->rows);
+            }
+        };
+
+        return (object) [
+            'captured' => $captured,
+            'db' => $db,
+        ];
+    }
+
+    /**
+     * Build a fluent DB mock for get_listing_channel_data() lookups.
+     *
+     * @param array $rows
+     * @return object
+     */
+    private function makeListingChannelDataDb(array $rows)
+    {
+        $captured = (object) ['gets' => []];
+
+        $db = new class($this, $captured, $rows) {
+            private $test;
+            private $captured;
+            private $rows;
+            private $table;
+            private $fields = [];
+            private $where = [];
+
+            public function __construct($test, $captured, $rows)
+            {
+                $this->test = $test;
+                $this->captured = $captured;
+                $this->rows = $rows;
+            }
+
+            public function select($field = '*')
             {
                 $this->fields[] = $field;
 
