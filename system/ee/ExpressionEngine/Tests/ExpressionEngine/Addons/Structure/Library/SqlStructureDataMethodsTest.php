@@ -2932,6 +2932,94 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertSame('/parent/copy-page/', $sql->is_duplicate_page_uri(99, '/parent/page'));
     }
 
+    /**
+     * It uses the dash separator without a trailing slash in normal duplicate resolution.
+     *
+     * @return void
+     */
+    public function testIsDuplicatePageUriUsesDashSeparatorWithoutTrailingSlashInNormalMode()
+    {
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'word_separator') {
+                    return 'dash';
+                }
+
+                return null;
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return [
+                    'url' => '/',
+                    'uris' => [
+                        10 => '/parent/page',
+                        11 => '/parent/page-1',
+                    ],
+                    'templates' => [
+                        10 => 2,
+                        11 => 3,
+                    ],
+                ];
+            }
+            public function get_settings()
+            {
+                return [];
+            }
+        };
+
+        $this->assertSame('/parent/page-2', $sql->is_duplicate_page_uri(99, '/parent/page'));
+    }
+
+    /**
+     * It ignores the current entry URI before checking the remaining page collisions.
+     *
+     * @return void
+     */
+    public function testIsDuplicatePageUriIgnoresCurrentEntryUriWhenCheckingDuplicates()
+    {
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'word_separator') {
+                    return 'dash';
+                }
+
+                return null;
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return [
+                    'url' => '/',
+                    'uris' => [
+                        99 => '/parent/page',
+                    ],
+                    'templates' => [
+                        99 => 2,
+                    ],
+                ];
+            }
+            public function get_settings()
+            {
+                return [];
+            }
+        };
+
+        $this->assertFalse($sql->is_duplicate_page_uri(99, '/parent/page'));
+    }
+
     public function testRetrieveStructureUrlTitleBuildsParentChainRecursively()
     {
         $sql = $this->makeSql();
