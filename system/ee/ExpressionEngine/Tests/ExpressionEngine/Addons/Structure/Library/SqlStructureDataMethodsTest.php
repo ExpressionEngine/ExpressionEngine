@@ -995,6 +995,181 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertSame(['channel_id' => 7, 'template_id' => 21], $sql->get_channel_data(7));
     }
 
+    public function testGetSinglePathUsesListingParentAndUrlHookOverride()
+    {
+        $captured = (object) ['queries' => [], 'hookUrls' => []];
+
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'base_url') {
+                    return 'https://example.test/';
+                }
+                return null;
+            }
+        });
+        ee()->setMock('functions', new class {
+            public function create_page_url($base, $uri, $trailing = false)
+            {
+                return rtrim($base, '/') . '/' . ltrim($uri, '/');
+            }
+        });
+        ee()->setMock('extensions', new class($captured) {
+            private $captured;
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+            public function active_hook($name)
+            {
+                return $name === 'structure_generate_page_url_end';
+            }
+            public function call($name, $url)
+            {
+                $this->captured->hookUrls[] = $url;
+
+                return str_replace('example.test', 'fr.example.test', $url);
+            }
+        });
+        ee()->setMock('db', new class($this, $captured) {
+            private $test;
+            private $captured;
+            public function __construct($test, $captured)
+            {
+                $this->test = $test;
+                $this->captured = $captured;
+            }
+            public function query($sql)
+            {
+                $this->captured->queries[] = $sql;
+
+                return $this->test->result([
+                    ['entry_id' => 10, 'title' => 'Parent', 'lft' => 2, 'rgt' => 5]
+                ], 1);
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return ['url' => '{base_url}/', 'uris' => [10 => '/parent/'], 'templates' => []];
+            }
+            public function get_listing_entry_ids()
+            {
+                return [99 => 99];
+            }
+            public function get_parent_id($entry_id, $default = 'home')
+            {
+                return 10;
+            }
+        };
+        $sql->site_id = 1;
+        $sql->cache = [];
+
+        $path = $sql->get_single_path(99);
+
+        $this->assertStringContainsString("node.entry_id = '10'", $captured->queries[0]);
+        $this->assertSame(['https://example.test/parent/'], $captured->hookUrls);
+        $this->assertSame('https://fr.example.test/parent/', $path[10]['uri']);
+        $this->assertSame('Parent', $path[10]['title']);
+    }
+
+    public function testGetSinglePathSkipsRowsMissingFromSitePages()
+    {
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'base_url') {
+                    return 'https://example.test/';
+                }
+                return null;
+            }
+        });
+        ee()->setMock('functions', new class {
+            public function create_page_url($base, $uri, $trailing = false)
+            {
+                return rtrim($base, '/') . '/' . ltrim($uri, '/');
+            }
+        });
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+            public function call($name, $url)
+            {
+                return $url;
+            }
+        });
+        ee()->setMock('db', new class($this) {
+            private $test;
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+            public function query($sql)
+            {
+                return $this->test->result([
+                    ['entry_id' => 77, 'title' => 'Missing', 'lft' => 2, 'rgt' => 3]
+                ], 1);
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return ['url' => '{base_url}/', 'uris' => [], 'templates' => []];
+            }
+            public function get_listing_entry_ids()
+            {
+                return [];
+            }
+        };
+        $sql->site_id = 1;
+        $sql->cache = [];
+
+        $this->assertSame([], $sql->get_single_path(77));
+    }
+
+    public function testGetSinglePathReturnsEmptyArrayWhenQueryHasNoRows()
+    {
+        ee()->setMock('db', new class($this) {
+            private $test;
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+            public function query($sql)
+            {
+                return $this->test->result([], 0);
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return ['url' => '{base_url}/', 'uris' => [10 => '/unused/'], 'templates' => []];
+            }
+            public function get_listing_entry_ids()
+            {
+                return [];
+            }
+        };
+        $sql->site_id = 1;
+        $sql->cache = [];
+
+        $this->assertSame([], $sql->get_single_path(10));
+    }
+
     public function testGetDataCoversExcludeCacheEmptyAndHookBranches()
     {
         StaticCache::clear();
