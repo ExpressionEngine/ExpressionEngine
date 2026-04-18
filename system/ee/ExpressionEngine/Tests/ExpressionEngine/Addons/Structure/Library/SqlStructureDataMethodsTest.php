@@ -1171,6 +1171,73 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertFalse($sql->get_pid_for_listing_entry(5));
     }
 
+    /**
+     * Ensure split asset channels are queried once and mapped by channel.
+     *
+     * @return void
+     */
+    public function testGetSplitAssetsMapsMultipleChannelResultsWithoutTransformingChildLookups()
+    {
+        $captured = (object) [
+            'queries' => [],
+            'channelIds' => [],
+        ];
+
+        ee()->setMock('db', new class($this, $captured) {
+            private $test;
+            private $captured;
+
+            public function __construct($test, $captured)
+            {
+                $this->test = $test;
+                $this->captured = $captured;
+            }
+
+            public function query($sql)
+            {
+                $this->captured->queries[] = $sql;
+
+                return $this->test->result([
+                    ['channel_id' => 4],
+                    ['channel_id' => 9],
+                ], 2);
+            }
+        });
+
+        $sql = new class($captured) extends Sql_structure {
+            private $captured;
+
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+
+            public function get_entry_titles_by_channel($channel_id)
+            {
+                $this->captured->channelIds[] = $channel_id;
+
+                if ($channel_id === 4) {
+                    return false;
+                }
+
+                return [
+                    ['entry_id' => 101, 'title' => 'Split Asset'],
+                ];
+            }
+        };
+
+        $this->assertSame([
+            4 => false,
+            9 => [
+                ['entry_id' => 101, 'title' => 'Split Asset'],
+            ],
+        ], $sql->get_split_assets());
+        $this->assertSame([
+            "SELECT channel_id FROM exp_structure_channels WHERE type = 'asset' AND split_assets = 'y'",
+        ], $captured->queries);
+        $this->assertSame([4, 9], $captured->channelIds);
+    }
+
     public function testGetEntryTitleSkipsDatabaseQueryForNonNumericEntryIds()
     {
         $db = new class($this) {
