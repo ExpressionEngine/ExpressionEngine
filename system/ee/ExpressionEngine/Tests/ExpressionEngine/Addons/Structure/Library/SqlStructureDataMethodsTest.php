@@ -1115,6 +1115,180 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertFalse($sql->create_custom_titles());
     }
 
+    public function testCreateCustomTitlesReturnsFalseForMalformedCustomTitlePair()
+    {
+        StaticCache::clear();
+
+        ee()->setMock('TMPL', new class {
+            public function fetch_param($key, $default = false)
+            {
+                if ($key === 'channel:title') {
+                    return 'blogheadline|news:lede';
+                }
+
+                return $default;
+            }
+        });
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+            public function call($name, $value)
+            {
+                return $value;
+            }
+        });
+        ee()->setMock('db', new class($this) {
+            private $test;
+            public $queryCount = 0;
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+            public function query($sql)
+            {
+                $this->queryCount++;
+
+                if (strpos($sql, 'SELECT channel_id, channel_name FROM exp_channels') !== false) {
+                    return $this->test->result([
+                        ['channel_id' => 2, 'channel_name' => 'blog'],
+                        ['channel_id' => 3, 'channel_name' => 'news'],
+                    ], 2);
+                }
+
+                return $this->test->result([]);
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+        };
+        $sql->site_id = 1;
+        $sql->cache = [];
+
+        $this->assertFalse($sql->create_custom_titles());
+        $this->assertSame(1, ee()->db->queryCount);
+    }
+
+    public function testCreateCustomTitlesReusesCustomTitleCacheAndIgnoresUnknownChannels()
+    {
+        StaticCache::clear();
+
+        ee()->setMock('TMPL', new class {
+            public function fetch_param($key, $default = false)
+            {
+                if ($key === 'channel:title') {
+                    return 'unknown:headline|blog:headline';
+                }
+
+                return $default;
+            }
+        });
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+            public function call($name, $value)
+            {
+                return $value;
+            }
+        });
+        ee()->setMock('load', new class {
+            public function library($name)
+            {
+            }
+        });
+        ee()->setMock('legacy_api', new class {
+            public function instantiate($name)
+            {
+            }
+        });
+        ee()->setMock('api_channel_fields', new class {
+            public function fetch_custom_channel_fields($customTitles)
+            {
+                return [
+                    'custom_channel_fields' => [
+                        0 => ['headline' => 12],
+                    ]
+                ];
+            }
+        });
+        ee()->setMock('db', new class($this) {
+            private $test;
+            public $queryCount = 0;
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+            public function query($sql)
+            {
+                $this->queryCount++;
+
+                if (strpos($sql, 'SELECT channel_id, channel_name FROM exp_channels') !== false) {
+                    return $this->test->result([
+                        ['channel_id' => 2, 'channel_name' => 'blog'],
+                    ], 1);
+                }
+
+                return $this->test->result([]);
+            }
+        });
+        ee()->setMock('Model', new class {
+            public function get($model)
+            {
+                if ($model !== 'ChannelEntry') {
+                    return new class {
+                        public function __call($name, $args)
+                        {
+                            return $this;
+                        }
+                        public function all()
+                        {
+                            return [];
+                        }
+                    };
+                }
+
+                return new class {
+                    public function fields(...$args)
+                    {
+                        return $this;
+                    }
+                    public function filter($field, $operator, $value)
+                    {
+                        return $this;
+                    }
+                    public function all()
+                    {
+                        return [
+                            (object) ['entry_id' => 10, 'channel_id' => 2, 'site_id' => 1, 'title' => 'Default Blog', 'field_id_12' => 'Blog Headline'],
+                        ];
+                    }
+                };
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_structure_channels($type = '', $channel_id = '', $order = '', $selector = false)
+            {
+                return [2 => ['channel_id' => 2]];
+            }
+        };
+        $sql->site_id = 1;
+        $sql->cache = [];
+
+        $this->assertSame([10 => 'Blog Headline'], $sql->create_custom_titles());
+        $this->assertSame([10 => 'Blog Headline'], $sql->create_custom_titles());
+        $this->assertSame(1, ee()->db->queryCount);
+    }
+
     public function testGetDataSinglePathAndGetChannelDataMethods()
     {
         StaticCache::clear();
