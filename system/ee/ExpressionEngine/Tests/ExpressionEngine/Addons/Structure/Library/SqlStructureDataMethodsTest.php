@@ -3615,6 +3615,140 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertArrayNotHasKey(12, $updatesByEntry);
     }
 
+    public function testUpdateIntegrityDataSkipsTemplateFallbackWhenChannelIdIsEmpty()
+    {
+        $captured = (object) ['updates' => []];
+
+        ee()->setMock('db', new class($captured, $this) {
+            private $captured;
+            private $test;
+            private $entryIdWhere = null;
+            public function __construct($captured, $test)
+            {
+                $this->captured = $captured;
+                $this->test = $test;
+            }
+            public function select($fields = '*')
+            {
+                return $this;
+            }
+            public function from($table)
+            {
+                return $this;
+            }
+            public function where($field, $value = null)
+            {
+                if ($field === 'entry_id') {
+                    $this->entryIdWhere = (int) $value;
+                }
+                return $this;
+            }
+            public function join($table, $condition, $type = '')
+            {
+                return $this;
+            }
+            public function get($table = null)
+            {
+                return $this->test->result([
+                    ['entry_id' => 13, 'channel_id' => 0, 'url_title' => 'orphan-title', 'parent_id' => 0],
+                ]);
+            }
+            public function update($table, $data = null, $where = null)
+            {
+                $this->captured->updates[] = [$table, $this->entryIdWhere, $data];
+                return true;
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return [
+                    'uris' => [13 => '/orphan/'],
+                    'templates' => [],
+                ];
+            }
+            public function get_structure_channels($type = '', $channel_id = '', $order = '', $selector = false)
+            {
+                return [
+                    99 => ['template_id' => 99],
+                ];
+            }
+        };
+        $sql->site_id = 1;
+
+        $sql->update_integrity_data();
+
+        $this->assertCount(1, $captured->updates);
+        $this->assertSame(13, $captured->updates[0][1]);
+        $this->assertSame(['structure_url_title' => 'orphan-title'], $captured->updates[0][2]);
+    }
+
+    public function testUpdateIntegrityDataDoesNothingWhenStructureIndexIsEmpty()
+    {
+        $captured = (object) ['updates' => []];
+
+        ee()->setMock('db', new class($captured, $this) {
+            private $captured;
+            private $test;
+            public function __construct($captured, $test)
+            {
+                $this->captured = $captured;
+                $this->test = $test;
+            }
+            public function select($fields = '*')
+            {
+                return $this;
+            }
+            public function from($table)
+            {
+                return $this;
+            }
+            public function where($field, $value = null)
+            {
+                return $this;
+            }
+            public function join($table, $condition, $type = '')
+            {
+                return $this;
+            }
+            public function get($table = null)
+            {
+                return $this->test->result([]);
+            }
+            public function update($table, $data = null, $where = null)
+            {
+                $this->captured->updates[] = [$table, $data, $where];
+                return true;
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return [
+                    'uris' => [],
+                    'templates' => [],
+                ];
+            }
+            public function get_structure_channels($type = '', $channel_id = '', $order = '', $selector = false)
+            {
+                return [];
+            }
+        };
+        $sql->site_id = 1;
+
+        $sql->update_integrity_data();
+
+        $this->assertSame([], $captured->updates);
+    }
+
     public function testAddAttributesCoversHiddenLastAndIdBranches()
     {
         ee()->setMock('config', new class {
