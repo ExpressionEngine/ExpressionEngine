@@ -44,6 +44,8 @@ class SqlStructureGetSqlFieldsTest extends TestCase
             'instantiations' => [],
             'fetches' => [],
             'channel_filters' => [],
+            'site_filters' => [],
+            'selected_fields' => [],
         ];
 
         $this->primeCreateCustomTitlesEnvironment(
@@ -88,6 +90,8 @@ class SqlStructureGetSqlFieldsTest extends TestCase
             'instantiations' => [],
             'fetches' => [],
             'channel_filters' => [],
+            'site_filters' => [],
+            'selected_fields' => [],
         ];
 
         $this->primeCreateCustomTitlesEnvironment(
@@ -136,6 +140,8 @@ class SqlStructureGetSqlFieldsTest extends TestCase
             'instantiations' => [],
             'fetches' => [],
             'channel_filters' => [],
+            'site_filters' => [],
+            'selected_fields' => [],
         ];
 
         $this->primeCreateCustomTitlesEnvironment(
@@ -156,6 +162,71 @@ class SqlStructureGetSqlFieldsTest extends TestCase
         $this->assertSame(['channel_fields'], $captured->instantiations);
         $this->assertSame([['blog:headline']], $captured->fetches);
         $this->assertSame([], $captured->channel_filters);
+    }
+
+    /**
+     * It falls back to entry titles when the custom field is empty or missing.
+     *
+     * @return void
+     */
+    public function testCreateCustomTitlesFallsBackToEntryTitlesWhenCustomFieldValueIsUnavailable(): void
+    {
+        $captured = (object) [
+            'libraries' => [],
+            'instantiations' => [],
+            'fetches' => [],
+            'channel_filters' => [],
+            'site_filters' => [],
+            'selected_fields' => [],
+        ];
+
+        $this->primeCreateCustomTitlesEnvironment(
+            'blog:headline',
+            [1 => ['headline' => 42]],
+            [
+                ['channel_id' => 2, 'channel_name' => 'blog'],
+            ],
+            [
+                (object) [
+                    'entry_id' => 10,
+                    'channel_id' => 2,
+                    'site_id' => 1,
+                    'title' => 'Fallback Empty Value',
+                    'field_id_42' => '',
+                ],
+                (object) [
+                    'entry_id' => 20,
+                    'channel_id' => 3,
+                    'site_id' => 1,
+                    'title' => 'Fallback Missing Mapping',
+                ],
+                (object) [
+                    'entry_id' => 30,
+                    'channel_id' => 2,
+                    'site_id' => 2,
+                    'title' => 'Other Site Title',
+                    'field_id_42' => 'Other Site Headline',
+                ],
+            ],
+            $captured
+        );
+
+        $sql = $this->makeSqlWithStructureChannels([
+            2 => ['channel_id' => 2],
+            3 => ['channel_id' => 3],
+        ]);
+        $titles = $sql->create_custom_titles();
+
+        $this->assertSame([
+            10 => 'Fallback Empty Value',
+            20 => 'Fallback Missing Mapping',
+        ], $titles);
+        $this->assertSame([[2, 3]], $captured->channel_filters);
+        $this->assertSame([1], $captured->site_filters);
+        $this->assertSame([
+            ['entry_id', 'channel_id', 'site_id', 'title'],
+            ['field_id_42'],
+        ], $captured->selected_fields);
     }
 
     /**
@@ -386,6 +457,7 @@ class SqlStructureGetSqlFieldsTest extends TestCase
                     private $captured;
                     private $entries;
                     private $channelIds = [];
+                    private $siteId;
 
                     /**
                      * Store shared capture state and fake entries.
@@ -408,6 +480,8 @@ class SqlStructureGetSqlFieldsTest extends TestCase
                      */
                     public function fields(...$args)
                     {
+                        $this->captured->selected_fields[] = $args;
+
                         return $this;
                     }
 
@@ -426,6 +500,11 @@ class SqlStructureGetSqlFieldsTest extends TestCase
                             $this->captured->channel_filters[] = $value;
                         }
 
+                        if ($field === 'site_id' && $operator === '==') {
+                            $this->siteId = $value;
+                            $this->captured->site_filters[] = $value;
+                        }
+
                         return $this;
                     }
 
@@ -437,11 +516,15 @@ class SqlStructureGetSqlFieldsTest extends TestCase
                     public function all(): array
                     {
                         return array_values(array_filter($this->entries, function ($entry) {
-                            if (empty($this->channelIds)) {
-                                return true;
+                            if (!empty($this->channelIds) && !in_array($entry->channel_id, $this->channelIds, true)) {
+                                return false;
                             }
 
-                            return in_array($entry->channel_id, $this->channelIds, true);
+                            if (isset($this->siteId) && $entry->site_id !== $this->siteId) {
+                                return false;
+                            }
+
+                            return true;
                         }));
                     }
                 };
