@@ -671,6 +671,37 @@ class SqlStructureDataMethodsTest extends TestCase
         ], $fixture->captured->gets);
     }
 
+    /**
+     * Lock the structure table lookup and root-row subtraction contract.
+     *
+     * @return void
+     */
+    public function testGetPageCountCountsStructureTableAndSubtractsRootNode()
+    {
+        $captured = (object) ['tables' => []];
+
+        ee()->setMock('db', new class($captured) {
+            private $captured;
+
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+
+            public function count_all($table)
+            {
+                $this->captured->tables[] = $table;
+
+                return 4;
+            }
+        });
+
+        $sql = $this->makeSql();
+
+        $this->assertSame(3, $sql->get_page_count());
+        $this->assertSame(['structure'], $captured->tables);
+    }
+
     public function testGetChannelTypeReturnsFalseForNonNumericChannelWithoutQueryingDb()
     {
         $db = new class {
