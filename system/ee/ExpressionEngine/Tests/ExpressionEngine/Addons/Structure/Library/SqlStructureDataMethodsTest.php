@@ -538,6 +538,93 @@ class SqlStructureDataMethodsTest extends TestCase
         ], $captured->queries);
     }
 
+    /**
+     * Resolve a category slug before querying category posts.
+     *
+     * @return void
+     */
+    public function testGetEntriesByCategoryResolvesSlugToCategoryIdBeforeLoadingEntries()
+    {
+        $fixture = $this->makeGetEntriesByCategoryDb(
+            [['cat_id' => 4]],
+            [['entry_id' => 31], ['entry_id' => 32]],
+            1
+        );
+        ee()->setMock('db', $fixture->db);
+
+        $sql = $this->makeSql();
+
+        $this->assertSame([['entry_id' => 31], ['entry_id' => 32]], $sql->get_entries_by_category('news'));
+        $this->assertSame([
+            [
+                'table' => 'categories',
+                'fields' => ['cat_id'],
+                'where' => ['cat_url_title' => 'news'],
+            ],
+            [
+                'table' => 'category_posts',
+                'fields' => ['entry_id'],
+                'where' => ['cat_id' => 4],
+            ],
+        ], $fixture->captured->gets);
+    }
+
+    /**
+     * Keep the original slug when the category lookup misses.
+     *
+     * @return void
+     */
+    public function testGetEntriesByCategoryKeepsSlugWhenCategoryLookupHasNoMatch()
+    {
+        $fixture = $this->makeGetEntriesByCategoryDb(
+            [],
+            [['entry_id' => 77]],
+            0
+        );
+        ee()->setMock('db', $fixture->db);
+
+        $sql = $this->makeSql();
+
+        $this->assertSame([['entry_id' => 77]], $sql->get_entries_by_category('missing-news'));
+        $this->assertSame([
+            [
+                'table' => 'categories',
+                'fields' => ['cat_id'],
+                'where' => ['cat_url_title' => 'missing-news'],
+            ],
+            [
+                'table' => 'category_posts',
+                'fields' => ['entry_id'],
+                'where' => ['cat_id' => 'missing-news'],
+            ],
+        ], $fixture->captured->gets);
+    }
+
+    /**
+     * Skip the category lookup when the caller already provides a numeric value.
+     *
+     * @return void
+     */
+    public function testGetEntriesByCategorySkipsSlugLookupForNumericCategoryValues()
+    {
+        $fixture = $this->makeGetEntriesByCategoryDb(
+            [['cat_id' => 999]],
+            [['entry_id' => 88]]
+        );
+        ee()->setMock('db', $fixture->db);
+
+        $sql = $this->makeSql();
+
+        $this->assertSame([['entry_id' => 88]], $sql->get_entries_by_category('4'));
+        $this->assertSame([
+            [
+                'table' => 'category_posts',
+                'fields' => ['entry_id'],
+                'where' => ['cat_id' => '4'],
+            ],
+        ], $fixture->captured->gets);
+    }
+
     public function testGetChannelTypeReturnsFalseForNonNumericChannelWithoutQueryingDb()
     {
         $db = new class {
@@ -4629,6 +4716,96 @@ class SqlStructureDataMethodsTest extends TestCase
         $sql->site_id = 1;
         $sql->cache = [];
         return $sql;
+    }
+
+    /**
+     * Build a fluent DB mock for get_entries_by_category() scenarios.
+     *
+     * @param array $categoryRows
+     * @param array $categoryPostRows
+     * @param int|null $categoryNumRows
+     * @return object
+     */
+    private function makeGetEntriesByCategoryDb(array $categoryRows, array $categoryPostRows, ?int $categoryNumRows = null)
+    {
+        $captured = (object) ['gets' => []];
+
+        $db = new class($this, $captured, $categoryRows, $categoryPostRows, $categoryNumRows) {
+            private $test;
+            private $captured;
+            private $categoryRows;
+            private $categoryPostRows;
+            private $categoryNumRows;
+            private $table;
+            private $fields = [];
+            private $where = [];
+
+            public function __construct($test, $captured, $categoryRows, $categoryPostRows, $categoryNumRows)
+            {
+                $this->test = $test;
+                $this->captured = $captured;
+                $this->categoryRows = $categoryRows;
+                $this->categoryPostRows = $categoryPostRows;
+                $this->categoryNumRows = $categoryNumRows;
+            }
+
+            public function select($field)
+            {
+                $this->fields[] = $field;
+
+                return $this;
+            }
+
+            public function from($table)
+            {
+                $this->table = $table;
+
+                return $this;
+            }
+
+            public function where($field, $value = null)
+            {
+                $this->where[$field] = $value;
+
+                return $this;
+            }
+
+            public function get($table = null)
+            {
+                if ($table !== null) {
+                    $this->table = $table;
+                }
+
+                $this->captured->gets[] = [
+                    'table' => $this->table,
+                    'fields' => $this->fields,
+                    'where' => $this->where,
+                ];
+
+                $rows = [];
+                $numRows = null;
+
+                if ($this->table === 'categories') {
+                    $rows = $this->categoryRows;
+                    $numRows = $this->categoryNumRows;
+                }
+
+                if ($this->table === 'category_posts') {
+                    $rows = $this->categoryPostRows;
+                }
+
+                $this->table = null;
+                $this->fields = [];
+                $this->where = [];
+
+                return $this->test->result($rows, $numRows);
+            }
+        };
+
+        return (object) [
+            'captured' => $captured,
+            'db' => $db,
+        ];
     }
 
     public function result(array $rows, ?int $numRows = null)
