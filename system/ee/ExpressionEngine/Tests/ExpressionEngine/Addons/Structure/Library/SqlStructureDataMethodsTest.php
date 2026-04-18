@@ -3232,8 +3232,98 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertSame(2, $groups[0]['id']);
         $this->assertSame('Editors', $groups[0]['title']);
 
-        $model->permissionRows['can_edit_self_entries'] = [];
-        $this->assertFalse($sql->get_member_groups());
+        foreach (array_keys($model->permissionRows) as $permission) {
+            $model->permissionRows = [
+                'can_create_entries' => [2, 3],
+                'can_edit_other_entries' => [2, 3],
+                'can_edit_self_entries' => [2, 3],
+            ];
+            $model->permissionRows[$permission] = [];
+
+            $this->assertFalse($sql->get_member_groups());
+        }
+    }
+
+    public function testGetMemberGroupsReturnsEmptyArrayWhenNoAllowedRolesRemain()
+    {
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                return 1;
+            }
+        });
+
+        ee()->setMock('Model', new class {
+            public function get($name)
+            {
+                return new class($name) {
+                    private $name;
+                    public function __construct($name)
+                    {
+                        $this->name = $name;
+                    }
+                    public function fields($field)
+                    {
+                        return $this;
+                    }
+                    public function filter($field, $operatorOrValue = null, $value = null)
+                    {
+                        return $this;
+                    }
+                    public function order($field, $direction = 'asc')
+                    {
+                        return $this;
+                    }
+                    public function all()
+                    {
+                        return $this;
+                    }
+                    public function pluck($field)
+                    {
+                        if ($this->name === 'Permission') {
+                            return [2];
+                        }
+
+                        if ($this->name === 'Module') {
+                            return [2];
+                        }
+
+                        return [];
+                    }
+                    public function toArray()
+                    {
+                        if ($this->name === 'Role') {
+                            return [];
+                        }
+
+                        return [];
+                    }
+                    public function first()
+                    {
+                        if ($this->name === 'Module') {
+                            return new class {
+                                public $AssignedRoles;
+                                public function __construct()
+                                {
+                                    $this->AssignedRoles = new class {
+                                        public function pluck($field)
+                                        {
+                                            return [2];
+                                        }
+                                    };
+                                }
+                            };
+                        }
+
+                        return null;
+                    }
+                };
+            }
+        });
+
+        $sql = $this->makeSql();
+
+        $this->assertSame([], $sql->get_member_groups());
     }
 
     public function testUpdateIntegrityDataUsesSitePagesAndChannelDefaults()
