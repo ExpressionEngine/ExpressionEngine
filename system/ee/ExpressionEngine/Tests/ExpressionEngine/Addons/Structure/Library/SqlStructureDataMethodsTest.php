@@ -1099,6 +1099,78 @@ class SqlStructureDataMethodsTest extends TestCase
         $sql->update_root_node();
     }
 
+    public function testUpdateRootNodeRepositionsRootToOnePastHighestRightValue()
+    {
+        $db = new class($this) {
+            private $test;
+            public $queries = [];
+
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+
+            public function query($sql)
+            {
+                $this->queries[] = $sql;
+
+                if (strpos($sql, 'SELECT MAX(rgt) AS max_right FROM exp_structure where site_id != 0') !== false) {
+                    return $this->test->result([['max_right' => '20']], 1);
+                }
+
+                return $this->test->result([]);
+            }
+        };
+        ee()->setMock('db', $db);
+
+        $sql = $this->makeSql();
+        $sql->update_root_node();
+
+        $this->assertSame(
+            [
+                'SELECT MAX(rgt) AS max_right FROM exp_structure where site_id != 0',
+                'UPDATE exp_structure SET rgt = 21 WHERE site_id = 0',
+            ],
+            $db->queries
+        );
+    }
+
+    public function testUpdateRootNodeSetsRootToOneWhenNoNonRootNodesExist()
+    {
+        $db = new class($this) {
+            private $test;
+            public $queries = [];
+
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+
+            public function query($sql)
+            {
+                $this->queries[] = $sql;
+
+                if (strpos($sql, 'SELECT MAX(rgt) AS max_right FROM exp_structure where site_id != 0') !== false) {
+                    return $this->test->result([['max_right' => null]], 1);
+                }
+
+                return $this->test->result([]);
+            }
+        };
+        ee()->setMock('db', $db);
+
+        $sql = $this->makeSql();
+        $sql->update_root_node();
+
+        $this->assertSame(
+            [
+                'SELECT MAX(rgt) AS max_right FROM exp_structure where site_id != 0',
+                'UPDATE exp_structure SET rgt = 1 WHERE site_id = 0',
+            ],
+            $db->queries
+        );
+    }
+
     public function testGetEntryTitleAcceptsNumericStringEntryIds()
     {
         $db = new class($this) {

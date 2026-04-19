@@ -75,6 +75,16 @@ class SqlStructureUtilityMethodsTest extends TestCase
         $this->assertSame('0', $sql->get_slug(0));
     }
 
+    public function testGetParentUriDepthPreservesEmptySegmentsAtBoundaryInputs()
+    {
+        $sql = new SqlStructureUtilityFixture();
+
+        $this->assertSame(1, $sql->get_parent_uri_depth('/'));
+        $this->assertSame(1, $sql->get_parent_uri_depth(''));
+        $this->assertSame(3, $sql->get_parent_uri_depth('/alpha//beta/'));
+        $this->assertSame(2, $sql->get_parent_uri_depth('alpha/beta'));
+    }
+
     public function testReindexAtOnePreservesOriginalKeysWhileAddingOneBasedCopies()
     {
         $sql = new SqlStructureUtilityFixture();
