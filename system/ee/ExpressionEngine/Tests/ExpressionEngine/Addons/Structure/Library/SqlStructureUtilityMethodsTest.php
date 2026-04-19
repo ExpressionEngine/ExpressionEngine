@@ -1200,4 +1200,262 @@ class SqlStructureUtilityMethodsTest extends TestCase
         ee()->db->rows = 0;
         $this->assertFalse($sql->user_access('perm_publish'));
     }
+
+    /**
+     * It short-circuits to provided settings and skips DB lookups for both hit and miss cases.
+     *
+     * @return void
+     */
+    public function testUserAccessUsesProvidedSettingsWithoutTouchingDatabase(): void
+    {
+        $captured = (object) [
+            'config_calls' => [],
+        ];
+
+        ee()->setMock('config', new class($captured) {
+            private $captured;
+
+            /**
+             * Store shared capture state for config lookups.
+             *
+             * @param object $captured
+             * @return void
+             */
+            public function __construct(object $captured)
+            {
+                $this->captured = $captured;
+            }
+
+            /**
+             * Return the configured site ID while capturing the requested key.
+             *
+             * @param string $key
+             * @return int
+             */
+            public function item($key): int
+            {
+                $this->captured->config_calls[] = $key;
+
+                return 9;
+            }
+        });
+        ee()->setMock('session', (object) ['userdata' => ['group_id' => 7]]);
+        ee()->setMock('db', new class {
+            /**
+             * Fail fast if the method reaches the DB-backed permission branch.
+             *
+             * @param string $field
+             * @return void
+             */
+            public function select($field)
+            {
+                throw new RuntimeException('user_access() should not query the database when settings are provided.');
+            }
+        });
+
+        $sql = new SqlStructureUtilityFixture();
+
+        $this->assertSame('n', $sql->user_access('perm_reorder', ['perm_reorder_7' => 'n']));
+        $this->assertFalse($sql->user_access('perm_reorder', ['perm_publish_7' => 'y']));
+        $this->assertSame(['site_id', 'site_id'], $captured->config_calls);
+    }
+
+    /**
+     * It queries both admin and permission settings before granting DB-backed delete access.
+     *
+     * @return void
+     */
+    public function testUserAccessDbLookupChecksAdminAndPermissionVars(): void
+    {
+        $captured = (object) [
+            'config_calls' => [],
+            'db_calls' => [],
+        ];
+
+        ee()->setMock('config', new class($captured) {
+            private $captured;
+
+            /**
+             * Store shared capture state for config lookups.
+             *
+             * @param object $captured
+             * @return void
+             */
+            public function __construct(object $captured)
+            {
+                $this->captured = $captured;
+            }
+
+            /**
+             * Return the configured site ID while capturing the requested key.
+             *
+             * @param string $key
+             * @return int
+             */
+            public function item($key): int
+            {
+                $this->captured->config_calls[] = $key;
+
+                return 12;
+            }
+        });
+        ee()->setMock('session', (object) ['userdata' => ['group_id' => 4]]);
+        ee()->setMock('db', new class($captured) {
+            private $captured;
+
+            /**
+             * Store shared capture state for the fluent DB mock.
+             *
+             * @param object $captured
+             * @return void
+             */
+            public function __construct(object $captured)
+            {
+                $this->captured = $captured;
+            }
+
+            /**
+             * Capture the selected field.
+             *
+             * @param string $field
+             * @return object
+             */
+            public function select($field): object
+            {
+                $this->captured->db_calls[] = ['method' => 'select', 'field' => $field];
+
+                return $this;
+            }
+
+            /**
+             * Capture the queried table.
+             *
+             * @param string $table
+             * @return object
+             */
+            public function from($table): object
+            {
+                $this->captured->db_calls[] = ['method' => 'from', 'table' => $table];
+
+                return $this;
+            }
+
+            /**
+             * Capture the admin permission lookup.
+             *
+             * @param string $field
+             * @param string $value
+             * @return object
+             */
+            public function where($field, $value): object
+            {
+                $this->captured->db_calls[] = ['method' => 'where', 'field' => $field, 'value' => $value];
+
+                return $this;
+            }
+
+            /**
+             * Capture the specific permission lookup.
+             *
+             * @param string $field
+             * @param string $value
+             * @return object
+             */
+            public function or_where($field, $value): object
+            {
+                $this->captured->db_calls[] = ['method' => 'or_where', 'field' => $field, 'value' => $value];
+
+                return $this;
+            }
+
+            /**
+             * Return a matching result set for the DB-backed permission path.
+             *
+             * @return int
+             */
+            public function num_rows(): int
+            {
+                return 1;
+            }
+        });
+
+        $sql = new SqlStructureUtilityFixture();
+
+        $this->assertSame('all', $sql->user_access('perm_delete'));
+        $this->assertSame(['site_id'], $captured->config_calls);
+        $this->assertSame([
+            ['method' => 'select', 'field' => 'var'],
+            ['method' => 'from', 'table' => 'structure_settings'],
+            ['method' => 'where', 'field' => 'var', 'value' => 'perm_admin_structure_4'],
+            ['method' => 'or_where', 'field' => 'var', 'value' => 'perm_delete_4'],
+        ], $captured->db_calls);
+    }
+
+    /**
+     * It confirms exact line and branch coverage for the real user_access implementation.
+     *
+     * @return void
+     */
+    public function testUserAccessCoverageSubprocessReportsFullCoverage(): void
+    {
+        $outputFile = sys_get_temp_dir() . '/sql-structure-user-access-' . uniqid('', true) . '.json';
+        $script = dirname(__DIR__, 4) . '/support/sql_structure_user_access_subprocess.php';
+        $command = escapeshellarg(PHP_BINARY) . ' -d xdebug.mode=coverage ' . escapeshellarg($script) . ' ' . escapeshellarg($outputFile) . ' 2>&1';
+
+        exec($command, $output, $exitCode);
+
+        $this->assertSame(0, $exitCode, implode("\n", $output));
+        $this->assertFileExists($outputFile);
+
+        $result = json_decode(file_get_contents($outputFile), true);
+        @unlink($outputFile);
+
+        $this->assertIsArray($result);
+        $this->assertSame(
+            realpath(PATH_ADDONS . 'structure/sql.structure.php'),
+            $result['real_module_path']
+        );
+        $this->assertSame('all', $result['super_admin_delete_result']);
+        $this->assertTrue($result['super_admin_publish_result']);
+        $this->assertTrue($result['settings_yes_result']);
+        $this->assertSame('n', $result['settings_no_result']);
+        $this->assertFalse($result['settings_missing_result']);
+        $this->assertSame('all', $result['db_delete_result']);
+        $this->assertTrue($result['db_publish_result']);
+        $this->assertFalse($result['db_missing_result']);
+        $this->assertSame([
+            'site_id',
+            'site_id',
+            'site_id',
+            'site_id',
+            'site_id',
+            'site_id',
+            'site_id',
+            'site_id',
+        ], $result['config_calls']);
+        $this->assertSame([
+            ['method' => 'select', 'field' => 'var'],
+            ['method' => 'from', 'table' => 'structure_settings'],
+            ['method' => 'where', 'field' => 'var', 'value' => 'perm_admin_structure_4'],
+            ['method' => 'or_where', 'field' => 'var', 'value' => 'perm_delete_4'],
+            ['method' => 'num_rows', 'rows' => 1],
+            ['method' => 'select', 'field' => 'var'],
+            ['method' => 'from', 'table' => 'structure_settings'],
+            ['method' => 'where', 'field' => 'var', 'value' => 'perm_admin_structure_4'],
+            ['method' => 'or_where', 'field' => 'var', 'value' => 'perm_publish_4'],
+            ['method' => 'num_rows', 'rows' => 1],
+            ['method' => 'select', 'field' => 'var'],
+            ['method' => 'from', 'table' => 'structure_settings'],
+            ['method' => 'where', 'field' => 'var', 'value' => 'perm_admin_structure_4'],
+            ['method' => 'or_where', 'field' => 'var', 'value' => 'perm_publish_4'],
+            ['method' => 'num_rows', 'rows' => 0],
+        ], $result['db_calls']);
+
+        if ($result['xdebug_available'] ?? false) {
+            $this->assertEquals(100.0, $result['line_percentage']);
+            $this->assertEquals(100.0, $result['branch_percentage']);
+            $this->assertSame([], $result['uncovered_lines']);
+            $this->assertSame([], $result['uncovered_branches']);
+        }
+    }
 }
