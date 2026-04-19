@@ -203,6 +203,45 @@ class SqlStructureUtilityMethodsTest extends TestCase
         $this->assertSame('/', $sql->get_uri());
     }
 
+    /**
+     * It captures method-specific subprocess coverage for both theme URL source branches and the cache-hit return path.
+     *
+     * @return void
+     */
+    public function testThemeUrlCoverageSubprocessCoversConfigAndUrlThemesBranches(): void
+    {
+        $outputFile = sys_get_temp_dir() . '/sql-structure-theme-url-' . uniqid('', true) . '.json';
+        $script = dirname(__DIR__, 4) . '/support/sql_structure_theme_url_subprocess.php';
+        $command = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($script) . ' ' . escapeshellarg($outputFile) . ' 2>&1';
+
+        exec($command, $output, $exitCode);
+
+        $this->assertSame(0, $exitCode, implode("\n", $output));
+        $this->assertFileExists($outputFile);
+
+        $result = json_decode(file_get_contents($outputFile), true);
+        @unlink($outputFile);
+
+        $this->assertIsArray($result);
+        $this->assertFalse($result['url_themes_defined_before']);
+        $this->assertSame(
+            realpath(PATH_ADDONS . 'structure/sql.structure.php'),
+            $result['real_module_path']
+        );
+        $this->assertSame('https://cdn.example.com/themes/third_party/structure/', $result['fallback_first']);
+        $this->assertSame($result['fallback_first'], $result['fallback_second']);
+        $this->assertSame(1, $result['fallback_config_calls']);
+        $this->assertSame('https://themes.example/structure/', $result['constant_result']);
+        $this->assertSame(0, $result['constant_config_calls']);
+
+        if ($result['xdebug_available'] ?? false) {
+            $this->assertEquals(100.0, $result['line_percentage']);
+            $this->assertEquals(100.0, $result['branch_percentage']);
+            $this->assertSame([], $result['uncovered_lines']);
+            $this->assertSame([], $result['uncovered_paths']);
+        }
+    }
+
     public function testModuleAndExtensionInstallChecksAndModuleId()
     {
         $cache = new class {
