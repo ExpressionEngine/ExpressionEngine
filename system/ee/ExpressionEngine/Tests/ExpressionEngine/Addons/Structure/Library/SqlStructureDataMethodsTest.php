@@ -3347,6 +3347,169 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertSame('https://example.com/', $decoded[1]['url']);
     }
 
+    public function testRestoreSitePagesTemplatesPersistsExpectedPayloadForMissingTemplates()
+    {
+        $captured = (object) ['lookups' => [], 'updates' => [], 'where' => []];
+
+        ee()->setMock('functions', new class {
+            public function fetch_site_index($includeIndex = 1, $includeQuery = 0)
+            {
+                return 'https://example.com/';
+            }
+        });
+        ee()->setMock('db', new class($captured, $this) {
+            private $captured;
+            private $test;
+
+            public function __construct($captured, $test)
+            {
+                $this->captured = $captured;
+                $this->test = $test;
+            }
+
+            public function query($sql)
+            {
+                $this->captured->lookups[] = $sql;
+
+                if (strpos($sql, 'SELECT channel_id FROM exp_channel_titles') !== false) {
+                    return $this->test->result([['channel_id' => 9]], 1);
+                }
+
+                return $this->test->result([]);
+            }
+
+            public function where($field, $value = null)
+            {
+                $this->captured->where[] = [$field, $value];
+
+                return $this;
+            }
+
+            public function update($table, $data = null, $where = null)
+            {
+                $this->captured->updates[] = [$table, $data];
+
+                return true;
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return [
+                    'uris' => [10 => '/existing/', 11 => '/needs-template/'],
+                    'templates' => [10 => 2],
+                ];
+            }
+
+            public function get_structure_channels($type = '', $channel_id = '', $order = '', $selector = false)
+            {
+                return [
+                    9 => ['template_id' => 7],
+                ];
+            }
+        };
+        $sql->site_id = 1;
+
+        $sql->restore_site_pages_templates();
+
+        $this->assertCount(1, $captured->lookups);
+        $this->assertStringContainsString("entry_id = '11'", $captured->lookups[0]);
+        $this->assertSame([['site_id', 1]], $captured->where);
+        $this->assertCount(1, $captured->updates);
+        $this->assertSame('sites', $captured->updates[0][0]);
+
+        $decoded = unserialize(base64_decode($captured->updates[0][1]['site_pages']));
+
+        $this->assertSame([
+            1 => [
+                'uris' => [10 => '/existing/', 11 => '/needs-template/'],
+                'templates' => [10 => 2, 11 => 7],
+                'url' => 'https://example.com/',
+            ],
+        ], $decoded);
+    }
+
+    public function testRestoreSitePagesTemplatesUpdatesEmptySitePagesWithoutTemplateLookups()
+    {
+        $captured = (object) ['lookups' => 0, 'updates' => []];
+
+        ee()->setMock('functions', new class {
+            public function fetch_site_index($includeIndex = 1, $includeQuery = 0)
+            {
+                return 'https://example.com/';
+            }
+        });
+        ee()->setMock('db', new class($captured) {
+            private $captured;
+
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+
+            public function query($sql)
+            {
+                $this->captured->lookups++;
+
+                return null;
+            }
+
+            public function where($field, $value = null)
+            {
+                return $this;
+            }
+
+            public function update($table, $data = null, $where = null)
+            {
+                $this->captured->updates[] = [$table, $data];
+
+                return true;
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return [
+                    'uris' => [],
+                    'templates' => [],
+                ];
+            }
+
+            public function get_structure_channels($type = '', $channel_id = '', $order = '', $selector = false)
+            {
+                return [
+                    9 => ['template_id' => 7],
+                ];
+            }
+        };
+        $sql->site_id = 1;
+
+        $sql->restore_site_pages_templates();
+
+        $this->assertSame(0, $captured->lookups);
+        $this->assertCount(1, $captured->updates);
+
+        $decoded = unserialize(base64_decode($captured->updates[0][1]['site_pages']));
+
+        $this->assertSame([
+            1 => [
+                'uris' => [],
+                'templates' => [],
+                'url' => 'https://example.com/',
+            ],
+        ], $decoded);
+    }
+
     public function testGetMemberGroupsCoversAllowedAndEmptyPermissionPaths()
     {
         ee()->setMock('config', new class {
