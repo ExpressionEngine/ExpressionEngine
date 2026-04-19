@@ -413,6 +413,7 @@ class Fluid_field_parser
                 $fluid_field_name . ':last_group' => (int) (($g + 1) == $total_groups),
                 $fluid_field_name . ':count_group' => $g + 1,
                 $fluid_field_name . ':index_group' => $g,
+                $fluid_field_name . ':group_id' => min(array_map(function ($f) { return (int) $f->id; }, $group['fields'])),
                 $fluid_field_name . ':current_group_name' => $group['name'],
                 $fluid_field_name . ':current_group_short_name' => $group['short_name'],
                 $fluid_field_name . ':next_group_name' => (($g + 1) < $total_groups) ? $groups[$g + 1]['name'] : '',
