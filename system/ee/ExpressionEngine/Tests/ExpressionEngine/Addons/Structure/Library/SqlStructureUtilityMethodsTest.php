@@ -189,6 +189,20 @@ class SqlStructureUtilityMethodsTest extends TestCase
         $this->assertSame('/', $sql->get_uri());
     }
 
+    public function testGetUriFallsBackToHomepageWhenPaginationConsumesEntireUriWithoutTrailingSlash()
+    {
+        ee()->setMock('uri', new class {
+            public function uri_string()
+            {
+                return 'P3';
+            }
+        });
+
+        $sql = new SqlStructureUtilityFixture(['add_trailing_slash' => 'n']);
+
+        $this->assertSame('/', $sql->get_uri());
+    }
+
     public function testModuleAndExtensionInstallChecksAndModuleId()
     {
         $cache = new class {
