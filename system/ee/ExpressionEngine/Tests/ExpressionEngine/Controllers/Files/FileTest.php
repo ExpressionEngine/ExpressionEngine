@@ -697,6 +697,7 @@ class FileTest extends TestCase
      * @return void
      *
      * @runInSeparateProcess
+     * @preserveGlobalState disabled
      */
     public function testViewRunsAjaxValidationDuringModify()
     {
