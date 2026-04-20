@@ -1,3 +1,0 @@
-[     262ms] [LOG] JQMIGRATE: Migrate is installed, version 3.0.0 @ http://ee_repo_2.test/themes/ee/asset/javascript/src/jquery/jquery-migrate-3.0.0.min.js?v=1775240053:1
-[     289ms] [VERBOSE] [DOM] Password forms should have (optionally hidden) username fields for accessibility: (More info: https://goo.gl/9p2vKq) %o @ http://ee_repo_2.test/admin.php?/cp/homepage:0
-[     289ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "new-password"): (More info: https://goo.gl/9p2vKq) %o @ http://ee_repo_2.test/admin.php?/cp/homepage:0
