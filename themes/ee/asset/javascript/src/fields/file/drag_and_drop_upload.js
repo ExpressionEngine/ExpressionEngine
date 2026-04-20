@@ -316,6 +316,8 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
         var xhr = new XMLHttpRequest();
         xhr.open('POST', EE.dragAndDrop.endpoint, true);
         xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhr.setRequestHeader('X-CSRF-TOKEN', EE.CSRF_TOKEN);
+        xhr.setRequestHeader('X-EEXID', EE.CSRF_TOKEN);
         xhr.upload.addEventListener('progress', function (e) {
           if ($('.file-upload-widget').hasClass('open-dd')) {
             $('.file-upload-widget').css({
@@ -390,7 +392,9 @@ var DragAndDropUpload = /*#__PURE__*/function (_React$Component) {
                 reject(file);
                 break;
               default:
-                if (typeof _response.message !== 'undefined') {
+                if (typeof _response.error !== 'undefined') {
+                  file.error = _this3.stripTags(_response.error);
+                } else if (typeof _response.message !== 'undefined') {
                   file.error = _response.message;
                 } else {
                   file.error = EE.lang.file_dnd_unexpected_error;
