@@ -5434,20 +5434,56 @@ class Channel
 
         // Validate preview token
         $request = ee('Request');
-        $auth_header = null;
-        if (is_object($request) && method_exists($request, 'header')) {
-            $auth_header = $request->header('Authorization');
-        }
-        if (empty($auth_header) && is_object($request) && method_exists($request, 'server')) {
-            $auth_header = $request->server('REDIRECT_HTTP_AUTHORIZATION');
-        }
-        if (empty($auth_header)) {
-            $auth_header = $_SERVER['HTTP_AUTHORIZATION'] ?? ($_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? null);
-        }
+        $token_candidates = [
+            'HTTP_AUTHORIZATION',
+            'REDIRECT_HTTP_AUTHORIZATION',
+            'HTTP_EE_LIVE_PREVIEW_TOKEN',
+            'REDIRECT_HTTP_EE_LIVE_PREVIEW_TOKEN',
+        ];
+
+        $extract_token = static function ($candidate, $header_value) {
+            if (!is_string($header_value)) {
+                return null;
+            }
+
+            $header_value = trim($header_value);
+            if ($header_value === '') {
+                return null;
+            }
+
+            if (preg_match('/^\s*Bearer\s+(.+)$/i', $header_value, $matches)) {
+                return trim($matches[1]);
+            }
+
+            if (preg_match('/AUTHORIZATION$/', $candidate)) {
+                return null;
+            }
+
+            return $header_value;
+        };
 
         $preview_token = null;
-        if (!empty($auth_header) && preg_match('/^\s*Bearer\s+(.+)$/i', $auth_header, $matches)) {
-            $preview_token = trim($matches[1]);
+
+        foreach ($token_candidates as $candidate) {
+            $header_value = null;
+            if (is_object($request) && method_exists($request, 'server')) {
+                $header_value = $request->server($candidate);
+            }
+
+            if (is_null($header_value)) {
+                $header_value = $_SERVER[$candidate] ?? null;
+            }
+
+            $preview_token = $extract_token($candidate, $header_value);
+            if (!is_null($preview_token)) {
+                break;
+            }
+        }
+
+        // Display an error if the webserver is preventing access to the Authorization header
+        if (empty($preview_token)) {
+            ee()->lang->load('cp');
+            return ee()->output->show_user_error('general', lang('http_auth_header_missing'));
         }
 
         $token_origin = $from_origin ?: ($origin_header ?: ($referer_header ?: $return));

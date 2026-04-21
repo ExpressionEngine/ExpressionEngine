@@ -289,6 +289,7 @@ $(document).ready(function () {
 					request.setRequestHeader("Access-Control-Allow-Origin", window.location.origin);
 					if (preview_token) {
 						request.setRequestHeader("Authorization", "Bearer " + preview_token);
+						request.setRequestHeader("EE-Live-Preview-Token", preview_token);
 					}
 				},
 				data: publishForm.serialize(),
