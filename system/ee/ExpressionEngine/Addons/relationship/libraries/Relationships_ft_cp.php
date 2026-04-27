@@ -275,6 +275,10 @@ class Relationships_ft_cp
         $status_options = array();
 
         foreach ($statuses->all() as $status) {
+            if ($status->status === null || $status->status === '') {
+                continue;
+            }
+
             $status_name = ($status->status == 'closed' or $status->status == 'open') ? lang($status->status) : $status->status;
             $status_options[$status->status] = $status_name;
         }
