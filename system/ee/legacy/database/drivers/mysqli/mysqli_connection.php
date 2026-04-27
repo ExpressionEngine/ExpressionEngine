@@ -74,10 +74,14 @@ class CI_DB_mysqli_connection
             PDO::ATTR_STRINGIFY_FETCHES => ! $this->mysqlnd
         );
 
+        $mysql_init_command_attr = (defined('Pdo\\Mysql::ATTR_INIT_COMMAND'))
+            ? constant('Pdo\\Mysql::ATTR_INIT_COMMAND')
+            : PDO::MYSQL_ATTR_INIT_COMMAND;
+
         // only set names and collation if they are set in config
         // and are different from what's default in EE
         if (isset($this->config['dbcollat_default']) && $this->config['dbcollat_default'] === true) {
-            $options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES '$char_set' COLLATE '$dbcollat'";
+            $options[$mysql_init_command_attr] = "SET NAMES '$char_set' COLLATE '$dbcollat'";
         }
 
         // There is a limited set of PDO options that we can pass though
@@ -104,6 +108,11 @@ class CI_DB_mysqli_connection
         ];
         foreach ($mysqlAttr as $attr) {
             if (isset($this->config[$attr])) {
+                if ($attr === 'MYSQL_ATTR_INIT_COMMAND') {
+                    $options[$mysql_init_command_attr] = $this->config[$attr];
+                    continue;
+                }
+
                 $options[constant("PDO::$attr")] = $this->config[$attr];
             }
         }

@@ -2245,7 +2245,7 @@ class Channel
         $timezone = ee()->config->item('default_site_timezone');
 
         // Check legacy timezone formats
-        if (isset($timezones[$timezone])) {
+        if ($timezone !== null && isset($timezones[$timezone])) {
             $offset = $timezones[$timezone] * 3600;
         } else {
             // Otherwise, get the offset from DateTime
@@ -2735,6 +2735,9 @@ class Channel
     public function channel_name()
     {
         $channel_name = ee()->TMPL->fetch_param('channel');
+        if ($channel_name === null) {
+            $channel_name = '';
+        }
 
         if (isset($this->channel_name[$channel_name])) {
             return $this->channel_name[$channel_name];
