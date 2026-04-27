@@ -418,8 +418,7 @@ class Edit extends AbstractPublishController
 
         $vars = array(
             'head' => [
-                // 'title' => lang('edit_entry'),
-                'title' => sprintf(lang('edit_entry_with_title'), $entry_title),
+                'title' => sprintf(lang('edit_entry_with_styled_title'), $entry_title),
                 'class' => 'entries'
             ],
             'form_url' => $base_url,
