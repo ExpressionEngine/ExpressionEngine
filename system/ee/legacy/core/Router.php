@@ -119,21 +119,23 @@ class EE_Router
      */
     public function _set_default_controller()
     {
-        if ($this->default_controller === false) {
+        if ($this->default_controller === false || $this->default_controller === null || $this->default_controller === '') {
             show_error("Unable to determine what should be displayed. A default route has not been specified in the routing file.");
         }
 
+        $default_controller = (string) $this->default_controller;
+
         // Is the method being specified?
-        if (strpos($this->default_controller, '/') !== false) {
-            $x = explode('/', $this->default_controller);
+        if (strpos($default_controller, '/') !== false) {
+            $x = explode('/', $default_controller);
 
             $this->set_class($x[0]);
             $this->set_method($x[1]);
             $this->_set_request($x);
         } else {
-            $this->set_class($this->default_controller);
+            $this->set_class($default_controller);
             $this->set_method('index');
-            $this->_set_request(array($this->default_controller, 'index'));
+            $this->_set_request(array($default_controller, 'index'));
         }
 
         // re-index the routed segments array so it starts with 1 rather than 0
@@ -202,13 +204,14 @@ class EE_Router
         $saved_segments = $segments;
         $directory = APPPATH . '../ExpressionEngine/Controller/';
         $namespace = '';
-        if (strtolower($segments[0]) == 'cp') {
+        $first_segment = (string) ($segments[0] ?? '');
+        if (strtolower($first_segment) == 'cp') {
             array_shift($segments); // This will not factor into the path for namespaced stuff
             $c++;
         }
 
         while ($c < count($saved_segments)) {
-            $segment = str_replace('-', '_', $segments[0]);
+            $segment = str_replace('-', '_', (string) ($segments[0] ?? ''));
             $words = explode('_', $segment);
             $words = array_map('ucfirst', $words);
             $segment = implode('', $words);
@@ -231,7 +234,7 @@ class EE_Router
             // controller class.
             if (! file_exists($directory . $segment . '.php')) {
                 if ($c > 0) {
-                    $segment = str_replace('-', '_', $saved_segments[$c - 1]);
+                    $segment = str_replace('-', '_', (string) ($saved_segments[$c - 1] ?? ''));
                     $words = explode('_', $segment);
                     $words = array_map('ucfirst', $words);
                     $segment = implode('', $words);
@@ -360,7 +363,7 @@ class EE_Router
      */
     public function set_class($class)
     {
-        $this->class = str_replace(array('/', '.'), '', $class);
+        $this->class = str_replace(array('/', '.'), '', (string) $class);
     }
 
     /**
