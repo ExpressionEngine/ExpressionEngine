@@ -2995,8 +2995,24 @@ GRID_FALLBACK;
      */
     public function unserialize($data, $base64_decode = false)
     {
+        if ($data === null) {
+            return array();
+        }
+
         if ($base64_decode) {
-            $data = base64_decode((string) $data);
+            $decoded = base64_decode((string) $data);
+            if ($decoded === false) {
+                return array();
+            }
+            $data = $decoded;
+        }
+
+        if (! is_string($data)) {
+            $data = (string) $data;
+        }
+
+        if ($data === '') {
+            return array();
         }
 
         $data = @unserialize($data);
