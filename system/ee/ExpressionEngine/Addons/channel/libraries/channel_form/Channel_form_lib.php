@@ -2126,8 +2126,8 @@ GRID_FALLBACK;
             // and now into safecracker legacy format. Good grief, why does it
             // group them by column name?
             foreach ($rows as $row) {
-                $site_id = $row['site_id'];
-                $channel_id = $row['channel_id'];
+                $site_id = $row['site_id'] ?? null;
+                $channel_id = $row['channel_id'] ?? null;
 
                 unset(
                     $row['site_id'],
@@ -2136,19 +2136,22 @@ GRID_FALLBACK;
                 );
 
                 foreach ($row as $column => $value) {
+                    $site_key = $site_id ?? '';
+                    $channel_key = $channel_id ?? '';
+
                     if (! isset($this->settings[$column])) {
                         $this->settings[$column] = array();
                     }
 
-                    if (! isset($this->settings[$column][$site_id])) {
-                        $this->settings[$column][$site_id] = array();
+                    if (! isset($this->settings[$column][$site_key])) {
+                        $this->settings[$column][$site_key] = array();
                     }
 
                     if ($column == 'allow_guest_posts') {
                         $value = $this->bool_string($value);
                     }
 
-                    $this->settings[$column][$site_id][$channel_id] = $value;
+                    $this->settings[$column][$site_key][$channel_key] = $value;
                 }
             }
         }
