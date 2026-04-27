@@ -796,18 +796,15 @@ class EE_Image_lib
     }
 
     /**
-     * Preserves transparencies when working with GIFs and PNGs
+     * Preserve source transparency on a destination GD image resource.
      *
-     * Provided a new image and source image resource, it works with those
-     * already-allocated resources, so it returns void
-     *
-     * @access  public
-     * @param   resource $new_img Destination image resource, will have alpha applied to this
-     * @param   resource $src_img Source image resource for reference
+     * @param resource $new_img Destination image resource that will receive transparency setup.
+     * @param resource $src_img Source image resource used to inspect transparency metadata.
+     * @return void
      */
     public function image_preserve_alpha($new_img, $src_img)
     {
-        // Preserve transparancies for GIFs and PNGs
+        // Preserve transparancies for GIFs and PNGs.
         if ($this->image_type == IMAGETYPE_GIF || $this->image_type == IMAGETYPE_PNG) {
             $src_alpha_index = imagecolortransparent($src_img);
 
@@ -827,17 +824,23 @@ class EE_Image_lib
                 // Set alpha color as background color and make it transparent
                 imagefill($new_img, 0, 0, $alpha_index);
                 imagecolortransparent($new_img, $alpha_index);
-            } elseif ($this->image_type == IMAGETYPE_PNG) {
-                imagealphablending($new_img, false);
 
-                // Create a new transparent color for image
-                $alpha_color = imagecolorallocatealpha($new_img, 0, 0, 0, 127);
-
-                // Set alpha color as background color and save alpha state
-                imagefill($new_img, 0, 0, $alpha_color);
-                imagesavealpha($new_img, true);
+                return;
             }
         }
+
+        if (! in_array($this->image_type, [IMAGETYPE_PNG, 18, 19], true)) {
+            return;
+        }
+
+        imagealphablending($new_img, false);
+
+        // Create a new transparent color for image
+        $alpha_color = imagecolorallocatealpha($new_img, 0, 0, 0, 127);
+
+        // Set alpha color as background color and save alpha state
+        imagefill($new_img, 0, 0, $alpha_color);
+        imagesavealpha($new_img, true);
     }
 
     /**
