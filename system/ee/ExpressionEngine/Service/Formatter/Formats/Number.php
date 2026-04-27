@@ -113,8 +113,8 @@ class Number extends Formatter
         // This is intentionally a 20% effort, 80% solution situation rather than maintaining our own
         // localization formatting lookup tables. The 100% solution is easily achieved by ensuring
         // that the intl extension is loaded in PHP, handled above.
-        // NOTE: `money_format` is deprecated in PHP7.4
-        if (function_exists('money_format')) {
+        // NOTE: `money_format` is deprecated in PHP 7.4+ and removed in PHP 8.
+        if (function_exists('money_format') && PHP_VERSION_ID < 70400) {
             // grab the current monetary locale to reset after formatting
             $sys_locale = setlocale(LC_MONETARY, 0);
 
@@ -131,7 +131,20 @@ class Number extends Formatter
             return $this;
         }
 
-        throw new \Exception('<code>{...:currency}</code> modifier error: Environment does not support any known currency formatters, please install the PHP <b>intl</b> extension.');
+        // Fallback for environments where `money_format` is unavailable/deprecated.
+        $sys_locale = setlocale(LC_MONETARY, 0);
+        setlocale(LC_MONETARY, $options['locale']);
+
+        $locale = localeconv();
+        $right_precision = (is_int($options['decimals'])) ? $options['decimals'] : 2;
+        $decimal_point = (!empty($locale['mon_decimal_point'])) ? $locale['mon_decimal_point'] : '.';
+        $thousands_sep = (!empty($locale['mon_thousands_sep'])) ? $locale['mon_thousands_sep'] : ',';
+
+        $this->content = $options['currency'] . ' ' . number_format((float) $this->content, $right_precision, $decimal_point, $thousands_sep);
+
+        setlocale(LC_MONETARY, $sys_locale);
+
+        return $this;
     }
 
     /**
