@@ -1,7 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../../../../eeObjectMock.php';
-require_once __DIR__ . '/../../../../../Addons/structure/sql.structure.php';
+require_once PATH_ADDONS . 'structure/sql.structure.php';
 require_once __DIR__ . '/../../../../../Addons/structure/Conduit/StaticCache.php';
 
 use ExpressionEngine\Structure\Conduit\StaticCache;
@@ -188,6 +188,230 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertSame([20 => 20], $sql->get_listing_entry_ids());
     }
 
+    public function testIsListingEntryReturnsFalseWhenEntryIdIsMissing()
+    {
+        StaticCache::set('listing_ids', [20 => 20]);
+        StaticCache::set('listing_ids_empty', 'false');
+
+        $sql = $this->makeSql();
+
+        $this->assertFalse($sql->is_listing_entry(21));
+    }
+
+    public function testGetOverviewCachesEmptyResultsWithoutRepeatQueries()
+    {
+        $db = new class($this) {
+            private $test;
+            public $overviewQueries = 0;
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+            public function query($sql)
+            {
+                if (strpos($sql, 'FROM exp_structure AS node') !== false && strpos($sql, 'GROUP BY node.lft') !== false) {
+                    $this->overviewQueries++;
+                }
+
+                return $this->test->result([], 0);
+            }
+        };
+        ee()->setMock('db', $db);
+
+        $sql = $this->makeSql();
+
+        $this->assertSame([], $sql->get_overview(999));
+        $this->assertSame([], $sql->get_overview(999));
+        $this->assertSame(1, $db->overviewQueries);
+    }
+
+    public function testGetHomeNodeCachesFetchedNode()
+    {
+        $sqlHelper = new class {
+            public $calls = [];
+
+            public function row($sql)
+            {
+                $this->calls[] = $sql;
+
+                return ['entry_id' => 0, 'lft' => 1, 'rgt' => 20];
+            }
+        };
+        ee()->setMock('sql_helper', $sqlHelper);
+
+        $sql = $this->makeSql();
+
+        $this->assertSame(['entry_id' => 0, 'lft' => 1, 'rgt' => 20], $sql->get_home_node());
+        $this->assertSame(['entry_id' => 0, 'lft' => 1, 'rgt' => 20], StaticCache::get('get_home_node'));
+        $this->assertSame(['SELECT * FROM exp_structure WHERE entry_id = 0'], $sqlHelper->calls);
+    }
+
+    public function testGetHomeNodeReturnsCachedNodeWithoutQueryingSqlHelper()
+    {
+        $sqlHelper = new class {
+            public $calls = 0;
+
+            public function row($sql)
+            {
+                $this->calls++;
+
+                return ['entry_id' => 999];
+            }
+        };
+        ee()->setMock('sql_helper', $sqlHelper);
+        StaticCache::set('get_home_node', ['entry_id' => 0, 'lft' => 1, 'rgt' => 20]);
+
+        $sql = $this->makeSql();
+
+        $this->assertSame(['entry_id' => 0, 'lft' => 1, 'rgt' => 20], $sql->get_home_node());
+        $this->assertSame(0, $sqlHelper->calls);
+    }
+
+    public function testGetPageTitleReturnsFalseForNonNumericEntryIdWithoutTouchingDb()
+    {
+        $db = new class {
+            public $whereCalls = 0;
+            public $limitCalls = 0;
+            public $getCalls = 0;
+
+            public function where($field, $value = null)
+            {
+                $this->whereCalls++;
+
+                return $this;
+            }
+
+            public function limit($n)
+            {
+                $this->limitCalls++;
+
+                return $this;
+            }
+
+            public function get($table = null)
+            {
+                $this->getCalls++;
+
+                throw new RuntimeException('get_page_title() should not query the database for non-numeric entry IDs.');
+            }
+        };
+        ee()->setMock('db', $db);
+
+        $sql = $this->makeSql();
+
+        $this->assertFalse($sql->get_page_title('not-an-id'));
+        $this->assertSame(0, $db->whereCalls);
+        $this->assertSame(0, $db->limitCalls);
+        $this->assertSame(0, $db->getCalls);
+        $this->assertFalse(StaticCache::get('structure_page_title_not-an-id'));
+    }
+
+    public function testGetParentIdUsesDistinctCacheKeysPerDefault()
+    {
+        $sqlHelper = new class {
+            public $calls = [];
+            public function row($sql)
+            {
+                $this->calls[] = $sql;
+
+                if (strpos($sql, 'SELECT parent_id FROM exp_structure WHERE entry_id = 21') !== false) {
+                    return ['parent_id' => 0];
+                }
+
+                if (strpos($sql, 'SELECT entry_id FROM exp_structure WHERE lft = 2') !== false) {
+                    return ['entry_id' => 2];
+                }
+
+                return null;
+            }
+        };
+        ee()->setMock('sql_helper', $sqlHelper);
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+
+            public function get_listing_entry_ids()
+            {
+                return [];
+            }
+        };
+        $sql->site_id = 1;
+
+        $this->assertSame(2, $sql->get_parent_id(21));
+        $this->assertSame(0, $sql->get_parent_id(21, 'root'));
+        $this->assertSame([
+            'SELECT parent_id FROM exp_structure WHERE entry_id = 21 AND site_id = 1',
+            'SELECT entry_id FROM exp_structure WHERE lft = 2 AND site_id = 1',
+            'SELECT parent_id FROM exp_structure WHERE entry_id = 21 AND site_id = 1',
+        ], $sqlHelper->calls);
+    }
+
+    public function testGetParentIdReturnsCachedValueWithoutRequerying()
+    {
+        $sqlHelper = new class {
+            public $calls = [];
+            public function row($sql)
+            {
+                $this->calls[] = $sql;
+
+                if (strpos($sql, 'SELECT parent_id FROM exp_structure WHERE entry_id = 31') !== false) {
+                    return ['parent_id' => 9];
+                }
+
+                return null;
+            }
+        };
+        ee()->setMock('sql_helper', $sqlHelper);
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+
+            public function get_listing_entry_ids()
+            {
+                return [];
+            }
+        };
+        $sql->site_id = 1;
+
+        $this->assertSame(9, $sql->get_parent_id(31));
+        $this->assertSame(9, $sql->get_parent_id(31));
+        $this->assertSame([
+            'SELECT parent_id FROM exp_structure WHERE entry_id = 31 AND site_id = 1',
+        ], $sqlHelper->calls);
+    }
+
+    /**
+     * Verify the home-page lookup queries the live Structure table for the current site.
+     *
+     * @return void
+     */
+    public function testGetHomePageIdUsesCurrentSiteHomeQuery()
+    {
+        $sqlHelper = new class {
+            public $calls = [];
+
+            public function row($sql)
+            {
+                $this->calls[] = $sql;
+
+                return ['entry_id' => 42];
+            }
+        };
+        ee()->setMock('sql_helper', $sqlHelper);
+
+        $sql = $this->makeSql();
+        $sql->site_id = 7;
+
+        $this->assertSame(42, $sql->get_home_page_id());
+        $this->assertSame([
+            'SELECT entry_id FROM exp_structure WHERE lft = 2 AND site_id = 7',
+        ], $sqlHelper->calls);
+    }
+
     public function testStructureChannelsAndCategoryAndChannelLookupMethods()
     {
         ee()->setMock('config', new class {
@@ -281,6 +505,412 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertSame(2, $sql->get_channel_by_entry_id(31));
         $this->assertSame('pages', $sql->get_channel_name_by_channel_id(2));
         $this->assertSame(0, $sql->get_page_count());
+    }
+
+    public function testGetChannelTypeReturnsFalseWhenNumericChannelHasNoMatchingStructureChannel()
+    {
+        $captured = (object) ['queries' => []];
+
+        ee()->setMock('db', new class($captured, $this) {
+            private $captured;
+            private $test;
+
+            public function __construct($captured, $test)
+            {
+                $this->captured = $captured;
+                $this->test = $test;
+            }
+
+            public function query($sql)
+            {
+                $this->captured->queries[] = $sql;
+
+                return $this->test->result([], 0);
+            }
+        });
+
+        $sql = $this->makeSql();
+        $sql->site_id = 7;
+
+        $this->assertFalse($sql->get_channel_type('0'));
+        $this->assertSame([
+            "SELECT type FROM exp_structure_channels WHERE channel_id = '0' AND site_id = '7' LIMIT 1",
+        ], $captured->queries);
+    }
+
+    /**
+     * Resolve a category slug before querying category posts.
+     *
+     * @return void
+     */
+    public function testGetEntriesByCategoryResolvesSlugToCategoryIdBeforeLoadingEntries()
+    {
+        $fixture = $this->makeGetEntriesByCategoryDb(
+            [['cat_id' => 4]],
+            [['entry_id' => 31], ['entry_id' => 32]],
+            1
+        );
+        ee()->setMock('db', $fixture->db);
+
+        $sql = $this->makeSql();
+
+        $this->assertSame([['entry_id' => 31], ['entry_id' => 32]], $sql->get_entries_by_category('news'));
+        $this->assertSame([
+            [
+                'table' => 'categories',
+                'fields' => ['cat_id'],
+                'where' => ['cat_url_title' => 'news'],
+            ],
+            [
+                'table' => 'category_posts',
+                'fields' => ['entry_id'],
+                'where' => ['cat_id' => 4],
+            ],
+        ], $fixture->captured->gets);
+    }
+
+    /**
+     * Keep the original slug when the category lookup misses.
+     *
+     * @return void
+     */
+    public function testGetEntriesByCategoryKeepsSlugWhenCategoryLookupHasNoMatch()
+    {
+        $fixture = $this->makeGetEntriesByCategoryDb(
+            [],
+            [['entry_id' => 77]],
+            0
+        );
+        ee()->setMock('db', $fixture->db);
+
+        $sql = $this->makeSql();
+
+        $this->assertSame([['entry_id' => 77]], $sql->get_entries_by_category('missing-news'));
+        $this->assertSame([
+            [
+                'table' => 'categories',
+                'fields' => ['cat_id'],
+                'where' => ['cat_url_title' => 'missing-news'],
+            ],
+            [
+                'table' => 'category_posts',
+                'fields' => ['entry_id'],
+                'where' => ['cat_id' => 'missing-news'],
+            ],
+        ], $fixture->captured->gets);
+    }
+
+    /**
+     * Skip the category lookup when the caller already provides a numeric value.
+     *
+     * @return void
+     */
+    public function testGetEntriesByCategorySkipsSlugLookupForNumericCategoryValues()
+    {
+        $fixture = $this->makeGetEntriesByCategoryDb(
+            [['cat_id' => 999]],
+            [['entry_id' => 88]]
+        );
+        ee()->setMock('db', $fixture->db);
+
+        $sql = $this->makeSql();
+
+        $this->assertSame([['entry_id' => 88]], $sql->get_entries_by_category('4'));
+        $this->assertSame([
+            [
+                'table' => 'category_posts',
+                'fields' => ['entry_id'],
+                'where' => ['cat_id' => '4'],
+            ],
+        ], $fixture->captured->gets);
+    }
+
+    /**
+     * Lock the channel-name lookup query contract for matching channels.
+     *
+     * @return void
+     */
+    public function testGetChannelNameByChannelIdBuildsChannelLookupQueryAndReturnsChannelName()
+    {
+        $fixture = $this->makeChannelNameByChannelIdDb([
+            ['channel_name' => 'pages'],
+        ]);
+        ee()->setMock('db', $fixture->db);
+
+        $sql = $this->makeSql();
+
+        $this->assertSame('pages', $sql->get_channel_name_by_channel_id('2'));
+        $this->assertSame([
+            [
+                'table' => 'channels',
+                'fields' => ['channel_name'],
+                'where' => ['channel_id' => '2'],
+            ],
+        ], $fixture->captured->gets);
+    }
+
+    /**
+     * Preserve the null fallback when the channel lookup misses.
+     *
+     * @return void
+     */
+    public function testGetChannelNameByChannelIdReturnsNullWhenLookupMisses()
+    {
+        $fixture = $this->makeChannelNameByChannelIdDb([]);
+        ee()->setMock('db', $fixture->db);
+
+        $sql = $this->makeSql();
+
+        $this->assertNull($sql->get_channel_name_by_channel_id(5));
+        $this->assertSame([
+            [
+                'table' => 'channels',
+                'fields' => ['channel_name'],
+                'where' => ['channel_id' => 5],
+            ],
+        ], $fixture->captured->gets);
+    }
+
+    /**
+     * Lock the listing-channel query contract for explicit and default channel filters.
+     *
+     * @dataProvider listingChannelDataProvider
+     * @param mixed $channelId
+     * @param array $rows
+     * @return void
+     */
+    public function testGetListingChannelDataBuildsChannelTitlesQueryAndPreservesResultRows($channelId, array $rows)
+    {
+        $fixture = $this->makeListingChannelDataDb($rows);
+        ee()->setMock('db', $fixture->db);
+
+        $sql = $this->makeSql();
+
+        $this->assertSame($rows, $sql->get_listing_channel_data($channelId));
+        $this->assertSame([
+            [
+                'table' => 'channel_titles',
+                'fields' => ['*'],
+                'where' => ['channel_id' => $channelId],
+            ],
+        ], $fixture->captured->gets);
+    }
+
+    /**
+     * Provide explicit and default channel filters for listing lookups.
+     *
+     * @return array
+     */
+    public function listingChannelDataProvider()
+    {
+        return [
+            'explicit-channel-id' => [
+                'channelId' => 4,
+                'rows' => [
+                    ['entry_id' => 7, 'uri' => 'alpha'],
+                    ['entry_id' => 8, 'uri' => 'beta'],
+                ],
+            ],
+            'default-false-channel-id' => [
+                'channelId' => false,
+                'rows' => [
+                    ['entry_id' => 0, 'uri' => 'fallback'],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Lock the structure table lookup and root-row subtraction contract.
+     *
+     * @return void
+     */
+    public function testGetPageCountCountsStructureTableAndSubtractsRootNode()
+    {
+        $captured = (object) ['tables' => []];
+
+        ee()->setMock('db', new class($captured) {
+            private $captured;
+
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+
+            public function count_all($table)
+            {
+                $this->captured->tables[] = $table;
+
+                return 4;
+            }
+        });
+
+        $sql = $this->makeSql();
+
+        $this->assertSame(3, $sql->get_page_count());
+        $this->assertSame(['structure'], $captured->tables);
+    }
+
+    public function testGetChannelTypeReturnsFalseForNonNumericChannelWithoutQueryingDb()
+    {
+        $db = new class {
+            public $queryCalls = 0;
+
+            public function query($sql)
+            {
+                $this->queryCalls++;
+
+                throw new RuntimeException('get_channel_type() should not query the database for non-numeric channel IDs.');
+            }
+        };
+        ee()->setMock('db', $db);
+
+        $sql = $this->makeSql();
+
+        $this->assertFalse($sql->get_channel_type('not-a-channel'));
+        $this->assertSame(0, $db->queryCalls);
+    }
+
+    public function testGetDefaultTemplateReturnsFalseWhenNumericChannelHasNoMatchingStructureChannel()
+    {
+        $captured = (object) ['queries' => []];
+
+        ee()->setMock('db', new class($captured, $this) {
+            private $captured;
+            private $test;
+
+            public function __construct($captured, $test)
+            {
+                $this->captured = $captured;
+                $this->test = $test;
+            }
+
+            public function query($sql)
+            {
+                $this->captured->queries[] = $sql;
+
+                return $this->test->result([], 0);
+            }
+        });
+
+        $sql = $this->makeSql();
+        $sql->site_id = 7;
+
+        $this->assertFalse($sql->get_default_template('0'));
+        $this->assertSame([
+            "SELECT template_id FROM exp_structure_channels WHERE channel_id = '0' AND site_id = '7' LIMIT 1",
+        ], $captured->queries);
+    }
+
+    public function testGetDefaultTemplateReturnsFalseForNonNumericChannelWithoutQueryingDb()
+    {
+        $db = new class {
+            public $queryCalls = 0;
+
+            public function query($sql)
+            {
+                $this->queryCalls++;
+
+                throw new RuntimeException('get_default_template() should not query the database for non-numeric channel IDs.');
+            }
+        };
+        ee()->setMock('db', $db);
+
+        $sql = $this->makeSql();
+
+        $this->assertFalse($sql->get_default_template('not-a-channel'));
+        $this->assertSame(0, $db->queryCalls);
+    }
+
+    public function testGetStructureChannelsBuildsExpectedQueryForAllOptionalFilters()
+    {
+        $captured = (object) ['queries' => []];
+
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'site_id') {
+                    return 7;
+                }
+
+                return null;
+            }
+        });
+        ee()->setMock('db', new class($captured, $this) {
+            private $captured;
+            private $test;
+
+            public function __construct($captured, $test)
+            {
+                $this->captured = $captured;
+                $this->test = $test;
+            }
+
+            public function query($sql)
+            {
+                $this->captured->queries[] = $sql;
+
+                return $this->test->result([
+                    ['channel_id' => 9, 'channel_title' => 'Alpha', 'site_id' => 7, 'template_id' => 11, 'type' => 'page', 'split_assets' => 'n', 'show_in_page_selector' => 'y'],
+                    ['channel_id' => 12, 'channel_title' => 'Beta', 'site_id' => 7, 'template_id' => 15, 'type' => 'page', 'split_assets' => 'y', 'show_in_page_selector' => 'y'],
+                ], 2);
+            }
+        });
+
+        $channels = $this->makeSql()->get_structure_channels('page', 9, 'alpha', true);
+        $queryText = implode("\n", $captured->queries);
+
+        $this->assertSame([9, 12], array_keys($channels));
+        $this->assertSame('Alpha', $channels[9]['channel_title']);
+        $this->assertSame('y', $channels[12]['split_assets']);
+        $this->assertStringContainsString("WHERE ec.site_id = '7'", $queryText);
+        $this->assertStringContainsString("AND esc.type = 'page'", $queryText);
+        $this->assertStringContainsString("AND esc.channel_id = '9'", $queryText);
+        $this->assertStringContainsString("AND esc.show_in_page_selector = 'y'", $queryText);
+        $this->assertStringContainsString('ORDER BY ec.channel_title', $queryText);
+    }
+
+    public function testGetStructureChannelsUsesBaseQueryWhenFiltersAreEmpty()
+    {
+        $captured = (object) ['queries' => []];
+
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'site_id') {
+                    return 3;
+                }
+
+                return null;
+            }
+        });
+        ee()->setMock('db', new class($captured, $this) {
+            private $captured;
+            private $test;
+
+            public function __construct($captured, $test)
+            {
+                $this->captured = $captured;
+                $this->test = $test;
+            }
+
+            public function query($sql)
+            {
+                $this->captured->queries[] = $sql;
+
+                return $this->test->result([], 0);
+            }
+        });
+
+        $result = $this->makeSql()->get_structure_channels('', '', '', false);
+        $queryText = implode("\n", $captured->queries);
+
+        $this->assertFalse($result);
+        $this->assertStringContainsString("WHERE ec.site_id = '3'", $queryText);
+        $this->assertStringNotContainsString('AND esc.type =', $queryText);
+        $this->assertStringNotContainsString('AND esc.channel_id =', $queryText);
+        $this->assertStringNotContainsString('AND esc.show_in_page_selector =', $queryText);
+        $this->assertStringNotContainsString('ORDER BY ec.channel_title', $queryText);
     }
 
     public function testSitePagesTemplateAndListingMethods()
@@ -469,6 +1099,107 @@ class SqlStructureDataMethodsTest extends TestCase
         $sql->update_root_node();
     }
 
+    public function testUpdateRootNodeRepositionsRootToOnePastHighestRightValue()
+    {
+        $db = new class($this) {
+            private $test;
+            public $queries = [];
+
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+
+            public function query($sql)
+            {
+                $this->queries[] = $sql;
+
+                if (strpos($sql, 'SELECT MAX(rgt) AS max_right FROM exp_structure where site_id != 0') !== false) {
+                    return $this->test->result([['max_right' => '20']], 1);
+                }
+
+                return $this->test->result([]);
+            }
+        };
+        ee()->setMock('db', $db);
+
+        $sql = $this->makeSql();
+        $sql->update_root_node();
+
+        $this->assertSame(
+            [
+                'SELECT MAX(rgt) AS max_right FROM exp_structure where site_id != 0',
+                'UPDATE exp_structure SET rgt = 21 WHERE site_id = 0',
+            ],
+            $db->queries
+        );
+    }
+
+    public function testUpdateRootNodeSetsRootToOneWhenNoNonRootNodesExist()
+    {
+        $db = new class($this) {
+            private $test;
+            public $queries = [];
+
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+
+            public function query($sql)
+            {
+                $this->queries[] = $sql;
+
+                if (strpos($sql, 'SELECT MAX(rgt) AS max_right FROM exp_structure where site_id != 0') !== false) {
+                    return $this->test->result([['max_right' => null]], 1);
+                }
+
+                return $this->test->result([]);
+            }
+        };
+        ee()->setMock('db', $db);
+
+        $sql = $this->makeSql();
+        $sql->update_root_node();
+
+        $this->assertSame(
+            [
+                'SELECT MAX(rgt) AS max_right FROM exp_structure where site_id != 0',
+                'UPDATE exp_structure SET rgt = 1 WHERE site_id = 0',
+            ],
+            $db->queries
+        );
+    }
+
+    public function testGetEntryTitleAcceptsNumericStringEntryIds()
+    {
+        $db = new class($this) {
+            private $test;
+            public $queries = [];
+
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+
+            public function query($sql)
+            {
+                $this->queries[] = $sql;
+
+                return $this->test->result([['title' => 'String Title']], 1);
+            }
+        };
+        ee()->setMock('db', $db);
+
+        $sql = $this->makeSql();
+
+        $this->assertSame('String Title', $sql->get_entry_title('7'));
+        $this->assertSame(
+            ['SELECT title FROM exp_channel_titles WHERE entry_id = 7'],
+            $db->queries
+        );
+    }
+
     public function testNegativeBranchesForLookupMethods()
     {
         ee()->setMock('config', new class {
@@ -561,6 +1292,135 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertFalse($sql->get_pid_for_listing_entry(5));
     }
 
+    public function testGetChannelListingEntriesAcceptsNumericStringsAndKeysRowsByEntryId()
+    {
+        $captured = (object) ['queries' => []];
+
+        ee()->setMock('db', new class($this, $captured) {
+            private $test;
+            private $captured;
+
+            public function __construct($test, $captured)
+            {
+                $this->test = $test;
+                $this->captured = $captured;
+            }
+
+            public function query($sql)
+            {
+                $this->captured->queries[] = $sql;
+
+                return $this->test->result([
+                    ['entry_id' => 11, 'uri' => 'listing-a', 'template_id' => 2],
+                    ['entry_id' => 17, 'uri' => 'listing-b', 'template_id' => 5],
+                ], 2);
+            }
+        });
+
+        $sql = $this->makeSql();
+
+        $this->assertSame([
+            11 => ['entry_id' => 11, 'uri' => 'listing-a', 'template_id' => 2],
+            17 => ['entry_id' => 17, 'uri' => 'listing-b', 'template_id' => 5],
+        ], $sql->get_channel_listing_entries('4'));
+        $this->assertSame([
+            'SELECT * FROM exp_structure_listings WHERE channel_id = 4 AND site_id = 1 limit 99999999',
+        ], $captured->queries);
+    }
+
+    /**
+     * Ensure split asset channels are queried once and mapped by channel.
+     *
+     * @return void
+     */
+    public function testGetSplitAssetsMapsMultipleChannelResultsWithoutTransformingChildLookups()
+    {
+        $captured = (object) [
+            'queries' => [],
+            'channelIds' => [],
+        ];
+
+        ee()->setMock('db', new class($this, $captured) {
+            private $test;
+            private $captured;
+
+            public function __construct($test, $captured)
+            {
+                $this->test = $test;
+                $this->captured = $captured;
+            }
+
+            public function query($sql)
+            {
+                $this->captured->queries[] = $sql;
+
+                return $this->test->result([
+                    ['channel_id' => 4],
+                    ['channel_id' => 9],
+                ], 2);
+            }
+        });
+
+        $sql = new class($captured) extends Sql_structure {
+            private $captured;
+
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+
+            public function get_entry_titles_by_channel($channel_id)
+            {
+                $this->captured->channelIds[] = $channel_id;
+
+                if ($channel_id === 4) {
+                    return false;
+                }
+
+                return [
+                    ['entry_id' => 101, 'title' => 'Split Asset'],
+                ];
+            }
+        };
+
+        $this->assertSame([
+            4 => false,
+            9 => [
+                ['entry_id' => 101, 'title' => 'Split Asset'],
+            ],
+        ], $sql->get_split_assets());
+        $this->assertSame([
+            "SELECT channel_id FROM exp_structure_channels WHERE type = 'asset' AND split_assets = 'y'",
+        ], $captured->queries);
+        $this->assertSame([4, 9], $captured->channelIds);
+    }
+
+    public function testGetEntryTitleSkipsDatabaseQueryForNonNumericEntryIds()
+    {
+        $db = new class($this) {
+            private $test;
+            public $queries = [];
+
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+
+            public function query($sql)
+            {
+                $this->queries[] = $sql;
+
+                return $this->test->result([['title' => 'Unexpected Title']], 1);
+            }
+        };
+        ee()->setMock('db', $db);
+
+        $sql = $this->makeSql();
+
+        $this->assertNull($sql->get_entry_title('bad-7'));
+        $this->assertSame([], $db->queries);
+    }
+
     public function testSitePagesAndListingChannelAdditionalBranches()
     {
         ee()->setMock('config', new class {
@@ -643,6 +1503,34 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertSame(['url' => '', 'uris' => [], 'templates' => []], $sql->get_site_pages(true));
         $this->assertFalse($sql->get_listing_channel('abc'));
         $this->assertFalse($sql->get_listing_channel(10));
+    }
+
+    public function testGetSitePagesOverrideSlashBypassesTrailingSlashNormalization()
+    {
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'site_id') {
+                    return 1;
+                }
+                if ($key === 'site_pages') {
+                    return [1 => ['url' => '/', 'uris' => [4 => '//double//slash//', 5 => '/'], 'templates' => []]];
+                }
+
+                return null;
+            }
+        });
+
+        $sql = new SqlStructureSettingsFixture();
+        $sql->site_id = 1;
+        $sql->settingsFixture = ['add_trailing_slash' => 'y'];
+
+        $normalizedPages = $sql->get_site_pages();
+        $overridePages = $sql->get_site_pages(false, true);
+
+        $this->assertSame('/double/slash/', $normalizedPages['uris'][4]);
+        $this->assertSame('//double//slash', $overridePages['uris'][4]);
+        $this->assertSame('/', $overridePages['uris'][5]);
     }
 
     public function testAdditionalBranchesForHighThresholdSqlMethods()
@@ -787,6 +1675,77 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertFalse($sql->get_listing_channel(20));
     }
 
+    /**
+     * Verifies get_listing_parent() scopes the lookup to Structure rows for the site.
+     *
+     * @return void
+     */
+    public function testGetListingParentUsesStructureTableAndSiteFilter()
+    {
+        $captured = (object) [
+            'selects' => [],
+            'tables' => [],
+            'where' => [],
+            'get_calls' => 0,
+            'get_args' => [],
+        ];
+
+        ee()->setMock('db', new class($this, $captured) {
+            private $test;
+            private $captured;
+
+            public function __construct($test, $captured)
+            {
+                $this->test = $test;
+                $this->captured = $captured;
+            }
+
+            public function select($fields = '*')
+            {
+                $this->captured->selects[] = $fields;
+
+                return $this;
+            }
+
+            public function from($table)
+            {
+                $this->captured->tables[] = $table;
+
+                return $this;
+            }
+
+            public function where($field, $value = null)
+            {
+                $this->captured->where[] = [$field, $value];
+
+                return $this;
+            }
+
+            public function get($table = null)
+            {
+                $this->captured->get_calls++;
+                $this->captured->get_args[] = $table;
+
+                return $this->test->result([
+                    ['entry_id' => 42],
+                ], 1);
+            }
+        });
+
+        $sql = $this->makeSql();
+        $sql->site_id = 9;
+
+        $this->assertSame(42, $sql->get_listing_parent(77));
+        $this->assertSame(['entry_id'], $captured->selects);
+        $this->assertSame(['structure'], $captured->tables);
+        $this->assertSame([
+            ['listing_cid', 77],
+            ['site_id', 9],
+        ], $captured->where);
+        $this->assertSame(1, $captured->get_calls);
+        $this->assertSame([null], $captured->get_args);
+    }
+
     public function testCreateCustomTitlesExercisesPrivateTitleHelpers()
     {
         StaticCache::clear();
@@ -907,6 +1866,522 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertSame('News Subhead', $titles[20]);
     }
 
+    public function testCreateCustomTitlesExcludesListingsUnlessRequested()
+    {
+        StaticCache::clear();
+
+        ee()->setMock('TMPL', new class {
+            public function fetch_param($key, $default = false)
+            {
+                if ($key === 'channel:title') {
+                    return 'blog:headline|listing:lede';
+                }
+
+                return $default;
+            }
+        });
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+            public function call($name, $value)
+            {
+                return $value;
+            }
+        });
+        ee()->setMock('load', new class {
+            public function library($name)
+            {
+            }
+        });
+        ee()->setMock('legacy_api', new class {
+            public function instantiate($name)
+            {
+            }
+        });
+        ee()->setMock('api_channel_fields', new class {
+            public function fetch_custom_channel_fields($customTitles)
+            {
+                return [
+                    'custom_channel_fields' => [
+                        0 => ['headline' => 12, 'lede' => 14],
+                    ]
+                ];
+            }
+        });
+        ee()->setMock('db', new class($this) {
+            private $test;
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+            public function query($sql)
+            {
+                if (strpos($sql, 'SELECT channel_id, channel_name FROM exp_channels') !== false) {
+                    return $this->test->result([
+                        ['channel_id' => 2, 'channel_name' => 'blog'],
+                        ['channel_id' => 9, 'channel_name' => 'listing'],
+                    ], 2);
+                }
+
+                return $this->test->result([]);
+            }
+        });
+        ee()->setMock('Model', new class {
+            public $channelIds = [];
+            public function get($model)
+            {
+                if ($model !== 'ChannelEntry') {
+                    return new class {
+                        public function __call($name, $args)
+                        {
+                            return $this;
+                        }
+                        public function all()
+                        {
+                            return [];
+                        }
+                    };
+                }
+
+                return new class($this) {
+                    private $parent;
+                    public function __construct($parent)
+                    {
+                        $this->parent = $parent;
+                    }
+                    public function fields(...$args)
+                    {
+                        return $this;
+                    }
+                    public function filter($field, $operator, $value)
+                    {
+                        if ($field === 'channel_id' && $operator === 'IN') {
+                            $this->parent->channelIds = $value;
+                        }
+
+                        return $this;
+                    }
+                    public function all()
+                    {
+                        $entries = [
+                            (object) ['entry_id' => 10, 'channel_id' => 2, 'site_id' => 1, 'title' => 'Default Blog', 'field_id_12' => 'Blog Headline'],
+                            (object) ['entry_id' => 30, 'channel_id' => 9, 'site_id' => 1, 'title' => 'Default Listing', 'field_id_14' => 'Listing Lede'],
+                        ];
+
+                        return array_values(array_filter($entries, function ($entry) {
+                            return in_array($entry->channel_id, $this->parent->channelIds, true);
+                        }));
+                    }
+                };
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_structure_channels($type = '', $channel_id = '', $order = '', $selector = false)
+            {
+                if ($type === 'listing') {
+                    return [9 => ['channel_id' => 9]];
+                }
+
+                return [2 => ['channel_id' => 2]];
+            }
+        };
+        $sql->site_id = 1;
+        $sql->cache = [];
+
+        $withoutListings = $sql->create_custom_titles();
+        $this->assertSame([10 => 'Blog Headline'], $withoutListings);
+
+        $withListings = $sql->create_custom_titles(true);
+        $this->assertSame([10 => 'Blog Headline', 30 => 'Listing Lede'], $withListings);
+    }
+
+    public function testCreateCustomTitlesIgnoresMissingListingChannelsWhenListingsRequested()
+    {
+        StaticCache::clear();
+
+        ee()->setMock('TMPL', new class {
+            public function fetch_param($key, $default = false)
+            {
+                if ($key === 'channel:title') {
+                    return 'blog:headline|listing:lede';
+                }
+
+                return $default;
+            }
+        });
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+            public function call($name, $value)
+            {
+                return $value;
+            }
+        });
+        ee()->setMock('load', new class {
+            public function library($name)
+            {
+            }
+        });
+        ee()->setMock('legacy_api', new class {
+            public function instantiate($name)
+            {
+            }
+        });
+        ee()->setMock('api_channel_fields', new class {
+            public function fetch_custom_channel_fields($customTitles)
+            {
+                return [
+                    'custom_channel_fields' => [
+                        0 => ['headline' => 12, 'lede' => 14],
+                    ]
+                ];
+            }
+        });
+        ee()->setMock('db', new class($this) {
+            private $test;
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+            public function query($sql)
+            {
+                if (strpos($sql, 'SELECT channel_id, channel_name FROM exp_channels') !== false) {
+                    return $this->test->result([
+                        ['channel_id' => 2, 'channel_name' => 'blog'],
+                        ['channel_id' => 9, 'channel_name' => 'listing'],
+                    ], 2);
+                }
+
+                return $this->test->result([]);
+            }
+        });
+        ee()->setMock('Model', new class {
+            public $channelIds = [];
+            public function get($model)
+            {
+                if ($model !== 'ChannelEntry') {
+                    return new class {
+                        public function __call($name, $args)
+                        {
+                            return $this;
+                        }
+                        public function all()
+                        {
+                            return [];
+                        }
+                    };
+                }
+
+                return new class($this) {
+                    private $parent;
+                    public function __construct($parent)
+                    {
+                        $this->parent = $parent;
+                    }
+                    public function fields(...$args)
+                    {
+                        return $this;
+                    }
+                    public function filter($field, $operator, $value)
+                    {
+                        if ($field === 'channel_id' && $operator === 'IN') {
+                            $this->parent->channelIds = $value;
+                        }
+
+                        return $this;
+                    }
+                    public function all()
+                    {
+                        $entries = [
+                            (object) ['entry_id' => 10, 'channel_id' => 2, 'site_id' => 1, 'title' => 'Default Blog', 'field_id_12' => 'Blog Headline'],
+                            (object) ['entry_id' => 30, 'channel_id' => 9, 'site_id' => 1, 'title' => 'Default Listing', 'field_id_14' => 'Listing Lede'],
+                        ];
+
+                        return array_values(array_filter($entries, function ($entry) {
+                            return in_array($entry->channel_id, $this->parent->channelIds, true);
+                        }));
+                    }
+                };
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_structure_channels($type = '', $channel_id = '', $order = '', $selector = false)
+            {
+                if ($type === 'listing') {
+                    return false;
+                }
+
+                return [2 => ['channel_id' => 2]];
+            }
+        };
+        $sql->site_id = 1;
+        $sql->cache = [];
+
+        $titles = $sql->create_custom_titles(true);
+
+        $this->assertSame([10 => 'Blog Headline'], $titles);
+        $this->assertSame([2], ee()->Model->channelIds);
+    }
+
+    public function testCreateCustomTitlesReturnsFalseWhenNoSqlFieldsMatch()
+    {
+        StaticCache::clear();
+
+        ee()->setMock('TMPL', new class {
+            public function fetch_param($key, $default = false)
+            {
+                if ($key === 'channel:title') {
+                    return 'blog:headline';
+                }
+
+                return $default;
+            }
+        });
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+            public function call($name, $value)
+            {
+                return $value;
+            }
+        });
+        ee()->setMock('load', new class {
+            public function library($name)
+            {
+            }
+        });
+        ee()->setMock('legacy_api', new class {
+            public function instantiate($name)
+            {
+            }
+        });
+        ee()->setMock('api_channel_fields', new class {
+            public function fetch_custom_channel_fields($customTitles)
+            {
+                return [
+                    'custom_channel_fields' => [
+                        0 => ['other_field' => 99],
+                    ]
+                ];
+            }
+        });
+        ee()->setMock('db', new class($this) {
+            private $test;
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+            public function query($sql)
+            {
+                if (strpos($sql, 'SELECT channel_id, channel_name FROM exp_channels') !== false) {
+                    return $this->test->result([
+                        ['channel_id' => 2, 'channel_name' => 'blog'],
+                    ], 1);
+                }
+
+                return $this->test->result([]);
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+        };
+        $sql->site_id = 1;
+        $sql->cache = [];
+
+        $this->assertFalse($sql->create_custom_titles());
+    }
+
+    public function testCreateCustomTitlesReturnsFalseForMalformedCustomTitlePair()
+    {
+        StaticCache::clear();
+
+        ee()->setMock('TMPL', new class {
+            public function fetch_param($key, $default = false)
+            {
+                if ($key === 'channel:title') {
+                    return 'blogheadline|news:lede';
+                }
+
+                return $default;
+            }
+        });
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+            public function call($name, $value)
+            {
+                return $value;
+            }
+        });
+        ee()->setMock('db', new class($this) {
+            private $test;
+            public $queryCount = 0;
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+            public function query($sql)
+            {
+                $this->queryCount++;
+
+                if (strpos($sql, 'SELECT channel_id, channel_name FROM exp_channels') !== false) {
+                    return $this->test->result([
+                        ['channel_id' => 2, 'channel_name' => 'blog'],
+                        ['channel_id' => 3, 'channel_name' => 'news'],
+                    ], 2);
+                }
+
+                return $this->test->result([]);
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+        };
+        $sql->site_id = 1;
+        $sql->cache = [];
+
+        $this->assertFalse($sql->create_custom_titles());
+        $this->assertSame(1, ee()->db->queryCount);
+    }
+
+    public function testCreateCustomTitlesReusesCustomTitleCacheAndIgnoresUnknownChannels()
+    {
+        StaticCache::clear();
+
+        ee()->setMock('TMPL', new class {
+            public function fetch_param($key, $default = false)
+            {
+                if ($key === 'channel:title') {
+                    return 'unknown:headline|blog:headline';
+                }
+
+                return $default;
+            }
+        });
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+            public function call($name, $value)
+            {
+                return $value;
+            }
+        });
+        ee()->setMock('load', new class {
+            public function library($name)
+            {
+            }
+        });
+        ee()->setMock('legacy_api', new class {
+            public function instantiate($name)
+            {
+            }
+        });
+        ee()->setMock('api_channel_fields', new class {
+            public function fetch_custom_channel_fields($customTitles)
+            {
+                return [
+                    'custom_channel_fields' => [
+                        0 => ['headline' => 12],
+                    ]
+                ];
+            }
+        });
+        ee()->setMock('db', new class($this) {
+            private $test;
+            public $queryCount = 0;
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+            public function query($sql)
+            {
+                $this->queryCount++;
+
+                if (strpos($sql, 'SELECT channel_id, channel_name FROM exp_channels') !== false) {
+                    return $this->test->result([
+                        ['channel_id' => 2, 'channel_name' => 'blog'],
+                    ], 1);
+                }
+
+                return $this->test->result([]);
+            }
+        });
+        ee()->setMock('Model', new class {
+            public function get($model)
+            {
+                if ($model !== 'ChannelEntry') {
+                    return new class {
+                        public function __call($name, $args)
+                        {
+                            return $this;
+                        }
+                        public function all()
+                        {
+                            return [];
+                        }
+                    };
+                }
+
+                return new class {
+                    public function fields(...$args)
+                    {
+                        return $this;
+                    }
+                    public function filter($field, $operator, $value)
+                    {
+                        return $this;
+                    }
+                    public function all()
+                    {
+                        return [
+                            (object) ['entry_id' => 10, 'channel_id' => 2, 'site_id' => 1, 'title' => 'Default Blog', 'field_id_12' => 'Blog Headline'],
+                        ];
+                    }
+                };
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_structure_channels($type = '', $channel_id = '', $order = '', $selector = false)
+            {
+                return [2 => ['channel_id' => 2]];
+            }
+        };
+        $sql->site_id = 1;
+        $sql->cache = [];
+
+        $this->assertSame([10 => 'Blog Headline'], $sql->create_custom_titles());
+        $this->assertSame([10 => 'Blog Headline'], $sql->create_custom_titles());
+        $this->assertSame(1, ee()->db->queryCount);
+    }
+
     public function testGetDataSinglePathAndGetChannelDataMethods()
     {
         StaticCache::clear();
@@ -993,6 +2468,234 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertStringContainsString('/home/', $path[10]['uri']);
 
         $this->assertSame(['channel_id' => 7, 'template_id' => 21], $sql->get_channel_data(7));
+    }
+
+    public function testGetChannelDataBuildsExpectedQueryAndReturnsSqlHelperRow()
+    {
+        $captured = (object) ['sql' => null];
+
+        ee()->setMock('sql_helper', new class($captured) {
+            private $captured;
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+            public function row($sql)
+            {
+                $this->captured->sql = $sql;
+
+                return ['channel_id' => 42, 'template_id' => 88];
+            }
+        });
+
+        $sql = $this->makeSql();
+        $sql->site_id = 9;
+
+        $this->assertSame(['channel_id' => 42, 'template_id' => 88], $sql->get_channel_data(42));
+        $this->assertStringContainsString('SELECT * FROM exp_structure_channels', $captured->sql);
+        $this->assertStringContainsString('WHERE channel_id = 42', $captured->sql);
+        $this->assertStringContainsString('AND site_id = 9', $captured->sql);
+    }
+
+    public function testGetChannelDataReturnsNullWhenSqlHelperHasNoMatch()
+    {
+        $captured = (object) ['sql' => null];
+
+        ee()->setMock('sql_helper', new class($captured) {
+            private $captured;
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+            public function row($sql)
+            {
+                $this->captured->sql = $sql;
+
+                return null;
+            }
+        });
+
+        $sql = $this->makeSql();
+        $sql->site_id = 4;
+
+        $this->assertNull($sql->get_channel_data(0));
+        $this->assertStringContainsString('WHERE channel_id = 0', $captured->sql);
+        $this->assertStringContainsString('AND site_id = 4', $captured->sql);
+    }
+
+    public function testGetSinglePathUsesListingParentAndUrlHookOverride()
+    {
+        $captured = (object) ['queries' => [], 'hookUrls' => []];
+
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'base_url') {
+                    return 'https://example.test/';
+                }
+                return null;
+            }
+        });
+        ee()->setMock('functions', new class {
+            public function create_page_url($base, $uri, $trailing = false)
+            {
+                return rtrim($base, '/') . '/' . ltrim($uri, '/');
+            }
+        });
+        ee()->setMock('extensions', new class($captured) {
+            private $captured;
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+            public function active_hook($name)
+            {
+                return $name === 'structure_generate_page_url_end';
+            }
+            public function call($name, $url)
+            {
+                $this->captured->hookUrls[] = $url;
+
+                return str_replace('example.test', 'fr.example.test', $url);
+            }
+        });
+        ee()->setMock('db', new class($this, $captured) {
+            private $test;
+            private $captured;
+            public function __construct($test, $captured)
+            {
+                $this->test = $test;
+                $this->captured = $captured;
+            }
+            public function query($sql)
+            {
+                $this->captured->queries[] = $sql;
+
+                return $this->test->result([
+                    ['entry_id' => 10, 'title' => 'Parent', 'lft' => 2, 'rgt' => 5]
+                ], 1);
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return ['url' => '{base_url}/', 'uris' => [10 => '/parent/'], 'templates' => []];
+            }
+            public function get_listing_entry_ids()
+            {
+                return [99 => 99];
+            }
+            public function get_parent_id($entry_id, $default = 'home')
+            {
+                return 10;
+            }
+        };
+        $sql->site_id = 1;
+        $sql->cache = [];
+
+        $path = $sql->get_single_path(99);
+
+        $this->assertStringContainsString("node.entry_id = '10'", $captured->queries[0]);
+        $this->assertSame(['https://example.test/parent/'], $captured->hookUrls);
+        $this->assertSame('https://fr.example.test/parent/', $path[10]['uri']);
+        $this->assertSame('Parent', $path[10]['title']);
+    }
+
+    public function testGetSinglePathSkipsRowsMissingFromSitePages()
+    {
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'base_url') {
+                    return 'https://example.test/';
+                }
+                return null;
+            }
+        });
+        ee()->setMock('functions', new class {
+            public function create_page_url($base, $uri, $trailing = false)
+            {
+                return rtrim($base, '/') . '/' . ltrim($uri, '/');
+            }
+        });
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+            public function call($name, $url)
+            {
+                return $url;
+            }
+        });
+        ee()->setMock('db', new class($this) {
+            private $test;
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+            public function query($sql)
+            {
+                return $this->test->result([
+                    ['entry_id' => 77, 'title' => 'Missing', 'lft' => 2, 'rgt' => 3]
+                ], 1);
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return ['url' => '{base_url}/', 'uris' => [], 'templates' => []];
+            }
+            public function get_listing_entry_ids()
+            {
+                return [];
+            }
+        };
+        $sql->site_id = 1;
+        $sql->cache = [];
+
+        $this->assertSame([], $sql->get_single_path(77));
+    }
+
+    public function testGetSinglePathReturnsEmptyArrayWhenQueryHasNoRows()
+    {
+        ee()->setMock('db', new class($this) {
+            private $test;
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+            public function query($sql)
+            {
+                return $this->test->result([], 0);
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return ['url' => '{base_url}/', 'uris' => [10 => '/unused/'], 'templates' => []];
+            }
+            public function get_listing_entry_ids()
+            {
+                return [];
+            }
+        };
+        $sql->site_id = 1;
+        $sql->cache = [];
+
+        $this->assertSame([], $sql->get_single_path(10));
     }
 
     public function testGetDataCoversExcludeCacheEmptyAndHookBranches()
@@ -1309,6 +3012,142 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertSame('n', $assets['Flat Assets']['split_assets']);
     }
 
+    public function testGetCpAssetDataReturnsSortedMixedAssetRows()
+    {
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_structure_channels($type = '', $channel_id = '', $order = '', $selector = false)
+            {
+                if ($type === 'asset') {
+                    return [
+                        7 => ['channel_id' => 7, 'channel_title' => 'Zeta Assets', 'split_assets' => 'n'],
+                        9 => ['channel_id' => 9, 'channel_title' => 'Split Assets', 'split_assets' => 'y'],
+                    ];
+                }
+
+                return [];
+            }
+            public function get_split_assets()
+            {
+                return [
+                    9 => [
+                        201 => ['title' => 'Beta Asset', 'entry_id' => 201],
+                        305 => ['title' => 'Gamma Asset', 'entry_id' => 305],
+                    ],
+                ];
+            }
+        };
+
+        $assets = $sql->get_cp_asset_data();
+
+        $this->assertSame(['Beta Asset', 'Gamma Asset', 'Zeta Assets'], array_keys($assets));
+        $this->assertSame([
+            'title' => 'Beta Asset',
+            'channel_id' => 9,
+            'entry_id' => 201,
+            'split_assets' => 'y',
+        ], $assets['Beta Asset']);
+        $this->assertSame([
+            'title' => 'Zeta Assets',
+            'channel_id' => 7,
+            'split_assets' => 'n',
+        ], $assets['Zeta Assets']);
+    }
+
+    public function testGetCpAssetDataReturnsEmptyArrayWhenAssetChannelsAreEmpty()
+    {
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_structure_channels($type = '', $channel_id = '', $order = '', $selector = false)
+            {
+                return [];
+            }
+            public function get_split_assets()
+            {
+                return [];
+            }
+        };
+
+        $this->assertSame([], $sql->get_cp_asset_data());
+    }
+
+    public function testGetCpAssetDataReturnsEmptyArrayWhenAssetChannelsAreEmptyTraversable()
+    {
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_structure_channels($type = '', $channel_id = '', $order = '', $selector = false)
+            {
+                return new ArrayIterator([]);
+            }
+            public function get_split_assets()
+            {
+                return [];
+            }
+        };
+
+        $this->assertSame([], $sql->get_cp_asset_data());
+    }
+
+    public function testGetCpAssetDataReturnsEmptyArrayWhenSplitChannelHasNoEntries()
+    {
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_structure_channels($type = '', $channel_id = '', $order = '', $selector = false)
+            {
+                if ($type === 'asset') {
+                    return [
+                        14 => ['channel_id' => 14, 'channel_title' => 'Split Assets', 'split_assets' => 'y'],
+                    ];
+                }
+
+                return [];
+            }
+            public function get_split_assets()
+            {
+                return [
+                    14 => [],
+                ];
+            }
+        };
+
+        $this->assertSame([], $sql->get_cp_asset_data());
+    }
+
+    public function testGetCpAssetDataReturnsEmptyArrayWhenSplitChannelHasEmptyTraversableEntries()
+    {
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_structure_channels($type = '', $channel_id = '', $order = '', $selector = false)
+            {
+                if ($type === 'asset') {
+                    return [
+                        21 => ['channel_id' => 21, 'channel_title' => 'Split Assets', 'split_assets' => 'y'],
+                    ];
+                }
+
+                return [];
+            }
+            public function get_split_assets()
+            {
+                return [
+                    21 => new ArrayIterator([]),
+                ];
+            }
+        };
+
+        $this->assertSame([], $sql->get_cp_asset_data());
+    }
+
     public function testGetStructureChannelIdsReturnsStringWhenRequested()
     {
         $sql = new class extends Sql_structure {
@@ -1370,6 +3209,94 @@ class SqlStructureDataMethodsTest extends TestCase
         };
 
         $this->assertSame('/parent/copy-page/', $sql->is_duplicate_page_uri(99, '/parent/page'));
+    }
+
+    /**
+     * It uses the dash separator without a trailing slash in normal duplicate resolution.
+     *
+     * @return void
+     */
+    public function testIsDuplicatePageUriUsesDashSeparatorWithoutTrailingSlashInNormalMode()
+    {
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'word_separator') {
+                    return 'dash';
+                }
+
+                return null;
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return [
+                    'url' => '/',
+                    'uris' => [
+                        10 => '/parent/page',
+                        11 => '/parent/page-1',
+                    ],
+                    'templates' => [
+                        10 => 2,
+                        11 => 3,
+                    ],
+                ];
+            }
+            public function get_settings()
+            {
+                return [];
+            }
+        };
+
+        $this->assertSame('/parent/page-2', $sql->is_duplicate_page_uri(99, '/parent/page'));
+    }
+
+    /**
+     * It ignores the current entry URI before checking the remaining page collisions.
+     *
+     * @return void
+     */
+    public function testIsDuplicatePageUriIgnoresCurrentEntryUriWhenCheckingDuplicates()
+    {
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'word_separator') {
+                    return 'dash';
+                }
+
+                return null;
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return [
+                    'url' => '/',
+                    'uris' => [
+                        99 => '/parent/page',
+                    ],
+                    'templates' => [
+                        99 => 2,
+                    ],
+                ];
+            }
+            public function get_settings()
+            {
+                return [];
+            }
+        };
+
+        $this->assertFalse($sql->is_duplicate_page_uri(99, '/parent/page'));
     }
 
     public function testRetrieveStructureUrlTitleBuildsParentChainRecursively()
@@ -1492,6 +3419,169 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertSame('https://example.com/', $decoded[1]['url']);
     }
 
+    public function testRestoreSitePagesTemplatesPersistsExpectedPayloadForMissingTemplates()
+    {
+        $captured = (object) ['lookups' => [], 'updates' => [], 'where' => []];
+
+        ee()->setMock('functions', new class {
+            public function fetch_site_index($includeIndex = 1, $includeQuery = 0)
+            {
+                return 'https://example.com/';
+            }
+        });
+        ee()->setMock('db', new class($captured, $this) {
+            private $captured;
+            private $test;
+
+            public function __construct($captured, $test)
+            {
+                $this->captured = $captured;
+                $this->test = $test;
+            }
+
+            public function query($sql)
+            {
+                $this->captured->lookups[] = $sql;
+
+                if (strpos($sql, 'SELECT channel_id FROM exp_channel_titles') !== false) {
+                    return $this->test->result([['channel_id' => 9]], 1);
+                }
+
+                return $this->test->result([]);
+            }
+
+            public function where($field, $value = null)
+            {
+                $this->captured->where[] = [$field, $value];
+
+                return $this;
+            }
+
+            public function update($table, $data = null, $where = null)
+            {
+                $this->captured->updates[] = [$table, $data];
+
+                return true;
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return [
+                    'uris' => [10 => '/existing/', 11 => '/needs-template/'],
+                    'templates' => [10 => 2],
+                ];
+            }
+
+            public function get_structure_channels($type = '', $channel_id = '', $order = '', $selector = false)
+            {
+                return [
+                    9 => ['template_id' => 7],
+                ];
+            }
+        };
+        $sql->site_id = 1;
+
+        $sql->restore_site_pages_templates();
+
+        $this->assertCount(1, $captured->lookups);
+        $this->assertStringContainsString("entry_id = '11'", $captured->lookups[0]);
+        $this->assertSame([['site_id', 1]], $captured->where);
+        $this->assertCount(1, $captured->updates);
+        $this->assertSame('sites', $captured->updates[0][0]);
+
+        $decoded = unserialize(base64_decode($captured->updates[0][1]['site_pages']));
+
+        $this->assertSame([
+            1 => [
+                'uris' => [10 => '/existing/', 11 => '/needs-template/'],
+                'templates' => [10 => 2, 11 => 7],
+                'url' => 'https://example.com/',
+            ],
+        ], $decoded);
+    }
+
+    public function testRestoreSitePagesTemplatesUpdatesEmptySitePagesWithoutTemplateLookups()
+    {
+        $captured = (object) ['lookups' => 0, 'updates' => []];
+
+        ee()->setMock('functions', new class {
+            public function fetch_site_index($includeIndex = 1, $includeQuery = 0)
+            {
+                return 'https://example.com/';
+            }
+        });
+        ee()->setMock('db', new class($captured) {
+            private $captured;
+
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+
+            public function query($sql)
+            {
+                $this->captured->lookups++;
+
+                return null;
+            }
+
+            public function where($field, $value = null)
+            {
+                return $this;
+            }
+
+            public function update($table, $data = null, $where = null)
+            {
+                $this->captured->updates[] = [$table, $data];
+
+                return true;
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return [
+                    'uris' => [],
+                    'templates' => [],
+                ];
+            }
+
+            public function get_structure_channels($type = '', $channel_id = '', $order = '', $selector = false)
+            {
+                return [
+                    9 => ['template_id' => 7],
+                ];
+            }
+        };
+        $sql->site_id = 1;
+
+        $sql->restore_site_pages_templates();
+
+        $this->assertSame(0, $captured->lookups);
+        $this->assertCount(1, $captured->updates);
+
+        $decoded = unserialize(base64_decode($captured->updates[0][1]['site_pages']));
+
+        $this->assertSame([
+            1 => [
+                'uris' => [],
+                'templates' => [],
+                'url' => 'https://example.com/',
+            ],
+        ], $decoded);
+    }
+
     public function testGetMemberGroupsCoversAllowedAndEmptyPermissionPaths()
     {
         ee()->setMock('config', new class {
@@ -1584,8 +3674,98 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertSame(2, $groups[0]['id']);
         $this->assertSame('Editors', $groups[0]['title']);
 
-        $model->permissionRows['can_edit_self_entries'] = [];
-        $this->assertFalse($sql->get_member_groups());
+        foreach (array_keys($model->permissionRows) as $permission) {
+            $model->permissionRows = [
+                'can_create_entries' => [2, 3],
+                'can_edit_other_entries' => [2, 3],
+                'can_edit_self_entries' => [2, 3],
+            ];
+            $model->permissionRows[$permission] = [];
+
+            $this->assertFalse($sql->get_member_groups());
+        }
+    }
+
+    public function testGetMemberGroupsReturnsEmptyArrayWhenNoAllowedRolesRemain()
+    {
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                return 1;
+            }
+        });
+
+        ee()->setMock('Model', new class {
+            public function get($name)
+            {
+                return new class($name) {
+                    private $name;
+                    public function __construct($name)
+                    {
+                        $this->name = $name;
+                    }
+                    public function fields($field)
+                    {
+                        return $this;
+                    }
+                    public function filter($field, $operatorOrValue = null, $value = null)
+                    {
+                        return $this;
+                    }
+                    public function order($field, $direction = 'asc')
+                    {
+                        return $this;
+                    }
+                    public function all()
+                    {
+                        return $this;
+                    }
+                    public function pluck($field)
+                    {
+                        if ($this->name === 'Permission') {
+                            return [2];
+                        }
+
+                        if ($this->name === 'Module') {
+                            return [2];
+                        }
+
+                        return [];
+                    }
+                    public function toArray()
+                    {
+                        if ($this->name === 'Role') {
+                            return [];
+                        }
+
+                        return [];
+                    }
+                    public function first()
+                    {
+                        if ($this->name === 'Module') {
+                            return new class {
+                                public $AssignedRoles;
+                                public function __construct()
+                                {
+                                    $this->AssignedRoles = new class {
+                                        public function pluck($field)
+                                        {
+                                            return [2];
+                                        }
+                                    };
+                                }
+                            };
+                        }
+
+                        return null;
+                    }
+                };
+            }
+        });
+
+        $sql = $this->makeSql();
+
+        $this->assertSame([], $sql->get_member_groups());
     }
 
     public function testUpdateIntegrityDataUsesSitePagesAndChannelDefaults()
@@ -1668,6 +3848,140 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertSame(30, $updatesByEntry[11][0]['template_id']);
         $this->assertSame('fallback-title', $updatesByEntry[11][1]['structure_url_title']);
         $this->assertArrayNotHasKey(12, $updatesByEntry);
+    }
+
+    public function testUpdateIntegrityDataSkipsTemplateFallbackWhenChannelIdIsEmpty()
+    {
+        $captured = (object) ['updates' => []];
+
+        ee()->setMock('db', new class($captured, $this) {
+            private $captured;
+            private $test;
+            private $entryIdWhere = null;
+            public function __construct($captured, $test)
+            {
+                $this->captured = $captured;
+                $this->test = $test;
+            }
+            public function select($fields = '*')
+            {
+                return $this;
+            }
+            public function from($table)
+            {
+                return $this;
+            }
+            public function where($field, $value = null)
+            {
+                if ($field === 'entry_id') {
+                    $this->entryIdWhere = (int) $value;
+                }
+                return $this;
+            }
+            public function join($table, $condition, $type = '')
+            {
+                return $this;
+            }
+            public function get($table = null)
+            {
+                return $this->test->result([
+                    ['entry_id' => 13, 'channel_id' => 0, 'url_title' => 'orphan-title', 'parent_id' => 0],
+                ]);
+            }
+            public function update($table, $data = null, $where = null)
+            {
+                $this->captured->updates[] = [$table, $this->entryIdWhere, $data];
+                return true;
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return [
+                    'uris' => [13 => '/orphan/'],
+                    'templates' => [],
+                ];
+            }
+            public function get_structure_channels($type = '', $channel_id = '', $order = '', $selector = false)
+            {
+                return [
+                    99 => ['template_id' => 99],
+                ];
+            }
+        };
+        $sql->site_id = 1;
+
+        $sql->update_integrity_data();
+
+        $this->assertCount(1, $captured->updates);
+        $this->assertSame(13, $captured->updates[0][1]);
+        $this->assertSame(['structure_url_title' => 'orphan-title'], $captured->updates[0][2]);
+    }
+
+    public function testUpdateIntegrityDataDoesNothingWhenStructureIndexIsEmpty()
+    {
+        $captured = (object) ['updates' => []];
+
+        ee()->setMock('db', new class($captured, $this) {
+            private $captured;
+            private $test;
+            public function __construct($captured, $test)
+            {
+                $this->captured = $captured;
+                $this->test = $test;
+            }
+            public function select($fields = '*')
+            {
+                return $this;
+            }
+            public function from($table)
+            {
+                return $this;
+            }
+            public function where($field, $value = null)
+            {
+                return $this;
+            }
+            public function join($table, $condition, $type = '')
+            {
+                return $this;
+            }
+            public function get($table = null)
+            {
+                return $this->test->result([]);
+            }
+            public function update($table, $data = null, $where = null)
+            {
+                $this->captured->updates[] = [$table, $data, $where];
+                return true;
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return [
+                    'uris' => [],
+                    'templates' => [],
+                ];
+            }
+            public function get_structure_channels($type = '', $channel_id = '', $order = '', $selector = false)
+            {
+                return [];
+            }
+        };
+        $sql->site_id = 1;
+
+        $sql->update_integrity_data();
+
+        $this->assertSame([], $captured->updates);
     }
 
     public function testAddAttributesCoversHiddenLastAndIdBranches()
@@ -1866,6 +4180,149 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertContains('root_home', $result[1]['ids']);
     }
 
+    public function testAddAttributesUsesDashSeparatorCssIdFallbackAndHomeSlugId()
+    {
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'word_separator') {
+                    return 'dash';
+                }
+                return null;
+            }
+        });
+        ee()->setMock('TMPL', new FakeTemplate());
+        ee()->TMPL->setMap([
+            'css_id' => 'none',
+            'current_class' => 'off',
+            'has_children_class' => 'no',
+            'add_unique_ids' => 'on',
+        ]);
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_single_path($entry_id)
+            {
+                return [];
+            }
+            public function get_parent_id($entry_id, $default = 'home')
+            {
+                return 0;
+            }
+            public function get_listing_entry_ids()
+            {
+                return [];
+            }
+        };
+
+        $pages = [
+            1 => [
+                'entry_id' => 1,
+                'depth' => 1,
+                'parent_id' => 0,
+                'lft' => 1,
+                'rgt' => 2,
+                'slug' => '/',
+                'classes' => [],
+                'ids' => [],
+                'hidden' => 'n',
+            ],
+        ];
+
+        $result = $sql->add_attributes($pages, 1, 'main', 'no');
+
+        $this->assertContains('first', $result[1]['classes']);
+        $this->assertContains('last', $result[1]['classes']);
+        $this->assertContains('nav-home', $result[1]['ids']);
+        $this->assertNotContains('here', $result[1]['classes']);
+        $this->assertNotContains('level-1', $result[1]['classes']);
+    }
+
+    public function testAddAttributesKeepsHiddenLastChildWhenOverrideEnabled()
+    {
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'word_separator') {
+                    return 'underscore';
+                }
+                return null;
+            }
+        });
+        ee()->setMock('TMPL', new FakeTemplate());
+        ee()->TMPL->setMap([
+            'css_id' => 'root',
+            'add_level_classes' => 'yes',
+            'current_class' => 'here',
+            'has_children_class' => 'no',
+            'add_unique_ids' => 'entry_id',
+        ]);
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_single_path($entry_id)
+            {
+                return [];
+            }
+            public function get_parent_id($entry_id, $default = 'home')
+            {
+                return 0;
+            }
+            public function get_listing_entry_ids()
+            {
+                return [];
+            }
+        };
+
+        $pages = [
+            1 => [
+                'entry_id' => 1,
+                'depth' => 1,
+                'parent_id' => 0,
+                'lft' => 1,
+                'rgt' => 6,
+                'slug' => '/parent/',
+                'classes' => [],
+                'ids' => [],
+                'hidden' => 'n',
+            ],
+            2 => [
+                'entry_id' => 2,
+                'depth' => 2,
+                'parent_id' => 1,
+                'lft' => 2,
+                'rgt' => 3,
+                'slug' => '/parent/visible/',
+                'classes' => [],
+                'ids' => [],
+                'hidden' => 'n',
+            ],
+            3 => [
+                'entry_id' => 3,
+                'depth' => 2,
+                'parent_id' => 1,
+                'lft' => 4,
+                'rgt' => 5,
+                'slug' => '/parent/hidden/',
+                'classes' => [],
+                'ids' => [],
+                'hidden' => 'y',
+            ],
+        ];
+
+        $result = $sql->add_attributes($pages, 99, 'sub', 'yes');
+
+        $this->assertArrayHasKey(3, $result);
+        $this->assertContains('last', $result[3]['classes']);
+        $this->assertContains('level_2', $result[3]['classes']);
+        $this->assertContains('root_3', $result[3]['ids']);
+        $this->assertNotContains('last', $result[2]['classes']);
+    }
+
     public function testGenerateNavCoversRenameOverviewAndCssIdNoneBranches()
     {
         ee()->setMock('config', new class {
@@ -1910,6 +4367,100 @@ class SqlStructureDataMethodsTest extends TestCase
 
         $htmlRecursiveYes = $sql->generate_nav([], 1, 1, 'sub', true, 'title', 'no', 'yes', 1);
         $this->assertStringContainsString('<li class="first"><a href="/top/">Top</a></li>', $htmlRecursiveYes);
+    }
+
+    public function testGenerateNavUsesCustomTitlesWithoutWrapperAndFallsBackToEntryId()
+    {
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'word_separator') {
+                    return 'dash';
+                }
+                return null;
+            }
+        });
+        ee()->setMock('TMPL', new FakeTemplate());
+        ee()->TMPL->setMap([
+            'encode_titles' => 'no',
+            'add_span' => 'no',
+            'include_ul' => 'no',
+        ]);
+
+        $sql = new class extends Sql_structure {
+            public $capturedEntryId;
+            public function __construct()
+            {
+            }
+            public function add_attributes($pages, $entry_id, $mode, $override_hidden_state = "no")
+            {
+                $this->capturedEntryId = $entry_id;
+
+                return [
+                    10 => ['entry_id' => 10, 'title' => 'Parent', 'uri' => '/parent/', 'depth' => 1, 'classes' => [], 'ids' => []],
+                    11 => ['entry_id' => 11, 'title' => 'Child', 'uri' => '/parent/child/', 'depth' => 2, 'classes' => [], 'ids' => []],
+                ];
+            }
+            public function create_custom_titles($include_listings = false)
+            {
+                return [
+                    10 => 'Custom <Parent>',
+                    11 => 'Custom Child',
+                ];
+            }
+        };
+
+        $html = $sql->generate_nav([], false, 42, 'sub', false, 'Overview', 'yes', 'no', 1);
+
+        $this->assertSame(42, $sql->capturedEntryId);
+        $this->assertStringNotContainsString('<ul id=', $html);
+        $this->assertStringContainsString('<li><a href="/parent/">Custom <Parent></a>', $html);
+        $this->assertStringContainsString('<li><a href="/parent/child/">Custom Child</a></li>', $html);
+    }
+
+    public function testGenerateNavCoversLevelMismatchAndRecursiveOverviewRenameString()
+    {
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'word_separator') {
+                    return 'dash';
+                }
+                return null;
+            }
+        });
+        ee()->setMock('TMPL', new FakeTemplate());
+        ee()->TMPL->setMap([
+            'encode_titles' => 'yes',
+            'add_span' => 'no',
+            'include_ul' => 'yes',
+            'wrap_start' => '',
+            'wrap_end' => '',
+        ]);
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function add_attributes($pages, $entry_id, $mode, $override_hidden_state = "no")
+            {
+                return [
+                    1 => ['entry_id' => 1, 'title' => 'Top', 'uri' => '/top/', 'depth' => 1, 'classes' => [], 'ids' => []],
+                    2 => ['entry_id' => 2, 'title' => 'Child', 'uri' => '/top/child/', 'depth' => 2, 'classes' => [], 'ids' => []],
+                ];
+            }
+            public function create_custom_titles($include_listings = false)
+            {
+                return false;
+            }
+        };
+
+        $htmlLevelMismatch = $sql->generate_nav([], 1, 1, 'sub', true, 'Overview', 'no', 'no', 99);
+        $this->assertStringNotContainsString('<li class="first"><a href="/top/">Overview</a></li>', $htmlLevelMismatch);
+
+        $htmlRecursiveRename = $sql->generate_nav([], 1, 1, 'sub', true, 'Browse', 'no', 'yes', 99);
+        $this->assertStringContainsString('<ul id="nav-sub">', $htmlRecursiveRename);
+        $this->assertStringContainsString('<li class="first"><a href="/top/">Browse</a></li>', $htmlRecursiveRename);
     }
 
     public function testGetSelectiveDataCoversResultFlowAndUrlGeneration()
@@ -2231,6 +4782,74 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertStringContainsString('DELETE FROM exp_structure WHERE site_id = 1 AND entry_id NOT IN (10,11)', $queryText);
         $this->assertStringContainsString('DELETE FROM exp_structure_listings WHERE site_id = 1 AND entry_id NOT IN (10,11)', $queryText);
         $this->assertStringContainsString('UPDATE exp_structure SET rgt = 13 WHERE site_id = 0', $queryText);
+    }
+
+    public function testCleanupIgnoresUnsupportedModeWithoutMutatingStructureData()
+    {
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'structure_nav_history') {
+                    return 'n';
+                }
+
+                return null;
+            }
+        });
+
+        $captured = (object) ['queries' => [], 'getSitePagesCalls' => 0, 'generateCalls' => 0, 'setSitePages' => []];
+        ee()->setMock('db', new class($captured) {
+            private $captured;
+
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+
+            public function query($sql)
+            {
+                $this->captured->queries[] = $sql;
+
+                return null;
+            }
+        });
+
+        $sql = new class($captured) extends Sql_structure {
+            private $captured;
+
+            public function __construct($captured)
+            {
+                $this->captured = $captured;
+            }
+
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                $this->captured->getSitePagesCalls++;
+
+                return ['url' => 'https://example.test/', 'uris' => [], 'templates' => []];
+            }
+
+            public function generate_site_pages_array()
+            {
+                $this->captured->generateCalls++;
+
+                return ['url' => 'https://example.test/', 'uris' => [], 'templates' => []];
+            }
+
+            public function set_site_pages($site_id, $site_pages)
+            {
+                $this->captured->setSitePages[] = [$site_id, $site_pages];
+
+                return true;
+            }
+        };
+        $sql->site_id = 1;
+
+        $this->assertTrue($sql->cleanup('unsupported-mode'));
+        $this->assertSame([], $captured->queries);
+        $this->assertSame(0, $captured->getSitePagesCalls);
+        $this->assertSame(0, $captured->generateCalls);
+        $this->assertSame([], $captured->setSitePages);
     }
 
     public function testGenerateSitePagesArrayCoversRootListingAndTemplatePreserveBranch()
@@ -2767,6 +5386,405 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertSame('https://example.test/page?hook=1', $data[5]['uri']);
     }
 
+    public function testGetSelectiveDataCoversSubModeAllDepthAndSiteUrlOverride()
+    {
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'site_id') {
+                    return 1;
+                }
+                if ($key === 'base_url') {
+                    return 'https://example.test/';
+                }
+                return null;
+            }
+        });
+        ee()->setMock('TMPL', new class {
+            public $cache_timestamp = '';
+        });
+        ee()->setMock('localize', (object) ['now' => 1700000000]);
+        ee()->setMock('session', (object) ['cache' => ['structure' => []]]);
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+            public function call($name, ...$args)
+            {
+                return $args[0] ?? null;
+            }
+        });
+        ee()->setMock('functions', new class {
+            public function create_page_url($base, $uri, $trailing_slash = false)
+            {
+                $prefix = $base !== '' ? rtrim($base, '/') . '/' : '{base_url}/';
+
+                return $prefix . trim($uri, '/');
+            }
+        });
+        ee()->setMock('db', new class($this) {
+            private $test;
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+            public function query($sql)
+            {
+                return $this->test->result([
+                    ['entry_id' => 10, 'parent_id' => 0, 'lft' => 1, 'rgt' => 4, 'title' => 'Branch', 'entry_date' => 0, 'expiration_date' => 0, 'status' => 'open', 'hidden' => 'n'],
+                    ['entry_id' => 11, 'parent_id' => 10, 'lft' => 2, 'rgt' => 3, 'title' => 'Leaf', 'entry_date' => 0, 'expiration_date' => 0, 'status' => 'open', 'hidden' => 'n'],
+                ], 2);
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_parent_id($entry_id, $default = 'home')
+            {
+                return 10;
+            }
+            public function get_settings()
+            {
+                return ['add_trailing_slash' => 'y'];
+            }
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return [
+                    'url' => 'https://ignored.test/',
+                    'uris' => [10 => '/branch/', 11 => '/branch/leaf/'],
+                    'templates' => [10 => 1, 11 => 1],
+                ];
+            }
+            public function is_listing_entry($entry_id)
+            {
+                return false;
+            }
+        };
+        $sql->site_id = 1;
+
+        $data = $sql->get_selective_data(
+            1,
+            11,
+            10,
+            'sub',
+            'all',
+            -1,
+            'open',
+            [],
+            [],
+            false,
+            'Overview',
+            'yes',
+            'yes',
+            'no',
+            'no',
+            'no'
+        );
+
+        $this->assertArrayHasKey(11, $data);
+        $this->assertSame('https://example.test/branch/leaf', $data[11]['uri']);
+    }
+
+    public function testGetSelectiveDataCoversActiveBranchPruneBeforeExpansion()
+    {
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'site_id') {
+                    return 1;
+                }
+                if ($key === 'base_url') {
+                    return 'https://example.test/';
+                }
+                return null;
+            }
+        });
+        ee()->setMock('TMPL', new class {
+            public $cache_timestamp = '';
+        });
+        ee()->setMock('localize', (object) ['now' => 1700000000]);
+        ee()->setMock('session', (object) ['cache' => ['structure' => []]]);
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+            public function call($name, ...$args)
+            {
+                return $args[0] ?? null;
+            }
+        });
+        ee()->setMock('functions', new class {
+            public function create_page_url($base, $uri, $trailing_slash = false)
+            {
+                return rtrim($base, '/') . '/' . trim($uri, '/');
+            }
+        });
+        ee()->setMock('db', new class($this) {
+            private $test;
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+            public function query($sql)
+            {
+                return $this->test->result([
+                    ['entry_id' => 10, 'parent_id' => 0, 'lft' => 1, 'rgt' => 8, 'title' => 'Root', 'entry_date' => 0, 'expiration_date' => 0, 'status' => 'open', 'hidden' => 'n'],
+                    ['entry_id' => 11, 'parent_id' => 10, 'lft' => 2, 'rgt' => 7, 'title' => 'Active', 'entry_date' => 0, 'expiration_date' => 0, 'status' => 'open', 'hidden' => 'n'],
+                    ['entry_id' => 12, 'parent_id' => 11, 'lft' => 3, 'rgt' => 6, 'title' => 'Grandchild', 'entry_date' => 0, 'expiration_date' => 0, 'status' => 'open', 'hidden' => 'n'],
+                    ['entry_id' => 13, 'parent_id' => 12, 'lft' => 4, 'rgt' => 5, 'title' => 'Great Grandchild', 'entry_date' => 0, 'expiration_date' => 0, 'status' => 'open', 'hidden' => 'n'],
+                ], 4);
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_parent_id($entry_id, $default = 'home')
+            {
+                return 0;
+            }
+            public function get_settings()
+            {
+                return ['add_trailing_slash' => 'y'];
+            }
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return [
+                    'url' => 'https://example.test/',
+                    'uris' => [10 => '/root/', 11 => '/root/active/', 12 => '/root/active/grandchild/', 13 => '/root/active/grandchild/great-grandchild/'],
+                    'templates' => [10 => 1, 11 => 1, 12 => 1, 13 => 1],
+                ];
+            }
+            public function is_listing_entry($entry_id)
+            {
+                return false;
+            }
+        };
+        $sql->site_id = 1;
+
+        $data = $sql->get_selective_data(
+            1,
+            11,
+            10,
+            'sub',
+            2,
+            -1,
+            'open',
+            [],
+            [],
+            false,
+            'Overview',
+            'yes',
+            'yes',
+            'no',
+            'no',
+            'yes'
+        );
+
+        $this->assertArrayHasKey(11, $data);
+        $this->assertArrayHasKey(12, $data);
+        $this->assertArrayNotHasKey(13, $data);
+    }
+
+    public function testGetSelectiveDataCoversActiveGrandchildExpansionPath()
+    {
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'site_id') {
+                    return 1;
+                }
+                if ($key === 'base_url') {
+                    return 'https://example.test/';
+                }
+                return null;
+            }
+        });
+        ee()->setMock('TMPL', new class {
+            public $cache_timestamp = '';
+        });
+        ee()->setMock('localize', (object) ['now' => 1700000000]);
+        ee()->setMock('session', (object) ['cache' => ['structure' => []]]);
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+            public function call($name, ...$args)
+            {
+                return $args[0] ?? null;
+            }
+        });
+        ee()->setMock('functions', new class {
+            public function create_page_url($base, $uri, $trailing_slash = false)
+            {
+                return rtrim($base, '/') . '/' . trim($uri, '/');
+            }
+        });
+        ee()->setMock('db', new class($this) {
+            private $test;
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+            public function query($sql)
+            {
+                return $this->test->result([
+                    ['entry_id' => 10, 'parent_id' => 0, 'lft' => 1, 'rgt' => 10, 'title' => 'Root', 'entry_date' => 0, 'expiration_date' => 0, 'status' => 'open', 'hidden' => 'n'],
+                    ['entry_id' => 11, 'parent_id' => 10, 'lft' => 2, 'rgt' => 9, 'title' => 'Branch', 'entry_date' => 0, 'expiration_date' => 0, 'status' => 'open', 'hidden' => 'n'],
+                    ['entry_id' => 12, 'parent_id' => 11, 'lft' => 3, 'rgt' => 6, 'title' => 'Current', 'entry_date' => 0, 'expiration_date' => 0, 'status' => 'open', 'hidden' => 'n'],
+                    ['entry_id' => 14, 'parent_id' => 12, 'lft' => 4, 'rgt' => 5, 'title' => 'Expanded Child', 'entry_date' => 0, 'expiration_date' => 0, 'status' => 'open', 'hidden' => 'n'],
+                    ['entry_id' => 13, 'parent_id' => 11, 'lft' => 7, 'rgt' => 8, 'title' => 'Sibling Child', 'entry_date' => 0, 'expiration_date' => 0, 'status' => 'open', 'hidden' => 'n'],
+                ], 4);
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_parent_id($entry_id, $default = 'home')
+            {
+                return 10;
+            }
+            public function get_settings()
+            {
+                return ['add_trailing_slash' => 'y'];
+            }
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return [
+                    'url' => 'https://example.test/',
+                    'uris' => [10 => '/root/', 11 => '/root/branch/', 12 => '/root/branch/current/', 13 => '/root/branch/sibling-child/', 14 => '/root/branch/current/expanded-child/'],
+                    'templates' => [10 => 1, 11 => 1, 12 => 1, 13 => 1, 14 => 1],
+                ];
+            }
+            public function is_listing_entry($entry_id)
+            {
+                return false;
+            }
+        };
+        $sql->site_id = 1;
+
+        $data = $sql->get_selective_data(
+            1,
+            12,
+            10,
+            'sub',
+            1,
+            -1,
+            'open',
+            [],
+            [],
+            false,
+            'Overview',
+            'yes',
+            'yes',
+            'no',
+            'no',
+            'yes'
+        );
+
+        $this->assertArrayHasKey(12, $data);
+        $this->assertArrayHasKey(13, $data);
+        $this->assertArrayHasKey(14, $data);
+    }
+
+    public function testGetSelectiveDataReturnsEmptyWhenIncludeFilterRemovesRoot()
+    {
+        ee()->setMock('config', new class {
+            public function item($key)
+            {
+                if ($key === 'site_id') {
+                    return 1;
+                }
+                return null;
+            }
+        });
+        ee()->setMock('TMPL', new class {
+            public $cache_timestamp = '';
+        });
+        ee()->setMock('localize', (object) ['now' => 1700000000]);
+        ee()->setMock('session', (object) ['cache' => ['structure' => []]]);
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+            public function call($name, ...$args)
+            {
+                return $args[0] ?? null;
+            }
+        });
+        ee()->setMock('db', new class($this) {
+            private $test;
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+            public function query($sql)
+            {
+                return $this->test->result([
+                    ['entry_id' => 0, 'parent_id' => 0, 'lft' => 1, 'rgt' => 4, 'title' => 'Global Root', 'entry_date' => 0, 'expiration_date' => 0, 'status' => 'open', 'hidden' => 'n'],
+                    ['entry_id' => 10, 'parent_id' => 0, 'lft' => 2, 'rgt' => 3, 'title' => 'Branch Root', 'entry_date' => 0, 'expiration_date' => 0, 'status' => 'open', 'hidden' => 'n'],
+                ], 2);
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+            public function get_parent_id($entry_id, $default = 'home')
+            {
+                return 0;
+            }
+            public function get_settings()
+            {
+                return ['add_trailing_slash' => 'y'];
+            }
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return [
+                    'url' => 'https://example.test/',
+                    'uris' => [10 => '/branch-root/'],
+                    'templates' => [10 => 1],
+                ];
+            }
+            public function is_listing_entry($entry_id)
+            {
+                return false;
+            }
+        };
+        $sql->site_id = 1;
+
+        $data = $sql->get_selective_data(
+            1,
+            10,
+            10,
+            'sub',
+            1,
+            -1,
+            'open',
+            [11],
+            [],
+            false,
+            'Overview',
+            'yes',
+            'yes',
+            'no',
+            'no',
+            'yes'
+        );
+
+        $this->assertSame([], $data);
+    }
+
     public function testCleanupCheckCoversOrphanMismatchListingAndDuplicateFlows()
     {
         ee()->setMock('general_helper', new class {
@@ -2879,12 +5897,578 @@ class SqlStructureDataMethodsTest extends TestCase
         $this->assertTrue($vals['validation_action_enabled']);
     }
 
+    public function testCleanupCheckReturnsZeroCountsWhenStructureAndSitePagesAreEmpty()
+    {
+        ee()->setMock('db', new class($this) {
+            private $test;
+
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+
+            public function get_where($table, $where = null, $limit = null, $offset = null)
+            {
+                return $this->test->result([], 0);
+            }
+
+            public function query($sql)
+            {
+                return $this->test->result([], 0);
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return [
+                    'url' => 'https://example.test/',
+                    'uris' => [],
+                    'templates' => [],
+                ];
+            }
+        };
+        $sql->site_id = 1;
+
+        $vals = $sql->cleanup_check();
+
+        $this->assertSame(0, $vals['total_site_pages_entries']);
+        $this->assertSame(0, $vals['total_structure_entries']);
+        $this->assertSame(0, $vals['total_site_pages_duplicates']);
+        $this->assertSame(0, $vals['ee_orphans']);
+        $this->assertSame(0, $vals['site_pages_orphans']);
+        $this->assertSame(0, $vals['site_pages_listing_orphans']);
+        $this->assertSame(0, $vals['structure_orphans']);
+        $this->assertSame(0, $vals['structure_listing_orphans']);
+        $this->assertSame(0, $vals['duplicate_rights']);
+        $this->assertSame(0, $vals['duplicate_lefts']);
+        $this->assertFalse($vals['validation_action_enabled']);
+        $this->assertSame([], $vals['site_pages_duplicates']);
+        $this->assertSame([], $vals['site_pages_uri_duplicates']);
+        $this->assertSame([], $vals['mismatch_url_entries']);
+        $this->assertSame([], $vals['template_id_errors']);
+        $this->assertSame([], $vals['orphaned_entries']);
+    }
+
+    public function testCleanupCheckLeavesMatchingRootAndListingEntriesClean()
+    {
+        ee()->setMock('general_helper', new class {
+            public function cpURL($section, $method, $params = [])
+            {
+                return 'cp://' . $section . '/' . $method . '/' . ($params['entry_id'] ?? '0');
+            }
+        });
+
+        ee()->setMock('db', new class($this) {
+            private $test;
+
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+
+            public function select($fields = '*')
+            {
+                return $this;
+            }
+
+            public function get_where($table, $where = null, $limit = null, $offset = null)
+            {
+                if ($table === 'structure') {
+                    return $this->test->result([
+                        ['entry_id' => 300, 'listing_cid' => 9, 'structure_url_title' => '/', 'template_id' => 5],
+                    ], 1);
+                }
+
+                if ($table === 'channel_titles' && isset($where['channel_id'])) {
+                    return $this->test->result([
+                        ['entry_id' => 301, 'title' => 'Child', 'url_title' => 'child'],
+                    ], 1);
+                }
+
+                if ($table === 'channel_titles' && isset($where['entry_id'])) {
+                    if ((int) $where['entry_id'] === 300) {
+                        return $this->test->result([
+                            ['entry_id' => 300, 'title' => 'Home', 'url_title' => 'home', 'channel_id' => 2],
+                        ], 1);
+                    }
+
+                    return $this->test->result([], 0);
+                }
+
+                if ($table === 'structure_listings' && isset($where['entry_id'])) {
+                    if ((int) $where['entry_id'] === 301) {
+                        return $this->test->result([
+                            ['entry_id' => 301, 'uri' => 'child', 'template_id' => 6],
+                        ], 1);
+                    }
+
+                    return $this->test->result([], 0);
+                }
+
+                return $this->test->result([], 0);
+            }
+
+            public function query($sql)
+            {
+                return $this->test->result([], 0);
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return [
+                    'url' => 'https://example.test/',
+                    'uris' => [
+                        300 => '/',
+                        301 => '/child/',
+                    ],
+                    'templates' => [300 => 5, 301 => 6],
+                ];
+            }
+
+            public function is_valid_template($template_id)
+            {
+                return in_array((int) $template_id, [5, 6], true);
+            }
+        };
+        $sql->site_id = 1;
+
+        $vals = $sql->cleanup_check();
+
+        $this->assertSame(2, $vals['total_site_pages_entries']);
+        $this->assertSame(2, $vals['total_structure_entries']);
+        $this->assertSame(0, $vals['total_site_pages_duplicates']);
+        $this->assertSame(0, $vals['ee_orphans']);
+        $this->assertSame(0, $vals['site_pages_orphans']);
+        $this->assertSame(0, $vals['site_pages_listing_orphans']);
+        $this->assertSame(0, $vals['structure_orphans']);
+        $this->assertSame(0, $vals['structure_listing_orphans']);
+        $this->assertSame(0, $vals['duplicate_rights']);
+        $this->assertSame(0, $vals['duplicate_lefts']);
+        $this->assertFalse($vals['validation_action_enabled']);
+        $this->assertSame([], $vals['site_pages_duplicates']);
+        $this->assertSame([], $vals['site_pages_uri_duplicates']);
+        $this->assertSame([], $vals['mismatch_url_entries']);
+        $this->assertSame([], $vals['template_id_errors']);
+        $this->assertSame([], $vals['orphaned_entries']);
+    }
+
+    public function testCleanupCheckMarksSitePagesOnlyListingEntriesAsListingOrphans()
+    {
+        ee()->setMock('general_helper', new class {
+            public function cpURL($section, $method, $params = [])
+            {
+                return 'cp://' . $section . '/' . $method . '/' . ($params['entry_id'] ?? '0');
+            }
+        });
+
+        ee()->setMock('db', new class($this) {
+            private $test;
+
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+
+            public function get_where($table, $where = null, $limit = null, $offset = null)
+            {
+                if ($table === 'structure') {
+                    return $this->test->result([], 0);
+                }
+
+                if ($table === 'channel_titles' && isset($where['entry_id']) && (int) $where['entry_id'] === 400) {
+                    return $this->test->result([
+                        ['entry_id' => 400, 'title' => 'Listing Orphan', 'url_title' => 'listing-orphan', 'channel_id' => 8],
+                    ], 1);
+                }
+
+                if ($table === 'structure_listings' && isset($where['entry_id']) && (int) $where['entry_id'] === 400) {
+                    return $this->test->result([
+                        ['entry_id' => 400, 'uri' => 'listing-orphan', 'template_id' => 9],
+                    ], 1);
+                }
+
+                return $this->test->result([], 0);
+            }
+
+            public function query($sql)
+            {
+                return $this->test->result([], 0);
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return [
+                    'url' => 'https://example.test/',
+                    'uris' => [
+                        400 => '/listing-orphan/',
+                    ],
+                    'templates' => [400 => 9],
+                ];
+            }
+        };
+        $sql->site_id = 1;
+
+        $vals = $sql->cleanup_check();
+
+        $this->assertSame(1, $vals['total_site_pages_entries']);
+        $this->assertSame(0, $vals['total_structure_entries']);
+        $this->assertSame(1, $vals['structure_orphans']);
+        $this->assertSame(0, $vals['structure_listing_orphans']);
+        $this->assertTrue($vals['validation_action_enabled']);
+        $this->assertSame(1, $vals['orphaned_entries'][400]['ee']);
+        $this->assertSame(1, $vals['orphaned_entries'][400]['site_pages']);
+        $this->assertSame(1, $vals['orphaned_entries'][400]['is_listing']);
+        $this->assertSame(0, $vals['orphaned_entries'][400]['structure']);
+        $this->assertSame('cp://publish/edit/400', $vals['orphaned_entries'][400]['ee_url']);
+    }
+
+    public function testCleanupCheckNormalizesNestedAndRootListingUris()
+    {
+        ee()->setMock('general_helper', new class {
+            public function cpURL($section, $method, $params = [])
+            {
+                return 'cp://' . $section . '/' . $method . '/' . ($params['entry_id'] ?? '0');
+            }
+        });
+
+        ee()->setMock('db', new class($this) {
+            private $test;
+
+            public function __construct($test)
+            {
+                $this->test = $test;
+            }
+
+            public function select($fields = '*')
+            {
+                return $this;
+            }
+
+            public function get_where($table, $where = null, $limit = null, $offset = null)
+            {
+                if ($table === 'structure') {
+                    return $this->test->result([
+                        ['entry_id' => 500, 'listing_cid' => 10, 'structure_url_title' => 'child', 'template_id' => 5],
+                    ], 1);
+                }
+
+                if ($table === 'channel_titles' && isset($where['channel_id']) && (int) $where['channel_id'] === 10) {
+                    return $this->test->result([
+                        ['entry_id' => 501, 'title' => 'Root Listing', 'url_title' => 'root-listing'],
+                    ], 1);
+                }
+
+                if ($table === 'channel_titles' && isset($where['entry_id']) && (int) $where['entry_id'] === 500) {
+                    return $this->test->result([
+                        ['entry_id' => 500, 'title' => 'Nested Parent', 'url_title' => 'nested-parent', 'channel_id' => 4],
+                    ], 1);
+                }
+
+                if ($table === 'structure_listings' && isset($where['entry_id']) && (int) $where['entry_id'] === 501) {
+                    return $this->test->result([
+                        ['entry_id' => 501, 'uri' => '/', 'template_id' => 6],
+                    ], 1);
+                }
+
+                return $this->test->result([], 0);
+            }
+
+            public function query($sql)
+            {
+                return $this->test->result([], 0);
+            }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function __construct()
+            {
+            }
+
+            public function get_site_pages($cache_bust = false, $override_slash = false)
+            {
+                return [
+                    'url' => 'https://example.test/',
+                    'uris' => [
+                        500 => '/nested/path/child/',
+                        501 => '/',
+                    ],
+                    'templates' => [500 => 5, 501 => 6],
+                ];
+            }
+
+            public function is_valid_template($template_id)
+            {
+                return in_array((int) $template_id, [5, 6], true);
+            }
+        };
+        $sql->site_id = 1;
+
+        $vals = $sql->cleanup_check();
+
+        $this->assertSame([], $vals['mismatch_url_entries']);
+        $this->assertSame([], $vals['template_id_errors']);
+        $this->assertSame([], $vals['orphaned_entries']);
+        $this->assertFalse($vals['validation_action_enabled']);
+        $this->assertSame(2, $vals['total_structure_entries']);
+    }
+
     private function makeSql()
     {
         $sql = (new ReflectionClass('Sql_structure'))->newInstanceWithoutConstructor();
         $sql->site_id = 1;
         $sql->cache = [];
         return $sql;
+    }
+
+    /**
+     * Build a fluent DB mock for get_entries_by_category() scenarios.
+     *
+     * @param array $categoryRows
+     * @param array $categoryPostRows
+     * @param int|null $categoryNumRows
+     * @return object
+     */
+    private function makeGetEntriesByCategoryDb(array $categoryRows, array $categoryPostRows, ?int $categoryNumRows = null)
+    {
+        $captured = (object) ['gets' => []];
+
+        $db = new class($this, $captured, $categoryRows, $categoryPostRows, $categoryNumRows) {
+            private $test;
+            private $captured;
+            private $categoryRows;
+            private $categoryPostRows;
+            private $categoryNumRows;
+            private $table;
+            private $fields = [];
+            private $where = [];
+
+            public function __construct($test, $captured, $categoryRows, $categoryPostRows, $categoryNumRows)
+            {
+                $this->test = $test;
+                $this->captured = $captured;
+                $this->categoryRows = $categoryRows;
+                $this->categoryPostRows = $categoryPostRows;
+                $this->categoryNumRows = $categoryNumRows;
+            }
+
+            public function select($field)
+            {
+                $this->fields[] = $field;
+
+                return $this;
+            }
+
+            public function from($table)
+            {
+                $this->table = $table;
+
+                return $this;
+            }
+
+            public function where($field, $value = null)
+            {
+                $this->where[$field] = $value;
+
+                return $this;
+            }
+
+            public function get($table = null)
+            {
+                if ($table !== null) {
+                    $this->table = $table;
+                }
+
+                $this->captured->gets[] = [
+                    'table' => $this->table,
+                    'fields' => $this->fields,
+                    'where' => $this->where,
+                ];
+
+                $rows = [];
+                $numRows = null;
+
+                if ($this->table === 'categories') {
+                    $rows = $this->categoryRows;
+                    $numRows = $this->categoryNumRows;
+                }
+
+                if ($this->table === 'category_posts') {
+                    $rows = $this->categoryPostRows;
+                }
+
+                $this->table = null;
+                $this->fields = [];
+                $this->where = [];
+
+                return $this->test->result($rows, $numRows);
+            }
+        };
+
+        return (object) [
+            'captured' => $captured,
+            'db' => $db,
+        ];
+    }
+
+    /**
+     * Build a fluent DB mock for get_channel_name_by_channel_id() lookups.
+     *
+     * @param array $rows
+     * @return object
+     */
+    private function makeChannelNameByChannelIdDb(array $rows)
+    {
+        $captured = (object) ['gets' => []];
+
+        $db = new class($this, $captured, $rows) {
+            private $test;
+            private $captured;
+            private $rows;
+            private $table;
+            private $fields = [];
+            private $where = [];
+
+            public function __construct($test, $captured, $rows)
+            {
+                $this->test = $test;
+                $this->captured = $captured;
+                $this->rows = $rows;
+            }
+
+            public function select($field)
+            {
+                $this->fields[] = $field;
+
+                return $this;
+            }
+
+            public function from($table)
+            {
+                $this->table = $table;
+
+                return $this;
+            }
+
+            public function where($field, $value = null)
+            {
+                $this->where[$field] = $value;
+
+                return $this;
+            }
+
+            public function get($table = null)
+            {
+                if ($table !== null) {
+                    $this->table = $table;
+                }
+
+                $this->captured->gets[] = [
+                    'table' => $this->table,
+                    'fields' => $this->fields,
+                    'where' => $this->where,
+                ];
+
+                $this->table = null;
+                $this->fields = [];
+                $this->where = [];
+
+                return $this->test->result($this->rows);
+            }
+        };
+
+        return (object) [
+            'captured' => $captured,
+            'db' => $db,
+        ];
+    }
+
+    /**
+     * Build a fluent DB mock for get_listing_channel_data() lookups.
+     *
+     * @param array $rows
+     * @return object
+     */
+    private function makeListingChannelDataDb(array $rows)
+    {
+        $captured = (object) ['gets' => []];
+
+        $db = new class($this, $captured, $rows) {
+            private $test;
+            private $captured;
+            private $rows;
+            private $table;
+            private $fields = [];
+            private $where = [];
+
+            public function __construct($test, $captured, $rows)
+            {
+                $this->test = $test;
+                $this->captured = $captured;
+                $this->rows = $rows;
+            }
+
+            public function select($field = '*')
+            {
+                $this->fields[] = $field;
+
+                return $this;
+            }
+
+            public function from($table)
+            {
+                $this->table = $table;
+
+                return $this;
+            }
+
+            public function where($field, $value = null)
+            {
+                $this->where[$field] = $value;
+
+                return $this;
+            }
+
+            public function get($table = null)
+            {
+                if ($table !== null) {
+                    $this->table = $table;
+                }
+
+                $this->captured->gets[] = [
+                    'table' => $this->table,
+                    'fields' => $this->fields,
+                    'where' => $this->where,
+                ];
+
+                $this->table = null;
+                $this->fields = [];
+                $this->where = [];
+
+                return $this->test->result($this->rows);
+            }
+        };
+
+        return (object) [
+            'captured' => $captured,
+            'db' => $db,
+        ];
     }
 
     public function result(array $rows, ?int $numRows = null)

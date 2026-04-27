@@ -278,7 +278,56 @@ class StructureSetSitePagesTest extends StructureTestBase
         $this->assertSame('/page/', $decoded[2]['uris'][789], 'URI with trailing slash should be preserved');
         $this->assertSame('/mixed/path', $decoded[2]['uris'][999], 'URI without trailing slash should remain unchanged');
     }
-}
 
+    public function testSetSitePagesDefaultsToTrimBranchWhenTrailingSlashSettingMissingAndUrisEmpty()
+    {
+        require_once PATH_ADDONS . 'structure/sql.structure.php';
+
+        $captured = (object) ['data' => null, 'where' => null, 'queries' => []];
+
+        ee()->setMock('db', new class($captured) extends FakeDb {
+            private $cap;
+            public function __construct($cap) { $this->cap = $cap; }
+            public function escape_str($str) { return addslashes($str); }
+            public function update_string($table, $data, $where)
+            {
+                $this->cap->data = $data;
+                $this->cap->where = $where;
+                return 'UPDATE exp_sites SET site_pages=... WHERE ' . $where;
+            }
+            public function query($sql)
+            {
+                $this->cap->queries[] = $sql;
+                return new eeDbResultMock([]);
+            }
+        });
+
+        ee()->setMock('addons_model', new class {
+            public function module_installed($module) { return false; }
+        });
+
+        $sql = new class extends Sql_structure {
+            public function get_settings()
+            {
+                return [];
+            }
+
+            public function get_site_id()
+            {
+                return 1;
+            }
+        };
+
+        ee()->config->items['site_id'] = 2;
+        $pages = ['url' => '/', 'uris' => []];
+        $sql->set_site_pages(null, $pages);
+
+        $decoded = unserialize(base64_decode($captured->data['site_pages']));
+        $this->assertArrayHasKey(2, $decoded);
+        $this->assertSame([], $decoded[2]['uris']);
+        $this->assertSame("site_id='2'", $captured->where);
+        $this->assertNotEmpty($captured->queries);
+    }
+}
 
 
