@@ -174,6 +174,21 @@ class EE_Exceptions
     }
 
     /**
+     * Write an internal error that is hidden from the browser.
+     *
+     * @param string $message
+     * @return void
+     */
+    public function logHiddenError($message)
+    {
+        try {
+            log_message('error', $message);
+        } catch (\Throwable $e) {
+            @error_log($message);
+        }
+    }
+
+    /**
      * Render a generic public error response.
      *
      * @param int $status_code
@@ -291,6 +306,7 @@ class EE_Exceptions
         set_status_header($status_code);
 
         if (! $this->shouldShowDetailedWebErrors()) {
+            $this->logExceptionObject($exception);
             $this->showPublicError($status_code);
         }
 
@@ -416,6 +432,8 @@ class EE_Exceptions
         @ini_set('display_errors', 0);
 
         if (! $this->shouldShowDetailedWebErrors()) {
+            $this->logFatalShutdownError($error);
+
             while (ob_get_level() > 0) {
                 ob_end_clean();
             }
@@ -570,6 +588,46 @@ class EE_Exceptions
         }
 
         return ee()->session->userdata('can_debug') == 'y';
+    }
+
+    /**
+     * @param \Throwable|\Exception $exception
+     * @return void
+     */
+    private function logExceptionObject($exception)
+    {
+        $message = sprintf(
+            '%s: %s in %s on line %s',
+            get_class($exception),
+            $exception->getMessage(),
+            $exception->getFile(),
+            $exception->getLine()
+        );
+
+        $trace = $exception->getTraceAsString();
+
+        if ($trace !== '') {
+            $message .= "\nStack trace:\n" . $trace;
+        }
+
+        $this->logHiddenError($message);
+    }
+
+    /**
+     * @param array $error
+     * @return void
+     */
+    private function logFatalShutdownError(array $error)
+    {
+        list($error_constant) = $this->lookupSeverity($error['type'] ?? 0);
+
+        $this->logHiddenError(sprintf(
+            'Fatal shutdown error (%s): %s in %s on line %s',
+            $error_constant,
+            $error['message'] ?? 'Fatal error',
+            $error['file'] ?? 'unknown',
+            $error['line'] ?? 'unknown'
+        ));
     }
 }
 // END Exceptions Class

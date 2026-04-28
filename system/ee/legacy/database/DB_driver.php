@@ -876,24 +876,39 @@ class CI_DB_driver
 
         $error_handler = load_class('Exceptions', 'core');
 
-        if (! $error_handler->shouldShowDetailedWebErrors()) {
-            $error_handler->showPublicError(500);
-        }
-
         // Find the most likely culprit of the error by going through
         // the backtrace until the source file is no longer in the
         // database folder.
 
         $trace = debug_backtrace();
+        $source = null;
 
         foreach ($trace as $call) {
             if (isset($call['file']) && strpos($call['file'], APPPATH . 'database') === false) {
-                // Found it - use a relative path for safety
-                $message[] = '<b>File location</b>: ' . str_replace(array(BASEPATH, APPPATH), '', $call['file']);
-                $message[] = '<b>Line number</b>: ' . $call['line'];
+                $source = [
+                    'file' => $call['file'],
+                    'line' => $call['line'],
+                ];
 
                 break;
             }
+        }
+
+        if (! $error_handler->shouldShowDetailedWebErrors()) {
+            $log_message = $heading . ': ' . (is_array($message) ? implode(' ', $message) : $message);
+
+            if ($source !== null) {
+                $log_message .= ' in ' . $source['file'] . ' on line ' . $source['line'];
+            }
+
+            $error_handler->logHiddenError(strip_tags($log_message));
+            $error_handler->showPublicError(500);
+        }
+
+        if ($source !== null) {
+            // Found it - use a relative path for safety
+            $message[] = '<b>File location</b>: ' . str_replace(array(BASEPATH, APPPATH), '', $source['file']);
+            $message[] = '<b>Line number</b>: ' . $source['line'];
         }
 
         // Optional exception handling for DB errors
