@@ -13,7 +13,9 @@
 			<div class="err-wrap error">
 				<h1><?=$error_type?> Caught</h1>
 				<h2><?php echo $message ?></h2>
-				<p><?php echo $location ?></p>
+				<?php if ($location !== ''): ?>
+					<p><?php echo $location ?></p>
+				<?php endif ?>
 
 				<?php if ($debug): ?>
 					<h3>Stack Trace: <i>Please include when reporting this error</i></h3>

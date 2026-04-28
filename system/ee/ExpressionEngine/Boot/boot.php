@@ -87,6 +87,8 @@
         register_shutdown_function('cliShutdownHandler');
     } else {
         set_error_handler('_exception_handler');
+        ob_start();
+        register_shutdown_function('webShutdownHandler');
     }
 
 /*

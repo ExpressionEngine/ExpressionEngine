@@ -874,6 +874,12 @@ class CI_DB_driver
             $message = (! is_array($error)) ? array(str_replace('%s', $swap, $LANG->line($error))) : $error;
         }
 
+        $error_handler = load_class('Exceptions', 'core');
+
+        if (! $error_handler->shouldShowDetailedWebErrors()) {
+            $error_handler->showPublicError(500);
+        }
+
         // Find the most likely culprit of the error by going through
         // the backtrace until the source file is no longer in the
         // database folder.
@@ -899,8 +905,7 @@ class CI_DB_driver
             throw new Exception(implode('<br>', $message));
         }
 
-        $error = load_class('Exceptions', 'core');
-        echo $error->show_error($heading, $message);
+        echo $error_handler->show_error($heading, $message);
         exit;
     }
 
