@@ -553,7 +553,7 @@ function webShutdownHandler()
     if (@is_array($error = @error_get_last())) {
         $_error = load_class('Exceptions', 'core');
 
-        return $_error->handleWebShutdownError($error);
+        return $_error->logWebShutdownError($error);
     }
 
     return true;

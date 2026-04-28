@@ -182,10 +182,17 @@ class EE_Exceptions
     public function logHiddenError($message)
     {
         try {
-            log_message('error', $message);
+            if (function_exists('load_class')) {
+                $_log = load_class('Log');
+
+                if ($_log->write_log('error', $message)) {
+                    return;
+                }
+            }
         } catch (\Throwable $e) {
-            @error_log($message);
         }
+
+        @error_log($message);
     }
 
     /**
@@ -417,39 +424,23 @@ class EE_Exceptions
     }
 
     /**
-     * Handle a fatal shutdown error for web requests.
+     * Log a fatal shutdown error for web requests.
+     *
+     * Browser output for PHP engine fatals is controlled by PHP/server
+     * display_errors configuration; this handler intentionally only logs.
      *
      * @param array $error
      * @return bool
      */
-    public function handleWebShutdownError($error)
+    public function logWebShutdownError($error)
     {
         if (! is_array($error) || ! $this->isFatalShutdownError($error['type'] ?? null)) {
             return false;
         }
 
-        // We are taking responsibility for rendering the fatal error now.
-        @ini_set('display_errors', 0);
+        $this->logFatalShutdownError($error);
 
-        if (! $this->shouldShowDetailedWebErrors()) {
-            $this->logFatalShutdownError($error);
-
-            while (ob_get_level() > 0) {
-                ob_end_clean();
-            }
-
-            $this->showPublicError(500);
-        }
-
-        $exception = new \ErrorException(
-            $error['message'] ?? 'Fatal error',
-            0,
-            $error['type'],
-            $error['file'] ?? __FILE__,
-            $error['line'] ?? __LINE__
-        );
-
-        $this->show_exception($exception, 500);
+        return true;
     }
 
     /**
