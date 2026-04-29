@@ -148,11 +148,17 @@ namespace {
         /** @var array<int, mixed> */
         public $calls = [];
 
+        /** @var array<int, mixed> */
+        public $parseFieldCalls = [];
+
         /** @var array<int, array<string, mixed>> */
         public $dragAndDropCalls = [];
 
         /** @var array<int, array<string, mixed>> */
         public $fieldCalls = [];
+
+        /** @var mixed */
+        public $parseFieldReturn;
 
         /** @var string */
         public $dragAndDropReturn = 'cp-display-field';
@@ -171,6 +177,19 @@ namespace {
             $this->calls[] = $data;
 
             return $this->fileModel;
+        }
+
+        /**
+         * Capture pre_process() parser calls and return the configured value.
+         *
+         * @param mixed $data
+         * @return mixed
+         */
+        public function parse_field($data)
+        {
+            $this->parseFieldCalls[] = $data;
+
+            return $this->parseFieldReturn;
         }
 
         /**
