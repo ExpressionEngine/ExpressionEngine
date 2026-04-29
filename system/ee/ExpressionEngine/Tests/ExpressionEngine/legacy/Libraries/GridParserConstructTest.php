@@ -692,6 +692,207 @@ class GridParserConstructTest extends TestCase
     }
 
     /**
+     * Ensure parse routes known field pairs through Grid replace_tag with row identity overrides.
+     *
+     * @return void
+     */
+    public function testParseRowReplacesKnownFieldPairUsingReplaceTagWithOriginalRowContext(): void
+    {
+        $gridModel = $this->makeParseGridModelMock(
+            [
+                'params' => $this->makeParseParams(),
+                5 => [
+                    10 => [
+                        'row_id' => 10,
+                        'orig_row_id' => 910,
+                        'fluid_field_data_id' => 77,
+                        'col_id_7' => 'title-value',
+                        'col_id_8' => 44,
+                    ],
+                ],
+            ],
+            [
+                7 => ['field_id' => 11, 'col_id' => 7, 'col_name' => 'title', 'col_type' => 'text'],
+                8 => ['field_id' => 11, 'col_id' => 8, 'col_name' => 'related_entry', 'col_type' => 'relationship'],
+            ]
+        );
+        $parser = $this->makeGridParserReplaceTagSpy(function ($call) {
+            if ($call['content'] !== false) {
+                return 'PAIR_REPLACED';
+            }
+
+            return 'SINGLE_REPLACED';
+        });
+        $relationshipsParser = $this->makeRelationshipsParserMock(function ($rowId, $gridRow) {
+            return $gridRow;
+        });
+
+        ee()->setMock('Variables/Parser', $this->makeGridVariablesParserMock());
+        ee()->setMock('grid_model', $gridModel);
+        ee()->setMock('load', $this->makeParseLoadMock());
+        ee()->setMock('TMPL', $this->makeParseTemplateMock());
+        ee()->setMock('functions', $this->makeParseFunctionsMock());
+        ee()->setMock(
+            'api_channel_fields',
+            $this->makeApiChannelFieldsMock([
+                'title' => [['title', 'PAIR_CONTENT', ['limit' => '2'], '{grid:gallery:title}PAIR_CONTENT{/grid:gallery:title}']],
+            ])
+        );
+        ee()->setMock('session', $this->makeSessionMockWithActiveChannel([8 => 8]));
+        ee()->setMock('relationships_parser', $relationshipsParser);
+
+        $parser->grid_field_names[11][0] = 'grid:gallery';
+
+        $result = $parser->parse(
+            ['entry_id' => 5],
+            11,
+            [],
+            '{grid:gallery:title}PAIR_CONTENT{/grid:gallery:title}'
+        );
+
+        $this->assertSame('PAIR_REPLACED', $result);
+        $this->assertCount(1, $parser->replaceTagCalls);
+        $this->assertSame(910, $parser->replaceTagCalls[0]['orig_row_id']);
+        $this->assertSame(77, $parser->replaceTagCalls[0]['fluid_field_data_id']);
+        $this->assertSame('title', $parser->replaceTagCalls[0]['column']['col_name']);
+        $this->assertSame('title', $parser->replaceTagCalls[0]['field']['modifier']);
+        $this->assertSame('PAIR_CONTENT', $parser->replaceTagCalls[0]['content']);
+    }
+
+    /**
+     * Ensure parse routes known single tags through Grid replace_tag with default row context fallback.
+     *
+     * @return void
+     */
+    public function testParseRowReplacesKnownSingleVariableUsingDefaultRowContext(): void
+    {
+        $gridModel = $this->makeParseGridModelMock(
+            [
+                'params' => $this->makeParseParams(),
+                5 => [
+                    10 => [
+                        'row_id' => 10,
+                        'col_id_7' => 'title-value',
+                    ],
+                ],
+            ],
+            [
+                7 => ['field_id' => 11, 'col_id' => 7, 'col_name' => 'title', 'col_type' => 'text'],
+            ]
+        );
+        $parser = $this->makeGridParserReplaceTagSpy(function ($call) {
+            return 'SINGLE_REPLACED';
+        });
+
+        ee()->setMock('Variables/Parser', $this->makeGridVariablesParserMock());
+        ee()->setMock('grid_model', $gridModel);
+        ee()->setMock('load', $this->makeParseLoadMock());
+        ee()->setMock('TMPL', $this->makeParseTemplateMock());
+        ee()->setMock('functions', $this->makeParseFunctionsMock());
+        ee()->setMock('api_channel_fields', $this->makeApiChannelFieldsMock());
+        ee()->setMock('session', $this->makeSessionMockWithActiveChannel());
+
+        $parser->grid_field_names[11][0] = 'grid:gallery';
+
+        $result = $parser->parse(['entry_id' => 5], 11, [], '{grid:gallery:title}');
+
+        $this->assertSame('SINGLE_REPLACED', $result);
+        $this->assertCount(1, $parser->replaceTagCalls);
+        $this->assertSame(10, $parser->replaceTagCalls[0]['orig_row_id']);
+        $this->assertSame(0, $parser->replaceTagCalls[0]['fluid_field_data_id']);
+        $this->assertFalse($parser->replaceTagCalls[0]['content']);
+    }
+
+    /**
+     * Ensure parse handles unknown pair columns, table value fallback, and parser modifiers.
+     *
+     * @return void
+     */
+    public function testParseRowHandlesUnknownPairsRowFallbackAndModifierFallback(): void
+    {
+        $gridModel = $this->makeParseGridModelMock(
+            [
+                'params' => $this->makeParseParams(),
+                5 => [
+                    44 => [
+                        'row_id' => 44,
+                        'caption' => 'hello world',
+                    ],
+                ],
+            ],
+            [
+                7 => ['field_id' => 11, 'col_id' => 7, 'col_name' => 'title', 'col_type' => 'text'],
+            ]
+        );
+
+        $variablesParser = $this->makeGridVariablesParserMock();
+
+        ee()->setMock('Variables/Parser', $variablesParser);
+        ee()->setMock('grid_model', $gridModel);
+        ee()->setMock('load', $this->makeParseLoadMock());
+        ee()->setMock('TMPL', $this->makeParseTemplateMock());
+        ee()->setMock('functions', $this->makeParseFunctionsMock());
+        ee()->setMock(
+            'api_channel_fields',
+            $this->makeApiChannelFieldsMock([
+                'missing' => [['missing', 'MISSING_PAIR', [], '{grid:gallery:missing}MISSING_PAIR{/grid:gallery:missing}']],
+            ])
+        );
+        ee()->setMock('session', $this->makeSessionMockWithActiveChannel());
+
+        $parser = new \Grid_parser();
+        $parser->grid_field_names[11][0] = 'grid:gallery';
+
+        $result = $parser->parse(
+            ['entry_id' => 5],
+            11,
+            [],
+            '{grid:gallery:missing}MISSING_PAIR{/grid:gallery:missing}|{grid:gallery:row_id}|{grid:gallery:caption:length}'
+        );
+
+        $this->assertSame('|44|{grid:gallery:caption:length}', $result);
+        $this->assertContains('caption:length', $variablesParser->parseCalls);
+        $this->assertSame(0, $variablesParser->lengthCalls);
+    }
+
+    /**
+     * Ensure parse leaves single variables untouched when a parser modifier function is unavailable.
+     *
+     * @return void
+     */
+    public function testParseRowLeavesSingleVariableWhenParserModifierMethodDoesNotExist(): void
+    {
+        $gridModel = $this->makeParseGridModelMock(
+            [
+                'params' => $this->makeParseParams(),
+                5 => [
+                    44 => [
+                        'row_id' => 44,
+                        'caption' => 'hello world',
+                    ],
+                ],
+            ],
+            [
+                7 => ['field_id' => 11, 'col_id' => 7, 'col_name' => 'title', 'col_type' => 'text'],
+            ]
+        );
+        ee()->setMock('Variables/Parser', $this->makeGridVariablesParserMock());
+        ee()->setMock('grid_model', $gridModel);
+        ee()->setMock('load', $this->makeParseLoadMock());
+        ee()->setMock('TMPL', $this->makeParseTemplateMock());
+        ee()->setMock('functions', $this->makeParseFunctionsMock());
+        ee()->setMock('api_channel_fields', $this->makeApiChannelFieldsMock());
+        ee()->setMock('session', $this->makeSessionMockWithActiveChannel());
+
+        $parser = new \Grid_parser();
+        $parser->grid_field_names[11][0] = 'grid:gallery';
+
+        $result = $parser->parse(['entry_id' => 5], 11, [], '{grid:gallery:caption:unknown}');
+
+        $this->assertSame('{grid:gallery:caption:unknown}', $result);
+    }
+
+    /**
      * Build a parser-like stub exposing Grid pre-parser methods.
      *
      * @param string $prefix Tag prefix expected by the parser.
@@ -1029,6 +1230,90 @@ class GridParserConstructTest extends TestCase
             public function parse($rowId, $gridRow, $channel)
             {
                 return call_user_func($this->parseCallback, $rowId, $gridRow, $channel);
+            }
+        };
+    }
+
+    /**
+     * Build a Variables/Parser mock that parses field modifiers and supports uppercase replacement.
+     *
+     * @return object
+     */
+    private function makeGridVariablesParserMock(): object
+    {
+        return new class {
+            public $parseCalls = [];
+            public $lengthCalls = 0;
+
+            public function parseVariableProperties($properties, $fieldName = null)
+            {
+                $properties = ltrim(trim((string) $properties), ':');
+                $this->parseCalls[] = $properties;
+                $token = trim((string) strtok($properties, ' '));
+
+                $field = $token;
+                $modifier = '';
+
+                if (strpos($token, ':') !== false) {
+                    list($field, $modifier) = explode(':', $token, 2);
+                }
+
+                return [
+                    'field_name' => $field,
+                    'modifier' => $modifier,
+                    'params' => [],
+                ];
+            }
+
+            public function replace_upper($value, $params)
+            {
+                return strtoupper((string) $value);
+            }
+
+            public function replace_length($value, $params)
+            {
+                $this->lengthCalls++;
+                return strlen((string) $value);
+            }
+        };
+    }
+
+    /**
+     * Build a Grid parser spy that captures _replace_tag calls and returns callback output.
+     *
+     * @param callable $callback Callback receiving call payload and returning replacement text.
+     * @return object
+     */
+    private function makeGridParserReplaceTagSpy(callable $callback): object
+    {
+        return new class($callback) extends \Grid_parser {
+            public $replaceTagCalls = [];
+            private $callback;
+
+            public function __construct(callable $callback)
+            {
+                parent::__construct();
+                $this->callback = $callback;
+            }
+
+            protected function _replace_tag($column, $field_id, $entry_id, $row_id, $field, $data, $content = false, $content_type = 'channel', $orig_row_id = null, $fluid_field_data_id = 0)
+            {
+                $call = [
+                    'column' => $column,
+                    'field_id' => $field_id,
+                    'entry_id' => $entry_id,
+                    'row_id' => $row_id,
+                    'field' => $field,
+                    'data' => $data,
+                    'content' => $content,
+                    'content_type' => $content_type,
+                    'orig_row_id' => $orig_row_id,
+                    'fluid_field_data_id' => $fluid_field_data_id,
+                ];
+
+                $this->replaceTagCalls[] = $call;
+
+                return call_user_func($this->callback, $call);
             }
         };
     }
