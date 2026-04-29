@@ -57,6 +57,33 @@ namespace {
 
     require_once dirname(__DIR__, 5) . '/Addons/file/ft.file.php';
 
+    if (!function_exists('get_bool_from_string')) {
+        /**
+         * Convert common yes/no strings into booleans for isolated fieldtype tests.
+         *
+         * @param mixed $value
+         * @return bool|null
+         */
+        function get_bool_from_string($value)
+        {
+            if (is_bool($value) || is_null($value)) {
+                return $value;
+            }
+
+            $normalized = strtolower((string) $value);
+
+            if (in_array($normalized, ['true', 'yes', 'y', 'on', '1'], true)) {
+                return true;
+            }
+
+            if (in_array($normalized, ['false', 'no', 'n', 'off', '0'], true)) {
+                return false;
+            }
+
+            return null;
+        }
+    }
+
     class FileFtLoadRecorder
     {
         /** @var array<int, string> */
@@ -579,6 +606,12 @@ namespace {
         /** @var string */
         public $parseVariablesReturn = 'parsed-template';
 
+        /** @var int */
+        public $noResultsCalls = 0;
+
+        /** @var string */
+        public $noResultsReturn = 'NO_RESULTS';
+
         /**
          * Return the configured template parameter value.
          *
@@ -616,6 +649,543 @@ namespace {
 
             return $this->parseVariablesReturn;
         }
+
+        /**
+         * Capture no-results fallbacks and return the configured payload.
+         *
+         * @return string
+         */
+        public function no_results()
+        {
+            $this->noResultsCalls++;
+
+            return $this->noResultsReturn;
+        }
+    }
+
+    class FileFtConfigStub
+    {
+        /** @var array<string, mixed> */
+        public $items = [
+            'image_resize_protocol' => 'gd2',
+            'image_library_path' => '/usr/local/lib',
+            'image_manipulation_quality' => null,
+            'debug' => 0,
+        ];
+
+        /**
+         * Return the configured config value for the requested key.
+         *
+         * @param string $key
+         * @return mixed
+         */
+        public function item($key)
+        {
+            if (array_key_exists($key, $this->items)) {
+                return $this->items[$key];
+            }
+
+            return null;
+        }
+    }
+
+    class FileFtPermissionStub
+    {
+        /** @var bool */
+        public $isSuperAdmin = false;
+
+        /**
+         * Return the configured super-admin flag.
+         *
+         * @return bool
+         */
+        public function isSuperAdmin()
+        {
+            return $this->isSuperAdmin;
+        }
+    }
+
+    class FileFtImageLibStub
+    {
+        /** @var array<int, string> */
+        public $explodeNameCalls = [];
+
+        /** @var int */
+        public $clearCalls = 0;
+
+        /** @var array<int, array<string, mixed>> */
+        public $initializeCalls = [];
+
+        /** @var array<int, array<int, mixed>> */
+        public $getImagePropertiesCalls = [];
+
+        /** @var array<int, string> */
+        public $actionCalls = [];
+
+        /** @var array<string, bool> */
+        public $actionResults = [
+            'resize' => true,
+            'crop' => true,
+            'rotate' => true,
+            'webp' => true,
+            'avif' => true,
+        ];
+
+        /** @var array<string, array<string, int>> */
+        public $imagePropertiesByPath = [];
+
+        /** @var string */
+        public $displayErrorsReturn = 'display-errors';
+
+        /** @var string */
+        public $width = 'sentinel-width';
+
+        /** @var string */
+        public $height = 'sentinel-height';
+
+        /**
+         * Return split filename parts that mirror Image_lib::explode_name().
+         *
+         * @param string $sourceImage
+         * @return array<string, string>
+         */
+        public function explode_name($sourceImage)
+        {
+            $this->explodeNameCalls[] = $sourceImage;
+            $ext = strrchr($sourceImage, '.');
+            $name = ($ext === false) ? $sourceImage : substr($sourceImage, 0, -strlen($ext));
+
+            return ['ext' => $ext, 'name' => $name];
+        }
+
+        /**
+         * Record that the image library state was cleared.
+         *
+         * @return void
+         */
+        public function clear()
+        {
+            $this->clearCalls++;
+        }
+
+        /**
+         * Record the config used to initialize the image library.
+         *
+         * @param array<string, mixed> $config
+         * @return void
+         */
+        public function initialize($config)
+        {
+            $this->initializeCalls[] = $config;
+        }
+
+        /**
+         * Return the configured image properties for the requested path.
+         *
+         * @param string $path
+         * @param bool $cached
+         * @return array<string, int>
+         */
+        public function get_image_properties($path, $cached)
+        {
+            $this->getImagePropertiesCalls[] = [$path, $cached];
+
+            if (isset($this->imagePropertiesByPath[$path])) {
+                return $this->imagePropertiesByPath[$path];
+            }
+
+            return ['width' => 200, 'height' => 100];
+        }
+
+        /**
+         * Return the configured image-library error payload.
+         *
+         * @return string
+         */
+        public function display_errors()
+        {
+            return $this->displayErrorsReturn;
+        }
+
+        /**
+         * Handle resize/crop/rotate/webp/avif calls through one stubbed gateway.
+         *
+         * @param string $name
+         * @param array<int, mixed> $arguments
+         * @return bool
+         */
+        public function __call($name, $arguments)
+        {
+            $this->actionCalls[] = $name;
+
+            if (array_key_exists($name, $this->actionResults)) {
+                return $this->actionResults[$name];
+            }
+
+            throw new \BadMethodCallException('Unsupported image action: ' . $name);
+        }
+    }
+
+    class FileFtProcessImageFilesystemStub
+    {
+        /** @var array<string, bool> */
+        public $directories = [];
+
+        /** @var array<string, bool> */
+        public $writableDirectories = [];
+
+        /** @var array<string, bool> */
+        public $existingPaths = [];
+
+        /** @var array<string, string> */
+        public $copyToTempFileExceptions = [];
+
+        /** @var array<string, string> */
+        public $copyToTempFileContents = [];
+
+        /** @var array<int, string> */
+        public $isDirCalls = [];
+
+        /** @var array<int, string> */
+        public $mkdirCalls = [];
+
+        /** @var array<int, string> */
+        public $addIndexHtmlCalls = [];
+
+        /** @var array<int, string> */
+        public $isWritableCalls = [];
+
+        /** @var array<int, string> */
+        public $existsCalls = [];
+
+        /** @var array<int, string> */
+        public $copyToTempFileCalls = [];
+
+        /** @var int */
+        public $createTempFileCalls = 0;
+
+        /** @var array<int, array<string, mixed>> */
+        public $writeStreamCalls = [];
+
+        /** @var array<int, string> */
+        public $ensureCorrectAccessModeCalls = [];
+
+        /** @var array<int, string> */
+        private $temporaryPaths = [];
+
+        /**
+         * Return whether the target path is a known directory.
+         *
+         * @param string $path
+         * @return bool
+         */
+        public function isDir($path)
+        {
+            $this->isDirCalls[] = $path;
+
+            return $this->directories[$path] ?? false;
+        }
+
+        /**
+         * Record directory creation and mark the path as available.
+         *
+         * @param string $path
+         * @return void
+         */
+        public function mkdir($path)
+        {
+            $this->mkdirCalls[] = $path;
+            $this->directories[$path] = true;
+        }
+
+        /**
+         * Record index-file creation for the requested directory.
+         *
+         * @param string $path
+         * @return void
+         */
+        public function addIndexHtml($path)
+        {
+            $this->addIndexHtmlCalls[] = $path;
+        }
+
+        /**
+         * Return whether the requested directory is writable.
+         *
+         * @param string $path
+         * @return bool
+         */
+        public function isWritable($path)
+        {
+            $this->isWritableCalls[] = $path;
+
+            if (array_key_exists($path, $this->writableDirectories)) {
+                return $this->writableDirectories[$path];
+            }
+
+            return true;
+        }
+
+        /**
+         * Return whether the requested destination already exists.
+         *
+         * @param string $path
+         * @return bool
+         */
+        public function exists($path)
+        {
+            $this->existsCalls[] = $path;
+
+            return $this->existingPaths[$path] ?? false;
+        }
+
+        /**
+         * Return a local temp-file copy or throw the configured exception.
+         *
+         * @param string $path
+         * @return array<string, mixed>
+         * @throws \ExpressionEngine\Library\Filesystem\FilesystemException
+         */
+        public function copyToTempFile($path)
+        {
+            $this->copyToTempFileCalls[] = $path;
+
+            if (array_key_exists($path, $this->copyToTempFileExceptions)) {
+                throw new \ExpressionEngine\Library\Filesystem\FilesystemException(
+                    $this->copyToTempFileExceptions[$path]
+                );
+            }
+
+            $contents = $this->copyToTempFileContents[$path] ?? 'temp-image-data';
+
+            return $this->makeTempFile($contents);
+        }
+
+        /**
+         * Create a writable temp file for the transformed image.
+         *
+         * @return array<string, mixed>
+         */
+        public function createTempFile()
+        {
+            $this->createTempFileCalls++;
+
+            return $this->makeTempFile('generated-image-data');
+        }
+
+        /**
+         * Record transformed-file writes and mark the destination as existing.
+         *
+         * @param string $path
+         * @param resource $stream
+         * @return void
+         */
+        public function writeStream($path, $stream)
+        {
+            $metadata = stream_get_meta_data($stream);
+            $this->writeStreamCalls[] = [
+                'path' => $path,
+                'stream_uri' => $metadata['uri'] ?? null,
+            ];
+            $this->existingPaths[$path] = true;
+        }
+
+        /**
+         * Record access-mode normalization requests.
+         *
+         * @param string $path
+         * @return void
+         */
+        public function ensureCorrectAccessMode($path)
+        {
+            $this->ensureCorrectAccessModeCalls[] = $path;
+        }
+
+        /**
+         * Clean up any temporary files created for the test.
+         *
+         * @return void
+         */
+        public function __destruct()
+        {
+            foreach ($this->temporaryPaths as $path) {
+                if (is_file($path)) {
+                    @unlink($path);
+                }
+            }
+        }
+
+        /**
+         * Create and open a temporary file seeded with the provided contents.
+         *
+         * @param string $contents
+         * @return array<string, mixed>
+         */
+        private function makeTempFile($contents)
+        {
+            $path = tempnam(sys_get_temp_dir(), 'file-ft-');
+            file_put_contents($path, $contents);
+            $file = fopen($path, 'r+');
+            $this->temporaryPaths[] = $path;
+
+            return [
+                'path' => $path,
+                'file' => $file,
+            ];
+        }
+    }
+
+    class FileFtProcessImageUploadDestinationStub
+    {
+        /** @var mixed */
+        private $filesystem;
+
+        /**
+         * Seed the filesystem returned by the upload destination.
+         *
+         * @param mixed $filesystem
+         * @return void
+         */
+        public function __construct($filesystem)
+        {
+            $this->filesystem = $filesystem;
+        }
+
+        /**
+         * Return the configured filesystem object.
+         *
+         * @return mixed
+         */
+        public function getFilesystem()
+        {
+            return $this->filesystem;
+        }
+    }
+
+    class FileFtProcessImageModelObjectStub
+    {
+        /** @var string */
+        public $file_name;
+
+        /** @var FileFtProcessImageUploadDestinationStub */
+        public $UploadDestination;
+
+        /** @var bool */
+        private $isImage;
+
+        /** @var bool */
+        private $isEditableImage;
+
+        /** @var string */
+        private $absolutePath;
+
+        /** @var string */
+        private $baseServerPath;
+
+        /** @var string */
+        private $subfoldersPath;
+
+        /** @var string */
+        private $absoluteUrl;
+
+        /** @var string */
+        private $manipulationBaseUrl;
+
+        /** @var array<int, string> */
+        public $manipulationUrlCalls = [];
+
+        /**
+         * Seed the file model consumed by editable-image processing tests.
+         *
+         * @param array<string, mixed> $attributes
+         * @return void
+         */
+        public function __construct(array $attributes = [])
+        {
+            $this->file_name = $attributes['file_name'] ?? 'hero.jpg';
+            $filesystem = $attributes['filesystem'] ?? new FileFtProcessImageFilesystemStub();
+            $this->UploadDestination = new FileFtProcessImageUploadDestinationStub($filesystem);
+            $this->isImage = $attributes['isImage'] ?? true;
+            $this->isEditableImage = $attributes['isEditableImage'] ?? true;
+            $this->absolutePath = $attributes['absolutePath'] ?? '/srv/uploads/gallery/hero.jpg';
+            $this->baseServerPath = $attributes['baseServerPath'] ?? '/srv/uploads';
+            $this->subfoldersPath = $attributes['subfoldersPath'] ?? '/gallery';
+            $this->absoluteUrl = $attributes['absoluteUrl'] ?? 'https://example.com/uploads/gallery/hero.jpg';
+            $this->manipulationBaseUrl = $attributes['manipulationBaseUrl'] ?? 'https://example.com/uploads/gallery';
+        }
+
+        /**
+         * Return whether the model should be treated as an image.
+         *
+         * @return bool
+         */
+        public function isImage()
+        {
+            return $this->isImage;
+        }
+
+        /**
+         * Return whether the image is editable by the manipulation pipeline.
+         *
+         * @return bool
+         */
+        public function isEditableImage()
+        {
+            return $this->isEditableImage;
+        }
+
+        /**
+         * Return the absolute file path used as the source image.
+         *
+         * @return string
+         */
+        public function getAbsolutePath()
+        {
+            return $this->absolutePath;
+        }
+
+        /**
+         * Return the filesystem root for generated manipulation directories.
+         *
+         * @return string
+         */
+        public function getBaseServerPath()
+        {
+            return $this->baseServerPath;
+        }
+
+        /**
+         * Return the model subfolder suffix for generated manipulations.
+         *
+         * @return string
+         */
+        public function getSubfoldersPath()
+        {
+            return $this->subfoldersPath;
+        }
+
+        /**
+         * Return the original file URL when transformation setup fails.
+         *
+         * @return string
+         */
+        public function getAbsoluteURL()
+        {
+            return $this->absoluteUrl;
+        }
+
+        /**
+         * Return the generated manipulation URL for the current file_name.
+         *
+         * @param string $function
+         * @return string
+         */
+        public function getAbsoluteManipulationURL($function)
+        {
+            $this->manipulationUrlCalls[] = $function;
+
+            return rtrim($this->manipulationBaseUrl, '/') . '/_' . $function . '/' . $this->file_name;
+        }
     }
 
     abstract class FileFtTestBase extends TestCase
@@ -644,6 +1214,15 @@ namespace {
         /** @var FileFtTemplateStub */
         protected $templateMock;
 
+        /** @var FileFtConfigStub */
+        protected $configMock;
+
+        /** @var FileFtPermissionStub */
+        protected $permissionMock;
+
+        /** @var FileFtImageLibStub */
+        protected $imageLibMock;
+
         /**
          * Reset the EE mock container and seed the shared File_ft doubles.
          *
@@ -664,6 +1243,9 @@ namespace {
             $this->cpMock = new FileFtCpStub();
             $this->cpUrlFactory = new FileFtCpUrlFactoryStub();
             $this->templateMock = new FileFtTemplateStub();
+            $this->configMock = new FileFtConfigStub();
+            $this->permissionMock = new FileFtPermissionStub();
+            $this->imageLibMock = new FileFtImageLibStub();
 
             ee()->setMock('load', $this->loadRecorder);
             ee()->setMock('session', $this->sessionMock);
@@ -673,6 +1255,9 @@ namespace {
             ee()->setMock('cp', $this->cpMock);
             ee()->setMock('CP/URL', $this->cpUrlFactory);
             ee()->setMock('TMPL', $this->templateMock);
+            ee()->setMock('config', $this->configMock);
+            ee()->setMock('Permission', $this->permissionMock);
+            ee()->setMock('image_lib', $this->imageLibMock);
         }
 
         /**
@@ -752,6 +1337,40 @@ namespace {
         protected function setMemberModel($memberId, $member)
         {
             $this->modelService->setFirstResult('Member', $memberId, $member);
+        }
+
+        /**
+         * Override one or more config values used by image-processing tests.
+         *
+         * @param array<string, mixed> $items
+         * @return void
+         */
+        protected function setConfigItems(array $items)
+        {
+            $this->configMock->items = array_merge($this->configMock->items, $items);
+        }
+
+        /**
+         * Swap in a custom image-lib double for the current test.
+         *
+         * @param FileFtImageLibStub $imageLib
+         * @return void
+         */
+        protected function setImageLib(FileFtImageLibStub $imageLib)
+        {
+            $this->imageLibMock = $imageLib;
+            ee()->setMock('image_lib', $imageLib);
+        }
+
+        /**
+         * Configure the permission service used by debug-image failure paths.
+         *
+         * @param bool $isSuperAdmin
+         * @return void
+         */
+        protected function setPermissionIsSuperAdmin($isSuperAdmin)
+        {
+            $this->permissionMock->isSuperAdmin = $isSuperAdmin;
         }
 
         /**

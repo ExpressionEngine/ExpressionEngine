@@ -353,4 +353,55 @@ class FileFtReplaceCropTest extends FileFtTestBase
         $this->assertSame([], $fieldtype->replaceTagCatchallCalls);
         $this->assertSame([], $fieldtype->replaceTagCalls);
     }
+
+    /**
+     * Assert crop processing centers the requested box and parses tag-pair variables.
+     *
+     * @return void
+     */
+    public function testReplaceCropCentersPositionedSelectionsAndParsesTagPairs()
+    {
+        $fieldtype = $this->makeFieldtype();
+        $filesystem = new FileFtProcessImageFilesystemStub();
+        $modelObject = new FileFtProcessImageModelObjectStub([
+            'filesystem' => $filesystem,
+        ]);
+        $params = [
+            'position' => 'center',
+            'width' => '50',
+            'height' => '20',
+            'x' => '5',
+            'y' => '7',
+        ];
+        $hash = md5(serialize($params));
+        $destinationPath = '/srv/uploads/gallery/_crop/hero_crop_' . $hash . '.jpg';
+        $destinationUrl = 'https://example.com/uploads/gallery/_crop/hero_crop_' . $hash . '.jpg';
+        $data = [
+            'model_object' => $modelObject,
+            'fs_filename' => 'hero.jpg',
+            'filesystem' => $filesystem,
+            'source_image' => '/srv/uploads/gallery/hero.jpg',
+        ];
+        $this->templateMock->parseVariablesReturn = 'cropped-template';
+
+        $result = $fieldtype->replace_crop($data, $params, '{file}{url}:{width}x{height}{/file}');
+
+        $this->assertSame('cropped-template', $result);
+        $this->assertSame(['/srv/uploads/gallery/_crop' . DIRECTORY_SEPARATOR], $filesystem->mkdirCalls);
+        $this->assertSame(['/srv/uploads/gallery/_crop' . DIRECTORY_SEPARATOR], $filesystem->addIndexHtmlCalls);
+        $this->assertCount(1, $this->imageLibMock->initializeCalls);
+        $this->assertSame(80, $this->imageLibMock->initializeCalls[0]['x_axis']);
+        $this->assertSame(47, $this->imageLibMock->initializeCalls[0]['y_axis']);
+        $this->assertSame([
+            [
+                'tagdata' => '{file}{url}:{width}x{height}{/file}',
+                'variables' => [[
+                    'url' => $destinationUrl,
+                    'width' => 200,
+                    'height' => 100,
+                ]],
+            ],
+        ], $this->templateMock->parseVariablesCalls);
+        $this->assertSame($destinationPath, $filesystem->writeStreamCalls[0]['path']);
+    }
 }

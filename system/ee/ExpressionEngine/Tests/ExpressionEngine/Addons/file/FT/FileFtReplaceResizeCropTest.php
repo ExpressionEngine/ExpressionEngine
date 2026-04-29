@@ -390,4 +390,56 @@ class FileFtReplaceResizeCropTest extends FileFtTestBase
         ], $fieldtype->replaceTagCalls[1]['params']);
         $this->assertSame('{tagdata}', $fieldtype->replaceTagCalls[1]['tagdata']);
     }
+
+    /**
+     * Assert the real resize-crop pipeline feeds the resized path into crop and returns the crop URL.
+     *
+     * @return void
+     */
+    public function testReplaceResizeCropUsesResizePathForTheRealCropStage()
+    {
+        $fieldtype = $this->makeFieldtype();
+        $filesystem = new FileFtProcessImageFilesystemStub();
+        $modelObject = new FileFtProcessImageModelObjectStub([
+            'filesystem' => $filesystem,
+        ]);
+        $params = [
+            'resize:width' => '320',
+            'crop:width' => '150',
+            'crop:height' => '60',
+        ];
+        $resizeParams = [
+            'resize:width' => '320',
+            'crop:width' => '150',
+            'crop:height' => '60',
+            'function' => 'resize_crop',
+            'width' => '320',
+        ];
+        $cropParams = [
+            'resize:width' => '320',
+            'crop:width' => '150',
+            'crop:height' => '60',
+            'function' => 'resize_crop',
+            'width' => '150',
+            'height' => '60',
+        ];
+        $resizePath = '/srv/uploads/gallery/_resize/hero_resize_' . md5(serialize($resizeParams)) . '.jpg';
+        $cropUrl = 'https://example.com/uploads/gallery/_crop/hero_crop_' . md5(serialize($cropParams)) . '.jpg';
+        $data = [
+            'model_object' => $modelObject,
+            'fs_filename' => 'hero.jpg',
+            'filesystem' => $filesystem,
+            'source_image' => '/srv/uploads/gallery/hero.jpg',
+        ];
+
+        $result = $fieldtype->replace_resize_crop($data, $params, false);
+
+        $this->assertSame($cropUrl, $result);
+        $this->assertSame([
+            '/srv/uploads/gallery/hero.jpg',
+            $resizePath,
+        ], $filesystem->copyToTempFileCalls);
+        $this->assertCount(2, $filesystem->writeStreamCalls);
+        $this->assertSame(['resize', 'crop'], $this->imageLibMock->actionCalls);
+    }
 }

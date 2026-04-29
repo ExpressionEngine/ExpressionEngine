@@ -353,4 +353,260 @@ class FileFtReplaceResizeTest extends FileFtTestBase
         $this->assertSame([], $fieldtype->replaceTagCatchallCalls);
         $this->assertSame([], $fieldtype->replaceTagCalls);
     }
+
+    /**
+     * Assert the private process_image() guard rejects unsupported functions.
+     *
+     * @return void
+     */
+    public function testProcessImageReturnsFalseForUnsupportedFunction()
+    {
+        $fieldtype = $this->makeFieldtype();
+        $method = new ReflectionMethod(File_ft::class, 'process_image');
+        TestReflectionHelper::makeAccessible($method);
+
+        $this->assertFalse($method->invoke($fieldtype, 'sharpen', [], [], false, false));
+    }
+
+    /**
+     * Assert editable-image processing stops when the manipulation directory is not writable.
+     *
+     * @return void
+     */
+    public function testReplaceResizeReturnsFalseWhenManipulationDirectoryIsNotWritable()
+    {
+        $fieldtype = $this->makeFieldtype();
+        $filesystem = new FileFtProcessImageFilesystemStub();
+        $modelObject = new FileFtProcessImageModelObjectStub([
+            'filesystem' => $filesystem,
+        ]);
+        $data = [
+            'model_object' => $modelObject,
+            'fs_filename' => 'hero.jpg',
+            'filesystem' => $filesystem,
+            'source_image' => '/srv/uploads/gallery/hero.jpg',
+        ];
+        $directory = '/srv/uploads/gallery/_resize' . DIRECTORY_SEPARATOR;
+        $filesystem->directories[$directory] = true;
+        $filesystem->writableDirectories[$directory] = false;
+
+        $result = $fieldtype->replace_resize($data, ['width' => '320'], false);
+
+        $this->assertFalse($result);
+        $this->assertSame([$directory], $filesystem->isWritableCalls);
+        $this->assertSame([], $filesystem->copyToTempFileCalls);
+        $this->assertSame([], $this->imageLibMock->initializeCalls);
+    }
+
+    /**
+     * Assert missing source files fall back to the original absolute URL instead of erroring.
+     *
+     * @return void
+     */
+    public function testReplaceResizeReturnsOriginalUrlWhenSourceCopyFails()
+    {
+        $fieldtype = $this->makeFieldtype();
+        $filesystem = new FileFtProcessImageFilesystemStub();
+        $sourceImage = '/srv/uploads/gallery/hero.jpg';
+        $filesystem->copyToTempFileExceptions[$sourceImage] = 'missing source image';
+        $modelObject = new FileFtProcessImageModelObjectStub([
+            'filesystem' => $filesystem,
+            'absoluteUrl' => 'https://example.com/uploads/gallery/hero.jpg',
+        ]);
+        $data = [
+            'model_object' => $modelObject,
+            'fs_filename' => 'hero.jpg',
+            'filesystem' => $filesystem,
+            'source_image' => $sourceImage,
+        ];
+
+        $result = $fieldtype->replace_resize($data, ['width' => '320'], false);
+
+        $this->assertSame('https://example.com/uploads/gallery/hero.jpg', $result);
+        $this->assertSame([$sourceImage], $filesystem->copyToTempFileCalls);
+        $this->assertSame([], $filesystem->writeStreamCalls);
+    }
+
+    /**
+     * Assert resize failures surface image-lib errors for debug mode and honor config defaults.
+     *
+     * @return void
+     */
+    public function testReplaceResizeReturnsDisplayErrorsForDebugFailures()
+    {
+        $fieldtype = $this->makeFieldtype();
+        $filesystem = new FileFtProcessImageFilesystemStub();
+        $modelObject = new FileFtProcessImageModelObjectStub([
+            'filesystem' => $filesystem,
+        ]);
+        $data = [
+            'model_object' => $modelObject,
+            'fs_filename' => 'hero.jpg',
+            'filesystem' => $filesystem,
+            'source_image' => '/srv/uploads/gallery/hero.jpg',
+        ];
+        $imageLib = new FileFtImageLibStub();
+        $imageLib->actionResults['resize'] = false;
+        $imageLib->displayErrorsReturn = 'resize failed';
+        $this->setImageLib($imageLib);
+        $this->setConfigItems([
+            'image_resize_protocol' => 'imagick',
+            'image_library_path' => '/opt/homebrew/lib',
+            'image_manipulation_quality' => 92,
+            'debug' => 2,
+        ]);
+
+        $result = $fieldtype->replace_resize($data, [
+            'width' => '320',
+            'maintain_ratio' => 'n',
+        ], false);
+
+        $this->assertSame('resize failed', $result);
+        $this->assertCount(1, $imageLib->initializeCalls);
+        $this->assertFalse($imageLib->initializeCalls[0]['maintain_ratio']);
+        $this->assertSame('width', $imageLib->initializeCalls[0]['master_dim']);
+        $this->assertSame(92, $imageLib->initializeCalls[0]['quality']);
+        $this->assertSame(320, $imageLib->initializeCalls[0]['width']);
+        $this->assertSame(100, $imageLib->initializeCalls[0]['height']);
+        $this->assertSame('imagick', $imageLib->initializeCalls[0]['image_library']);
+        $this->assertSame('/opt/homebrew/lib', $imageLib->initializeCalls[0]['library_path']);
+        $this->assertSame([], $filesystem->writeStreamCalls);
+    }
+
+    /**
+     * Assert resize failures return no_results() outside the debug-superadmin path.
+     *
+     * @return void
+     */
+    public function testReplaceResizeReturnsNoResultsWhenFailuresAreNotDebugVisible()
+    {
+        $fieldtype = $this->makeFieldtype();
+        $filesystem = new FileFtProcessImageFilesystemStub();
+        $modelObject = new FileFtProcessImageModelObjectStub([
+            'filesystem' => $filesystem,
+        ]);
+        $data = [
+            'model_object' => $modelObject,
+            'fs_filename' => 'hero.jpg',
+            'filesystem' => $filesystem,
+            'source_image' => '/srv/uploads/gallery/hero.jpg',
+        ];
+        $imageLib = new FileFtImageLibStub();
+        $imageLib->actionResults['resize'] = false;
+        $this->setImageLib($imageLib);
+        $this->setConfigItems([
+            'image_manipulation_quality' => 120,
+            'debug' => 1,
+        ]);
+        $this->setPermissionIsSuperAdmin(false);
+
+        $result = $fieldtype->replace_resize($data, ['maintain_ratio' => 'y'], false);
+
+        $this->assertSame('NO_RESULTS', $result);
+        $this->assertSame(75, $imageLib->initializeCalls[0]['quality']);
+        $this->assertTrue($imageLib->initializeCalls[0]['maintain_ratio']);
+        $this->assertSame('', $imageLib->width);
+        $this->assertSame('', $imageLib->height);
+        $this->assertSame([], $filesystem->writeStreamCalls);
+    }
+
+    /**
+     * Assert cached manipulations reuse the existing file and return chainable metadata.
+     *
+     * @return void
+     */
+    public function testReplaceResizeReturnsExistingManipulationDataForModifierChaining()
+    {
+        $fieldtype = $this->makeFieldtype();
+        $filesystem = new FileFtProcessImageFilesystemStub();
+        $modelObject = new FileFtProcessImageModelObjectStub([
+            'filesystem' => $filesystem,
+        ]);
+        $params = ['height' => '240'];
+        $hash = md5(serialize($params));
+        $destinationPath = '/srv/uploads/gallery/_resize/hero_resize_' . $hash . '.jpg';
+        $destinationUrl = 'https://example.com/uploads/gallery/_resize/hero_resize_' . $hash . '.jpg';
+        $filesystem->directories['/srv/uploads/gallery/_resize' . DIRECTORY_SEPARATOR] = true;
+        $filesystem->existingPaths[$destinationPath] = true;
+        $data = [
+            'model_object' => $modelObject,
+            'fs_filename' => 'hero.jpg',
+            'filesystem' => $filesystem,
+            'source_image' => '/srv/uploads/gallery/hero.jpg',
+        ];
+
+        $result = $fieldtype->replace_resize($data, $params, null);
+
+        $this->assertSame($destinationPath, $result['source_image']);
+        $this->assertSame($destinationUrl, $result['url']);
+        $this->assertSame(200, $result['width']);
+        $this->assertSame(100, $result['height']);
+        $this->assertSame([$destinationPath], $filesystem->copyToTempFileCalls);
+        $this->assertSame([], $filesystem->writeStreamCalls);
+        $this->assertSame([], $this->imageLibMock->initializeCalls);
+    }
+
+    /**
+     * Assert height-only resize requests infer the missing width and switch master_dim to height.
+     *
+     * @return void
+     */
+    public function testReplaceResizeInfersWidthWhenOnlyHeightIsProvided()
+    {
+        $fieldtype = $this->makeFieldtype();
+        $filesystem = new FileFtProcessImageFilesystemStub();
+        $modelObject = new FileFtProcessImageModelObjectStub([
+            'filesystem' => $filesystem,
+        ]);
+        $data = [
+            'model_object' => $modelObject,
+            'fs_filename' => 'hero.jpg',
+            'filesystem' => $filesystem,
+            'source_image' => '/srv/uploads/gallery/hero.jpg',
+        ];
+
+        $result = $fieldtype->replace_resize($data, ['height' => '240'], false);
+
+        $this->assertStringContainsString('/_resize/hero_resize_', $result);
+        $this->assertSame('height', $this->imageLibMock->initializeCalls[0]['master_dim']);
+        $this->assertSame(100, $this->imageLibMock->initializeCalls[0]['width']);
+        $this->assertSame(240, $this->imageLibMock->initializeCalls[0]['height']);
+    }
+
+    /**
+     * Assert successful manipulations can wrap the generated URL as image markup.
+     *
+     * @return void
+     */
+    public function testReplaceResizeWrapsGeneratedUrlsWhenRequested()
+    {
+        $fieldtype = $this->makeFieldtype();
+        $filesystem = new FileFtProcessImageFilesystemStub();
+        $modelObject = new FileFtProcessImageModelObjectStub([
+            'filesystem' => $filesystem,
+        ]);
+        $params = [
+            'width' => '320',
+            'wrap' => 'image',
+        ];
+        $hash = md5(serialize($params));
+        $destinationUrl = 'https://example.com/uploads/gallery/_resize/hero_resize_' . $hash . '.jpg';
+        $data = [
+            'model_object' => $modelObject,
+            'fs_filename' => 'hero.jpg',
+            'filesystem' => $filesystem,
+            'source_image' => '/srv/uploads/gallery/hero.jpg',
+            'filename' => 'Hero Banner',
+            'image_pre_format' => '<figure>',
+            'image_post_format' => '</figure>',
+            'image_properties' => 'class="hero"',
+        ];
+
+        $result = $fieldtype->replace_resize($data, $params, false);
+
+        $this->assertSame(
+            '<figure><img src="' . $destinationUrl . '" class="hero" alt="Hero Banner" /></figure>',
+            $result
+        );
+    }
 }

@@ -275,4 +275,36 @@ class FileFtReplaceWebpTest extends FileFtTestBase
         ], $result);
         $this->assertSame([], $fieldtype->replaceTagCalls);
     }
+
+    /**
+     * Assert successful webp conversions rewrite the filename extension and return the generated URL.
+     *
+     * @return void
+     */
+    public function testReplaceWebpReturnsGeneratedUrlForEditableImages()
+    {
+        $fieldtype = $this->makeFieldtype();
+        $filesystem = new FileFtProcessImageFilesystemStub();
+        $modelObject = new FileFtProcessImageModelObjectStub([
+            'filesystem' => $filesystem,
+        ]);
+        $params = ['quality' => '60'];
+        $hash = md5(serialize($params));
+        $destinationPath = '/srv/uploads/gallery/_webp/hero_.jpg_webp_' . $hash . '.webp';
+        $destinationUrl = 'https://example.com/uploads/gallery/_webp/hero_.jpg_webp_' . $hash . '.webp';
+        $data = [
+            'model_object' => $modelObject,
+            'fs_filename' => 'hero.jpg',
+            'filesystem' => $filesystem,
+            'source_image' => '/srv/uploads/gallery/hero.jpg',
+        ];
+
+        $result = $fieldtype->replace_webp($data, $params, false);
+
+        $this->assertSame($destinationUrl, $result);
+        $this->assertSame(['webp'], $modelObject->manipulationUrlCalls);
+        $this->assertSame($destinationPath, $filesystem->writeStreamCalls[0]['path']);
+        $this->assertSame('hero.jpg', $modelObject->file_name);
+        $this->assertSame(60, $this->imageLibMock->initializeCalls[0]['quality']);
+    }
 }
