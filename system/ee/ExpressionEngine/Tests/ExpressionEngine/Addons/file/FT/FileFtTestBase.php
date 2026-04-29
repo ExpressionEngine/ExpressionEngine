@@ -148,6 +148,18 @@ namespace {
         /** @var array<int, mixed> */
         public $calls = [];
 
+        /** @var array<int, array<string, mixed>> */
+        public $dragAndDropCalls = [];
+
+        /** @var array<int, array<string, mixed>> */
+        public $fieldCalls = [];
+
+        /** @var string */
+        public $dragAndDropReturn = 'cp-display-field';
+
+        /** @var string */
+        public $fieldReturn = 'frontend-display-field';
+
         /**
          * Return the configured file model for the incoming field data.
          *
@@ -159,6 +171,159 @@ namespace {
             $this->calls[] = $data;
 
             return $this->fileModel;
+        }
+
+        /**
+         * Capture the control-panel drag-and-drop field arguments.
+         *
+         * @param string $fieldName
+         * @param mixed $data
+         * @param mixed $allowedFileDirs
+         * @param string $contentType
+         * @return string
+         */
+        public function dragAndDropField($fieldName, $data, $allowedFileDirs, $contentType)
+        {
+            $this->dragAndDropCalls[] = [
+                'field_name' => $fieldName,
+                'data' => $data,
+                'allowed_file_dirs' => $allowedFileDirs,
+                'content_type' => $contentType,
+            ];
+
+            return $this->dragAndDropReturn;
+        }
+
+        /**
+         * Capture the front-end field arguments.
+         *
+         * @param string $fieldName
+         * @param mixed $data
+         * @param mixed $allowedFileDirs
+         * @param string $contentType
+         * @param bool $filebrowser
+         * @param int|null $existingLimit
+         * @return string
+         */
+        public function field($fieldName, $data, $allowedFileDirs, $contentType, $filebrowser, $existingLimit)
+        {
+            $this->fieldCalls[] = [
+                'field_name' => $fieldName,
+                'data' => $data,
+                'allowed_file_dirs' => $allowedFileDirs,
+                'content_type' => $contentType,
+                'filebrowser' => $filebrowser,
+                'existing_limit' => $existingLimit,
+            ];
+
+            return $this->fieldReturn;
+        }
+    }
+
+    class FileFtJavascriptStub
+    {
+        /** @var array<int, array<string, string>> */
+        public $globals = [];
+
+        /**
+         * Capture global JavaScript payloads.
+         *
+         * @param array<string, string> $data
+         * @return void
+         */
+        public function set_global(array $data)
+        {
+            $this->globals[] = $data;
+        }
+    }
+
+    class FileFtCpStub
+    {
+        /** @var array<int, array<string, array<int, string>>> */
+        public $scripts = [];
+
+        /**
+         * Capture queued control-panel JavaScript bundles.
+         *
+         * @param array<string, array<int, string>> $script
+         * @return void
+         */
+        public function add_js_script(array $script)
+        {
+            $this->scripts[] = $script;
+        }
+    }
+
+    class FileFtCompiledUrlStub
+    {
+        /** @var string */
+        public $compiledUrl;
+
+        /** @var int */
+        public $compileCalls = 0;
+
+        /**
+         * Seed the compiled control-panel URL returned to display_field().
+         *
+         * @param string $compiledUrl
+         * @return void
+         */
+        public function __construct($compiledUrl)
+        {
+            $this->compiledUrl = $compiledUrl;
+        }
+
+        /**
+         * Return the configured compiled URL and record the call.
+         *
+         * @return string
+         */
+        public function compile()
+        {
+            $this->compileCalls++;
+
+            return $this->compiledUrl;
+        }
+    }
+
+    class FileFtCpUrlFactoryStub
+    {
+        /** @var string */
+        public $compiledUrl;
+
+        /** @var array<int, array<string, mixed>> */
+        public $makeCalls = [];
+
+        /** @var FileFtCompiledUrlStub|null */
+        public $lastCompiledUrl;
+
+        /**
+         * Seed the URL generated for the publish-file modal.
+         *
+         * @param string $compiledUrl
+         * @return void
+         */
+        public function __construct($compiledUrl = 'https://example.com/admin.php?/cp/files/file/view/###&modal_form=y')
+        {
+            $this->compiledUrl = $compiledUrl;
+        }
+
+        /**
+         * Capture control-panel URL generation requests.
+         *
+         * @param string $path
+         * @param array<string, string> $params
+         * @return FileFtCompiledUrlStub
+         */
+        public function make($path, array $params = [])
+        {
+            $this->makeCalls[] = [
+                'path' => $path,
+                'params' => $params,
+            ];
+            $this->lastCompiledUrl = new FileFtCompiledUrlStub($this->compiledUrl);
+
+            return $this->lastCompiledUrl;
         }
     }
 
@@ -362,6 +527,15 @@ namespace {
         /** @var FileFtModelServiceStub */
         protected $modelService;
 
+        /** @var FileFtJavascriptStub */
+        protected $javascriptMock;
+
+        /** @var FileFtCpStub */
+        protected $cpMock;
+
+        /** @var FileFtCpUrlFactoryStub */
+        protected $cpUrlFactory;
+
         /**
          * Reset the EE mock container and seed the shared File_ft doubles.
          *
@@ -378,11 +552,17 @@ namespace {
             $this->sessionMock = new FileFtSessionStub();
             $this->fileFieldMock = new FileFtFileFieldStub();
             $this->modelService = new FileFtModelServiceStub();
+            $this->javascriptMock = new FileFtJavascriptStub();
+            $this->cpMock = new FileFtCpStub();
+            $this->cpUrlFactory = new FileFtCpUrlFactoryStub();
 
             ee()->setMock('load', $this->loadRecorder);
             ee()->setMock('session', $this->sessionMock);
             ee()->setMock('file_field', $this->fileFieldMock);
             ee()->setMock('Model', $this->modelService);
+            ee()->setMock('javascript', $this->javascriptMock);
+            ee()->setMock('cp', $this->cpMock);
+            ee()->setMock('CP/URL', $this->cpUrlFactory);
         }
 
         /**
@@ -403,11 +583,12 @@ namespace {
          * @param array<string, mixed> $settings
          * @param int $contentId
          * @param string $fieldName
+         * @param class-string<File_ft> $fieldtypeClass
          * @return File_ft
          */
-        protected function makeFieldtype(array $settings = [], $contentId = 0, $fieldName = 'file_field')
+        protected function makeFieldtype(array $settings = [], $contentId = 0, $fieldName = 'file_field', $fieldtypeClass = File_ft::class)
         {
-            $fieldtype = new File_ft();
+            $fieldtype = new $fieldtypeClass();
             $fieldtype->settings = array_merge([
                 'field_required' => 'n',
             ], $settings);
