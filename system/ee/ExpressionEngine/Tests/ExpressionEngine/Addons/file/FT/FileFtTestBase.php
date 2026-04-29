@@ -163,6 +163,12 @@ namespace {
         /** @var mixed */
         public $parseFieldReturn;
 
+        /** @var array<int, string> */
+        public $parseStringCalls = [];
+
+        /** @var string */
+        public $parseStringReturn = '';
+
         /** @var string */
         public $dragAndDropReturn = 'cp-display-field';
 
@@ -193,6 +199,19 @@ namespace {
             $this->parseFieldCalls[] = $data;
 
             return $this->parseFieldReturn;
+        }
+
+        /**
+         * Capture replace_tag() string parsing calls and return the configured URL.
+         *
+         * @param string $data
+         * @return string
+         */
+        public function parse_string($data)
+        {
+            $this->parseStringCalls[] = $data;
+
+            return $this->parseStringReturn;
         }
 
         /**
@@ -546,6 +565,32 @@ namespace {
         }
     }
 
+    class FileFtTemplateStub
+    {
+        /** @var array<int, array<string, mixed>> */
+        public $parseVariablesCalls = [];
+
+        /** @var string */
+        public $parseVariablesReturn = 'parsed-template';
+
+        /**
+         * Capture template variable parsing requests and return the configured result.
+         *
+         * @param string $tagdata
+         * @param array<int, array<string, mixed>> $variables
+         * @return string
+         */
+        public function parse_variables($tagdata, $variables)
+        {
+            $this->parseVariablesCalls[] = [
+                'tagdata' => $tagdata,
+                'variables' => $variables,
+            ];
+
+            return $this->parseVariablesReturn;
+        }
+    }
+
     abstract class FileFtTestBase extends TestCase
     {
         /** @var FileFtLoadRecorder */
@@ -569,6 +614,9 @@ namespace {
         /** @var FileFtCpUrlFactoryStub */
         protected $cpUrlFactory;
 
+        /** @var FileFtTemplateStub */
+        protected $templateMock;
+
         /**
          * Reset the EE mock container and seed the shared File_ft doubles.
          *
@@ -588,6 +636,7 @@ namespace {
             $this->javascriptMock = new FileFtJavascriptStub();
             $this->cpMock = new FileFtCpStub();
             $this->cpUrlFactory = new FileFtCpUrlFactoryStub();
+            $this->templateMock = new FileFtTemplateStub();
 
             ee()->setMock('load', $this->loadRecorder);
             ee()->setMock('session', $this->sessionMock);
@@ -596,6 +645,7 @@ namespace {
             ee()->setMock('javascript', $this->javascriptMock);
             ee()->setMock('cp', $this->cpMock);
             ee()->setMock('CP/URL', $this->cpUrlFactory);
+            ee()->setMock('TMPL', $this->templateMock);
         }
 
         /**
