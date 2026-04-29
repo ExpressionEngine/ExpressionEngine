@@ -22,6 +22,8 @@ namespace {
     if (!class_exists('EE_Fieldtype')) {
         abstract class EE_Fieldtype
         {
+            use ExpressionEngine\Service\Template\Variables\ModifiableTrait;
+
             public static $constructCount = 0;
 
             /** @var array<string, mixed> */
