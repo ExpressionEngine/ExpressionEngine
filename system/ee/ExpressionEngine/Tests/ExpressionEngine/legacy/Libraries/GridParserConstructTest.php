@@ -276,6 +276,147 @@ class GridParserConstructTest extends TestCase
     }
 
     /**
+     * Ensure instantiate_fieldtype bootstraps fieldtype APIs and assigns merged settings.
+     *
+     * @return void
+     */
+    public function testInstantiateFieldtypeBootstrapsApisAndAssignsMergedSettings(): void
+    {
+        $fieldtype = $this->makeFieldtypeHandlerMock();
+        $load = $this->makeParseLoadMock();
+        $legacyApi = $this->makeLegacyApiMock();
+        $apiChannelFields = $this->makeInstantiateApiChannelFieldsMock($fieldtype, []);
+        $column = [
+            'col_type' => 'text',
+            'col_id' => 12,
+            'col_label' => 'Headline',
+            'col_required' => 'y',
+            'col_name' => 'headline',
+            'col_settings' => [
+                'custom' => 'value',
+                'entry_id' => 999,
+            ],
+        ];
+
+        ee()->setMock('load', $load);
+        ee()->setMock('legacy_api', $legacyApi);
+        ee()->setMock('api_channel_fields', $apiChannelFields);
+
+        $parser = new \Grid_parser();
+        $result = $parser->instantiate_fieldtype($column, 'new_row_5', 45, 88, 'fluid', 13, true);
+
+        $this->assertSame($fieldtype, $result);
+        $this->assertSame(['api'], $load->libraries);
+        $this->assertSame(['channel_fields'], $legacyApi->instantiateCalls);
+        $this->assertSame(1, $apiChannelFields->fetchInstalledFieldtypesCalls);
+        $this->assertSame([['type' => 'text', 'cache' => true]], $apiChannelFields->setupHandlerCalls);
+        $this->assertSame(
+            [
+                [
+                    'field_id' => 12,
+                    'field_name' => 'col_id_12',
+                    'content_id' => 88,
+                    'content_type' => 'grid',
+                ],
+            ],
+            $fieldtype->initCalls
+        );
+        $this->assertSame('value', $fieldtype->settings['custom']);
+        $this->assertSame('Headline', $fieldtype->settings['field_label']);
+        $this->assertSame('y', $fieldtype->settings['field_required']);
+        $this->assertSame(12, $fieldtype->settings['col_id']);
+        $this->assertSame('headline', $fieldtype->settings['col_name']);
+        $this->assertSame('y', $fieldtype->settings['col_required']);
+        $this->assertSame(88, $fieldtype->settings['entry_id']);
+        $this->assertSame(45, $fieldtype->settings['grid_field_id']);
+        $this->assertSame('new_row_5', $fieldtype->settings['grid_row_name']);
+        $this->assertSame('fluid', $fieldtype->settings['grid_content_type']);
+        $this->assertSame(13, $fieldtype->settings['fluid_field_data_id']);
+        $this->assertTrue($fieldtype->settings['in_modal_context']);
+    }
+
+    /**
+     * Ensure instantiate_fieldtype returns null when no fieldtype handler is available.
+     *
+     * @return void
+     */
+    public function testInstantiateFieldtypeReturnsNullWhenSetupHandlerFails(): void
+    {
+        $load = $this->makeParseLoadMock();
+        $legacyApi = $this->makeLegacyApiMock();
+        $apiChannelFields = $this->makeInstantiateApiChannelFieldsMock(false, ['text' => true], false);
+        $column = [
+            'col_type' => 'text',
+            'col_id' => 9,
+            'col_label' => 'Title',
+            'col_required' => 'n',
+            'col_name' => 'title',
+        ];
+
+        ee()->setMock('load', $load);
+        ee()->setMock('legacy_api', $legacyApi);
+        ee()->setMock('api_channel_fields', $apiChannelFields);
+
+        $parser = new \Grid_parser();
+        $result = $parser->instantiate_fieldtype($column);
+
+        $this->assertNull($result);
+        $this->assertSame([], $load->libraries);
+        $this->assertSame([], $legacyApi->instantiateCalls);
+        $this->assertSame(0, $apiChannelFields->fetchInstalledFieldtypesCalls);
+        $this->assertSame([['type' => 'text', 'cache' => true]], $apiChannelFields->setupHandlerCalls);
+    }
+
+    /**
+     * Ensure instantiate_fieldtype falls back to empty column settings when none are provided.
+     *
+     * @return void
+     */
+    public function testInstantiateFieldtypeUsesDefaultSettingsWhenColumnSettingsAreMissing(): void
+    {
+        $fieldtype = $this->makeFieldtypeHandlerMock();
+        $apiChannelFields = $this->makeInstantiateApiChannelFieldsMock($fieldtype, ['text' => true], false);
+        $column = [
+            'col_type' => 'text',
+            'col_id' => 3,
+            'col_label' => 'Summary',
+            'col_required' => 'n',
+            'col_name' => 'summary',
+        ];
+
+        ee()->setMock('load', $this->makeParseLoadMock());
+        ee()->setMock('legacy_api', $this->makeLegacyApiMock());
+        ee()->setMock('api_channel_fields', $apiChannelFields);
+
+        $parser = new \Grid_parser();
+        $result = $parser->instantiate_fieldtype($column);
+
+        $this->assertSame($fieldtype, $result);
+        $this->assertSame(
+            [
+                [
+                    'field_id' => 3,
+                    'field_name' => 'col_id_3',
+                    'content_id' => 0,
+                    'content_type' => 'grid',
+                ],
+            ],
+            $fieldtype->initCalls
+        );
+        $this->assertSame('Summary', $fieldtype->settings['field_label']);
+        $this->assertSame('n', $fieldtype->settings['field_required']);
+        $this->assertSame(3, $fieldtype->settings['col_id']);
+        $this->assertSame('summary', $fieldtype->settings['col_name']);
+        $this->assertSame('n', $fieldtype->settings['col_required']);
+        $this->assertSame(0, $fieldtype->settings['entry_id']);
+        $this->assertSame(0, $fieldtype->settings['grid_field_id']);
+        $this->assertNull($fieldtype->settings['grid_row_name']);
+        $this->assertSame('channel', $fieldtype->settings['grid_content_type']);
+        $this->assertSame(0, $fieldtype->settings['fluid_field_data_id']);
+        $this->assertFalse($fieldtype->settings['in_modal_context']);
+    }
+
+    /**
      * Ensure parse exits early when the field-pair tagdata is empty.
      *
      * @return void
@@ -1167,6 +1308,86 @@ class GridParserConstructTest extends TestCase
                 }
 
                 return [];
+            }
+        };
+    }
+
+    /**
+     * Build an api_channel_fields mock for instantiate_fieldtype() tests.
+     *
+     * @param mixed $handler Fieldtype handler returned by setup_handler().
+     * @param array $fieldTypes Preloaded field type registry keyed by type.
+     * @param bool $populateTypeOnFetch Whether fetch_installed_fieldtypes should register text type.
+     * @return object
+     */
+    private function makeInstantiateApiChannelFieldsMock($handler, array $fieldTypes, bool $populateTypeOnFetch = true): object
+    {
+        return new class($handler, $fieldTypes, $populateTypeOnFetch) {
+            public $field_types = [];
+            public $fetchInstalledFieldtypesCalls = 0;
+            public $setupHandlerCalls = [];
+            private $handler;
+            private $populateTypeOnFetch;
+
+            public function __construct($handler, array $fieldTypes, bool $populateTypeOnFetch)
+            {
+                $this->handler = $handler;
+                $this->field_types = $fieldTypes;
+                $this->populateTypeOnFetch = $populateTypeOnFetch;
+            }
+
+            public function fetch_installed_fieldtypes()
+            {
+                $this->fetchInstalledFieldtypesCalls++;
+
+                if ($this->populateTypeOnFetch) {
+                    $this->field_types['text'] = true;
+                }
+            }
+
+            public function setup_handler($colType, $cache = false)
+            {
+                $this->setupHandlerCalls[] = [
+                    'type' => $colType,
+                    'cache' => $cache,
+                ];
+
+                return $this->handler;
+            }
+        };
+    }
+
+    /**
+     * Build a fieldtype handler mock that records _init payloads.
+     *
+     * @return object
+     */
+    private function makeFieldtypeHandlerMock(): object
+    {
+        return new class {
+            public $initCalls = [];
+            public $settings = [];
+
+            public function _init($params)
+            {
+                $this->initCalls[] = $params;
+            }
+        };
+    }
+
+    /**
+     * Build a legacy_api mock that records instantiate() calls.
+     *
+     * @return object
+     */
+    private function makeLegacyApiMock(): object
+    {
+        return new class {
+            public $instantiateCalls = [];
+
+            public function instantiate($name)
+            {
+                $this->instantiateCalls[] = $name;
             }
         };
     }
