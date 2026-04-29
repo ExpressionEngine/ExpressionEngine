@@ -567,11 +567,38 @@ namespace {
 
     class FileFtTemplateStub
     {
+        /** @var array<string, mixed> */
+        public $fetchParamMap = [];
+
+        /** @var array<int, array<string, mixed>> */
+        public $fetchParamCalls = [];
+
         /** @var array<int, array<string, mixed>> */
         public $parseVariablesCalls = [];
 
         /** @var string */
         public $parseVariablesReturn = 'parsed-template';
+
+        /**
+         * Return the configured template parameter value.
+         *
+         * @param string $key
+         * @param mixed $default
+         * @return mixed
+         */
+        public function fetch_param($key, $default = null)
+        {
+            $this->fetchParamCalls[] = [
+                'key' => $key,
+                'default' => $default,
+            ];
+
+            if (array_key_exists($key, $this->fetchParamMap)) {
+                return $this->fetchParamMap[$key];
+            }
+
+            return $default;
+        }
 
         /**
          * Capture template variable parsing requests and return the configured result.
