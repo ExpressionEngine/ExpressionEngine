@@ -151,6 +151,9 @@ namespace {
         /** @var array<int, mixed> */
         public $parseFieldCalls = [];
 
+        /** @var array<int, mixed> */
+        public $cacheDataCalls = [];
+
         /** @var array<int, array<string, mixed>> */
         public $dragAndDropCalls = [];
 
@@ -190,6 +193,17 @@ namespace {
             $this->parseFieldCalls[] = $data;
 
             return $this->parseFieldReturn;
+        }
+
+        /**
+         * Capture pre_loop() cache requests.
+         *
+         * @param mixed $data
+         * @return void
+         */
+        public function cache_data($data)
+        {
+            $this->cacheDataCalls[] = $data;
         }
 
         /**
