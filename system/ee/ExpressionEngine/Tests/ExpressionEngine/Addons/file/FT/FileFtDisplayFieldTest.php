@@ -26,6 +26,28 @@ class FileFtDisplayFieldSpy extends File_ft
     }
 }
 
+class FileFtVarDisplayFieldSpy extends File_ft
+{
+    /** @var array<int, mixed> */
+    public $displayFieldCalls = [];
+
+    /** @var string */
+    public $displayFieldReturn = '<variables field>';
+
+    /**
+     * Capture wrapper delegation without exercising display_field() internals.
+     *
+     * @param mixed $data
+     * @return string
+     */
+    public function display_field($data)
+    {
+        $this->displayFieldCalls[] = $data;
+
+        return $this->displayFieldReturn;
+    }
+}
+
 class FileFtDisplayFieldTest extends FileFtTestBase
 {
     /**
@@ -153,5 +175,21 @@ class FileFtDisplayFieldTest extends FileFtTestBase
                 'existing_limit' => 9,
             ],
         ], $this->fileFieldMock->fieldCalls);
+    }
+
+    /**
+     * Assert Pro Variables display delegates to display_field() unchanged.
+     *
+     * @return void
+     */
+    public function testVarDisplayFieldDelegatesToDisplayField()
+    {
+        $fieldtype = $this->makeFieldtype([], 0, 'variables_file', FileFtVarDisplayFieldSpy::class);
+        $fieldtype->displayFieldReturn = '<variables field output>';
+
+        $result = $fieldtype->var_display_field('{filedir_7}manual.pdf');
+
+        $this->assertSame('<variables field output>', $result);
+        $this->assertSame(['{filedir_7}manual.pdf'], $fieldtype->displayFieldCalls);
     }
 }
