@@ -417,6 +417,134 @@ class GridParserConstructTest extends TestCase
     }
 
     /**
+     * Ensure call() prefers the grid_ method variant and wraps single-parameter payloads.
+     *
+     * @return void
+     */
+    public function testCallPrefersGridMethodAndWrapsSingleParam(): void
+    {
+        $load = $this->makeCallLoadMock();
+        $apiChannelFields = $this->makeCallApiChannelFieldsMock(
+            [
+                'grid_replace_tag' => true,
+            ],
+            'GRID_RESULT',
+            '/custom/fieldtypes/path',
+            'text'
+        );
+
+        ee()->setMock('load', $load);
+        ee()->setMock('api_channel_fields', $apiChannelFields);
+
+        $parser = new \Grid_parser();
+        $result = $parser->call('replace_tag', 'value');
+
+        $this->assertSame('GRID_RESULT', $result);
+        $this->assertSame(
+            [
+                [
+                    'path' => '/custom/fieldtypes/path',
+                    'view_cascade' => false,
+                ],
+            ],
+            $load->addPackagePathCalls
+        );
+        $this->assertSame(['/custom/fieldtypes/path'], $load->removePackagePathCalls);
+        $this->assertSame(['grid_replace_tag', 'grid_replace_tag'], $apiChannelFields->checkMethodExistsCalls);
+        $this->assertSame(
+            [
+                [
+                    'method' => 'grid_replace_tag',
+                    'data' => ['value'],
+                ],
+            ],
+            $apiChannelFields->applyCalls
+        );
+    }
+
+    /**
+     * Ensure call() falls back to the original method and keeps multi-parameter arrays untouched.
+     *
+     * @return void
+     */
+    public function testCallFallsBackToOriginalMethodWithMultiParamPayload(): void
+    {
+        $load = $this->makeCallLoadMock();
+        $apiChannelFields = $this->makeCallApiChannelFieldsMock(
+            [
+                'grid_replace_tag' => false,
+                'replace_tag' => true,
+            ],
+            'FALLBACK_RESULT'
+        );
+
+        ee()->setMock('load', $load);
+        ee()->setMock('api_channel_fields', $apiChannelFields);
+
+        $parser = new \Grid_parser();
+        $result = $parser->call('replace_tag', ['first', 'second'], true);
+
+        $this->assertSame('FALLBACK_RESULT', $result);
+        $this->assertSame(['grid_replace_tag', 'replace_tag'], $apiChannelFields->checkMethodExistsCalls);
+        $this->assertSame(
+            [
+                [
+                    'method' => 'replace_tag',
+                    'data' => ['first', 'second'],
+                ],
+            ],
+            $apiChannelFields->applyCalls
+        );
+        $this->assertSame(
+            [
+                [
+                    'path' => '/fieldtypes/path',
+                    'view_cascade' => false,
+                ],
+            ],
+            $load->addPackagePathCalls
+        );
+        $this->assertSame(['/fieldtypes/path'], $load->removePackagePathCalls);
+    }
+
+    /**
+     * Ensure call() returns null when no method exists while still unwinding package path state.
+     *
+     * @return void
+     */
+    public function testCallReturnsNullWhenNoMethodExistsAndAlwaysRemovesPackagePath(): void
+    {
+        $load = $this->makeCallLoadMock();
+        $apiChannelFields = $this->makeCallApiChannelFieldsMock(
+            [
+                'grid_replace_tag' => false,
+                'replace_tag' => false,
+            ],
+            'UNUSED'
+        );
+
+        ee()->setMock('load', $load);
+        ee()->setMock('api_channel_fields', $apiChannelFields);
+
+        $parser = new \Grid_parser();
+        $result = $parser->call('replace_tag', 'value');
+
+        $this->assertNull($result);
+        $this->assertSame(['grid_replace_tag', 'replace_tag'], $apiChannelFields->checkMethodExistsCalls);
+        $this->assertSame([], $apiChannelFields->applyCalls);
+        $this->assertSame(
+            [
+                [
+                    'path' => '/fieldtypes/path',
+                    'view_cascade' => false,
+                ],
+            ],
+            $load->addPackagePathCalls
+        );
+        $this->assertSame(['/fieldtypes/path'], $load->removePackagePathCalls);
+    }
+
+    /**
      * Ensure parse exits early when the field-pair tagdata is empty.
      *
      * @return void
@@ -1167,6 +1295,32 @@ class GridParserConstructTest extends TestCase
     }
 
     /**
+     * Build a load mock that records package-path additions and removals for call() tests.
+     *
+     * @return object
+     */
+    private function makeCallLoadMock(): object
+    {
+        return new class extends \eeSingletonLoadMock {
+            public $addPackagePathCalls = [];
+            public $removePackagePathCalls = [];
+
+            public function add_package_path($path, $viewCascade = true)
+            {
+                $this->addPackagePathCalls[] = [
+                    'path' => $path,
+                    'view_cascade' => $viewCascade,
+                ];
+            }
+
+            public function remove_package_path($path = '')
+            {
+                $this->removePackagePathCalls[] = $path;
+            }
+        };
+    }
+
+    /**
      * Build a Grid model mock for parse() flow with configurable rows and columns.
      *
      * @param mixed $entryRowsResponse Return payload for get_entry_rows().
@@ -1353,6 +1507,52 @@ class GridParserConstructTest extends TestCase
                 ];
 
                 return $this->handler;
+            }
+        };
+    }
+
+    /**
+     * Build an api_channel_fields mock for call() method tests.
+     *
+     * @param array $methodExistsMap Method existence map keyed by method name.
+     * @param mixed $applyResult Value returned by apply().
+     * @param string $fieldtypePath Package path selected for the current fieldtype.
+     * @param string $fieldType Current field type key.
+     * @return object
+     */
+    private function makeCallApiChannelFieldsMock(array $methodExistsMap, $applyResult, string $fieldtypePath = '/fieldtypes/path', string $fieldType = 'text'): object
+    {
+        return new class($methodExistsMap, $applyResult, $fieldtypePath, $fieldType) {
+            public $ft_paths = [];
+            public $field_type;
+            public $checkMethodExistsCalls = [];
+            public $applyCalls = [];
+            private $methodExistsMap;
+            private $applyResult;
+
+            public function __construct(array $methodExistsMap, $applyResult, string $fieldtypePath, string $fieldType)
+            {
+                $this->methodExistsMap = $methodExistsMap;
+                $this->applyResult = $applyResult;
+                $this->field_type = $fieldType;
+                $this->ft_paths[$fieldType] = $fieldtypePath;
+            }
+
+            public function check_method_exists($method)
+            {
+                $this->checkMethodExistsCalls[] = $method;
+
+                return $this->methodExistsMap[$method] ?? false;
+            }
+
+            public function apply($method, $data)
+            {
+                $this->applyCalls[] = [
+                    'method' => $method,
+                    'data' => $data,
+                ];
+
+                return $this->applyResult;
             }
         };
     }
