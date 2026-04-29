@@ -17,8 +17,6 @@ class EE_Exceptions
 
     protected $php_errors_output = false;
 
-    protected $generic_public_error_message = 'An unexpected error occurred. Please contact the site administrator if the problem persists.';
-
     /**
      * Constructor
      */
@@ -170,7 +168,25 @@ class EE_Exceptions
      */
     public function getGenericPublicErrorMessage()
     {
-        return $this->generic_public_error_message;
+        return $this->getPublicLanguageLine(
+            'core',
+            'generic_public_error',
+            'An unexpected error occurred. Please contact the site administrator if the problem persists.'
+        );
+    }
+
+    /**
+     * Public-facing database error message for non-superadmins.
+     *
+     * @return string
+     */
+    public function getDatabasePublicErrorMessage()
+    {
+        return $this->getPublicLanguageLine(
+            'db',
+            'db_public_error',
+            'There was a database connection error or a problem with a query. Log in as a super admin or enable debugging for more information.'
+        );
     }
 
     /**
@@ -201,15 +217,15 @@ class EE_Exceptions
      * @param int $status_code
      * @return void
      */
-    public function showPublicError($status_code = 500)
+    public function showPublicError($status_code = 500, $message = null)
     {
         set_status_header($status_code);
 
         if (defined('AJAX_REQUEST') && AJAX_REQUEST) {
-            $this->sendGenericAjaxError($status_code);
+            $this->sendGenericAjaxError($status_code, $message);
         }
 
-        echo $this->renderGenericPublicError($status_code);
+        echo $this->renderGenericPublicError($status_code, $message);
         exit;
     }
 
@@ -314,7 +330,7 @@ class EE_Exceptions
 
         if (! $this->shouldShowDetailedWebErrors()) {
             $this->logExceptionObject($exception);
-            $this->showPublicError($status_code);
+            $this->showPublicError($status_code, $this->getPublicExceptionMessage($exception));
         }
 
         $error_type = get_class($exception);
@@ -489,10 +505,10 @@ class EE_Exceptions
      * @param int $status_code
      * @return string
      */
-    private function renderGenericPublicError($status_code)
+    private function renderGenericPublicError($status_code, $message = null)
     {
         $heading = 'Error';
-        $message = $this->getGenericPublicErrorMessage();
+        $message = $message ?: $this->getGenericPublicErrorMessage();
 
         if (ob_get_level() > $this->ob_level + 1) {
             ob_end_flush();
@@ -516,14 +532,54 @@ class EE_Exceptions
      * @param int $status_code
      * @return void
      */
-    private function sendGenericAjaxError($status_code)
+    private function sendGenericAjaxError($status_code, $message = null)
     {
         set_status_header($status_code);
         echo json_encode([
             'messageType' => 'error',
-            'message' => $this->getGenericPublicErrorMessage(),
+            'message' => $message ?: $this->getGenericPublicErrorMessage(),
         ]);
         exit;
+    }
+
+    /**
+     * @param \Throwable|\Exception $exception
+     * @return string
+     */
+    private function getPublicExceptionMessage($exception)
+    {
+        if (strpos($exception->getMessage(), 'SQLSTATE') !== false) {
+            return $this->getDatabasePublicErrorMessage();
+        }
+
+        return $this->getGenericPublicErrorMessage();
+    }
+
+    /**
+     * @param string $file
+     * @param string $key
+     * @param string $fallback
+     * @return string
+     */
+    private function getPublicLanguageLine($file, $key, $fallback)
+    {
+        try {
+            if (! function_exists('load_class') || ! function_exists('ee') || ! ee() || ! isset(ee()->config)) {
+                return $fallback;
+            }
+
+            $LANG = load_class('Lang', 'core');
+            $LANG->load($file, '', false, true, '', false);
+
+            $line = $LANG->line($key);
+
+            if ($line !== $key && $line !== '') {
+                return $line;
+            }
+        } catch (\Throwable $e) {
+        }
+
+        return $fallback;
     }
 
     /**
