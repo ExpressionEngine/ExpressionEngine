@@ -14,6 +14,7 @@ class GridParserConstructTest extends TestCase
     public static function setUpBeforeClass(): void
     {
         require_once BASEPATH . 'libraries/Grid_parser.php';
+        require_once SYSPATH . 'ee/legacy/libraries/relationship_parser/Exceptions.php';
     }
 
     /**
@@ -275,6 +276,422 @@ class GridParserConstructTest extends TestCase
     }
 
     /**
+     * Ensure parse exits early when the field-pair tagdata is empty.
+     *
+     * @return void
+     */
+    public function testParseReturnsEmptyStringWhenTagdataIsEmpty(): void
+    {
+        $parser = new \Grid_parser();
+        $parser->grid_field_names[11][0] = 'grid:gallery';
+
+        $result = $parser->parse(['entry_id' => 5], 11, [], '');
+
+        $this->assertSame('', $result);
+    }
+
+    /**
+     * Ensure parse bails out when Grid model returns no rows for the entry.
+     *
+     * @return void
+     */
+    public function testParseReturnsEmptyStringWhenGridModelReturnsFalse(): void
+    {
+        $gridModel = $this->makeParseGridModelMock(false);
+
+        ee()->setMock('grid_model', $gridModel);
+        ee()->setMock('load', $this->makeParseLoadMock());
+
+        $parser = new \Grid_parser();
+        $parser->grid_field_names[11][0] = 'grid:gallery';
+
+        $result = $parser->parse(['entry_id' => 5], 11, [], 'ROW');
+
+        $this->assertSame('', $result);
+    }
+
+    /**
+     * Ensure parse bails out when rows are returned for other entries only.
+     *
+     * @return void
+     */
+    public function testParseReturnsEmptyStringWhenEntryRowsMissRequestedEntry(): void
+    {
+        $gridModel = $this->makeParseGridModelMock([
+            'params' => $this->makeParseParams(),
+            99 => [
+                10 => ['row_id' => 10],
+            ],
+        ]);
+
+        ee()->setMock('grid_model', $gridModel);
+        ee()->setMock('load', $this->makeParseLoadMock());
+
+        $parser = new \Grid_parser();
+        $parser->grid_field_names[11][0] = 'grid:gallery';
+
+        $result = $parser->parse(['entry_id' => 5], 11, [], 'ROW');
+
+        $this->assertSame('', $result);
+    }
+
+    /**
+     * Ensure parse normalizes relationship-prefixed field names when tagdata omits full prefix.
+     *
+     * @return void
+     */
+    public function testParseNormalizesFieldNameWhenTagdataDoesNotContainRelationshipPrefix(): void
+    {
+        $gridModel = $this->makeParseGridModelMock([
+            'params' => $this->makeParseParams(),
+            5 => [
+                10 => ['row_id' => 10],
+            ],
+        ]);
+
+        ee()->setMock('grid_model', $gridModel);
+        ee()->setMock('load', $this->makeParseLoadMock());
+        ee()->setMock('TMPL', $this->makeParseTemplateMock());
+        ee()->setMock('functions', $this->makeParseFunctionsMock());
+        ee()->setMock('api_channel_fields', $this->makeApiChannelFieldsMock());
+        ee()->setMock('session', $this->makeSessionMockWithActiveChannel());
+
+        $parser = new \Grid_parser();
+        $parser->grid_field_names[11][0] = 'rel:grid:gallery';
+
+        $result = $parser->parse(['entry_id' => 5], 11, [], 'gallery');
+
+        $this->assertSame('gallery', $result);
+        $this->assertSame('gallery', $parser->grid_field_names[11][0]);
+    }
+
+    /**
+     * Ensure parse returns empty output for an unknown single row_id request.
+     *
+     * @return void
+     */
+    public function testParseReturnsEmptyStringWhenSingleRowIdDoesNotExist(): void
+    {
+        $gridModel = $this->makeParseGridModelMock([
+            'params' => $this->makeParseParams(['row_id' => '404']),
+            5 => [
+                10 => ['row_id' => 10],
+            ],
+        ]);
+
+        ee()->setMock('grid_model', $gridModel);
+        ee()->setMock('load', $this->makeParseLoadMock());
+
+        $parser = new \Grid_parser();
+        $parser->grid_field_names[11][0] = 'grid:gallery';
+
+        $result = $parser->parse(['entry_id' => 5], 11, [], 'ROW');
+
+        $this->assertSame('', $result);
+    }
+
+    /**
+     * Ensure parse narrows output to the selected row when row_id targets one row.
+     *
+     * @return void
+     */
+    public function testParseRestrictsToRequestedSingleRowId(): void
+    {
+        $gridModel = $this->makeParseGridModelMock([
+            'params' => $this->makeParseParams(['row_id' => '20']),
+            5 => [
+                10 => ['row_id' => 10],
+                20 => ['row_id' => 20],
+            ],
+        ]);
+        $tmpl = $this->makeParseTemplateMock();
+        $functions = $this->makeParseFunctionsMock();
+
+        ee()->setMock('grid_model', $gridModel);
+        ee()->setMock('load', $this->makeParseLoadMock());
+        ee()->setMock('TMPL', $tmpl);
+        ee()->setMock('functions', $functions);
+        ee()->setMock('api_channel_fields', $this->makeApiChannelFieldsMock());
+        ee()->setMock('session', $this->makeSessionMockWithActiveChannel());
+
+        $parser = new \Grid_parser();
+        $parser->grid_field_names[11][0] = 'grid:gallery';
+
+        $result = $parser->parse(['entry_id' => 5], 11, [], 'ROW');
+
+        $this->assertSame('ROW', $result);
+        $this->assertSame([['tagdata' => 'ROW', 'index' => 0, 'prefix' => 'gallery:']], $tmpl->parseSwitchCalls);
+        $this->assertCount(1, $functions->prepConditionalCalls);
+    }
+
+    /**
+     * Ensure parse supports "not row_id" filtering and applies backspace trimming.
+     *
+     * @return void
+     */
+    public function testParseFiltersNotRowIdAndAppliesBackspace(): void
+    {
+        $gridModel = $this->makeParseGridModelMock([
+            'params' => $this->makeParseParams(['row_id' => 'not 20', 'backspace' => 1]),
+            5 => [
+                10 => ['row_id' => 10],
+                20 => ['row_id' => 20],
+            ],
+        ]);
+
+        ee()->setMock('grid_model', $gridModel);
+        ee()->setMock('load', $this->makeParseLoadMock());
+        ee()->setMock('TMPL', $this->makeParseTemplateMock());
+        ee()->setMock('functions', $this->makeParseFunctionsMock());
+        ee()->setMock('api_channel_fields', $this->makeApiChannelFieldsMock());
+        ee()->setMock('session', $this->makeSessionMockWithActiveChannel());
+
+        $parser = new \Grid_parser();
+        $parser->grid_field_names[11][0] = 'grid:gallery';
+
+        $result = $parser->parse(['entry_id' => 5], 11, [], 'AB');
+
+        $this->assertSame('A', $result);
+    }
+
+    /**
+     * Ensure parse keeps only explicitly listed rows when row_id contains multiple values.
+     *
+     * @return void
+     */
+    public function testParseKeepsOnlyExplicitMultipleRowIds(): void
+    {
+        $gridModel = $this->makeParseGridModelMock([
+            'params' => $this->makeParseParams(['row_id' => '20|30']),
+            5 => [
+                10 => ['row_id' => 10],
+                20 => ['row_id' => 20],
+                30 => ['row_id' => 30],
+            ],
+        ]);
+
+        ee()->setMock('grid_model', $gridModel);
+        ee()->setMock('load', $this->makeParseLoadMock());
+        ee()->setMock('TMPL', $this->makeParseTemplateMock());
+        ee()->setMock('functions', $this->makeParseFunctionsMock());
+        ee()->setMock('api_channel_fields', $this->makeApiChannelFieldsMock());
+        ee()->setMock('session', $this->makeSessionMockWithActiveChannel());
+
+        $parser = new \Grid_parser();
+        $parser->grid_field_names[11][0] = 'grid:gallery';
+
+        $result = $parser->parse(['entry_id' => 5], 11, [], 'R');
+
+        $this->assertSame('RR', $result);
+    }
+
+    /**
+     * Ensure parse renders no_results content when filtered rows produce no display data.
+     *
+     * @return void
+     */
+    public function testParseReturnsNoResultsContentWhenDisplayRowsAreEmpty(): void
+    {
+        $gridModel = $this->makeParseGridModelMock([
+            'params' => $this->makeParseParams(['offset' => 5, 'limit' => 1]),
+            5 => [
+                10 => ['row_id' => 10],
+            ],
+        ]);
+        $variablesParser = new class {
+            public function getFullTag($tagdata, $chunk)
+            {
+                return $chunk;
+            }
+        };
+        $template = $this->makeParseTemplateMock();
+
+        ee()->setMock('grid_model', $gridModel);
+        ee()->setMock('load', $this->makeParseLoadMock());
+        ee()->setMock('TMPL', $template);
+        ee()->setMock('functions', $this->makeParseFunctionsMock());
+        ee()->setMock('api_channel_fields', $this->makeApiChannelFieldsMock());
+        ee()->setMock('session', $this->makeSessionMockWithActiveChannel());
+        ee()->setMock('Variables/Parser', $variablesParser);
+
+        $parser = new \Grid_parser();
+        $parser->grid_field_names[11][0] = 'grid:gallery';
+
+        $result = $parser->parse(
+            ['entry_id' => 5],
+            11,
+            [],
+            '{if no_results}{if condition}EMPTY{/if}{/if}'
+        );
+
+        $this->assertSame('{if condition}EMPTY', $result);
+        $this->assertSame('{if condition}EMPTY', $template->no_results);
+    }
+
+    /**
+     * Ensure parse processes relationship rows, next/prev chunks, and conditionals across rows.
+     *
+     * @return void
+     */
+    public function testParseProcessesRelationshipsAndNextPrevPairsAcrossRows(): void
+    {
+        $gridModel = $this->makeParseGridModelMock(
+            [
+                'params' => $this->makeParseParams(),
+                5 => [
+                    10 => ['row_id' => 10, 'col_id_5' => '', 'col_id_7' => 'alpha'],
+                    20 => ['row_id' => 20, 'col_id_5' => '1700000000', 'col_id_7' => 'beta'],
+                ],
+            ],
+            [
+                5 => ['field_id' => 11, 'col_id' => 5, 'col_name' => 'publish_at', 'col_type' => 'date'],
+                7 => ['field_id' => 11, 'col_id' => 7, 'col_name' => 'related_entry', 'col_type' => 'relationship'],
+            ]
+        );
+        $functions = $this->makeParseFunctionsMock();
+        $relationshipsParser = $this->makeRelationshipsParserMock(function ($rowId, $gridRow) {
+            return str_replace('{rel}', 'REL' . $rowId, $gridRow);
+        });
+
+        ee()->setMock('grid_model', $gridModel);
+        ee()->setMock('load', $this->makeParseLoadMock());
+        ee()->setMock('TMPL', $this->makeParseTemplateMock());
+        ee()->setMock('functions', $functions);
+        ee()->setMock(
+            'api_channel_fields',
+            $this->makeApiChannelFieldsMock([
+                'next_row' => [['next_row', 'NXT', [], '{NEXT}']],
+                'prev_row' => [['prev_row', 'PRV', [], '{PREV}']],
+            ])
+        );
+        ee()->setMock('session', $this->makeSessionMockWithActiveChannel([101, 202]));
+        ee()->setMock('relationships_parser', $relationshipsParser);
+
+        $parser = new \Grid_parser();
+        $parser->grid_field_names[11][0] = 'grid:gallery';
+
+        $result = $parser->parse(['entry_id' => 5], 11, [], '{rel}{NEXT}{PREV}');
+
+        $this->assertSame('REL10NXTREL20PRV', $result);
+        $this->assertCount(2, $functions->prepConditionalCalls);
+        $this->assertFalse($functions->prepConditionalCalls[0]['cond']['gallery:publish_at']);
+        $this->assertSame(1700000000, $functions->prepConditionalCalls[1]['cond']['gallery:publish_at']);
+        $this->assertSame(['gallery:related_entry' => 7], $relationshipsParser->createCalls[0]['relationships']);
+    }
+
+    /**
+     * Ensure parse logs relationship parser exceptions and continues rendering rows.
+     *
+     * @return void
+     */
+    public function testParseLogsRelationshipParserErrorsAndContinues(): void
+    {
+        $gridModel = $this->makeParseGridModelMock(
+            [
+                'params' => $this->makeParseParams(),
+                5 => [
+                    10 => ['row_id' => 10],
+                ],
+            ],
+            [
+                7 => ['field_id' => 11, 'col_id' => 7, 'col_name' => 'related_entry', 'col_type' => 'relationship'],
+            ]
+        );
+        $template = $this->makeParseTemplateMock();
+        $relationshipsParser = $this->makeRelationshipsParserMock(function () {
+            throw new \EE_Relationship_exception('parse error');
+        });
+
+        ee()->setMock('grid_model', $gridModel);
+        ee()->setMock('load', $this->makeParseLoadMock());
+        ee()->setMock('TMPL', $template);
+        ee()->setMock('functions', $this->makeParseFunctionsMock());
+        ee()->setMock('api_channel_fields', $this->makeApiChannelFieldsMock());
+        ee()->setMock('session', $this->makeSessionMockWithActiveChannel([101]));
+        ee()->setMock('relationships_parser', $relationshipsParser);
+
+        $parser = new \Grid_parser();
+        $parser->grid_field_names[11][0] = 'grid:gallery';
+
+        $result = $parser->parse(['entry_id' => 5], 11, [], 'ROW');
+
+        $this->assertSame('ROW', $result);
+        $this->assertSame(['parse error'], $template->logMessages);
+    }
+
+    /**
+     * Ensure parse shuffles entry rows when orderby=random and still renders each row once.
+     *
+     * @return void
+     */
+    public function testParseShufflesRowsWhenOrderByIsRandom(): void
+    {
+        $gridModel = $this->makeParseGridModelMock([
+            'params' => $this->makeParseParams(['orderby' => 'random']),
+            5 => [
+                10 => ['row_id' => 10],
+                20 => ['row_id' => 20],
+            ],
+        ]);
+
+        ee()->setMock('grid_model', $gridModel);
+        ee()->setMock('load', $this->makeParseLoadMock());
+        ee()->setMock('TMPL', $this->makeParseTemplateMock());
+        ee()->setMock('functions', $this->makeParseFunctionsMock());
+        ee()->setMock('api_channel_fields', $this->makeApiChannelFieldsMock());
+        ee()->setMock('session', $this->makeSessionMockWithActiveChannel());
+
+        $parser = new \Grid_parser();
+        $parser->grid_field_names[11][0] = 'grid:gallery';
+
+        $result = $parser->parse(['entry_id' => 5], 11, [], 'R');
+
+        $this->assertSame(2, strlen($result));
+        $this->assertSame('RR', $result);
+    }
+
+    /**
+     * Ensure parse recovers when relationship parser creation throws an EE relationship exception.
+     *
+     * @return void
+     */
+    public function testParseContinuesWhenRelationshipParserCreationThrowsException(): void
+    {
+        $gridModel = $this->makeParseGridModelMock(
+            [
+                'params' => $this->makeParseParams(),
+                5 => [
+                    10 => ['row_id' => 10],
+                ],
+            ],
+            [
+                7 => ['field_id' => 11, 'col_id' => 7, 'col_name' => 'related_entry', 'col_type' => 'relationship'],
+            ]
+        );
+        $failingParser = new class {
+            public function create()
+            {
+                throw new \EE_Relationship_exception('create error');
+            }
+        };
+
+        ee()->setMock('grid_model', $gridModel);
+        ee()->setMock('load', $this->makeParseLoadMock());
+        ee()->setMock('TMPL', $this->makeParseTemplateMock());
+        ee()->setMock('functions', $this->makeParseFunctionsMock());
+        ee()->setMock('api_channel_fields', $this->makeApiChannelFieldsMock());
+        ee()->setMock('session', $this->makeSessionMockWithActiveChannel([101]));
+        ee()->setMock('relationships_parser', $failingParser);
+
+        $parser = new \Grid_parser();
+        $parser->grid_field_names[11][0] = 'grid:gallery';
+
+        $result = $parser->parse(['entry_id' => 5], 11, [], 'ROW');
+
+        $this->assertSame('ROW', $result);
+    }
+
+    /**
      * Build a parser-like stub exposing Grid pre-parser methods.
      *
      * @param string $prefix Tag prefix expected by the parser.
@@ -361,6 +778,257 @@ class GridParserConstructTest extends TestCase
                 $this->gridDataCalls++;
 
                 return [];
+            }
+        };
+    }
+
+    /**
+     * Build default params returned by grid_model->get_entry_rows().
+     *
+     * @param array $overrides Parameter values to merge.
+     * @return array
+     */
+    private function makeParseParams(array $overrides = []): array
+    {
+        return array_merge(
+            [
+                'row_id' => 0,
+                'offset' => 0,
+                'limit' => 100,
+                'orderby' => 'title',
+            ],
+            $overrides
+        );
+    }
+
+    /**
+     * Build a load mock that records model and library loading calls.
+     *
+     * @return object
+     */
+    private function makeParseLoadMock(): object
+    {
+        return new class extends \eeSingletonLoadMock {
+            public $models = [];
+            public $libraries = [];
+
+            public function model($name = null)
+            {
+                $this->models[] = $name;
+            }
+
+            public function library($name = null)
+            {
+                $this->libraries[] = $name;
+            }
+        };
+    }
+
+    /**
+     * Build a Grid model mock for parse() flow with configurable rows and columns.
+     *
+     * @param mixed $entryRowsResponse Return payload for get_entry_rows().
+     * @param array $columns Columns returned by get_columns_for_field().
+     * @return object
+     */
+    private function makeParseGridModelMock($entryRowsResponse, array $columns = []): object
+    {
+        return new class($entryRowsResponse, $columns) {
+            public $entryRowsCalls = [];
+            public $columnCalls = [];
+            public $gridDataCalls = 0;
+            private $entryRowsResponse;
+            private $columns;
+
+            public function __construct($entryRowsResponse, array $columns)
+            {
+                $this->entryRowsResponse = $entryRowsResponse;
+                $this->columns = $columns;
+            }
+
+            public function get_entry_rows($entryIds, $fieldId, $contentType, $params, $cached = false, $fluidFieldDataId = 0)
+            {
+                $this->entryRowsCalls[] = [
+                    'entry_ids' => $entryIds,
+                    'field_id' => $fieldId,
+                    'content_type' => $contentType,
+                    'params' => $params,
+                    'cached' => $cached,
+                    'fluid_field_data_id' => $fluidFieldDataId,
+                ];
+
+                return $this->entryRowsResponse;
+            }
+
+            public function get_columns_for_field($fieldId, $contentType)
+            {
+                $this->columnCalls[] = [
+                    'field_id' => $fieldId,
+                    'content_type' => $contentType,
+                ];
+
+                return $this->columns;
+            }
+
+            public function get_grid_data()
+            {
+                $this->gridDataCalls++;
+
+                return [];
+            }
+        };
+    }
+
+    /**
+     * Build a TMPL mock that records switch parsing and relationship parser logs.
+     *
+     * @return object
+     */
+    private function makeParseTemplateMock(): object
+    {
+        return new class {
+            public $no_results = '';
+            public $parseSwitchCalls = [];
+            public $logMessages = [];
+
+            public function parse_switch($tagdata, $index, $prefix)
+            {
+                $this->parseSwitchCalls[] = [
+                    'tagdata' => $tagdata,
+                    'index' => $index,
+                    'prefix' => $prefix,
+                ];
+
+                return $tagdata;
+            }
+
+            public function no_results()
+            {
+                return $this->no_results;
+            }
+
+            public function log_item($message)
+            {
+                $this->logMessages[] = $message;
+            }
+        };
+    }
+
+    /**
+     * Build functions mock that records conditional compilation payloads.
+     *
+     * @return object
+     */
+    private function makeParseFunctionsMock(): object
+    {
+        return new class {
+            public $prepConditionalCalls = [];
+
+            public function prep_conditionals($tagdata, $cond)
+            {
+                $this->prepConditionalCalls[] = [
+                    'tagdata' => $tagdata,
+                    'cond' => $cond,
+                ];
+
+                return $tagdata;
+            }
+        };
+    }
+
+    /**
+     * Build api_channel_fields mock with optional next/prev pair chunks keyed by modifier.
+     *
+     * @param array $pairsByModifier Pair-chunk payloads keyed by modifier.
+     * @return object
+     */
+    private function makeApiChannelFieldsMock(array $pairsByModifier = []): object
+    {
+        return new class($pairsByModifier) {
+            public $pairFieldCalls = [];
+            private $pairsByModifier;
+
+            public function __construct(array $pairsByModifier)
+            {
+                $this->pairsByModifier = $pairsByModifier;
+            }
+
+            public function get_pair_field($tagdata, $modifier, $prefix)
+            {
+                $this->pairFieldCalls[] = [
+                    'tagdata' => $tagdata,
+                    'modifier' => $modifier,
+                    'prefix' => $prefix,
+                ];
+
+                if (isset($this->pairsByModifier[$modifier])) {
+                    return $this->pairsByModifier[$modifier];
+                }
+
+                return [];
+            }
+        };
+    }
+
+    /**
+     * Build session mock that returns an active channel object for relationship parsing.
+     *
+     * @param array $rfields Active relationship field mapping.
+     * @return object
+     */
+    private function makeSessionMockWithActiveChannel(array $rfields = []): object
+    {
+        return new class($rfields) {
+            private $activeChannel;
+
+            public function __construct(array $rfields)
+            {
+                $this->activeChannel = (object) ['rfields' => $rfields];
+            }
+
+            public function cache($class, $key, $value = null)
+            {
+                if ($class === 'mod_channel' && $key === 'active' && $value === null) {
+                    return $this->activeChannel;
+                }
+            }
+        };
+    }
+
+    /**
+     * Build a relationships parser mock with configurable parse callback behavior.
+     *
+     * @param callable $parseCallback Callback used by parse(row_id, grid_row, channel).
+     * @return object
+     */
+    private function makeRelationshipsParserMock(callable $parseCallback): object
+    {
+        return new class($parseCallback) {
+            public $createCalls = [];
+            private $parseCallback;
+
+            public function __construct(callable $parseCallback)
+            {
+                $this->parseCallback = $parseCallback;
+            }
+
+            public function create($rfields, $rowIds, $tagdata, $relationships, $fieldId, $fluidFieldDataId)
+            {
+                $this->createCalls[] = [
+                    'rfields' => $rfields,
+                    'row_ids' => $rowIds,
+                    'tagdata' => $tagdata,
+                    'relationships' => $relationships,
+                    'field_id' => $fieldId,
+                    'fluid_field_data_id' => $fluidFieldDataId,
+                ];
+
+                return $this;
+            }
+
+            public function parse($rowId, $gridRow, $channel)
+            {
+                return call_user_func($this->parseCallback, $rowId, $gridRow, $channel);
             }
         };
     }
