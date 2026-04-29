@@ -8,72 +8,21 @@
  * @license   https://expressionengine.com/license Licensed under Apache License, Version 2.0
  */
 
-namespace ExpressionEngine\Library\CP\EntryManager {
-    if (!interface_exists(ColumnInterface::class, false)) {
-        interface ColumnInterface
-        {
-        }
-    }
-}
+require_once __DIR__ . '/FileFtTestBase.php';
 
-namespace {
-    use PHPUnit\Framework\TestCase;
-
-    if (!class_exists('EE_Fieldtype')) {
-        abstract class EE_Fieldtype
-        {
-            public static $constructCount = 0;
-
-            public function __construct()
-            {
-                self::$constructCount++;
-            }
-        }
-    }
-
-    require_once dirname(__DIR__, 5) . '/Addons/file/ft.file.php';
-
-    class FileFtLoadRecorder
+class FileFtConstructTest extends FileFtTestBase
+{
+    /**
+     * Assert the lightweight constructor delegates to the parent and loads file_field.
+     *
+     * @return void
+     */
+    public function testConstructorCallsParentAndLoadsFileFieldLibrary()
     {
-        public $libraries = [];
+        $fieldtype = new File_ft();
 
-        public function library($name)
-        {
-            $this->libraries[] = $name;
-        }
-    }
-
-    class FileFtConstructTest extends TestCase
-    {
-        /** @var FileFtLoadRecorder */
-        private $loadRecorder;
-
-        protected function setUp(): void
-        {
-            parent::setUp();
-
-            ee()->resetMocks();
-
-            EE_Fieldtype::$constructCount = 0;
-            $this->loadRecorder = new FileFtLoadRecorder();
-
-            ee()->setMock('load', $this->loadRecorder);
-        }
-
-        protected function tearDown(): void
-        {
-            ee()->resetMocks();
-
-            parent::tearDown();
-        }
-
-        public function testConstructorCallsParentAndLoadsFileFieldLibrary()
-        {
-            $fieldtype = new File_ft();
-
-            $this->assertInstanceOf(File_ft::class, $fieldtype);
-            $this->assertSame(1, EE_Fieldtype::$constructCount);
-            $this->assertSame(['file_field'], $this->loadRecorder->libraries);
-        }
+        $this->assertInstanceOf(File_ft::class, $fieldtype);
+        $this->assertSame(1, EE_Fieldtype::$constructCount);
+        $this->assertSame(['file_field'], $this->loadRecorder->libraries);
     }
 }
