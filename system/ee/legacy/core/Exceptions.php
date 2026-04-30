@@ -158,7 +158,7 @@ class EE_Exceptions
             return $this->isCurrentUserSuperAdmin() || $this->currentSessionCanDebug();
         }
 
-        return $this->isCurrentUserSuperAdmin();
+        return false;
     }
 
     /**
