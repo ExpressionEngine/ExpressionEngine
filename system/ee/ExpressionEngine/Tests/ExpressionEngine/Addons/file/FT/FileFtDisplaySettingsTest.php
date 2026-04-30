@@ -320,6 +320,36 @@ class FileFtDisplaySettingsInlineAlertStub
     }
 }
 
+class FileFtGridDisplaySettingsSpy extends File_ft
+{
+    /** @var array<int, mixed> */
+    public $displaySettingsCalls = [];
+
+    /** @var \Throwable|null */
+    public $displaySettingsThrowable;
+
+    /** @var mixed */
+    public $displaySettingsReturn = [];
+
+    /**
+     * Capture delegated display_settings() calls and return canned data.
+     *
+     * @param mixed $data
+     * @return mixed
+     * @throws \Throwable
+     */
+    public function display_settings($data)
+    {
+        $this->displaySettingsCalls[] = $data;
+
+        if ($this->displaySettingsThrowable) {
+            throw $this->displaySettingsThrowable;
+        }
+
+        return $this->displaySettingsReturn;
+    }
+}
+
 class FileFtDisplaySettingsTest extends FileFtTestBase
 {
     /**
@@ -480,5 +510,109 @@ class FileFtDisplaySettingsTest extends FileFtTestBase
             $result['field_options_file']['settings'][1]['fields']
         );
         $this->assertSame([], $alert->makeInlineCalls);
+    }
+
+    /**
+     * Assert grid_display_settings() returns an empty map when the delegated
+     * display settings contain no sections.
+     *
+     * @return void
+     */
+    public function testGridDisplaySettingsReturnsEmptyArrayWhenNoSectionsExist()
+    {
+        $fieldtype = $this->makeFieldtype([], 0, 'file_field', FileFtGridDisplaySettingsSpy::class);
+        $fieldtype->displaySettingsReturn = [];
+
+        $result = $fieldtype->grid_display_settings(['allowed_directories' => 'all']);
+
+        $this->assertSame([['allowed_directories' => 'all']], $fieldtype->displaySettingsCalls);
+        $this->assertSame([], $result);
+    }
+
+    /**
+     * Assert grid_display_settings() re-keys each settings block by its label
+     * while preserving the original settings payload.
+     *
+     * @return void
+     */
+    public function testGridDisplaySettingsMapsEachSectionLabelToItsSettings()
+    {
+        $fieldtype = $this->makeFieldtype([], 0, 'file_field', FileFtGridDisplaySettingsSpy::class);
+        $fieldtype->displaySettingsReturn = [
+            'field_options_file' => [
+                'label' => 'field_options_file',
+                'settings' => [
+                    ['fields' => ['field_content_type' => ['value' => 'image']]],
+                ],
+            ],
+            'channel_form_settings_file' => [
+                'label' => 'channel_form_settings_file',
+                'settings' => [
+                    ['fields' => ['show_existing' => ['value' => 'n']]],
+                    ['fields' => ['num_existing' => ['value' => 0]]],
+                ],
+            ],
+        ];
+
+        $result = $fieldtype->grid_display_settings(['show_existing' => 'n']);
+
+        $this->assertSame([['show_existing' => 'n']], $fieldtype->displaySettingsCalls);
+        $this->assertSame([
+            'field_options_file' => [
+                ['fields' => ['field_content_type' => ['value' => 'image']]],
+            ],
+            'channel_form_settings_file' => [
+                ['fields' => ['show_existing' => ['value' => 'n']]],
+                ['fields' => ['num_existing' => ['value' => 0]]],
+            ],
+        ], $result);
+    }
+
+    /**
+     * Assert grid_display_settings() preserves collaborator failures from the
+     * delegated display_settings() call.
+     *
+     * @return void
+     */
+    public function testGridDisplaySettingsPropagatesDisplaySettingsFailures()
+    {
+        $fieldtype = $this->makeFieldtype([], 0, 'file_field', FileFtGridDisplaySettingsSpy::class);
+        $fieldtype->displaySettingsThrowable = new RuntimeException('display settings failed');
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('display settings failed');
+
+        $fieldtype->grid_display_settings(['show_existing' => 'n']);
+    }
+
+    /**
+     * Assert grid_display_settings() preserves the current warning-and-empty
+     * fallback when delegated settings are not iterable.
+     *
+     * @return void
+     */
+    public function testGridDisplaySettingsWarnsAndReturnsEmptyArrayForNonIterableSettings()
+    {
+        $fieldtype = $this->makeFieldtype([], 0, 'file_field', FileFtGridDisplaySettingsSpy::class);
+        $fieldtype->displaySettingsReturn = null;
+        $warnings = [];
+
+        set_error_handler(function ($severity, $message) use (&$warnings) {
+            $warnings[] = [$severity, $message];
+
+            return true;
+        });
+
+        try {
+            $result = $fieldtype->grid_display_settings(['allowed_directories' => 'all']);
+        } finally {
+            restore_error_handler();
+        }
+
+        $this->assertSame([['allowed_directories' => 'all']], $fieldtype->displaySettingsCalls);
+        $this->assertSame([], $result);
+        $this->assertCount(1, $warnings);
+        $this->assertSame(E_WARNING, $warnings[0][0]);
+        $this->assertNotSame('', $warnings[0][1]);
     }
 }
