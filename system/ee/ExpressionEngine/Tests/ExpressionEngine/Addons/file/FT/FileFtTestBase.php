@@ -797,6 +797,47 @@ namespace {
         }
     }
 
+    class FileFtRequestStub
+    {
+        /** @var array<string, mixed> */
+        public $postValues = [];
+
+        /** @var array<int, array{key: string, default: mixed}> */
+        public $postCalls = [];
+
+        /**
+         * Seed the POST values returned by the request double.
+         *
+         * @param array<string, mixed> $postValues
+         * @return void
+         */
+        public function __construct(array $postValues = [])
+        {
+            $this->postValues = $postValues;
+        }
+
+        /**
+         * Return a configured POST value or the provided default.
+         *
+         * @param string $key
+         * @param mixed $default
+         * @return mixed
+         */
+        public function post($key, $default = null)
+        {
+            $this->postCalls[] = [
+                'key' => $key,
+                'default' => $default,
+            ];
+
+            if (array_key_exists($key, $this->postValues)) {
+                return $this->postValues[$key];
+            }
+
+            return $default;
+        }
+    }
+
     class FileFtImageLibStub
     {
         /** @var array<int, string> */
@@ -1309,6 +1350,9 @@ namespace {
         /** @var FileFtConfigStub */
         protected $configMock;
 
+        /** @var FileFtRequestStub */
+        protected $requestMock;
+
         /** @var FileFtPermissionStub */
         protected $permissionMock;
 
@@ -1339,6 +1383,7 @@ namespace {
             $this->cpUrlFactory = new FileFtCpUrlFactoryStub();
             $this->templateMock = new FileFtTemplateStub();
             $this->configMock = new FileFtConfigStub();
+            $this->requestMock = new FileFtRequestStub();
             $this->permissionMock = new FileFtPermissionStub();
             $this->imageLibMock = new FileFtImageLibStub();
 
@@ -1351,6 +1396,7 @@ namespace {
             ee()->setMock('CP/URL', $this->cpUrlFactory);
             ee()->setMock('TMPL', $this->templateMock);
             ee()->setMock('config', $this->configMock);
+            ee()->setMock('Request', $this->requestMock);
             ee()->setMock('Permission', $this->permissionMock);
             ee()->setMock('image_lib', $this->imageLibMock);
         }
@@ -1443,6 +1489,20 @@ namespace {
         protected function setConfigItems(array $items)
         {
             $this->configMock->items = array_merge($this->configMock->items, $items);
+        }
+
+        /**
+         * Seed the request POST payload used by save_settings() tests.
+         *
+         * @param array<string, mixed> $postValues
+         * @return FileFtRequestStub
+         */
+        protected function setRequestPostValues(array $postValues)
+        {
+            $this->requestMock = new FileFtRequestStub($postValues);
+            ee()->setMock('Request', $this->requestMock);
+
+            return $this->requestMock;
         }
 
         /**
