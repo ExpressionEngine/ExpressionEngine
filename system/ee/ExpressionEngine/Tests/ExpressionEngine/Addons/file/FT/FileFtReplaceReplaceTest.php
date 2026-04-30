@@ -156,6 +156,35 @@ class FileFtReplaceReplaceTest extends FileFtTestBase
             $result
         );
     }
+
+    /**
+     * Assert image wrapping omits the extra attribute spacer when no image properties exist.
+     *
+     * @return void
+     */
+    public function testReplaceReplaceWrapsTransformedUrlAsImageWithoutImageProperties()
+    {
+        $formatRecorder = new FileFtReplaceReplaceFormatRecorder('https://cdn.example.com/images/hero-final.png');
+        ee()->setMock('Format', $formatRecorder);
+        $fieldtype = $this->makeFieldtype();
+
+        $result = $fieldtype->replace_replace([
+            'url' => 'https://cdn.example.com/images/hero-draft.png',
+            'filename' => 'Hero Banner',
+            'image_pre_format' => '<figure>',
+            'image_post_format' => '</figure>',
+            'image_properties' => '',
+        ], [
+            'find' => 'draft',
+            'replace' => 'final',
+            'wrap' => 'image',
+        ]);
+
+        $this->assertSame(
+            '<figure><img src="https://cdn.example.com/images/hero-final.png" alt="Hero Banner" /></figure>',
+            $result
+        );
+    }
 }
 
 class FileFtReplaceReplaceLoadRecorder extends FileFtLoadRecorder
