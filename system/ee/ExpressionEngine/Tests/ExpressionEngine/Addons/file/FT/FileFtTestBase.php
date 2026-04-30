@@ -594,6 +594,96 @@ namespace {
         }
     }
 
+    class FileFtValidationValidatorStub
+    {
+        /** @var array<string, string> */
+        public $rules = [];
+
+        /** @var array<int, array{name: string, callback: callable}> */
+        public $defineRuleCalls = [];
+
+        /** @var array<int, mixed> */
+        public $validateCalls = [];
+
+        /** @var mixed */
+        public $validateReturn;
+
+        /**
+         * Seed the validator return value used by validate_settings().
+         *
+         * @param mixed $validateReturn
+         * @return void
+         */
+        public function __construct($validateReturn = null)
+        {
+            $this->validateReturn = $validateReturn;
+        }
+
+        /**
+         * Record custom validation rule registration.
+         *
+         * @param string $name
+         * @param callable $callback
+         * @return self
+         */
+        public function defineRule($name, $callback)
+        {
+            $this->defineRuleCalls[] = [
+                'name' => $name,
+                'callback' => $callback,
+            ];
+
+            return $this;
+        }
+
+        /**
+         * Record validation payloads and return the configured result.
+         *
+         * @param mixed $settings
+         * @return mixed
+         */
+        public function validate($settings)
+        {
+            $this->validateCalls[] = $settings;
+
+            return $this->validateReturn;
+        }
+    }
+
+    class FileFtValidationServiceStub
+    {
+        /** @var array<int, array<string, string>> */
+        public $makeCalls = [];
+
+        /** @var FileFtValidationValidatorStub */
+        public $validator;
+
+        /**
+         * Seed the validator returned by ee('Validation')->make().
+         *
+         * @param FileFtValidationValidatorStub|null $validator
+         * @return void
+         */
+        public function __construct($validator = null)
+        {
+            $this->validator = $validator ?: new FileFtValidationValidatorStub();
+        }
+
+        /**
+         * Record requested rules and return the configured validator.
+         *
+         * @param array<string, string> $rules
+         * @return FileFtValidationValidatorStub
+         */
+        public function make(array $rules)
+        {
+            $this->makeCalls[] = $rules;
+            $this->validator->rules = $rules;
+
+            return $this->validator;
+        }
+    }
+
     class FileFtTemplateStub
     {
         /** @var array<string, mixed> */
@@ -1225,6 +1315,9 @@ namespace {
         /** @var FileFtImageLibStub */
         protected $imageLibMock;
 
+        /** @var FileFtValidationServiceStub|null */
+        protected $validationService;
+
         /**
          * Reset the EE mock container and seed the shared File_ft doubles.
          *
@@ -1402,6 +1495,20 @@ namespace {
             ee()->setMock('channel_form_lib', $channelFormLib);
 
             return $channelFormLib;
+        }
+
+        /**
+         * Register the validation service used by validate_settings().
+         *
+         * @param FileFtValidationValidatorStub|null $validator
+         * @return FileFtValidationServiceStub
+         */
+        protected function setValidationService($validator = null)
+        {
+            $this->validationService = new FileFtValidationServiceStub($validator);
+            ee()->setMock('Validation', $this->validationService);
+
+            return $this->validationService;
         }
     }
 }
