@@ -2177,6 +2177,217 @@ class GridModelInstallTest extends TestCase
         );
     }
 
+    /**
+     * Verify delete_columns_of_type() groups columns by field and delegates deletes per field.
+     *
+     * @return void
+     */
+    public function testDeleteColumnsOfTypeGroupsColumnsByFieldAndDelegatesDeletePerField(): void
+    {
+        $state = (object) ['calls' => []];
+        $gridColumns = [
+            ['col_id' => 7, 'col_type' => 'file', 'field_id' => 10, 'content_type' => 'channel'],
+            ['col_id' => 8, 'col_type' => 'file', 'field_id' => 10, 'content_type' => 'channel'],
+            ['col_id' => 12, 'col_type' => 'file', 'field_id' => 22, 'content_type' => 'fluid_field'],
+        ];
+
+        $queryResult = new class($state, $gridColumns) {
+            private $state;
+            private $gridColumns;
+
+            public function __construct($state, array $gridColumns)
+            {
+                $this->state = $state;
+                $this->gridColumns = $gridColumns;
+            }
+
+            public function result_array()
+            {
+                $this->state->calls[] = ['db.result_array'];
+
+                return $this->gridColumns;
+            }
+        };
+
+        ee()->setMock('db', new class($state, $queryResult) {
+            private $state;
+            private $queryResult;
+
+            public function __construct($state, $queryResult)
+            {
+                $this->state = $state;
+                $this->queryResult = $queryResult;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->calls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->calls[] = ['db.get', $table];
+
+                return $this->queryResult;
+            }
+        });
+
+        $model = $this->makeGridModelForDeleteColumnsOfTypeTest($state);
+        $model->delete_columns_of_type('file');
+
+        $this->assertSame(
+            [
+                ['db.where', 'col_type', 'file'],
+                ['db.get', 'grid_columns'],
+                ['db.result_array'],
+                ['model.delete_columns', [7, 8], [7 => 'file', 8 => 'file', 12 => 'file'], 10, 'channel'],
+                ['model.delete_columns', [12], [7 => 'file', 8 => 'file', 12 => 'file'], 22, 'fluid_field'],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * Verify delete_columns_of_type() is a no-op when no matching columns exist.
+     *
+     * @return void
+     */
+    public function testDeleteColumnsOfTypeSkipsDeleteWhenNoMatchingColumnsFound(): void
+    {
+        $state = (object) ['calls' => []];
+
+        $queryResult = new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function result_array()
+            {
+                $this->state->calls[] = ['db.result_array'];
+
+                return [];
+            }
+        };
+
+        ee()->setMock('db', new class($state, $queryResult) {
+            private $state;
+            private $queryResult;
+
+            public function __construct($state, $queryResult)
+            {
+                $this->state = $state;
+                $this->queryResult = $queryResult;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->calls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->calls[] = ['db.get', $table];
+
+                return $this->queryResult;
+            }
+        });
+
+        $model = $this->makeGridModelForDeleteColumnsOfTypeTest($state);
+        $model->delete_columns_of_type('relationship');
+
+        $this->assertSame(
+            [
+                ['db.where', 'col_type', 'relationship'],
+                ['db.get', 'grid_columns'],
+                ['db.result_array'],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * Verify delete_columns_of_type() bubbles delete failures and stops remaining fields.
+     *
+     * @return void
+     */
+    public function testDeleteColumnsOfTypeBubblesDeleteColumnsFailureAndStopsRemainingFields(): void
+    {
+        $state = (object) ['calls' => []];
+        $gridColumns = [
+            ['col_id' => 30, 'col_type' => 'textarea', 'field_id' => 3, 'content_type' => 'channel'],
+            ['col_id' => 31, 'col_type' => 'textarea', 'field_id' => 4, 'content_type' => 'channel'],
+        ];
+
+        $queryResult = new class($state, $gridColumns) {
+            private $state;
+            private $gridColumns;
+
+            public function __construct($state, array $gridColumns)
+            {
+                $this->state = $state;
+                $this->gridColumns = $gridColumns;
+            }
+
+            public function result_array()
+            {
+                $this->state->calls[] = ['db.result_array'];
+
+                return $this->gridColumns;
+            }
+        };
+
+        ee()->setMock('db', new class($state, $queryResult) {
+            private $state;
+            private $queryResult;
+
+            public function __construct($state, $queryResult)
+            {
+                $this->state = $state;
+                $this->queryResult = $queryResult;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->calls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->calls[] = ['db.get', $table];
+
+                return $this->queryResult;
+            }
+        });
+
+        $model = $this->makeGridModelForDeleteColumnsOfTypeTest($state, 3);
+
+        try {
+            $model->delete_columns_of_type('textarea');
+            $this->fail('Expected RuntimeException was not thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('delete_columns failed', $exception->getMessage());
+        }
+
+        $this->assertSame(
+            [
+                ['db.where', 'col_type', 'textarea'],
+                ['db.get', 'grid_columns'],
+                ['db.result_array'],
+                ['model.delete_columns', [30], [30 => 'textarea', 31 => 'textarea'], 3, 'channel'],
+            ],
+            $state->calls
+        );
+    }
+
     public function testDeleteFieldDropsExistingDataTableThenDeletesColumnSettings(): void
     {
         $state = (object) ['calls' => []];
@@ -2579,6 +2790,36 @@ class GridModelInstallTest extends TestCase
                 $this->state->calls[] = ['model._get_ft_api_settings', $field_id, $content_type];
 
                 return $this->ftApiSettings;
+            }
+        };
+    }
+
+    /**
+     * Build a Grid_model instance that records delete_columns() calls from delete_columns_of_type().
+     *
+     * @param object $state Shared mutable test state.
+     * @param int|null $throwOnFieldId Field ID that should trigger a RuntimeException.
+     * @return Grid_model
+     */
+    private function makeGridModelForDeleteColumnsOfTypeTest($state, ?int $throwOnFieldId = null): \Grid_model
+    {
+        return new class($state, $throwOnFieldId) extends \Grid_model {
+            private $state;
+            private $throwOnFieldId;
+
+            public function __construct($state, ?int $throwOnFieldId)
+            {
+                $this->state = $state;
+                $this->throwOnFieldId = $throwOnFieldId;
+            }
+
+            public function delete_columns($column_ids, $column_types, $field_id, $content_type)
+            {
+                $this->state->calls[] = ['model.delete_columns', $column_ids, $column_types, $field_id, $content_type];
+
+                if ($this->throwOnFieldId !== null && $field_id === $this->throwOnFieldId) {
+                    throw new \RuntimeException('delete_columns failed');
+                }
             }
         };
     }
