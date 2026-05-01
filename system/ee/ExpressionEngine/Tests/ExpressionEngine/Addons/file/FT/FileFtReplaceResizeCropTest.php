@@ -423,7 +423,7 @@ class FileFtReplaceResizeCropTest extends FileFtTestBase
             'width' => '150',
             'height' => '60',
         ];
-        $resizePath = '/srv/uploads/gallery/_resize/hero_resize_' . md5(serialize($resizeParams)) . '.jpg';
+        $resizePath = '/srv/uploads/gallery/_resize' . DIRECTORY_SEPARATOR . 'hero_resize_' . md5(serialize($resizeParams)) . '.jpg';
         $cropUrl = 'https://example.com/uploads/gallery/_crop/hero_crop_' . md5(serialize($cropParams)) . '.jpg';
         $data = [
             'model_object' => $modelObject,
