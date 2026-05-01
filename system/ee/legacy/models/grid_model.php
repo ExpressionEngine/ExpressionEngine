@@ -389,14 +389,12 @@ class Grid_model extends CI_Model
 
             ee()->load->helper('array_helper');
 
-            $orderby = element('orderby', $options);
-            if ($orderby == 'random' || empty($orderby)) {
-                $orderby = 'row_order';
-            }
-
             ee()->db->where_in('entry_id', $entry_ids);
             ee()->db->where('fluid_field_data_id', $fluid_field_data_id);
-            ee()->db->order_by($orderby, element('sort', $options, 'asc'));
+
+            foreach ($options['orderbys'] as $key => $orderby) {
+                ee()->db->order_by($orderby, $options['sorts'][$key]);
+            }
 
             // -------------------------------------------
             // 'grid_query' hook.
@@ -472,20 +470,24 @@ class Grid_model extends CI_Model
                 }
 
                 if (isset($options['orderby']) || isset($options['sort'])) {
-                    $orderby = element('orderby', $options);
-                    $sort = element('sort', $options, 'asc');
-                    if ($orderby == 'random' || empty($orderby)) {
-                        $orderby = 'row_order';
-                    }
-                    if ($orderby == 'row_id') {
-                        $orderby = 'orig_row_id';
-                    }
-                    usort($override, function ($a, $b) use ($orderby, $sort) {
-                        if ($sort == 'asc') {
-                            return ($a[$orderby] > $b[$orderby]) ? 1 : -1;
-                        } else {
+                    $orderbys = array_map(function ($orderby) {
+                        return ($orderby == 'row_id') ? 'orig_row_id' : $orderby;
+                    }, $options['orderbys']);
+
+                    usort($override, function ($a, $b) use ($orderbys, $options) {
+                        foreach ($orderbys as $key => $orderby) {
+                            if ($a[$orderby] == $b[$orderby]) {
+                                continue;
+                            }
+
+                            if ($options['sorts'][$key] == 'asc') {
+                                return ($a[$orderby] > $b[$orderby]) ? 1 : -1;
+                            }
+
                             return ($a[$orderby] < $b[$orderby]) ? 1 : -1;
                         }
+
+                        return 0;
                     });
                 }
 
@@ -637,11 +639,6 @@ class Grid_model extends CI_Model
         $row_id = element('row_id', $params, 0);
         $fixed_order = element('fixed_order', $params, 0);
 
-        // Validate sort parameter, only 'asc' and 'desc' allowed, default to 'asc'
-        if (! in_array($sort, array('asc', 'desc'))) {
-            $sort = 'asc';
-        }
-
         $columns = $this->get_columns_for_field($field_id, $content_type);
 
         $sortable_columns = array();
@@ -649,17 +646,15 @@ class Grid_model extends CI_Model
             $sortable_columns[$col['col_name']] = $col['col_id'];
         }
 
-        // orderby parameter can only order by the columns available to it,
-        // default to 'row_id'
-        if ($orderby != 'random') {
-            if (! in_array($orderby, array_keys($sortable_columns))) {
-                $orderby = 'row_order';
-            }
-            // Convert the column name to its matching table column name to hand
-            // off to the query for proper sorting
-            else {
-                $orderby = 'col_id_' . $sortable_columns[$orderby];
-            }
+        $orderbys = $this->_normalize_orderbys($orderby, $sortable_columns);
+        $sorts = $this->_normalize_sorts($sort, count($orderbys));
+
+        if ($this->_is_random_orderby($orderby)) {
+            $sort = $sorts[0];
+            $orderby = 'random';
+        } else {
+            $orderby = $orderbys[0];
+            $sort = $sorts[0];
         }
 
         // Gather search:field_name parameters
@@ -674,7 +669,9 @@ class Grid_model extends CI_Model
 
         return compact(
             'sort',
+            'sorts',
             'orderby',
+            'orderbys',
             'limit',
             'offset',
             'search',
@@ -705,9 +702,115 @@ class Grid_model extends CI_Model
             'search' => element('search', $params),
             'orderby' => element('orderby', $params),
             'sort' => element('sort', $params),
+            'orderbys' => element('orderbys', $params),
+            'sorts' => element('sorts', $params),
         );
 
         return md5(json_encode($db_params));
+    }
+
+    /**
+     * Normalize the Grid orderby parameter into database column names.
+     *
+     * @param mixed $orderby Raw orderby tag parameter.
+     * @param array $sortable_columns Valid Grid column names mapped to IDs.
+     * @return array Database columns to pass to the query builder.
+     */
+    protected function _normalize_orderbys($orderby, array $sortable_columns)
+    {
+        $orderbys = $this->_split_grid_parameter($orderby);
+
+        if (empty($orderbys)) {
+            return array('row_order');
+        }
+
+        if ($orderbys[0] == 'random') {
+            return array('row_order');
+        }
+
+        $normalized = array();
+
+        foreach ($orderbys as $orderby) {
+            if (! isset($sortable_columns[$orderby])) {
+                $normalized[] = 'row_order';
+
+                continue;
+            }
+
+            $normalized[] = 'col_id_' . $sortable_columns[$orderby];
+        }
+
+        return $normalized;
+    }
+
+    /**
+     * Normalize the Grid sort parameter to match each orderby field.
+     *
+     * @param mixed $sort Raw sort tag parameter.
+     * @param int $order_count Number of orderby fields.
+     * @return array Sort directions aligned to the orderby fields.
+     */
+    protected function _normalize_sorts($sort, $order_count)
+    {
+        $sorts = $this->_split_grid_parameter($sort);
+        $normalized = array();
+
+        for ($i = 0; $i < $order_count; $i++) {
+            $direction = isset($sorts[$i]) ? $sorts[$i] : 'asc';
+
+            if (! in_array($direction, array('asc', 'desc'))) {
+                $direction = 'asc';
+            }
+
+            $normalized[] = $direction;
+        }
+
+        return $normalized;
+    }
+
+    /**
+     * Determine whether the orderby parameter starts with random.
+     *
+     * @param mixed $orderby Raw orderby tag parameter.
+     * @return bool Whether random is the leading orderby token.
+     */
+    protected function _is_random_orderby($orderby)
+    {
+        $orderbys = $this->_split_grid_parameter($orderby);
+
+        return isset($orderbys[0]) && $orderbys[0] == 'random';
+    }
+
+    /**
+     * Split a pipe-delimited Grid parameter into clean tokens.
+     *
+     * @param mixed $value Raw tag parameter value.
+     * @return array Non-empty parameter tokens.
+     */
+    protected function _split_grid_parameter($value)
+    {
+        if ($value === false || $value === null) {
+            return array();
+        }
+
+        $raw_parts = is_array($value) ? $value : explode('|', (string) $value);
+        $parts = array();
+
+        foreach ($raw_parts as $part) {
+            if (is_array($part)) {
+                continue;
+            }
+
+            $part = trim((string) $part);
+
+            if ($part === '') {
+                continue;
+            }
+
+            $parts[] = $part;
+        }
+
+        return $parts;
     }
 
     /**
