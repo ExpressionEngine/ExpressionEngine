@@ -9,6 +9,9 @@ if (!class_exists('CI_Model')) {
 }
 
 require_once SYSPATH . 'ee/legacy/models/grid_model.php';
+if (! function_exists('element')) {
+    require_once SYSPATH . 'ee/legacy/helpers/array_helper.php';
+}
 
 class GridModelInstallTest extends TestCase
 {
@@ -2929,6 +2932,803 @@ class GridModelInstallTest extends TestCase
             ],
             $state->calls
         );
+    }
+
+    /**
+     * It caches fetched rows and reuses the warm cache on the next call.
+     *
+     * @return void
+     */
+    public function testGetEntryRowsCachesRowsAndSkipsSecondQueryWhenCacheIsWarm(): void
+    {
+        $state = (object) [
+            'calls' => [],
+            'getCallCount' => 0,
+            'fieldSearchCalls' => [],
+        ];
+        $rows = [
+            ['row_id' => 4, 'entry_id' => 101, 'row_order' => 0, 'fluid_field_data_id' => 0, 'col_id_9' => 'first'],
+            ['row_id' => 7, 'entry_id' => 101, 'row_order' => 1, 'fluid_field_data_id' => 0, 'col_id_9' => 'second'],
+        ];
+
+        ee()->setMock('db', new class($state, $rows) {
+            private $state;
+            private $rows;
+
+            public function __construct($state, array $rows)
+            {
+                $this->state = $state;
+                $this->rows = $rows;
+            }
+
+            public function where_in($column, $values)
+            {
+                $this->state->calls[] = ['db.where_in', $column, array_values($values)];
+
+                return $this;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->calls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function order_by($field, $direction = '', $escape = null)
+            {
+                $this->state->calls[] = ['db.order_by', $field, $direction, $escape];
+
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->calls[] = ['db.get', $table];
+                $this->state->getCallCount++;
+
+                return new class($this->state, $this->rows) {
+                    private $state;
+                    private $rows;
+
+                    public function __construct($state, array $rows)
+                    {
+                        $this->state = $state;
+                        $this->rows = $rows;
+                    }
+
+                    public function result_array()
+                    {
+                        $this->state->calls[] = ['db.result_array'];
+
+                        return $this->rows;
+                    }
+                };
+            }
+
+            public function _compile_select($reset = false, $test = false)
+            {
+                $this->state->calls[] = ['db._compile_select', $reset, $test];
+
+                return 'SELECT * FROM channel_grid_field_12';
+            }
+        });
+
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+        });
+
+        ee()->setMock('LivePreview', new class {
+            public function hasEntryData()
+            {
+                return false;
+            }
+
+            public function getEntryData()
+            {
+                return [];
+            }
+        });
+
+        $model = $this->makeGridModelForGetEntryRowsTest(
+            $state,
+            ['fixed_order' => '', 'search' => [], 'orderby' => '', 'sort' => 'asc']
+        );
+
+        $first = $model->get_entry_rows(101, 12, 'channel', ['ignored' => 'value'], false, 0);
+        $second = $model->get_entry_rows(101, 12, 'channel', ['ignored' => 'value'], false, 0);
+
+        $this->assertSame(1, $state->getCallCount);
+        $this->assertSame($first, $second);
+        $this->assertSame('first', $second[101][4]['col_id_9']);
+        $this->assertSame('second', $second[101][7]['col_id_9']);
+    }
+
+    /**
+     * It refreshes cached rows when fluid_field_data_id changes for the same marker.
+     *
+     * @return void
+     */
+    public function testGetEntryRowsRefreshesCacheWhenFluidFieldDataIdChanges(): void
+    {
+        $state = (object) [
+            'calls' => [],
+            'getCallCount' => 0,
+            'fieldSearchCalls' => [],
+        ];
+        $rowsByCall = [
+            [
+                ['row_id' => 1, 'entry_id' => 22, 'row_order' => 0, 'fluid_field_data_id' => 5, 'col_id_2' => 'first'],
+            ],
+            [
+                ['row_id' => 2, 'entry_id' => 22, 'row_order' => 0, 'fluid_field_data_id' => 9, 'col_id_2' => 'second'],
+            ],
+        ];
+
+        ee()->setMock('db', new class($state, $rowsByCall) {
+            private $state;
+            private $rowsByCall;
+
+            public function __construct($state, array $rowsByCall)
+            {
+                $this->state = $state;
+                $this->rowsByCall = $rowsByCall;
+            }
+
+            public function where_in($column, $values)
+            {
+                $this->state->calls[] = ['db.where_in', $column, array_values($values)];
+
+                return $this;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->calls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function order_by($field, $direction = '', $escape = null)
+            {
+                $this->state->calls[] = ['db.order_by', $field, $direction, $escape];
+
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->calls[] = ['db.get', $table];
+                $rows = $this->rowsByCall[$this->state->getCallCount] ?? [];
+                $this->state->getCallCount++;
+
+                return new class($rows) {
+                    private $rows;
+
+                    public function __construct(array $rows)
+                    {
+                        $this->rows = $rows;
+                    }
+
+                    public function result_array()
+                    {
+                        return $this->rows;
+                    }
+                };
+            }
+
+            public function _compile_select($reset = false, $test = false)
+            {
+                return 'SELECT * FROM channel_grid_field_3';
+            }
+        });
+
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+        });
+
+        ee()->setMock('LivePreview', new class {
+            public function hasEntryData()
+            {
+                return false;
+            }
+
+            public function getEntryData()
+            {
+                return [];
+            }
+        });
+
+        $model = $this->makeGridModelForGetEntryRowsTest(
+            $state,
+            ['fixed_order' => '', 'search' => [], 'orderby' => '', 'sort' => 'asc']
+        );
+
+        $model->get_entry_rows([22], 3, 'channel', [], false, 5);
+        $second = $model->get_entry_rows([22], 3, 'channel', [], false, 9);
+
+        $this->assertSame(2, $state->getCallCount);
+        $this->assertSame('second', $second[22][2]['col_id_2']);
+    }
+
+    /**
+     * It uses fixed-order and search options and delegates row loading to the grid_query hook.
+     *
+     * @return void
+     */
+    public function testGetEntryRowsUsesFixedOrderSearchAndGridQueryHookWhenActive(): void
+    {
+        $state = (object) [
+            'calls' => [],
+            'getCallCount' => 0,
+            'fieldSearchCalls' => [],
+            'gridQueryCalls' => [],
+        ];
+        $hookRows = [
+            ['row_id' => 30, 'entry_id' => 5, 'row_order' => 0, 'fluid_field_data_id' => 0, 'col_id_4' => 'hooked'],
+        ];
+
+        ee()->setMock('functions', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function ar_andor_string($value, $column)
+            {
+                $this->state->calls[] = ['functions.ar_andor_string', $value, $column];
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function where_in($column, $values)
+            {
+                $this->state->calls[] = ['db.where_in', $column, array_values($values)];
+
+                return $this;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->calls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function order_by($field, $direction = '', $escape = null)
+            {
+                $this->state->calls[] = ['db.order_by', $field, $direction, $escape];
+
+                return $this;
+            }
+
+            public function _compile_select($reset = false, $test = false)
+            {
+                $this->state->calls[] = ['db._compile_select', $reset, $test];
+
+                return 'SELECT row_id FROM channel_grid_field_12';
+            }
+
+            public function get($table)
+            {
+                $this->state->calls[] = ['db.get', $table];
+                $this->state->getCallCount++;
+                throw new \RuntimeException('db.get should not be called when grid_query hook is active.');
+            }
+        });
+
+        ee()->setMock('extensions', new class($state, $hookRows) {
+            private $state;
+            private $hookRows;
+
+            public function __construct($state, array $hookRows)
+            {
+                $this->state = $state;
+                $this->hookRows = $hookRows;
+            }
+
+            public function active_hook($name)
+            {
+                return $name === 'grid_query';
+            }
+
+            public function call($name, $entryIds, $fieldId, $contentType, $table, $sql)
+            {
+                $this->state->gridQueryCalls[] = [$name, $entryIds, $fieldId, $contentType, $table, $sql];
+
+                return $this->hookRows;
+            }
+        });
+
+        ee()->setMock('LivePreview', new class {
+            public function hasEntryData()
+            {
+                return false;
+            }
+
+            public function getEntryData()
+            {
+                return [];
+            }
+        });
+
+        $model = $this->makeGridModelForGetEntryRowsTest(
+            $state,
+            [
+                'fixed_order' => '30|10',
+                'search' => ['title' => 'alpha'],
+                'orderby' => 'random',
+                'sort' => 'desc',
+            ]
+        );
+
+        $result = $model->get_entry_rows([5], 12, 'channel', [], false, 0);
+
+        $this->assertSame('hooked', $result[5][30]['col_id_4']);
+        $this->assertSame(0, $state->getCallCount);
+        $this->assertContains(['functions.ar_andor_string', '30|10', 'row_id'], $state->calls);
+        $this->assertSame(
+            ['grid_query', [5], 12, 'channel', 'channel_grid_field_12', 'SELECT row_id FROM channel_grid_field_12'],
+            $state->gridQueryCalls[0]
+        );
+        $this->assertCount(1, $state->fieldSearchCalls);
+        $this->assertTrue($state->fieldSearchCalls[0][3]);
+    }
+
+    /**
+     * It bubbles database query exceptions when the grid_query hook is inactive.
+     *
+     * @return void
+     */
+    public function testGetEntryRowsBubblesDatabaseQueryExceptionWhenHookIsInactive(): void
+    {
+        $state = (object) [
+            'calls' => [],
+            'getCallCount' => 0,
+            'fieldSearchCalls' => [],
+        ];
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function where_in($column, $values)
+            {
+                return $this;
+            }
+
+            public function where($column, $value)
+            {
+                return $this;
+            }
+
+            public function order_by($field, $direction = '', $escape = null)
+            {
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->getCallCount++;
+                throw new \RuntimeException('grid row query failed');
+            }
+
+            public function _compile_select($reset = false, $test = false)
+            {
+                return 'SELECT * FROM channel_grid_field_12';
+            }
+        });
+
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+        });
+
+        ee()->setMock('LivePreview', new class {
+            public function hasEntryData()
+            {
+                return false;
+            }
+
+            public function getEntryData()
+            {
+                return [];
+            }
+        });
+
+        $model = $this->makeGridModelForGetEntryRowsTest(
+            $state,
+            ['fixed_order' => '', 'search' => [], 'orderby' => '', 'sort' => 'asc']
+        );
+
+        try {
+            $model->get_entry_rows([5], 12, 'channel', [], false, 0);
+            $this->fail('Expected RuntimeException was not thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('grid row query failed', $exception->getMessage());
+        }
+
+        $this->assertSame(1, $state->getCallCount);
+    }
+
+    /**
+     * It overrides cached row data with Live Preview rows and sorts by original row_id descending.
+     *
+     * @return void
+     */
+    public function testGetEntryRowsLivePreviewOverrideSortsByOriginalRowIdDescending(): void
+    {
+        $state = (object) [
+            'calls' => [],
+            'getCallCount' => 0,
+            'fieldSearchCalls' => [],
+        ];
+        $rows = [
+            ['row_id' => 6, 'entry_id' => 50, 'row_order' => 0, 'fluid_field_data_id' => 0, 'col_id_9' => 'db'],
+        ];
+
+        ee()->setMock('db', new class($state, $rows) {
+            private $state;
+            private $rows;
+
+            public function __construct($state, array $rows)
+            {
+                $this->state = $state;
+                $this->rows = $rows;
+            }
+
+            public function where_in($column, $values)
+            {
+                return $this;
+            }
+
+            public function where($column, $value)
+            {
+                return $this;
+            }
+
+            public function order_by($field, $direction = '', $escape = null)
+            {
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->getCallCount++;
+
+                return new class($this->rows) {
+                    private $rows;
+
+                    public function __construct(array $rows)
+                    {
+                        $this->rows = $rows;
+                    }
+
+                    public function result_array()
+                    {
+                        return $this->rows;
+                    }
+                };
+            }
+
+            public function _compile_select($reset = false, $test = false)
+            {
+                return 'SELECT * FROM channel_grid_field_12';
+            }
+        });
+
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+        });
+
+        ee()->setMock('LivePreview', new class {
+            public function hasEntryData()
+            {
+                return true;
+            }
+
+            public function getEntryData()
+            {
+                return [
+                    'entry_id' => 50,
+                    'field_id_12' => [
+                        'rows' => [
+                            2 => ['col_id_9' => 'beta'],
+                            10 => ['col_id_9' => 'alpha'],
+                        ],
+                    ],
+                ];
+            }
+        });
+
+        $model = $this->makeGridModelForGetEntryRowsTest(
+            $state,
+            ['fixed_order' => '', 'search' => [], 'orderby' => 'row_id', 'sort' => 'desc']
+        );
+
+        $result = $model->get_entry_rows([50], 12, 'channel', [], false, 0);
+        $rows = array_values($result[50]);
+
+        $this->assertSame(10, $rows[0]['orig_row_id']);
+        $this->assertSame(2, $rows[1]['orig_row_id']);
+        $this->assertSame(crc32(10), $rows[0]['row_id']);
+        $this->assertSame(crc32(2), $rows[1]['row_id']);
+    }
+
+    /**
+     * It applies preview-data search conditions and removes preview rows that fail all conditions.
+     *
+     * @return void
+     */
+    public function testGetEntryRowsLivePreviewSearchRemovesRowsThatFailAllConditions(): void
+    {
+        $state = (object) [
+            'calls' => [],
+            'getCallCount' => 0,
+            'fieldSearchCalls' => [],
+        ];
+        $rows = [
+            ['row_id' => 1, 'entry_id' => 42, 'row_order' => 0, 'fluid_field_data_id' => '15,33'],
+        ];
+
+        ee()->setMock('db', new class($rows) {
+            private $rows;
+
+            public function __construct(array $rows)
+            {
+                $this->rows = $rows;
+            }
+
+            public function where_in($column, $values)
+            {
+                return $this;
+            }
+
+            public function where($column, $value)
+            {
+                return $this;
+            }
+
+            public function order_by($field, $direction = '', $escape = null)
+            {
+                return $this;
+            }
+
+            public function get($table)
+            {
+                return new class($this->rows) {
+                    private $rows;
+
+                    public function __construct(array $rows)
+                    {
+                        $this->rows = $rows;
+                    }
+
+                    public function result_array()
+                    {
+                        return $this->rows;
+                    }
+                };
+            }
+
+            public function _compile_select($reset = false, $test = false)
+            {
+                return 'SELECT * FROM channel_grid_field_9';
+            }
+        });
+
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+        });
+
+        ee()->setMock('LivePreview', new class {
+            public function hasEntryData()
+            {
+                return true;
+            }
+
+            public function getEntryData()
+            {
+                return [
+                    'entry_id' => 42,
+                    15 => [
+                        'fields' => [
+                            33 => [[
+                                'field_id_9' => [
+                                    'rows' => [
+                                        'first' => ['col_id_2' => 'drop'],
+                                        'second' => ['col_id_2' => 'keep'],
+                                    ],
+                                ],
+                            ]],
+                        ],
+                    ],
+                ];
+            }
+        });
+
+        $model = $this->makeGridModelForGetEntryRowsTest(
+            $state,
+            ['fixed_order' => '', 'search' => ['status' => 'open'], 'orderby' => '', 'sort' => 'asc'],
+            ["col_id_2 = 'keep'"]
+        );
+
+        $result = $model->get_entry_rows([42], 9, 'channel', [], false, '15,33');
+        $rows = array_values($result[42]);
+
+        $this->assertCount(1, $rows);
+        $this->assertSame('second', $rows[0]['orig_row_id']);
+        $this->assertSame('keep', $rows[0]['col_id_2']);
+        $this->assertCount(3, $state->fieldSearchCalls);
+        $this->assertTrue($state->fieldSearchCalls[0][3]);
+        $this->assertFalse($state->fieldSearchCalls[1][3]);
+        $this->assertFalse($state->fieldSearchCalls[2][3]);
+    }
+
+    /**
+     * It sorts Live Preview rows by row_order ascending when orderby is random.
+     *
+     * @return void
+     */
+    public function testGetEntryRowsLivePreviewRandomOrderSortsByRowOrderAscending(): void
+    {
+        $state = (object) [
+            'calls' => [],
+            'getCallCount' => 0,
+            'fieldSearchCalls' => [],
+        ];
+        $rows = [
+            ['row_id' => 2, 'entry_id' => 71, 'row_order' => 0, 'fluid_field_data_id' => 0],
+        ];
+
+        ee()->setMock('db', new class($rows) {
+            private $rows;
+
+            public function __construct(array $rows)
+            {
+                $this->rows = $rows;
+            }
+
+            public function where_in($column, $values)
+            {
+                return $this;
+            }
+
+            public function where($column, $value)
+            {
+                return $this;
+            }
+
+            public function order_by($field, $direction = '', $escape = null)
+            {
+                return $this;
+            }
+
+            public function get($table)
+            {
+                return new class($this->rows) {
+                    private $rows;
+
+                    public function __construct(array $rows)
+                    {
+                        $this->rows = $rows;
+                    }
+
+                    public function result_array()
+                    {
+                        return $this->rows;
+                    }
+                };
+            }
+
+            public function _compile_select($reset = false, $test = false)
+            {
+                return 'SELECT * FROM channel_grid_field_4';
+            }
+        });
+
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+        });
+
+        ee()->setMock('LivePreview', new class {
+            public function hasEntryData()
+            {
+                return true;
+            }
+
+            public function getEntryData()
+            {
+                return [
+                    'entry_id' => 71,
+                    'field_id_4' => [
+                        'rows' => [
+                            'bbb' => ['col_id_1' => 'second'],
+                            'aaa' => ['col_id_1' => 'first'],
+                        ],
+                    ],
+                ];
+            }
+        });
+
+        $model = $this->makeGridModelForGetEntryRowsTest(
+            $state,
+            ['fixed_order' => '', 'search' => [], 'orderby' => 'random', 'sort' => 'asc']
+        );
+
+        $result = $model->get_entry_rows([71], 4, 'channel', [], false, 0);
+        $rows = array_values($result[71]);
+
+        $this->assertSame('bbb', $rows[0]['orig_row_id']);
+        $this->assertSame('aaa', $rows[1]['orig_row_id']);
+    }
+
+    /**
+     * Build a Grid_model instance that records get_entry_rows() parameter handling.
+     *
+     * @param object $state Shared mutable test state.
+     * @param array $validatedOptions Options returned from _validate_params().
+     * @param array $fieldSearchConditions Conditions returned from _field_search().
+     * @return Grid_model
+     */
+    private function makeGridModelForGetEntryRowsTest($state, array $validatedOptions, array $fieldSearchConditions = []): \Grid_model
+    {
+        return new class($state, $validatedOptions, $fieldSearchConditions) extends \Grid_model {
+            private $state;
+            private $validatedOptions;
+            private $fieldSearchConditions;
+
+            public function __construct($state, array $validatedOptions, array $fieldSearchConditions)
+            {
+                $this->state = $state;
+                $this->validatedOptions = $validatedOptions;
+                $this->fieldSearchConditions = $fieldSearchConditions;
+            }
+
+            protected function _validate_params($params, $field_id, $content_type)
+            {
+                $this->state->calls[] = ['model._validate_params', $params, $field_id, $content_type];
+
+                return $this->validatedOptions;
+            }
+
+            protected function _field_search($search_terms, $field_id, $content_type = 'channel', $set_sql_query = true)
+            {
+                $this->state->fieldSearchCalls[] = [$search_terms, $field_id, $content_type, $set_sql_query];
+
+                return $this->fieldSearchConditions;
+            }
+        };
     }
 
     /**
