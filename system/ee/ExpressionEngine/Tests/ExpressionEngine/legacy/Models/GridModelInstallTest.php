@@ -1839,6 +1839,344 @@ class GridModelInstallTest extends TestCase
         );
     }
 
+    public function testDeleteColumnsNormalizesScalarColumnIdAndDeletesDatatype(): void
+    {
+        $state = (object) ['calls' => []];
+        $ftApiSettings = [
+            'id_field' => 'col_id',
+            'type_field' => 'col_type',
+            'field_id' => 9,
+            'content_type' => 'fluid_field',
+        ];
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function where_in($column, $values)
+            {
+                $this->state->calls[] = ['db.where_in', $column, $values];
+
+                return $this;
+            }
+
+            public function delete($table)
+            {
+                $this->state->calls[] = ['db.delete', $table];
+            }
+        });
+
+        ee()->setMock('api_channel_fields', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function setup_handler($fieldType)
+            {
+                $this->state->calls[] = ['api.setup_handler', $fieldType];
+            }
+
+            public function delete_datatype($columnId, $dbInfo, $ftApiSettings)
+            {
+                $this->state->calls[] = ['api.delete_datatype', $columnId, $dbInfo, $ftApiSettings];
+            }
+        });
+
+        $model = $this->makeGridModelForDeleteColumnsTest($state, $ftApiSettings);
+        $model->delete_columns(31, [31 => 'text'], 9, 'fluid_field');
+
+        $this->assertSame(
+            [
+                ['db.where_in', 'col_id', [31]],
+                ['db.delete', 'grid_columns'],
+                ['api.setup_handler', 'text'],
+                ['model._get_ft_api_settings', 9, 'fluid_field'],
+                ['api.delete_datatype', 31, [], $ftApiSettings],
+            ],
+            $state->calls
+        );
+    }
+
+    public function testDeleteColumnsProcessesEachColumnIdInArrayOrder(): void
+    {
+        $state = (object) ['calls' => []];
+        $ftApiSettings = [
+            'id_field' => 'col_id',
+            'type_field' => 'col_type',
+            'field_id' => 18,
+            'content_type' => 'channel',
+        ];
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function where_in($column, $values)
+            {
+                $this->state->calls[] = ['db.where_in', $column, $values];
+
+                return $this;
+            }
+
+            public function delete($table)
+            {
+                $this->state->calls[] = ['db.delete', $table];
+            }
+        });
+
+        ee()->setMock('api_channel_fields', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function setup_handler($fieldType)
+            {
+                $this->state->calls[] = ['api.setup_handler', $fieldType];
+            }
+
+            public function delete_datatype($columnId, $dbInfo, $ftApiSettings)
+            {
+                $this->state->calls[] = ['api.delete_datatype', $columnId, $dbInfo, $ftApiSettings];
+            }
+        });
+
+        $model = $this->makeGridModelForDeleteColumnsTest($state, $ftApiSettings);
+        $model->delete_columns([12, 14], [12 => 'text', 14 => 'relationship'], 18, 'channel');
+
+        $this->assertSame(
+            [
+                ['db.where_in', 'col_id', [12, 14]],
+                ['db.delete', 'grid_columns'],
+                ['api.setup_handler', 'text'],
+                ['model._get_ft_api_settings', 18, 'channel'],
+                ['api.delete_datatype', 12, [], $ftApiSettings],
+                ['api.setup_handler', 'relationship'],
+                ['model._get_ft_api_settings', 18, 'channel'],
+                ['api.delete_datatype', 14, [], $ftApiSettings],
+            ],
+            $state->calls
+        );
+    }
+
+    public function testDeleteColumnsSkipsFieldtypeCallsWhenColumnIdListIsEmpty(): void
+    {
+        $state = (object) ['calls' => []];
+        $ftApiSettings = [
+            'id_field' => 'col_id',
+            'type_field' => 'col_type',
+            'field_id' => 5,
+            'content_type' => 'channel',
+        ];
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function where_in($column, $values)
+            {
+                $this->state->calls[] = ['db.where_in', $column, $values];
+
+                return $this;
+            }
+
+            public function delete($table)
+            {
+                $this->state->calls[] = ['db.delete', $table];
+            }
+        });
+
+        ee()->setMock('api_channel_fields', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function setup_handler($fieldType)
+            {
+                $this->state->calls[] = ['api.setup_handler', $fieldType];
+            }
+
+            public function delete_datatype($columnId, $dbInfo, $ftApiSettings)
+            {
+                $this->state->calls[] = ['api.delete_datatype', $columnId, $dbInfo, $ftApiSettings];
+            }
+        });
+
+        $model = $this->makeGridModelForDeleteColumnsTest($state, $ftApiSettings);
+        $model->delete_columns([], [], 5, 'channel');
+
+        $this->assertSame(
+            [
+                ['db.where_in', 'col_id', []],
+                ['db.delete', 'grid_columns'],
+            ],
+            $state->calls
+        );
+    }
+
+    public function testDeleteColumnsBubblesDeleteDatatypeFailureAndStopsRemainingColumns(): void
+    {
+        $state = (object) ['calls' => []];
+        $ftApiSettings = [
+            'id_field' => 'col_id',
+            'type_field' => 'col_type',
+            'field_id' => 6,
+            'content_type' => 'fluid_field',
+        ];
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function where_in($column, $values)
+            {
+                $this->state->calls[] = ['db.where_in', $column, $values];
+
+                return $this;
+            }
+
+            public function delete($table)
+            {
+                $this->state->calls[] = ['db.delete', $table];
+            }
+        });
+
+        ee()->setMock('api_channel_fields', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function setup_handler($fieldType)
+            {
+                $this->state->calls[] = ['api.setup_handler', $fieldType];
+            }
+
+            public function delete_datatype($columnId, $dbInfo, $ftApiSettings)
+            {
+                $this->state->calls[] = ['api.delete_datatype', $columnId, $dbInfo, $ftApiSettings];
+
+                if ($columnId === 4) {
+                    throw new \RuntimeException('delete_datatype failed');
+                }
+            }
+        });
+
+        $model = $this->makeGridModelForDeleteColumnsTest($state, $ftApiSettings);
+
+        try {
+            $model->delete_columns([4, 5], [4 => 'text', 5 => 'file'], 6, 'fluid_field');
+            $this->fail('Expected RuntimeException was not thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('delete_datatype failed', $exception->getMessage());
+        }
+
+        $this->assertSame(
+            [
+                ['db.where_in', 'col_id', [4, 5]],
+                ['db.delete', 'grid_columns'],
+                ['api.setup_handler', 'text'],
+                ['model._get_ft_api_settings', 6, 'fluid_field'],
+                ['api.delete_datatype', 4, [], $ftApiSettings],
+            ],
+            $state->calls
+        );
+    }
+
+    public function testDeleteColumnsBubblesDeleteFailureBeforeFieldtypeHandlersRun(): void
+    {
+        $state = (object) ['calls' => []];
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function where_in($column, $values)
+            {
+                $this->state->calls[] = ['db.where_in', $column, $values];
+
+                return $this;
+            }
+
+            public function delete($table)
+            {
+                $this->state->calls[] = ['db.delete', $table];
+                throw new \RuntimeException('delete failed');
+            }
+        });
+
+        ee()->setMock('api_channel_fields', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function setup_handler($fieldType)
+            {
+                $this->state->calls[] = ['api.setup_handler', $fieldType];
+            }
+
+            public function delete_datatype($columnId, $dbInfo, $ftApiSettings)
+            {
+                $this->state->calls[] = ['api.delete_datatype', $columnId, $dbInfo, $ftApiSettings];
+            }
+        });
+
+        $model = $this->makeGridModelForDeleteColumnsTest($state, [
+            'id_field' => 'col_id',
+            'type_field' => 'col_type',
+            'field_id' => 14,
+            'content_type' => 'channel',
+        ]);
+
+        try {
+            $model->delete_columns([9], [9 => 'text'], 14, 'channel');
+            $this->fail('Expected RuntimeException was not thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('delete failed', $exception->getMessage());
+        }
+
+        $this->assertSame(
+            [
+                ['db.where_in', 'col_id', [9]],
+                ['db.delete', 'grid_columns'],
+            ],
+            $state->calls
+        );
+    }
+
     public function testDeleteFieldDropsExistingDataTableThenDeletesColumnSettings(): void
     {
         $state = (object) ['calls' => []];
@@ -2197,6 +2535,34 @@ class GridModelInstallTest extends TestCase
      * @return Grid_model
      */
     private function makeGridModelForSaveColSettingsTest($state, array $ftApiSettings): \Grid_model
+    {
+        return new class($state, $ftApiSettings) extends \Grid_model {
+            private $state;
+            private $ftApiSettings;
+
+            public function __construct($state, $ftApiSettings)
+            {
+                $this->state = $state;
+                $this->ftApiSettings = $ftApiSettings;
+            }
+
+            protected function _get_ft_api_settings($field_id, $content_type = 'channel')
+            {
+                $this->state->calls[] = ['model._get_ft_api_settings', $field_id, $content_type];
+
+                return $this->ftApiSettings;
+            }
+        };
+    }
+
+    /**
+     * Build a Grid_model instance that records ft-api settings requests for delete_columns().
+     *
+     * @param object $state Shared mutable test state.
+     * @param array $ftApiSettings Settings returned by _get_ft_api_settings().
+     * @return Grid_model
+     */
+    private function makeGridModelForDeleteColumnsTest($state, array $ftApiSettings): \Grid_model
     {
         return new class($state, $ftApiSettings) extends \Grid_model {
             private $state;
