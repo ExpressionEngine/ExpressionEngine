@@ -643,4 +643,250 @@ class GridModelInstallTest extends TestCase
         );
     }
 
+    public function testCreateFieldCreatesTableSchemaAndReturnsTrueWhenTableDoesNotExist(): void
+    {
+        $state = (object) [
+            'calls' => [],
+            'capturedColumns' => null,
+            'capturedKeys' => [],
+            'capturedTables' => [],
+        ];
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function add_field($columns)
+            {
+                $this->state->calls[] = ['dbforge.add_field'];
+                $this->state->capturedColumns = $columns;
+            }
+
+            public function add_key($key, $primary = false)
+            {
+                $this->state->calls[] = ['dbforge.add_key', $key, $primary];
+                $this->state->capturedKeys[] = [$key, $primary];
+            }
+
+            public function create_table($table)
+            {
+                $this->state->calls[] = ['dbforge.create_table', $table];
+                $this->state->capturedTables[] = $table;
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function table_exists($table)
+            {
+                $this->state->calls[] = ['db.table_exists', $table];
+
+                return false;
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+
+        $result = $model->create_field(12, 'channel');
+
+        $expectedColumns = [
+            'row_id' => ['type' => 'int', 'constraint' => 10, 'unsigned' => true, 'auto_increment' => true],
+            'entry_id' => ['type' => 'int', 'constraint' => 10, 'unsigned' => true],
+            'row_order' => ['type' => 'int', 'constraint' => 10, 'unsigned' => true],
+            'fluid_field_data_id' => ['type' => 'int', 'constraint' => 10, 'unsigned' => true, 'default' => 0],
+        ];
+
+        $this->assertTrue($result);
+        $this->assertSame($expectedColumns, $state->capturedColumns);
+        $this->assertSame([['row_id', true], ['entry_id', false]], $state->capturedKeys);
+        $this->assertSame(['channel_grid_field_12'], $state->capturedTables);
+        $this->assertSame(
+            [
+                ['db.table_exists', 'channel_grid_field_12'],
+                ['load.dbforge'],
+                ['dbforge.add_field'],
+                ['dbforge.add_key', 'row_id', true],
+                ['dbforge.add_key', 'entry_id', false],
+                ['dbforge.create_table', 'channel_grid_field_12'],
+            ],
+            $state->calls
+        );
+    }
+
+    public function testCreateFieldReturnsFalseAndSkipsSchemaChangesWhenTableAlreadyExists(): void
+    {
+        $state = (object) ['calls' => []];
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function add_field($columns)
+            {
+                $this->state->calls[] = ['dbforge.add_field'];
+            }
+
+            public function add_key($key, $primary = false)
+            {
+                $this->state->calls[] = ['dbforge.add_key', $key, $primary];
+            }
+
+            public function create_table($table)
+            {
+                $this->state->calls[] = ['dbforge.create_table', $table];
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function table_exists($table)
+            {
+                $this->state->calls[] = ['db.table_exists', $table];
+
+                return true;
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+
+        $result = $model->create_field(9, 'fluid_field');
+
+        $this->assertFalse($result);
+        $this->assertSame(
+            [
+                ['db.table_exists', 'fluid_field_grid_field_9'],
+            ],
+            $state->calls
+        );
+    }
+
+    public function testCreateFieldBubblesCreateTableExceptionAfterPreparingSchema(): void
+    {
+        $state = (object) ['calls' => []];
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function add_field($columns)
+            {
+                $this->state->calls[] = ['dbforge.add_field'];
+            }
+
+            public function add_key($key, $primary = false)
+            {
+                $this->state->calls[] = ['dbforge.add_key', $key, $primary];
+            }
+
+            public function create_table($table)
+            {
+                $this->state->calls[] = ['dbforge.create_table', $table];
+                throw new \RuntimeException('create_field table creation failed');
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function table_exists($table)
+            {
+                $this->state->calls[] = ['db.table_exists', $table];
+
+                return false;
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+
+        try {
+            $model->create_field(77, 'channel');
+            $this->fail('Expected RuntimeException was not thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('create_field table creation failed', $exception->getMessage());
+        }
+
+        $this->assertSame(
+            [
+                ['db.table_exists', 'channel_grid_field_77'],
+                ['load.dbforge'],
+                ['dbforge.add_field'],
+                ['dbforge.add_key', 'row_id', true],
+                ['dbforge.add_key', 'entry_id', false],
+                ['dbforge.create_table', 'channel_grid_field_77'],
+            ],
+            $state->calls
+        );
+    }
+
 }
