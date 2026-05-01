@@ -3391,6 +3391,125 @@ class GridModelInstallTest extends TestCase
     }
 
     /**
+     * It returns an empty grid-data cache before any row-loading public API is called.
+     *
+     * @return void
+     */
+    public function testGetGridDataReturnsEmptyArrayBeforeRowsAreLoaded(): void
+    {
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+
+        $this->assertSame([], $model->get_grid_data());
+    }
+
+    /**
+     * It exposes the rows cached by get_entry_rows() with stable nested keys.
+     *
+     * @return void
+     */
+    public function testGetGridDataReturnsRowsCachedByGetEntryRows(): void
+    {
+        ee()->setMock('db', new class {
+            public function where_in($column, $values)
+            {
+                return $this;
+            }
+
+            public function where($column, $value)
+            {
+                return $this;
+            }
+
+            public function order_by($field, $direction = '', $escape = null)
+            {
+                return $this;
+            }
+
+            public function get($table)
+            {
+                return new class {
+                    public function result_array()
+                    {
+                        return [
+                            ['row_id' => 15, 'entry_id' => 9, 'row_order' => 0, 'fluid_field_data_id' => 0, 'col_id_4' => 'alpha'],
+                            ['row_id' => 16, 'entry_id' => 9, 'row_order' => 1, 'fluid_field_data_id' => 0, 'col_id_4' => 'beta'],
+                        ];
+                    }
+                };
+            }
+        });
+
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+        });
+
+        ee()->setMock('LivePreview', new class {
+            public function hasEntryData()
+            {
+                return false;
+            }
+
+            public function getEntryData()
+            {
+                return [];
+            }
+        });
+
+        $model = $this->makeGridModelForGetEntryRowsMarkerTest();
+        $model->get_entry_rows([9], 12, 'channel', [
+            'fixed_order' => '',
+            'search' => ['title' => 'alpha'],
+            'orderby' => 'row_order',
+            'sort' => 'asc',
+        ], false, 0);
+
+        $marker = md5(json_encode([
+            'fixed_order' => false,
+            'search' => ['title' => 'alpha'],
+            'orderby' => 'row_order',
+            'sort' => 'asc',
+        ]));
+
+        $this->assertSame(
+            [
+                'channel' => [
+                    12 => [
+                        $marker => [
+                            'params' => [
+                                'fixed_order' => '',
+                                'search' => ['title' => 'alpha'],
+                                'orderby' => 'row_order',
+                                'sort' => 'asc',
+                            ],
+                            'fluid_field_data_id' => 0,
+                            9 => [
+                                15 => [
+                                    'row_id' => 15,
+                                    'entry_id' => 9,
+                                    'row_order' => 0,
+                                    'fluid_field_data_id' => 0,
+                                    'col_id_4' => 'alpha',
+                                ],
+                                16 => [
+                                    'row_id' => 16,
+                                    'entry_id' => 9,
+                                    'row_order' => 1,
+                                    'fluid_field_data_id' => 0,
+                                    'col_id_4' => 'beta',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            $model->get_grid_data()
+        );
+    }
+
+    /**
      * It uses fixed-order and search options and delegates row loading to the grid_query hook.
      *
      * @return void
