@@ -5,6 +5,9 @@ require_once __DIR__ . '/../../../../eeObjectMock.php';
 if (!class_exists('EE_Fieldtype')) {
     class EE_Fieldtype
     {
+        use ExpressionEngine\Service\Template\Variables\ModifiableTrait;
+
+        public static $constructCount = 0;
         public $settings = [];
         public $field_name;
         public $field_id;
@@ -17,6 +20,7 @@ if (!class_exists('EE_Fieldtype')) {
 
         public function __construct()
         {
+            self::$constructCount++;
         }
 
         public function _init($config = [])

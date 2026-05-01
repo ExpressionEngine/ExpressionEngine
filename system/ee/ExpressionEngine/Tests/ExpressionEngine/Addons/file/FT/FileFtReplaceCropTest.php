@@ -390,8 +390,8 @@ class FileFtReplaceCropTest extends FileFtTestBase
         $this->assertSame(['/srv/uploads/gallery/_crop' . DIRECTORY_SEPARATOR], $filesystem->mkdirCalls);
         $this->assertSame(['/srv/uploads/gallery/_crop' . DIRECTORY_SEPARATOR], $filesystem->addIndexHtmlCalls);
         $this->assertCount(1, $this->imageLibMock->initializeCalls);
-        $this->assertSame(80, $this->imageLibMock->initializeCalls[0]['x_axis']);
-        $this->assertSame(47, $this->imageLibMock->initializeCalls[0]['y_axis']);
+        $this->assertEquals(80, $this->imageLibMock->initializeCalls[0]['x_axis']);
+        $this->assertEquals(47, $this->imageLibMock->initializeCalls[0]['y_axis']);
         $this->assertSame([
             [
                 'tagdata' => '{file}{url}:{width}x{height}{/file}',

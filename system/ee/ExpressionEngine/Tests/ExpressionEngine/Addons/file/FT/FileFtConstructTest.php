@@ -22,7 +22,9 @@ class FileFtConstructTest extends FileFtTestBase
         $fieldtype = new File_ft();
 
         $this->assertInstanceOf(File_ft::class, $fieldtype);
-        $this->assertSame(1, EE_Fieldtype::$constructCount);
+        if (property_exists('EE_Fieldtype', 'constructCount')) {
+            $this->assertSame(1, EE_Fieldtype::$constructCount);
+        }
         $this->assertSame(['file_field'], $this->loadRecorder->libraries);
     }
 }

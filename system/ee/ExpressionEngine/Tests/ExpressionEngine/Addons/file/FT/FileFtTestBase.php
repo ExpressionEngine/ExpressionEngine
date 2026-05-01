@@ -1373,7 +1373,9 @@ namespace {
 
             ee()->resetMocks();
 
-            EE_Fieldtype::$constructCount = 0;
+            if (property_exists('EE_Fieldtype', 'constructCount')) {
+                EE_Fieldtype::$constructCount = 0;
+            }
             $this->loadRecorder = new FileFtLoadRecorder();
             $this->sessionMock = new FileFtSessionStub();
             $this->fileFieldMock = new FileFtFileFieldStub();
