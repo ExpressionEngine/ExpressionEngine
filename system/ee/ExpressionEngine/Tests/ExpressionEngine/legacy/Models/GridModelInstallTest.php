@@ -2738,6 +2738,199 @@ class GridModelInstallTest extends TestCase
         );
     }
 
+    public function testGetEntryBuildsExpectedQueryWithExplicitFluidFieldDataIdAndReturnsRows(): void
+    {
+        $state = (object) ['calls' => []];
+        $expectedRows = [
+            ['row_id' => 10, 'entry_id' => 123, 'fluid_field_data_id' => 45],
+            ['row_id' => 11, 'entry_id' => 123, 'fluid_field_data_id' => 45],
+        ];
+
+        $queryResult = new class($state, $expectedRows) {
+            private $state;
+            private $expectedRows;
+
+            public function __construct($state, array $expectedRows)
+            {
+                $this->state = $state;
+                $this->expectedRows = $expectedRows;
+            }
+
+            public function result_array()
+            {
+                $this->state->calls[] = ['db.result_array'];
+
+                return $this->expectedRows;
+            }
+        };
+
+        ee()->setMock('db', new class($state, $queryResult) {
+            private $state;
+            private $queryResult;
+
+            public function __construct($state, $queryResult)
+            {
+                $this->state = $state;
+                $this->queryResult = $queryResult;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->calls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->calls[] = ['db.get', $table];
+
+                return $this->queryResult;
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $returnValue = $model->get_entry(123, 12, 'channel', 45);
+
+        $this->assertSame($expectedRows, $returnValue);
+        $this->assertSame(
+            [
+                ['db.where', 'entry_id', 123],
+                ['db.where', 'fluid_field_data_id', 45],
+                ['db.get', 'channel_grid_field_12'],
+                ['db.result_array'],
+            ],
+            $state->calls
+        );
+    }
+
+    public function testGetEntryUsesDefaultFluidFieldDataIdWhenArgumentIsOmitted(): void
+    {
+        $state = (object) ['calls' => []];
+        $expectedRows = [['row_id' => 1]];
+
+        $queryResult = new class($state, $expectedRows) {
+            private $state;
+            private $expectedRows;
+
+            public function __construct($state, array $expectedRows)
+            {
+                $this->state = $state;
+                $this->expectedRows = $expectedRows;
+            }
+
+            public function result_array()
+            {
+                $this->state->calls[] = ['db.result_array'];
+
+                return $this->expectedRows;
+            }
+        };
+
+        ee()->setMock('db', new class($state, $queryResult) {
+            private $state;
+            private $queryResult;
+
+            public function __construct($state, $queryResult)
+            {
+                $this->state = $state;
+                $this->queryResult = $queryResult;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->calls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->calls[] = ['db.get', $table];
+
+                return $this->queryResult;
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $returnValue = $model->get_entry(10, 5, 'fluid_field');
+
+        $this->assertSame($expectedRows, $returnValue);
+        $this->assertSame(
+            [
+                ['db.where', 'entry_id', 10],
+                ['db.where', 'fluid_field_data_id', 0],
+                ['db.get', 'fluid_field_grid_field_5'],
+                ['db.result_array'],
+            ],
+            $state->calls
+        );
+    }
+
+    public function testGetEntryBubblesResultArrayException(): void
+    {
+        $state = (object) ['calls' => []];
+
+        $queryResult = new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function result_array()
+            {
+                $this->state->calls[] = ['db.result_array'];
+                throw new \RuntimeException('result_array failed');
+            }
+        };
+
+        ee()->setMock('db', new class($state, $queryResult) {
+            private $state;
+            private $queryResult;
+
+            public function __construct($state, $queryResult)
+            {
+                $this->state = $state;
+                $this->queryResult = $queryResult;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->calls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->calls[] = ['db.get', $table];
+
+                return $this->queryResult;
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+
+        try {
+            $model->get_entry(88, 9, 'channel');
+            $this->fail('Expected RuntimeException was not thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('result_array failed', $exception->getMessage());
+        }
+
+        $this->assertSame(
+            [
+                ['db.where', 'entry_id', 88],
+                ['db.where', 'fluid_field_data_id', 0],
+                ['db.get', 'channel_grid_field_9'],
+                ['db.result_array'],
+            ],
+            $state->calls
+        );
+    }
+
     /**
      * Build a Grid_model instance that records ft-api settings requests.
      *
