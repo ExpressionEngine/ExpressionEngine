@@ -889,6 +889,543 @@ class GridModelInstallTest extends TestCase
         );
     }
 
+    /**
+     * It drops every matching Grid data table, then deletes Grid column metadata rows.
+     *
+     * @return void
+     */
+    public function testDeleteContentOfTypeDropsEachMatchingTableThenDeletesGridColumnRows(): void
+    {
+        $state = (object) ['calls' => []];
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function drop_table($table)
+            {
+                $this->state->calls[] = ['dbforge.drop_table', $table];
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function list_tables($prefix)
+            {
+                $this->state->calls[] = ['db.list_tables', $prefix];
+
+                return ['channel_grid_field_12', 'channel_grid_field_99'];
+            }
+
+            public function delete($table, $where)
+            {
+                $this->state->calls[] = ['db.delete', $table, $where];
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $model->delete_content_of_type('channel');
+
+        $this->assertSame(
+            [
+                ['db.list_tables', 'channelgrid_field_'],
+                ['load.dbforge'],
+                ['dbforge.drop_table', 'channel_grid_field_12'],
+                ['dbforge.drop_table', 'channel_grid_field_99'],
+                ['db.delete', 'grid_columns', ['content_type' => 'channel']],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * It deletes Grid column metadata rows even when no matching data tables exist.
+     *
+     * @return void
+     */
+    public function testDeleteContentOfTypeDeletesGridColumnRowsWhenNoMatchingTablesExist(): void
+    {
+        $state = (object) ['calls' => []];
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function drop_table($table)
+            {
+                $this->state->calls[] = ['dbforge.drop_table', $table];
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function list_tables($prefix)
+            {
+                $this->state->calls[] = ['db.list_tables', $prefix];
+
+                return [];
+            }
+
+            public function delete($table, $where)
+            {
+                $this->state->calls[] = ['db.delete', $table, $where];
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $model->delete_content_of_type('fluid_field');
+
+        $this->assertSame(
+            [
+                ['db.list_tables', 'fluid_fieldgrid_field_'],
+                ['load.dbforge'],
+                ['db.delete', 'grid_columns', ['content_type' => 'fluid_field']],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * It tolerates a non-iterable table list by surfacing the foreach warning and still deleting metadata.
+     *
+     * @return void
+     */
+    public function testDeleteContentOfTypeHandlesNullTableListByStillDeletingMetadata(): void
+    {
+        $state = (object) ['calls' => [], 'warnings' => []];
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function drop_table($table)
+            {
+                $this->state->calls[] = ['dbforge.drop_table', $table];
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function list_tables($prefix)
+            {
+                $this->state->calls[] = ['db.list_tables', $prefix];
+
+                return null;
+            }
+
+            public function delete($table, $where)
+            {
+                $this->state->calls[] = ['db.delete', $table, $where];
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+
+        set_error_handler(function ($severity, $message) use ($state) {
+            $state->warnings[] = [$severity, $message];
+
+            return true;
+        });
+
+        try {
+            $model->delete_content_of_type('channel');
+        } finally {
+            restore_error_handler();
+        }
+
+        $this->assertNotEmpty($state->warnings);
+        $this->assertStringContainsString('foreach', $state->warnings[0][1]);
+        $this->assertSame(
+            [
+                ['db.list_tables', 'channelgrid_field_'],
+                ['load.dbforge'],
+                ['db.delete', 'grid_columns', ['content_type' => 'channel']],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * It bubbles list_tables failures and performs no cleanup side effects.
+     *
+     * @return void
+     */
+    public function testDeleteContentOfTypeBubblesListTablesExceptionAndSkipsDbforgeAndDelete(): void
+    {
+        $state = (object) ['calls' => []];
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function drop_table($table)
+            {
+                $this->state->calls[] = ['dbforge.drop_table', $table];
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function list_tables($prefix)
+            {
+                $this->state->calls[] = ['db.list_tables', $prefix];
+                throw new \RuntimeException('list_tables failed');
+            }
+
+            public function delete($table, $where)
+            {
+                $this->state->calls[] = ['db.delete', $table, $where];
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+
+        try {
+            $model->delete_content_of_type('channel');
+            $this->fail('Expected RuntimeException was not thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('list_tables failed', $exception->getMessage());
+        }
+
+        $this->assertSame(
+            [
+                ['db.list_tables', 'channelgrid_field_'],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * It bubbles dbforge-loader failures and skips table drops and metadata deletion.
+     *
+     * @return void
+     */
+    public function testDeleteContentOfTypeBubblesDbforgeLoaderExceptionAndSkipsCleanup(): void
+    {
+        $state = (object) ['calls' => []];
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+                throw new \RuntimeException('dbforge loader failed');
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function drop_table($table)
+            {
+                $this->state->calls[] = ['dbforge.drop_table', $table];
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function list_tables($prefix)
+            {
+                $this->state->calls[] = ['db.list_tables', $prefix];
+
+                return ['channel_grid_field_6'];
+            }
+
+            public function delete($table, $where)
+            {
+                $this->state->calls[] = ['db.delete', $table, $where];
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+
+        try {
+            $model->delete_content_of_type('channel');
+            $this->fail('Expected RuntimeException was not thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('dbforge loader failed', $exception->getMessage());
+        }
+
+        $this->assertSame(
+            [
+                ['db.list_tables', 'channelgrid_field_'],
+                ['load.dbforge'],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * It bubbles drop_table failures and skips metadata deletion afterward.
+     *
+     * @return void
+     */
+    public function testDeleteContentOfTypeBubblesDropTableExceptionAndSkipsDelete(): void
+    {
+        $state = (object) ['calls' => []];
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function drop_table($table)
+            {
+                $this->state->calls[] = ['dbforge.drop_table', $table];
+                throw new \RuntimeException('drop_table failed');
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function list_tables($prefix)
+            {
+                $this->state->calls[] = ['db.list_tables', $prefix];
+
+                return ['channel_grid_field_8', 'channel_grid_field_9'];
+            }
+
+            public function delete($table, $where)
+            {
+                $this->state->calls[] = ['db.delete', $table, $where];
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+
+        try {
+            $model->delete_content_of_type('channel');
+            $this->fail('Expected RuntimeException was not thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('drop_table failed', $exception->getMessage());
+        }
+
+        $this->assertSame(
+            [
+                ['db.list_tables', 'channelgrid_field_'],
+                ['load.dbforge'],
+                ['dbforge.drop_table', 'channel_grid_field_8'],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * It bubbles metadata delete failures after all matching tables are dropped.
+     *
+     * @return void
+     */
+    public function testDeleteContentOfTypeBubblesDeleteExceptionAfterDroppingTables(): void
+    {
+        $state = (object) ['calls' => []];
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function drop_table($table)
+            {
+                $this->state->calls[] = ['dbforge.drop_table', $table];
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function list_tables($prefix)
+            {
+                $this->state->calls[] = ['db.list_tables', $prefix];
+
+                return ['fluid_field_grid_field_41', 'fluid_field_grid_field_42'];
+            }
+
+            public function delete($table, $where)
+            {
+                $this->state->calls[] = ['db.delete', $table, $where];
+                throw new \RuntimeException('delete failed');
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+
+        try {
+            $model->delete_content_of_type('fluid_field');
+            $this->fail('Expected RuntimeException was not thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('delete failed', $exception->getMessage());
+        }
+
+        $this->assertSame(
+            [
+                ['db.list_tables', 'fluid_fieldgrid_field_'],
+                ['load.dbforge'],
+                ['dbforge.drop_table', 'fluid_field_grid_field_41'],
+                ['dbforge.drop_table', 'fluid_field_grid_field_42'],
+                ['db.delete', 'grid_columns', ['content_type' => 'fluid_field']],
+            ],
+            $state->calls
+        );
+    }
+
     public function testDeleteFieldDropsExistingDataTableThenDeletesColumnSettings(): void
     {
         $state = (object) ['calls' => []];
