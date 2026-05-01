@@ -374,7 +374,7 @@ class FileFtReplaceCropTest extends FileFtTestBase
             'y' => '7',
         ];
         $hash = md5(serialize($params));
-        $destinationPath = '/srv/uploads/gallery/_crop/hero_crop_' . $hash . '.jpg';
+        $destinationPath = '/srv/uploads/gallery/_crop' . DIRECTORY_SEPARATOR . 'hero_crop_' . $hash . '.jpg';
         $destinationUrl = 'https://example.com/uploads/gallery/_crop/hero_crop_' . $hash . '.jpg';
         $data = [
             'model_object' => $modelObject,
