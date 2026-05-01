@@ -3510,6 +3510,187 @@ class GridModelInstallTest extends TestCase
     }
 
     /**
+     * It returns a warm single-field column cache without executing a database query.
+     *
+     * @return void
+     */
+    public function testGetColumnsForFieldReturnsWarmSingleFieldCacheWithoutDatabaseQuery(): void
+    {
+        $state = (object) ['calls' => []];
+        ee()->setMock('db', $this->makeDbMockForGetColumnsForFieldTest($state, []));
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $cachedColumns = [
+            5 => [
+                11 => [
+                    'field_id' => 5,
+                    'col_id' => 11,
+                    'col_name' => 'col_one',
+                    'col_settings' => ['format' => 'text'],
+                ],
+            ],
+        ];
+        $this->setGridModelColumnsCache($model, 'channel', $cachedColumns);
+
+        $result = $model->get_columns_for_field(5, 'channel');
+
+        $this->assertSame($cachedColumns[5], $result);
+        $this->assertSame([], $state->calls);
+    }
+
+    /**
+     * It returns only requested warm cache rows for multi-field lookups when every field is cached.
+     *
+     * @return void
+     */
+    public function testGetColumnsForFieldReturnsRequestedWarmCacheSubsetForMultiFieldLookup(): void
+    {
+        $state = (object) ['calls' => []];
+        ee()->setMock('db', $this->makeDbMockForGetColumnsForFieldTest($state, []));
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $cachedColumns = [
+            5 => [
+                11 => ['field_id' => 5, 'col_id' => 11, 'col_name' => 'col_one', 'col_settings' => ['format' => 'text']],
+            ],
+            8 => [
+                22 => ['field_id' => 8, 'col_id' => 22, 'col_name' => 'col_two', 'col_settings' => ['format' => 'text']],
+            ],
+            99 => [
+                300 => ['field_id' => 99, 'col_id' => 300, 'col_name' => 'col_three', 'col_settings' => ['format' => 'text']],
+            ],
+        ];
+        $this->setGridModelColumnsCache($model, 'channel', $cachedColumns);
+
+        $result = $model->get_columns_for_field([5, 8], 'channel');
+
+        $this->assertSame(
+            [
+                5 => $cachedColumns[5],
+                8 => $cachedColumns[8],
+            ],
+            $result
+        );
+        $this->assertSame([], $state->calls);
+    }
+
+    /**
+     * It fetches uncached multi-field columns, decodes JSON settings, and initializes empty arrays for fields without rows.
+     *
+     * @return void
+     */
+    public function testGetColumnsForFieldFetchesMissingMultiFieldColumnsAndInitializesEmptyFieldEntries(): void
+    {
+        $state = (object) ['calls' => []];
+        $rows = [
+            [
+                'field_id' => 8,
+                'col_id' => 41,
+                'col_name' => 'text_col',
+                'col_settings' => '{"maxl":120}',
+            ],
+            [
+                'field_id' => 8,
+                'col_id' => 42,
+                'col_name' => 'select_col',
+                'col_settings' => ['choices' => ['one', 'two']],
+            ],
+        ];
+        ee()->setMock('db', $this->makeDbMockForGetColumnsForFieldTest($state, $rows));
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $cachedColumns = [
+            5 => [
+                11 => [
+                    'field_id' => 5,
+                    'col_id' => 11,
+                    'col_name' => 'cached_col',
+                    'col_settings' => ['format' => 'text'],
+                ],
+            ],
+        ];
+        $this->setGridModelColumnsCache($model, 'channel', $cachedColumns);
+
+        $result = $model->get_columns_for_field([5, 8, 13], 'channel');
+
+        $this->assertSame(
+            [
+                ['db.where_in', 'field_id', [8, 13]],
+                ['db.where', 'content_type', 'channel'],
+                ['db.order_by', 'col_order'],
+                ['db.get', 'grid_columns'],
+                ['db.result_array'],
+            ],
+            $state->calls
+        );
+        $this->assertSame(['maxl' => 120], $result[8][41]['col_settings']);
+        $this->assertSame(['choices' => ['one', 'two']], $result[8][42]['col_settings']);
+        $this->assertSame([], $result[13]);
+        $this->assertSame($cachedColumns[5], $result[5]);
+    }
+
+    /**
+     * It bypasses warm single-field cache values when cache usage is disabled.
+     *
+     * @return void
+     */
+    public function testGetColumnsForFieldBypassesWarmSingleFieldCacheWhenCacheDisabled(): void
+    {
+        $state = (object) ['calls' => []];
+        $rows = [
+            [
+                'field_id' => 5,
+                'col_id' => 11,
+                'col_name' => 'col_one',
+                'col_settings' => '{"format":"select"}',
+            ],
+        ];
+        ee()->setMock('db', $this->makeDbMockForGetColumnsForFieldTest($state, $rows));
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $this->setGridModelColumnsCache($model, 'channel', [
+            5 => [
+                11 => [
+                    'field_id' => 5,
+                    'col_id' => 11,
+                    'col_name' => 'col_one',
+                    'col_settings' => ['format' => 'text'],
+                ],
+            ],
+        ]);
+
+        $result = $model->get_columns_for_field(5, 'channel', false);
+
+        $this->assertSame(
+            [
+                ['db.where_in', 'field_id', [5]],
+                ['db.where', 'content_type', 'channel'],
+                ['db.order_by', 'col_order'],
+                ['db.get', 'grid_columns'],
+                ['db.result_array'],
+            ],
+            $state->calls
+        );
+        $this->assertSame(['format' => 'select'], $result[11]['col_settings']);
+    }
+
+    /**
+     * It currently throws when cache bypass is requested for multiple field IDs due to nested field-id normalization.
+     *
+     * @return void
+     */
+    public function testGetColumnsForFieldThrowsTypeErrorWhenCacheDisabledForMultipleFieldIds(): void
+    {
+        $state = (object) ['calls' => []];
+        ee()->setMock('db', $this->makeDbMockForGetColumnsForFieldTest($state, []));
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+
+        $this->expectException(\TypeError::class);
+
+        $model->get_columns_for_field([5, 8], 'channel', false);
+    }
+
+    /**
      * It uses fixed-order and search options and delegates row loading to the grid_query hook.
      *
      * @return void
@@ -4358,6 +4539,86 @@ class GridModelInstallTest extends TestCase
                 if ($this->throwOnFieldId !== null && $field_id === $this->throwOnFieldId) {
                     throw new \RuntimeException('delete_columns failed');
                 }
+            }
+        };
+    }
+
+    /**
+     * Seed the model's protected column cache for one content type.
+     *
+     * @param Grid_model $model Grid model under test.
+     * @param string $contentType Content type cache bucket name.
+     * @param array $columnsByFieldId Cached columns keyed by field ID.
+     * @return void
+     */
+    private function setGridModelColumnsCache(\Grid_model $model, string $contentType, array $columnsByFieldId): void
+    {
+        $property = new \ReflectionProperty(\Grid_model::class, '_columns');
+        $property->setAccessible(true);
+        $property->setValue($model, [$contentType => $columnsByFieldId]);
+    }
+
+    /**
+     * Build a db mock that records get_columns_for_field() query-builder calls.
+     *
+     * @param object $state Shared mutable state that collects calls.
+     * @param array $rows Rows returned by result_array().
+     * @return object
+     */
+    private function makeDbMockForGetColumnsForFieldTest($state, array $rows)
+    {
+        return new class($state, $rows) {
+            private $state;
+            private $rows;
+
+            public function __construct($state, array $rows)
+            {
+                $this->state = $state;
+                $this->rows = $rows;
+            }
+
+            public function where_in($column, $values)
+            {
+                $this->state->calls[] = ['db.where_in', $column, array_values($values)];
+
+                return $this;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->calls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function order_by($field, $direction = '', $escape = null)
+            {
+                $this->state->calls[] = ['db.order_by', $field];
+
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->calls[] = ['db.get', $table];
+
+                return new class($this->state, $this->rows) {
+                    private $state;
+                    private $rows;
+
+                    public function __construct($state, array $rows)
+                    {
+                        $this->state = $state;
+                        $this->rows = $rows;
+                    }
+
+                    public function result_array()
+                    {
+                        $this->state->calls[] = ['db.result_array'];
+
+                        return $this->rows;
+                    }
+                };
             }
         };
     }
