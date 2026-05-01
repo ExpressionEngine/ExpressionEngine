@@ -3158,6 +3158,239 @@ class GridModelInstallTest extends TestCase
     }
 
     /**
+     * It reuses the same cache marker when only non-database options change.
+     *
+     * @return void
+     */
+    public function testGetEntryRowsCacheMarkerIgnoresNonDatabaseOptions(): void
+    {
+        $state = (object) [
+            'getCallCount' => 0,
+        ];
+        $rows = [
+            ['row_id' => 11, 'entry_id' => 42, 'row_order' => 0, 'fluid_field_data_id' => 0, 'col_id_3' => 'alpha'],
+        ];
+
+        ee()->setMock('db', new class($state, $rows) {
+            private $state;
+            private $rows;
+
+            public function __construct($state, array $rows)
+            {
+                $this->state = $state;
+                $this->rows = $rows;
+            }
+
+            public function where_in($column, $values)
+            {
+                return $this;
+            }
+
+            public function where($column, $value)
+            {
+                return $this;
+            }
+
+            public function order_by($field, $direction = '', $escape = null)
+            {
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->getCallCount++;
+
+                return new class($this->rows) {
+                    private $rows;
+
+                    public function __construct(array $rows)
+                    {
+                        $this->rows = $rows;
+                    }
+
+                    public function result_array()
+                    {
+                        return $this->rows;
+                    }
+                };
+            }
+        });
+
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+        });
+
+        ee()->setMock('LivePreview', new class {
+            public function hasEntryData()
+            {
+                return false;
+            }
+
+            public function getEntryData()
+            {
+                return [];
+            }
+        });
+
+        $model = $this->makeGridModelForGetEntryRowsMarkerTest();
+
+        $first = $model->get_entry_rows([42], 12, 'channel', [
+            'fixed_order' => '',
+            'search' => ['title' => 'news'],
+            'orderby' => 'row_order',
+            'sort' => 'asc',
+            'limit' => 1,
+            'offset' => 0,
+            'backspace' => 0,
+        ], false, 0);
+        $second = $model->get_entry_rows([42], 12, 'channel', [
+            'fixed_order' => '',
+            'search' => ['title' => 'news'],
+            'orderby' => 'row_order',
+            'sort' => 'asc',
+            'limit' => 999,
+            'offset' => 45,
+            'backspace' => 200,
+        ], false, 0);
+
+        $this->assertSame(1, $state->getCallCount);
+        $this->assertSame('alpha', $first[42][11]['col_id_3']);
+        $this->assertSame('alpha', $second[42][11]['col_id_3']);
+
+        $expectedMarker = md5(json_encode([
+            'fixed_order' => false,
+            'search' => ['title' => 'news'],
+            'orderby' => 'row_order',
+            'sort' => 'asc',
+        ]));
+        $gridData = $model->get_grid_data();
+        $this->assertArrayHasKey($expectedMarker, $gridData['channel'][12]);
+    }
+
+    /**
+     * It creates distinct cache markers when database-impacting options differ.
+     *
+     * @return void
+     */
+    public function testGetEntryRowsCacheMarkerChangesWhenDatabaseOptionsChange(): void
+    {
+        $state = (object) [
+            'getCallCount' => 0,
+            'rowsByCall' => [
+                [
+                    ['row_id' => 1, 'entry_id' => 88, 'row_order' => 0, 'fluid_field_data_id' => 0, 'col_id_4' => 'first'],
+                ],
+                [
+                    ['row_id' => 2, 'entry_id' => 88, 'row_order' => 1, 'fluid_field_data_id' => 0, 'col_id_4' => 'second'],
+                ],
+            ],
+        ];
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function where_in($column, $values)
+            {
+                return $this;
+            }
+
+            public function where($column, $value)
+            {
+                return $this;
+            }
+
+            public function order_by($field, $direction = '', $escape = null)
+            {
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $rows = $this->state->rowsByCall[$this->state->getCallCount] ?? [];
+                $this->state->getCallCount++;
+
+                return new class($rows) {
+                    private $rows;
+
+                    public function __construct(array $rows)
+                    {
+                        $this->rows = $rows;
+                    }
+
+                    public function result_array()
+                    {
+                        return $this->rows;
+                    }
+                };
+            }
+        });
+
+        ee()->setMock('extensions', new class {
+            public function active_hook($name)
+            {
+                return false;
+            }
+        });
+
+        ee()->setMock('LivePreview', new class {
+            public function hasEntryData()
+            {
+                return false;
+            }
+
+            public function getEntryData()
+            {
+                return [];
+            }
+        });
+
+        $model = $this->makeGridModelForGetEntryRowsMarkerTest();
+
+        $first = $model->get_entry_rows([88], 12, 'channel', [
+            'fixed_order' => '',
+            'search' => ['title' => 'alpha'],
+            'orderby' => 'row_order',
+            'sort' => 'asc',
+        ], false, 0);
+        $second = $model->get_entry_rows([88], 12, 'channel', [
+            'fixed_order' => '',
+            'search' => ['title' => 'beta'],
+            'orderby' => 'row_order',
+            'sort' => 'asc',
+            'limit' => 50,
+        ], false, 0);
+
+        $this->assertSame(2, $state->getCallCount);
+        $this->assertSame('first', $first[88][1]['col_id_4']);
+        $this->assertSame('second', $second[88][2]['col_id_4']);
+
+        $firstMarker = md5(json_encode([
+            'fixed_order' => false,
+            'search' => ['title' => 'alpha'],
+            'orderby' => 'row_order',
+            'sort' => 'asc',
+        ]));
+        $secondMarker = md5(json_encode([
+            'fixed_order' => false,
+            'search' => ['title' => 'beta'],
+            'orderby' => 'row_order',
+            'sort' => 'asc',
+        ]));
+
+        $gridData = $model->get_grid_data();
+        $this->assertArrayHasKey($firstMarker, $gridData['channel'][12]);
+        $this->assertArrayHasKey($secondMarker, $gridData['channel'][12]);
+    }
+
+    /**
      * It uses fixed-order and search options and delegates row loading to the grid_query hook.
      *
      * @return void
@@ -3784,6 +4017,34 @@ class GridModelInstallTest extends TestCase
                 $this->state->fieldSearchCalls[] = [$search_terms, $field_id, $content_type, $set_sql_query];
 
                 return $this->fieldSearchConditions;
+            }
+        };
+    }
+
+    /**
+     * Build a Grid_model instance that preserves marker-relevant options.
+     *
+     * @return Grid_model
+     */
+    private function makeGridModelForGetEntryRowsMarkerTest(): \Grid_model
+    {
+        return new class extends \Grid_model {
+            protected function _validate_params($params, $field_id, $content_type)
+            {
+                return array_merge(
+                    [
+                        'fixed_order' => '',
+                        'search' => [],
+                        'orderby' => 'row_order',
+                        'sort' => 'asc',
+                    ],
+                    $params
+                );
+            }
+
+            protected function _field_search($search_terms, $field_id, $content_type = 'channel', $set_sql_query = true)
+            {
+                return [];
             }
         };
     }
