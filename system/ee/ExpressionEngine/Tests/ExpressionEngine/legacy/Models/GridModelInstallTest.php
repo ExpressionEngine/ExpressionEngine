@@ -1426,6 +1426,419 @@ class GridModelInstallTest extends TestCase
         );
     }
 
+    /**
+     * It updates an existing Grid column and passes array settings through unchanged.
+     *
+     * @return void
+     */
+    public function testSaveColSettingsUpdatesExistingColumnWithArraySettings(): void
+    {
+        $state = (object) ['calls' => []];
+        $ftApiSettings = [
+            'id_field' => 'col_id',
+            'type_field' => 'col_type',
+            'field_id' => 9,
+            'content_type' => 'fluid_field',
+        ];
+        $column = [
+            'field_id' => 9,
+            'col_type' => 'text',
+            'col_settings' => ['maxl' => 120],
+            'col_label' => 'Summary',
+        ];
+
+        ee()->setMock('api_channel_fields', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function edit_datatype($colId, $colType, $colSettings, $ftApiSettings)
+            {
+                $this->state->calls[] = ['api.edit_datatype', $colId, $colType, $colSettings, $ftApiSettings];
+            }
+
+            public function setup_handler($colType)
+            {
+                $this->state->calls[] = ['api.setup_handler', $colType];
+            }
+
+            public function set_datatype($colId, $colSettings, $dbInfo, $native, $hasRelationData, $ftApiSettings)
+            {
+                $this->state->calls[] = ['api.set_datatype', $colId, $colSettings, $dbInfo, $native, $hasRelationData, $ftApiSettings];
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->calls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function update($table, $payload)
+            {
+                $this->state->calls[] = ['db.update', $table, $payload];
+            }
+
+            public function insert($table, $payload)
+            {
+                $this->state->calls[] = ['db.insert', $table, $payload];
+            }
+
+            public function insert_id()
+            {
+                $this->state->calls[] = ['db.insert_id'];
+
+                return 0;
+            }
+        });
+
+        $model = $this->makeGridModelForSaveColSettingsTest($state, $ftApiSettings);
+        $returnValue = $model->save_col_settings($column, 44, 'fluid_field');
+
+        $this->assertSame(44, $returnValue);
+        $this->assertSame(
+            [
+                ['model._get_ft_api_settings', 9, 'fluid_field'],
+                ['api.edit_datatype', 44, 'text', ['maxl' => 120], $ftApiSettings],
+                ['db.where', 'col_id', 44],
+                ['db.update', 'grid_columns', $column],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * It decodes JSON settings before updating an existing Grid column.
+     *
+     * @return void
+     */
+    public function testSaveColSettingsDecodesJsonForExistingColumnUpdate(): void
+    {
+        $state = (object) ['calls' => []];
+        $decodedSettings = ['format' => 'horizontal', 'rows' => 3];
+        $ftApiSettings = [
+            'id_field' => 'col_id',
+            'type_field' => 'col_type',
+            'field_id' => 12,
+            'content_type' => 'channel',
+        ];
+        $column = [
+            'field_id' => 12,
+            'col_type' => 'relationship',
+            'col_settings' => json_encode($decodedSettings),
+            'col_label' => 'Related Entry',
+        ];
+
+        ee()->setMock('api_channel_fields', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function edit_datatype($colId, $colType, $colSettings, $ftApiSettings)
+            {
+                $this->state->calls[] = ['api.edit_datatype', $colId, $colType, $colSettings, $ftApiSettings];
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->calls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function update($table, $payload)
+            {
+                $this->state->calls[] = ['db.update', $table, $payload];
+            }
+        });
+
+        $model = $this->makeGridModelForSaveColSettingsTest($state, $ftApiSettings);
+        $returnValue = $model->save_col_settings($column, 91);
+
+        $this->assertSame(91, $returnValue);
+        $this->assertSame(
+            [
+                ['model._get_ft_api_settings', 12, 'channel'],
+                ['api.edit_datatype', 91, 'relationship', $decodedSettings, $ftApiSettings],
+                ['db.where', 'col_id', 91],
+                ['db.update', 'grid_columns', $column],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * It bubbles edit_datatype failures before persisting existing Grid column updates.
+     *
+     * @return void
+     */
+    public function testSaveColSettingsBubblesExistingColumnEditDatatypeFailureBeforeUpdate(): void
+    {
+        $state = (object) ['calls' => []];
+        $ftApiSettings = [
+            'id_field' => 'col_id',
+            'type_field' => 'col_type',
+            'field_id' => 2,
+            'content_type' => 'channel',
+        ];
+        $column = [
+            'field_id' => 2,
+            'col_type' => 'textarea',
+            'col_settings' => ['rows' => 5],
+            'col_label' => 'Body',
+        ];
+
+        ee()->setMock('api_channel_fields', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function edit_datatype($colId, $colType, $colSettings, $ftApiSettings)
+            {
+                $this->state->calls[] = ['api.edit_datatype', $colId, $colType, $colSettings, $ftApiSettings];
+                throw new \RuntimeException('edit failed');
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->calls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function update($table, $payload)
+            {
+                $this->state->calls[] = ['db.update', $table, $payload];
+            }
+        });
+
+        $model = $this->makeGridModelForSaveColSettingsTest($state, $ftApiSettings);
+
+        try {
+            $model->save_col_settings($column, 13);
+            $this->fail('Expected RuntimeException was not thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('edit failed', $exception->getMessage());
+        }
+
+        $this->assertSame(
+            [
+                ['model._get_ft_api_settings', 2, 'channel'],
+                ['api.edit_datatype', 13, 'textarea', ['rows' => 5], $ftApiSettings],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * It inserts a new Grid column and configures its fieldtype columns with decoded JSON settings.
+     *
+     * @return void
+     */
+    public function testSaveColSettingsInsertsNewColumnAndConfiguresDatatypeWithJsonSettings(): void
+    {
+        $state = (object) ['calls' => []];
+        $decodedSettings = ['allowed_directories' => [4, 5], 'show_existing' => 'y'];
+        $ftApiSettings = [
+            'id_field' => 'col_id',
+            'type_field' => 'col_type',
+            'field_id' => 17,
+            'content_type' => 'fluid_field',
+        ];
+        $column = [
+            'field_id' => 17,
+            'col_type' => 'file',
+            'col_settings' => json_encode($decodedSettings),
+            'col_label' => 'Attachment',
+        ];
+
+        ee()->setMock('api_channel_fields', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function setup_handler($colType)
+            {
+                $this->state->calls[] = ['api.setup_handler', $colType];
+            }
+
+            public function set_datatype($colId, $colSettings, $dbInfo, $native, $hasRelationData, $ftApiSettings)
+            {
+                $this->state->calls[] = ['api.set_datatype', $colId, $colSettings, $dbInfo, $native, $hasRelationData, $ftApiSettings];
+            }
+
+            public function edit_datatype($colId, $colType, $colSettings, $ftApiSettings)
+            {
+                $this->state->calls[] = ['api.edit_datatype', $colId, $colType, $colSettings, $ftApiSettings];
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function insert($table, $payload)
+            {
+                $this->state->calls[] = ['db.insert', $table, $payload];
+            }
+
+            public function insert_id()
+            {
+                $this->state->calls[] = ['db.insert_id'];
+
+                return 376;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->calls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function update($table, $payload)
+            {
+                $this->state->calls[] = ['db.update', $table, $payload];
+            }
+        });
+
+        $model = $this->makeGridModelForSaveColSettingsTest($state, $ftApiSettings);
+        $returnValue = $model->save_col_settings($column, false, 'fluid_field');
+
+        $this->assertSame(376, $returnValue);
+        $this->assertSame(
+            [
+                ['db.insert', 'grid_columns', $column],
+                ['db.insert_id'],
+                ['api.setup_handler', 'file'],
+                ['model._get_ft_api_settings', 17, 'fluid_field'],
+                ['api.set_datatype', 376, $decodedSettings, [], true, false, $ftApiSettings],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * It bubbles insert failures for new Grid columns and skips fieldtype setup.
+     *
+     * @return void
+     */
+    public function testSaveColSettingsBubblesNewColumnInsertFailureBeforeFieldtypeSetup(): void
+    {
+        $state = (object) ['calls' => []];
+        $column = [
+            'field_id' => 21,
+            'col_type' => 'text',
+            'col_settings' => ['maxl' => 255],
+            'col_label' => 'Headline',
+        ];
+
+        ee()->setMock('api_channel_fields', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function setup_handler($colType)
+            {
+                $this->state->calls[] = ['api.setup_handler', $colType];
+            }
+
+            public function set_datatype($colId, $colSettings, $dbInfo, $native, $hasRelationData, $ftApiSettings)
+            {
+                $this->state->calls[] = ['api.set_datatype', $colId, $colSettings, $dbInfo, $native, $hasRelationData, $ftApiSettings];
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function insert($table, $payload)
+            {
+                $this->state->calls[] = ['db.insert', $table, $payload];
+                throw new \RuntimeException('insert failed');
+            }
+
+            public function insert_id()
+            {
+                $this->state->calls[] = ['db.insert_id'];
+
+                return 0;
+            }
+        });
+
+        $model = $this->makeGridModelForSaveColSettingsTest($state, [
+            'id_field' => 'col_id',
+            'type_field' => 'col_type',
+            'field_id' => 21,
+            'content_type' => 'channel',
+        ]);
+
+        try {
+            $model->save_col_settings($column);
+            $this->fail('Expected RuntimeException was not thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('insert failed', $exception->getMessage());
+        }
+
+        $this->assertSame(
+            [
+                ['db.insert', 'grid_columns', $column],
+            ],
+            $state->calls
+        );
+    }
+
     public function testDeleteFieldDropsExistingDataTableThenDeletesColumnSettings(): void
     {
         $state = (object) ['calls' => []];
@@ -1774,6 +2187,34 @@ class GridModelInstallTest extends TestCase
             ],
             $state->calls
         );
+    }
+
+    /**
+     * Build a Grid_model instance that records ft-api settings requests.
+     *
+     * @param object $state Shared mutable test state.
+     * @param array $ftApiSettings Settings returned by _get_ft_api_settings().
+     * @return Grid_model
+     */
+    private function makeGridModelForSaveColSettingsTest($state, array $ftApiSettings): \Grid_model
+    {
+        return new class($state, $ftApiSettings) extends \Grid_model {
+            private $state;
+            private $ftApiSettings;
+
+            public function __construct($state, $ftApiSettings)
+            {
+                $this->state = $state;
+                $this->ftApiSettings = $ftApiSettings;
+            }
+
+            protected function _get_ft_api_settings($field_id, $content_type = 'channel')
+            {
+                $this->state->calls[] = ['model._get_ft_api_settings', $field_id, $content_type];
+
+                return $this->ftApiSettings;
+            }
+        };
     }
 
 }
