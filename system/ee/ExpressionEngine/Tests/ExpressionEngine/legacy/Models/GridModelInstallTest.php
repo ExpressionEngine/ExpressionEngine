@@ -889,4 +889,211 @@ class GridModelInstallTest extends TestCase
         );
     }
 
+    public function testDeleteFieldDropsExistingDataTableThenDeletesColumnSettings(): void
+    {
+        $state = (object) ['calls' => []];
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function drop_table($table)
+            {
+                $this->state->calls[] = ['dbforge.drop_table', $table];
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function table_exists($table)
+            {
+                $this->state->calls[] = ['db.table_exists', $table];
+
+                return true;
+            }
+
+            public function delete($table, $where)
+            {
+                $this->state->calls[] = ['db.delete', $table, $where];
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+
+        $model->delete_field(12, 'fluid_field');
+
+        $this->assertSame(
+            [
+                ['db.table_exists', 'fluid_field_grid_field_12'],
+                ['load.dbforge'],
+                ['dbforge.drop_table', 'fluid_field_grid_field_12'],
+                ['db.delete', 'grid_columns', ['field_id' => 12]],
+            ],
+            $state->calls
+        );
+    }
+
+    public function testDeleteFieldSkipsDropWhenDataTableDoesNotExistAndStillDeletesColumnSettings(): void
+    {
+        $state = (object) ['calls' => []];
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function drop_table($table)
+            {
+                $this->state->calls[] = ['dbforge.drop_table', $table];
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function table_exists($table)
+            {
+                $this->state->calls[] = ['db.table_exists', $table];
+
+                return false;
+            }
+
+            public function delete($table, $where)
+            {
+                $this->state->calls[] = ['db.delete', $table, $where];
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+
+        $model->delete_field(9, 'channel');
+
+        $this->assertSame(
+            [
+                ['db.table_exists', 'channel_grid_field_9'],
+                ['db.delete', 'grid_columns', ['field_id' => 9]],
+            ],
+            $state->calls
+        );
+    }
+
+    public function testDeleteFieldBubblesDropTableExceptionAndSkipsColumnSettingsDelete(): void
+    {
+        $state = (object) ['calls' => []];
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function drop_table($table)
+            {
+                $this->state->calls[] = ['dbforge.drop_table', $table];
+                throw new \RuntimeException('drop_table failed');
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function table_exists($table)
+            {
+                $this->state->calls[] = ['db.table_exists', $table];
+
+                return true;
+            }
+
+            public function delete($table, $where)
+            {
+                $this->state->calls[] = ['db.delete', $table, $where];
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+
+        try {
+            $model->delete_field(5, 'channel');
+            $this->fail('Expected RuntimeException was not thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('drop_table failed', $exception->getMessage());
+        }
+
+        $this->assertSame(
+            [
+                ['db.table_exists', 'channel_grid_field_5'],
+                ['load.dbforge'],
+                ['dbforge.drop_table', 'channel_grid_field_5'],
+            ],
+            $state->calls
+        );
+    }
+
 }
