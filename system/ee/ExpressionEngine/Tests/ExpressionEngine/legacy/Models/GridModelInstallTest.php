@@ -178,4 +178,469 @@ class GridModelInstallTest extends TestCase
 
         $this->assertSame(0, $state->insertCallCount);
     }
+
+    public function testUninstallDropsColumnsTableAndDeletesContentTypeWhenNoGridFieldsFound(): void
+    {
+        $state = (object) ['calls' => []];
+        $queryResult = new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function result_array()
+            {
+                $this->state->calls[] = ['db.result_array'];
+
+                return [];
+            }
+        };
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function drop_table($table)
+            {
+                $this->state->calls[] = ['dbforge.drop_table', $table];
+            }
+        });
+
+        ee()->setMock('db', new class($state, $queryResult) {
+            private $state;
+            private $queryResult;
+
+            public function __construct($state, $queryResult)
+            {
+                $this->state = $state;
+                $this->queryResult = $queryResult;
+            }
+
+            public function select($column)
+            {
+                $this->state->calls[] = ['db.select', $column];
+
+                return $this;
+            }
+
+            public function distinct()
+            {
+                $this->state->calls[] = ['db.distinct'];
+
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->calls[] = ['db.get', $table];
+
+                return $this->queryResult;
+            }
+
+            public function delete($table, $where)
+            {
+                $this->state->calls[] = ['db.delete', $table, $where];
+            }
+        });
+
+        $model = new class extends \Grid_model {
+            public $deleteFieldCalls = [];
+
+            public function delete_field($field_id, $content_type)
+            {
+                $this->deleteFieldCalls[] = [$field_id, $content_type];
+            }
+        };
+
+        $model->uninstall();
+
+        $this->assertSame([], $model->deleteFieldCalls);
+        $this->assertSame(
+            [
+                ['db.select', 'field_id'],
+                ['db.distinct'],
+                ['db.get', 'grid_columns'],
+                ['db.result_array'],
+                ['load.dbforge'],
+                ['dbforge.drop_table', 'grid_columns'],
+                ['db.delete', 'content_types', ['name' => 'grid']],
+            ],
+            $state->calls
+        );
+    }
+
+    public function testUninstallDeletesEachGridFieldThenDropsColumnsTableAndDeletesContentType(): void
+    {
+        $state = (object) ['calls' => []];
+        $queryResult = new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function result_array()
+            {
+                $this->state->calls[] = ['db.result_array'];
+
+                return [
+                    ['field_id' => 3, 'content_type' => 'channel'],
+                    ['field_id' => 7, 'content_type' => 'fluid_field'],
+                ];
+            }
+        };
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function drop_table($table)
+            {
+                $this->state->calls[] = ['dbforge.drop_table', $table];
+            }
+        });
+
+        ee()->setMock('db', new class($state, $queryResult) {
+            private $state;
+            private $queryResult;
+
+            public function __construct($state, $queryResult)
+            {
+                $this->state = $state;
+                $this->queryResult = $queryResult;
+            }
+
+            public function select($column)
+            {
+                $this->state->calls[] = ['db.select', $column];
+
+                return $this;
+            }
+
+            public function distinct()
+            {
+                $this->state->calls[] = ['db.distinct'];
+
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->calls[] = ['db.get', $table];
+
+                return $this->queryResult;
+            }
+
+            public function delete($table, $where)
+            {
+                $this->state->calls[] = ['db.delete', $table, $where];
+            }
+        });
+
+        $model = new class($state) extends \Grid_model {
+            private $state;
+            public $deleteFieldCalls = [];
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function delete_field($field_id, $content_type)
+            {
+                $this->state->calls[] = ['model.delete_field', $field_id, $content_type];
+                $this->deleteFieldCalls[] = [$field_id, $content_type];
+            }
+        };
+
+        $model->uninstall();
+
+        $this->assertSame([[3, 'channel'], [7, 'fluid_field']], $model->deleteFieldCalls);
+        $this->assertSame(
+            [
+                ['db.select', 'field_id'],
+                ['db.distinct'],
+                ['db.get', 'grid_columns'],
+                ['db.result_array'],
+                ['model.delete_field', 3, 'channel'],
+                ['model.delete_field', 7, 'fluid_field'],
+                ['load.dbforge'],
+                ['dbforge.drop_table', 'grid_columns'],
+                ['db.delete', 'content_types', ['name' => 'grid']],
+            ],
+            $state->calls
+        );
+    }
+
+    public function testUninstallErrorsWhenResultRowOmitsContentTypeKey(): void
+    {
+        $state = (object) ['calls' => []];
+        $queryResult = new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function result_array()
+            {
+                $this->state->calls[] = ['db.result_array'];
+
+                return [
+                    ['field_id' => 42],
+                ];
+            }
+        };
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function drop_table($table)
+            {
+                $this->state->calls[] = ['dbforge.drop_table', $table];
+            }
+        });
+
+        ee()->setMock('db', new class($state, $queryResult) {
+            private $state;
+            private $queryResult;
+
+            public function __construct($state, $queryResult)
+            {
+                $this->state = $state;
+                $this->queryResult = $queryResult;
+            }
+
+            public function select($column)
+            {
+                $this->state->calls[] = ['db.select', $column];
+
+                return $this;
+            }
+
+            public function distinct()
+            {
+                $this->state->calls[] = ['db.distinct'];
+
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->calls[] = ['db.get', $table];
+
+                return $this->queryResult;
+            }
+
+            public function delete($table, $where)
+            {
+                $this->state->calls[] = ['db.delete', $table, $where];
+            }
+        });
+
+        $model = new class($state) extends \Grid_model {
+            private $state;
+            public $deleteFieldCalls = [];
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function delete_field($field_id, $content_type)
+            {
+                $this->state->calls[] = ['model.delete_field', $field_id, $content_type];
+                $this->deleteFieldCalls[] = [$field_id, $content_type];
+            }
+        };
+
+        set_error_handler(static function ($severity, $message, $file, $line) {
+            if (strpos($message, 'content_type') !== false) {
+                throw new \ErrorException($message, 0, $severity, $file, $line);
+            }
+
+            return false;
+        });
+
+        try {
+            try {
+                $model->uninstall();
+                $this->fail('Expected ErrorException was not thrown.');
+            } catch (\ErrorException $exception) {
+                $this->assertStringContainsString('content_type', $exception->getMessage());
+            }
+        } finally {
+            restore_error_handler();
+            $this->assertSame([], $model->deleteFieldCalls);
+            $this->assertSame(
+                [
+                    ['db.select', 'field_id'],
+                    ['db.distinct'],
+                    ['db.get', 'grid_columns'],
+                    ['db.result_array'],
+                ],
+                $state->calls
+            );
+        }
+    }
+
+    public function testUninstallBubblesGridFieldQueryExceptionAndSkipsDropAndDelete(): void
+    {
+        $state = (object) ['calls' => []];
+
+        ee()->setMock('load', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function dbforge()
+            {
+                $this->state->calls[] = ['load.dbforge'];
+            }
+        });
+
+        ee()->setMock('dbforge', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function drop_table($table)
+            {
+                $this->state->calls[] = ['dbforge.drop_table', $table];
+            }
+        });
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function select($column)
+            {
+                $this->state->calls[] = ['db.select', $column];
+
+                return $this;
+            }
+
+            public function distinct()
+            {
+                $this->state->calls[] = ['db.distinct'];
+
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->calls[] = ['db.get', $table];
+                throw new \RuntimeException('grid lookup failed');
+            }
+
+            public function delete($table, $where)
+            {
+                $this->state->calls[] = ['db.delete', $table, $where];
+            }
+        });
+
+        $model = new class($state) extends \Grid_model {
+            private $state;
+            public $deleteFieldCalls = [];
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function delete_field($field_id, $content_type)
+            {
+                $this->state->calls[] = ['model.delete_field', $field_id, $content_type];
+                $this->deleteFieldCalls[] = [$field_id, $content_type];
+            }
+        };
+
+        try {
+            $model->uninstall();
+            $this->fail('Expected RuntimeException was not thrown.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('grid lookup failed', $exception->getMessage());
+        }
+
+        $this->assertSame([], $model->deleteFieldCalls);
+        $this->assertSame(
+            [
+                ['db.select', 'field_id'],
+                ['db.distinct'],
+                ['db.get', 'grid_columns'],
+            ],
+            $state->calls
+        );
+    }
+
 }
