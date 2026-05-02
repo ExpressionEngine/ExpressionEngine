@@ -4252,6 +4252,233 @@ class GridModelInstallTest extends TestCase
     }
 
     /**
+     * It saves mixed new and existing rows, preserving row order and returning deleted row IDs.
+     *
+     * @return void
+     */
+    public function testSaveFieldDataPersistsNewAndExistingRowsWhenHookIsInactive(): void
+    {
+        $state = (object) ['calls' => [], 'hookCalls' => []];
+        ee()->setMock('db', $this->makeDbMockForSaveFieldDataTest($state, [['row_id' => 17]]));
+        ee()->setMock('extensions', $this->makeExtensionsMockForSaveFieldDataTest($state, false));
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $deletedRows = $model->save_field_data(
+            [
+                'new_row_7' => ['col_id_1' => 'new-value'],
+                'row_id_42' => ['col_id_1' => 'updated-value'],
+            ],
+            9,
+            'channel',
+            55
+        );
+
+        $this->assertSame([['row_id' => 17]], $deletedRows);
+        $this->assertSame(
+            ['db.where_not_in', 'row_id', [0, '42']],
+            $state->calls[2]
+        );
+        $this->assertSame(
+            [
+                'db.update_batch',
+                'channel_grid_field_9',
+                [
+                    ['col_id_1' => 'updated-value', 'row_order' => 1, 'row_id' => '42'],
+                ],
+                'row_id',
+            ],
+            $state->calls[5]
+        );
+        $this->assertSame(
+            [
+                'db.insert_batch',
+                'channel_grid_field_9',
+                [
+                    ['col_id_1' => 'new-value', 'row_order' => 0, 'entry_id' => 55],
+                ],
+            ],
+            $state->calls[6]
+        );
+        $this->assertSame([], $state->hookCalls);
+    }
+
+    /**
+     * It skips batch writes when save_field_data() receives no rows while still returning deletions.
+     *
+     * @return void
+     */
+    public function testSaveFieldDataSkipsBatchWritesWhenInputRowsAreEmpty(): void
+    {
+        $state = (object) ['calls' => [], 'hookCalls' => []];
+        ee()->setMock('db', $this->makeDbMockForSaveFieldDataTest($state, [['row_id' => 91]]));
+        ee()->setMock('extensions', $this->makeExtensionsMockForSaveFieldDataTest($state, false));
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $deletedRows = $model->save_field_data([], 9, 'channel', 55);
+
+        $this->assertSame([['row_id' => 91]], $deletedRows);
+        $this->assertSame(['db.where_not_in', 'row_id', [0]], $state->calls[2]);
+        foreach ($state->calls as $call) {
+            $this->assertNotSame('db.update_batch', $call[0]);
+            $this->assertNotSame('db.insert_batch', $call[0]);
+        }
+    }
+
+    /**
+     * It currently accepts null row data, emits a foreach warning, and still returns deletion rows.
+     *
+     * @return void
+     */
+    public function testSaveFieldDataWithNullRowsEmitsForeachWarningAndSkipsBatchWrites(): void
+    {
+        $state = (object) ['calls' => [], 'hookCalls' => []];
+        $warnings = [];
+        ee()->setMock('db', $this->makeDbMockForSaveFieldDataTest($state, [['row_id' => 77]]));
+        ee()->setMock('extensions', $this->makeExtensionsMockForSaveFieldDataTest($state, false));
+
+        set_error_handler(static function ($severity, $message) use (&$warnings) {
+            $warnings[] = [$severity, $message];
+
+            return true;
+        });
+
+        try {
+            $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+            $deletedRows = $model->save_field_data(null, 9, 'channel', 55);
+        } finally {
+            restore_error_handler();
+        }
+
+        $this->assertSame([['row_id' => 77]], $deletedRows);
+        $this->assertSame(['db.where_not_in', 'row_id', [0]], $state->calls[2]);
+        $this->assertNotEmpty($warnings);
+        $this->assertStringContainsString('foreach', $warnings[0][1]);
+        foreach ($state->calls as $call) {
+            $this->assertNotSame('db.update_batch', $call[0]);
+            $this->assertNotSame('db.insert_batch', $call[0]);
+        }
+    }
+
+    /**
+     * It applies fluid row scoping and persists hook-mutated save payloads when grid_save is active.
+     *
+     * @return void
+     */
+    public function testSaveFieldDataUsesFluidScopeAndHookReturnedRowsWhenHookIsActive(): void
+    {
+        $state = (object) ['calls' => [], 'hookCalls' => []];
+        $hookResponse = [
+            'new_rows' => [
+                ['entry_id' => 55, 'row_order' => 40, 'fluid_field_data_id' => 99, 'col_id_1' => 'hook-new'],
+            ],
+            'updated_rows' => [
+                ['row_id' => '8', 'row_order' => 41, 'fluid_field_data_id' => 99, 'col_id_1' => 'hook-updated'],
+            ],
+            'deleted_rows' => [['row_id' => 999]],
+        ];
+        ee()->setMock('db', $this->makeDbMockForSaveFieldDataTest($state, [['row_id' => 17]]));
+        ee()->setMock('extensions', $this->makeExtensionsMockForSaveFieldDataTest($state, true, $hookResponse));
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $deletedRows = $model->save_field_data(
+            [
+                'new_row_3' => ['col_id_1' => 'from-data-new'],
+                'row_id_8' => ['col_id_1' => 'from-data-updated'],
+            ],
+            9,
+            'channel',
+            55,
+            99
+        );
+
+        $this->assertSame([['row_id' => 999]], $deletedRows);
+        $this->assertSame(
+            ['db.where', 'fluid_field_data_id', 99],
+            $state->calls[3]
+        );
+        $this->assertSame(
+            [
+                'db.update_batch',
+                'channel_grid_field_9',
+                $hookResponse['updated_rows'],
+                'row_id',
+            ],
+            $state->calls[6]
+        );
+        $this->assertSame(
+            [
+                'db.insert_batch',
+                'channel_grid_field_9',
+                $hookResponse['new_rows'],
+            ],
+            $state->calls[7]
+        );
+        $this->assertCount(1, $state->hookCalls);
+        $this->assertSame('grid_save', $state->hookCalls[0][0]);
+        $this->assertSame(55, $state->hookCalls[0][1]);
+        $this->assertSame(9, $state->hookCalls[0][2]);
+        $this->assertSame('channel', $state->hookCalls[0][3]);
+        $this->assertSame('channel_grid_field_9', $state->hookCalls[0][4]);
+        $this->assertSame(
+            [
+                'new_rows' => [
+                    ['col_id_1' => 'from-data-new', 'row_order' => 0, 'fluid_field_data_id' => 99, 'entry_id' => 55],
+                ],
+                'updated_rows' => [
+                    ['col_id_1' => 'from-data-updated', 'row_order' => 1, 'fluid_field_data_id' => 99, 'row_id' => '8'],
+                ],
+                'deleted_rows' => [['row_id' => 17]],
+            ],
+            $state->hookCalls[0][5]
+        );
+    }
+
+    /**
+     * It treats existing row IDs as new rows when CLONING_MODE is enabled.
+     *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     * @return void
+     */
+    public function testSaveFieldDataTreatsExistingRowsAsInsertsDuringCloningMode(): void
+    {
+        define('CLONING_MODE', true);
+
+        $state = (object) ['calls' => [], 'hookCalls' => []];
+        ee()->setMock('db', $this->makeDbMockForSaveFieldDataTest($state, [['row_id' => 21]]));
+        ee()->setMock('extensions', $this->makeExtensionsMockForSaveFieldDataTest($state, false));
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $deletedRows = $model->save_field_data(
+            [
+                'row_id_12' => ['col_id_1' => 'cloned-row'],
+            ],
+            9,
+            'channel',
+            55
+        );
+
+        $this->assertSame([['row_id' => 21]], $deletedRows);
+        $this->assertSame(
+            ['db.where_not_in', 'row_id', [0]],
+            $state->calls[2]
+        );
+        $this->assertSame(
+            [
+                'db.insert_batch',
+                'channel_grid_field_9',
+                [
+                    ['col_id_1' => 'cloned-row', 'row_order' => 0, 'entry_id' => 55],
+                ],
+            ],
+            $state->calls[5]
+        );
+        foreach ($state->calls as $call) {
+            $this->assertNotSame('db.update_batch', $call[0]);
+        }
+    }
+
+    /**
      * Provide preview-condition vectors that map to comparator and normalization branches.
      *
      * @return array
@@ -4539,6 +4766,125 @@ class GridModelInstallTest extends TestCase
                 if ($this->throwOnFieldId !== null && $field_id === $this->throwOnFieldId) {
                     throw new \RuntimeException('delete_columns failed');
                 }
+            }
+        };
+    }
+
+    /**
+     * Build a db mock that records save_field_data() query and write operations.
+     *
+     * @param object $state Shared mutable state that collects calls.
+     * @param array $deletedRows Rows returned by the delete-discovery query.
+     * @return object
+     */
+    private function makeDbMockForSaveFieldDataTest($state, array $deletedRows)
+    {
+        return new class($state, $deletedRows) {
+            private $state;
+            private $deletedRows;
+
+            public function __construct($state, array $deletedRows)
+            {
+                $this->state = $state;
+                $this->deletedRows = $deletedRows;
+            }
+
+            public function select($column)
+            {
+                $this->state->calls[] = ['db.select', $column];
+
+                return $this;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->calls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function where_not_in($column, $values)
+            {
+                $this->state->calls[] = ['db.where_not_in', $column, array_values($values)];
+
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->calls[] = ['db.get', $table];
+
+                return new class($this->state, $this->deletedRows) {
+                    private $state;
+                    private $deletedRows;
+
+                    public function __construct($state, array $deletedRows)
+                    {
+                        $this->state = $state;
+                        $this->deletedRows = $deletedRows;
+                    }
+
+                    public function result_array()
+                    {
+                        $this->state->calls[] = ['db.result_array'];
+
+                        return $this->deletedRows;
+                    }
+                };
+            }
+
+            public function update_batch($table, $rows, $index)
+            {
+                $this->state->calls[] = ['db.update_batch', $table, $rows, $index];
+
+                return true;
+            }
+
+            public function insert_batch($table, $rows)
+            {
+                $this->state->calls[] = ['db.insert_batch', $table, $rows];
+
+                return true;
+            }
+        };
+    }
+
+    /**
+     * Build an extensions mock for save_field_data() hook state and payload interception.
+     *
+     * @param object $state Shared mutable state that collects hook calls.
+     * @param bool $isActive Whether the grid_save hook is active.
+     * @param array|null $hookResponse Replacement payload returned by the hook.
+     * @return object
+     */
+    private function makeExtensionsMockForSaveFieldDataTest($state, bool $isActive, ?array $hookResponse = null)
+    {
+        return new class($state, $isActive, $hookResponse) {
+            private $state;
+            private $isActive;
+            private $hookResponse;
+
+            public function __construct($state, bool $isActive, ?array $hookResponse)
+            {
+                $this->state = $state;
+                $this->isActive = $isActive;
+                $this->hookResponse = $hookResponse;
+            }
+
+            public function active_hook($name)
+            {
+                return $this->isActive && $name === 'grid_save';
+            }
+
+            public function call($name, $entryId, $fieldId, $contentType, $tableName, $data)
+            {
+                $this->state->hookCalls[] = [$name, $entryId, $fieldId, $contentType, $tableName, $data];
+
+                if ($this->hookResponse !== null) {
+                    return $this->hookResponse;
+                }
+
+                return $data;
             }
         };
     }
