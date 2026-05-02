@@ -4479,6 +4479,88 @@ class GridModelInstallTest extends TestCase
     }
 
     /**
+     * It deletes only the provided row IDs from the resolved Grid data table.
+     *
+     * @return void
+     */
+    public function testDeleteRowsDeletesProvidedRowIdsFromResolvedTable(): void
+    {
+        $state = (object) ['calls' => []];
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function where_in($column, $values)
+            {
+                $this->state->calls[] = ['db.where_in', $column, array_values($values)];
+
+                return $this;
+            }
+
+            public function delete($table)
+            {
+                $this->state->calls[] = ['db.delete', $table];
+
+                return true;
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $model->delete_rows([3, 7, 11], 14, 'fluid_field');
+
+        $this->assertSame(
+            [
+                ['db.where_in', 'row_id', [3, 7, 11]],
+                ['db.delete', 'fluid_field_grid_field_14'],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * It skips delete queries when delete_rows() receives no row IDs.
+     *
+     * @return void
+     */
+    public function testDeleteRowsSkipsDeleteWhenRowIdsAreEmpty(): void
+    {
+        $state = (object) ['calls' => []];
+
+        ee()->setMock('db', new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+            }
+
+            public function where_in($column, $values)
+            {
+                $this->state->calls[] = ['db.where_in', $column, array_values($values)];
+
+                return $this;
+            }
+
+            public function delete($table)
+            {
+                $this->state->calls[] = ['db.delete', $table];
+
+                return true;
+            }
+        });
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $model->delete_rows([], 14, 'fluid_field');
+
+        $this->assertSame([], $state->calls);
+    }
+
+    /**
      * Provide preview-condition vectors that map to comparator and normalization branches.
      *
      * @return array
