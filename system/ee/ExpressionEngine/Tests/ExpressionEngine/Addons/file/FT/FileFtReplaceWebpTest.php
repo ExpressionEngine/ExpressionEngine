@@ -290,7 +290,7 @@ class FileFtReplaceWebpTest extends FileFtTestBase
         ]);
         $params = ['quality' => '60'];
         $hash = md5(serialize($params));
-        $destinationPath = '/srv/uploads/gallery/_webp/hero_.jpg_webp_' . $hash . '.webp';
+        $destinationPath = '/srv/uploads/gallery/_webp' . DIRECTORY_SEPARATOR . 'hero_.jpg_webp_' . $hash . '.webp';
         $destinationUrl = 'https://example.com/uploads/gallery/_webp/hero_.jpg_webp_' . $hash . '.webp';
         $data = [
             'model_object' => $modelObject,

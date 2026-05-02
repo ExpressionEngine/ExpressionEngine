@@ -524,7 +524,7 @@ class FileFtReplaceResizeTest extends FileFtTestBase
         ]);
         $params = ['height' => '240'];
         $hash = md5(serialize($params));
-        $destinationPath = '/srv/uploads/gallery/_resize/hero_resize_' . $hash . '.jpg';
+        $destinationPath = '/srv/uploads/gallery/_resize' . DIRECTORY_SEPARATOR . 'hero_resize_' . $hash . '.jpg';
         $destinationUrl = 'https://example.com/uploads/gallery/_resize/hero_resize_' . $hash . '.jpg';
         $filesystem->directories['/srv/uploads/gallery/_resize' . DIRECTORY_SEPARATOR] = true;
         $filesystem->existingPaths[$destinationPath] = true;
