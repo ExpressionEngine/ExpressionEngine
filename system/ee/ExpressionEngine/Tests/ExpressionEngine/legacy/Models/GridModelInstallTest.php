@@ -4561,6 +4561,142 @@ class GridModelInstallTest extends TestCase
     }
 
     /**
+     * It keeps existing row_id keys and remaps only missing keys to new_row slots.
+     *
+     * @return void
+     */
+    public function testRemapRevisionRowsKeepsExistingRowKeysAndRemapsMissingOnes(): void
+    {
+        $state = (object) ['calls' => []];
+        ee()->setMock('db', $this->makeDbServiceMockForRemapRevisionRowsTest($state, [['row_id' => 5], ['row_id' => 12]]));
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $result = $model->remap_revision_rows(
+            [
+                'row_id_5' => ['col_id_1' => 'keep-existing-a'],
+                'row_id_7' => ['col_id_1' => 'becomes-new'],
+                'row_id_12' => ['col_id_1' => 'keep-existing-b'],
+            ],
+            9,
+            33,
+            44,
+            'fluid'
+        );
+
+        $this->assertSame(
+            [
+                'row_id_5' => ['col_id_1' => 'keep-existing-a'],
+                'new_row_10' => ['col_id_1' => 'becomes-new'],
+                'row_id_12' => ['col_id_1' => 'keep-existing-b'],
+            ],
+            $result
+        );
+        $this->assertSame(
+            [
+                ['db.select', 'row_id'],
+                ['db.from', 'fluid_grid_field_9'],
+                ['db.where', 'entry_id', 33],
+                ['db.where', 'fluid_field_data_id', 44],
+                ['db.get'],
+                ['db.num_rows'],
+                ['db.result_array'],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * It remaps every row to new_row keys when no stored rows exist for the entry.
+     *
+     * @return void
+     */
+    public function testRemapRevisionRowsRemapsAllKeysWhenNoRowsExist(): void
+    {
+        $state = (object) ['calls' => []];
+        ee()->setMock('db', $this->makeDbServiceMockForRemapRevisionRowsTest($state, []));
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $result = $model->remap_revision_rows(
+            [
+                'row_id_3' => ['col_id_1' => 'first'],
+                'row_id_4' => ['col_id_1' => 'second'],
+            ],
+            14,
+            77
+        );
+
+        $this->assertSame(
+            [
+                'new_row_5' => ['col_id_1' => 'first'],
+                'new_row_6' => ['col_id_1' => 'second'],
+            ],
+            $result
+        );
+        $this->assertSame(
+            [
+                ['db.select', 'row_id'],
+                ['db.from', 'channel_grid_field_14'],
+                ['db.where', 'entry_id', 77],
+                ['db.where', 'fluid_field_data_id', 0],
+                ['db.get'],
+                ['db.num_rows'],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
+     * It preserves row values by index even when remapping produces non-sequential new_row keys.
+     *
+     * @return void
+     */
+    public function testRemapRevisionRowsPreservesValueOrderWhenRemappingKeys(): void
+    {
+        $state = (object) ['calls' => []];
+        ee()->setMock('db', $this->makeDbServiceMockForRemapRevisionRowsTest($state, [['row_id' => 1]]));
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $result = $model->remap_revision_rows(
+            [
+                'row_id_2' => ['col_id_1' => 'alpha'],
+                'row_id_1' => ['col_id_1' => 'beta'],
+            ],
+            8,
+            19
+        );
+
+        $this->assertSame(['alpha', 'beta'], array_column(array_values($result), 'col_id_1'));
+        $this->assertSame(['new_row_4', 'row_id_1'], array_keys($result));
+    }
+
+    /**
+     * It returns an empty array for empty input rows while still resolving existing row IDs.
+     *
+     * @return void
+     */
+    public function testRemapRevisionRowsReturnsEmptyArrayWhenRowsInputIsEmpty(): void
+    {
+        $state = (object) ['calls' => []];
+        ee()->setMock('db', $this->makeDbServiceMockForRemapRevisionRowsTest($state, []));
+
+        $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
+        $result = $model->remap_revision_rows([], 6, 99);
+
+        $this->assertSame([], $result);
+        $this->assertSame(
+            [
+                ['db.select', 'row_id'],
+                ['db.from', 'channel_grid_field_6'],
+                ['db.where', 'entry_id', 99],
+                ['db.where', 'fluid_field_data_id', 0],
+                ['db.get'],
+                ['db.num_rows'],
+            ],
+            $state->calls
+        );
+    }
+
+    /**
      * Provide preview-condition vectors that map to comparator and normalization branches.
      *
      * @return array
@@ -4967,6 +5103,78 @@ class GridModelInstallTest extends TestCase
                 }
 
                 return $data;
+            }
+        };
+    }
+
+    /**
+     * Build a db service mock that records remap_revision_rows() query-builder calls.
+     *
+     * @param object $state Shared mutable state that collects calls.
+     * @param array $existingRows Existing rows returned from the row lookup query.
+     * @return object
+     */
+    private function makeDbServiceMockForRemapRevisionRowsTest($state, array $existingRows)
+    {
+        return new class($state, $existingRows) {
+            private $state;
+            private $existingRows;
+
+            public function __construct($state, array $existingRows)
+            {
+                $this->state = $state;
+                $this->existingRows = $existingRows;
+            }
+
+            public function select($column)
+            {
+                $this->state->calls[] = ['db.select', $column];
+
+                return $this;
+            }
+
+            public function from($table)
+            {
+                $this->state->calls[] = ['db.from', $table];
+
+                return $this;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->calls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function get()
+            {
+                $this->state->calls[] = ['db.get'];
+
+                return new class($this->state, $this->existingRows) {
+                    private $state;
+                    private $existingRows;
+
+                    public function __construct($state, array $existingRows)
+                    {
+                        $this->state = $state;
+                        $this->existingRows = $existingRows;
+                    }
+
+                    public function num_rows()
+                    {
+                        $this->state->calls[] = ['db.num_rows'];
+
+                        return count($this->existingRows);
+                    }
+
+                    public function result_array()
+                    {
+                        $this->state->calls[] = ['db.result_array'];
+
+                        return $this->existingRows;
+                    }
+                };
             }
         };
     }
