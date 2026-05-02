@@ -4697,6 +4697,210 @@ class GridModelInstallTest extends TestCase
     }
 
     /**
+     * It returns early when the requested field IDs do not resolve to Grid fields.
+     *
+     * @return void
+     */
+    public function testUpdateGridSearchReturnsEarlyWhenNoGridFieldsMatch(): void
+    {
+        $state = (object) ['calls' => []];
+        $fields = [];
+        $model = $this->makeGridModelForUpdateGridSearchTest($state, []);
+
+        ee()->setMock('Model', $this->makeModelServiceMockForUpdateGridSearchTest($state, $fields));
+        ee()->setMock('db', $this->makeDbMockForUpdateGridSearchTest($state, []));
+        ee()->setMock('load', $this->makeLoadMockForUpdateGridSearchTest($state));
+
+        $model->update_grid_search([5, 9]);
+
+        $this->assertSame(
+            [
+                ['model.get', 'ChannelField', [5, 9]],
+                ['model.fields', ['field_id', 'field_search', 'legacy_field_data']],
+                ['model.filter', 'field_type', 'grid'],
+                ['model.all'],
+            ],
+            $state->modelCalls
+        );
+        $this->assertSame([], $state->dbCalls);
+        $this->assertSame([], $state->loadCalls);
+        $this->assertSame([], $state->getColumnsCalls);
+    }
+
+    /**
+     * It clears unsearchable Grid columns and skips repopulation when searchable fields produce no rows.
+     *
+     * @return void
+     */
+    public function testUpdateGridSearchClearsUnsearchableFieldsAndSkipsRepopulationWhenNoRowsFound(): void
+    {
+        $state = (object) ['calls' => []];
+        $fields = [
+            $this->makeGridChannelFieldStub(5, false, 'channel_data'),
+            $this->makeGridChannelFieldStub(8, true, 'channel_data'),
+        ];
+        $model = $this->makeGridModelForUpdateGridSearchTest(
+            $state,
+            [
+                8 => [
+                    ['col_id' => 11, 'col_search' => 'y'],
+                    ['col_id' => 12, 'col_search' => 'n'],
+                ],
+            ]
+        );
+
+        ee()->setMock('Model', $this->makeModelServiceMockForUpdateGridSearchTest($state, $fields));
+        ee()->setMock('db', $this->makeDbMockForUpdateGridSearchTest($state, ['channel_grid_field_8' => []]));
+        ee()->setMock('load', $this->makeLoadMockForUpdateGridSearchTest($state));
+
+        $model->update_grid_search([5, 8]);
+
+        $this->assertSame([[8, 'channel']], $state->getColumnsCalls);
+        $this->assertSame([['db.update', 'channel_data', ['field_id_5' => null]]], $state->dbUpdates);
+        $this->assertSame([], $state->dbBatchUpdates);
+        $this->assertSame([], $state->loadCalls);
+    }
+
+    /**
+     * It aggregates searchable column values per entry, encodes field payloads, and batch-updates each storage table.
+     *
+     * @return void
+     */
+    public function testUpdateGridSearchAggregatesAndBatchUpdatesSearchDataByTableAndEntry(): void
+    {
+        $state = (object) ['calls' => []];
+        $fields = [
+            $this->makeGridChannelFieldStub(7, true, 'channel_data'),
+            $this->makeGridChannelFieldStub(9, true, 'channel_titles'),
+        ];
+        $model = $this->makeGridModelForUpdateGridSearchTest(
+            $state,
+            [
+                7 => [
+                    ['col_id' => 20, 'col_search' => 'y'],
+                    ['col_id' => 21, 'col_search' => 'y'],
+                    ['col_id' => 22, 'col_search' => 'n'],
+                ],
+                9 => [
+                    ['col_id' => 30, 'col_search' => 'y'],
+                ],
+            ]
+        );
+
+        $rowsByTable = [
+            'channel_grid_field_7' => [
+                ['row_id' => 1, 'entry_id' => 100, 'col_id_20' => 'alpha', 'col_id_21' => 'bravo'],
+                ['row_id' => 2, 'entry_id' => 100, 'col_id_20' => 'charlie', 'col_id_21' => 'delta'],
+                ['row_id' => 3, 'entry_id' => 200, 'col_id_20' => 'echo', 'col_id_21' => 'foxtrot'],
+            ],
+            'channel_grid_field_9' => [
+                ['row_id' => 11, 'entry_id' => 300, 'col_id_30' => 'golf'],
+            ],
+        ];
+
+        ee()->setMock('Model', $this->makeModelServiceMockForUpdateGridSearchTest($state, $fields));
+        ee()->setMock('db', $this->makeDbMockForUpdateGridSearchTest($state, $rowsByTable));
+        ee()->setMock('load', $this->makeLoadMockForUpdateGridSearchTest($state));
+
+        $model->update_grid_search([7, 9]);
+
+        $this->assertSame([[7, 'channel'], [9, 'channel']], $state->getColumnsCalls);
+        $this->assertSame([['load.helper', 'custom_field_helper']], $state->loadCalls);
+        $this->assertSame([], $state->dbUpdates);
+        $this->assertSame(
+            [
+                [
+                    'channel_data',
+                    [
+                        [
+                            'field_id_7' => encode_multi_field(['alpha', 'bravo', 'charlie', 'delta']),
+                            'entry_id' => 100,
+                        ],
+                        [
+                            'field_id_7' => encode_multi_field(['echo', 'foxtrot']),
+                            'entry_id' => 200,
+                        ],
+                    ],
+                    'entry_id',
+                ],
+                [
+                    'channel_titles',
+                    [
+                        [
+                            'field_id_9' => encode_multi_field(['golf']),
+                            'entry_id' => 300,
+                        ],
+                    ],
+                    'entry_id',
+                ],
+            ],
+            $state->dbBatchUpdates
+        );
+    }
+
+    /**
+     * It exposes the existing same-entry multi-field merge failure when Grid fields share one storage table.
+     *
+     * @return void
+     */
+    public function testUpdateGridSearchErrorsWhenSameEntryHasMultipleGridFieldsInOneTable(): void
+    {
+        $state = (object) ['calls' => []];
+        $fields = [
+            $this->makeGridChannelFieldStub(7, true, 'channel_data'),
+            $this->makeGridChannelFieldStub(9, true, 'channel_data'),
+        ];
+        $model = $this->makeGridModelForUpdateGridSearchTest(
+            $state,
+            [
+                7 => [
+                    ['col_id' => 20, 'col_search' => 'y'],
+                ],
+                9 => [
+                    ['col_id' => 30, 'col_search' => 'y'],
+                ],
+            ]
+        );
+        $rowsByTable = [
+            'channel_grid_field_7' => [
+                ['row_id' => 1, 'entry_id' => 100, 'col_id_20' => 'alpha'],
+            ],
+            'channel_grid_field_9' => [
+                ['row_id' => 2, 'entry_id' => 100, 'col_id_30' => 'bravo'],
+            ],
+        ];
+
+        ee()->setMock('Model', $this->makeModelServiceMockForUpdateGridSearchTest($state, $fields));
+        ee()->setMock('db', $this->makeDbMockForUpdateGridSearchTest($state, $rowsByTable));
+        ee()->setMock('load', $this->makeLoadMockForUpdateGridSearchTest($state));
+
+        $thrown = null;
+        set_error_handler(static function ($severity, $message, $file, $line) {
+            if (strpos($message, 'field_id_9') !== false) {
+                throw new \ErrorException($message, 0, $severity, $file, $line);
+            }
+
+            return false;
+        });
+
+        try {
+            try {
+                $model->update_grid_search([7, 9]);
+            } catch (\Throwable $exception) {
+                $thrown = $exception;
+            }
+        } finally {
+            restore_error_handler();
+        }
+
+        $this->assertNotNull($thrown);
+        $this->assertSame(\ErrorException::class, get_class($thrown));
+        $this->assertStringContainsString('field_id_9', $thrown->getMessage());
+        $this->assertSame([], $state->loadCalls);
+        $this->assertSame([], $state->dbBatchUpdates);
+    }
+
+    /**
      * Provide preview-condition vectors that map to comparator and normalization branches.
      *
      * @return array
@@ -4726,6 +4930,230 @@ class GridModelInstallTest extends TestCase
             'normalized_is_not_null_and_clause' => ["( col_id_2 != '' AND col_id_2 IS NOT NULL )", 'present', true],
             'unsupported_comparison_defaults_false' => ["col_id_2 <> 'keep'", 'keep', false],
         ];
+    }
+
+    /**
+     * Build a Grid field stub with test-controlled searchability and data-storage table metadata.
+     *
+     * @param int $fieldId Channel field ID.
+     * @param bool $fieldSearch Whether the field is searchable.
+     * @param string $table Target storage table for the field's search payload.
+     * @return object
+     */
+    private function makeGridChannelFieldStub(int $fieldId, bool $fieldSearch, string $table)
+    {
+        return new class($fieldId, $fieldSearch, $table) {
+            public $field_id;
+            public $field_search;
+            private $table;
+
+            public function __construct(int $fieldId, bool $fieldSearch, string $table)
+            {
+                $this->field_id = $fieldId;
+                $this->field_search = $fieldSearch;
+                $this->table = $table;
+            }
+
+            public function getDataStorageTable()
+            {
+                return $this->table;
+            }
+        };
+    }
+
+    /**
+     * Build a model service mock that records ChannelField query-chain calls for update_grid_search().
+     *
+     * @param object $state Shared mutable test state.
+     * @param array $fields Fields returned by the query chain.
+     * @return object
+     */
+    private function makeModelServiceMockForUpdateGridSearchTest($state, array $fields)
+    {
+        return new class($state, $fields) {
+            private $state;
+            private $fields;
+
+            public function __construct($state, array $fields)
+            {
+                $this->state = $state;
+                $this->fields = $fields;
+                $this->state->modelCalls = [];
+            }
+
+            public function get($model, $ids)
+            {
+                $this->state->modelCalls[] = ['model.get', $model, array_values($ids)];
+
+                return new class($this->state, $this->fields) {
+                    private $state;
+                    private $fields;
+
+                    public function __construct($state, array $fields)
+                    {
+                        $this->state = $state;
+                        $this->fields = $fields;
+                    }
+
+                    public function fields(...$fields)
+                    {
+                        $this->state->modelCalls[] = ['model.fields', $fields];
+
+                        return $this;
+                    }
+
+                    public function filter($column, $value)
+                    {
+                        $this->state->modelCalls[] = ['model.filter', $column, $value];
+
+                        return $this;
+                    }
+
+                    public function all()
+                    {
+                        $this->state->modelCalls[] = ['model.all'];
+
+                        return $this->fields;
+                    }
+                };
+            }
+        };
+    }
+
+    /**
+     * Build a db mock that records row scans, unsearchable updates, and search batch writes.
+     *
+     * @param object $state Shared mutable test state.
+     * @param array $rowsByTable Result rows keyed by Grid data table.
+     * @return object
+     */
+    private function makeDbMockForUpdateGridSearchTest($state, array $rowsByTable)
+    {
+        return new class($state, $rowsByTable) {
+            private $state;
+            private $rowsByTable;
+
+            public function __construct($state, array $rowsByTable)
+            {
+                $this->state = $state;
+                $this->rowsByTable = $rowsByTable;
+                $this->state->dbCalls = [];
+                $this->state->dbUpdates = [];
+                $this->state->dbBatchUpdates = [];
+            }
+
+            public function select($columns)
+            {
+                $this->state->dbCalls[] = ['db.select', $columns];
+
+                return $this;
+            }
+
+            public function where($column, $value)
+            {
+                $this->state->dbCalls[] = ['db.where', $column, $value];
+
+                return $this;
+            }
+
+            public function get($table)
+            {
+                $this->state->dbCalls[] = ['db.get', $table];
+                $rows = [];
+                if (isset($this->rowsByTable[$table])) {
+                    $rows = $this->rowsByTable[$table];
+                }
+
+                return new class($rows) {
+                    private $rows;
+
+                    public function __construct(array $rows)
+                    {
+                        $this->rows = $rows;
+                    }
+
+                    public function result_array()
+                    {
+                        return $this->rows;
+                    }
+                };
+            }
+
+            public function update($table, $columns)
+            {
+                $this->state->dbUpdates[] = ['db.update', $table, $columns];
+
+                return true;
+            }
+
+            public function update_batch($table, $rows, $index)
+            {
+                $this->state->dbBatchUpdates[] = [$table, $rows, $index];
+
+                return true;
+            }
+        };
+    }
+
+    /**
+     * Build a loader mock that records helper loads and provides encode_multi_field().
+     *
+     * @param object $state Shared mutable test state.
+     * @return object
+     */
+    private function makeLoadMockForUpdateGridSearchTest($state)
+    {
+        return new class($state) {
+            private $state;
+
+            public function __construct($state)
+            {
+                $this->state = $state;
+                $this->state->loadCalls = [];
+            }
+
+            public function helper($helperName)
+            {
+                $this->state->loadCalls[] = ['load.helper', $helperName];
+
+                if ($helperName === 'custom_field_helper' && ! function_exists('encode_multi_field')) {
+                    require_once SYSPATH . 'ee/legacy/helpers/custom_field_helper.php';
+                }
+            }
+        };
+    }
+
+    /**
+     * Build a Grid_model instance that returns test-controlled column metadata per field.
+     *
+     * @param object $state Shared mutable test state.
+     * @param array $columnsByFieldId Column metadata keyed by field ID.
+     * @return Grid_model
+     */
+    private function makeGridModelForUpdateGridSearchTest($state, array $columnsByFieldId): \Grid_model
+    {
+        return new class($state, $columnsByFieldId) extends \Grid_model {
+            private $state;
+            private $columnsByFieldId;
+
+            public function __construct($state, array $columnsByFieldId)
+            {
+                $this->state = $state;
+                $this->columnsByFieldId = $columnsByFieldId;
+                $this->state->getColumnsCalls = [];
+            }
+
+            public function get_columns_for_field($field_ids, $content_type, $cache = true)
+            {
+                $this->state->getColumnsCalls[] = [$field_ids, $content_type];
+
+                if (isset($this->columnsByFieldId[$field_ids])) {
+                    return $this->columnsByFieldId[$field_ids];
+                }
+
+                return [];
+            }
+        };
     }
 
     /**
