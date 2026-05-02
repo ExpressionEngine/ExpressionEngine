@@ -4901,6 +4901,58 @@ class GridModelInstallTest extends TestCase
     }
 
     /**
+     * It returns zero and does not query the database when the target Grid field has no columns.
+     *
+     * @return void
+     */
+    public function testSearchAndReplaceReturnsZeroWhenFieldHasNoColumns(): void
+    {
+        $state = (object) ['calls' => []];
+        $model = $this->makeGridModelForSearchAndReplaceTest($state, 'channel_grid_field_77', []);
+        ee()->setMock('db', $this->makeDbMockForSearchAndReplaceTest($state, 4));
+
+        $result = $model->search_and_replace('fluid_field', 77, 'alpha', 'omega');
+
+        $this->assertSame(0, $result);
+        $this->assertSame([['fluid_field', 77]], $state->dataTableCalls);
+        $this->assertSame([[77, 'channel', true]], $state->getColumnsCalls);
+        $this->assertSame([], $state->dbQueryCalls);
+        $this->assertSame(0, $state->dbAffectedRowsCallCount);
+    }
+
+    /**
+     * It builds a replace statement for every Grid column and returns the database affected row count.
+     *
+     * @return void
+     */
+    public function testSearchAndReplaceBuildsReplaceSqlAndReturnsAffectedRows(): void
+    {
+        $state = (object) ['calls' => []];
+        $model = $this->makeGridModelForSearchAndReplaceTest(
+            $state,
+            'channel_grid_field_42',
+            [
+                ['col_id' => 10],
+                ['col_id' => 12],
+            ]
+        );
+        ee()->setMock('db', $this->makeDbMockForSearchAndReplaceTest($state, 6));
+
+        $result = $model->search_and_replace('channel', 42, 'alpha', 'omega');
+
+        $this->assertSame(6, $result);
+        $this->assertSame([['channel', 42]], $state->dataTableCalls);
+        $this->assertSame([[42, 'channel', true]], $state->getColumnsCalls);
+        $this->assertSame(
+            [
+                "UPDATE `exp_channel_grid_field_42` SET `col_id_10` = REPLACE(`col_id_10`, 'alpha', 'omega'),`col_id_12` = REPLACE(`col_id_12`, 'alpha', 'omega')",
+            ],
+            $state->dbQueryCalls
+        );
+        $this->assertSame(1, $state->dbAffectedRowsCallCount);
+    }
+
+    /**
      * Provide preview-condition vectors that map to comparator and normalization branches.
      *
      * @return array
@@ -5152,6 +5204,83 @@ class GridModelInstallTest extends TestCase
                 }
 
                 return [];
+            }
+        };
+    }
+
+    /**
+     * Build a Grid_model instance that captures table and column resolution for search_and_replace().
+     *
+     * @param object $state Shared mutable test state.
+     * @param string $tableName Table name returned from _data_table().
+     * @param array $columns Columns returned from get_columns_for_field().
+     * @return Grid_model
+     */
+    private function makeGridModelForSearchAndReplaceTest($state, string $tableName, array $columns): \Grid_model
+    {
+        return new class($state, $tableName, $columns) extends \Grid_model {
+            private $state;
+            private $tableName;
+            private $columns;
+
+            public function __construct($state, string $tableName, array $columns)
+            {
+                $this->state = $state;
+                $this->tableName = $tableName;
+                $this->columns = $columns;
+                $this->state->dataTableCalls = [];
+                $this->state->getColumnsCalls = [];
+            }
+
+            protected function _data_table($content_type, $field_id)
+            {
+                $this->state->dataTableCalls[] = [$content_type, $field_id];
+
+                return $this->tableName;
+            }
+
+            public function get_columns_for_field($field_ids, $content_type, $cache = true)
+            {
+                $this->state->getColumnsCalls[] = [$field_ids, $content_type, $cache];
+
+                return $this->columns;
+            }
+        };
+    }
+
+    /**
+     * Build a db mock that records query SQL and affected row requests for search_and_replace().
+     *
+     * @param object $state Shared mutable test state.
+     * @param int $affectedRows Value returned by affected_rows().
+     * @return object
+     */
+    private function makeDbMockForSearchAndReplaceTest($state, int $affectedRows)
+    {
+        return new class($state, $affectedRows) {
+            private $state;
+            private $affectedRows;
+
+            public function __construct($state, int $affectedRows)
+            {
+                $this->state = $state;
+                $this->affectedRows = $affectedRows;
+                $this->state->dbQueryCalls = [];
+                $this->state->dbAffectedRowsCallCount = 0;
+            }
+
+            public function query($sql)
+            {
+                $this->state->dbQueryCalls[] = $sql;
+
+                return true;
+            }
+
+            public function affected_rows()
+            {
+                $this->state->dbAffectedRowsCallCount++;
+
+                return $this->affectedRows;
             }
         };
     }
