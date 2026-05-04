@@ -1680,6 +1680,8 @@ class FileFieldFieldTest extends TestCase
      */
     public function testGetFileQueriesByNameWithScalarInputsAndCachesResult(): void
     {
+        $this->subject->_files = [];
+
         $filters = [
             ['field' => 'file_name', 'operator' => 'IN', 'value' => ['brochure.pdf']],
             ['field' => 'upload_location_id', 'operator' => 'IN', 'value' => ['9']],
@@ -1736,6 +1738,323 @@ class FileFieldFieldTest extends TestCase
             ]],
             $this->modelServiceMock->allCalls
         );
+    }
+
+    /**
+     * Ensure get_file returns false for null references without mutating cache state.
+     *
+     * @return void
+     */
+    public function testGetFileReturnsFalseWhenReferenceIsNull(): void
+    {
+        $this->subject->_files = [
+            ['file_id' => 999, 'file_name' => 'existing.pdf', 'upload_location_id' => 3],
+        ];
+
+        $result = $this->subject->get_file(null);
+
+        $this->assertFalse($result);
+        $this->assertSame(
+            [
+                ['file_id' => 999, 'file_name' => 'existing.pdf', 'upload_location_id' => 3],
+            ],
+            $this->subject->_files
+        );
+        $this->assertSame([], $this->modelServiceMock->calls);
+        $this->assertSame([], $this->modelServiceMock->withCalls);
+        $this->assertSame([], $this->modelServiceMock->filterCalls);
+        $this->assertSame([], $this->modelServiceMock->firstCalls);
+        $this->assertSame([], $this->modelServiceMock->allCalls);
+    }
+
+    /**
+     * Ensure numeric cache lookups return cached files and skip model queries.
+     *
+     * @return void
+     */
+    public function testGetFileReturnsCachedNumericReferenceWithoutQuery(): void
+    {
+        $this->subject->_files = [
+            ['file_id' => 21, 'file_name' => 'older.pdf', 'upload_location_id' => 2],
+            ['file_name' => 'no-id.pdf', 'upload_location_id' => 5],
+            ['file_id' => 55, 'file_name' => 'cached.pdf', 'upload_location_id' => 7],
+        ];
+
+        $result = $this->subject->get_file('55');
+
+        $this->assertSame(55, $result['file_id']);
+        $this->assertSame('cached.pdf', $result['file_name']);
+        $this->assertSame(7, $result['upload_location_id']);
+        $this->assertCount(3, $this->subject->_files);
+        $this->assertSame([], $this->modelServiceMock->calls);
+        $this->assertSame([], $this->modelServiceMock->withCalls);
+        $this->assertSame([], $this->modelServiceMock->filterCalls);
+        $this->assertSame([], $this->modelServiceMock->firstCalls);
+        $this->assertSame([], $this->modelServiceMock->allCalls);
+    }
+
+    /**
+     * Ensure URL-encoded file names resolve from cache using matching directory IDs.
+     *
+     * @return void
+     */
+    public function testGetFileReturnsCachedUrlDecodedNameFromMatchingDirectory(): void
+    {
+        $this->subject->_files = [
+            ['file_name' => 'different.pdf', 'upload_location_id' => 9],
+            ['file_name' => 'brochure guide.pdf', 'upload_location_id' => 3],
+            ['file_name' => 'brochure guide.pdf', 'upload_location_id' => 9],
+        ];
+
+        $result = $this->subject->get_file('brochure%20guide.pdf', '9');
+
+        $this->assertSame('brochure guide.pdf', $result['file_name']);
+        $this->assertSame(9, $result['upload_location_id']);
+        $this->assertCount(3, $this->subject->_files);
+        $this->assertSame([], $this->modelServiceMock->calls);
+        $this->assertSame([], $this->modelServiceMock->withCalls);
+        $this->assertSame([], $this->modelServiceMock->filterCalls);
+        $this->assertSame([], $this->modelServiceMock->firstCalls);
+        $this->assertSame([], $this->modelServiceMock->allCalls);
+    }
+
+    /**
+     * Ensure numeric lookups apply optional directory filters and cache merged model data.
+     *
+     * @return void
+     */
+    public function testGetFileQueriesByNumericIdWithDirectoryAndCachesMergedModelData(): void
+    {
+        $filters = [
+            ['field' => 'file_id', 'operator' => '=', 'value' => '88'],
+            ['field' => 'upload_location_id', 'operator' => '=', 'value' => '9'],
+        ];
+        $this->modelServiceMock->fileResultsByFilterKey[$this->modelServiceMock->buildFileFilterKey($filters)] = new FileFieldCachedModelRecordMock([
+            'file_id' => 88,
+            'file_name' => 'manual.pdf',
+            'upload_location_id' => 9,
+        ]);
+
+        $result = $this->subject->get_file('88', '9');
+
+        $this->assertSame(88, $result['file_id']);
+        $this->assertSame('manual.pdf', $result['file_name']);
+        $this->assertSame(9, $result['upload_location_id']);
+        $this->assertArrayHasKey('model_object', $result);
+        $this->assertCount(1, $this->subject->_files);
+        $this->assertSame(
+            [
+                ['model' => 'File', 'id' => null],
+            ],
+            $this->modelServiceMock->calls
+        );
+        $this->assertSame(
+            [
+                ['model' => 'File', 'id' => null, 'relation' => 'UploadDestination'],
+            ],
+            $this->modelServiceMock->withCalls
+        );
+        $this->assertSame(
+            [[
+                'model' => 'File',
+                'id' => null,
+                'field' => 'file_id',
+                'operator' => '=',
+                'value' => '88',
+            ], [
+                'model' => 'File',
+                'id' => null,
+                'field' => 'upload_location_id',
+                'operator' => '=',
+                'value' => '9',
+            ]],
+            $this->modelServiceMock->filterCalls
+        );
+        $this->assertSame(
+            [[
+                'model' => 'File',
+                'id' => null,
+                'with' => ['UploadDestination'],
+                'filters' => $filters,
+                'as_model' => null,
+            ]],
+            $this->modelServiceMock->firstCalls
+        );
+        $this->assertSame([], $this->modelServiceMock->allCalls);
+    }
+
+    /**
+     * Ensure numeric lookups cache null results when no model record is found.
+     *
+     * @return void
+     */
+    public function testGetFileCachesNullForMissingNumericLookup(): void
+    {
+        $result = $this->subject->get_file('91', 0);
+
+        $this->assertNull($result);
+        $this->assertSame([null], $this->subject->_files);
+        $this->assertSame(
+            [
+                ['model' => 'File', 'id' => null],
+            ],
+            $this->modelServiceMock->calls
+        );
+        $this->assertSame(
+            [
+                ['model' => 'File', 'id' => null, 'relation' => 'UploadDestination'],
+            ],
+            $this->modelServiceMock->withCalls
+        );
+        $this->assertSame(
+            [[
+                'model' => 'File',
+                'id' => null,
+                'field' => 'file_id',
+                'operator' => '=',
+                'value' => '91',
+            ]],
+            $this->modelServiceMock->filterCalls
+        );
+        $this->assertSame(
+            [[
+                'model' => 'File',
+                'id' => null,
+                'with' => ['UploadDestination'],
+                'filters' => [
+                    ['field' => 'file_id', 'operator' => '=', 'value' => '91'],
+                ],
+                'as_model' => null,
+            ]],
+            $this->modelServiceMock->firstCalls
+        );
+        $this->assertSame([], $this->modelServiceMock->allCalls);
+    }
+
+    /**
+     * Ensure file-name lookups cache null when model queries return no rows.
+     *
+     * @return void
+     */
+    public function testGetFileCachesNullForMissingFileNameLookup(): void
+    {
+        $result = $this->subject->get_file('missing.pdf', '9');
+
+        $this->assertNull($result);
+        $this->assertSame([null], $this->subject->_files);
+        $this->assertSame(
+            [
+                ['model' => 'File', 'id' => null],
+            ],
+            $this->modelServiceMock->calls
+        );
+        $this->assertSame(
+            [
+                ['model' => 'File', 'id' => null, 'relation' => 'UploadDestination'],
+            ],
+            $this->modelServiceMock->withCalls
+        );
+        $this->assertSame(
+            [[
+                'model' => 'File',
+                'id' => null,
+                'field' => 'file_name',
+                'operator' => 'IN',
+                'value' => ['missing.pdf'],
+            ], [
+                'model' => 'File',
+                'id' => null,
+                'field' => 'upload_location_id',
+                'operator' => 'IN',
+                'value' => ['9'],
+            ]],
+            $this->modelServiceMock->filterCalls
+        );
+        $this->assertSame(
+            [[
+                'model' => 'File',
+                'id' => null,
+                'with' => ['UploadDestination'],
+                'filters' => [
+                    ['field' => 'file_name', 'operator' => 'IN', 'value' => ['missing.pdf']],
+                    ['field' => 'upload_location_id', 'operator' => 'IN', 'value' => ['9']],
+                ],
+            ]],
+            $this->modelServiceMock->allCalls
+        );
+        $this->assertSame([], $this->modelServiceMock->firstCalls);
+    }
+
+    /**
+     * Ensure get_file still performs name lookups when the legacy cache container is null.
+     *
+     * @return void
+     */
+    public function testGetFileHandlesNullCacheContainerDuringNameLookup(): void
+    {
+        $warningCount = 0;
+        $this->subject->_files = null;
+
+        set_error_handler(function ($severity) use (&$warningCount) {
+            if ($severity === E_WARNING) {
+                $warningCount++;
+
+                return true;
+            }
+
+            return false;
+        });
+
+        try {
+            $result = $this->subject->get_file('missing.pdf', '9');
+        } finally {
+            restore_error_handler();
+        }
+
+        $this->assertNull($result);
+        $this->assertGreaterThanOrEqual(1, $warningCount);
+        $this->assertSame([null], $this->subject->_files);
+        $this->assertSame(
+            [
+                ['model' => 'File', 'id' => null],
+            ],
+            $this->modelServiceMock->calls
+        );
+        $this->assertSame(
+            [
+                ['model' => 'File', 'id' => null, 'relation' => 'UploadDestination'],
+            ],
+            $this->modelServiceMock->withCalls
+        );
+        $this->assertSame(
+            [[
+                'model' => 'File',
+                'id' => null,
+                'field' => 'file_name',
+                'operator' => 'IN',
+                'value' => ['missing.pdf'],
+            ], [
+                'model' => 'File',
+                'id' => null,
+                'field' => 'upload_location_id',
+                'operator' => 'IN',
+                'value' => ['9'],
+            ]],
+            $this->modelServiceMock->filterCalls
+        );
+        $this->assertSame(
+            [[
+                'model' => 'File',
+                'id' => null,
+                'with' => ['UploadDestination'],
+                'filters' => [
+                    ['field' => 'file_name', 'operator' => 'IN', 'value' => ['missing.pdf']],
+                    ['field' => 'upload_location_id', 'operator' => 'IN', 'value' => ['9']],
+                ],
+            ]],
+            $this->modelServiceMock->allCalls
+        );
+        $this->assertSame([], $this->modelServiceMock->firstCalls);
     }
 
     /**
