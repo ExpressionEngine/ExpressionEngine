@@ -829,7 +829,10 @@ class EE_Image_lib
             }
         }
 
-        if (! in_array($this->image_type, [IMAGETYPE_PNG, 18, 19], true)) {
+        // If the image is not a PNG, WEBP or AVIF we will skip handling alpha channel support.
+        // Note: IMAGETYPE_AVIF was introduced in PHP 8.1.0 so the value 19 is used here instead.
+        $imagetype_avif = defined('IMAGETYPE_AVIF') ? IMAGETYPE_AVIF : 19;
+        if (! in_array($this->image_type, [IMAGETYPE_PNG, IMAGETYPE_WEBP, $imagetype_avif], true)) {
             return;
         }
 
