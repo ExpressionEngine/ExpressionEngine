@@ -1578,7 +1578,7 @@ class FileFieldFieldTest extends TestCase
     public static function setUpBeforeClass(): void
     {
         if (! defined('REQ')) {
-            define('REQ', 'PAGE');
+            define('REQ', 'CP');
         }
 
         if (! function_exists('\bool_config_item')) {
@@ -1800,6 +1800,237 @@ class FileFieldFieldTest extends TestCase
                 return $this->fieldValues[$name] ?? null;
             }
         };
+    }
+
+    /**
+     * Seed upload preference cache to avoid unrelated model calls in targeted tests.
+     *
+     * @param mixed $uploadPreferences
+     * @return void
+     */
+    private function setUploadPreferenceCache($uploadPreferences): void
+    {
+        $uploadPrefsProperty = new \ReflectionProperty(\File_field::class, '_upload_prefs');
+        $uploadPrefsProperty->setAccessible(true);
+        $uploadPrefsProperty->setValue($this->subject, $uploadPreferences);
+    }
+
+    /**
+     * Build upload destination doubles used by loadDragAndDropAssets() branch tests.
+     *
+     * @param int $id
+     * @param int $siteId
+     * @param int $moduleId
+     * @param string $name
+     * @param array<string|int, string> $dropdown
+     * @return object
+     */
+    private function makeDragAndDropUploadPreference(
+        int $id,
+        int $siteId,
+        int $moduleId,
+        string $name,
+        array $dropdown
+    ): object {
+        return new class($id, $siteId, $moduleId, $name, $dropdown) {
+            /** @var int */
+            public $id;
+
+            /** @var int */
+            public $site_id;
+
+            /** @var int */
+            public $module_id;
+
+            /** @var string */
+            public $name;
+
+            /** @var int */
+            public $getDirectoriesDropdownCalls = 0;
+
+            /** @var array<string|int, string> */
+            private $dropdown;
+
+            /**
+             * @param int $id
+             * @param int $siteId
+             * @param int $moduleId
+             * @param string $name
+             * @param array<string|int, string> $dropdown
+             */
+            public function __construct(int $id, int $siteId, int $moduleId, string $name, array $dropdown)
+            {
+                $this->id = $id;
+                $this->site_id = $siteId;
+                $this->module_id = $moduleId;
+                $this->name = $name;
+                $this->dropdown = $dropdown;
+            }
+
+            /**
+             * @return array<string|int, string>
+             */
+            public function getDirectoriesDropdown(): array
+            {
+                $this->getDirectoriesDropdownCalls++;
+
+                return $this->dropdown;
+            }
+        };
+    }
+
+    /**
+     * Override collaborators required by loadDragAndDropAssets() endpoint/global setup.
+     *
+     * @param bool $canAccessFiles
+     * @return array<string, mixed>
+     */
+    private function setLoadDragAndDropCollaborators(bool $canAccessFiles): array
+    {
+        $permission = new class($canAccessFiles) {
+            /** @var array<int, string> */
+            public $hasCalls = [];
+
+            /** @var bool */
+            private $canAccessFiles;
+
+            public function __construct(bool $canAccessFiles)
+            {
+                $this->canAccessFiles = $canAccessFiles;
+            }
+
+            /**
+             * @param string $permission
+             * @return bool
+             */
+            public function has(string $permission): bool
+            {
+                $this->hasCalls[] = $permission;
+
+                return $this->canAccessFiles;
+            }
+        };
+        ee()->setMock('Permission', $permission);
+
+        $viewHelpers = new class {
+            /** @var array<int, array<int|string, mixed>> */
+            public $normalizedChoicesCalls = [];
+
+            /**
+             * @param array<int|string, mixed> $choices
+             * @return array<int|string, mixed>
+             */
+            public function normalizedChoices(array $choices): array
+            {
+                $this->normalizedChoicesCalls[] = $choices;
+
+                return $choices;
+            }
+        };
+        ee()->setMock('View/Helpers', $viewHelpers);
+
+        $cpUrlFactory = new class {
+            /** @var array<int, string> */
+            public $paths = [];
+
+            /** @var array<int, string> */
+            public $compilePaths = [];
+
+            /**
+             * @param string $path
+             * @return object
+             */
+            public function make(string $path): object
+            {
+                $this->paths[] = $path;
+
+                return new class($path, $this) {
+                    /** @var string */
+                    private $path;
+
+                    /** @var object */
+                    private $factory;
+
+                    public function __construct(string $path, $factory)
+                    {
+                        $this->path = $path;
+                        $this->factory = $factory;
+                    }
+
+                    /**
+                     * @return string
+                     */
+                    public function compile(): string
+                    {
+                        $this->factory->compilePaths[] = $this->path;
+
+                        return 'compiled://' . $this->path;
+                    }
+                };
+            }
+        };
+        ee()->setMock('CP/URL', $cpUrlFactory);
+
+        $filePickerFactory = new class {
+            /** @var array<int, string> */
+            public $allowedDirectoryCalls = [];
+
+            /** @var int */
+            public $compileCalls = 0;
+
+            /**
+             * @param string $allowedDirectory
+             * @return object
+             */
+            public function make(string $allowedDirectory): object
+            {
+                $this->allowedDirectoryCalls[] = $allowedDirectory;
+
+                return new class($this) {
+                    /** @var object */
+                    private $factory;
+
+                    public function __construct($factory)
+                    {
+                        $this->factory = $factory;
+                    }
+
+                    /**
+                     * @return object
+                     */
+                    public function getUrl(): object
+                    {
+                        return new class($this->factory) {
+                            /** @var object */
+                            private $factory;
+
+                            public function __construct($factory)
+                            {
+                                $this->factory = $factory;
+                            }
+
+                            /**
+                             * @return string
+                             */
+                            public function compile(): string
+                            {
+                                $this->factory->compileCalls++;
+
+                                return 'compiled://filepicker/all';
+                            }
+                        };
+                    }
+                };
+            }
+        };
+        ee()->setMock('CP/FilePicker', $filePickerFactory);
+
+        return [
+            'permission' => $permission,
+            'view_helpers' => $viewHelpers,
+            'cp_url_factory' => $cpUrlFactory,
+            'file_picker_factory' => $filePickerFactory,
+        ];
     }
 
     /**
@@ -4048,5 +4279,158 @@ class FileFieldFieldTest extends TestCase
         );
         $this->assertSame([['model' => 'UploadDestination', 'id' => null]], $this->modelServiceMock->calls);
         $this->assertSame([['field' => 'name', 'direction' => 'asc']], $this->modelServiceMock->orderCalls);
+    }
+
+    /**
+     * Ensure CP drag-and-drop globals include only allowed destinations and endpoint invariants.
+     *
+     * @return void
+     */
+    public function testLoadDragAndDropAssetsBuildsGlobalsForAllowedCpDirectories(): void
+    {
+        ee()->config->setItem('site_id', 7);
+        ee()->config->setItem('file_manager_compatibility_mode', 'n');
+
+        $globalPref = $this->makeDragAndDropUploadPreference(1, 0, 0, 'Global Assets', [11 => 'Global Child']);
+        $currentSitePref = $this->makeDragAndDropUploadPreference(2, 7, 0, 'Site Assets', [12 => 'Site Child']);
+        $otherSitePref = $this->makeDragAndDropUploadPreference(3, 9, 0, 'Other Site', [13 => 'Other Child']);
+        $moduleOwnedPref = $this->makeDragAndDropUploadPreference(4, 7, 9, 'Module Files', [14 => 'Module Child']);
+        $this->setUploadPreferenceCache([$globalPref, $currentSitePref, $otherSitePref, $moduleOwnedPref]);
+
+        $collaborators = $this->setLoadDragAndDropCollaborators(true);
+
+        $this->subject->loadDragAndDropAssets();
+
+        $this->assertSame(['can_access_files', 'can_access_files'], $collaborators['permission']->hasCalls);
+        $this->assertSame(1, $globalPref->getDirectoriesDropdownCalls);
+        $this->assertSame(1, $currentSitePref->getDirectoriesDropdownCalls);
+        $this->assertSame(0, $otherSitePref->getDirectoriesDropdownCalls);
+        $this->assertSame(0, $moduleOwnedPref->getDirectoriesDropdownCalls);
+
+        $expectedDestinations = [
+            1 => [
+                'label' => 'Global Assets',
+                'path' => '',
+                'upload_location_id' => 1,
+                'children' => [11 => 'Global Child'],
+            ],
+            2 => [
+                'label' => 'Site Assets',
+                'path' => '',
+                'upload_location_id' => 2,
+                'children' => [12 => 'Site Child'],
+            ],
+        ];
+        $this->assertSame([$expectedDestinations], $collaborators['view_helpers']->normalizedChoicesCalls);
+        $this->assertCount(1, $this->javascriptMock->globals);
+        $globals = $this->javascriptMock->globals[0];
+        $this->assertSame('file_dnd_no_directories_desc', $globals['lang.file_dnd_no_directories_desc']);
+        $this->assertSame($expectedDestinations, $globals['dragAndDrop.uploadDesinations']);
+        $this->assertSame('compiled://addons/settings/filepicker/ajax-upload', $globals['dragAndDrop.endpoint']);
+        $this->assertSame(
+            'compiled://addons/settings/filepicker/ajax-overwrite-or-rename',
+            $globals['dragAndDrop.resolveConflictEndpoint']
+        );
+        $this->assertSame('compiled://filepicker/all', $globals['dragAndDrop.filepickerEndpoint']);
+        $this->assertSame('compiled://addons/settings/filepicker/upload', $globals['dragAndDrop.filepickerUploadEndpoint']);
+        $this->assertSame(
+            [
+                'addons/settings/filepicker/ajax-upload',
+                'addons/settings/filepicker/ajax-overwrite-or-rename',
+                'addons/settings/filepicker/upload',
+            ],
+            $collaborators['cp_url_factory']->paths
+        );
+        $this->assertSame(['all'], $collaborators['file_picker_factory']->allowedDirectoryCalls);
+        $this->assertSame(1, $collaborators['file_picker_factory']->compileCalls);
+        $this->assertSame(
+            [[
+                'file' => [
+                    'fields/file/file_field_drag_and_drop',
+                    'fields/file/concurrency_queue',
+                    'fields/file/file_upload_progress_table',
+                    'fields/file/drag_and_drop_upload',
+                    'fields/grid/file_grid',
+                ],
+            ]],
+            $this->cpMock->scripts
+        );
+    }
+
+    /**
+     * Ensure destination globals are emptied and permissions copy reflects access denial.
+     *
+     * @return void
+     */
+    public function testLoadDragAndDropAssetsClearsDestinationsWhenFileAccessIsDenied(): void
+    {
+        ee()->config->setItem('site_id', 7);
+        ee()->config->setItem('file_manager_compatibility_mode', 'n');
+
+        $allowedPref = $this->makeDragAndDropUploadPreference(8, 7, 0, 'Member Files', [30 => 'Uploads']);
+        $this->setUploadPreferenceCache([$allowedPref]);
+
+        $collaborators = $this->setLoadDragAndDropCollaborators(false);
+
+        $this->subject->loadDragAndDropAssets();
+
+        $this->assertSame(['can_access_files', 'can_access_files'], $collaborators['permission']->hasCalls);
+        $this->assertSame(1, $allowedPref->getDirectoriesDropdownCalls);
+        $this->assertSame([[]], $collaborators['view_helpers']->normalizedChoicesCalls);
+        $this->assertCount(1, $this->javascriptMock->globals);
+        $globals = $this->javascriptMock->globals[0];
+        $this->assertSame('file_dnd_no_directory_permissions', $globals['lang.file_dnd_no_directories_desc']);
+        $this->assertSame([], $globals['dragAndDrop.uploadDesinations']);
+    }
+
+    /**
+     * Ensure compatibility mode bypasses child-directory lookups in upload destination payloads.
+     *
+     * @return void
+     */
+    public function testLoadDragAndDropAssetsOmitsChildrenInCompatibilityMode(): void
+    {
+        ee()->config->setItem('site_id', 7);
+        ee()->config->setItem('file_manager_compatibility_mode', 'y');
+
+        $pref = $this->makeDragAndDropUploadPreference(10, 7, 0, 'Compatibility Files', [41 => 'Should Not Load']);
+        $this->setUploadPreferenceCache([$pref]);
+
+        $collaborators = $this->setLoadDragAndDropCollaborators(true);
+
+        $this->subject->loadDragAndDropAssets();
+
+        $this->assertSame(0, $pref->getDirectoriesDropdownCalls);
+        $this->assertSame(
+            [[
+                10 => [
+                    'label' => 'Compatibility Files',
+                    'path' => '',
+                    'upload_location_id' => 10,
+                    'children' => [],
+                ],
+            ]],
+            $collaborators['view_helpers']->normalizedChoicesCalls
+        );
+    }
+
+    /**
+     * Ensure empty upload preference caches still register CP globals without destination payloads.
+     *
+     * @return void
+     */
+    public function testLoadDragAndDropAssetsHandlesEmptyUploadPreferences(): void
+    {
+        ee()->config->setItem('site_id', 7);
+        ee()->config->setItem('file_manager_compatibility_mode', 'n');
+        $this->setUploadPreferenceCache(new \ArrayObject([]));
+
+        $collaborators = $this->setLoadDragAndDropCollaborators(true);
+
+        $this->subject->loadDragAndDropAssets();
+
+        $this->assertSame([[]], $collaborators['view_helpers']->normalizedChoicesCalls);
+        $this->assertCount(1, $this->javascriptMock->globals);
+        $this->assertSame([], $this->javascriptMock->globals[0]['dragAndDrop.uploadDesinations']);
     }
 }
