@@ -312,6 +312,12 @@ class FileFieldModelQueryMock
     /** @var mixed */
     private $id;
 
+    /** @var array<int, string> */
+    private $withRelations = [];
+
+    /** @var array<int, array<string, mixed>> */
+    private $filters = [];
+
     /**
      * @param FileFieldModelServiceMock $service
      * @param string $modelName
@@ -342,6 +348,59 @@ class FileFieldModelQueryMock
     }
 
     /**
+     * Record requested model relationship eager loads.
+     *
+     * @param string $relation
+     * @return self
+     */
+    public function with($relation)
+    {
+        $this->withRelations[] = $relation;
+        $this->service->withCalls[] = [
+            'model' => $this->modelName,
+            'id' => $this->id,
+            'relation' => $relation,
+        ];
+
+        return $this;
+    }
+
+    /**
+     * Record query filter constraints in normalized form.
+     *
+     * @param string $field
+     * @param mixed $operatorOrValue
+     * @param mixed $value
+     * @return self
+     */
+    public function filter($field, $operatorOrValue, $value = null)
+    {
+        $operator = '=';
+        $normalizedValue = $operatorOrValue;
+
+        if (func_num_args() === 3) {
+            $operator = (string) $operatorOrValue;
+            $normalizedValue = $value;
+        }
+
+        $entry = [
+            'field' => $field,
+            'operator' => $operator,
+            'value' => $normalizedValue,
+        ];
+        $this->filters[] = $entry;
+        $this->service->filterCalls[] = [
+            'model' => $this->modelName,
+            'id' => $this->id,
+            'field' => $field,
+            'operator' => $operator,
+            'value' => $normalizedValue,
+        ];
+
+        return $this;
+    }
+
+    /**
      * Return all configured upload destinations.
      *
      * @return FileFieldCollectionMock
@@ -360,21 +419,39 @@ class FileFieldModelQueryMock
      *
      * @return mixed
      */
-    public function first()
+    public function first($asModel = null)
     {
-        if ($this->modelName !== 'UploadDestination') {
+        if ($this->modelName === 'UploadDestination') {
+            if ($this->id === null) {
+                return null;
+            }
+
+            if (! array_key_exists((int) $this->id, $this->service->uploadDestinationsById)) {
+                return null;
+            }
+
+            return $this->service->uploadDestinationsById[(int) $this->id];
+        }
+
+        if ($this->modelName !== 'File') {
             return null;
         }
 
-        if ($this->id === null) {
-            return null;
+        $this->service->firstCalls[] = [
+            'model' => $this->modelName,
+            'id' => $this->id,
+            'with' => $this->withRelations,
+            'filters' => $this->filters,
+            'as_model' => $asModel,
+        ];
+
+        if ($this->id !== null) {
+            return $this->service->fileResultsById[(string) $this->id] ?? null;
         }
 
-        if (! array_key_exists((int) $this->id, $this->service->uploadDestinationsById)) {
-            return null;
-        }
+        $key = $this->service->buildFileFilterKey($this->filters);
 
-        return $this->service->uploadDestinationsById[(int) $this->id];
+        return $this->service->fileResultsByFilterKey[$key] ?? null;
     }
 }
 
@@ -386,11 +463,26 @@ class FileFieldModelServiceMock
     /** @var array<int, mixed> */
     public $orderCalls = [];
 
+    /** @var array<int, array<string, mixed>> */
+    public $withCalls = [];
+
+    /** @var array<int, array<string, mixed>> */
+    public $filterCalls = [];
+
+    /** @var array<int, array<string, mixed>> */
+    public $firstCalls = [];
+
     /** @var array<int, FileFieldUploadDestinationMock> */
     public $uploadDestinationsById = [];
 
     /** @var array<int, FileFieldUploadDestinationMock> */
     public $uploadDestinationsAll = [];
+
+    /** @var array<string, mixed> */
+    public $fileResultsById = [];
+
+    /** @var array<string, mixed> */
+    public $fileResultsByFilterKey = [];
 
     /**
      * Return a chainable query mock for model lookups.
@@ -407,6 +499,27 @@ class FileFieldModelServiceMock
         ];
 
         return new FileFieldModelQueryMock($this, $modelName, $id);
+    }
+
+    /**
+     * Build deterministic key for lookup-based file model responses.
+     *
+     * @param array<int, array<string, mixed>> $filters
+     * @return string
+     */
+    public function buildFileFilterKey(array $filters)
+    {
+        $normalized = [];
+
+        foreach ($filters as $filter) {
+            $normalized[] = [
+                'field' => (string) $filter['field'],
+                'operator' => (string) $filter['operator'],
+                'value' => $filter['value'],
+            ];
+        }
+
+        return json_encode($normalized);
     }
 }
 
@@ -1107,6 +1220,168 @@ class FileFieldFieldTest extends TestCase
         $this->assertStringContainsString('name="empty_existing_existing"', $vars['existing_files']);
         $this->assertSame(1, substr_count($vars['existing_files'], '<option value='));
         $this->assertStringContainsString('<option value="">file_ft_select_existing</option>', $vars['existing_files']);
+    }
+
+    /**
+     * Ensure empty field data short-circuits without touching model lookup.
+     *
+     * @return void
+     */
+    public function testGetFileModelForFieldDataReturnsNullForEmptyData(): void
+    {
+        $subject = new \File_field();
+
+        $this->assertNull($subject->getFileModelForFieldData(''));
+        $this->assertSame([], $this->modelServiceMock->calls);
+        $this->assertSame([], $this->modelServiceMock->withCalls);
+        $this->assertSame([], $this->modelServiceMock->firstCalls);
+    }
+
+    /**
+     * Ensure numeric file IDs use direct model fetch with UploadDestination eager loading.
+     *
+     * @return void
+     */
+    public function testGetFileModelForFieldDataLoadsNumericFileId(): void
+    {
+        $subject = new \File_field();
+        $expected = (object) ['file_id' => 42];
+        $this->modelServiceMock->fileResultsById['42'] = $expected;
+
+        $result = $subject->getFileModelForFieldData('42');
+
+        $this->assertSame($expected, $result);
+        $this->assertSame([['model' => 'File', 'id' => '42']], $this->modelServiceMock->calls);
+        $this->assertSame([['model' => 'File', 'id' => '42', 'relation' => 'UploadDestination']], $this->modelServiceMock->withCalls);
+        $this->assertSame([], $this->modelServiceMock->filterCalls);
+        $this->assertSame(
+            [[
+                'model' => 'File',
+                'id' => '42',
+                'with' => ['UploadDestination'],
+                'filters' => [],
+                'as_model' => true,
+            ]],
+            $this->modelServiceMock->firstCalls
+        );
+    }
+
+    /**
+     * Ensure `{file:id:url}` payloads extract and query by embedded file id.
+     *
+     * @return void
+     */
+    public function testGetFileModelForFieldDataLoadsFileTokenId(): void
+    {
+        $subject = new \File_field();
+        $expected = (object) ['file_id' => 77];
+        $this->modelServiceMock->fileResultsById['77'] = $expected;
+
+        $result = $subject->getFileModelForFieldData('{file:77:url}');
+
+        $this->assertSame($expected, $result);
+        $this->assertSame([['model' => 'File', 'id' => '77']], $this->modelServiceMock->calls);
+        $this->assertSame([['model' => 'File', 'id' => '77', 'relation' => 'UploadDestination']], $this->modelServiceMock->withCalls);
+        $this->assertSame([], $this->modelServiceMock->filterCalls);
+        $this->assertSame(
+            [[
+                'model' => 'File',
+                'id' => '77',
+                'with' => ['UploadDestination'],
+                'filters' => [],
+                'as_model' => true,
+            ]],
+            $this->modelServiceMock->firstCalls
+        );
+    }
+
+    /**
+     * Ensure filedir payloads query by filename, upload directory, and current site id.
+     *
+     * @return void
+     */
+    public function testGetFileModelForFieldDataLoadsFiledirPayloadUsingSiteScopedFilters(): void
+    {
+        $subject = new \File_field();
+        $expected = (object) ['file_name' => 'spec sheet.pdf'];
+        ee()->config->setItem('site_id', 51);
+
+        $filters = [
+            ['field' => 'file_name', 'operator' => '=', 'value' => 'spec sheet.pdf'],
+            ['field' => 'upload_location_id', 'operator' => '=', 'value' => '9'],
+            ['field' => 'site_id', 'operator' => '=', 'value' => 51],
+        ];
+        $this->modelServiceMock->fileResultsByFilterKey[$this->modelServiceMock->buildFileFilterKey($filters)] = $expected;
+
+        $result = $subject->getFileModelForFieldData('{filedir_9}spec sheet.pdf');
+
+        $this->assertSame($expected, $result);
+        $this->assertSame([['model' => 'File', 'id' => null]], $this->modelServiceMock->calls);
+        $this->assertSame([['model' => 'File', 'id' => null, 'relation' => 'UploadDestination']], $this->modelServiceMock->withCalls);
+        $this->assertSame(
+            [[
+                'model' => 'File',
+                'id' => null,
+                'field' => 'file_name',
+                'operator' => '=',
+                'value' => 'spec sheet.pdf',
+            ], [
+                'model' => 'File',
+                'id' => null,
+                'field' => 'upload_location_id',
+                'operator' => '=',
+                'value' => '9',
+            ], [
+                'model' => 'File',
+                'id' => null,
+                'field' => 'site_id',
+                'operator' => '=',
+                'value' => 51,
+            ]],
+            $this->modelServiceMock->filterCalls
+        );
+        $this->assertSame(
+            [[
+                'model' => 'File',
+                'id' => null,
+                'with' => ['UploadDestination'],
+                'filters' => $filters,
+                'as_model' => true,
+            ]],
+            $this->modelServiceMock->firstCalls
+        );
+    }
+
+    /**
+     * Ensure unsupported values return null and avoid accidental model lookups.
+     *
+     * @return void
+     */
+    public function testGetFileModelForFieldDataReturnsNullForUnsupportedInput(): void
+    {
+        $subject = new \File_field();
+
+        $this->assertNull($subject->getFileModelForFieldData('manual.pdf'));
+        $this->assertSame([], $this->modelServiceMock->calls);
+        $this->assertSame([], $this->modelServiceMock->withCalls);
+        $this->assertSame([], $this->modelServiceMock->filterCalls);
+        $this->assertSame([], $this->modelServiceMock->firstCalls);
+    }
+
+    /**
+     * Ensure zero-like values follow the empty guard and avoid querying by id zero.
+     *
+     * @return void
+     */
+    public function testGetFileModelForFieldDataTreatsZeroStringAsEmpty(): void
+    {
+        $subject = new \File_field();
+
+        $this->assertNull($subject->getFileModelForFieldData('0'));
+        $this->assertSame([], $this->modelServiceMock->calls);
+        $this->assertSame([], $this->modelServiceMock->withCalls);
+        $this->assertSame([], $this->modelServiceMock->filterCalls);
+        $this->assertSame([], $this->modelServiceMock->firstCalls);
     }
 
     /**
