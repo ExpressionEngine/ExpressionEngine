@@ -698,13 +698,42 @@ class FileFieldCpMock
     /** @var array<int, array<string, mixed>> */
     public $scripts = [];
 
+    /** @var array<int, string> */
+    public $headItems = [];
+
+    /** @var string */
+    public $cp_theme_url = 'https://example.com/themes/cp/';
+
     /**
-     * @param array<string, mixed> $script
+     * Capture JS script registrations in both legacy call signatures.
+     *
+     * @param mixed $scriptOrType
+     * @param mixed $script
      * @return void
      */
-    public function add_js_script($script)
+    public function add_js_script($scriptOrType, $script = null)
     {
-        $this->scripts[] = $script;
+        if (func_num_args() === 1) {
+            $this->scripts[] = $scriptOrType;
+
+            return;
+        }
+
+        $this->scripts[] = [
+            'type' => $scriptOrType,
+            'script' => $script,
+        ];
+    }
+
+    /**
+     * Capture stylesheet link output added to the CP head region.
+     *
+     * @param string $headItem
+     * @return void
+     */
+    public function add_to_head($headItem)
+    {
+        $this->headItems[] = $headItem;
     }
 }
 
@@ -713,6 +742,9 @@ class FileFieldJavascriptMock
     /** @var array<int, array<string, mixed>> */
     public $globals = [];
 
+    /** @var array<int, string> */
+    public $readyCalls = [];
+
     /**
      * @param array<string, mixed> $globals
      * @return void
@@ -720,6 +752,55 @@ class FileFieldJavascriptMock
     public function set_global(array $globals)
     {
         $this->globals[] = $globals;
+    }
+
+    /**
+     * Capture ready handler registration payloads.
+     *
+     * @param string $javascript
+     * @return void
+     */
+    public function ready($javascript)
+    {
+        $this->readyCalls[] = $javascript;
+    }
+}
+
+class FileFieldLegacyViewMock
+{
+    /** @var array<int, string> */
+    public $headLinks = [];
+
+    /**
+     * Return deterministic stylesheet markup for head registration tests.
+     *
+     * @param string $path
+     * @return string
+     */
+    public function head_link($path)
+    {
+        $this->headLinks[] = $path;
+
+        return '<head-link path="' . $path . '">';
+    }
+}
+
+class FileFieldFunctionsMock
+{
+    /** @var array<int, bool> */
+    public $fetchSiteIndexCalls = [];
+
+    /**
+     * Return deterministic site index prefixes for URL helper anchor generation.
+     *
+     * @param bool $includeDomain
+     * @return string
+     */
+    public function fetch_site_index($includeDomain = false)
+    {
+        $this->fetchSiteIndexCalls[] = (bool) $includeDomain;
+
+        return 'https://example.com/';
     }
 }
 
@@ -921,6 +1002,12 @@ class FileFieldFieldTest extends TestCase
     /** @var FileFieldViewFactoryMock */
     private $viewFactoryMock;
 
+    /** @var FileFieldLegacyViewMock */
+    private $legacyViewMock;
+
+    /** @var FileFieldFunctionsMock */
+    private $functionsMock;
+
     /** @var FileFieldModelMock */
     private $fileModelMock;
 
@@ -968,6 +1055,8 @@ class FileFieldFieldTest extends TestCase
         }
 
         require_once SYSPATH . 'ee/legacy/helpers/form_helper.php';
+        require_once SYSPATH . 'ee/legacy/helpers/url_helper.php';
+        require_once SYSPATH . 'ee/legacy/helpers/html_helper.php';
     }
 
     /**
@@ -998,6 +1087,12 @@ class FileFieldFieldTest extends TestCase
 
         $this->viewFactoryMock = new FileFieldViewFactoryMock('<rendered-output>');
         ee()->setMock('View', $this->viewFactoryMock);
+
+        $this->legacyViewMock = new FileFieldLegacyViewMock();
+        ee()->setMock('view', $this->legacyViewMock);
+
+        $this->functionsMock = new FileFieldFunctionsMock();
+        ee()->setMock('functions', $this->functionsMock);
 
         $this->fileModelMock = new FileFieldModelMock([
             'results' => new FileFieldResultRowsMock([]),
@@ -1382,6 +1477,120 @@ class FileFieldFieldTest extends TestCase
         $this->assertSame([], $this->modelServiceMock->withCalls);
         $this->assertSame([], $this->modelServiceMock->filterCalls);
         $this->assertSame([], $this->modelServiceMock->firstCalls);
+    }
+
+    /**
+     * Ensure default browser initialization enables publish mode and loads shared assets.
+     *
+     * @return void
+     */
+    public function testBrowserWithDefaultConfigEnablesPublishModeAndLoadsAssets(): void
+    {
+        $this->subject->browser();
+
+        $this->assertSame(['content'], $this->langMock->loaded);
+        $this->assertSame(['css/file_browser.css'], $this->legacyViewMock->headLinks);
+        $this->assertSame(['<head-link path="css/file_browser.css">'], $this->cpMock->headItems);
+        $this->assertSame(
+            [
+                ['type' => 'plugin', 'script' => ['tmpl', 'ee_table']],
+                [
+                    'file' => ['vendor/underscore', 'files/publish_fields'],
+                    'plugin' => ['ee_filebrowser', 'ee_fileuploader', 'tmpl'],
+                ],
+            ],
+            $this->cpMock->scripts
+        );
+        $this->assertSame(['html'], $this->loadMock->helpers);
+        $this->assertCount(2, $this->javascriptMock->globals);
+        $this->assertSame(['filebrowser' => ['publish' => true]], $this->javascriptMock->globals[0]);
+        $this->assertSame('addons/settings/filepicker/modal', $this->javascriptMock->globals[1]['filebrowser']['endpoint_url']);
+        $this->assertSame([], $this->javascriptMock->readyCalls);
+    }
+
+    /**
+     * Ensure trigger/callback browser config registers ready JS with optional field and settings arguments.
+     *
+     * @return void
+     */
+    public function testBrowserWithTriggerCallbackFieldAndSettingsRegistersReadyTrigger(): void
+    {
+        $this->subject->browser([
+            'publish' => false,
+            'trigger' => '.js-open-file-browser',
+            'field_name' => 'hero_file',
+            'settings' => '{"content_type":"image","directory":"7"}',
+            'callback' => 'function(file, field) { window.fileBrowserHit = true; }',
+        ], 'custom/filepicker/modal');
+
+        $this->assertSame(['content'], $this->langMock->loaded);
+        $this->assertCount(1, $this->javascriptMock->readyCalls);
+        $this->assertStringContainsString(
+            "$.ee_filebrowser.add_trigger('.js-open-file-browser', 'hero_file',{\"content_type\":\"image\",\"directory\":\"7\"}, function(file, field) { window.fileBrowserHit = true; });",
+            $this->javascriptMock->readyCalls[0]
+        );
+        $this->assertCount(1, $this->javascriptMock->globals);
+        $this->assertSame('custom/filepicker/modal', $this->javascriptMock->globals[0]['filebrowser']['endpoint_url']);
+    }
+
+    /**
+     * Ensure trigger/callback mode omits optional arguments when field name and settings are not provided.
+     *
+     * @return void
+     */
+    public function testBrowserWithTriggerCallbackOmitsOptionalArgumentsWhenUnset(): void
+    {
+        $this->subject->browser([
+            'trigger' => '#picker-trigger',
+            'callback' => 'function(file, field) { return file; }',
+        ]);
+
+        $this->assertCount(1, $this->javascriptMock->readyCalls);
+        $this->assertStringContainsString(
+            "$.ee_filebrowser.add_trigger('#picker-trigger', function(file, field) { return file; });",
+            $this->javascriptMock->readyCalls[0]
+        );
+        $this->assertCount(1, $this->javascriptMock->globals);
+        $this->assertSame('addons/settings/filepicker/modal', $this->javascriptMock->globals[0]['filebrowser']['endpoint_url']);
+    }
+
+    /**
+     * Ensure invalid config returns early without loading browser assets.
+     *
+     * @return void
+     */
+    public function testBrowserReturnsEarlyWhenConfigIsMissingRequiredTriggerOrCallback(): void
+    {
+        $this->subject->browser([
+            'publish' => 1,
+            'trigger' => '.missing-callback',
+        ]);
+
+        $this->assertSame(['content'], $this->langMock->loaded);
+        $this->assertSame([], $this->javascriptMock->globals);
+        $this->assertSame([], $this->javascriptMock->readyCalls);
+        $this->assertSame([], $this->cpMock->headItems);
+        $this->assertSame([], $this->cpMock->scripts);
+        $this->assertSame([], $this->loadMock->helpers);
+    }
+
+    /**
+     * Ensure callback-only config also returns early when trigger is missing.
+     *
+     * @return void
+     */
+    public function testBrowserReturnsEarlyWhenConfigIsMissingTrigger(): void
+    {
+        $this->subject->browser([
+            'callback' => 'function(file, field) { return field; }',
+        ]);
+
+        $this->assertSame(['content'], $this->langMock->loaded);
+        $this->assertSame([], $this->javascriptMock->globals);
+        $this->assertSame([], $this->javascriptMock->readyCalls);
+        $this->assertSame([], $this->cpMock->headItems);
+        $this->assertSame([], $this->cpMock->scripts);
+        $this->assertSame([], $this->loadMock->helpers);
     }
 
     /**
