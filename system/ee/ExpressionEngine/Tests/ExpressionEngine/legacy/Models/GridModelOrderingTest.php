@@ -193,6 +193,36 @@ class GridModelOrderingTest extends TestCase
         $this->assertSame(array('desc'), $params['sorts']);
     }
 
+    public function testEmptyOrderbyFallsBackToRowOrderForSql(): void
+    {
+        list($model, $db) = $this->makeModelWithDbRows(array(
+            array('row_id' => 1, 'entry_id' => 100, 'row_order' => 0, 'fluid_field_data_id' => 0),
+        ));
+
+        $model->get_entry_rows(100, 9, 'channel', array(), true);
+
+        $this->assertSame(array(
+            array('field' => 'row_order', 'direction' => 'asc', 'escape' => null),
+        ), $db->orders);
+    }
+
+    public function testRandomOrderbyUsesRowOrderForSqlButPreservesRandomParam(): void
+    {
+        list($model, $db) = $this->makeModelWithDbRows(array(
+            array('row_id' => 1, 'entry_id' => 100, 'row_order' => 0, 'fluid_field_data_id' => 0),
+        ));
+
+        $entry_data = $model->get_entry_rows(100, 9, 'channel', array(
+            'orderby' => 'random',
+            'sort' => 'desc',
+        ), true);
+
+        $this->assertSame(array(
+            array('field' => 'row_order', 'direction' => 'desc', 'escape' => null),
+        ), $db->orders);
+        $this->assertSame('random', $entry_data['params']['orderby']);
+    }
+
     public function testFixedOrderRemainsFirstOrderingRule(): void
     {
         list($model, $db) = $this->makeModelWithDbRows(array(
