@@ -545,17 +545,33 @@ class FileFieldModelQueryMock
     }
 
     /**
-     * Return all configured upload destinations.
+     * Return configured query results for `all()` calls.
      *
-     * @return FileFieldCollectionMock
+     * @return mixed
      */
     public function all()
     {
-        if ($this->modelName !== 'UploadDestination') {
-            return new FileFieldCollectionMock([]);
+        if ($this->modelName === 'UploadDestination') {
+            return new FileFieldCollectionMock($this->service->uploadDestinationsAll);
         }
 
-        return new FileFieldCollectionMock($this->service->uploadDestinationsAll);
+        if ($this->modelName !== 'File') {
+            return [];
+        }
+
+        $this->service->allCalls[] = [
+            'model' => $this->modelName,
+            'id' => $this->id,
+            'with' => $this->withRelations,
+            'filters' => $this->filters,
+        ];
+        $key = $this->service->buildFileFilterKey($this->filters);
+
+        if (! array_key_exists($key, $this->service->fileResultsAllByFilterKey)) {
+            return [];
+        }
+
+        return $this->service->fileResultsAllByFilterKey[$key];
     }
 
     /**
@@ -616,6 +632,9 @@ class FileFieldModelServiceMock
     /** @var array<int, array<string, mixed>> */
     public $firstCalls = [];
 
+    /** @var array<int, array<string, mixed>> */
+    public $allCalls = [];
+
     /** @var array<int, FileFieldUploadDestinationMock> */
     public $uploadDestinationsById = [];
 
@@ -627,6 +646,9 @@ class FileFieldModelServiceMock
 
     /** @var array<string, mixed> */
     public $fileResultsByFilterKey = [];
+
+    /** @var array<string, array<int, mixed>> */
+    public $fileResultsAllByFilterKey = [];
 
     /**
      * Return a chainable query mock for model lookups.
@@ -1126,6 +1148,30 @@ class FileFieldModelMock
     }
 }
 
+class FileFieldCachedModelRecordMock
+{
+    /** @var array<string, mixed> */
+    private $attributes;
+
+    /**
+     * @param array<string, mixed> $attributes
+     */
+    public function __construct(array $attributes)
+    {
+        $this->attributes = $attributes;
+    }
+
+    /**
+     * Return normalized model attributes for File_field cache merging.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray()
+    {
+        return $this->attributes;
+    }
+}
+
 class FileFieldFieldTest extends TestCase
 {
     /** @var FileFieldFieldHarness */
@@ -1381,6 +1427,213 @@ class FileFieldFieldTest extends TestCase
         $result = $this->subject->format_data('');
 
         $this->assertNull($result);
+    }
+
+    /**
+     * Ensure cache_data returns false for empty payloads and skips dependency loading.
+     *
+     * @return void
+     */
+    public function testCacheDataReturnsFalseForEmptyPayload(): void
+    {
+        $result = $this->subject->cache_data([]);
+
+        $this->assertFalse($result);
+        $this->assertSame([], $this->loadMock->models);
+        $this->assertSame([], $this->subject->_file_names);
+        $this->assertSame([], $this->subject->_file_ids);
+        $this->assertSame([], $this->subject->_files);
+    }
+
+    /**
+     * Ensure cache_data parses mixed file formats, de-duplicates cached IDs/names, and merges query results.
+     *
+     * @return void
+     */
+    public function testCacheDataCachesMixedFormatsAndMergesModelResults(): void
+    {
+        $this->subject->_files = [
+            ['file_id' => 999, 'file_name' => 'existing.png'],
+        ];
+        $this->subject->_file_names = ['already-cached.jpg'];
+        $this->subject->_file_ids = ['12'];
+
+        $nameFilters = [
+            ['field' => 'file_name', 'operator' => 'IN', 'value' => ['diagram.jpg']],
+            ['field' => 'upload_location_id', 'operator' => 'IN', 'value' => ['3']],
+        ];
+        $idFilters = [
+            ['field' => 'file_id', 'operator' => 'IN', 'value' => ['44']],
+        ];
+
+        $this->modelServiceMock->fileResultsAllByFilterKey[$this->modelServiceMock->buildFileFilterKey($nameFilters)] = [
+            new FileFieldCachedModelRecordMock([
+                'file_id' => 301,
+                'file_name' => 'diagram.jpg',
+                'upload_location_id' => 3,
+            ]),
+        ];
+        $this->modelServiceMock->fileResultsAllByFilterKey[$this->modelServiceMock->buildFileFilterKey($idFilters)] = [
+            new FileFieldCachedModelRecordMock([
+                'file_id' => 44,
+                'file_name' => 'manual.pdf',
+                'upload_location_id' => 0,
+            ]),
+        ];
+
+        $result = $this->subject->cache_data([
+            '{filedir_3}diagram.jpg',
+            '44',
+            '{file:12:url}',
+            '{filedir_3}diagram.jpg',
+            'manual-text',
+            '',
+            '0',
+        ]);
+
+        $this->assertNull($result);
+        $this->assertSame(['file_model'], $this->loadMock->models);
+        $this->assertSame(['already-cached.jpg', 'diagram.jpg'], $this->subject->_file_names);
+        $this->assertSame(['12', '44'], $this->subject->_file_ids);
+        $this->assertCount(3, $this->subject->_files);
+        $this->assertSame(999, $this->subject->_files[0]['file_id']);
+        $this->assertSame(301, $this->subject->_files[1]['file_id']);
+        $this->assertSame(44, $this->subject->_files[2]['file_id']);
+        $this->assertArrayHasKey('model_object', $this->subject->_files[1]);
+        $this->assertArrayHasKey('model_object', $this->subject->_files[2]);
+        $this->assertSame(
+            [
+                ['model' => 'File', 'id' => null],
+                ['model' => 'File', 'id' => null],
+            ],
+            $this->modelServiceMock->calls
+        );
+        $this->assertSame(
+            [
+                ['model' => 'File', 'id' => null, 'relation' => 'UploadDestination'],
+                ['model' => 'File', 'id' => null, 'relation' => 'UploadDestination'],
+            ],
+            $this->modelServiceMock->withCalls
+        );
+        $this->assertSame(
+            [[
+                'model' => 'File',
+                'id' => null,
+                'field' => 'file_name',
+                'operator' => 'IN',
+                'value' => ['diagram.jpg'],
+            ], [
+                'model' => 'File',
+                'id' => null,
+                'field' => 'upload_location_id',
+                'operator' => 'IN',
+                'value' => ['3'],
+            ], [
+                'model' => 'File',
+                'id' => null,
+                'field' => 'file_id',
+                'operator' => 'IN',
+                'value' => ['44'],
+            ]],
+            $this->modelServiceMock->filterCalls
+        );
+        $this->assertSame(
+            [[
+                'model' => 'File',
+                'id' => null,
+                'with' => ['UploadDestination'],
+                'filters' => $nameFilters,
+            ], [
+                'model' => 'File',
+                'id' => null,
+                'with' => ['UploadDestination'],
+                'filters' => $idFilters,
+            ]],
+            $this->modelServiceMock->allCalls
+        );
+    }
+
+    /**
+     * Ensure cache_data keeps state stable when ID lookup returns no file models.
+     *
+     * @return void
+     */
+    public function testCacheDataHandlesEmptyModelResultForCollectedFileIds(): void
+    {
+        $result = $this->subject->cache_data([
+            '77',
+        ]);
+
+        $this->assertNull($result);
+        $this->assertSame(['file_model'], $this->loadMock->models);
+        $this->assertSame([], $this->subject->_file_names);
+        $this->assertSame(['77'], $this->subject->_file_ids);
+        $this->assertSame([], $this->subject->_files);
+        $this->assertSame(
+            [
+                ['model' => 'File', 'id' => null],
+            ],
+            $this->modelServiceMock->calls
+        );
+        $this->assertSame(
+            [
+                ['model' => 'File', 'id' => null, 'relation' => 'UploadDestination'],
+            ],
+            $this->modelServiceMock->withCalls
+        );
+        $this->assertSame(
+            [[
+                'model' => 'File',
+                'id' => null,
+                'field' => 'file_id',
+                'operator' => 'IN',
+                'value' => ['77'],
+            ]],
+            $this->modelServiceMock->filterCalls
+        );
+        $this->assertSame(
+            [[
+                'model' => 'File',
+                'id' => null,
+                'with' => ['UploadDestination'],
+                'filters' => [
+                    ['field' => 'file_id', 'operator' => 'IN', 'value' => ['77']],
+                ],
+            ]],
+            $this->modelServiceMock->allCalls
+        );
+    }
+
+    /**
+     * Ensure cache_data skips model queries when parsed candidates are already cached or invalid.
+     *
+     * @return void
+     */
+    public function testCacheDataSkipsQueriesWhenOnlyCachedOrInvalidValuesRemain(): void
+    {
+        $this->subject->_files = [
+            ['file_id' => 44, 'file_name' => 'diagram.jpg'],
+        ];
+        $this->subject->_file_names = ['diagram.jpg'];
+        $this->subject->_file_ids = ['44'];
+
+        $result = $this->subject->cache_data([
+            '{filedir_3}diagram.jpg',
+            '44',
+            '',
+            'manual-entry',
+            '0',
+        ]);
+
+        $this->assertNull($result);
+        $this->assertSame(['file_model'], $this->loadMock->models);
+        $this->assertSame(['diagram.jpg'], $this->subject->_file_names);
+        $this->assertSame(['44'], $this->subject->_file_ids);
+        $this->assertSame([['file_id' => 44, 'file_name' => 'diagram.jpg']], $this->subject->_files);
+        $this->assertSame([], $this->modelServiceMock->calls);
+        $this->assertSame([], $this->modelServiceMock->withCalls);
+        $this->assertSame([], $this->modelServiceMock->filterCalls);
+        $this->assertSame([], $this->modelServiceMock->allCalls);
     }
 
     /**
