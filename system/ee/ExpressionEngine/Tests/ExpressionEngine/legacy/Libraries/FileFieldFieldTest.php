@@ -3944,4 +3944,74 @@ class FileFieldFieldTest extends TestCase
         $this->assertSame('all', $vars['allowed_directory']);
         $this->assertSame([], $vars['role_allowed_dirs']);
     }
+
+    /**
+     * Ensure upload preferences are cached across drag-and-drop calls and reused on subsequent "all" lookups.
+     *
+     * @return void
+     */
+    public function testDragAndDropFieldReusesCachedUploadPreferencesAcrossCalls(): void
+    {
+        $this->subject->fileModelReturn = null;
+        $this->modelServiceMock->uploadDestinationsAll = [
+            new FileFieldUploadDestinationMock(9, 0, 'list', true),
+        ];
+
+        $first = $this->subject->dragAndDropField('asset_file', '{filedir_9}first.pdf', 'all', 'all');
+
+        $this->modelServiceMock->uploadDestinationsAll = [
+            new FileFieldUploadDestinationMock(5, 0, 'list', true),
+        ];
+        $second = $this->subject->dragAndDropField('asset_file', '{filedir_5}second.pdf', 'all', 'all');
+
+        $this->assertSame('<rendered-output>', $first);
+        $this->assertSame('<rendered-output>', $second);
+        $this->assertSame([9], $this->viewFactoryMock->renderVars[0]['role_allowed_dirs']);
+        $this->assertSame([9], $this->viewFactoryMock->renderVars[1]['role_allowed_dirs']);
+        $this->assertSame(9, $this->viewFactoryMock->renderVars[0]['allowed_directory']);
+        $this->assertSame(9, $this->viewFactoryMock->renderVars[1]['allowed_directory']);
+        $this->assertSame([9, 9], $this->filePickerFactoryMock->allowedDirectoryCalls);
+        $this->assertSame([['model' => 'UploadDestination', 'id' => null]], $this->modelServiceMock->calls);
+        $this->assertSame([['field' => 'name', 'direction' => 'asc']], $this->modelServiceMock->orderCalls);
+    }
+
+    /**
+     * Ensure validate() reuses cached upload preferences and does not query destinations twice.
+     *
+     * @return void
+     */
+    public function testValidateReusesCachedUploadPreferencesAcrossCalls(): void
+    {
+        $this->modelServiceMock->uploadDestinationsAll = [
+            new FileFieldUploadDestinationMock(9, 0, 'list', true),
+        ];
+
+        $this->setValidatePostValues('asset_file', [
+            'asset_file_directory' => '9',
+            'asset_file_hidden_dir' => '9',
+            'asset_file_existing' => 'first.pdf',
+        ]);
+        $first = $this->subject->validate('', 'asset_file');
+
+        $this->modelServiceMock->uploadDestinationsAll = [
+            new FileFieldUploadDestinationMock(5, 0, 'list', true),
+        ];
+        $this->setValidatePostValues('asset_file', [
+            'asset_file_directory' => '5',
+            'asset_file_hidden_dir' => '5',
+            'asset_file_existing' => 'second.pdf',
+        ]);
+        $second = $this->subject->validate('', 'asset_file');
+
+        $this->assertSame(['value' => '{filedir_9}first.pdf'], $first);
+        $this->assertSame(
+            [
+                'value' => '',
+                'error' => 'directory_no_access',
+            ],
+            $second
+        );
+        $this->assertSame([['model' => 'UploadDestination', 'id' => null]], $this->modelServiceMock->calls);
+        $this->assertSame([['field' => 'name', 'direction' => 'asc']], $this->modelServiceMock->orderCalls);
+    }
 }
