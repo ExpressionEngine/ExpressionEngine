@@ -1317,6 +1317,73 @@ class FileFieldFieldTest extends TestCase
     }
 
     /**
+     * Ensure numeric file identifiers are normalized to `{file:id:url}` tokens when compatibility mode is disabled.
+     *
+     * @param string $fileId
+     * @dataProvider formatDataNumericFileIdProvider
+     * @return void
+     */
+    public function testFormatDataReturnsFileIdTokenWhenCompatibilityModeIsDisabled(string $fileId): void
+    {
+        ee()->config->setItem('file_manager_compatibility_mode', 'n');
+
+        $result = $this->subject->format_data($fileId);
+
+        $this->assertSame('{file:' . $fileId . ':url}', $result);
+    }
+
+    /**
+     * Provide numeric IDs that should preserve token formatting, including zero-value boundaries.
+     *
+     * @return array<string, array<int, string>>
+     */
+    public function formatDataNumericFileIdProvider(): array
+    {
+        return [
+            'standard numeric id' => ['42'],
+            'zero numeric id' => ['0'],
+        ];
+    }
+
+    /**
+     * Ensure an explicit directory ID produces legacy `{filedir_n}` payloads.
+     *
+     * @return void
+     */
+    public function testFormatDataReturnsFiledirPayloadWhenDirectoryIsProvided(): void
+    {
+        $result = $this->subject->format_data('brochure.pdf', '9');
+
+        $this->assertSame('{filedir_9}brochure.pdf', $result);
+    }
+
+    /**
+     * Ensure compatibility mode keeps numeric values unchanged when no directory context is available.
+     *
+     * @return void
+     */
+    public function testFormatDataReturnsRawFileNameWhenCompatibilityModeIsEnabledAndDirectoryIsMissing(): void
+    {
+        ee()->config->setItem('file_manager_compatibility_mode', 'y');
+
+        $result = $this->subject->format_data('42', 0);
+
+        $this->assertSame('42', $result);
+    }
+
+    /**
+     * Ensure empty file names keep the legacy null return contract.
+     *
+     * @return void
+     */
+    public function testFormatDataReturnsNullWhenFileNameIsEmpty(): void
+    {
+        $result = $this->subject->format_data('');
+
+        $this->assertNull($result);
+    }
+
+    /**
      * Ensure parsed legacy data produces expected render vars and hide-state links.
      *
      * @return void
