@@ -1637,6 +1637,166 @@ class FileFieldFieldTest extends TestCase
     }
 
     /**
+     * Ensure get_files_by_name returns false when either required input is empty.
+     *
+     * @param mixed $fileNames
+     * @param mixed $dirIds
+     * @dataProvider getFilesByNameEmptyInputProvider
+     * @return void
+     * @throws \ReflectionException
+     */
+    public function testGetFilesByNameReturnsFalseWhenRequiredInputsAreEmpty($fileNames, $dirIds): void
+    {
+        $method = new \ReflectionMethod(\File_field::class, 'get_files_by_name');
+        $method->setAccessible(true);
+
+        $result = $method->invoke($this->subject, $fileNames, $dirIds);
+
+        $this->assertFalse($result);
+        $this->assertSame([], $this->modelServiceMock->calls);
+        $this->assertSame([], $this->modelServiceMock->withCalls);
+        $this->assertSame([], $this->modelServiceMock->filterCalls);
+        $this->assertSame([], $this->modelServiceMock->allCalls);
+    }
+
+    /**
+     * Provide empty-input combinations for private get_files_by_name guard coverage.
+     *
+     * @return array<string, array<int, mixed>>
+     */
+    public function getFilesByNameEmptyInputProvider(): array
+    {
+        return [
+            'empty file_names array' => [[], ['9']],
+            'empty dir_ids array' => [['brochure.pdf'], []],
+            'scalar empty dir id' => ['brochure.pdf', null],
+        ];
+    }
+
+    /**
+     * Ensure get_file normalizes scalar file-name inputs and returns merged model data.
+     *
+     * @return void
+     */
+    public function testGetFileQueriesByNameWithScalarInputsAndCachesResult(): void
+    {
+        $filters = [
+            ['field' => 'file_name', 'operator' => 'IN', 'value' => ['brochure.pdf']],
+            ['field' => 'upload_location_id', 'operator' => 'IN', 'value' => ['9']],
+        ];
+        $this->modelServiceMock->fileResultsAllByFilterKey[$this->modelServiceMock->buildFileFilterKey($filters)] = [
+            new FileFieldCachedModelRecordMock([
+                'file_id' => 77,
+                'file_name' => 'brochure.pdf',
+                'upload_location_id' => 9,
+            ]),
+        ];
+
+        $result = $this->subject->get_file('brochure.pdf', '9');
+
+        $this->assertSame(77, $result['file_id']);
+        $this->assertSame('brochure.pdf', $result['file_name']);
+        $this->assertSame(9, $result['upload_location_id']);
+        $this->assertArrayHasKey('model_object', $result);
+        $this->assertCount(1, $this->subject->_files);
+        $this->assertSame(
+            [
+                ['model' => 'File', 'id' => null],
+            ],
+            $this->modelServiceMock->calls
+        );
+        $this->assertSame(
+            [
+                ['model' => 'File', 'id' => null, 'relation' => 'UploadDestination'],
+            ],
+            $this->modelServiceMock->withCalls
+        );
+        $this->assertSame(
+            [[
+                'model' => 'File',
+                'id' => null,
+                'field' => 'file_name',
+                'operator' => 'IN',
+                'value' => ['brochure.pdf'],
+            ], [
+                'model' => 'File',
+                'id' => null,
+                'field' => 'upload_location_id',
+                'operator' => 'IN',
+                'value' => ['9'],
+            ]],
+            $this->modelServiceMock->filterCalls
+        );
+        $this->assertSame(
+            [[
+                'model' => 'File',
+                'id' => null,
+                'with' => ['UploadDestination'],
+                'filters' => $filters,
+            ]],
+            $this->modelServiceMock->allCalls
+        );
+    }
+
+    /**
+     * Ensure cache_data keeps cached files unchanged when name lookup returns no results.
+     *
+     * @return void
+     */
+    public function testCacheDataHandlesEmptyModelResultsForNameLookup(): void
+    {
+        $result = $this->subject->cache_data([
+            '{filedir_3}missing-image.png',
+        ]);
+
+        $this->assertNull($result);
+        $this->assertSame(['file_model'], $this->loadMock->models);
+        $this->assertSame(['missing-image.png'], $this->subject->_file_names);
+        $this->assertSame([], $this->subject->_file_ids);
+        $this->assertSame([], $this->subject->_files);
+        $this->assertSame(
+            [
+                ['model' => 'File', 'id' => null],
+            ],
+            $this->modelServiceMock->calls
+        );
+        $this->assertSame(
+            [
+                ['model' => 'File', 'id' => null, 'relation' => 'UploadDestination'],
+            ],
+            $this->modelServiceMock->withCalls
+        );
+        $this->assertSame(
+            [[
+                'model' => 'File',
+                'id' => null,
+                'field' => 'file_name',
+                'operator' => 'IN',
+                'value' => ['missing-image.png'],
+            ], [
+                'model' => 'File',
+                'id' => null,
+                'field' => 'upload_location_id',
+                'operator' => 'IN',
+                'value' => ['3'],
+            ]],
+            $this->modelServiceMock->filterCalls
+        );
+        $this->assertSame(
+            [[
+                'model' => 'File',
+                'id' => null,
+                'with' => ['UploadDestination'],
+                'filters' => [
+                    ['field' => 'file_name', 'operator' => 'IN', 'value' => ['missing-image.png']],
+                    ['field' => 'upload_location_id', 'operator' => 'IN', 'value' => ['3']],
+                ],
+            ]],
+            $this->modelServiceMock->allCalls
+        );
+    }
+
+    /**
      * Ensure parsed legacy data produces expected render vars and hide-state links.
      *
      * @return void
