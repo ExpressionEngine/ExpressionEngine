@@ -48,6 +48,345 @@ class FileFieldFieldHarness extends \File_field
     }
 }
 
+class FileFieldParseFieldHarness extends \File_field
+{
+    /** @var mixed */
+    public $getFileReturn = null;
+
+    /** @var array<int, array<string, mixed>> */
+    public $getFileCalls = [];
+
+    /**
+     * Return deterministic file records for parse_field branch coverage.
+     *
+     * @param mixed $file_reference
+     * @param mixed $dir_id
+     * @return mixed
+     */
+    public function get_file($file_reference = null, $dir_id = null)
+    {
+        $this->getFileCalls[] = [
+            'file_reference' => $file_reference,
+            'dir_id' => $dir_id,
+        ];
+
+        if (is_callable($this->getFileReturn)) {
+            return call_user_func($this->getFileReturn, $file_reference, $dir_id);
+        }
+
+        return $this->getFileReturn;
+    }
+}
+
+class FileFieldParseFilesystemMock
+{
+    /** @var array<int, mixed> */
+    public $urlCalls = [];
+
+    /** @var array<int, string> */
+    public $existsCalls = [];
+
+    /** @var array<int, string> */
+    public $sizeCalls = [];
+
+    /** @var array<string, bool> */
+    public $existingPaths = [];
+
+    /** @var array<string, int> */
+    public $sizesByPath = [];
+
+    /** @var array<string, bool> */
+    public $throwOnPath = [];
+
+    /** @var string */
+    private $baseUrl;
+
+    /**
+     * @param string $baseUrl
+     */
+    public function __construct($baseUrl = 'https://cdn.example.com/uploads/')
+    {
+        $this->baseUrl = $baseUrl;
+    }
+
+    /**
+     * Return a base URL or file URL for parse_field path generation.
+     *
+     * @param string|null $path
+     * @return string
+     */
+    public function getUrl($path = null)
+    {
+        $this->urlCalls[] = $path;
+        $normalizedPath = is_null($path) ? '__base__' : (string) $path;
+
+        if (! empty($this->throwOnPath[$normalizedPath])) {
+            throw new \RuntimeException('URL resolution failed for ' . $normalizedPath);
+        }
+
+        if (is_null($path)) {
+            return $this->baseUrl;
+        }
+
+        return rtrim($this->baseUrl, '/') . '/' . ltrim((string) $path, '/');
+    }
+
+    /**
+     * Return configured existence checks for manipulation absolute paths.
+     *
+     * @param string $path
+     * @return bool
+     */
+    public function exists($path)
+    {
+        $this->existsCalls[] = $path;
+
+        return ! empty($this->existingPaths[(string) $path]);
+    }
+
+    /**
+     * Return deterministic size values for manipulated outputs.
+     *
+     * @param string $path
+     * @return int
+     */
+    public function getSize($path)
+    {
+        $this->sizeCalls[] = $path;
+
+        if (isset($this->sizesByPath[(string) $path])) {
+            return $this->sizesByPath[(string) $path];
+        }
+
+        return 0;
+    }
+}
+
+class FileFieldParseUploadDestinationMock
+{
+    /** @var int */
+    public $id;
+
+    /** @var string */
+    public $name;
+
+    /** @var string */
+    public $pre_format = 'pre-format';
+
+    /** @var string */
+    public $post_format = 'post-format';
+
+    /** @var string */
+    public $file_pre_format = 'file-pre-format';
+
+    /** @var string */
+    public $file_post_format = 'file-post-format';
+
+    /** @var array<int, string> */
+    public $properties = ['resize', 'crop'];
+
+    /** @var array<int, string> */
+    public $file_properties = ['download'];
+
+    /** @var FileFieldParseFilesystemMock */
+    private $filesystem;
+
+    /**
+     * @param int $id
+     * @param string $name
+     * @param FileFieldParseFilesystemMock $filesystem
+     */
+    public function __construct($id, $name, FileFieldParseFilesystemMock $filesystem)
+    {
+        $this->id = $id;
+        $this->name = $name;
+        $this->filesystem = $filesystem;
+    }
+
+    /**
+     * Return filesystem implementation used by parse_field.
+     *
+     * @return FileFieldParseFilesystemMock
+     */
+    public function getFilesystem()
+    {
+        return $this->filesystem;
+    }
+}
+
+class FileFieldParseModelObjectMock
+{
+    /** @var array<int, string> */
+    public $absoluteManipulationPathCalls = [];
+
+    /** @var array<string, string> */
+    private $manipulationPaths;
+
+    /** @var string */
+    private $baseUrl;
+
+    /** @var string */
+    private $absoluteUrl;
+
+    /** @var string */
+    private $absolutePath;
+
+    /**
+     * @param string $baseUrl
+     * @param string $absoluteUrl
+     * @param string $absolutePath
+     * @param array<string, string> $manipulationPaths
+     */
+    public function __construct($baseUrl, $absoluteUrl, $absolutePath, array $manipulationPaths = [])
+    {
+        $this->baseUrl = $baseUrl;
+        $this->absoluteUrl = $absoluteUrl;
+        $this->absolutePath = $absolutePath;
+        $this->manipulationPaths = $manipulationPaths;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBaseUrl()
+    {
+        return $this->baseUrl;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAbsoluteURL()
+    {
+        return $this->absoluteUrl;
+    }
+
+    /**
+     * @param string $shortName
+     * @return string
+     */
+    public function getAbsoluteManipulationPath($shortName)
+    {
+        $this->absoluteManipulationPathCalls[] = $shortName;
+
+        if (isset($this->manipulationPaths[$shortName])) {
+            return $this->manipulationPaths[$shortName];
+        }
+
+        return $this->absolutePath;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAbsolutePath()
+    {
+        return $this->absolutePath;
+    }
+}
+
+class FileFieldParseManipulationMock
+{
+    /** @var string */
+    public $short_name;
+
+    /** @var int */
+    public $width;
+
+    /** @var int */
+    public $height;
+
+    /** @var array<string, int>|null */
+    private $dimensions;
+
+    /** @var array<int, mixed> */
+    public $calls = [];
+
+    /**
+     * @param string $shortName
+     * @param int $width
+     * @param int $height
+     * @param array<string, int>|null $dimensions
+     */
+    public function __construct($shortName, $width, $height, $dimensions = null)
+    {
+        $this->short_name = $shortName;
+        $this->width = $width;
+        $this->height = $height;
+        $this->dimensions = $dimensions;
+    }
+
+    /**
+     * Return configured manipulated dimensions for the provided file model.
+     *
+     * @param mixed $fileModel
+     * @return array<string, int>|null
+     */
+    public function getNewDimensionsOfFile($fileModel)
+    {
+        $this->calls[] = $fileModel;
+
+        return $this->dimensions;
+    }
+}
+
+class FileFieldFormatNumberMock
+{
+    /** @var int */
+    private $value;
+
+    /** @var array<int, bool> */
+    public $bytesCalls = [];
+
+    /**
+     * @param int $value
+     */
+    public function __construct($value)
+    {
+        $this->value = $value;
+    }
+
+    /**
+     * Return deterministic byte formatting for parse_field assertions.
+     *
+     * @param bool $short
+     * @return string
+     */
+    public function bytes($short = true)
+    {
+        $this->bytesCalls[] = (bool) $short;
+
+        if ($short) {
+            return (string) $this->value . 'B';
+        }
+
+        return (string) $this->value . ' bytes';
+    }
+}
+
+class FileFieldFormatFactoryMock
+{
+    /** @var array<int, array<string, mixed>> */
+    public $calls = [];
+
+    /**
+     * Create deterministic formatter instances for parse_field size output.
+     *
+     * @param string $format
+     * @param int $value
+     * @return FileFieldFormatNumberMock
+     */
+    public function make($format, $value)
+    {
+        $this->calls[] = [
+            'format' => $format,
+            'value' => $value,
+        ];
+
+        return new FileFieldFormatNumberMock((int) $value);
+    }
+}
+
 class FileFieldLoadMock
 {
     /** @var array<int, string> */
@@ -1228,6 +1567,9 @@ class FileFieldFieldTest extends TestCase
     /** @var FileFieldServiceMock */
     private $fileFieldServiceMock;
 
+    /** @var FileFieldFormatFactoryMock */
+    private $formatFactoryMock;
+
     /**
      * Load legacy dependencies once for this test class.
      *
@@ -1325,6 +1667,9 @@ class FileFieldFieldTest extends TestCase
 
         $this->fileFieldServiceMock = new FileFieldServiceMock();
         ee()->setMock('file_field', $this->fileFieldServiceMock);
+
+        $this->formatFactoryMock = new FileFieldFormatFactoryMock();
+        ee()->setMock('Format', $this->formatFactoryMock);
 
         $this->subject = new FileFieldFieldHarness();
         $this->subject->fileModelReturn = (object) ['file_id' => 123];
@@ -2113,6 +2458,319 @@ class FileFieldFieldTest extends TestCase
             ]],
             $this->modelServiceMock->allCalls
         );
+    }
+
+    /**
+     * Ensure parse_field short-circuits false for empty payloads.
+     *
+     * @return void
+     */
+    public function testParseFieldReturnsFalseForEmptyPayload(): void
+    {
+        $subject = new FileFieldParseFieldHarness();
+
+        $result = $subject->parse_field('');
+
+        $this->assertFalse($result);
+        $this->assertSame([], $subject->getFileCalls);
+    }
+
+    /**
+     * Ensure parse_field preserves unknown string values as legacy URL fallback output.
+     *
+     * @return void
+     */
+    public function testParseFieldReturnsFallbackArrayForUnknownStringValue(): void
+    {
+        $subject = new FileFieldParseFieldHarness();
+
+        $result = $subject->parse_field('https://legacy.example.com/images/category/photo.jpg');
+
+        $this->assertSame('https://legacy.example.com/images/category/photo.jpg', $result['url']);
+        $this->assertSame('https://legacy.example.com/images/category/photo.jpg', $result['file_name']);
+        $this->assertSame('', $result['filename']);
+        $this->assertSame('', $result['extension']);
+        $this->assertSame('', $result['upload_location_id']);
+        $this->assertSame('', $result['file_hw_original']);
+        $this->assertSame([], $subject->getFileCalls);
+    }
+
+    /**
+     * Ensure parse_field returns false when file lookup resolves but upload directory is unavailable.
+     *
+     * @return void
+     */
+    public function testParseFieldReturnsFalseWhenUploadDirectoryIsMissing(): void
+    {
+        $subject = new FileFieldParseFieldHarness();
+        $subject->getFileReturn = [
+            'file_name' => 'missing.jpg',
+            'upload_location_id' => 99,
+            'directory_id' => 99,
+            'file_hw_original' => '10 10',
+            'file_size' => 42,
+            'mime_type' => 'image/jpeg',
+        ];
+        $subject->_upload_prefs = [
+            9 => new FileFieldParseUploadDestinationMock(9, 'Assets', new FileFieldParseFilesystemMock()),
+        ];
+
+        $result = $subject->parse_field('22');
+
+        $this->assertFalse($result);
+        $this->assertSame([['file_reference' => '22', 'dir_id' => null]], $subject->getFileCalls);
+    }
+
+    /**
+     * Ensure parse_field parses `{file:id:url}` values and returns normalized metadata.
+     *
+     * @return void
+     */
+    public function testParseFieldParsesFileTokenAndBuildsFilesystemMetadata(): void
+    {
+        $subject = new FileFieldParseFieldHarness();
+        $filesystem = new FileFieldParseFilesystemMock('https://cdn.example.com/uploads/');
+        $subject->_upload_prefs = [
+            9 => new FileFieldParseUploadDestinationMock(9, 'Assets', $filesystem),
+        ];
+        $subject->getFileReturn = [
+            'file_name' => 'brochure image.png',
+            'upload_location_id' => 9,
+            'directory_id' => 22,
+            'file_hw_original' => '480 640',
+            'file_size' => 1024,
+            'mime_type' => 'image/png',
+        ];
+
+        $result = $subject->parse_field('{file:42:url}');
+
+        $this->assertSame([['file_reference' => '42', 'dir_id' => null]], $subject->getFileCalls);
+        $this->assertSame('brochure%20image.png', $result['file_name']);
+        $this->assertSame('png', $result['extension']);
+        $this->assertSame('brochure%20image', $result['filename']);
+        $this->assertSame('{file:42:url}', $result['raw_output']);
+        $this->assertSame('{file:42:url}', $result['raw_content']);
+        $this->assertSame('640', $result['width']);
+        $this->assertSame('480', $result['height']);
+        $this->assertSame('https://cdn.example.com/uploads/', $result['path']);
+        $this->assertSame('https://cdn.example.com/uploads/brochure%20image.png', $result['url']);
+        $this->assertSame(22, $result['folder_id']);
+        $this->assertSame(9, $result['directory_id']);
+        $this->assertSame('Assets', $result['directory_title']);
+        $this->assertSame('1024B', $result['file_size:human']);
+        $this->assertSame('1024 bytes', $result['file_size:human_long']);
+    }
+
+    /**
+     * Ensure parse_field extracts directory-scoped file names from `{filedir_n}` payloads.
+     *
+     * @return void
+     */
+    public function testParseFieldParsesFiledirPayloadAndPassesDirectoryIdToLookup(): void
+    {
+        $subject = new FileFieldParseFieldHarness();
+        $filesystem = new FileFieldParseFilesystemMock('https://cdn.example.com/uploads/');
+        $subject->_upload_prefs = [
+            9 => new FileFieldParseUploadDestinationMock(9, 'Assets', $filesystem),
+        ];
+        $subject->getFileReturn = [
+            'file_name' => 'manual.pdf',
+            'upload_location_id' => 9,
+            'directory_id' => 9,
+            'file_hw_original' => '',
+            'file_size' => 88,
+            'mime_type' => 'application/pdf',
+        ];
+
+        $result = $subject->parse_field('{filedir_9}manual.pdf');
+
+        $this->assertSame([['file_reference' => 'manual.pdf', 'dir_id' => '9']], $subject->getFileCalls);
+        $this->assertSame('manual.pdf', $result['file_name']);
+        $this->assertSame('pdf', $result['extension']);
+        $this->assertSame('manual', $result['filename']);
+        $this->assertSame('{filedir_9}manual.pdf', $result['raw_output']);
+    }
+
+    /**
+     * Ensure parse_field can recover file metadata directly from array payloads.
+     *
+     * @return void
+     */
+    public function testParseFieldUsesArrayFallbackWhenLookupInputIsArray(): void
+    {
+        $subject = new FileFieldParseFieldHarness();
+        $subject->_upload_prefs = [
+            9 => new FileFieldParseUploadDestinationMock(9, 'Assets', new FileFieldParseFilesystemMock()),
+        ];
+        $input = [
+            'file_name' => 'array-input.jpg',
+            'upload_location_id' => 9,
+            'directory_id' => 9,
+            'file_hw_original' => '',
+            'file_size' => 5,
+            'mime_type' => 'image/jpeg',
+        ];
+
+        $result = $subject->parse_field($input);
+
+        $this->assertSame([], $subject->getFileCalls);
+        $this->assertSame('array-input.jpg', $result['file_name']);
+        $this->assertSame('jpg', $result['extension']);
+        $this->assertSame('array-input', $result['filename']);
+        $this->assertSame($input, $result['raw_output']);
+        $this->assertSame($input, $result['raw_content']);
+    }
+
+    /**
+     * Ensure parse_field falls back to encoded filenames when filesystem URL lookups fail.
+     *
+     * @return void
+     */
+    public function testParseFieldFallsBackToEncodedFilenameWhenFilesystemThrows(): void
+    {
+        $subject = new FileFieldParseFieldHarness();
+        $filesystem = new FileFieldParseFilesystemMock('https://cdn.example.com/uploads/');
+        $filesystem->throwOnPath['error%20doc.pdf'] = true;
+        $subject->_upload_prefs = [
+            9 => new FileFieldParseUploadDestinationMock(9, 'Assets', $filesystem),
+        ];
+        $subject->getFileReturn = [
+            'file_name' => 'error doc.pdf',
+            'upload_location_id' => 9,
+            'directory_id' => 9,
+            'file_hw_original' => '',
+            'file_size' => 3,
+            'mime_type' => 'application/pdf',
+        ];
+
+        $result = $subject->parse_field('77');
+
+        $this->assertSame('', $result['path']);
+        $this->assertSame('error%20doc.pdf', $result['url']);
+    }
+
+    /**
+     * Ensure parse_field builds manipulation metadata and preserves legacy aliases.
+     *
+     * @return void
+     */
+    public function testParseFieldBuildsManipulationMetadataForImageFiles(): void
+    {
+        $subject = new FileFieldParseFieldHarness();
+        $filesystem = new FileFieldParseFilesystemMock('https://cdn.example.com/uploads/');
+        $filesystem->sizesByPath['_thumb/sample photo.jpg'] = 256;
+        $modelObject = new FileFieldParseModelObjectMock(
+            'https://files.example.com/base/',
+            'https://files.example.com/base/sample%20photo.jpg',
+            '/var/www/files/sample photo.jpg',
+            ['thumb' => '/var/www/files/_thumb/sample photo.jpg']
+        );
+        $subject->_upload_prefs = [
+            9 => new FileFieldParseUploadDestinationMock(9, 'Assets', $filesystem),
+        ];
+        $subject->_manipulations[9] = [
+            new FileFieldParseManipulationMock('thumb', 150, 120, ['width' => 90, 'height' => 72]),
+        ];
+        $subject->getFileReturn = [
+            'file_name' => 'sample photo.jpg',
+            'upload_location_id' => 9,
+            'directory_id' => 44,
+            'file_hw_original' => '100 200',
+            'file_size' => 64,
+            'mime_type' => 'image/jpeg',
+            'model_object' => $modelObject,
+        ];
+
+        $result = $subject->parse_field('55');
+
+        $this->assertSame('https://files.example.com/base/', $result['path']);
+        $this->assertSame('https://files.example.com/base/sample%20photo.jpg', $result['url']);
+        $this->assertSame('https://files.example.com/base/_thumb/sample%20photo.jpg', $result['url:thumb']);
+        $this->assertSame('/var/www/files/sample photo.jpg', $result['path:thumb']);
+        $this->assertSame(90, $result['width:thumb']);
+        $this->assertSame(72, $result['height:thumb']);
+        $this->assertSame(256, $result['file_size:thumb']);
+        $this->assertSame('256B', $result['file_size:thumb:human']);
+        $this->assertSame('256 bytes', $result['file_size:thumb:human_long']);
+        $this->assertSame(256, $result['thumb_size']);
+        $this->assertSame(72, $result['thumb_height']);
+        $this->assertSame(90, $result['thumb_width']);
+        $this->assertSame('https://files.example.com/base/_thumb/sample%20photo.jpg', $result['thumb_file_url']);
+    }
+
+    /**
+     * Ensure parse_field uses absolute manipulation paths when generated files exist.
+     *
+     * @return void
+     */
+    public function testParseFieldUsesManipulationAbsolutePathWhenGeneratedFileExists(): void
+    {
+        $subject = new FileFieldParseFieldHarness();
+        $filesystem = new FileFieldParseFilesystemMock('https://cdn.example.com/uploads/');
+        $filesystem->existingPaths['/var/www/files/_thumb/has-path.jpg'] = true;
+        $filesystem->sizesByPath['_thumb/has-path.jpg'] = 321;
+        $modelObject = new FileFieldParseModelObjectMock(
+            'https://files.example.com/base/',
+            'https://files.example.com/base/has-path.jpg',
+            '/var/www/files/has-path.jpg',
+            ['thumb' => '/var/www/files/_thumb/has-path.jpg']
+        );
+        $subject->_upload_prefs = [
+            9 => new FileFieldParseUploadDestinationMock(9, 'Assets', $filesystem),
+        ];
+        $subject->_manipulations[9] = [
+            new FileFieldParseManipulationMock('thumb', 151, 121),
+        ];
+        $subject->getFileReturn = [
+            'file_name' => 'has-path.jpg',
+            'upload_location_id' => 9,
+            'directory_id' => 44,
+            'file_hw_original' => '100 200',
+            'file_size' => 12,
+            'mime_type' => 'image/jpeg',
+            'model_object' => $modelObject,
+        ];
+
+        $result = $subject->parse_field('56');
+
+        $this->assertSame('/var/www/files/_thumb/has-path.jpg', $result['path:thumb']);
+        $this->assertSame(321, $result['file_size:thumb']);
+        $this->assertSame('321B', $result['file_size:thumb:human']);
+    }
+
+    /**
+     * Ensure parse_field omits manipulation directories for SVG image MIME types.
+     *
+     * @return void
+     */
+    public function testParseFieldSkipsManipulationDirectoryPrefixForSvgMimeType(): void
+    {
+        $subject = new FileFieldParseFieldHarness();
+        $filesystem = new FileFieldParseFilesystemMock('https://cdn.example.com/uploads/');
+        $filesystem->sizesByPath['vector.svg'] = 19;
+        $subject->_upload_prefs = [
+            9 => new FileFieldParseUploadDestinationMock(9, 'Assets', $filesystem),
+        ];
+        $subject->_manipulations[9] = [
+            new FileFieldParseManipulationMock('thumb', 10, 11),
+        ];
+        $subject->getFileReturn = [
+            'file_name' => 'vector.svg',
+            'upload_location_id' => 9,
+            'directory_id' => 9,
+            'file_hw_original' => '',
+            'file_size' => 10,
+            'mime_type' => 'image/svg+xml',
+            'model_object' => null,
+        ];
+
+        $result = $subject->parse_field('19');
+
+        $this->assertSame('https://cdn.example.com/uploads/vector.svg', $result['url:thumb']);
+        $this->assertSame('', $result['path:thumb']);
+        $this->assertSame(10, $result['width:thumb']);
+        $this->assertSame(11, $result['height:thumb']);
+        $this->assertSame(['vector.svg'], $filesystem->sizeCalls);
     }
 
     /**
