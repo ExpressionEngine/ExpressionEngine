@@ -1708,6 +1708,101 @@ class FileFieldFieldTest extends TestCase
     }
 
     /**
+     * Install deterministic directory path lookups for parse_string coverage tests.
+     *
+     * @param array<string|int, string> $paths
+     * @return void
+     */
+    private function setParseStringUploadPaths(array $paths): void
+    {
+        ee()->setMock('file_upload_preferences_model', new class($paths) {
+            /** @var array<string|int, string> */
+            private $paths;
+
+            /**
+             * @param array<string|int, string> $paths
+             */
+            public function __construct(array $paths)
+            {
+                $this->paths = $paths;
+            }
+
+            /**
+             * @return array<string|int, string>
+             */
+            public function get_paths()
+            {
+                return $this->paths;
+            }
+        });
+    }
+
+    /**
+     * Build lightweight file model objects used by parse_string file token tests.
+     *
+     * @param int $fileId
+     * @param array<string, mixed> $fieldValues
+     * @param array<int, string> $fields
+     * @param string $absoluteUrl
+     * @return object
+     */
+    private function makeParseStringFileModel(int $fileId, array $fieldValues, array $fields, string $absoluteUrl): object
+    {
+        return new class($fileId, $fieldValues, $fields, $absoluteUrl) {
+            /** @var int */
+            public $file_id;
+
+            /** @var array<string, mixed> */
+            private $fieldValues;
+
+            /** @var array<int, string> */
+            private $fields;
+
+            /** @var string */
+            private $absoluteUrl;
+
+            /**
+             * @param int $fileId
+             * @param array<string, mixed> $fieldValues
+             * @param array<int, string> $fields
+             * @param string $absoluteUrl
+             */
+            public function __construct(int $fileId, array $fieldValues, array $fields, string $absoluteUrl)
+            {
+                $this->file_id = $fileId;
+                $this->fieldValues = $fieldValues;
+                $this->fields = $fields;
+                $this->absoluteUrl = $absoluteUrl;
+            }
+
+            /**
+             * @return array<int, string>
+             */
+            public function getFields(): array
+            {
+                return $this->fields;
+            }
+
+            /**
+             * @return string
+             */
+            public function getAbsoluteURL(): string
+            {
+                return $this->absoluteUrl;
+            }
+
+            /**
+             * @param string $name
+             * @return mixed
+             */
+            public function __get(string $name)
+            {
+                return $this->fieldValues[$name] ?? null;
+            }
+        };
+    }
+
+    /**
      * Ensure numeric file identifiers are normalized to `{file:id:url}` tokens when compatibility mode is disabled.
      *
      * @param string $fileId
@@ -2771,6 +2866,135 @@ class FileFieldFieldTest extends TestCase
         $this->assertSame(10, $result['width:thumb']);
         $this->assertSame(11, $result['height:thumb']);
         $this->assertSame(['vector.svg'], $filesystem->sizeCalls);
+    }
+
+    /**
+     * Ensure parse_string short-circuits to an empty string for empty payloads.
+     *
+     * @return void
+     */
+    public function testParseStringReturnsEmptyStringForEmptyPayload(): void
+    {
+        $result = $this->subject->parse_string('');
+
+        $this->assertSame('', $result);
+        $this->assertSame([], $this->modelServiceMock->calls);
+        $this->assertSame([], $this->loadMock->models);
+    }
+
+    /**
+     * Ensure parse_string replaces file metadata tokens and known filedir placeholders.
+     *
+     * @return void
+     */
+    public function testParseStringReplacesFileTokensAndRawFiledirTags(): void
+    {
+        $this->setParseStringUploadPaths([
+            7 => 'https://assets.example.com/uploads/',
+        ]);
+        $fileOne = $this->makeParseStringFileModel(
+            12,
+            [
+                'width' => 1200,
+                'height' => 800,
+                'title' => 'Hero Banner',
+                'credit' => 'Staff',
+            ],
+            ['title', 'credit'],
+            'https://files.example.com/hero-banner.jpg'
+        );
+        $fileTwo = $this->makeParseStringFileModel(
+            45,
+            [
+                'width' => 640,
+                'height' => 480,
+                'title' => 'Detail Shot',
+                'credit' => 'Designer',
+            ],
+            ['title', 'credit'],
+            'https://files.example.com/detail-shot.jpg'
+        );
+        $this->modelServiceMock->fileResultsAllByFilterKey[$this->modelServiceMock->buildFileFilterKey([])] = [
+            $fileOne,
+            $fileTwo,
+        ];
+
+        $result = $this->subject->parse_string(
+            'T={file:12:title} C={file:45:credit} W={file:12:width} H={file:45:height} U={file:12:url} P={filedir_7}brochure.pdf M={filedir_99}skip.pdf'
+        );
+
+        $this->assertSame(
+            'T=Hero Banner C=Designer W=1200 H=480 U=https://files.example.com/hero-banner.jpg P=https://assets.example.com/uploads/brochure.pdf M={filedir_99}skip.pdf',
+            $result
+        );
+        $this->assertSame([['model' => 'File', 'id' => ['12', '45', '12', '45', '12']]], $this->modelServiceMock->calls);
+        $this->assertSame([['model' => 'File', 'id' => ['12', '45', '12', '45', '12'], 'relation' => 'UploadDestination']], $this->modelServiceMock->withCalls);
+        $this->assertSame(['file_upload_preferences_model'], $this->loadMock->models);
+    }
+
+    /**
+     * Ensure parse_string parses encoded filedir tags when encoded parsing is enabled.
+     *
+     * @return void
+     */
+    public function testParseStringReplacesEncodedFiledirTagsWhenEnabled(): void
+    {
+        $this->setParseStringUploadPaths([
+            3 => 'https://cdn.example.com/site-images/',
+        ]);
+
+        $result = $this->subject->parse_string('Before &#123;filedir_3&#125;photo.jpg After', true);
+
+        $this->assertSame('Before https://cdn.example.com/site-images/photo.jpg After', $result);
+        $this->assertSame(['file_upload_preferences_model'], $this->loadMock->models);
+    }
+
+    /**
+     * Ensure parse_string keeps file tokens unchanged when file lookup returns no records.
+     *
+     * @return void
+     */
+    public function testParseStringLeavesFileTokensWhenModelReturnsNoFiles(): void
+    {
+        $result = $this->subject->parse_string('T={file:99:title} U={file:99:url}');
+
+        $this->assertSame('T={file:99:title} U={file:99:url}', $result);
+        $this->assertSame([['model' => 'File', 'id' => ['99', '99']]], $this->modelServiceMock->calls);
+        $this->assertSame(
+            [['model' => 'File', 'id' => ['99', '99'], 'relation' => 'UploadDestination']],
+            $this->modelServiceMock->withCalls
+        );
+    }
+
+    /**
+     * Ensure parse_string keeps encoded filedir tags unchanged when encoded parsing is disabled.
+     *
+     * @return void
+     */
+    public function testParseStringLeavesEncodedFiledirTagsWhenParseEncodedIsDisabled(): void
+    {
+        $this->setParseStringUploadPaths([
+            3 => 'https://cdn.example.com/site-images/',
+        ]);
+
+        $result = $this->subject->parse_string('Before &#123;filedir_3&#125;photo.jpg After', false);
+
+        $this->assertSame('Before &#123;filedir_3&#125;photo.jpg After', $result);
+        $this->assertSame([], $this->loadMock->models);
+    }
+
+    /**
+     * Ensure parse_string skips model and directory lookups when tokens do not match supported formats.
+     *
+     * @return void
+     */
+    public function testParseStringLeavesUnmatchedTokensUnchanged(): void
+    {
+        $result = $this->subject->parse_string('bad={file:abc:url} also={filedir_invalid} and plain file: marker');
+
+        $this->assertSame('bad={file:abc:url} also={filedir_invalid} and plain file: marker', $result);
+        $this->assertSame([], $this->modelServiceMock->calls);
+        $this->assertSame([], $this->loadMock->models);
     }
 
     /**
