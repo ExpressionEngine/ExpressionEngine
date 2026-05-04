@@ -3371,6 +3371,41 @@ class FileFieldFieldTest extends TestCase
     }
 
     /**
+     * Ensure browser javascript globals include expected language and pager markup invariants.
+     *
+     * @return void
+     */
+    public function testBrowserJavascriptGlobalsIncludeLanguageAndPagerMarkup(): void
+    {
+        $this->cpMock->cp_theme_url = 'https://cdn.example.com/themes/cp/';
+
+        $this->subject->browser([], 'custom/modal/path');
+
+        $globals = $this->javascriptMock->globals[1];
+        $filebrowser = $globals['filebrowser'];
+        $fileUploader = $globals['fileuploader'];
+
+        $this->assertSame(
+            [
+                'resize_image' => 'resize_image',
+                'or' => 'or',
+                'return_to_publish' => 'return_to_publish',
+            ],
+            $globals['lang']
+        );
+        $this->assertSame('custom/modal/path', $filebrowser['endpoint_url']);
+        $this->assertSame('file_manager', $filebrowser['window_title']);
+        $this->assertStringContainsString('class="next"', $filebrowser['next']);
+        $this->assertStringContainsString('images/pagination_next_button.gif', $filebrowser['next']);
+        $this->assertStringContainsString('alt=""', $filebrowser['next']);
+        $this->assertStringContainsString('class="previous"', $filebrowser['previous']);
+        $this->assertStringContainsString('images/pagination_prev_button.gif', $filebrowser['previous']);
+        $this->assertStringContainsString('alt=""', $filebrowser['previous']);
+        $this->assertSame('file_upload', $fileUploader['window_title']);
+        $this->assertSame('C=content_files&M=delete_files', $fileUploader['delete_url']);
+    }
+
+    /**
      * Ensure trigger/callback browser config registers ready JS with optional field and settings arguments.
      *
      * @return void
