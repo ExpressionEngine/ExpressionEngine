@@ -276,6 +276,144 @@ class GridParserConstructTest extends TestCase
     }
 
     /**
+     * Ensure pre_process keeps plain opening tags and preloads field rows.
+     *
+     * @return void
+     */
+    public function testPreProcessKeepsPlainOpeningTagAndPreloadsRows(): void
+    {
+        $gridModel = $this->makeGridModelMock();
+        $load = $this->makeLoadMock();
+
+        ee()->setMock('Variables/Parser', new class {
+            public function parseVariableProperties($properties, $fieldName = null)
+            {
+                return ['field_name' => $fieldName];
+            }
+        });
+        ee()->setMock('grid_model', $gridModel);
+        ee()->setMock('load', $load);
+
+        $parser = new \Grid_parser();
+
+        $result = $parser->pre_process(
+            '{grid:alpha}',
+            $this->makePreParser('grid:', [60]),
+            ['alpha' => 22]
+        );
+
+        $this->assertTrue($result);
+        $this->assertSame(['grid_model'], $load->models);
+        $this->assertSame(
+            [
+                [
+                    'field_ids' => [22],
+                    'content_type' => 'channel',
+                ],
+            ],
+            $gridModel->columnsCalls
+        );
+        $this->assertCount(1, $gridModel->entryRowsCalls);
+        $this->assertSame([60], $gridModel->entryRowsCalls[0]['entry_ids']);
+        $this->assertSame(22, $gridModel->entryRowsCalls[0]['field_id']);
+        $this->assertSame('channel', $gridModel->entryRowsCalls[0]['content_type']);
+        $this->assertSame('', $gridModel->entryRowsCalls[0]['params']);
+        $this->assertSame([22 => ['grid:alpha']], $parser->grid_field_names);
+        $this->assertSame(1, $gridModel->gridDataCalls);
+    }
+
+    /**
+     * Ensure pre_process keeps reserved modifier tags and primes row data for them.
+     *
+     * @return void
+     */
+    public function testPreProcessKeepsReservedModifierTagsAndPreloadsRows(): void
+    {
+        $gridModel = $this->makeGridModelMock();
+        $load = $this->makeLoadMock();
+
+        ee()->setMock('Variables/Parser', new class {
+            public function parseVariableProperties($properties, $fieldName = null)
+            {
+                if (substr((string) $fieldName, -1) === ':') {
+                    return ['field_name' => 'count'];
+                }
+
+                return ['field_name' => $fieldName];
+            }
+        });
+        ee()->setMock('grid_model', $gridModel);
+        ee()->setMock('load', $load);
+
+        $parser = new \Grid_parser();
+
+        $result = $parser->pre_process(
+            '{grid:alpha:}',
+            $this->makePreParser('grid:', [15, 20]),
+            ['alpha' => 9],
+            'fluid'
+        );
+
+        $this->assertTrue($result);
+        $this->assertSame(['grid_model'], $load->models);
+        $this->assertSame(
+            [
+                [
+                    'field_ids' => [9],
+                    'content_type' => 'fluid',
+                ],
+            ],
+            $gridModel->columnsCalls
+        );
+        $this->assertCount(1, $gridModel->entryRowsCalls);
+        $this->assertSame([15, 20], $gridModel->entryRowsCalls[0]['entry_ids']);
+        $this->assertSame(9, $gridModel->entryRowsCalls[0]['field_id']);
+        $this->assertSame('fluid', $gridModel->entryRowsCalls[0]['content_type']);
+        $this->assertSame(':', $gridModel->entryRowsCalls[0]['params']);
+        $this->assertSame([9 => ['grid:alpha']], $parser->grid_field_names);
+        $this->assertSame(1, $gridModel->gridDataCalls);
+    }
+
+    /**
+     * Ensure pre_process succeeds when only closing tags are present in the match set.
+     *
+     * @return void
+     */
+    public function testPreProcessHandlesClosingTagsWithoutPrimingEntryRows(): void
+    {
+        $gridModel = $this->makeGridModelMock();
+        $load = $this->makeLoadMock();
+
+        ee()->setMock('Variables/Parser', new class {
+            public function parseVariableProperties($properties, $fieldName = null)
+            {
+                return ['field_name' => $fieldName];
+            }
+        });
+        ee()->setMock('grid_model', $gridModel);
+        ee()->setMock('load', $load);
+
+        $parser = new \Grid_parser();
+
+        $result = $parser->pre_process('{/grid:alpha}', $this->makePreParser(), ['alpha' => 22]);
+
+        $this->assertTrue($result);
+        $this->assertSame(['grid_model'], $load->models);
+        $this->assertSame(
+            [
+                [
+                    'field_ids' => [],
+                    'content_type' => 'channel',
+                ],
+            ],
+            $gridModel->columnsCalls
+        );
+        $this->assertSame([], $gridModel->entryRowsCalls);
+        $this->assertSame(1, $gridModel->gridDataCalls);
+        $this->assertSame([], $parser->grid_field_names);
+    }
+
+    /**
      * Ensure instantiate_fieldtype bootstraps fieldtype APIs and assigns merged settings.
      *
      * @return void
