@@ -241,6 +241,29 @@ class GridModelOrderingTest extends TestCase
         ), $db->orders);
     }
 
+    public function testCacheMarkerIncludesSecondaryOrderingRules(): void
+    {
+        list($model, $db) = $this->makeModelWithDbRows(array(
+            array('row_id' => 1, 'entry_id' => 100, 'row_order' => 0, 'fluid_field_data_id' => 0),
+        ));
+
+        $model->get_entry_rows(100, 9, 'channel', array(
+            'orderby' => 'first|second',
+            'sort' => 'asc|desc',
+        ));
+        $model->get_entry_rows(100, 9, 'channel', array(
+            'orderby' => 'first|third',
+            'sort' => 'asc|desc',
+        ));
+
+        $this->assertSame(array(
+            array('field' => 'col_id_11', 'direction' => 'asc', 'escape' => null),
+            array('field' => 'col_id_22', 'direction' => 'desc', 'escape' => null),
+            array('field' => 'col_id_11', 'direction' => 'asc', 'escape' => null),
+            array('field' => 'col_id_33', 'direction' => 'desc', 'escape' => null),
+        ), $db->orders);
+    }
+
     public function testLivePreviewUsesSecondarySortForTies(): void
     {
         ee()->setMock('LivePreview', new class {
@@ -309,6 +332,7 @@ class GridModelOrderingTest extends TestCase
         return array(
             11 => array('col_id' => 11, 'col_name' => 'first'),
             22 => array('col_id' => 22, 'col_name' => 'second'),
+            33 => array('col_id' => 33, 'col_name' => 'third'),
         );
     }
 }
