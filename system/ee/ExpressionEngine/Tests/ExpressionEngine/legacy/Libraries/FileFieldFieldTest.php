@@ -148,6 +148,18 @@ class FileFieldManagerMock
     /** @var array<int, array<string, mixed>> */
     public $calls = [];
 
+    /** @var array<int, array<string, mixed>> */
+    public $uploadFileCalls = [];
+
+    /** @var array<string, mixed> */
+    public $uploadFileResponse = [];
+
+    /** @var int */
+    public $validatePostDataCalls = 0;
+
+    /** @var bool */
+    public $validatePostDataReturn = true;
+
     /**
      * Return deterministic thumbnail metadata.
      *
@@ -163,6 +175,127 @@ class FileFieldManagerMock
         ];
 
         return ['thumb' => 'legacy-thumb'];
+    }
+
+    /**
+     * Return configurable upload payload for upload branch coverage.
+     *
+     * @param mixed $directoryId
+     * @param string $fieldName
+     * @return array<string, mixed>
+     */
+    public function upload_file($directoryId, $fieldName)
+    {
+        $this->uploadFileCalls[] = [
+            'directory_id' => $directoryId,
+            'field_name' => $fieldName,
+        ];
+
+        return $this->uploadFileResponse;
+    }
+
+    /**
+     * Return configurable post validation state for overflow checks.
+     *
+     * @return bool
+     */
+    public function validate_post_data()
+    {
+        $this->validatePostDataCalls++;
+
+        return $this->validatePostDataReturn;
+    }
+}
+
+class FileFieldInputMock
+{
+    /** @var array<string, mixed> */
+    public $postValues = [];
+
+    /** @var array<int, string> */
+    public $postCalls = [];
+
+    /**
+     * Return configured POST values by key.
+     *
+     * @param string $key
+     * @return mixed
+     */
+    public function post($key)
+    {
+        $this->postCalls[] = $key;
+
+        if (array_key_exists($key, $this->postValues)) {
+            return $this->postValues[$key];
+        }
+
+        return null;
+    }
+}
+
+class FileFieldDbMock extends \eeDbArMock
+{
+    /** @var array<int, string> */
+    public $selectCalls = [];
+
+    /** @var array<int, array<string, mixed>> */
+    public $whereCalls = [];
+
+    /** @var array<int, mixed> */
+    public $getCalls = [];
+
+    /**
+     * Track selected columns for legacy validation queries.
+     *
+     * @param mixed $field
+     * @return $this
+     */
+    public function select($field = null)
+    {
+        $this->selectCalls[] = $field;
+
+        return parent::select();
+    }
+
+    /**
+     * Track where filters used for entry/grid validation lookups.
+     *
+     * @param mixed $field
+     * @param mixed $value
+     * @return $this
+     */
+    public function where($field = null, $value = null)
+    {
+        if (is_array($field)) {
+            foreach ($field as $column => $columnValue) {
+                $this->whereCalls[] = [
+                    'field' => $column,
+                    'value' => $columnValue,
+                ];
+            }
+        }
+
+        if (! is_array($field)) {
+            $this->whereCalls[] = [
+                'field' => $field,
+                'value' => $value,
+            ];
+        }
+
+        return parent::where($field, $value);
+    }
+
+    /**
+     * Track table names used for entry/grid fallback queries.
+     *
+     * @param mixed $table
+     * @return \eeDbResultMock
+     */
+    public function get($table = null)
+    {
+        $this->getCalls[] = $table;
+
+        return parent::get();
     }
 }
 
@@ -201,6 +334,17 @@ class FileFieldLangMock
 {
     /** @var array<int, string> */
     public $loaded = [];
+
+    /**
+     * Track requested language loads.
+     *
+     * @param string $file Language file alias.
+     * @return void
+     */
+    public function load($file)
+    {
+        $this->loaded[] = $file;
+    }
 
     /**
      * Track requested language file loads.
@@ -1017,6 +1161,12 @@ class FileFieldFieldTest extends TestCase
     /** @var FileFieldModelServiceMock */
     private $modelServiceMock;
 
+    /** @var FileFieldInputMock */
+    private $inputMock;
+
+    /** @var FileFieldDbMock */
+    private $dbMock;
+
     /** @var FileFieldFilePickerFactoryMock */
     private $filePickerFactoryMock;
 
@@ -1069,6 +1219,7 @@ class FileFieldFieldTest extends TestCase
         ee()->resetMocks();
         ee()->config->resetConfig();
         $_POST = [];
+        $_FILES = [];
 
         $this->loadMock = new FileFieldLoadMock();
         ee()->setMock('load', $this->loadMock);
@@ -1104,6 +1255,15 @@ class FileFieldFieldTest extends TestCase
 
         $this->modelServiceMock = new FileFieldModelServiceMock();
         ee()->setMock('Model', $this->modelServiceMock);
+        $this->modelServiceMock->uploadDestinationsAll = [
+            new FileFieldUploadDestinationMock(9),
+        ];
+
+        $this->inputMock = new FileFieldInputMock();
+        ee()->setMock('input', $this->inputMock);
+
+        $this->dbMock = new FileFieldDbMock();
+        ee()->setMock('db', $this->dbMock);
 
         $this->filePickerFactoryMock = new FileFieldFilePickerFactoryMock();
         ee()->setMock('CP/FilePicker', $this->filePickerFactoryMock);
@@ -1133,6 +1293,27 @@ class FileFieldFieldTest extends TestCase
     {
         ee()->resetMocks();
         ee()->config->resetConfig();
+    }
+
+    /**
+     * Configure default POST payload for validate branch tests.
+     *
+     * @param string $fieldName
+     * @param array<string, mixed> $overrides
+     * @return void
+     */
+    private function setValidatePostValues($fieldName, array $overrides = []): void
+    {
+        $_FILES = [];
+
+        $defaults = [
+            'entry_id' => 0,
+            $fieldName . '_directory' => '9',
+            $fieldName . '_existing' => '',
+            $fieldName . '_hidden_file' => '',
+            $fieldName . '_hidden_dir' => '9',
+        ];
+        $this->inputMock->postValues = array_merge($defaults, $overrides);
     }
 
     /**
@@ -1591,6 +1772,347 @@ class FileFieldFieldTest extends TestCase
         $this->assertSame([], $this->cpMock->headItems);
         $this->assertSame([], $this->cpMock->scripts);
         $this->assertSame([], $this->loadMock->helpers);
+    }
+
+    /**
+     * Ensure existing picker selections take priority over hidden fallback values.
+     *
+     * @return void
+     */
+    public function testValidateUsesExistingSelectionBeforeHiddenFallback(): void
+    {
+        $this->setValidatePostValues('asset_file', [
+            'asset_file_existing' => 'existing.pdf',
+            'asset_file_hidden_file' => 'hidden.pdf',
+            'asset_file_hidden_dir' => '9',
+        ]);
+
+        $result = $this->subject->validate('', 'asset_file');
+
+        $this->assertSame(['value' => '{filedir_9}existing.pdf'], $result);
+        $this->assertSame([], $this->fileManagerMock->uploadFileCalls);
+        $this->assertSame(0, $this->fileManagerMock->validatePostDataCalls);
+    }
+
+    /**
+     * Ensure hidden fallback values are used when existing picker value is absent.
+     *
+     * @return void
+     */
+    public function testValidateUsesHiddenFallbackWhenExistingSelectionIsMissing(): void
+    {
+        $this->setValidatePostValues('asset_file', [
+            'asset_file_hidden_file' => 'legacy.png',
+            'asset_file_hidden_dir' => '9',
+        ]);
+
+        $result = $this->subject->validate('', 'asset_file');
+
+        $this->assertSame(['value' => '{filedir_9}legacy.png'], $result);
+        $this->assertSame([], $this->fileManagerMock->uploadFileCalls);
+    }
+
+    /**
+     * Ensure uploads in compatibility mode store the uploaded filename token.
+     *
+     * @return void
+     */
+    public function testValidateUsesUploadedFilenameInCompatibilityMode(): void
+    {
+        ee()->config->setItem('file_manager_compatibility_mode', 'y');
+        $this->setValidatePostValues('asset_file', [
+            'asset_file_hidden_dir' => '9',
+        ]);
+        $_FILES['asset_file'] = ['name' => 'legacy.jpg'];
+        $this->fileManagerMock->uploadFileResponse = [
+            'file_id' => 33,
+            'file_name' => 'legacy.jpg',
+        ];
+
+        $result = $this->subject->validate('', 'asset_file');
+
+        $this->assertSame(['value' => '{filedir_9}legacy.jpg'], $result);
+        $this->assertSame(
+            [[
+                'directory_id' => '9',
+                'field_name' => 'asset_file',
+            ]],
+            $this->fileManagerMock->uploadFileCalls
+        );
+        $this->assertSame(0, $this->fileManagerMock->validatePostDataCalls);
+    }
+
+    /**
+     * Ensure uploads outside compatibility mode store numeric file IDs.
+     *
+     * @return void
+     */
+    public function testValidateUsesUploadedFileIdWhenCompatibilityModeIsDisabled(): void
+    {
+        ee()->config->setItem('file_manager_compatibility_mode', 'n');
+        $this->setValidatePostValues('asset_file', [
+            'asset_file_hidden_dir' => '9',
+        ]);
+        $_FILES['asset_file'] = ['name' => 'hero.jpg'];
+        $this->fileManagerMock->uploadFileResponse = [
+            'file_id' => 77,
+            'file_name' => 'hero.jpg',
+        ];
+
+        $result = $this->subject->validate('', 'asset_file');
+
+        $this->assertSame(['value' => '{file:77:url}'], $result);
+        $this->assertSame(1, count($this->fileManagerMock->uploadFileCalls));
+    }
+
+    /**
+     * Ensure upload errors are returned directly from the filemanager payload.
+     *
+     * @return void
+     */
+    public function testValidateReturnsUploadErrorPayloadFromFilemanager(): void
+    {
+        $this->setValidatePostValues('asset_file');
+        $_FILES['asset_file'] = ['name' => 'failing.jpg'];
+        $this->fileManagerMock->uploadFileResponse = [
+            'error' => [
+                'value' => '',
+                'error' => 'invalid_upload',
+            ],
+        ];
+
+        $result = $this->subject->validate('', 'asset_file');
+
+        $this->assertSame(
+            [
+                'value' => '',
+                'error' => 'invalid_upload',
+            ],
+            $result
+        );
+    }
+
+    /**
+     * Ensure post_max_size overflows map to the upload limit language key.
+     *
+     * @return void
+     */
+    public function testValidateReturnsLimitErrorWhenPostDataValidationFails(): void
+    {
+        $this->setValidatePostValues('asset_file');
+        $this->fileManagerMock->validatePostDataReturn = false;
+
+        $result = $this->subject->validate('', 'asset_file');
+
+        $this->assertSame(
+            [
+                'value' => '',
+                'error' => 'upload_file_exceeds_limit',
+            ],
+            $result
+        );
+        $this->assertSame(['upload'], $this->langMock->loaded);
+        $this->assertSame(1, $this->fileManagerMock->validatePostDataCalls);
+    }
+
+    /**
+     * Ensure required file fields reject empty values after passing post validation.
+     *
+     * @return void
+     */
+    public function testValidateReturnsRequiredErrorWhenNoFileIsResolved(): void
+    {
+        $this->setValidatePostValues('asset_file');
+        $this->fileManagerMock->validatePostDataReturn = true;
+
+        $result = $this->subject->validate('', 'asset_file', 'y');
+
+        $this->assertSame(
+            [
+                'value' => '',
+                'error' => 'required',
+            ],
+            $result
+        );
+    }
+
+    /**
+     * Ensure inaccessible directory values with no selected directory preserve legacy values.
+     *
+     * @return void
+     */
+    public function testValidatePreservesLegacyValueWhenDirectoryIsBlankAndInaccessible(): void
+    {
+        $this->setValidatePostValues('asset_file', [
+            'asset_file_directory' => '',
+            'asset_file_hidden_dir' => '',
+            'asset_file_existing' => 'legacy-image.jpg',
+        ]);
+
+        $result = $this->subject->validate('', 'asset_file');
+
+        $this->assertSame(['value' => 'legacy-image.jpg'], $result);
+    }
+
+    /**
+     * Ensure inaccessible directory values fail on new entries without entry IDs.
+     *
+     * @return void
+     */
+    public function testValidateReturnsNoAccessForNewEntriesWhenDirectoryIsInaccessible(): void
+    {
+        $this->setValidatePostValues('asset_file', [
+            'asset_file_directory' => '11',
+            'asset_file_hidden_dir' => '11',
+            'asset_file_existing' => 'legacy-image.jpg',
+            'entry_id' => 0,
+        ]);
+
+        $result = $this->subject->validate('', 'asset_file');
+
+        $this->assertSame(
+            [
+                'value' => '',
+                'error' => 'directory_no_access',
+            ],
+            $result
+        );
+    }
+
+    /**
+     * Ensure edit submissions fail when the existing entry has no stored field value row.
+     *
+     * @return void
+     */
+    public function testValidateReturnsNoAccessWhenExistingEntryRowIsMissing(): void
+    {
+        $this->setValidatePostValues('asset_file', [
+            'asset_file_directory' => '11',
+            'asset_file_hidden_dir' => '11',
+            'asset_file_existing' => 'legacy-image.jpg',
+            'entry_id' => 15,
+        ]);
+
+        $result = $this->subject->validate('', 'asset_file');
+
+        $this->assertSame(
+            [
+                'value' => '',
+                'error' => 'directory_no_access',
+            ],
+            $result
+        );
+        $this->assertSame(['asset_file'], $this->dbMock->selectCalls);
+        $this->assertSame([['field' => 'entry_id', 'value' => 15]], $this->dbMock->whereCalls);
+        $this->assertSame(['channel_data'], $this->dbMock->getCalls);
+    }
+
+    /**
+     * Ensure edits fail when stored entry data differs from the submitted legacy filename.
+     *
+     * @return void
+     */
+    public function testValidateReturnsNoAccessWhenSubmittedValueDiffersFromStoredLegacyValue(): void
+    {
+        $this->setValidatePostValues('asset_file', [
+            'asset_file_directory' => '11',
+            'asset_file_hidden_dir' => '11',
+            'asset_file_existing' => 'legacy-image.jpg',
+            'entry_id' => 22,
+        ]);
+        $this->dbMock->setRows([
+            ['entry_id' => 22, 'asset_file' => '{filedir_11}different.jpg'],
+        ]);
+
+        $result = $this->subject->validate('', 'asset_file');
+
+        $this->assertSame(
+            [
+                'value' => '',
+                'error' => 'directory_no_access',
+            ],
+            $result
+        );
+    }
+
+    /**
+     * Ensure numeric values still enter the numeric-token validation branch on edits.
+     *
+     * @return void
+     */
+    public function testValidateChecksNumericTokenBranchForInaccessibleDirectoryEdits(): void
+    {
+        $this->setValidatePostValues('asset_file', [
+            'asset_file_directory' => '11',
+            'asset_file_hidden_dir' => '11',
+            'asset_file_existing' => '77',
+            'entry_id' => 31,
+        ]);
+        $this->dbMock->setRows([
+            ['entry_id' => 31, 'asset_file' => '{filedir_11}77'],
+        ]);
+
+        $result = $this->subject->validate('', 'asset_file');
+
+        $this->assertSame(
+            [
+                'value' => '',
+                'error' => 'directory_no_access',
+            ],
+            $result
+        );
+    }
+
+    /**
+     * Ensure unchanged legacy values are accepted on edits without directory access.
+     *
+     * @return void
+     */
+    public function testValidateAllowsUnchangedLegacyValueForInaccessibleDirectoryEdit(): void
+    {
+        $this->setValidatePostValues('asset_file', [
+            'asset_file_directory' => '11',
+            'asset_file_hidden_dir' => '11',
+            'asset_file_existing' => 'legacy-image.jpg',
+            'entry_id' => 44,
+        ]);
+        $this->dbMock->setRows([
+            ['entry_id' => 44, 'asset_file' => '{filedir_11}legacy-image.jpg'],
+        ]);
+
+        $result = $this->subject->validate('', 'asset_file');
+
+        $this->assertSame(['value' => '{filedir_11}legacy-image.jpg'], $result);
+    }
+
+    /**
+     * Ensure grid field edits use grid table lookups before no-access validation checks.
+     *
+     * @return void
+     */
+    public function testValidateUsesGridRowLookupForInaccessibleDirectoryEditChecks(): void
+    {
+        $this->setValidatePostValues('grid_asset', [
+            'grid_asset_directory' => '11',
+            'grid_asset_hidden_dir' => '11',
+            'grid_asset_existing' => 'grid-file.pdf',
+            'entry_id' => 51,
+        ]);
+        $this->dbMock->setRows([
+            ['row_id' => 7, 'grid_asset' => '{filedir_11}grid-file.pdf'],
+        ]);
+
+        $result = $this->subject->validate('', 'grid_asset', 'n', [
+            'grid_row_id' => 7,
+            'grid_field_id' => 3,
+        ]);
+
+        $this->assertSame(['value' => '{filedir_11}grid-file.pdf'], $result);
+        $this->assertSame(
+            [['field' => 'row_id', 'value' => 7]],
+            $this->dbMock->whereCalls
+        );
+        $this->assertSame(['grid_field_3'], $this->dbMock->getCalls);
     }
 
     /**
