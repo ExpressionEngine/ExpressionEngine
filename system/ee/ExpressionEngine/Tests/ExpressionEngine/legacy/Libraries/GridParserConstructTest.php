@@ -1167,6 +1167,60 @@ class GridParserConstructTest extends TestCase
     }
 
     /**
+     * Ensure parse falls back to row_id and zero fluid context when pair rows omit override keys.
+     *
+     * @return void
+     */
+    public function testParseRowReplacesKnownFieldPairUsingDefaultRowContextWhenOverridesAreMissing(): void
+    {
+        $gridModel = $this->makeParseGridModelMock(
+            [
+                'params' => $this->makeParseParams(),
+                5 => [
+                    10 => [
+                        'row_id' => 10,
+                        'col_id_7' => 'title-value',
+                    ],
+                ],
+            ],
+            [
+                7 => ['field_id' => 11, 'col_id' => 7, 'col_name' => 'title', 'col_type' => 'text'],
+            ]
+        );
+        $parser = $this->makeGridParserReplaceTagSpy(function ($call) {
+            return $call['content'] !== false ? 'PAIR_REPLACED' : 'SINGLE_REPLACED';
+        });
+
+        ee()->setMock('Variables/Parser', $this->makeGridVariablesParserMock());
+        ee()->setMock('grid_model', $gridModel);
+        ee()->setMock('load', $this->makeParseLoadMock());
+        ee()->setMock('TMPL', $this->makeParseTemplateMock());
+        ee()->setMock('functions', $this->makeParseFunctionsMock());
+        ee()->setMock(
+            'api_channel_fields',
+            $this->makeApiChannelFieldsMock([
+                'title' => [['title', 'PAIR_CONTENT', ['limit' => '2'], '{gallery:title}PAIR_CONTENT{/gallery:title}']],
+            ])
+        );
+        ee()->setMock('session', $this->makeSessionMockWithActiveChannel());
+
+        $parser->grid_field_names[11][0] = 'grid:gallery';
+
+        $result = $parser->parse(
+            ['entry_id' => 5],
+            11,
+            [],
+            '{gallery:title}PAIR_CONTENT{/gallery:title}'
+        );
+
+        $this->assertSame('PAIR_REPLACED', $result);
+        $this->assertCount(1, $parser->replaceTagCalls);
+        $this->assertSame(10, $parser->replaceTagCalls[0]['orig_row_id']);
+        $this->assertSame(0, $parser->replaceTagCalls[0]['fluid_field_data_id']);
+        $this->assertSame('PAIR_CONTENT', $parser->replaceTagCalls[0]['content']);
+    }
+
+    /**
      * Ensure parse routes known single tags through Grid replace_tag with default row context fallback.
      *
      * @return void
@@ -1207,6 +1261,52 @@ class GridParserConstructTest extends TestCase
         $this->assertCount(1, $parser->replaceTagCalls);
         $this->assertSame(10, $parser->replaceTagCalls[0]['orig_row_id']);
         $this->assertSame(0, $parser->replaceTagCalls[0]['fluid_field_data_id']);
+        $this->assertFalse($parser->replaceTagCalls[0]['content']);
+    }
+
+    /**
+     * Ensure parse keeps explicit original row and fluid context when replacing known single variables.
+     *
+     * @return void
+     */
+    public function testParseRowReplacesKnownSingleVariableUsingExplicitRowContextOverrides(): void
+    {
+        $gridModel = $this->makeParseGridModelMock(
+            [
+                'params' => $this->makeParseParams(),
+                5 => [
+                    10 => [
+                        'row_id' => 10,
+                        'orig_row_id' => 510,
+                        'fluid_field_data_id' => 42,
+                        'col_id_7' => 'title-value',
+                    ],
+                ],
+            ],
+            [
+                7 => ['field_id' => 11, 'col_id' => 7, 'col_name' => 'title', 'col_type' => 'text'],
+            ]
+        );
+        $parser = $this->makeGridParserReplaceTagSpy(function ($call) {
+            return 'SINGLE_REPLACED';
+        });
+
+        ee()->setMock('Variables/Parser', $this->makeGridVariablesParserMock());
+        ee()->setMock('grid_model', $gridModel);
+        ee()->setMock('load', $this->makeParseLoadMock());
+        ee()->setMock('TMPL', $this->makeParseTemplateMock());
+        ee()->setMock('functions', $this->makeParseFunctionsMock());
+        ee()->setMock('api_channel_fields', $this->makeApiChannelFieldsMock());
+        ee()->setMock('session', $this->makeSessionMockWithActiveChannel());
+
+        $parser->grid_field_names[11][0] = 'grid:gallery';
+
+        $result = $parser->parse(['entry_id' => 5], 11, [], '{gallery:title}');
+
+        $this->assertSame('SINGLE_REPLACED', $result);
+        $this->assertCount(1, $parser->replaceTagCalls);
+        $this->assertSame(510, $parser->replaceTagCalls[0]['orig_row_id']);
+        $this->assertSame(42, $parser->replaceTagCalls[0]['fluid_field_data_id']);
         $this->assertFalse($parser->replaceTagCalls[0]['content']);
     }
 
