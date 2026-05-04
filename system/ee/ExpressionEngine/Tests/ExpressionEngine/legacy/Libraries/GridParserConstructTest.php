@@ -736,6 +736,72 @@ class GridParserConstructTest extends TestCase
     }
 
     /**
+     * Ensure call() bubbles fieldtype exceptions and does not unwind package path state.
+     *
+     * @return void
+     */
+    public function testCallBubblesApplyExceptionWithoutRemovingPackagePath(): void
+    {
+        $load = $this->makeCallLoadMock();
+        $apiChannelFields = new class {
+            public $ft_paths = ['text' => '/fieldtypes/path'];
+            public $field_type = 'text';
+            public $checkMethodExistsCalls = [];
+            public $applyCalls = [];
+
+            public function check_method_exists($method)
+            {
+                $this->checkMethodExistsCalls[] = $method;
+
+                return $method === 'grid_replace_tag';
+            }
+
+            public function apply($method, $data)
+            {
+                $this->applyCalls[] = [
+                    'method' => $method,
+                    'data' => $data,
+                ];
+
+                throw new \RuntimeException('apply failed');
+            }
+        };
+
+        ee()->setMock('load', $load);
+        ee()->setMock('api_channel_fields', $apiChannelFields);
+
+        $parser = new \Grid_parser();
+
+        try {
+            $parser->call('replace_tag', 'value');
+            $this->fail('Expected RuntimeException from api_channel_fields->apply().');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('apply failed', $exception->getMessage());
+        }
+
+        $this->assertSame(
+            [
+                [
+                    'path' => '/fieldtypes/path',
+                    'view_cascade' => false,
+                ],
+            ],
+            $load->addPackagePathCalls
+        );
+        $this->assertSame([], $load->removePackagePathCalls);
+        $this->assertSame(['grid_replace_tag', 'grid_replace_tag'], $apiChannelFields->checkMethodExistsCalls);
+        $this->assertSame(
+            [
+                [
+                    'method' => 'grid_replace_tag',
+                    'data' => ['value'],
+                ],
+            ],
+            $apiChannelFields->applyCalls
+        );
+    }
+
+    /**
      * Ensure parse exits early when the field-pair tagdata is empty.
      *
      * @return void
