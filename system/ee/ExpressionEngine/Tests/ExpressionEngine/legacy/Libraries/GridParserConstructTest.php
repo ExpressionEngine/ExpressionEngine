@@ -474,6 +474,59 @@ class GridParserConstructTest extends TestCase
     }
 
     /**
+     * Ensure instantiate_fieldtype keeps canonical Grid metadata when column settings conflict.
+     *
+     * @return void
+     */
+    public function testInstantiateFieldtypePrefersCanonicalMetadataOverConflictingColumnSettings(): void
+    {
+        $fieldtype = $this->makeFieldtypeHandlerMock();
+        $apiChannelFields = $this->makeInstantiateApiChannelFieldsMock($fieldtype, ['text' => true], false);
+        $column = [
+            'col_type' => 'text',
+            'col_id' => 12,
+            'col_label' => 'Headline',
+            'col_required' => 'y',
+            'col_name' => 'headline',
+            'col_settings' => [
+                'custom' => 'value',
+                'field_label' => 'Wrong Label',
+                'field_required' => 'n',
+                'col_id' => 999,
+                'col_name' => 'wrong_name',
+                'col_required' => 'n',
+                'entry_id' => 777,
+                'grid_field_id' => 555,
+                'grid_row_name' => 'wrong_row',
+                'grid_content_type' => 'matrix',
+                'fluid_field_data_id' => 404,
+                'in_modal_context' => false,
+            ],
+        ];
+
+        ee()->setMock('load', $this->makeParseLoadMock());
+        ee()->setMock('legacy_api', $this->makeLegacyApiMock());
+        ee()->setMock('api_channel_fields', $apiChannelFields);
+
+        $parser = new \Grid_parser();
+        $result = $parser->instantiate_fieldtype($column, 'new_row_5', 45, 88, 'fluid', 13, true);
+
+        $this->assertSame($fieldtype, $result);
+        $this->assertSame('value', $fieldtype->settings['custom']);
+        $this->assertSame('Headline', $fieldtype->settings['field_label']);
+        $this->assertSame('y', $fieldtype->settings['field_required']);
+        $this->assertSame(12, $fieldtype->settings['col_id']);
+        $this->assertSame('headline', $fieldtype->settings['col_name']);
+        $this->assertSame('y', $fieldtype->settings['col_required']);
+        $this->assertSame(88, $fieldtype->settings['entry_id']);
+        $this->assertSame(45, $fieldtype->settings['grid_field_id']);
+        $this->assertSame('new_row_5', $fieldtype->settings['grid_row_name']);
+        $this->assertSame('fluid', $fieldtype->settings['grid_content_type']);
+        $this->assertSame(13, $fieldtype->settings['fluid_field_data_id']);
+        $this->assertTrue($fieldtype->settings['in_modal_context']);
+    }
+
+    /**
      * Ensure instantiate_fieldtype returns null when no fieldtype handler is available.
      *
      * @return void
