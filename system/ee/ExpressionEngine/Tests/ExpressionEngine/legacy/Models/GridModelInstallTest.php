@@ -3675,19 +3675,29 @@ class GridModelInstallTest extends TestCase
     }
 
     /**
-     * It currently throws when cache bypass is requested for multiple field IDs due to nested field-id normalization.
+     * It keeps multiple field IDs flat when bypassing cache and returns empty buckets for each requested field.
      *
      * @return void
      */
-    public function testGetColumnsForFieldThrowsTypeErrorWhenCacheDisabledForMultipleFieldIds(): void
+    public function testGetColumnsForFieldReturnsEmptyBucketsWhenCacheDisabledForMultipleFieldIds(): void
     {
         $state = (object) ['calls' => []];
         ee()->setMock('db', $this->makeDbMockForGetColumnsForFieldTest($state, []));
         $model = (new \ReflectionClass(\Grid_model::class))->newInstanceWithoutConstructor();
 
-        $this->expectException(\TypeError::class);
+        $result = $model->get_columns_for_field([5, 8], 'channel', false);
 
-        $model->get_columns_for_field([5, 8], 'channel', false);
+        $this->assertSame(
+            [
+                ['db.where_in', 'field_id', [5, 8]],
+                ['db.where', 'content_type', 'channel'],
+                ['db.order_by', 'col_order'],
+                ['db.get', 'grid_columns'],
+                ['db.result_array'],
+            ],
+            $state->calls
+        );
+        $this->assertSame([5 => [], 8 => []], $result);
     }
 
     /**
@@ -4254,6 +4264,8 @@ class GridModelInstallTest extends TestCase
     /**
      * It saves mixed new and existing rows, preserving row order and returning deleted row IDs.
      *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      * @return void
      */
     public function testSaveFieldDataPersistsNewAndExistingRowsWhenHookIsInactive(): void
@@ -4362,6 +4374,8 @@ class GridModelInstallTest extends TestCase
     /**
      * It applies fluid row scoping and persists hook-mutated save payloads when grid_save is active.
      *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
      * @return void
      */
     public function testSaveFieldDataUsesFluidScopeAndHookReturnedRowsWhenHookIsActive(): void

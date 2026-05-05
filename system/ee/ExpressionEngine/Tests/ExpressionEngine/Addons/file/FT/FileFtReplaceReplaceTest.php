@@ -14,14 +14,27 @@ if (!function_exists('anchor')) {
     /**
      * Provide the url helper anchor() API needed by File_ft::_wrap_it().
      *
-     * @param string $url
+     * @param string|array $url
      * @param string $title
-     * @param string $attributes
+     * @param string|array $attributes
      * @return string
      */
     function anchor($url = '', $title = '', $attributes = '')
     {
-        $attributeMarkup = $attributes !== '' ? ' ' . $attributes : '';
+        if (is_array($url)) {
+            $url = implode('/', $url);
+        }
+
+        $attributeMarkup = '';
+        if (is_array($attributes)) {
+            $pairs = [];
+            foreach ($attributes as $key => $value) {
+                $pairs[] = $key . '="' . $value . '"';
+            }
+            $attributeMarkup = ! empty($pairs) ? ' ' . implode(' ', $pairs) : '';
+        } elseif ($attributes !== '') {
+            $attributeMarkup = ' ' . $attributes;
+        }
 
         return '<a href="' . $url . '"' . $attributeMarkup . '>' . $title . '</a>';
     }
