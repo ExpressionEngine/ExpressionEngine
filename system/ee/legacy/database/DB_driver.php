@@ -902,7 +902,7 @@ class CI_DB_driver
             }
 
             $error_handler->logHiddenError(strip_tags($log_message));
-            $error_handler->showPublicError(500);
+            $error_handler->showPublicError(500, $error_handler->getDatabasePublicErrorMessage());
         }
 
         if ($source !== null) {

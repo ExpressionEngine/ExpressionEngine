@@ -12,6 +12,8 @@ $lang = array(
 
     'db_error_heading' => 'A Database Error Occurred',
 
+    'db_public_error' => 'There was a database connection error or a problem with a query. Log in as a super admin or enable debugging for more information.',
+
     'db_field_param_missing' => 'To fetch fields requires the name of the table as a parameter.',
 
     'db_filepath_error' => 'Unable to write data to the file path you have submitted.',
