@@ -5735,7 +5735,7 @@ class GridModelInstallTest extends TestCase
     private function setGridModelColumnsCache(\Grid_model $model, string $contentType, array $columnsByFieldId): void
     {
         $property = new \ReflectionProperty(\Grid_model::class, '_columns');
-        $property->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($property);
         $property->setValue($model, [$contentType => $columnsByFieldId]);
     }
 

@@ -41,7 +41,7 @@ abstract class PagesTestBase extends TestCase
     protected function invokePrivate($object, string $method, array $args = [])
     {
         $ref = new ReflectionMethod($object, $method);
-        $ref->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($ref);
         return $ref->invokeArgs($object, $args);
     }
 

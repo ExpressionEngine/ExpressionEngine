@@ -154,7 +154,7 @@ class SqlStructureGetSqlFieldsTest extends TestCase
 
         $sql = $this->makeSqlWithStructureChannels([]);
         $method = new ReflectionMethod('Sql_structure', '_get_sql_fields');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($method);
         $sqlFields = $method->invoke($sql, ['blog:headline'], []);
 
         $this->assertSame([], $sqlFields);

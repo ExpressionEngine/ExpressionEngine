@@ -1398,7 +1398,7 @@ class FileTest extends TestCase
     private function invokeModify(TestFileModel $file, string $action): void
     {
         $method = new \ReflectionMethod(\ExpressionEngine\Controller\Files\File::class, 'modify');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($method);
         $method->invoke($this->controller, $file, $action);
     }
 

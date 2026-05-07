@@ -122,7 +122,7 @@ class StructureConstructTest extends StructureTestBase
     private function getPrivateProperty($object, string $property)
     {
         $reflection = new ReflectionProperty($object, $property);
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($reflection);
 
         return $reflection->getValue($object);
     }

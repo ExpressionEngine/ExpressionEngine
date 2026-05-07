@@ -1811,7 +1811,7 @@ class FileFieldFieldTest extends TestCase
     private function setUploadPreferenceCache($uploadPreferences): void
     {
         $uploadPrefsProperty = new \ReflectionProperty(\File_field::class, '_upload_prefs');
-        $uploadPrefsProperty->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($uploadPrefsProperty);
         $uploadPrefsProperty->setValue($this->subject, $uploadPreferences);
     }
 
@@ -2319,7 +2319,7 @@ class FileFieldFieldTest extends TestCase
     public function testGetFilesByNameReturnsFalseWhenRequiredInputsAreEmpty($fileNames, $dirIds): void
     {
         $method = new \ReflectionMethod(\File_field::class, 'get_files_by_name');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($method);
 
         $result = $method->invoke($this->subject, $fileNames, $dirIds);
 
