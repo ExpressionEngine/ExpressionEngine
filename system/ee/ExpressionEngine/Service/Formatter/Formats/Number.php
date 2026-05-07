@@ -122,24 +122,8 @@ class Number extends Formatter
             setlocale(LC_MONETARY, $options['locale']);
 
             $right_precision = (is_int($options['decimals'])) ? $options['decimals'] : 2;
-            $previous_error_handler = null;
-            $previous_error_handler = set_error_handler(function ($severity, $message, $file = null, $line = null) use (&$previous_error_handler) {
-                if ($severity === E_DEPRECATED && strpos($message, 'money_format() is deprecated') !== false) {
-                    return true;
-                }
-
-                if (is_callable($previous_error_handler)) {
-                    return (bool) call_user_func($previous_error_handler, $severity, $message, $file, $line);
-                }
-
-                return false;
-            });
-
-            try {
-                $this->content = money_format("%.{$right_precision}n", (float) $this->content);
-            } finally {
-                restore_error_handler();
-            }
+            //@-suppressing because we don't want deprecation error - see above on 20/80 effort
+            $this->content = @money_format("%.{$right_precision}n", (float) $this->content);
 
             // set the monetary locale back to normal
             setlocale(LC_MONETARY, $sys_locale);

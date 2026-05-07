@@ -16,10 +16,6 @@ namespace ExpressionEngine\Updater\Service\Updater;
  */
 trait SteppableTrait
 {
-    public $steps = [];
-    public $currentStep = null;
-    public $nextStep = null;
-
     /**
      * Set the steps (method names) to run through
      *

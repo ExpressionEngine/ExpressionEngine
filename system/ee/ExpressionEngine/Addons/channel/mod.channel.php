@@ -2087,10 +2087,6 @@ class Channel
         $channel_ids = array();
 
         foreach ($query->result_array() as $row) {
-            if (! isset($row['entry_id'], $row['channel_id'])) {
-                continue;
-            }
-
             $entries[] = $row['entry_id'];
             $channel_ids[] = $row['channel_id'];
         }
@@ -2102,10 +2098,6 @@ class Channel
         $hiddenFieldsQuery = ee('db')->select('entry_id, field_id')->from('channel_entry_hidden_fields')->where_in('entry_id', $entries)->get();
         if ($hiddenFieldsQuery->num_rows() > 0) {
             foreach ($hiddenFieldsQuery->result_array() as $hiddenFieldsRow) {
-                if (! isset($hiddenFieldsRow['entry_id'], $hiddenFieldsRow['field_id'])) {
-                    continue;
-                }
-
                 if (!isset($this->hidden_fields[$hiddenFieldsRow['entry_id']])) {
                     $this->hidden_fields[$hiddenFieldsRow['entry_id']] = [];
                 }
@@ -2251,11 +2243,10 @@ class Channel
         $offset = 0;
         $timezones = timezones();
         $timezone = ee()->config->item('default_site_timezone');
-        $timezone_key = $timezone ?? '';
 
         // Check legacy timezone formats
-        if (isset($timezones[$timezone_key])) {
-            $offset = $timezones[$timezone_key] * 3600;
+        if (isset($timezones[$timezone])) {
+            $offset = $timezones[$timezone] * 3600;
         } else {
             // Otherwise, get the offset from DateTime
             $dt = new DateTime('now', new DateTimeZone($timezone ?? 'UTC'));
@@ -2744,10 +2735,9 @@ class Channel
     public function channel_name()
     {
         $channel_name = ee()->TMPL->fetch_param('channel');
-        $channel_name_key = $channel_name ?? '';
 
-        if (isset($this->channel_name[$channel_name_key])) {
-            return $this->channel_name[$channel_name_key];
+        if (isset($this->channel_name[$channel_name])) {
+            return $this->channel_name[$channel_name];
         }
 
         $sql = "SELECT channel_title FROM exp_channels ";
@@ -2761,7 +2751,7 @@ class Channel
         $query = ee()->db->query($sql);
 
         if ($query->num_rows() == 1) {
-            $this->channel_name[$channel_name_key] = $query->row('channel_title') ;
+            $this->channel_name[$channel_name] = $query->row('channel_title') ;
 
             return $query->row('channel_title') ;
         } else {

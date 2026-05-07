@@ -181,13 +181,8 @@ abstract class Filter
         $value = $this->display_value;
 
         if (is_null($value)) {
-            $option_key = $this->value();
-            if ($option_key === null) {
-                $option_key = '';
-            }
-
-            $value = (array_key_exists($option_key, $this->options)) ?
-                $this->options[$option_key] :
+            $value = (array_key_exists($this->value(), $this->options)) ?
+                $this->options[$this->value()] :
                 $this->value();
         }
 
@@ -240,12 +235,7 @@ abstract class Filter
                 $label = htmlentities($label, ENT_QUOTES, 'UTF-8');
             }
 
-            $compiled_url = $url->compile();
-            if ($compiled_url === null) {
-                $compiled_url = '';
-            }
-
-            $options[$compiled_url] = $label;
+            $options[$url->compile()] = $label;
         }
 
         return $options;

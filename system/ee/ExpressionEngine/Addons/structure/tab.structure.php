@@ -823,7 +823,7 @@ class Structure_tab
         $uris = $site_pages['uris'];
 
         //exclude current page from check
-        if ($entry->entry_id !== null && isset($uris[$entry->entry_id])) {
+        if (isset($uris[$entry->entry_id])) {
             unset($uris[$entry->entry_id]);
         }
         //ensure leading slash is present
