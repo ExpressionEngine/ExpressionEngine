@@ -416,7 +416,7 @@ class SqlStructureGetChildEntriesTest extends TestCase
      * @param array $categoryRowsBySlug
      * @return Sql_structure
      */
-    private function makeSql(object $captured = null, array $categoryRowsBySlug = []): Sql_structure
+    private function makeSql(?object $captured = null, array $categoryRowsBySlug = []): Sql_structure
     {
         $captured = $captured ?? (object) [
             'category_calls' => [],
