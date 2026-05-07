@@ -3405,7 +3405,8 @@ class EE_Template
                 if ($class == 'comment') {
                     $comment = new $fqcn();
                     $captcha = ee()->functions->cached_captcha ?? '';
-                    $str = str_replace($match[0][$i], $comment->form(true, $captcha), $str);
+                    $comment_form = $comment->form(true, $captcha);
+                    $str = str_replace($match[0][$i], $comment_form ?? '', $str);
                 }
 
                 $str = str_replace('{PREVIEW_TEMPLATE}', $match[2][$i], $str);
