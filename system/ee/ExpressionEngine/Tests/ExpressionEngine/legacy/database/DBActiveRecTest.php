@@ -727,6 +727,10 @@ class DBActiveRecHarness extends CI_DB_active_record
     public $updateBatchCalls = [];
     public $deleteCalls = [];
     public $truncateCalls = [];
+    protected $_like_escape_str;
+    protected $_like_escape_chr;
+    protected $_random_keyword;
+    protected $_count_string;
 
     public function __construct($params = [])
     {

@@ -12,6 +12,7 @@ if (! class_exists('CI_DB')) {
         public $_trans_failure = false;
         public $simpleQueries = [];
         public $queryResult;
+        public $lastCountAllSql;
 
         public function _protect_identifiers($item, $prefix_single = false, $protect_identifiers = null, $field_exists = true)
         {
@@ -232,6 +233,7 @@ class MysqliDriverTest extends TestCase
 
 class MysqliDriverTestable extends CI_DB_mysqli_driver
 {
+    public $connection;
 }
 
 class MysqliDriverConnectionStub

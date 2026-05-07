@@ -265,6 +265,7 @@ class DBForgeTest extends TestCase
 
 class DBForgeTestable extends CI_DB_forge
 {
+    public $db;
     public $createDatabaseReturn;
     public $dropDatabaseReturn;
     public $dropTableReturn;

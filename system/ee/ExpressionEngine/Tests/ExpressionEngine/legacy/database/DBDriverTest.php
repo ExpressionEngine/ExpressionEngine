@@ -529,6 +529,7 @@ class DBDriverTest extends TestCase
 
 class DBDriverMethodHarness extends CI_DB_driver
 {
+    public $connection;
     public $displayErrorCalls = [];
     public $querySqls = [];
     public $queryResponse;

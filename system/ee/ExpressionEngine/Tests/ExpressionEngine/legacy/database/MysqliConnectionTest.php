@@ -56,7 +56,7 @@ class MysqliConnectionTest extends TestCase
 
     public function testQueryAppliesCreateTableEnforcementAndLogsTimings(): void
     {
-        $connection = new CI_DB_mysqli_connection($this->baseConfig());
+        $connection = new MysqliConnectionTestable($this->baseConfig());
         $native = new MysqliConnectionNativeStub();
         $native->queryReturn = 'query-result';
         $log = new MysqliConnectionLogStub();
@@ -267,6 +267,11 @@ class MysqliConnectionOpenStub extends CI_DB_mysqli_connection
         $property->setAccessible(true);
         $property->setValue($this, $native);
     }
+}
+
+class MysqliConnectionTestable extends CI_DB_mysqli_connection
+{
+    public $log;
 }
 
 class MysqliConnectionNativeStub
