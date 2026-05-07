@@ -280,7 +280,8 @@ class Relationships_ft_cp
             }
 
             $status_name = ($status->status == 'closed' or $status->status == 'open') ? lang($status->status) : $status->status;
-            $status_options[$status->status] = $status_name;
+            $status_key = $status->status ?? '';
+            $status_options[$status_key] = $status_name;
         }
 
         $this->all_statuses = array(

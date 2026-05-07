@@ -82,7 +82,7 @@ class EE_Exceptions
 
         list($error_constant, $error_category) = $this->lookupSeverity($severity);
 
-        if (defined('REQ') && REQ === 'CLI') {
+        if (REQ == 'CLI') {
             stdout('PHP ' . $error_category . ':', CLI_STDOUT_FAILURE);
             echo $message . "\n";
             echo $filepath . ": $line\n\n";
@@ -141,7 +141,7 @@ class EE_Exceptions
      */
     public function show_error($heading, $message, $template = 'error_general', $status_code = 500)
     {
-        if (defined('REQ') && REQ === 'CLI') {
+        if (REQ == 'CLI') {
             $cli = new \ExpressionEngine\Cli\Cli();
             $cli->fail($message);
         }
@@ -317,7 +317,7 @@ class EE_Exceptions
         }
 
         // If the request came from the cli, show an appropriate message
-        if (defined('REQ') && REQ === 'CLI') {
+        if (REQ === 'CLI') {
             echo "$error_type caught:\n";
             echo html_entity_decode($message) . "\n";
             echo html_entity_decode($location) . "\n";

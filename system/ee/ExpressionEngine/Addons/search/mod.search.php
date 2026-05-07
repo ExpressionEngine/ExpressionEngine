@@ -90,7 +90,7 @@ class Search
         /** ----------------------------------------
         /**  Is the current user allowed to search?
         /** ----------------------------------------*/
-        if (! ee('Permission')->can('search') && ! ee('Permission')->isSuperAdmin()) {
+        if (! ee('Permission')->can('search') and ! ee('Permission')->isSuperAdmin()) {
             return ee()->output->show_user_error('general', array(lang('search_not_allowed')));
         }
 
@@ -200,7 +200,7 @@ class Search
             ee()->functions->log_search_terms($this->keywords);
         }
 
-        if (isset($_POST['member_name']) && $_POST['member_name'] != "") {
+        if (isset($_POST['member_name']) and $_POST['member_name'] != "") {
             $_POST['member_name'] = ee('Security/XSS')->clean($_POST['member_name']);
         }
 
@@ -254,7 +254,7 @@ class Search
             'keywords' => ($original_keywords != '') ? $original_keywords : $mbr,
             'ip_address' => ee()->input->ip_address(),
             'total_results' => $this->num_rows,
-            'per_page' => (isset($_POST['RES']) && is_numeric($_POST['RES']) && $_POST['RES'] < 255) ? $_POST['RES'] : 50,
+            'per_page' => (isset($_POST['RES']) and is_numeric($_POST['RES']) and $_POST['RES'] < 255) ? $_POST['RES'] : 50,
             'query' => serialize($query_parts),
             'custom_fields' => addslashes(serialize($this->fields)),
             'result_page' => $this->_meta['result_page'],
@@ -428,7 +428,7 @@ class Search
         // If $_POST['channel_id'] exists we know the request is coming from the
         // advanced search form. We set those values to the $channel_id_array
 
-        if (isset($_POST['channel_id']) && is_array($_POST['channel_id'])) {
+        if (isset($_POST['channel_id']) and is_array($_POST['channel_id'])) {
             $channel_id_array = $_POST['channel_id'];
         }
 
@@ -480,7 +480,7 @@ class Search
 
         if (count($channel_array) > 0) {
             foreach ($channel_array as $val) {
-                if ($val != 'null' && $val != '') {
+                if ($val != 'null' and $val != '') {
                     $id_query .= ee()->db->escape_str($val) . ", ";
                 }
             }
@@ -501,7 +501,7 @@ class Search
         $member_array = array();
         $member_ids = '';
 
-        if (isset($_GET['mbr']) && is_numeric($_GET['mbr'])) {
+        if (isset($_GET['mbr']) and is_numeric($_GET['mbr'])) {
             $query = ee()->db->select('member_id')->get_where('members', array(
                 'member_id' => $_GET['mbr']
             ));
@@ -594,7 +594,7 @@ class Search
         /** ----------------------------------------------
         /**  Add status declaration to the query
         /** ----------------------------------------------*/
-        if (isset($this->_meta['status']) && ($status = $this->_meta['status']) != '') {
+        if (isset($this->_meta['status']) and ($status = $this->_meta['status']) != '') {
             $status = str_replace('Open', 'open', $status);
             $status = str_replace('Closed', 'closed', $status);
 
@@ -614,17 +614,17 @@ class Search
             $sql .= "AND exp_channel_titles.status = 'open' ";
         }
 
-        if (isset($this->_meta['entry_id']) && $this->_meta['entry_id'] != '') {
+        if (isset($this->_meta['entry_id']) and $this->_meta['entry_id'] != '') {
             $sql .= ee()->functions->sql_andor_string($this->_meta['entry_id'], 'exp_channel_titles.entry_id') . ' ';
         }
 
         /** ----------------------------------------------
         /**  Set Date filtering
         /** ----------------------------------------------*/
-        if (isset($_POST['date']) && $_POST['date'] != 0) {
+        if (isset($_POST['date']) and $_POST['date'] != 0) {
             $cutoff = ee()->localize->now - (60 * 60 * 24 * $_POST['date']);
 
-            if (isset($_POST['date_order']) && $_POST['date_order'] == 'older') {
+            if (isset($_POST['date_order']) and $_POST['date_order'] == 'older') {
                 $sql .= "AND exp_channel_titles.entry_date < " . $cutoff . " ";
             } else {
                 $sql .= "AND exp_channel_titles.entry_date > " . $cutoff . " ";
@@ -644,20 +644,20 @@ class Search
 
         // Check for different sets of category IDs, checking the parameters
         // first, then the $_POST
-        if (isset($this->_meta['category']) && $this->_meta['category'] != '' && !is_array($this->_meta['category'])) {
+        if (isset($this->_meta['category']) and $this->_meta['category'] != '' and !is_array($this->_meta['category'])) {
             $this->_meta['category'] = explode('|', $this->_meta['category']);
         } elseif (
-            (!isset($this->_meta['category']) or $this->_meta['category'] == '') &&
-            (isset($_POST['cat_id']) && is_array($_POST['cat_id']))
+            (!isset($this->_meta['category']) or $this->_meta['category'] == '') and
+            (isset($_POST['cat_id']) and is_array($_POST['cat_id']))
         ) {
             $this->_meta['category'] = $_POST['cat_id'];
         }
 
-        if (isset($this->_meta['category']) && is_array($this->_meta['category'])) {
+        if (isset($this->_meta['category']) and is_array($this->_meta['category'])) {
             $temp = '';
 
             foreach ($this->_meta['category'] as $val) {
-                if ($val != 'all' && $val != '') {
+                if ($val != 'all' and $val != '') {
                     $temp .= " exp_categories.cat_id = '" . ee()->db->escape_str($val) . "' OR";
                 }
             }
@@ -749,7 +749,7 @@ class Search
             /** ----------------------------------
             /**  Search in Searchable Fields
             /** ----------------------------------*/
-            if (isset($this->_meta['search_in']) && ($this->_meta['search_in'] == 'entries' or $this->_meta['search_in'] == 'everywhere')) {
+            if (isset($this->_meta['search_in']) and ($this->_meta['search_in'] == 'entries' or $this->_meta['search_in'] == 'everywhere')) {
                 if (count($this->terms) > 1 && isset($this->_meta['where']) && $this->_meta['where'] == 'all' && ! isset($_POST['exact_keyword']) && count($fields) > 0) {
                     $concat_tables = [];
                     foreach ($fields as $val) {
@@ -840,7 +840,7 @@ class Search
             /** ----------------------------------
             /**  Search in Comments
             /** ----------------------------------*/
-            if (isset($this->_meta['search_in']) && $this->_meta['search_in'] == 'everywhere' && ee()->addons_model->module_installed('comment')) {
+            if (isset($this->_meta['search_in']) and $this->_meta['search_in'] == 'everywhere' and ee()->addons_model->module_installed('comment')) {
                 if (count($this->terms) == 1 && isset($this->_meta['where']) && $this->_meta['where'] == 'word') {
                     $sql .= " OR (exp_comments.comment LIKE '% " . $terms_like['0'] . " %' ";
 
@@ -898,7 +898,7 @@ class Search
                 $sql .= "AND (exp_channel_titles.author_id {$member_ids} ";
 
                 // searching comments too?
-                if (isset($this->_meta['search_in']) && $this->_meta['search_in'] == 'everywhere' && ee()->addons_model->module_installed('comment')) {
+                if (isset($this->_meta['search_in']) and $this->_meta['search_in'] == 'everywhere' and ee()->addons_model->module_installed('comment')) {
                     $sql .= " OR exp_comments.author_id {$member_ids}";
                 }
 
@@ -989,7 +989,7 @@ class Search
         $sort = (! isset($_POST['sort'])) ? $sort : $_POST['sort'];
         $order = (! isset($_POST['sort_order'])) ? $sort : $_POST['sort_order'];
 
-        if (strtolower($order) !== 'asc' && strtolower($order) !== 'desc') {
+        if (strtolower($order) !== 'asc' and strtolower($order) !== 'desc') {
             $order = 'desc';
         }
 
@@ -1315,7 +1315,7 @@ class Search
         $row['comment_url'] = parse_config_variables($row['comment_url'], $overrides);
         $row['search_results_url'] = parse_config_variables($row['search_results_url'], $overrides);
 
-        if (isset($row['field_id_' . $row['search_excerpt']]) && $row['field_id_' . $row['search_excerpt']] && !is_array($row['field_id_' . $row['search_excerpt']])) {
+        if (isset($row['field_id_' . $row['search_excerpt']]) and $row['field_id_' . $row['search_excerpt']] and !is_array($row['field_id_' . $row['search_excerpt']])) {
             $format = (! isset($row['field_ft_' . $row['search_excerpt']])) ? 'xhtml' : $row['field_ft_' . $row['search_excerpt']];
 
             // Replace block HTML tags with spaces so words don't run together in case
