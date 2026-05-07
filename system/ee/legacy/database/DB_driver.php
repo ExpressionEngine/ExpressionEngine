@@ -799,7 +799,7 @@ class CI_DB_driver
 
             return false;
         } else {
-            $args = (func_num_args() > 1) ? array_splice(func_get_args(), 1) : null;
+            $args = (func_num_args() > 1) ? array_splice(func_get_args(), 1) : array();
 
             return call_user_func_array($function, $args);
         }

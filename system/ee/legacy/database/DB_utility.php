@@ -275,6 +275,10 @@ class CI_DB_utility extends CI_DB_forge
             }
         }
 
+        if (! is_array($prefs['tables'])) {
+            $prefs['tables'] = (array) $prefs['tables'];
+        }
+
         // ------------------------------------------------------
 
         // Are we backing up a complete database or individual tables?

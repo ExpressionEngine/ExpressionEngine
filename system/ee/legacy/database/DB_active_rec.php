@@ -167,6 +167,8 @@ class CI_DB_active_record extends CI_DB_driver
     {
         if (! is_string($select) or empty($select)) {
             $this->display_error('db_invalid_query');
+
+            return $this;
         }
 
         $type = strtoupper($type);
@@ -1221,10 +1223,22 @@ class CI_DB_active_record extends CI_DB_driver
             $key = array($key => $value);
         }
 
+        if (empty($key) || ! is_array(current($key))) {
+            $this->ar_set[] = array();
+
+            return;
+        }
+
         $keys = array_keys(current($key));
         sort($keys);
 
         foreach ($key as $row) {
+            if (! is_array($row)) {
+                $this->ar_set[] = array();
+
+                return;
+            }
+
             if (count(array_diff($keys, array_keys($row))) > 0 or count(array_diff(array_keys($row), $keys)) > 0) {
                 // batch function above returns an error on an empty array
                 $this->ar_set[] = array();

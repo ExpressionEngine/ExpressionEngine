@@ -135,7 +135,10 @@ class CI_DB_mysqli_result extends CI_DB_result
      */
     public function _data_seek($n = 0)
     {
-        // TODO
+        if (! ($this->result_id instanceof \mysqli_result)) {
+            return false;
+        }
+
         return mysqli_data_seek($this->result_id, $n);
     }
 

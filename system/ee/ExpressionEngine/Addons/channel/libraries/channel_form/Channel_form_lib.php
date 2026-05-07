@@ -1888,8 +1888,14 @@ GRID_FALLBACK;
     public function get_selected_cats()
     {
         $selected = array();
+        $entry_id = isset($this->entry->entry_id) ? $this->entry->entry_id : 0;
+        $default_category = isset($this->channel->deft_category) ? $this->channel->deft_category : null;
 
-        if ($this->entry->entry_id or ! empty($this->channel->deft_category)) {
+        if (
+            (!empty($entry_id) || !empty($default_category))
+            && isset($this->entry->Categories)
+            && method_exists($this->entry->Categories, 'pluck')
+        ) {
             $selected = $this->entry->Categories->pluck('cat_id');
         }
 
@@ -2062,7 +2068,13 @@ GRID_FALLBACK;
             $query->filter('url_title', $url_title);
         }
 
-        $query->filter('ChannelEntry.channel_id', $this->channel->channel_id);
+        $channel_id = isset($this->channel->channel_id) ? $this->channel->channel_id : null;
+
+        if ($channel_id === null) {
+            return;
+        }
+
+        $query->filter('ChannelEntry.channel_id', $channel_id);
         $query->filter('ChannelEntry.site_id', $this->site_id);
 
         $entry = $query->first();
@@ -2385,7 +2397,7 @@ GRID_FALLBACK;
 
     public function get_field($field_name)
     {
-        return $this->custom_fields[$field_name];
+        return isset($this->custom_fields[$field_name]) ? $this->custom_fields[$field_name] : null;
     }
 
     /**
@@ -2448,8 +2460,12 @@ GRID_FALLBACK;
         $field = $this->get_field($field_name);
         $options = array();
 
-        $field_data = (is_array($this->entry('field_id_' . $field->field_id)))
-            ? $this->entry('field_id_' . $field->field_id) : explode('|', (string) $this->entry('field_id_' . $field->field_id));
+        if (! is_object($field) || ! isset($field->field_id, $field->field_type)) {
+            return $options;
+        }
+
+        $entry_field_data = $this->entry('field_id_' . $field->field_id);
+        $field_data = is_array($entry_field_data) ? $entry_field_data : explode('|', (string) $entry_field_data);
 
         if (in_array($field->field_type, $this->option_fields)) {
             $field_settings = $field->getField()->getItem('field_settings');

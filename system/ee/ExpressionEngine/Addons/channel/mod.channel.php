@@ -2087,8 +2087,16 @@ class Channel
         $channel_ids = array();
 
         foreach ($query->result_array() as $row) {
-            $entries[] = $row['entry_id'];
-            $channel_ids[] = $row['channel_id'];
+            $entry_id = isset($row['entry_id']) ? $row['entry_id'] : null;
+            $channel_id = isset($row['channel_id']) ? $row['channel_id'] : null;
+
+            if ($entry_id !== null) {
+                $entries[] = $entry_id;
+            }
+
+            if ($channel_id !== null) {
+                $channel_ids[] = $channel_id;
+            }
         }
 
         $entries = array_unique($entries);
@@ -2098,10 +2106,18 @@ class Channel
         $hiddenFieldsQuery = ee('db')->select('entry_id, field_id')->from('channel_entry_hidden_fields')->where_in('entry_id', $entries)->get();
         if ($hiddenFieldsQuery->num_rows() > 0) {
             foreach ($hiddenFieldsQuery->result_array() as $hiddenFieldsRow) {
-                if (!isset($this->hidden_fields[$hiddenFieldsRow['entry_id']])) {
-                    $this->hidden_fields[$hiddenFieldsRow['entry_id']] = [];
+                $entry_id = isset($hiddenFieldsRow['entry_id']) ? $hiddenFieldsRow['entry_id'] : null;
+                $field_id = isset($hiddenFieldsRow['field_id']) ? $hiddenFieldsRow['field_id'] : null;
+
+                if ($entry_id === null || $field_id === null) {
+                    continue;
                 }
-                $this->hidden_fields[$hiddenFieldsRow['entry_id']][] = $hiddenFieldsRow['field_id'];
+
+                if (!isset($this->hidden_fields[$entry_id])) {
+                    $this->hidden_fields[$entry_id] = array();
+                }
+
+                $this->hidden_fields[$entry_id][] = $field_id;
             }
         }
 
