@@ -320,7 +320,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
     {
         $pk = $this->getPrimaryKey();
 
-        if ($pk !== null && isset($data[$pk])) {
+        if ($pk !== null && $pk !== '' && isset($data[$pk])) {
             $this->_new = false;
         }
 
@@ -991,8 +991,11 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
      */
     public function addForeignKey($key, $assoc_name)
     {
-        $foreign_key = $key ?? '';
-        $this->_foreign_keys[$foreign_key] = $assoc_name;
+        if ($key === null || $key === '') {
+            return;
+        }
+
+        $this->_foreign_keys[$key] = $assoc_name;
     }
 
     /**

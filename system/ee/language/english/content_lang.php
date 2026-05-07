@@ -126,6 +126,8 @@ $lang = array(
 
     'edit_entry_with_title' => 'Edit Entry: %s',
 
+    'edit_entry_with_styled_title' => 'Edit Entry: <span>[%s]</span>',
+
     'entries' => 'Entries',
 
     'entries_deleted_desc' => 'The following entries were deleted',

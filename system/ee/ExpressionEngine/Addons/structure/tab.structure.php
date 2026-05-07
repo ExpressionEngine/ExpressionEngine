@@ -823,8 +823,9 @@ class Structure_tab
         $uris = $site_pages['uris'];
 
         //exclude current page from check
-        if ($entry->entry_id !== null && isset($uris[$entry->entry_id])) {
-            unset($uris[$entry->entry_id]);
+        $entry_id = $entry->entry_id ?? null;
+        if ($entry_id !== null && isset($uris[$entry_id])) {
+            unset($uris[$entry_id]);
         }
         //ensure leading slash is present
         $value = '/' . trim($values['uri'], '/');

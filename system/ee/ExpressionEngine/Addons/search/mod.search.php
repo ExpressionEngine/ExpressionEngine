@@ -298,6 +298,7 @@ class Search
             'category' => ee()->TMPL->fetch_param('category', ''),
             'search_in' => ee()->TMPL->fetch_param('search_in', ''),
             'where' => ee()->TMPL->fetch_param('where', ''),
+            'entry_id' => ee()->TMPL->fetch_param('entry_id', ''),
             'show_expired' => ee()->TMPL->fetch_param('show_expired', ''),
             'show_future_entries' => ee()->TMPL->fetch_param('show_future_entries'),
             'orderby' => ee()->TMPL->fetch_param('orderby', 'entry_date'),
@@ -611,6 +612,10 @@ class Search
             }
         } else {
             $sql .= "AND exp_channel_titles.status = 'open' ";
+        }
+
+        if (isset($this->_meta['entry_id']) and $this->_meta['entry_id'] != '') {
+            $sql .= ee()->functions->sql_andor_string($this->_meta['entry_id'], 'exp_channel_titles.entry_id') . ' ';
         }
 
         /** ----------------------------------------------

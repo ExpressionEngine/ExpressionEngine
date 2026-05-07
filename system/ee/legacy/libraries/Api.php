@@ -18,7 +18,7 @@ class Api
 {
     public $errors = array();  // holds any and all errors on failure
     public $api_template_structure; // API template structure instance
-    public $site_id;
+    protected $dynamic_properties = array();
 
     private $apis = array(	// apis available to initialize when loading the parent Api class
         'channel_structure', 'channel_entries', 'channel_fields',
@@ -238,6 +238,18 @@ class Api
     }
 
     /**
+     * Store undefined properties without creating dynamic class properties.
+     *
+     * @param string $key
+     * @param mixed $value
+     * @return void
+     */
+    public function __set($key, $value)
+    {
+        $this->dynamic_properties[$key] = $value;
+    }
+
+    /**
      * Magic Get Method
      *
      * It can be quite useful to read out some of the private members in the
@@ -249,7 +261,34 @@ class Api
      */
     public function __get($key)
     {
-        return $this->$key;
+        if (array_key_exists($key, $this->dynamic_properties)) {
+            return $this->dynamic_properties[$key];
+        }
+
+        if (property_exists($this, $key)) {
+            return $this->$key;
+        }
+
+        return null;
+    }
+
+    /**
+     * Determine if a dynamic property is set.
+     *
+     * @param string $key
+     * @return bool
+     */
+    public function __isset($key)
+    {
+        if (array_key_exists($key, $this->dynamic_properties)) {
+            return isset($this->dynamic_properties[$key]);
+        }
+
+        if (property_exists($this, $key)) {
+            return isset($this->$key);
+        }
+
+        return false;
     }
 }
 // END CLASS

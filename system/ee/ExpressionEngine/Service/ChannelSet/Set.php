@@ -376,14 +376,14 @@ class Set
             return;
         }
 
-        $field_groups = (isset($data->field_groups)) ? $data->field_groups : [];
-        $upload_destinations = (isset($data->upload_destinations)) ? $data->upload_destinations : [];
-        $category_groups = (isset($data->category_groups)) ? $data->category_groups : [];
-        $channels = (isset($data->channels)) ? $data->channels : [];
+        $field_groups = (isset($data->field_groups) && is_array($data->field_groups)) ? $data->field_groups : [];
+        $upload_destinations = (isset($data->upload_destinations) && is_array($data->upload_destinations)) ? $data->upload_destinations : [];
+        $category_groups = (isset($data->category_groups) && is_array($data->category_groups)) ? $data->category_groups : [];
+        $channels = (isset($data->channels) && is_array($data->channels)) ? $data->channels : [];
 
         // Pre-4.0 sets will have status groups, post-4.0 sets will only have statuses
-        $status_groups = isset($data->status_groups) ? $data->status_groups : [];
-        $statuses = isset($data->statuses) ? $data->statuses : [];
+        $status_groups = (isset($data->status_groups) && is_array($data->status_groups)) ? $data->status_groups : [];
+        $statuses = (isset($data->statuses) && is_array($data->statuses)) ? $data->statuses : [];
 
         // Version check: v3 installs cannot import v4 exports
         $version = (isset($data->version)) ? $data->version : '3.0.0';
@@ -647,20 +647,7 @@ class Set
      */
     private function loadStatuses($statuses)
     {
-        $existing_statuses = [];
-        $status_query = ee('Model')->get('Status');
-        if (is_object($status_query) && method_exists($status_query, 'all')) {
-            $existing = $status_query->all();
-            if (is_object($existing) && method_exists($existing, 'pluck')) {
-                $existing = $existing->pluck('status');
-            }
-
-            if ($existing instanceof \Traversable) {
-                $existing_statuses = iterator_to_array($existing, false);
-            } elseif (is_array($existing)) {
-                $existing_statuses = $existing;
-            }
-        }
+        $existing_statuses = ee('Model')->get('Status')->all()->pluck('status');
 
         // Keep track of statuses brought in by this single call to map them
         // to old channel sets that contain status groups

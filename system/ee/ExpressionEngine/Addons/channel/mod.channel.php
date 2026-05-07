@@ -2087,10 +2087,6 @@ class Channel
         $channel_ids = array();
 
         foreach ($query->result_array() as $row) {
-            if (! isset($row['entry_id'], $row['channel_id'])) {
-                continue;
-            }
-
             $entries[] = $row['entry_id'];
             $channel_ids[] = $row['channel_id'];
         }
@@ -2102,10 +2098,6 @@ class Channel
         $hiddenFieldsQuery = ee('db')->select('entry_id, field_id')->from('channel_entry_hidden_fields')->where_in('entry_id', $entries)->get();
         if ($hiddenFieldsQuery->num_rows() > 0) {
             foreach ($hiddenFieldsQuery->result_array() as $hiddenFieldsRow) {
-                if (! isset($hiddenFieldsRow['entry_id'], $hiddenFieldsRow['field_id'])) {
-                    continue;
-                }
-
                 if (!isset($this->hidden_fields[$hiddenFieldsRow['entry_id']])) {
                     $this->hidden_fields[$hiddenFieldsRow['entry_id']] = [];
                 }
@@ -2251,11 +2243,10 @@ class Channel
         $offset = 0;
         $timezones = timezones();
         $timezone = ee()->config->item('default_site_timezone');
-        $timezone_key = $timezone ?? '';
 
         // Check legacy timezone formats
-        if (isset($timezones[$timezone_key])) {
-            $offset = $timezones[$timezone_key] * 3600;
+        if ($timezone !== null && isset($timezones[$timezone])) {
+            $offset = $timezones[$timezone] * 3600;
         } else {
             // Otherwise, get the offset from DateTime
             $dt = new DateTime('now', new DateTimeZone($timezone ?? 'UTC'));
@@ -2744,10 +2735,12 @@ class Channel
     public function channel_name()
     {
         $channel_name = ee()->TMPL->fetch_param('channel');
-        $channel_name_key = $channel_name ?? '';
+        if ($channel_name === null) {
+            $channel_name = '';
+        }
 
-        if (isset($this->channel_name[$channel_name_key])) {
-            return $this->channel_name[$channel_name_key];
+        if (isset($this->channel_name[$channel_name])) {
+            return $this->channel_name[$channel_name];
         }
 
         $sql = "SELECT channel_title FROM exp_channels ";
@@ -2761,7 +2754,7 @@ class Channel
         $query = ee()->db->query($sql);
 
         if ($query->num_rows() == 1) {
-            $this->channel_name[$channel_name_key] = $query->row('channel_title') ;
+            $this->channel_name[$channel_name] = $query->row('channel_title') ;
 
             return $query->row('channel_title') ;
         } else {
@@ -5444,20 +5437,56 @@ class Channel
 
         // Validate preview token
         $request = ee('Request');
-        $auth_header = null;
-        if (is_object($request) && method_exists($request, 'header')) {
-            $auth_header = $request->header('Authorization');
-        }
-        if (empty($auth_header) && is_object($request) && method_exists($request, 'server')) {
-            $auth_header = $request->server('REDIRECT_HTTP_AUTHORIZATION');
-        }
-        if (empty($auth_header)) {
-            $auth_header = $_SERVER['HTTP_AUTHORIZATION'] ?? ($_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? null);
-        }
+        $token_candidates = [
+            'HTTP_AUTHORIZATION',
+            'REDIRECT_HTTP_AUTHORIZATION',
+            'HTTP_EE_LIVE_PREVIEW_TOKEN',
+            'REDIRECT_HTTP_EE_LIVE_PREVIEW_TOKEN',
+        ];
+
+        $extract_token = static function ($candidate, $header_value) {
+            if (!is_string($header_value)) {
+                return null;
+            }
+
+            $header_value = trim($header_value);
+            if ($header_value === '') {
+                return null;
+            }
+
+            if (preg_match('/^\s*Bearer\s+(.+)$/i', $header_value, $matches)) {
+                return trim($matches[1]);
+            }
+
+            if (preg_match('/AUTHORIZATION$/', $candidate)) {
+                return null;
+            }
+
+            return $header_value;
+        };
 
         $preview_token = null;
-        if (!empty($auth_header) && preg_match('/^\s*Bearer\s+(.+)$/i', $auth_header, $matches)) {
-            $preview_token = trim($matches[1]);
+
+        foreach ($token_candidates as $candidate) {
+            $header_value = null;
+            if (is_object($request) && method_exists($request, 'server')) {
+                $header_value = $request->server($candidate);
+            }
+
+            if (is_null($header_value)) {
+                $header_value = $_SERVER[$candidate] ?? null;
+            }
+
+            $preview_token = $extract_token($candidate, $header_value);
+            if (!is_null($preview_token)) {
+                break;
+            }
+        }
+
+        // Display an error if the webserver is preventing access to the Authorization header
+        if (empty($preview_token)) {
+            ee()->lang->load('cp');
+            return ee()->output->show_user_error('general', lang('http_auth_header_missing'));
         }
 
         $token_origin = $from_origin ?: ($origin_header ?: ($referer_header ?: $return));

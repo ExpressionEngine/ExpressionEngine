@@ -119,13 +119,13 @@ class EE_Router
      */
     public function _set_default_controller()
     {
-        if ($this->default_controller === false) {
+        if ($this->default_controller === false || $this->default_controller === null || $this->default_controller === '') {
             show_error("Unable to determine what should be displayed. A default route has not been specified in the routing file.");
         }
 
-        // Is the method being specified?
         $default_controller = (string) $this->default_controller;
 
+        // Is the method being specified?
         if (strpos($default_controller, '/') !== false) {
             $x = explode('/', $default_controller);
 
@@ -204,7 +204,8 @@ class EE_Router
         $saved_segments = $segments;
         $directory = APPPATH . '../ExpressionEngine/Controller/';
         $namespace = '';
-        if (strtolower((string) ($segments[0] ?? '')) == 'cp') {
+        $first_segment = (string) ($segments[0] ?? '');
+        if (strtolower($first_segment) == 'cp') {
             array_shift($segments); // This will not factor into the path for namespaced stuff
             $c++;
         }
@@ -329,7 +330,7 @@ class EE_Router
 
         // Is there a literal match?  If so we're done
         if (isset($this->routes[$uri])) {
-            return $this->_set_request(explode('/', (string) $this->routes[$uri]));
+            return $this->_set_request(explode('/', $this->routes[$uri]));
         }
 
         // Loop through the route array looking for wild-cards
@@ -340,11 +341,11 @@ class EE_Router
             // Does the RegEx match?
             if (preg_match('#^' . $key . '$#', $uri)) {
                 // Do we have a back-reference?
-                if (strpos((string) $val, '$') !== false and strpos($key, '(') !== false) {
+                if (strpos($val, '$') !== false and strpos($key, '(') !== false) {
                     $val = preg_replace('#^' . $key . '$#', $val, $uri);
                 }
 
-                return $this->_set_request(explode('/', (string) $val));
+                return $this->_set_request(explode('/', $val));
             }
         }
 
