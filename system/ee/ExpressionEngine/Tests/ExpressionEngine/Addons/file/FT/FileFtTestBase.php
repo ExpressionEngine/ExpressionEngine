@@ -54,6 +54,23 @@ namespace {
             {
                 return $this->field_name;
             }
+
+            /**
+             * Mirror EE_Fieldtype::_init() for cross-suite compatibility.
+             *
+             * @param array $config
+             * @return void
+             */
+            public function _init($config = [])
+            {
+                foreach ($config as $key => $value) {
+                    $this->$key = $value;
+                }
+
+                if (isset($config['name'])) {
+                    $this->field_name = $config['name'];
+                }
+            }
         }
     }
 
