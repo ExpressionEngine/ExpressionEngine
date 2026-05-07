@@ -370,11 +370,20 @@ class Set
         }
 
         $data = json_decode(file_get_contents($this->path . '/channel_set.json'));
-        $field_groups = (isset($data->field_groups)) ? $data->field_groups : [];
+        if (! is_object($data)) {
+            $this->result->addError(lang('channel_set_invalid'));
+
+            return;
+        }
+
+        $field_groups = (isset($data->field_groups) && is_array($data->field_groups)) ? $data->field_groups : [];
+        $upload_destinations = (isset($data->upload_destinations) && is_array($data->upload_destinations)) ? $data->upload_destinations : [];
+        $category_groups = (isset($data->category_groups) && is_array($data->category_groups)) ? $data->category_groups : [];
+        $channels = (isset($data->channels) && is_array($data->channels)) ? $data->channels : [];
 
         // Pre-4.0 sets will have status groups, post-4.0 sets will only have statuses
-        $status_groups = isset($data->status_groups) ? $data->status_groups : [];
-        $statuses = isset($data->statuses) ? $data->statuses : [];
+        $status_groups = (isset($data->status_groups) && is_array($data->status_groups)) ? $data->status_groups : [];
+        $statuses = (isset($data->statuses) && is_array($data->statuses)) ? $data->statuses : [];
 
         // Version check: v3 installs cannot import v4 exports
         $version = (isset($data->version)) ? $data->version : '3.0.0';
@@ -388,13 +397,13 @@ class Set
         }
 
         try {
-            $this->loadUploadDestinations($data->upload_destinations);
+            $this->loadUploadDestinations($upload_destinations);
             $this->loadFieldsAndGroups($field_groups);
             $this->loadStatusGroups($status_groups);
             $this->loadStatuses($statuses);
-            $this->loadCategoryGroups($data->category_groups);
+            $this->loadCategoryGroups($category_groups);
             $this->loadCategoryFields();
-            $this->loadChannels($data->channels);
+            $this->loadChannels($channels);
         } catch (\Exception $e) {
             $this->result->addError($e->getMessage());
         }
