@@ -5,7 +5,9 @@ ini_set('display_errors', '1');
 
 $projectBase = realpath(__DIR__ . '/../../../../../../../') . '/';
 
-define('SYSPATH', $projectBase);
+if (!defined('SYSPATH')) {
+    define('SYSPATH', $projectBase);
+}
 
 require_once __DIR__ . '/../../../../eeObjectMock.php';
 
@@ -51,12 +53,24 @@ class Structure_core_nav_parser
 PHP
 );
 
-define('APP_VER', '7.5.21');
-define('BASEPATH', $isolatedAddonsPath . '/');
-define('PATH_ADDONS', rtrim($isolatedAddonsPath, '/') . '/');
-define('PATH_PRO_ADDONS', PATH_ADDONS);
-define('PATH_MOD', PATH_ADDONS);
-define('STRUCTURE_NAV_BASIC_REAL_METHOD_BOOTSTRAP', true);
+if (!defined('APP_VER')) {
+    define('APP_VER', '7.5.21');
+}
+if (!defined('BASEPATH')) {
+    define('BASEPATH', $isolatedAddonsPath . '/');
+}
+if (!defined('PATH_ADDONS')) {
+    define('PATH_ADDONS', rtrim($isolatedAddonsPath, '/') . '/');
+}
+if (!defined('PATH_PRO_ADDONS')) {
+    define('PATH_PRO_ADDONS', PATH_ADDONS);
+}
+if (!defined('PATH_MOD')) {
+    define('PATH_MOD', PATH_ADDONS);
+}
+if (!defined('STRUCTURE_NAV_BASIC_REAL_METHOD_BOOTSTRAP')) {
+    define('STRUCTURE_NAV_BASIC_REAL_METHOD_BOOTSTRAP', true);
+}
 
 register_shutdown_function(static function () use ($isolatedAddonsPath): void {
     if (!is_dir($isolatedAddonsPath)) {

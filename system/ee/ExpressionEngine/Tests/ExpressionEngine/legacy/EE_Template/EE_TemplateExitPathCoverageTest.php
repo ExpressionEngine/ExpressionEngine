@@ -14,12 +14,12 @@ class EE_TemplateExitPathCoverageTest extends TestCase
 
     public function testExitLineCoverageForFindLayoutTooLate()
     {
-        $this->runScenarioAndAppendCoverage(self::SCENARIO_FIND_LAYOUT_TOO_LATE, [883]);
+        $this->runScenarioAndAppendCoverage(self::SCENARIO_FIND_LAYOUT_TOO_LATE, [885]);
     }
 
     public function testExitLineCoverageForFindLayoutMultiple()
     {
-        $this->runScenarioAndAppendCoverage(self::SCENARIO_FIND_LAYOUT_MULTIPLE, [897]);
+        $this->runScenarioAndAppendCoverage(self::SCENARIO_FIND_LAYOUT_MULTIPLE, [899]);
     }
 
     public function testExitLineCoverageForShow404()
@@ -29,7 +29,7 @@ class EE_TemplateExitPathCoverageTest extends TestCase
 
     public function testExitLineCoverageForProcessSubTemplatesLoopPrevention()
     {
-        $this->runScenarioAndAppendCoverage(self::SCENARIO_SUB_TEMPLATES_LOOP, [1163]);
+        $this->runScenarioAndAppendCoverage(self::SCENARIO_SUB_TEMPLATES_LOOP, [1167]);
     }
 
     public function testExitLineCoverageForParseTemplateUriPostInstallMessageBranch()

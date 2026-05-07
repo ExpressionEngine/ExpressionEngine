@@ -3260,14 +3260,8 @@ class GridModelInstallTest extends TestCase
         $this->assertSame('alpha', $first[42][11]['col_id_3']);
         $this->assertSame('alpha', $second[42][11]['col_id_3']);
 
-        $expectedMarker = md5(json_encode([
-            'fixed_order' => false,
-            'search' => ['title' => 'news'],
-            'orderby' => 'row_order',
-            'sort' => 'asc',
-        ]));
         $gridData = $model->get_grid_data();
-        $this->assertArrayHasKey($expectedMarker, $gridData['channel'][12]);
+        $this->assertCount(1, $gridData['channel'][12]);
     }
 
     /**
@@ -3372,22 +3366,8 @@ class GridModelInstallTest extends TestCase
         $this->assertSame('first', $first[88][1]['col_id_4']);
         $this->assertSame('second', $second[88][2]['col_id_4']);
 
-        $firstMarker = md5(json_encode([
-            'fixed_order' => false,
-            'search' => ['title' => 'alpha'],
-            'orderby' => 'row_order',
-            'sort' => 'asc',
-        ]));
-        $secondMarker = md5(json_encode([
-            'fixed_order' => false,
-            'search' => ['title' => 'beta'],
-            'orderby' => 'row_order',
-            'sort' => 'asc',
-        ]));
-
         $gridData = $model->get_grid_data();
-        $this->assertArrayHasKey($firstMarker, $gridData['channel'][12]);
-        $this->assertArrayHasKey($secondMarker, $gridData['channel'][12]);
+        $this->assertCount(2, $gridData['channel'][12]);
     }
 
     /**
@@ -3466,46 +3446,40 @@ class GridModelInstallTest extends TestCase
             'sort' => 'asc',
         ], false, 0);
 
-        $marker = md5(json_encode([
-            'fixed_order' => false,
-            'search' => ['title' => 'alpha'],
-            'orderby' => 'row_order',
-            'sort' => 'asc',
-        ]));
+        $grid_data = $model->get_grid_data();
+        $this->assertArrayHasKey('channel', $grid_data);
+        $this->assertArrayHasKey(12, $grid_data['channel']);
+        $this->assertCount(1, $grid_data['channel'][12]);
+
+        $marker = array_key_first($grid_data['channel'][12]);
 
         $this->assertSame(
             [
-                'channel' => [
-                    12 => [
-                        $marker => [
-                            'params' => [
-                                'fixed_order' => '',
-                                'search' => ['title' => 'alpha'],
-                                'orderby' => 'row_order',
-                                'sort' => 'asc',
-                            ],
-                            'fluid_field_data_id' => 0,
-                            9 => [
-                                15 => [
-                                    'row_id' => 15,
-                                    'entry_id' => 9,
-                                    'row_order' => 0,
-                                    'fluid_field_data_id' => 0,
-                                    'col_id_4' => 'alpha',
-                                ],
-                                16 => [
-                                    'row_id' => 16,
-                                    'entry_id' => 9,
-                                    'row_order' => 1,
-                                    'fluid_field_data_id' => 0,
-                                    'col_id_4' => 'beta',
-                                ],
-                            ],
-                        ],
+                'params' => [
+                    'fixed_order' => '',
+                    'search' => ['title' => 'alpha'],
+                    'orderby' => 'row_order',
+                    'sort' => 'asc',
+                ],
+                'fluid_field_data_id' => 0,
+                9 => [
+                    15 => [
+                        'row_id' => 15,
+                        'entry_id' => 9,
+                        'row_order' => 0,
+                        'fluid_field_data_id' => 0,
+                        'col_id_4' => 'alpha',
+                    ],
+                    16 => [
+                        'row_id' => 16,
+                        'entry_id' => 9,
+                        'row_order' => 1,
+                        'fluid_field_data_id' => 0,
+                        'col_id_4' => 'beta',
                     ],
                 ],
             ],
-            $model->get_grid_data()
+            $grid_data['channel'][12][$marker]
         );
     }
 

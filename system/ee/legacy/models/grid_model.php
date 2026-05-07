@@ -392,8 +392,16 @@ class Grid_model extends CI_Model
             ee()->db->where_in('entry_id', $entry_ids);
             ee()->db->where('fluid_field_data_id', $fluid_field_data_id);
 
-            foreach ($options['orderbys'] as $key => $orderby) {
-                ee()->db->order_by($orderby, $options['sorts'][$key]);
+            $orderbys = (array) element('orderbys', $options, element('orderby', $options, []));
+            $orderbys = array_map(function ($orderby) {
+                return ($orderby == 'random') ? 'row_order' : $orderby;
+            }, $orderbys);
+            $sorts = (array) element('sorts', $options, element('sort', $options, []));
+            $default_sort = (string) element('sort', $options, 'asc');
+
+            foreach ($orderbys as $key => $orderby) {
+                $sort = $sorts[$key] ?? $default_sort;
+                ee()->db->order_by($orderby, $sort);
             }
 
             // -------------------------------------------
@@ -469,18 +477,26 @@ class Grid_model extends CI_Model
                     $i++;
                 }
 
-                if (isset($options['orderby']) || isset($options['sort'])) {
+                $orderbys = (array) element('orderbys', $options, element('orderby', $options, []));
+                $orderbys = array_map(function ($orderby) {
+                    return ($orderby == 'random') ? 'row_order' : $orderby;
+                }, $orderbys);
+                $sorts = (array) element('sorts', $options, element('sort', $options, []));
+                $default_sort = (string) element('sort', $options, 'asc');
+
+                if (!empty($orderbys)) {
                     $orderbys = array_map(function ($orderby) {
                         return ($orderby == 'row_id') ? 'orig_row_id' : $orderby;
-                    }, $options['orderbys']);
+                    }, $orderbys);
 
-                    usort($override, function ($a, $b) use ($orderbys, $options) {
+                    usort($override, function ($a, $b) use ($orderbys, $sorts, $default_sort) {
                         foreach ($orderbys as $key => $orderby) {
                             if ($a[$orderby] == $b[$orderby]) {
                                 continue;
                             }
 
-                            if ($options['sorts'][$key] == 'asc') {
+                            $sort = $sorts[$key] ?? $default_sort;
+                            if ($sort == 'asc') {
                                 return ($a[$orderby] > $b[$orderby]) ? 1 : -1;
                             }
 
