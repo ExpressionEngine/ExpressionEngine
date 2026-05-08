@@ -4179,8 +4179,10 @@ class Channel
     }
 
     /**
-      *  Channel "category_heading" tag
-      */
+     * Parse the Channel "category_heading" tag.
+     *
+     * @return string
+     */
     public function category_heading()
     {
         if ($this->query_string == '' && !ee()->TMPL->fetch_param('category_url_title') && !ee()->TMPL->fetch_param('category_id')) {
@@ -4269,6 +4271,20 @@ class Channel
 
                 $valid_cats = array_unique($valid_cats);
 
+                if ($category_group = ee()->TMPL->fetch_param('category_group')) {
+                    if (substr($category_group, 0, 4) == 'not ') {
+                        $x = explode('|', substr($category_group, 4));
+                        $valid_cats = array_diff($valid_cats, $x);
+                    }
+
+                    if (substr($category_group, 0, 4) != 'not ') {
+                        $x = explode('|', $category_group);
+                        $valid_cats = array_intersect($valid_cats, $x);
+                    }
+
+                    $valid_cats = array_filter($valid_cats, 'is_numeric');
+                }
+
                 if (count($valid_cats) == 0) {
                     $valid = 'n';
                 }
@@ -4293,9 +4309,10 @@ class Channel
 
                 $result = ee()->db->query("SELECT cat_id FROM exp_categories
                                       WHERE cat_url_title='" . ee()->db->escape_str($cut_qstring) . "'
-                                      AND group_id IN ('" . implode("','", $valid_cats) . "')");
+                                      AND group_id IN ('" . implode("','", $valid_cats) . "')
+                                      ORDER BY cat_id ASC LIMIT 1");
 
-                if ($result->num_rows() == 1) {
+                if ($result->num_rows() > 0) {
                     $qstring = !ee()->TMPL->fetch_param('category_url_title')
                         ? str_replace($cut_qstring, 'C' . $result->row('cat_id'), $qstring)
                         : 'C' . $result->row('cat_id');
@@ -4303,9 +4320,10 @@ class Channel
                     // give it one more try using the whole $qstring
                     $result = ee()->db->query("SELECT cat_id FROM exp_categories
                                           WHERE cat_url_title='" . ee()->db->escape_str($qstring) . "'
-                                          AND group_id IN ('" . implode("','", $valid_cats) . "')");
+                                          AND group_id IN ('" . implode("','", $valid_cats) . "')
+                                          ORDER BY cat_id ASC LIMIT 1");
 
-                    if ($result->num_rows() == 1) {
+                    if ($result->num_rows() > 0) {
                         $qstring = 'C' . $result->row('cat_id') ;
                     }
                 }
