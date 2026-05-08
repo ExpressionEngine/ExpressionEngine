@@ -114,7 +114,7 @@ class Number extends Formatter
         // localization formatting lookup tables. The 100% solution is easily achieved by ensuring
         // that the intl extension is loaded in PHP, handled above.
         // NOTE: `money_format` is deprecated in PHP 7.4+ and removed in PHP 8.
-        if (function_exists('money_format') && PHP_VERSION_ID < 70400) {
+        if (function_exists('money_format') && PHP_VERSION_ID < 80000) {
             // grab the current monetary locale to reset after formatting
             $sys_locale = setlocale(LC_MONETARY, 0);
 
