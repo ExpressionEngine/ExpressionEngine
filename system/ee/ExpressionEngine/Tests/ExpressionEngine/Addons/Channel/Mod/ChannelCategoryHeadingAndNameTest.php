@@ -123,6 +123,119 @@ class ChannelCategoryHeadingAndNameTest extends ChannelTestBase
         $this->assertEquals('NO_RESULTS', $out);
     }
 
+    /**
+     * The parent_only parameter allows top-level category URL title matches.
+     *
+     * @return void
+     */
+    public function testCategoryHeadingParentOnlyAllowsTopLevelCategoryUrlTitle()
+    {
+        $this->setCategoryHeadingRenderingMocks();
+        $this->setTemplateParams([
+            'channel' => 'products',
+            'category_url_title' => 'top-category',
+            'parent_only' => 'yes',
+        ]);
+        $this->setTemplateTagdata('{category_id}:{category_name}');
+        $this->setCategoryHeadingRows(
+            [
+                ['channel_id' => 1, 'group_id' => 2],
+            ],
+            [
+                ['cat_id' => 21, 'group_id' => 2, 'parent_id' => 0, 'cat_name' => 'Top Category', 'cat_url_title' => 'top-category'],
+            ]
+        );
+
+        $out = $this->channel->category_heading();
+
+        $this->assertEquals('21:Top Category', $out);
+    }
+
+    /**
+     * The parent_only parameter rejects child category URL title matches.
+     *
+     * @return void
+     */
+    public function testCategoryHeadingParentOnlyRejectsChildCategoryUrlTitle()
+    {
+        $this->setCategoryHeadingRenderingMocks();
+        $this->setTemplateParams([
+            'channel' => 'products',
+            'category_url_title' => 'child-category',
+            'parent_only' => 'yes',
+        ]);
+        $this->setTemplateTagdata('{category_id}:{category_name}');
+        $this->setCategoryHeadingRows(
+            [
+                ['channel_id' => 1, 'group_id' => 2],
+            ],
+            [
+                ['cat_id' => 22, 'group_id' => 2, 'parent_id' => 21, 'cat_name' => 'Child Category', 'cat_url_title' => 'child-category'],
+            ]
+        );
+
+        $out = $this->channel->category_heading();
+
+        $this->assertEquals('NO_RESULTS', $out);
+    }
+
+    /**
+     * The parent_only parameter rejects child category IDs.
+     *
+     * @return void
+     */
+    public function testCategoryHeadingParentOnlyRejectsChildCategoryId()
+    {
+        $this->setCategoryHeadingRenderingMocks();
+        $this->setTemplateParams([
+            'category_id' => '22',
+            'parent_only' => 'yes',
+        ]);
+        $this->setTemplateTagdata('{category_id}:{category_name}');
+        $this->setCategoryHeadingRows(
+            [],
+            [
+                ['cat_id' => 22, 'group_id' => 2, 'parent_id' => 21, 'cat_name' => 'Child Category', 'cat_url_title' => 'child-category'],
+            ]
+        );
+
+        $out = $this->channel->category_heading();
+
+        $this->assertEquals('NO_RESULTS', $out);
+    }
+
+    /**
+     * The category_group and parent_only parameters can narrow matches together.
+     *
+     * @return void
+     */
+    public function testCategoryHeadingCategoryGroupAndParentOnlyWorkTogether()
+    {
+        $this->setCategoryHeadingRenderingMocks();
+        $this->setTemplateParams([
+            'channel' => 'products',
+            'category_url_title' => 'shared-category',
+            'category_group' => '3',
+            'parent_only' => 'yes',
+        ]);
+        $this->setTemplateTagdata('{category_id}:{category_name}');
+        $this->setCategoryHeadingRows(
+            [
+                ['channel_id' => 1, 'group_id' => 2],
+                ['channel_id' => 1, 'group_id' => 3],
+            ],
+            [
+                ['cat_id' => 12, 'group_id' => 2, 'parent_id' => 0, 'cat_name' => 'First Shared', 'cat_url_title' => 'shared-category'],
+                ['cat_id' => 13, 'group_id' => 3, 'parent_id' => 12, 'cat_name' => 'Child Shared', 'cat_url_title' => 'shared-category'],
+                ['cat_id' => 15, 'group_id' => 3, 'parent_id' => 0, 'cat_name' => 'Second Shared', 'cat_url_title' => 'shared-category'],
+            ]
+        );
+
+        $out = $this->channel->category_heading();
+
+        $this->assertEquals('15:Second Shared', $out);
+    }
+
     public function testCategoryHeadingReturnsNoResultsWhenNoCriteria()
     {
         $this->channel->query_string = '';
@@ -267,6 +380,12 @@ class ChannelCategoryHeadingAndNameTest extends ChannelTestBase
                     }));
                 }
 
+                if (strpos($sql, 'parent_id = 0') !== false) {
+                    $matches = array_values(array_filter($matches, function ($row) {
+                        return (int) $row['parent_id'] === 0;
+                    }));
+                }
+
                 usort($matches, function ($left, $right) {
                     return $left['cat_id'] <=> $right['cat_id'];
                 });
@@ -280,4 +399,3 @@ class ChannelCategoryHeadingAndNameTest extends ChannelTestBase
         });
     }
 }
-

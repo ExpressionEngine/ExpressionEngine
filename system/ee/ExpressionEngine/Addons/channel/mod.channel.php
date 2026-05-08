@@ -4218,6 +4218,8 @@ class Channel
             $qstring = reduce_double_slashes(str_replace($match[0], '', $qstring));
         }
 
+        $parent_only = (ee()->TMPL->fetch_param('parent_only') == 'yes');
+
         // Is the category being specified by name?
         if (
             (
@@ -4310,6 +4312,7 @@ class Channel
                 $result = ee()->db->query("SELECT cat_id FROM exp_categories
                                       WHERE cat_url_title='" . ee()->db->escape_str($cut_qstring) . "'
                                       AND group_id IN ('" . implode("','", $valid_cats) . "')
+                                      " . ($parent_only ? 'AND parent_id = 0' : '') . "
                                       ORDER BY cat_id ASC LIMIT 1");
 
                 if ($result->num_rows() > 0) {
@@ -4321,6 +4324,7 @@ class Channel
                     $result = ee()->db->query("SELECT cat_id FROM exp_categories
                                           WHERE cat_url_title='" . ee()->db->escape_str($qstring) . "'
                                           AND group_id IN ('" . implode("','", $valid_cats) . "')
+                                          " . ($parent_only ? 'AND parent_id = 0' : '') . "
                                           ORDER BY cat_id ASC LIMIT 1");
 
                     if ($result->num_rows() > 0) {
@@ -4357,7 +4361,8 @@ class Channel
         $query = ee()->db->query("SELECT c.cat_name, c.parent_id, c.cat_url_title, c.cat_description, c.cat_image {$field_sqla}
                             FROM exp_categories AS c
                             {$field_sqlb}
-                            WHERE c.cat_id = '" . ee()->db->escape_str($cat_id) . "'");
+                            WHERE c.cat_id = '" . ee()->db->escape_str($cat_id) . "'
+                            " . ($parent_only ? 'AND c.parent_id = 0' : ''));
 
         if ($query->num_rows() == 0) {
             return ee()->TMPL->no_results();
