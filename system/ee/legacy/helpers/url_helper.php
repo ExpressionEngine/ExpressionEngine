@@ -75,25 +75,27 @@ if (! function_exists('url_title')) {
  * @param	mixed	any attributes
  * @return	string
  */
-function anchor($uri = '', $title = '', $attributes = '')
-{
-    $title = (string) $title;
+if (! function_exists('anchor')) {
+    function anchor($uri = '', $title = '', $attributes = '')
+    {
+        $title = (string) $title;
 
-    $site_url = is_array($uri) ? implode('/', $uri) : $uri;
+        $site_url = is_array($uri) ? implode('/', $uri) : $uri;
 
-    if (REQ != 'CP' && ! preg_match('!^\w+://! i', $site_url)) {
-        $site_url = ee()->functions->fetch_site_index(true) . $site_url;
+        if (REQ != 'CP' && ! preg_match('!^\w+://! i', $site_url)) {
+            $site_url = ee()->functions->fetch_site_index(true) . $site_url;
+        }
+
+        if ($title == '') {
+            $title = $site_url;
+        }
+
+        if ($attributes != '') {
+            $attributes = _parse_attributes($attributes);
+        }
+
+        return '<a href="' . $site_url . '"' . $attributes . '>' . $title . '</a>';
     }
-
-    if ($title == '') {
-        $title = $site_url;
-    }
-
-    if ($attributes != '') {
-        $attributes = _parse_attributes($attributes);
-    }
-
-    return '<a href="' . $site_url . '"' . $attributes . '>' . $title . '</a>';
 }
 
 /**

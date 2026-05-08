@@ -90,7 +90,7 @@ class FieldDisplay
 
     public function getInstructions()
     {
-        return $this->field->getItem('field_instructions');
+        return $this->field->getItem('field_instructions') ?? $this->field->getItem('m_field_description');
     }
 
     public function isRequired()

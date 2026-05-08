@@ -292,9 +292,30 @@ class Translate extends Utilities
             }
         }
 
-        $tmpfilename = tempnam(sys_get_temp_dir(), '');
+        $tmpfilename = tempnam(sys_get_temp_dir(), 'ee_lang_');
+        if ($tmpfilename === false) {
+            ee()->view->set_message('issue', lang('cannot_create_zip'));
+
+            return;
+        }
+
+        // ZipArchive::open() deprecates opening an existing empty file with CREATE.
+        // tempnam() creates that file, so remove it before opening the archive.
+        if (is_file($tmpfilename)) {
+            unlink($tmpfilename);
+        }
         $zip = new ZipArchive();
-        if ($zip->open($tmpfilename, ZipArchive::CREATE) !== true) {
+        if ($tmpfilename === false) {
+            ee()->view->set_message('issue', lang('cannot_create_zip'));
+
+            return;
+        }
+
+        if ($tmpfilename !== false && file_exists($tmpfilename)) {
+            @unlink($tmpfilename);
+        }
+
+        if ($zip->open($tmpfilename, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
             ee()->view->set_message('issue', lang('cannot_create_zip'));
 
             return;
@@ -449,7 +470,7 @@ class Translate extends Utilities
             }
         }
 
-        $this->load->helper('file');
+        ee()->load->helper('file');
 
         if (write_file($dest_loc, $str)) {
             ee('CP/Alert')->makeInline('shared-form')

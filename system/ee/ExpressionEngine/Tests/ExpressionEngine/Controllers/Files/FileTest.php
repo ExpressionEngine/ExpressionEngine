@@ -153,6 +153,28 @@ namespace ExpressionEngine\Controller\Files {
             return (bool) $value;
         }
     }
+
+    public function testUsableImagePropertiesRequiresReadableDimensions()
+    {
+        $this->assertTrue($this->hasUsableImageProperties(['width' => 120, 'height' => 80]));
+        $this->assertTrue($this->hasUsableImageProperties(['width' => '120', 'height' => '80']));
+
+        $this->assertFalse($this->hasUsableImageProperties(false));
+        $this->assertFalse($this->hasUsableImageProperties([]));
+        $this->assertFalse($this->hasUsableImageProperties(['width' => 120]));
+        $this->assertFalse($this->hasUsableImageProperties(['width' => 120, 'height' => 0]));
+        $this->assertFalse($this->hasUsableImageProperties(['width' => 'bad', 'height' => 80]));
+    }
+
+    private function hasUsableImageProperties($info)
+    {
+        $reflection = new \ReflectionClass('ExpressionEngine\Controller\Files\File');
+        $controller = $reflection->newInstanceWithoutConstructor();
+        $method = $reflection->getMethod('hasUsableImageProperties');
+        \TestReflectionHelper::makeMethodAccessible($method);
+
+        return $method->invoke($controller, $info);
+    }
 }
 
 namespace ExpressionEngine\Tests\Controllers\Files {
