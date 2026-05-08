@@ -1497,6 +1497,14 @@ class EE_TemplateFetchTemplateTest extends EE_TemplateTestBase
         $this->assertEquals([], ee()->session->tracker);
     }
 
+    /**
+     * Verify site-404 handling when restricted template access has no bounce URL.
+     *
+     * @return void
+     *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function testFetchTemplateCallsGlobalShow404ForSite404TemplateOnEmptyBounce()
     {
         $row = [
@@ -1578,6 +1586,14 @@ class EE_TemplateFetchTemplateTest extends EE_TemplateTestBase
         }
     }
 
+    /**
+     * Verify site-404 handling when restricted template access has a bounce URL.
+     *
+     * @return void
+     *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function testFetchTemplateCallsGlobalShow404ForSite404TemplateOnBounceRedirect()
     {
         $templateRow = [

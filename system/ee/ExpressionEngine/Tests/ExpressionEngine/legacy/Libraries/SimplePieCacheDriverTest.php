@@ -219,7 +219,7 @@ class SimplePieCacheDriverTest extends TestCase
     {
         $reflection = new \ReflectionClass($object);
         $propertyObj = $reflection->getProperty($property);
-        $propertyObj->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($propertyObj);
 
         return $propertyObj->getValue($object);
     }

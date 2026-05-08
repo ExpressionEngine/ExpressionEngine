@@ -180,6 +180,9 @@ class StructureMcpSmallMethodsTest extends TestCase
                 return true;
             }
         });
+        ee()->setMock('session', new class {
+            public $userdata = ['group_id' => 1];
+        });
         ee()->setMock('db', new class {
             public function query($sql)
             {

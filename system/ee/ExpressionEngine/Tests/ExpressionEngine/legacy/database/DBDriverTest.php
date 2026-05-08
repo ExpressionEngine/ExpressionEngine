@@ -404,6 +404,14 @@ class DBDriverTest extends TestCase
         $this->assertTrue($connection->closeCalled);
     }
 
+    /**
+     * Verify db_exception display_error paths without inherited full-suite globals.
+     *
+     * @return void
+     *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function testDisplayErrorThrowsWhenDbExceptionEnabled(): void
     {
         ee()->setMock('session', new class {
@@ -445,6 +453,14 @@ class DBDriverTest extends TestCase
         }
     }
 
+    /**
+     * Verify native display_error formatting when no session mock is available.
+     *
+     * @return void
+     *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function testDisplayErrorCoversNativeNoSessionPathWithoutTriggeringExit(): void
     {
         $driver = new CI_DB_driver([]);
@@ -529,6 +545,7 @@ class DBDriverTest extends TestCase
 
 class DBDriverMethodHarness extends CI_DB_driver
 {
+    public $connection;
     public $displayErrorCalls = [];
     public $querySqls = [];
     public $queryResponse;

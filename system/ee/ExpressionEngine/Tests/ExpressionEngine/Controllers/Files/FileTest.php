@@ -153,28 +153,6 @@ namespace ExpressionEngine\Controller\Files {
             return (bool) $value;
         }
     }
-
-    public function testUsableImagePropertiesRequiresReadableDimensions()
-    {
-        $this->assertTrue($this->hasUsableImageProperties(['width' => 120, 'height' => 80]));
-        $this->assertTrue($this->hasUsableImageProperties(['width' => '120', 'height' => '80']));
-
-        $this->assertFalse($this->hasUsableImageProperties(false));
-        $this->assertFalse($this->hasUsableImageProperties([]));
-        $this->assertFalse($this->hasUsableImageProperties(['width' => 120]));
-        $this->assertFalse($this->hasUsableImageProperties(['width' => 120, 'height' => 0]));
-        $this->assertFalse($this->hasUsableImageProperties(['width' => 'bad', 'height' => 80]));
-    }
-
-    private function hasUsableImageProperties($info)
-    {
-        $reflection = new \ReflectionClass('ExpressionEngine\Controller\Files\File');
-        $controller = $reflection->newInstanceWithoutConstructor();
-        $method = $reflection->getMethod('hasUsableImageProperties');
-        \TestReflectionHelper::makeMethodAccessible($method);
-
-        return $method->invoke($controller, $info);
-    }
 }
 
 namespace ExpressionEngine\Tests\Controllers\Files {
@@ -269,6 +247,23 @@ class FileTest extends TestCase
         FileDownloadRecorder::reset();
         ee()->resetMocks();
         ee()->config->resetConfig();
+    }
+
+    /**
+     * Ensure image metadata is considered usable only when dimensions are readable.
+     *
+     * @return void
+     */
+    public function testUsableImagePropertiesRequiresReadableDimensions()
+    {
+        $this->assertTrue($this->hasUsableImageProperties(['width' => 120, 'height' => 80]));
+        $this->assertTrue($this->hasUsableImageProperties(['width' => '120', 'height' => '80']));
+
+        $this->assertFalse($this->hasUsableImageProperties(false));
+        $this->assertFalse($this->hasUsableImageProperties([]));
+        $this->assertFalse($this->hasUsableImageProperties(['width' => 120]));
+        $this->assertFalse($this->hasUsableImageProperties(['width' => 120, 'height' => 0]));
+        $this->assertFalse($this->hasUsableImageProperties(['width' => 'bad', 'height' => 80]));
     }
 
     /**
@@ -1420,8 +1415,26 @@ class FileTest extends TestCase
     private function invokeModify(TestFileModel $file, string $action): void
     {
         $method = new \ReflectionMethod(\ExpressionEngine\Controller\Files\File::class, 'modify');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($method);
         $method->invoke($this->controller, $file, $action);
+    }
+
+    /**
+     * Invoke the controller image-dimension guard.
+     *
+     * @param mixed $info
+     * @return bool
+     *
+     * @throws \ReflectionException
+     */
+    private function hasUsableImageProperties($info)
+    {
+        $reflection = new \ReflectionClass('ExpressionEngine\Controller\Files\File');
+        $controller = $reflection->newInstanceWithoutConstructor();
+        $method = $reflection->getMethod('hasUsableImageProperties');
+        \TestReflectionHelper::makeAccessible($method);
+
+        return $method->invoke($controller, $info);
     }
 
     /**

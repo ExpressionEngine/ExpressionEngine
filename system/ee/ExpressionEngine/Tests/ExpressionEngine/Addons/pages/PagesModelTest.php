@@ -271,26 +271,32 @@ class PagesModelTest extends PagesTestBase
             }
         };
 
-        $model = (new ReflectionClass(Pages_model::class))->newInstanceWithoutConstructor();
-        $model->db = $db;
-        $model->config = $config;
+        return new class($db, $config) extends Pages_model {
+            public $db;
+            public $config;
 
-        return $model;
+            public function __construct($db, $config)
+            {
+                $this->db = $db;
+                $this->config = $config;
+            }
+        };
     }
 
     private function modelWithFetchPages(Pages_model $model, $sitePages): Pages_model
     {
         return new class($model, $sitePages) extends Pages_model {
-            private $inner;
+            public $db;
+            public $config;
             private $sitePages;
+
             public function __construct($inner, $sitePages)
             {
-                foreach (get_object_vars($inner) as $k => $v) {
-                    $this->$k = $v;
-                }
-                $this->inner = $inner;
+                $this->db = $inner->db;
+                $this->config = $inner->config;
                 $this->sitePages = $sitePages;
             }
+
             public function fetch_site_pages()
             {
                 return $this->sitePages;

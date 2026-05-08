@@ -108,6 +108,14 @@ class EE_TemplateShow404Test extends EE_TemplateTestBase
         $templateMock->show_404();
     }
 
+    /**
+     * Verify empty site-404 config delegates to the global 404 path.
+     *
+     * @return void
+     *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function testShow404CallsGlobalShow404WhenTemplateNotConfigured()
     {
         ee()->config->setItem('site_404', '');

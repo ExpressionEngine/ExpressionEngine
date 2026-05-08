@@ -104,7 +104,7 @@ abstract class MemberRegisterTestBase extends TestCase
     {
         $reflection = new ReflectionMethod($this->subject, $method);
         if (PHP_VERSION_ID < 80100) {
-            $reflection->setAccessible(true);
+            \TestReflectionHelper::makeAccessible($reflection);
         }
 
         return $reflection->invokeArgs($this->subject, $args);

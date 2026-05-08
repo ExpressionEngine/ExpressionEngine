@@ -171,7 +171,9 @@ class MysqlSchemaTest extends TestCase
 
     private function makeSchemaFixture(MysqlSchemaDbMock $db): \EE_Schema
     {
-        $schema = new \EE_Schema();
+        $schema = new class extends \EE_Schema {
+            public $DB;
+        };
         $schema->now = 1700000000;
         $schema->version = '7.6.0';
         $schema->userdata = [

@@ -661,29 +661,17 @@ class PagesTabTest extends PagesTestBase
 
     public function testPrepareSitePagesDataNormalizesDoubleSlashGuardBranch(): void
     {
-        $uriStore = new class implements ArrayAccess {
-            private $store = [];
+        $uriStore = new class extends ArrayObject {
             private $forceDoubleSlashOnFirstWrite = true;
-            public function offsetExists($offset): bool
-            {
-                return array_key_exists($offset, $this->store);
-            }
-            public function offsetGet($offset)
-            {
-                return $this->store[$offset] ?? null;
-            }
             public function offsetSet($offset, $value): void
             {
                 if ($this->forceDoubleSlashOnFirstWrite) {
-                    $this->store[$offset] = '//';
+                    parent::offsetSet($offset, '//');
                     $this->forceDoubleSlashOnFirstWrite = false;
                     return;
                 }
-                $this->store[$offset] = $value;
-            }
-            public function offsetUnset($offset): void
-            {
-                unset($this->store[$offset]);
+
+                parent::offsetSet($offset, $value);
             }
         };
 

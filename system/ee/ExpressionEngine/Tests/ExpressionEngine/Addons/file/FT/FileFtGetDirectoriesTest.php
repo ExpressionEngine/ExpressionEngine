@@ -263,7 +263,7 @@ class FileFtGetDirectoriesTest extends FileFtTestBase
     private function callGetDirectories($fieldtype)
     {
         $method = new ReflectionMethod(File_ft::class, 'getDirectories');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($method);
 
         return $method->invoke($fieldtype);
     }

@@ -301,7 +301,7 @@ class ProSearchExtTest extends ProSearchTestBase
 
         $private = new ReflectionMethod('Pro_search_ext', '_update_index_by_category');
         if (PHP_VERSION_ID < 80100) {
-            $private->setAccessible(true);
+            \TestReflectionHelper::makeAccessible($private);
         }
 
         $this->assertSame([], $private->invoke($ext, []));

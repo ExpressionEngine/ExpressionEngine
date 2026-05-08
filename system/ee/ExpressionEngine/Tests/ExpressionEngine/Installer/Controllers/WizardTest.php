@@ -3562,7 +3562,7 @@ class WizardTest extends TestCase
     {
         $reflection = new \ReflectionMethod($object, $method);
         if (PHP_VERSION_ID < 80100) {
-            $reflection->setAccessible(true);
+            \TestReflectionHelper::makeAccessible($reflection);
         }
 
         return $reflection->invokeArgs($object, $args);
@@ -3572,7 +3572,7 @@ class WizardTest extends TestCase
     {
         $reflection = new \ReflectionProperty($object, $property);
         if (PHP_VERSION_ID < 80100) {
-            $reflection->setAccessible(true);
+            \TestReflectionHelper::makeAccessible($reflection);
         }
         $reflection->setValue($object, $value);
     }
@@ -3581,7 +3581,7 @@ class WizardTest extends TestCase
     {
         $reflection = new \ReflectionProperty($object, $property);
         if (PHP_VERSION_ID < 80100) {
-            $reflection->setAccessible(true);
+            \TestReflectionHelper::makeAccessible($reflection);
         }
 
         return $reflection->getValue($object);

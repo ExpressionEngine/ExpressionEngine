@@ -56,7 +56,7 @@ class MysqliConnectionTest extends TestCase
 
     public function testQueryAppliesCreateTableEnforcementAndLogsTimings(): void
     {
-        $connection = new CI_DB_mysqli_connection($this->baseConfig());
+        $connection = new MysqliConnectionTestable($this->baseConfig());
         $native = new MysqliConnectionNativeStub();
         $native->queryReturn = 'query-result';
         $log = new MysqliConnectionLogStub();
@@ -240,14 +240,14 @@ class MysqliConnectionTest extends TestCase
     private function setProtectedProperty($object, string $name, $value): void
     {
         $property = new ReflectionProperty(CI_DB_mysqli_connection::class, $name);
-        $property->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($property);
         $property->setValue($object, $value);
     }
 
     private function invokePrivate($object, string $method, ...$args)
     {
         $reflection = new ReflectionMethod(CI_DB_mysqli_connection::class, $method);
-        $reflection->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($reflection);
 
         return $reflection->invoke($object, ...$args);
     }
@@ -264,9 +264,14 @@ class MysqliConnectionOpenStub extends CI_DB_mysqli_connection
         $native = new MysqliConnectionNativeStub();
         $native->quotedReturn = "'escaped-don\\'t panic'";
         $property = new ReflectionProperty(CI_DB_mysqli_connection::class, 'connection');
-        $property->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($property);
         $property->setValue($this, $native);
     }
+}
+
+class MysqliConnectionTestable extends CI_DB_mysqli_connection
+{
+    public $log;
 }
 
 class MysqliConnectionNativeStub

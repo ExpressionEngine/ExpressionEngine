@@ -49,8 +49,8 @@ class ImageLibAlphaPreservationTest extends TestCase
 
         $this->assertSame(127, $this->getAlphaValueForPixel($destinationImage, 0, 0));
 
-        imagedestroy($sourceImage);
-        imagedestroy($destinationImage);
+        $this->destroyImage($sourceImage);
+        $this->destroyImage($destinationImage);
     }
 
     /**
@@ -73,8 +73,8 @@ class ImageLibAlphaPreservationTest extends TestCase
 
         $this->assertSame(127, $this->getAlphaValueForPixel($destinationImage, 0, 0));
 
-        imagedestroy($sourceImage);
-        imagedestroy($destinationImage);
+        $this->destroyImage($sourceImage);
+        $this->destroyImage($destinationImage);
     }
 
     /**
@@ -108,6 +108,19 @@ class ImageLibAlphaPreservationTest extends TestCase
         $channels = imagecolorsforindex($image, $pixel);
 
         return $channels['alpha'];
+    }
+
+    /**
+     * Avoid imagedestroy() deprecation warnings on PHP 8.5+.
+     *
+     * @param mixed $image
+     * @return void
+     */
+    private function destroyImage($image): void
+    {
+        if (PHP_VERSION_ID < 80500) {
+            imagedestroy($image);
+        }
     }
 
     /**

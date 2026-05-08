@@ -466,6 +466,14 @@ class StructureExtTest extends TestCase
         $fixture->sessions_end($session);
     }
 
+    /**
+     * Cover template routing and private helper behavior with local router stubs.
+     *
+     * @return void
+     *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function testCoreTemplateRouteTemplateParseAndPrivateHelpers()
     {
         ee()->setMock('config', new class {
