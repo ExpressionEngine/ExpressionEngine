@@ -150,7 +150,7 @@ class Mfa extends Profile\Pro
                         'fields' => array(
                             'enable_mfa' => array(
                                 'type' => 'yes_no',
-                                'disabled' => version_compare(PHP_VERSION, 7.1, '<'),
+                                'disabled' => version_compare(PHP_VERSION, '7.1', '<'),
                                 'value' => $this->member->enable_mfa,
                                 'group_toggle' => array(
                                     'n' => 'password',
@@ -173,7 +173,7 @@ class Mfa extends Profile\Pro
             ]);
         }
 
-        if (version_compare(PHP_VERSION, 7.1, '<')) {
+        if (version_compare(PHP_VERSION, '7.1', '<')) {
             ee()->lang->load('addons');
             $vars['sections'] = array_merge($vars['sections'], [
                 [
@@ -190,7 +190,7 @@ class Mfa extends Profile\Pro
             ]);
         }
 
-        if (version_compare(PHP_VERSION, 7.1, '>=') && $this->member->enable_mfa === false && ee()->session->userdata('member_id') == $this->member->member_id) {
+        if (version_compare(PHP_VERSION, '7.1', '>=') && $this->member->enable_mfa === false && ee()->session->userdata('member_id') == $this->member->member_id) {
             $vars['sections'][0] = array_merge($vars['sections'][0], array(
                 array(
                     'title' => 'mfa_qr_code',

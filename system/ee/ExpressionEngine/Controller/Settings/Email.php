@@ -36,7 +36,7 @@ class Email extends Settings
             STREAM_CRYPTO_METHOD_TLSv1_1_CLIENT => '1.1',
             STREAM_CRYPTO_METHOD_TLSv1_2_CLIENT => '1.2'
         );
-        if (version_compare(PHP_VERSION, 7.4, '>=')) {
+        if (version_compare(PHP_VERSION, '7.4', '>=')) {
             $tls_options[STREAM_CRYPTO_METHOD_TLSv1_3_CLIENT] = '1.3';
         }
         if (ee()->config->item('tls_crypto_method') !== false && ! array_key_exists(ee()->config->item('tls_crypto_method'), $tls_options)) {
