@@ -588,9 +588,7 @@ class MultiSelectEdgeCasesTest extends MultiSelectTestBase
         ];
 
         $fieldtype = $this->getMockFieldtypeWithSettings([
-            'field_options' => array_map(function ($value) {
-                return is_float($value) && is_nan($value) ? 'NAN' : (string) $value;
-            }, $numericTests)
+            'field_options' => array_map('strval', $numericTests)
         ]);
 
         $data = 'integer|float|scientific';
