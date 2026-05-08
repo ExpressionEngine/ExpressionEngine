@@ -114,7 +114,7 @@ class Number extends Formatter
         // localization formatting lookup tables. The 100% solution is easily achieved by ensuring
         // that the intl extension is loaded in PHP, handled above.
         // NOTE: `money_format` is deprecated in PHP 7.4+ and removed in PHP 8.
-        if (function_exists('money_format') && PHP_VERSION_ID < 80000) {
+        if (function_exists('money_format') && PHP_VERSION_ID < 70400) {
             // grab the current monetary locale to reset after formatting
             $sys_locale = setlocale(LC_MONETARY, 0);
 
@@ -122,24 +122,8 @@ class Number extends Formatter
             setlocale(LC_MONETARY, $options['locale']);
 
             $right_precision = (is_int($options['decimals'])) ? $options['decimals'] : 2;
-            $previous_error_handler = null;
-            $previous_error_handler = set_error_handler(function ($severity, $message, $file = null, $line = null) use (&$previous_error_handler) {
-                if ($severity === E_DEPRECATED && strpos($message, 'money_format() is deprecated') !== false) {
-                    return true;
-                }
-
-                if (is_callable($previous_error_handler)) {
-                    return (bool) call_user_func($previous_error_handler, $severity, $message, $file, $line);
-                }
-
-                return false;
-            });
-
-            try {
-                $this->content = money_format("%.{$right_precision}n", (float) $this->content);
-            } finally {
-                restore_error_handler();
-            }
+            //@-suppressing because we don't want deprecation error - see above on 20/80 effort
+            $this->content = @money_format("%.{$right_precision}n", (float) $this->content);
 
             // set the monetary locale back to normal
             setlocale(LC_MONETARY, $sys_locale);
