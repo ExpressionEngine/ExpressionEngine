@@ -319,6 +319,11 @@ class ChannelCategoryHeadingAndNameTest extends ChannelTestBase
         $this->setMock('db', new class($groupRows, $categoryRows) extends FakeDb {
             private $groupRows;
             private $categoryRows;
+            private $activeRecord = [
+                'where' => [],
+                'where_in' => [],
+                'limit' => null,
+            ];
 
             public function __construct(array $groupRows, array $categoryRows)
             {
@@ -343,16 +348,74 @@ class ChannelCategoryHeadingAndNameTest extends ChannelTestBase
                 return new eeDbResultMock([]);
             }
 
+            public function select($fields = '*')
+            {
+                return $this;
+            }
+
+            public function where($field, $value = null)
+            {
+                $this->activeRecord['where'][$field] = $value;
+
+                return $this;
+            }
+
+            public function where_in($field, $values)
+            {
+                $this->activeRecord['where_in'][$field] = (array) $values;
+
+                return $this;
+            }
+
+            public function order_by($field, $direction = '')
+            {
+                return $this;
+            }
+
+            public function limit($value)
+            {
+                $this->activeRecord['limit'] = $value;
+
+                return $this;
+            }
+
+            public function get($table = null)
+            {
+                $matches = $this->categoryRows;
+
+                foreach ($this->activeRecord['where'] as $field => $value) {
+                    $matches = array_values(array_filter($matches, function ($row) use ($field, $value) {
+                        return isset($row[$field]) && $row[$field] == $value;
+                    }));
+                }
+
+                foreach ($this->activeRecord['where_in'] as $field => $values) {
+                    $matches = array_values(array_filter($matches, function ($row) use ($field, $values) {
+                        return isset($row[$field]) && in_array((string) $row[$field], array_map('strval', $values));
+                    }));
+                }
+
+                usort($matches, function ($left, $right) {
+                    return $left['cat_id'] <=> $right['cat_id'];
+                });
+
+                if ($this->activeRecord['limit'] !== null) {
+                    $matches = array_slice($matches, 0, $this->activeRecord['limit']);
+                }
+
+                $this->activeRecord = [
+                    'where' => [],
+                    'where_in' => [],
+                    'limit' => null,
+                ];
+
+                return new eeDbResultMock($this->categoryIdRows($matches));
+            }
+
             private function matchingCategoryIdRows($sql)
             {
                 $matches = $this->matchingCategoryRows($sql);
-                $ids = [];
-
-                foreach ($matches as $row) {
-                    $ids[] = ['cat_id' => $row['cat_id']];
-                }
-
-                return $ids;
+                return $this->categoryIdRows($matches);
             }
 
             private function matchingCategoryRows($sql)
@@ -395,6 +458,17 @@ class ChannelCategoryHeadingAndNameTest extends ChannelTestBase
                 }
 
                 return $matches;
+            }
+
+            private function categoryIdRows(array $matches)
+            {
+                $ids = [];
+
+                foreach ($matches as $row) {
+                    $ids[] = ['cat_id' => $row['cat_id']];
+                }
+
+                return $ids;
             }
         });
     }

@@ -4309,11 +4309,17 @@ class Channel
                     $cut_qstring = ee()->TMPL->fetch_param('category_url_title');
                 }
 
-                $result = ee()->db->query("SELECT cat_id FROM exp_categories
-                                      WHERE cat_url_title='" . ee()->db->escape_str($cut_qstring) . "'
-                                      AND group_id IN ('" . implode("','", $valid_cats) . "')
-                                      " . ($parent_only ? 'AND parent_id = 0' : '') . "
-                                      ORDER BY cat_id ASC LIMIT 1");
+                ee()->db->select('cat_id');
+                ee()->db->where('cat_url_title', $cut_qstring);
+                ee()->db->where_in('group_id', $valid_cats);
+                ee()->db->order_by('cat_id', 'ASC');
+                ee()->db->limit(1);
+
+                if ($parent_only) {
+                    ee()->db->where('parent_id', 0);
+                }
+
+                $result = ee()->db->get('categories');
 
                 if ($result->num_rows() > 0) {
                     $qstring = !ee()->TMPL->fetch_param('category_url_title')
@@ -4321,11 +4327,17 @@ class Channel
                         : 'C' . $result->row('cat_id');
                 } else {
                     // give it one more try using the whole $qstring
-                    $result = ee()->db->query("SELECT cat_id FROM exp_categories
-                                          WHERE cat_url_title='" . ee()->db->escape_str($qstring) . "'
-                                          AND group_id IN ('" . implode("','", $valid_cats) . "')
-                                          " . ($parent_only ? 'AND parent_id = 0' : '') . "
-                                          ORDER BY cat_id ASC LIMIT 1");
+                    ee()->db->select('cat_id');
+                    ee()->db->where('cat_url_title', $qstring);
+                    ee()->db->where_in('group_id', $valid_cats);
+                    ee()->db->order_by('cat_id', 'ASC');
+                    ee()->db->limit(1);
+
+                    if ($parent_only) {
+                        ee()->db->where('parent_id', 0);
+                    }
+
+                    $result = ee()->db->get('categories');
 
                     if ($result->num_rows() > 0) {
                         $qstring = 'C' . $result->row('cat_id') ;
