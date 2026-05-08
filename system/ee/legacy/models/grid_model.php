@@ -897,15 +897,15 @@ class Grid_model extends CI_Model
             if (empty($field_ids)) {
                 return $cached;
             }
-        } else {
-            if (! $multi_column) {
-                // Return fron cache if exists and allowed
-                if (isset($this->_columns[$content_type][$field_ids]) && $cache) {
-                    return $this->_columns[$content_type][$field_ids];
-                }
+        }
 
-                $field_ids = array($field_ids);
+        if (! $multi_column) {
+            // Return fron cache if exists and allowed
+            if (isset($this->_columns[$content_type][$field_ids]) && $cache) {
+                return $this->_columns[$content_type][$field_ids];
             }
+
+            $field_ids = array($field_ids);
         }
 
         $columns = ee('db')->where_in('field_id', $field_ids)
