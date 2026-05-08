@@ -4275,13 +4275,13 @@ class Channel
 
                 if ($category_group = ee()->TMPL->fetch_param('category_group')) {
                     if (substr($category_group, 0, 4) == 'not ') {
-                        $x = explode('|', substr($category_group, 4));
-                        $valid_cats = array_diff($valid_cats, $x);
+                        $category_group_ids = explode('|', substr($category_group, 4));
+                        $valid_cats = array_diff($valid_cats, $category_group_ids);
                     }
 
                     if (substr($category_group, 0, 4) != 'not ') {
-                        $x = explode('|', $category_group);
-                        $valid_cats = array_intersect($valid_cats, $x);
+                        $category_group_ids = explode('|', $category_group);
+                        $valid_cats = array_intersect($valid_cats, $category_group_ids);
                     }
 
                     $valid_cats = array_filter($valid_cats, 'is_numeric');
