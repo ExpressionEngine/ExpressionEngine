@@ -95,11 +95,13 @@ class File extends AbstractFilesController
             });
             ee()->image_lib->error_msg = array(); // Reset any erorrs
 
-            $tabs['crop'] = $this->renderCropForm($file, $info);
-            $tabs['rotate'] = $this->renderRotateForm($file);
-            $tabs['resize'] = $this->renderResizeForm($file, $info);
-            if (!empty($file->UploadDestination->FileDimensions->count())) {
-                $tabs['manipulations'] = $this->renderManipulationsForm($file);
+            if ($this->hasUsableImageProperties($info)) {
+                $tabs['crop'] = $this->renderCropForm($file, $info);
+                $tabs['rotate'] = $this->renderRotateForm($file);
+                $tabs['resize'] = $this->renderResizeForm($file, $info);
+                if (!empty($file->UploadDestination->FileDimensions->count())) {
+                    $tabs['manipulations'] = $this->renderManipulationsForm($file);
+                }
             }
         }
         if (! bool_config_item('file_manager_compatibility_mode')) {
@@ -504,6 +506,16 @@ class File extends AbstractFilesController
 
         return ee('View')->make('_shared/form/section')
             ->render(array('name' => null, 'settings' => $section));
+    }
+
+    protected function hasUsableImageProperties($info)
+    {
+        return is_array($info)
+            && isset($info['width'], $info['height'])
+            && is_numeric($info['width'])
+            && is_numeric($info['height'])
+            && (int) $info['width'] > 0
+            && (int) $info['height'] > 0;
     }
 
     protected function renderRotateForm($file)
