@@ -1052,17 +1052,9 @@ class Structure_ext
                     // Load the router class
                     $RTR = & load_class('Router', 'core');
 
-                    $default_controller = property_exists($RTR, 'default_controller')
-                        ? $RTR->default_controller
-                        : null;
-
-                    if ($default_controller === false || $default_controller === null || $default_controller === '') {
-                        ee()->uri->_reindex_segments();
-
-                        return;
+                    if (isset($RTR->default_controller) && $RTR->default_controller !== false && $RTR->default_controller !== '') {
+                        $RTR->_parse_routes();
                     }
-
-                    $RTR->_parse_routes();
 
                     // re-index the segments
                     ee()->uri->_reindex_segments();

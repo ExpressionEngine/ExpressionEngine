@@ -581,7 +581,9 @@ class SelectableButtonsEdgeCasesTest extends SelectableButtonsTestBase
         ];
 
         $fieldtype = $this->getMockFieldtypeWithSettings([
-            'field_options' => array_map('strval', $numericTests)
+            'field_options' => array_map(function ($value) {
+                return is_float($value) && is_nan($value) ? 'NAN' : (string) $value;
+            }, $numericTests)
         ]);
 
         $data = 'integer|float|scientific';
