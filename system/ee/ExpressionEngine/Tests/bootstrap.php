@@ -61,12 +61,31 @@ function log_message()
 }
 
 // add the composer autoloader (prefer local, fallback to repo root)
-if (file_exists(__DIR__ . '/vendor/autoload.php')) {
-    require_once __DIR__ . '/vendor/autoload.php';
-} elseif (file_exists($project_base . '../vendor/autoload.php')) {
-    require_once $project_base . '../vendor/autoload.php';
-} else {
-    require_once realpath(dirname(__FILE__) . '/../../../../') . '/vendor/autoload.php';
+$composerAutoloadPath = __DIR__ . '/vendor/autoload.php';
+if (!file_exists($composerAutoloadPath)) {
+    $composerAutoloadPath = $project_base . '../vendor/autoload.php';
+}
+
+if (!file_exists($composerAutoloadPath)) {
+    $composerAutoloadPath = realpath(dirname(__FILE__) . '/../../../../') . '/vendor/autoload.php';
+}
+
+$composerAutoloader = require_once $composerAutoloadPath;
+$composerAutoloaders = [];
+
+if ($composerAutoloader instanceof \Composer\Autoload\ClassLoader) {
+    $composerAutoloaders = [$composerAutoloader];
+}
+
+if ($composerAutoloaders === [] && class_exists(\Composer\Autoload\ClassLoader::class)) {
+    $composerAutoloaders = \Composer\Autoload\ClassLoader::getRegisteredLoaders();
+}
+
+foreach ($composerAutoloaders as $composerAutoloader) {
+    $composerAutoloader->addPsr4(
+        'ExpressionEngine\\Updater\\',
+        SYSPATH . 'ee/installer/updater/ExpressionEngine/Updater/'
+    );
 }
 require_once SYSPATH . 'ee/vendor-build/autoload.php';
 

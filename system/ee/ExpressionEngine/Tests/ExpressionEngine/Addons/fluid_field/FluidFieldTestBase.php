@@ -166,6 +166,8 @@ abstract class FluidFieldTestBase extends TestCase
             'content_id' => 99,
             'content_type' => 'channel',
         ]);
+        $this->fieldtype->field_id = 10;
+        $this->fieldtype->field_name = 'fluid_content';
 
         $this->fieldtype->settings = [
             'field_channel_fields' => [],

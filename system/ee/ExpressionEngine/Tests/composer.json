@@ -20,6 +20,7 @@
     "autoload": {
         "psr-4": {
             "ExpressionEngine\\Tests\\": "",
+            "ExpressionEngine\\Updater\\": "../../installer/updater/ExpressionEngine/Updater/",
             "ExpressionEngine\\": "../../ExpressionEngine/"
         }
     }
