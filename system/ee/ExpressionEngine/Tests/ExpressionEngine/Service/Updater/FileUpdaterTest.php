@@ -51,7 +51,7 @@ class FileUpdaterTest extends TestCase
             [SYSPATH . 'ee/updater']
         );
         $this->shouldCallMove(
-            '/themes/ee/',
+            $this->expectedThemeInstallPath('/themes/'),
             $this->backups_path . 'themes_ee/'
         );
 
@@ -65,7 +65,7 @@ class FileUpdaterTest extends TestCase
             [SYSPATH . 'ee/updater']
         );
         $this->shouldCallMove(
-            '/themes/ee/',
+            $this->expectedThemeInstallPath('/themes/'),
             $this->backups_path . 'themes_ee/'
         );
 
@@ -79,7 +79,7 @@ class FileUpdaterTest extends TestCase
             [SYSPATH . 'ee/updater']
         );
         $this->shouldCallMove(
-            '/themes/ee/',
+            $this->expectedThemeInstallPath('/themes/'),
             $this->backups_path . 'themes_ee/'
         );
 
@@ -95,7 +95,7 @@ class FileUpdaterTest extends TestCase
         );
         $this->shouldCallMove(
             $this->archive_path . 'themes/ee/',
-            '/themes/ee/'
+            $this->expectedThemeInstallPath('/themes/')
         );
 
         $this->fileupdater->moveNewInstallFiles();
@@ -110,7 +110,7 @@ class FileUpdaterTest extends TestCase
         foreach ($this->fileupdater->configs['theme_paths'] as $theme_path) {
             $this->shouldCallMove(
                 $this->archive_path . 'themes/ee/',
-                $theme_path . 'ee/',
+                $this->expectedThemeInstallPath($theme_path),
                 [],
                 true
             );
@@ -132,7 +132,7 @@ class FileUpdaterTest extends TestCase
         )->andReturn(true)->once();
 
         $this->verifier->shouldReceive('verifyPath')->with(
-            '/themes/ee/',
+            $this->expectedThemeInstallPath('/themes/'),
             $hash_manifiest,
             'themes/ee',
             $exclusions
@@ -151,7 +151,7 @@ class FileUpdaterTest extends TestCase
 
         foreach ($this->fileupdater->configs['theme_paths'] as $theme_path) {
             $this->verifier->shouldReceive('verifyPath')->with(
-                $theme_path . 'ee/',
+                $this->expectedThemeInstallPath($theme_path),
                 $hash_manifiest,
                 'themes/ee',
                 $exclusions
@@ -174,7 +174,7 @@ class FileUpdaterTest extends TestCase
             [SYSPATH . 'ee/updater']
         );
         foreach ($this->fileupdater->configs['theme_paths'] as $theme_path) {
-            $this->shouldCallDelete($theme_path . 'ee/');
+            $this->shouldCallDelete($this->expectedThemeInstallPath($theme_path));
         }
         $this->shouldCallMove(
             $this->backups_path . 'system_ee/',
@@ -183,7 +183,7 @@ class FileUpdaterTest extends TestCase
         foreach ($this->fileupdater->configs['theme_paths'] as $theme_path) {
             $this->shouldCallMove(
                 $this->backups_path . 'themes_ee/',
-                $theme_path . 'ee/',
+                $this->expectedThemeInstallPath($theme_path),
                 [],
                 true
             );
@@ -207,7 +207,7 @@ class FileUpdaterTest extends TestCase
         $this->filesystem->shouldReceive('isDir')->with($source)->andReturn(true)->once();
         $this->filesystem->shouldReceive('getDirectoryContents')->with($source)->andReturn([])->once();
 
-        $source = '/themes/ee/';
+        $source = $this->expectedThemeInstallPath('/themes/');
         $destination = $this->backups_path . 'themes_ee/';
 
         $this->filesystem->shouldReceive('exists')->with($destination)->andReturn(false)->once();
@@ -260,7 +260,7 @@ class FileUpdaterTest extends TestCase
         $this->filesystem->shouldReceive('isWritable')->with($normalized_file_path)->andReturn(true)->once();
         $this->filesystem->shouldReceive('rename')->with($normalized_file_path, $new_path)->andReturn(true)->once();
 
-        $source = '/themes/ee/';
+        $source = $this->expectedThemeInstallPath('/themes/');
         $destination = $this->backups_path . 'themes_ee/';
 
         $this->filesystem->shouldReceive('exists')->with($destination)->andReturn(false)->once();
@@ -306,7 +306,7 @@ class FileUpdaterTest extends TestCase
             $this->archive_path . 'system/ee/',
             [SYSPATH . 'ee/updater']
         );
-        $directory = '/themes/ee/';
+        $directory = $this->expectedThemeInstallPath('/themes/');
         $this->filesystem->shouldReceive('getDirectoryContents')->with($directory)->andReturn([$directory . 'index.html'])->once();
         $this->filesystem->shouldReceive('isWritable')->with($directory . 'index.html')->andReturn(false)->once();
 
@@ -327,7 +327,7 @@ class FileUpdaterTest extends TestCase
         );
 
         $this->shouldCallMove(
-            '/themes/ee/',
+            $this->expectedThemeInstallPath('/themes/'),
             $this->archive_path . 'themes/ee/'
         );
 
@@ -338,7 +338,7 @@ class FileUpdaterTest extends TestCase
 
         $this->shouldCallMove(
             PATH_CACHE . 'ee_update/backups/themes_ee/',
-            '/themes/ee/',
+            $this->expectedThemeInstallPath('/themes/'),
             [],
             true
         );
@@ -346,20 +346,54 @@ class FileUpdaterTest extends TestCase
 
     protected function shouldCallMove($source, $destination, array $exclusions = [], $copy = false)
     {
-        $this->filesystem->shouldReceive('exists')->with($destination)->andReturn(true)->once();
-        $this->filesystem->shouldReceive('isDir')->with($destination)->andReturn(true)->once();
-        $this->filesystem->shouldReceive('isWritable')->with($destination)->andReturn(true)->once();
-        $this->filesystem->shouldReceive('isDir')->with($source)->andReturn(true)->once();
+        $this->filesystem->shouldReceive('exists')->with($this->pathArgument($destination))->andReturn(true)->once();
+        $this->filesystem->shouldReceive('isDir')->with($this->pathArgument($destination))->andReturn(true)->once();
+        $this->filesystem->shouldReceive('isWritable')->with($this->pathArgument($destination))->andReturn(true)->once();
+        $this->filesystem->shouldReceive('isDir')->with($this->pathArgument($source))->andReturn(true)->once();
 
         $file_path = $source . 'index.html';
-        $this->filesystem->shouldReceive('getDirectoryContents')->with($source)->andReturn([$file_path])->once();
+        $this->filesystem->shouldReceive('getDirectoryContents')
+            ->with($this->pathArgument($source))
+            ->andReturnUsing(function ($actualSource) {
+                return [$actualSource . 'index.html'];
+            })
+            ->once();
 
         $normalized_file_path = $this->normalizeMovePath($file_path);
         $new_path = $this->expectedMovePath($source, $destination, $file_path);
-        $this->filesystem->shouldReceive('isWritable')->with($normalized_file_path)->andReturn(true)->once();
+        $this->filesystem->shouldReceive('isWritable')->with($this->pathArgument($normalized_file_path))->andReturn(true)->once();
 
         $method = $copy ? 'copy' : 'rename';
-        $this->filesystem->shouldReceive($method)->with($normalized_file_path, $new_path)->andReturn(true)->once();
+        $this->filesystem->shouldReceive($method)
+            ->with($this->pathArgument($normalized_file_path), $this->pathArgument($new_path))
+            ->andReturn(true)
+            ->once();
+    }
+
+    /**
+     * Match paths that are equivalent after updater-style normalization.
+     *
+     * @param string $expected Expected path.
+     * @return \Mockery\Matcher\Closure
+     */
+    protected function pathArgument($expected)
+    {
+        $expected = $this->canonicalPath($expected);
+
+        return Mockery::on(function ($actual) use ($expected) {
+            return $this->canonicalPath($actual) === $expected;
+        });
+    }
+
+    /**
+     * Normalize separators and duplicate slashes for cross-platform mocks.
+     *
+     * @param string $path Path to normalize.
+     * @return string Comparable path.
+     */
+    protected function canonicalPath($path)
+    {
+        return preg_replace('#/+#', '/', $this->normalizeMovePath($path));
     }
 
     /**
@@ -388,6 +422,17 @@ class FileUpdaterTest extends TestCase
         $path = $this->normalizeMovePath($path);
 
         return str_replace("//", "/", str_replace($source, $destination, $path));
+    }
+
+    /**
+     * Build the theme install path the same way the updater does.
+     *
+     * @param string $themePath Base theme path from updater config.
+     * @return string Theme install path passed into move/copy/delete.
+     */
+    protected function expectedThemeInstallPath($themePath)
+    {
+        return rtrim($themePath, DIRECTORY_SEPARATOR) . '/ee/';
     }
 
     protected function shouldCallDelete($directory, array $exclusions = [])
