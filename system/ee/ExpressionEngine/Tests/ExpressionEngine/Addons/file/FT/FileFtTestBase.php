@@ -32,6 +32,15 @@ namespace {
             /** @var int */
             public $content_id = 0;
 
+            /** @var int|null */
+            public $id = null;
+
+            /** @var int|null */
+            public $field_id = null;
+
+            /** @var string */
+            public $name = 'file_field';
+
             /** @var string */
             public $field_name = 'file_field';
 
@@ -56,6 +65,36 @@ namespace {
             }
 
             /**
+             * Mirror the canonical field id getter used by fieldtypes.
+             *
+             * @return int|null
+             */
+            public function id()
+            {
+                return $this->id;
+            }
+
+            /**
+             * Mirror the new-field check used by fieldtype settings.
+             *
+             * @return bool
+             */
+            public function isNew()
+            {
+                return is_null($this->id);
+            }
+
+            /**
+             * Mirror the content id getter used by fieldtypes.
+             *
+             * @return int|null
+             */
+            public function content_id()
+            {
+                return $this->content_id;
+            }
+
+            /**
              * Mirror EE_Fieldtype::_init() for cross-suite compatibility.
              *
              * @param array $config
@@ -68,7 +107,22 @@ namespace {
                 }
 
                 if (isset($config['name'])) {
+                    $this->name = $config['name'];
                     $this->field_name = $config['name'];
+                }
+
+                if (isset($config['field_name'])) {
+                    $this->name = $config['field_name'];
+                    $this->field_name = $config['field_name'];
+                }
+
+                if (isset($config['id'])) {
+                    $this->field_id = $config['id'];
+                }
+
+                if (isset($config['field_id'])) {
+                    $this->id = $config['field_id'];
+                    $this->field_id = $config['field_id'];
                 }
             }
         }
