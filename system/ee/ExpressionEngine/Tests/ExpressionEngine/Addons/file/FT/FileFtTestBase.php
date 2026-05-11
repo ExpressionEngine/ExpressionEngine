@@ -29,6 +29,9 @@ namespace {
             /** @var array<string, mixed> */
             public $settings = [];
 
+            /** @var mixed */
+            public $row = null;
+
             /** @var int */
             public $content_id = 0;
 
