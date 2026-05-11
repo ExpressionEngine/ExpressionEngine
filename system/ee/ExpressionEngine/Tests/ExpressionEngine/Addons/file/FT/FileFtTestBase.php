@@ -32,6 +32,9 @@ namespace {
             /** @var int */
             public $content_id = 0;
 
+            /** @var string */
+            public $content_type = 'channel';
+
             /** @var int|null */
             public $id = null;
 
@@ -92,6 +95,44 @@ namespace {
             public function content_id()
             {
                 return $this->content_id;
+            }
+
+            /**
+             * Mirror the content type getter used by fieldtypes.
+             *
+             * @return string
+             */
+            public function content_type()
+            {
+                return $this->content_type;
+            }
+
+            /**
+             * Mirror row data lookup used by fieldtypes.
+             *
+             * @param string $key
+             * @param mixed $default
+             * @return mixed
+             */
+            public function row($key, $default = null)
+            {
+                if (!isset($this->row)) {
+                    return $default;
+                }
+
+                if (is_array($this->row)) {
+                    return array_key_exists($key, $this->row) ? $this->row[$key] : $default;
+                }
+
+                if (is_object($this->row) && method_exists($this->row, 'getProperty')) {
+                    return $this->row->getProperty($key) ?: $default;
+                }
+
+                if (is_object($this->row)) {
+                    return isset($this->row->$key) ? $this->row->$key : $default;
+                }
+
+                return $default;
             }
 
             /**
