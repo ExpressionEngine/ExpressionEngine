@@ -254,9 +254,11 @@ class FileUpdaterTest extends TestCase
             $source . '.DS_Store',
         ])->once();
 
-        $new_path = str_replace($source, $destination, $source . 'index.html');
-        $this->filesystem->shouldReceive('isWritable')->with($source . 'index.html')->andReturn(true)->once();
-        $this->filesystem->shouldReceive('rename')->with($source . 'index.html', $new_path)->andReturn(true)->once();
+        $file_path = $source . 'index.html';
+        $normalized_file_path = $this->normalizeMovePath($file_path);
+        $new_path = $this->expectedMovePath($source, $destination, $file_path);
+        $this->filesystem->shouldReceive('isWritable')->with($normalized_file_path)->andReturn(true)->once();
+        $this->filesystem->shouldReceive('rename')->with($normalized_file_path, $new_path)->andReturn(true)->once();
 
         $source = '/themes/ee/';
         $destination = $this->backups_path . 'themes_ee/';
@@ -280,8 +282,9 @@ class FileUpdaterTest extends TestCase
             $source . 'index.html',
         ])->once();
 
-        $new_path = str_replace($source, $destination, $source . 'index.html');
-        $this->filesystem->shouldReceive('isWritable')->with($source . 'index.html')->andReturn(false)->once();
+        $file_path = $source . 'index.html';
+        $normalized_file_path = $this->normalizeMovePath($file_path);
+        $this->filesystem->shouldReceive('isWritable')->with($normalized_file_path)->andReturn(false)->once();
 
         try {
             $this->fileupdater->backupExistingInstallFiles();
@@ -351,11 +354,40 @@ class FileUpdaterTest extends TestCase
         $file_path = $source . 'index.html';
         $this->filesystem->shouldReceive('getDirectoryContents')->with($source)->andReturn([$file_path])->once();
 
-        $new_path = str_replace($source, $destination, $file_path);
-        $this->filesystem->shouldReceive('isWritable')->with($file_path)->andReturn(true)->once();
+        $normalized_file_path = $this->normalizeMovePath($file_path);
+        $new_path = $this->expectedMovePath($source, $destination, $file_path);
+        $this->filesystem->shouldReceive('isWritable')->with($normalized_file_path)->andReturn(true)->once();
 
         $method = $copy ? 'copy' : 'rename';
-        $this->filesystem->shouldReceive($method)->with($file_path, $new_path)->andReturn(true)->once();
+        $this->filesystem->shouldReceive($method)->with($normalized_file_path, $new_path)->andReturn(true)->once();
+    }
+
+    /**
+     * Normalize a path the same way the updater move routine does.
+     *
+     * @param string $path Path before move-time normalization.
+     * @return string Path with Windows separators converted.
+     */
+    protected function normalizeMovePath($path)
+    {
+        return str_replace("\\", "/", $path);
+    }
+
+    /**
+     * Build the destination path expected from the updater move routine.
+     *
+     * @param string $source Source directory before normalization.
+     * @param string $destination Destination directory before normalization.
+     * @param string $path Source file path before normalization.
+     * @return string Destination file path after move-time normalization.
+     */
+    protected function expectedMovePath($source, $destination, $path)
+    {
+        $source = $this->normalizeMovePath($source);
+        $destination = $this->normalizeMovePath($destination);
+        $path = $this->normalizeMovePath($path);
+
+        return str_replace("//", "/", str_replace($source, $destination, $path));
     }
 
     protected function shouldCallDelete($directory, array $exclusions = [])
