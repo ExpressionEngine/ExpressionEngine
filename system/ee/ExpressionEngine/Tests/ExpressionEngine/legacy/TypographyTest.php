@@ -133,6 +133,15 @@ class TypographyTest extends TestCase
         $this->assertStringContainsString('<a href="https://example.com/release%20notes?name=big%20deal" title="Release notes">release notes</a>', $str);
     }
 
+    public function testMarkdownPreservesProtocolRelativeAngleBracketInlineLinkUrl()
+    {
+        $str = $this->typography->markdown('[cdn](<//cdn.example/path file>)', array('smartypants' => false));
+
+        $this->assertStringContainsString('<a href="//cdn.example/path%20file">cdn</a>', $str);
+        $this->assertStringNotContainsString('href="http://cdn.example', $str);
+        $this->assertStringNotContainsString('href="https://cdn.example', $str);
+    }
+
     public function testMarkdownDoesNotNormalizeLinkTextThatLooksLikeUrl()
     {
         $label = 'https://label.example';
@@ -198,6 +207,29 @@ class TypographyTest extends TestCase
         $this->assertStringContainsString('<a href="' . $expectedUrl . '">regular</a>', $str);
         $this->assertStringContainsString('<a href="' . $expectedUrl . '">angle</a>', $str);
         $this->assertStringNotContainsString('href="' . $unicodeUrl . '"', $str);
+    }
+
+    public function testMarkdownNormalizesUtf8ProtocolRelativeHostsInInlineLinkUrls()
+    {
+        if (! function_exists('idn_to_ascii')) {
+            $this->markTestSkipped('IDN normalization requires the intl extension.');
+        }
+
+        $unicodeHost = 't' . "\xC3\xA4" . 'st.example';
+        $encodedHost = idn_to_ascii($unicodeHost, 0, defined('INTL_IDNA_VARIANT_UTS46') ? INTL_IDNA_VARIANT_UTS46 : INTL_IDNA_VARIANT_2003);
+
+        if ($encodedHost !== 'xn--tst-qla.example') {
+            $this->markTestSkipped('IDN normalization is unavailable in this PHP environment.');
+        }
+
+        $unicodeUrl = '//' . $unicodeHost . '/path file';
+        $expectedUrl = '//' . $encodedHost . '/path%20file';
+
+        $str = $this->typography->markdown('[cdn](<' . $unicodeUrl . '>)', array('smartypants' => false));
+
+        $this->assertStringContainsString('<a href="' . $expectedUrl . '">cdn</a>', $str);
+        $this->assertStringNotContainsString('href="http://' . $encodedHost, $str);
+        $this->assertStringNotContainsString('href="https://' . $encodedHost, $str);
     }
 
     public function testEmoticonConversionOn()

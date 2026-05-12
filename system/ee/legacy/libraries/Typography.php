@@ -1418,14 +1418,15 @@ class EE_Typography
     }
 
     /**
-     * Parse content to Markdown
-     * @param  string $str     String to parse
-     * @param  array  $options Associative array containing options
-     *                         - smartypants (TRUE/FALSE) enable or disable
-     *                           smartypants
-     *                         - no_markup (TRUE/FALSE) set to TRUE to disable
-     *                           the parsing of markup in Markdown
-     * @return string          Parsed Markdown content
+     * Parse content to Markdown.
+     *
+     * @param string $str String to parse
+     * @param array $options Associative array containing options:
+     *                       - smartypants (TRUE/FALSE) enable or disable
+     *                         smartypants
+     *                       - no_markup (TRUE/FALSE) set to TRUE to disable
+     *                         the parsing of markup in Markdown
+     * @return string Parsed Markdown content
      */
     public function markdown($str, $options = array())
     {
@@ -1434,7 +1435,13 @@ class EE_Typography
                 $angle_bracket_url = isset($match[3]) && $match[3][0] !== '';
                 $url_match = $angle_bracket_url ? $match[3] : $match[4];
                 $url = $url_match[0];
+                $protocol_relative_url = strpos($url, '//') === 0;
                 $decoded_url = str_replace(' ', '%20', $this->decodeIDN($url));
+
+                // decodeIDN() adds a temporary scheme for parsing; Markdown links preserve this form.
+                if ($protocol_relative_url && preg_match('#^https?://#i', $decoded_url)) {
+                    $decoded_url = preg_replace('#^https?:#i', '', $decoded_url);
+                }
 
                 $str = substr_replace($str, $decoded_url, $url_match[1], strlen($url));
             }
