@@ -1,24 +1,40 @@
 <?php
 
+require_once rtrim(PATH_ADDONS, '/') . '/structure/mod.structure.php';
+
 use PHPUnit\Framework\TestCase;
+
+class StructureNavBasicRealMethodParserStub
+{
+    public $variables = [];
+    public $lastAddEntryVars = null;
+
+    public function get_variables($add_entry_vars = false)
+    {
+        $this->lastAddEntryVars = $add_entry_vars;
+
+        return $this->variables;
+    }
+}
+
+class StructureNavBasicRealMethodStructureStub extends Structure
+{
+    public $navParser;
+
+    protected function makeNavParser()
+    {
+        return $this->navParser;
+    }
+}
 
 class StructureNavBasicRealMethodTest extends TestCase
 {
     /**
      * Verify nav_basic() uses the real module file and preserves its
      * observable no-results and parse-variable behavior.
-     *
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
      */
     public function testNavBasicUsesRealModuleFileForNoResultsAndParsedBranches()
     {
-        if (!defined('STRUCTURE_NAV_BASIC_REAL_METHOD_BOOTSTRAP')) {
-            $this->markTestSkipped('Requires the dedicated nav_basic bootstrap to isolate PATH_ADDONS.');
-        }
-
-        require_once rtrim(PATH_ADDONS, '/') . '/structure/mod.structure.php';
-
         ee()->resetMocks();
         ee()->setMock('TMPL', new class {
             public $tagdata = 'TAGDATA';
@@ -47,18 +63,19 @@ class StructureNavBasicRealMethodTest extends TestCase
         $expectedModulePath = realpath(__DIR__ . '/../../../../../Addons/structure/mod.structure.php');
         $this->assertSame($expectedModulePath, (new ReflectionClass('Structure'))->getFileName());
 
-        $parserClass = 'ExpressionEngine\\Addons\\Structure\\Libraries\\Structure_core_nav_parser';
-        $structure = (new ReflectionClass('Structure'))->newInstanceWithoutConstructor();
+        $parser = new StructureNavBasicRealMethodParserStub();
+        $structure = (new ReflectionClass('StructureNavBasicRealMethodStructureStub'))->newInstanceWithoutConstructor();
+        $structure->navParser = $parser;
 
-        $parserClass::$variables = [];
+        $parser->variables = [];
         $this->assertSame('NO_RESULTS', $structure->nav_basic(false));
-        $this->assertFalse($parserClass::$lastAddEntryVars);
+        $this->assertFalse($parser->lastAddEntryVars);
         $this->assertSame(1, ee()->TMPL->noResultsCalls);
         $this->assertSame(0, ee()->TMPL->parseVariablesCalls);
 
-        $parserClass::$variables = [['entry_id' => 1]];
+        $parser->variables = [['entry_id' => 1]];
         $this->assertSame('PARSED:1', $structure->nav_basic(true));
-        $this->assertTrue($parserClass::$lastAddEntryVars);
+        $this->assertTrue($parser->lastAddEntryVars);
         $this->assertSame(1, ee()->TMPL->noResultsCalls);
         $this->assertSame(1, ee()->TMPL->parseVariablesCalls);
         $this->assertSame('TAGDATA', ee()->TMPL->lastParsedTagdata);

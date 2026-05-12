@@ -41,6 +41,8 @@ define('PATH_THEMES', realpath(SYSPATH . '/../themes') . '/');
 define('DOC_URL', 'http://our.doc.url/');
 define('PATH_THIRD', SYSPATH . 'user/addons/');
 define('PATH_ADDONS', SYSPATH . 'ee/ExpressionEngine/Addons/');
+define('PATH_PRO_ADDONS', PATH_ADDONS);
+define('PATH_MOD', PATH_ADDONS);
 
 // application constants
 define('AMP', '&amp;');

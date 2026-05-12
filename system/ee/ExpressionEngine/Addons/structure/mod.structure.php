@@ -2151,7 +2151,7 @@ class Structure extends Channel
      */
     public function nav_basic($add_entry_vars = false)
     {
-        $nav = new Structure_core_nav_parser();
+        $nav = $this->makeNavParser();
         $variables = $nav->get_variables($add_entry_vars);
         unset($nav);
 
@@ -2167,6 +2167,11 @@ class Structure extends Channel
     public function nav_advanced()
     {
         return $this->nav_basic(true);
+    }
+
+    protected function makeNavParser()
+    {
+        return new Structure_core_nav_parser();
     }
 }
 /* END Class */
