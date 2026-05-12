@@ -148,6 +148,30 @@ class TypographyTest extends TestCase
         $this->assertStringNotContainsString($normalizedLabel, $str);
     }
 
+    public function testMarkdownNormalizesOnlyHrefWhenUrlAppearsInLabelOrTitle()
+    {
+        $originalUrl = 'https://unicode.example/path';
+        $normalizedUrl = 'https://normalized.example/path';
+        $this->typography->decodedUrls[$originalUrl] = $normalizedUrl;
+
+        $regular = $this->typography->markdown(
+            '[see (' . $originalUrl . ')](' . $originalUrl . ' "Title ' . $originalUrl . '")',
+            array('smartypants' => false)
+        );
+
+        $this->assertStringContainsString('<a href="' . $normalizedUrl . '" title="Title ' . $originalUrl . '">see (' . $originalUrl . ')</a>', $regular);
+        $this->assertStringNotContainsString('Title ' . $normalizedUrl, $regular);
+        $this->assertStringNotContainsString('see (' . $normalizedUrl . ')', $regular);
+
+        $angle = $this->typography->markdown(
+            '[angle](<' . $originalUrl . '> "Title <' . $originalUrl . '>")',
+            array('smartypants' => false)
+        );
+
+        $this->assertStringContainsString('<a href="' . $normalizedUrl . '" title="Title &lt;' . $originalUrl . '>">angle</a>', $angle);
+        $this->assertStringNotContainsString('Title &lt;' . $normalizedUrl . '>', $angle);
+    }
+
     public function testMarkdownNormalizesUtf8HostsInInlineLinkUrls()
     {
         if (! function_exists('idn_to_ascii')) {

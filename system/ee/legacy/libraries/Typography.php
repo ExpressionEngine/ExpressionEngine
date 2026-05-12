@@ -1429,18 +1429,14 @@ class EE_Typography
      */
     public function markdown($str, $options = array())
     {
-        if ($link_matches = $this->getMarkdownLinks($str, PREG_SET_ORDER)) {
-            foreach ($link_matches as $match) {
-                $url = ! empty($match[3]) ? $match[3] : $match[4];
+        if ($link_matches = $this->getMarkdownLinks($str, PREG_SET_ORDER | PREG_OFFSET_CAPTURE)) {
+            foreach (array_reverse($link_matches) as $match) {
+                $angle_bracket_url = isset($match[3]) && $match[3][0] !== '';
+                $url_match = $angle_bracket_url ? $match[3] : $match[4];
+                $url = $url_match[0];
                 $decoded_url = str_replace(' ', '%20', $this->decodeIDN($url));
 
-                if (! empty($match[3])) {
-                    $new_match = str_replace('<' . $match[3] . '>', '<' . $decoded_url . '>', $match[0]);
-                } else {
-                    $new_match = str_replace('(' . $match[4], '(' . $decoded_url, $match[0]);
-                }
-
-                $str = str_replace($match[0], $new_match, $str);
+                $str = substr_replace($str, $decoded_url, $url_match[1], strlen($url));
             }
         }
 
