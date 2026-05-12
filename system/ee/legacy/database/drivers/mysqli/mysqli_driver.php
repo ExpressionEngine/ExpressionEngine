@@ -33,6 +33,7 @@ class CI_DB_mysqli_driver extends CI_DB
      */
     public $_count_string = "SELECT COUNT(*) AS ";
     public $_random_keyword = ' RAND()'; // database specific random keyword
+    public $last_query = null;
 
     /**
      * Whether to use the MySQL "delete hack" which allows the number

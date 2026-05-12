@@ -107,6 +107,39 @@ class StructureChildListingTest extends StructureTestBase
         $this->assertFalse($this->structure->child_listing());
     }
 
+    public function testFallsBackToCurrentUriWhenEntryIdParamIsZeroString()
+    {
+        $this->structure->sql = new class {
+            public function get_site_pages() { return ['uris' => [15 => '/current-page/']]; }
+            public function get_data() { return [15 => ['listing_cid' => 42]]; }
+        };
+
+        ee()->setMock('uri', new class {
+            public function uri_string() { return 'current-page'; }
+        });
+
+        $this->setTemplateParams(['entry_id' => '0']);
+
+        $value = $this->structure->child_listing();
+        $this->assertSame(42, $value);
+    }
+
+    public function testReturnsFalseWhenEntryIdCannotBeResolved()
+    {
+        $this->structure->sql = new class {
+            public function get_site_pages() { return ['uris' => [15 => '/other-page/']]; }
+            public function get_data() { return [15 => ['listing_cid' => 42]]; }
+        };
+
+        ee()->setMock('uri', new class {
+            public function uri_string() { return 'missing-page'; }
+        });
+
+        $this->setTemplateParams([]);
+
+        $this->assertFalse($this->structure->child_listing());
+    }
+
     public function testReturnsEmptyWhenListingCidZero()
     {
         $this->structure->sql = new class {
@@ -116,6 +149,32 @@ class StructureChildListingTest extends StructureTestBase
         $this->setTemplateParams(['entry_id' => 10, 'show' => 'channel_name']);
         $value = $this->structure->child_listing();
         $this->assertSame('', $value);
+    }
+
+    public function testReturnsEmptyWhenListingCidIsMissing()
+    {
+        $this->structure->sql = new class {
+            public function get_site_pages() { return ['uris' => []]; }
+            public function get_data() { return [10 => []]; }
+        };
+
+        $db = new class extends FakeDb {
+            public $queryCount = 0;
+
+            public function query($sql)
+            {
+                $this->queryCount++;
+
+                return parent::query($sql);
+            }
+        };
+        ee()->setMock('db', $db);
+
+        $this->setTemplateParams(['entry_id' => 10, 'show' => 'channel_name']);
+
+        $value = $this->structure->child_listing();
+        $this->assertSame('', $value);
+        $this->assertSame(0, $db->queryCount);
     }
 
     public function testUnknownShowFallsBackToListingCid()
@@ -129,5 +188,4 @@ class StructureChildListingTest extends StructureTestBase
         $this->assertSame(99, $value);
     }
 }
-
 

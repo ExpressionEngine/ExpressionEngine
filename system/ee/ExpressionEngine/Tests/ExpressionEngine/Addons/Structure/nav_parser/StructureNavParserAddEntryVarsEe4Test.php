@@ -46,12 +46,14 @@ class StructureNavParserAddEntryVarsEe4Test extends StructureTestBase
 
         $entry100 = new class($channelProxy) {
             public $entry_id = 100; public $url_title = 'alpha'; private $channel;
+            public $field_id_55 = '';
             public function __construct($c){ $this->channel = $c; }
             public function getFields(){ return []; }
             public function __get($name){ if ($name === 'Channel') { return $this->channel; } return null; }
         };
         $entry101 = new class($channelProxy) {
             public $entry_id = 101; public $url_title = 'beta'; private $channel;
+            public $field_id_55 = '';
             public function __construct($c){ $this->channel = $c; }
             public function getFields(){ return []; }
             public function __get($name){ if ($name === 'Channel') { return $this->channel; } return null; }
@@ -128,8 +130,8 @@ class StructureNavParserAddEntryVarsEe4Test extends StructureTestBase
 
         // Seed file field value for the custom field path
         // Use magic property access in add_entry_vars_ee4: field_id_55
-        @$entry100->field_id_55 = '{filedir_1}image.jpg';
-        @$entry101->field_id_55 = '{filedir_1}image2.jpg';
+        $entry100->field_id_55 = '{filedir_1}image.jpg';
+        $entry101->field_id_55 = '{filedir_1}image2.jpg';
 
         // Ensure file_field library is available (StructureTestBase sets it on demand)
         $ref = new ReflectionClass($parser);
@@ -274,4 +276,3 @@ class StructureNavParserAddEntryVarsEe4Test extends StructureTestBase
         unset($parser);
     }
 }
-

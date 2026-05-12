@@ -17,5 +17,24 @@ use ExpressionEngine\Library\CP\EntryManager;
  */
 class Categories extends EntryManager\Columns\Categories
 {
+    public function renderTableCell($data, $field_id, $entry)
+    {
+        $related = ee('db')->select('cat_id')
+            ->where('file_id', $entry->file_id)
+            ->get('file_categories')
+            ->result_array();
 
+        if (empty($related)) {
+            return '';
+        }
+
+        $categories = ee()->db
+            ->select('cat_name')
+            ->from('categories')
+            ->where_in('cat_id', array_column($related, 'cat_id'))
+            ->get()
+            ->result_array();
+
+        return implode(", ", array_column($categories, 'cat_name'));
+    }
 }

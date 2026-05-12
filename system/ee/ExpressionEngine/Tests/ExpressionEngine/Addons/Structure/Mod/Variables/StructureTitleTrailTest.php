@@ -27,8 +27,7 @@ class StructureTitleTrailTest extends StructureTestBase
             public function __construct($sitePages, $uri, $customTitles, $entryTitleMap, $channelEntries) {
                 $this->sitePages = $sitePages; 
                 $this->uri = $uri; 
-                // TitleTrail tests expect create_custom_titles() to return entryTitleMap (not customTitles)
-                $this->customTitles = $entryTitleMap; 
+                $this->customTitles = $customTitles; 
                 $this->entryTitleMap = $entryTitleMap; 
                 $this->channelEntries = $channelEntries;
             }
@@ -40,6 +39,29 @@ class StructureTitleTrailTest extends StructureTestBase
             public function get_entries_by_channel($channelId) { return $this->channelEntries; }
         };
         $this->structure->sql = $sql;
+    }
+
+    protected function setQueryCapturingDb(array $rows): object
+    {
+        $db = new class($rows) extends FakeDb {
+            public $capturedQueries = [];
+
+            public function __construct(array $rows)
+            {
+                $this->setRows($rows);
+            }
+
+            public function query($sql)
+            {
+                $this->capturedQueries[] = $sql;
+
+                return new eeDbResultMock($this->rows);
+            }
+        };
+
+        $this->setMock('db', $db);
+
+        return $db;
     }
 
     // Helpers inherited from StructureTestBase: setNsetStub, setTemplateParams, setDbRows
@@ -112,7 +134,7 @@ class StructureTitleTrailTest extends StructureTestBase
         ]);
 
         $result = $this->structure->titletrail();
-        $this->assertEquals('Team | About', $result);
+        $this->assertEquals('Custom Team Title | Custom About Title', $result);
     }
 
     public function testTitleTrailWithReverseOrder()
@@ -200,6 +222,78 @@ class StructureTitleTrailTest extends StructureTestBase
 
         $result = $wrapper->titletrail();
         $this->assertEquals('Team | About', $result);
+    }
+
+    public function testTitleTrailBuildsStrictAncestorQueryForRegularEntries()
+    {
+        ee()->config->items['site_id'] = 7;
+
+        $sitePages = [ 'uris' => [ 1 => '/', 2 => '/about', 3 => '/about/team' ] ];
+        $this->setSqlStub($sitePages, '/about/team', false, [3 => 'Team']);
+        $this->setNsetStub([
+            3 => ['left' => 6, 'right' => 7, 'entry_id' => 3],
+        ]);
+        $db = $this->setQueryCapturingDb([
+            ['entry_id' => 2, 'title' => 'About'],
+        ]);
+        $this->setTemplateParams([
+            'entry_id' => 3,
+        ]);
+
+        $this->structure->titletrail();
+
+        $this->assertCount(1, $db->capturedQueries);
+        $this->assertStringContainsString('AND node.lft < 7', $db->capturedQueries[0]);
+        $this->assertStringContainsString('AND node.rgt > 7', $db->capturedQueries[0]);
+        $this->assertStringNotContainsString('AND node.rgt >= 7', $db->capturedQueries[0]);
+        $this->assertStringContainsString('AND expt.site_id = 7', $db->capturedQueries[0]);
+        $this->assertStringContainsString('AND node.lft != 2', $db->capturedQueries[0]);
+    }
+
+    public function testTitleTrailBuildsInclusiveAncestorQueryForListingEntries()
+    {
+        ee()->config->items['site_id'] = 7;
+
+        $sitePages = [ 'uris' => [ 1 => '/', 2 => '/about', 3 => '/about/team' ] ];
+        $this->setSqlStub($sitePages, '/about/team', false, [3 => 'Team']);
+        $this->setNsetStub([
+            2 => ['left' => 4, 'right' => 7, 'entry_id' => 2],
+        ]);
+        $db = $this->setQueryCapturingDb([
+            ['entry_id' => 2, 'title' => 'About'],
+        ]);
+        $this->setTemplateParams([
+            'entry_id' => 3,
+        ]);
+
+        $wrapper = new class($this->structure) extends Structure {
+            public $inner;
+
+            public function __construct($inner)
+            {
+                $this->inner = $inner;
+            }
+
+            public function __call($name, $args)
+            {
+                return $this->inner->$name(...$args);
+            }
+
+            public function get_pid_for_listing_entry($entryId)
+            {
+                return 2;
+            }
+        };
+        $wrapper->sql = $this->structure->sql;
+        $wrapper->nset = $this->structure->nset;
+
+        $wrapper->titletrail();
+
+        $this->assertCount(1, $db->capturedQueries);
+        $this->assertStringContainsString('AND node.lft < 7', $db->capturedQueries[0]);
+        $this->assertStringContainsString('AND node.rgt >= 7', $db->capturedQueries[0]);
+        $this->assertStringNotContainsString('AND node.rgt > 7', $db->capturedQueries[0]);
+        $this->assertStringContainsString('AND expt.site_id = 7', $db->capturedQueries[0]);
     }
 
     public function testTitleTrailWithNoSitePages()
@@ -375,8 +469,7 @@ class StructureTitleTrailTest extends StructureTestBase
         ]);
 
         $result = $this->structure->titletrail();
-        $this->assertEquals('Test Site > Team > About > Leadership', $result);
+        $this->assertEquals('Test Site > Our Team > About Us > Leadership Team', $result);
     }
 }
-
 

@@ -2245,7 +2245,7 @@ class Channel
         $timezone = ee()->config->item('default_site_timezone');
 
         // Check legacy timezone formats
-        if (isset($timezones[$timezone])) {
+        if ($timezone !== null && isset($timezones[$timezone])) {
             $offset = $timezones[$timezone] * 3600;
         } else {
             // Otherwise, get the offset from DateTime
@@ -2735,6 +2735,9 @@ class Channel
     public function channel_name()
     {
         $channel_name = ee()->TMPL->fetch_param('channel');
+        if ($channel_name === null) {
+            $channel_name = '';
+        }
 
         if (isset($this->channel_name[$channel_name])) {
             return $this->channel_name[$channel_name];
@@ -4176,8 +4179,10 @@ class Channel
     }
 
     /**
-      *  Channel "category_heading" tag
-      */
+     * Parse the Channel "category_heading" tag.
+     *
+     * @return string
+     */
     public function category_heading()
     {
         if ($this->query_string == '' && !ee()->TMPL->fetch_param('category_url_title') && !ee()->TMPL->fetch_param('category_id')) {
@@ -4212,6 +4217,8 @@ class Channel
         if (preg_match("#/N(\d+)#", $qstring, $match)) {
             $qstring = reduce_double_slashes(str_replace($match[0], '', $qstring));
         }
+
+        $parent_only = (ee()->TMPL->fetch_param('parent_only') == 'yes');
 
         // Is the category being specified by name?
         if (
@@ -4266,6 +4273,20 @@ class Channel
 
                 $valid_cats = array_unique($valid_cats);
 
+                if ($category_group = ee()->TMPL->fetch_param('category_group')) {
+                    if (substr($category_group, 0, 4) == 'not ') {
+                        $category_group_ids = explode('|', substr($category_group, 4));
+                        $valid_cats = array_diff($valid_cats, $category_group_ids);
+                    }
+
+                    if (substr($category_group, 0, 4) != 'not ') {
+                        $category_group_ids = explode('|', $category_group);
+                        $valid_cats = array_intersect($valid_cats, $category_group_ids);
+                    }
+
+                    $valid_cats = array_filter($valid_cats, 'is_numeric');
+                }
+
                 if (count($valid_cats) == 0) {
                     $valid = 'n';
                 }
@@ -4288,21 +4309,37 @@ class Channel
                     $cut_qstring = ee()->TMPL->fetch_param('category_url_title');
                 }
 
-                $result = ee()->db->query("SELECT cat_id FROM exp_categories
-                                      WHERE cat_url_title='" . ee()->db->escape_str($cut_qstring) . "'
-                                      AND group_id IN ('" . implode("','", $valid_cats) . "')");
+                ee()->db->select('cat_id');
+                ee()->db->where('cat_url_title', $cut_qstring);
+                ee()->db->where_in('group_id', $valid_cats);
+                ee()->db->order_by('cat_id', 'ASC');
+                ee()->db->limit(1);
 
-                if ($result->num_rows() == 1) {
+                if ($parent_only) {
+                    ee()->db->where('parent_id', 0);
+                }
+
+                $result = ee()->db->get('categories');
+
+                if ($result->num_rows() > 0) {
                     $qstring = !ee()->TMPL->fetch_param('category_url_title')
                         ? str_replace($cut_qstring, 'C' . $result->row('cat_id'), $qstring)
                         : 'C' . $result->row('cat_id');
                 } else {
                     // give it one more try using the whole $qstring
-                    $result = ee()->db->query("SELECT cat_id FROM exp_categories
-                                          WHERE cat_url_title='" . ee()->db->escape_str($qstring) . "'
-                                          AND group_id IN ('" . implode("','", $valid_cats) . "')");
+                    ee()->db->select('cat_id');
+                    ee()->db->where('cat_url_title', $qstring);
+                    ee()->db->where_in('group_id', $valid_cats);
+                    ee()->db->order_by('cat_id', 'ASC');
+                    ee()->db->limit(1);
 
-                    if ($result->num_rows() == 1) {
+                    if ($parent_only) {
+                        ee()->db->where('parent_id', 0);
+                    }
+
+                    $result = ee()->db->get('categories');
+
+                    if ($result->num_rows() > 0) {
                         $qstring = 'C' . $result->row('cat_id') ;
                     }
                 }
@@ -4336,7 +4373,8 @@ class Channel
         $query = ee()->db->query("SELECT c.cat_name, c.parent_id, c.cat_url_title, c.cat_description, c.cat_image {$field_sqla}
                             FROM exp_categories AS c
                             {$field_sqlb}
-                            WHERE c.cat_id = '" . ee()->db->escape_str($cat_id) . "'");
+                            WHERE c.cat_id = '" . ee()->db->escape_str($cat_id) . "'
+                            " . ($parent_only ? 'AND c.parent_id = 0' : ''));
 
         if ($query->num_rows() == 0) {
             return ee()->TMPL->no_results();

@@ -69,7 +69,7 @@ class StructureMcpSmallMethodsTest extends TestCase
         $this->assertSame('/sub/site', $mcp->get_site_path());
 
         $rm = new ReflectionMethod($mcp, 'set_cp_title');
-        $rm->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($rm);
         $rm->invoke($mcp, 'pages');
         $this->assertSame('PAGES', ee()->view->cp_page_title);
     }
@@ -179,6 +179,9 @@ class StructureMcpSmallMethodsTest extends TestCase
             {
                 return true;
             }
+        });
+        ee()->setMock('session', new class {
+            public $userdata = ['group_id' => 1];
         });
         ee()->setMock('db', new class {
             public function query($sql)

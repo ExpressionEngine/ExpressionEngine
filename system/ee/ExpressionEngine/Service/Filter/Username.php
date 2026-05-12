@@ -175,9 +175,9 @@ class Username extends Filter
         if (is_null($value)) {
             $value = $this->value();
 
-            $value = (array_key_exists($value, $this->options)) ?
-                $this->options[$value] :
-                $value;
+            if ($value !== null && array_key_exists($value, $this->options)) {
+                $value = $this->options[$value];
+            }
         }
 
         // Create a filter URL without this filter (per-filter clear).

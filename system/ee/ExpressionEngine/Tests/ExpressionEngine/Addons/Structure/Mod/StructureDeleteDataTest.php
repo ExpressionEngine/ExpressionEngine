@@ -52,6 +52,59 @@ class StructureDeleteDataTest extends StructureTestBase
 		$this->assertContains(10, $nsetStub->deleted);
 	}
 
+	public function testDeletesPlainEntryWithoutStructureNode()
+	{
+		$sitePages = [
+			'url' => '/',
+			'uris' => [99 => '/orphaned-entry', 100 => '/keep'],
+			'templates' => [99 => 7, 100 => 8],
+		];
+
+		$nsetStub = new class {
+			public $deleted = [];
+			public function getNode($id){ return false; }
+			public function getTree($id){ return []; }
+			public function deleteNode($node){ $this->deleted[] = $node['entry_id']; }
+		};
+		$this->structure->nset = $nsetStub;
+
+		ee()->db->setRows([]);
+
+		$calls = (object) ['closed' => []];
+		ee()->setMock('Model', new class($calls) {
+			private $calls;
+			private $currentId;
+			public function __construct($calls){ $this->calls = $calls; }
+			public function get($model, $id){ $this->currentId = $id; return $this; }
+			public function fields($field){ return $this; }
+			public function first(){ return $this; }
+			public function setProperty($key, $value)
+			{
+				if ($key === 'status' && $value === 'closed') {
+					$this->calls->closed[] = $this->currentId;
+				}
+
+				return $this;
+			}
+			public function save(){ return true; }
+		});
+
+		$captured = (object) ['pages' => null];
+		$proxy = new class($this->structure, $sitePages, $captured) extends Structure {
+			private $pages; private $cap; public function __construct($base,$pages,$cap){ foreach (get_object_vars($base) as $k=>$v){ $this->$k=$v; } $this->pages=$pages; $this->cap=$cap; }
+			public function set_site_pages($site_id, $pages){ $this->cap->pages = $pages; }
+			public function get_site_pages(){ return $this->pages; }
+		};
+		$proxy->sql = new class($sitePages){ private $pages; public function __construct($p){ $this->pages=$p; } public function get_site_pages(){ return $this->pages; } };
+
+		$result = $proxy->delete_data([99]);
+		$this->assertTrue($result);
+		$this->assertArrayNotHasKey(99, $captured->pages['uris']);
+		$this->assertArrayNotHasKey(99, $captured->pages['templates']);
+		$this->assertSame([99], $calls->closed);
+		$this->assertSame([], $nsetStub->deleted);
+	}
+
 	public function testDeletesNodeWithChildrenAndListings()
 	{
 		$sitePages = [ 'url' => '/', 'uris' => [1 => '/root', 2 => '/child', 200 => '/list'], 'templates' => [1=>1,2=>1,200=>1] ];
@@ -147,6 +200,5 @@ class StructureDeleteDataTest extends StructureTestBase
 		$this->assertSame($sitePages, $captured->pages);
 	}
 }
-
 
 

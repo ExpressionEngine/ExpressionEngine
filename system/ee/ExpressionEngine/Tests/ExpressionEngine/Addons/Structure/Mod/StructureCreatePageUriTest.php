@@ -65,11 +65,16 @@ class StructureCreatePageUriTest extends StructureTestBase
 		$this->assertSame('/x/a/b', $uri);
 	}
 
+	public function testCreatePageUriCollapsesOverlappingSlashRunsUntilStable()
+	{
+		$uri = $this->structure->create_page_uri('/parent////', '////child////grandchild////');
+		$this->assertSame('/parent/child/grandchild', $uri);
+	}
+
 	public function testCreatePageUriPreservesNonAsciiChild()
 	{
 		$uri = $this->structure->create_page_uri('/parent', 'ümlaut');
 		$this->assertSame('/parent/ümlaut', $uri);
 	}
 }
-
 

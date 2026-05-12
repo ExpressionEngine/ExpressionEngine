@@ -166,6 +166,8 @@ abstract class FluidFieldTestBase extends TestCase
             'content_id' => 99,
             'content_type' => 'channel',
         ]);
+        $this->fieldtype->field_id = 10;
+        $this->fieldtype->field_name = 'fluid_content';
 
         $this->fieldtype->settings = [
             'field_channel_fields' => [],
@@ -196,7 +198,7 @@ abstract class FluidFieldTestBase extends TestCase
     {
         $reflection = new ReflectionClass($object);
         $refMethod = $reflection->getMethod($method);
-        $refMethod->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($refMethod);
 
         return $refMethod->invokeArgs($object, $args);
     }
@@ -205,7 +207,7 @@ abstract class FluidFieldTestBase extends TestCase
     {
         $reflection = new ReflectionClass($object);
         $refProperty = $reflection->getProperty($property);
-        $refProperty->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($refProperty);
 
         return $refProperty->getValue($object);
     }
@@ -214,7 +216,7 @@ abstract class FluidFieldTestBase extends TestCase
     {
         $reflection = new ReflectionClass($object);
         $refProperty = $reflection->getProperty($property);
-        $refProperty->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($refProperty);
         $refProperty->setValue($object, $value);
     }
 

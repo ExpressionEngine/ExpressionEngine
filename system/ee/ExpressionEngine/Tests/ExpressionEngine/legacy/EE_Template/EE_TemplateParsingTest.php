@@ -132,6 +132,19 @@ class EE_TemplateParsingTest extends EE_TemplateTestBase
         $this->assertTrue(strpos($lastLog['details'], 'value') !== false);
     }
 
+    public function testLogItemPrefixesMessageWithDepthIndentation()
+    {
+        $this->template->debugging = true;
+        $this->template->depth = 2;
+        $this->template->start_microtime = microtime(true);
+
+        $this->template->log_item('Nested message');
+
+        $lastLog = end($this->template->log);
+        $this->assertStringStartsWith(str_repeat('&nbsp;', 10), $lastLog['message']);
+        $this->assertStringEndsWith('Nested message', $lastLog['message']);
+    }
+
     /**
      * Test fetch_param method
      */
@@ -259,6 +272,19 @@ class EE_TemplateParsingTest extends EE_TemplateTestBase
         $this->assertEquals($tagData, $result);
     }
 
+    public function testAssignFormParamsReturnsTagDataWhenParamsMissing()
+    {
+        $this->template->form_id = 'stale-id';
+        $this->template->form_class = 'stale-class';
+        $tagData = ['foo' => 'bar'];
+
+        $result = $this->template->_assign_form_params($tagData);
+
+        $this->assertSame($tagData, $result);
+        $this->assertSame('', $this->template->form_id);
+        $this->assertSame('', $this->template->form_class);
+    }
+
     /**
      * Test _fetch_site_ids method
      */
@@ -289,6 +315,47 @@ class EE_TemplateParsingTest extends EE_TemplateTestBase
         $this->assertEquals(['site1' => 1, 'site3' => 3], $this->template->site_ids);
     }
 
+    public function testFetchSiteIdsLoadsSitesFromDatabaseWhenMultipleSitesEnabled()
+    {
+        $this->template->tagparams = ['site' => 'site1|site2'];
+        $this->template->sites = [];
+
+        $configMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['item'])
+            ->getMock();
+        $configMock->method('item')->willReturnCallback(function($key) {
+            if ($key === 'multiple_sites_enabled') {
+                return 'y';
+            }
+
+            if ($key === 'site_id') {
+                return 1;
+            }
+
+            return null;
+        });
+        ee()->setMock('config', $configMock);
+
+        $dbResultMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['result_array'])
+            ->getMock();
+        $dbResultMock->method('result_array')->willReturn([
+            ['site_id' => 1, 'site_name' => 'site1'],
+            ['site_id' => 2, 'site_name' => 'site2'],
+        ]);
+
+        $dbMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['query'])
+            ->getMock();
+        $dbMock->method('query')->willReturn($dbResultMock);
+        ee()->setMock('db', $dbMock);
+
+        $this->template->_fetch_site_ids();
+
+        $this->assertSame([1 => 'site1', 2 => 'site2'], $this->template->sites);
+        $this->assertSame(['site1' => 1, 'site2' => 2], $this->template->site_ids);
+    }
+
     /**
      * Test parse_variables method with simple variables
      */
@@ -302,6 +369,31 @@ class EE_TemplateParsingTest extends EE_TemplateTestBase
         $result = $this->template->parse_variables($tagdata, $variables);
 
         $this->assertEquals('Test Article by John Doe', $result);
+    }
+
+    public function testParseVariablesHandlesSwitchValuesAndBackspace()
+    {
+        $variablesParserMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['parseTagParameters'])
+            ->getMock();
+        $variablesParserMock->method('parseTagParameters')
+            ->with('switch="odd|even"')
+            ->willReturn(['switch' => 'odd|even']);
+        ee()->setMock('Variables/Parser', $variablesParserMock);
+
+        $this->template->tagparams = ['backspace' => '1'];
+
+        $result = $this->template->parse_variables(
+            '{switch="odd|even"}|{title},',
+            [
+                ['title' => 'First'],
+                ['title' => 'Second'],
+            ]
+        );
+
+        $this->assertStringContainsString('odd|First', $result);
+        $this->assertStringContainsString('even|Second', $result);
+        $this->assertStringEndsNotWith(',', $result);
     }
 
     /**
@@ -342,6 +434,212 @@ class EE_TemplateParsingTest extends EE_TemplateTestBase
         $this->assertEquals('Test Title - 1/5', $result);
     }
 
+    public function testParseVariablesRowReturnsOriginalTagdataForInvalidInput()
+    {
+        $this->assertSame('', $this->template->parse_variables_row('', ['title' => 'x']));
+        $this->assertSame('unchanged', $this->template->parse_variables_row('unchanged', []));
+    }
+
+    public function testParseVariablesRowSkipsInvalidModifierWhenVariableExists()
+    {
+        $functionsMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['prep_conditionals'])
+            ->getMock();
+        $functionsMock->method('prep_conditionals')->willReturnArgument(0);
+        ee()->setMock('functions', $functionsMock);
+
+        $modifiersMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['has'])
+            ->getMock();
+        $modifiersMock->method('has')->willReturn(false);
+        ee()->setMock('Variables/Modifiers', $modifiersMock);
+
+        $this->setModifiedVars([
+            'title:missing_modifier' => [
+                'field_name' => 'title',
+                'modifier' => 'missing_modifier',
+                'params' => [],
+            ],
+        ]);
+
+        $result = $this->template->parse_variables_row(
+            '{title:missing_modifier}',
+            ['title' => 'value']
+        );
+
+        $this->assertSame('{title:missing_modifier}', $result);
+    }
+
+    public function testParseVariablesRowHandlesEmptyPairValueAsBlankPair()
+    {
+        $result = $this->template->parse_variables_row(
+            '{items}{value}{/items}',
+            ['items' => []]
+        );
+
+        $this->assertSame('', $result);
+    }
+
+    public function testParseVariablesRowSkipsInvalidModifierAndProcessesValidModifierWithPathArray()
+    {
+        $functionsMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['prep_conditionals'])
+            ->getMock();
+        $functionsMock->method('prep_conditionals')->willReturnArgument(0);
+        ee()->setMock('functions', $functionsMock);
+
+        $modifiersMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['has'])
+            ->getMock();
+        $modifiersMock->method('has')->willReturn(false);
+        ee()->setMock('Variables/Modifiers', $modifiersMock);
+
+        $this->setModifiedVars([
+            'missing:unknown' => [
+                'field_name' => 'missing',
+                'modifier' => 'unknown',
+                'params' => [],
+            ],
+            'value:special_group_conditional' => [
+                'field_name' => 'value',
+                'modifier' => 'special_group_conditional',
+                'params' => [],
+                'all_modifiers' => [
+                    'special_group_conditional' => [],
+                ],
+            ],
+        ]);
+
+        $tagdata = '{value:special_group_conditional}';
+        $variables = [
+            'value' => [
+                '/asset/url',
+                ['path_variable' => true],
+            ],
+        ];
+
+        $result = $this->template->parse_variables_row($tagdata, $variables);
+
+        $this->assertSame('{value}', $result);
+    }
+
+    public function testParseVariablesRowHandlesScalarAndNonScalarArrayModifierRawValues()
+    {
+        $functionsMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['prep_conditionals'])
+            ->getMock();
+        $functionsMock->method('prep_conditionals')->willReturnArgument(0);
+        ee()->setMock('functions', $functionsMock);
+
+        $modifiersMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['has'])
+            ->getMock();
+        $modifiersMock->method('has')->willReturn(false);
+        ee()->setMock('Variables/Modifiers', $modifiersMock);
+
+        $loadMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['library'])
+            ->getMock();
+        $loadMock->method('library')->willReturn(null);
+        ee()->setMock('load', $loadMock);
+
+        $typographyMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['initialize', 'parse_type'])
+            ->getMock();
+        $typographyMock->method('initialize')->willReturn(null);
+        $typographyMock->method('parse_type')->willReturnCallback(function ($content) {
+            return is_array($content) ? 'parsed-array' : (string) $content;
+        });
+        ee()->setMock('typography', $typographyMock);
+
+        $this->setModifiedVars([
+            'value:special_group_conditional' => [
+                'field_name' => 'value',
+                'modifier' => 'special_group_conditional',
+                'params' => [],
+                'all_modifiers' => [
+                    'special_group_conditional' => [],
+                ],
+            ],
+        ]);
+
+        $scalarArrayResult = $this->template->parse_variables_row(
+            '{value:special_group_conditional}',
+            ['value' => ['scalar-first', ['text_format' => 'none']]]
+        );
+        $this->assertSame('scalar-first', $scalarArrayResult);
+
+        $nonScalarArrayResult = $this->template->parse_variables_row(
+            '{value:special_group_conditional}',
+            ['value' => [['nested' => 'value'], ['text_format' => 'none']]]
+        );
+        $this->assertSame('parsed-array', $nonScalarArrayResult);
+    }
+
+    public function testParseVariablesRowUsesSingleModifierConfigWhenAllModifiersAbsent()
+    {
+        $functionsMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['prep_conditionals'])
+            ->getMock();
+        $functionsMock->method('prep_conditionals')->willReturnArgument(0);
+        ee()->setMock('functions', $functionsMock);
+
+        $modifiersMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['has'])
+            ->getMock();
+        $modifiersMock->method('has')->willReturn(false);
+        ee()->setMock('Variables/Modifiers', $modifiersMock);
+
+        $this->setModifiedVars([
+            'title:special_group_conditional' => [
+                'field_name' => 'title',
+                'modifier' => 'special_group_conditional',
+                'params' => [],
+            ],
+        ]);
+
+        $result = $this->template->parse_variables_row(
+            '{title:special_group_conditional}',
+            ['title' => 'in_group(1|2)']
+        );
+
+        $this->assertStringContainsString('~', $result);
+    }
+
+    public function testParseVariablesRowSkipsInvalidModifierInsideAllModifiers()
+    {
+        $functionsMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['prep_conditionals'])
+            ->getMock();
+        $functionsMock->method('prep_conditionals')->willReturnArgument(0);
+        ee()->setMock('functions', $functionsMock);
+
+        $modifiersMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['has'])
+            ->getMock();
+        $modifiersMock->method('has')->willReturn(false);
+        ee()->setMock('Variables/Modifiers', $modifiersMock);
+
+        $this->setModifiedVars([
+            'title:special_group_conditional' => [
+                'field_name' => 'title',
+                'modifier' => 'special_group_conditional',
+                'params' => [],
+                'all_modifiers' => [
+                    'missing_modifier' => [],
+                    'special_group_conditional' => [],
+                ],
+            ],
+        ]);
+
+        $result = $this->template->parse_variables_row(
+            '{title:special_group_conditional}',
+            ['title' => 'in_group(3)']
+        );
+
+        $this->assertStringContainsString('~', $result);
+    }
+
     /**
      * Test _parse_var_single method
      */
@@ -362,6 +660,48 @@ class EE_TemplateParsingTest extends EE_TemplateTestBase
         $this->assertEquals('', $result);
     }
 
+    public function testParseVarSingleDelegatesToParseDateVariablesForDateVars()
+    {
+        $templateMock = $this->getMockBuilder(\EE_Template::class)
+            ->onlyMethods(['parse_date_variables'])
+            ->getMock();
+        $templateMock->date_vars = ['entry_date'];
+        $templateMock->expects($this->once())
+            ->method('parse_date_variables')
+            ->with('{entry_date}', ['entry_date' => 123456])
+            ->willReturn('formatted-date');
+
+        $this->assertSame(
+            'formatted-date',
+            $templateMock->_parse_var_single('entry_date', 123456, '{entry_date}')
+        );
+    }
+
+    public function testParseVarSingleReplacesPathVariablesAndSkipsDuplicateMatches()
+    {
+        $functionsMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['extract_path', 'create_url'])
+            ->getMock();
+        $functionsMock->method('extract_path')->willReturnCallback(function($fullTag) {
+            preg_match('/=([\"\']?)(.*?)\\1}/', $fullTag, $matches);
+            return $matches[2];
+        });
+        $functionsMock->method('create_url')->willReturnCallback(function($path) {
+            return 'https://example.com/' . trim($path, '/');
+        });
+        ee()->setMock('functions', $functionsMock);
+
+        $result = $this->template->_parse_var_single(
+            'id_path',
+            ['slug', ['path_variable' => true]],
+            "{id_path='news'} {id_path='news'} {id_path=\"blog\"}"
+        );
+
+        $this->assertStringNotContainsString('{id_path', $result);
+        $this->assertStringContainsString('https://example.com/news/slug', $result);
+        $this->assertStringContainsString('https://example.com/blog/slug', $result);
+    }
+
     /**
      * Test _parse_var_pair method
      */
@@ -379,6 +719,39 @@ class EE_TemplateParsingTest extends EE_TemplateTestBase
         $this->assertIsString($result);
     }
 
+    public function testParseVarPairHandlesEmptyNestedArraysAndLimitBackspace()
+    {
+        $functionsMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['prep_conditionals'])
+            ->getMock();
+        $functionsMock->method('prep_conditionals')->willReturnArgument(0);
+        ee()->setMock('functions', $functionsMock);
+
+        $variablesParserMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['parseTagParameters', 'parseModifiedVariables'])
+            ->getMock();
+        $variablesParserMock->method('parseTagParameters')
+            ->willReturnCallback(function($params) {
+                if (strpos($params, 'limit="1"') !== false) {
+                    return ['limit' => 1, 'backspace' => 1];
+                }
+
+                return [];
+            });
+        $variablesParserMock->method('parseModifiedVariables')->willReturnArgument(0);
+        ee()->setMock('Variables/Parser', $variablesParserMock);
+
+        $tagdata = '{items limit="1" backspace="1"}{children}{value},{/children}{/items}';
+        $variables = [
+            ['children' => []],
+            ['children' => [['value' => 'A']]],
+        ];
+
+        $result = $this->template->_parse_var_pair('items', $variables, $tagdata);
+
+        $this->assertSame('', $result);
+    }
+
     /**
      * Test _match_date_vars method
      */
@@ -390,6 +763,15 @@ class EE_TemplateParsingTest extends EE_TemplateTestBase
 
         $this->assertContains('entry_date', $this->template->date_vars);
         $this->assertContains('custom_date', $this->template->date_vars);
+    }
+
+    public function testMatchDateVarsClearsDateVarsWhenFormatMarkerHasNoMatch()
+    {
+        $this->template->date_vars = ['stale_value'];
+
+        $this->template->_match_date_vars('{entry_date format=}');
+
+        $this->assertSame([], $this->template->date_vars);
     }
 
     /**
@@ -450,6 +832,48 @@ class EE_TemplateParsingTest extends EE_TemplateTestBase
         $result = $this->template->parse_date_variables($tagdata, $dates);
 
         $this->assertEquals('2023', $result);
+    }
+
+    public function testParseDateVariablesHandlesRelativeVariableTimeDateArgument()
+    {
+        $variablesParserMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['parseTagParameters'])
+            ->getMock();
+        $variablesParserMock->method('parseTagParameters')
+            ->with('date="2024-03-01"')
+            ->willReturn(['date' => '2024-03-01']);
+        ee()->setMock('Variables/Parser', $variablesParserMock);
+
+        $localizeMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['string_to_timestamp', 'format_date'])
+            ->getMock();
+        $localizeMock->method('string_to_timestamp')
+            ->with('2024-03-01')
+            ->willReturn(1709251200);
+        $localizeMock->method('format_date')->willReturn('ignored');
+        $localizeMock->now = time();
+        $localizeMock->format = [];
+        ee()->setMock('localize', $localizeMock);
+
+        $templateMock = $this->getMockBuilder(\EE_Template::class)
+            ->onlyMethods(['process_date'])
+            ->getMock();
+        $templateMock->expects($this->once())
+            ->method('process_date')
+            ->with(
+                1709251200,
+                ['date' => '2024-03-01'],
+                true,
+                true
+            )
+            ->willReturn('relative-date');
+
+        $result = $templateMock->parse_date_variables(
+            '{variable_time:relative date="2024-03-01"}',
+            ['variable_time' => 123]
+        );
+
+        $this->assertSame('relative-date', $result);
     }
 
     /**
@@ -605,6 +1029,104 @@ class EE_TemplateParsingTest extends EE_TemplateTestBase
         $this->assertEquals('1969-12-31', $result); // Before Unix epoch
     }
 
+    public function testProcessDateLogsInvalidStopParameter()
+    {
+        $this->template->debugging = true;
+        $this->template->start_microtime = microtime(true);
+
+        $result = $this->template->process_date(time(), ['stop' => 'not-a-date'], true);
+
+        $this->assertIsString($result);
+        $lastLog = end($this->template->log);
+        $this->assertStringContainsString('Invalid Stop Parameter', $lastLog['message']);
+    }
+
+    public function testProcessDateStopParameterCanDisableRelativeFormatting()
+    {
+        $future = time() + 3600;
+
+        $result = $this->template->process_date($future, ['stop' => '-2 hours'], true);
+
+        $this->assertSame($future, $result);
+    }
+
+    public function testProcessDateLogsInvalidRelativeUnitAndAssignsCustomWords()
+    {
+        $this->template->debugging = true;
+        $this->template->start_microtime = microtime(true);
+
+        $loadMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['library'])
+            ->getMock();
+        $loadMock->method('library')->willReturn(null);
+        ee()->setMock('load', $loadMock);
+
+        $relativeDateMock = new class {
+            public $valid_units = ['years', 'months', 'days'];
+            public $singular;
+            public $less_than;
+            public $past;
+            public $future;
+            public $about;
+            public $units_seen = [];
+            public function create($timestamp)
+            {
+                return $this;
+            }
+            public function calculate($units)
+            {
+                $this->units_seen = $units;
+                return $this;
+            }
+            public function render($depth)
+            {
+                return 'relative-render';
+            }
+        };
+        ee()->setMock('relative_date', $relativeDateMock);
+
+        $result = $this->template->process_date(time(), [
+            'units' => 'years|bogus',
+            'singular' => 'one',
+            'less_than' => 'lt',
+            'past' => 'past',
+            'future' => 'future',
+            'about' => 'about',
+            'depth' => 2,
+        ], true);
+
+        $this->assertSame('relative-render', $result);
+        $this->assertSame(['years'], $relativeDateMock->units_seen);
+        $this->assertSame('one', $relativeDateMock->singular);
+        $this->assertSame('lt', $relativeDateMock->less_than);
+        $this->assertSame('past', $relativeDateMock->past);
+        $this->assertSame('future', $relativeDateMock->future);
+        $this->assertSame('about', $relativeDateMock->about);
+
+        $lastLog = end($this->template->log);
+        $this->assertStringContainsString('Invalid Relative Date Unit', $lastLog['message']);
+    }
+
+    public function testProcessDateReturnsTimestampWhenFormatFails()
+    {
+        $this->template->debugging = true;
+        $this->template->start_microtime = microtime(true);
+
+        $localizeMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['format_date'])
+            ->getMock();
+        $localizeMock->method('format_date')->willReturn(false);
+        $localizeMock->now = time();
+        $localizeMock->format = [];
+        ee()->setMock('localize', $localizeMock);
+
+        $result = $this->template->process_date(1234567890, ['format' => '%Y']);
+
+        $this->assertSame(1234567890, $result);
+        $lastLog = end($this->template->log);
+        $this->assertStringContainsString('Invalid Timestamp', $lastLog['message']);
+    }
+
     /**
      * Test parse_date_variables with missing date data
      */
@@ -650,5 +1172,12 @@ class EE_TemplateParsingTest extends EE_TemplateTestBase
 
         // Test that conditionals within variable pairs work - method should run without crashing
         $this->assertIsString($result);
+    }
+
+    private function setModifiedVars(array $modifiedVars)
+    {
+        $property = new \ReflectionProperty(\EE_Template::class, 'modified_vars');
+        \TestReflectionHelper::makeAccessible($property);
+        $property->setValue($this->template, $modifiedVars);
     }
 }

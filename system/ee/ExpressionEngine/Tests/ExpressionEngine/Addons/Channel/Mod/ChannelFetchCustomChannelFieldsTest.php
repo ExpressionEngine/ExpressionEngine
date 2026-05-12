@@ -127,6 +127,7 @@ class ChannelFetchCustomChannelFieldsTest extends ChannelTestBase
 
         // Mock session cache to return cached data
         $this->setMock('session', new class($cachedData) {
+            public $cache = [];
             private $cachedData;
             public function __construct($cachedData) { $this->cachedData = $cachedData; }
             public function cache($class, $key) {
@@ -151,6 +152,7 @@ class ChannelFetchCustomChannelFieldsTest extends ChannelTestBase
     {
         // Mock session cache to return false (no cached data)
         $this->setMock('session', new class {
+            public $cache = [];
             public function cache($class, $key) { return false; }
             public function set_cache($class, $key, $value) {
                 // Store the value for verification
@@ -187,6 +189,7 @@ class ChannelFetchCustomChannelFieldsTest extends ChannelTestBase
     {
         // Mock session cache to return false (no cached data)
         $this->setMock('session', new class {
+            public $cache = [];
             public function cache($class, $key) { return false; }
             public function set_cache($class, $key, $value) {
                 // Store the value for verification
@@ -216,6 +219,7 @@ class ChannelFetchCustomChannelFieldsTest extends ChannelTestBase
     {
         // Mock session cache to return false (no cached data)
         $this->setMock('session', new class {
+            public $cache = [];
             public function cache($class, $key) { return false; }
             public function set_cache($class, $key, $value) {
                 // Store the value for verification
@@ -245,6 +249,7 @@ class ChannelFetchCustomChannelFieldsTest extends ChannelTestBase
     {
         // Mock session cache to return false (no cached data)
         $this->setMock('session', new class {
+            public $cache = [];
             public function cache($class, $key) { return false; }
             public function set_cache($class, $key, $value) {
                 // Store the value for verification

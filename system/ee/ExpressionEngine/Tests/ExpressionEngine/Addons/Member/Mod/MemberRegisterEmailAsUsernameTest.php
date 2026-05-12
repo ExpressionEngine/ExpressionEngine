@@ -241,7 +241,7 @@ class MemberRegisterEmailAsUsernameTest extends TestCase
     private function callPrivateMethod($methodName, array $args = array())
     {
         $method = new ReflectionMethod($this->memberRegister, $methodName);
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($method);
 
         return $method->invokeArgs($this->memberRegister, $args);
     }

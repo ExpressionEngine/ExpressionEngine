@@ -56,8 +56,8 @@ class PersistentCacheTest extends StructureTestBase
         $this->tmpRoot = sys_get_temp_dir() . '/structure-persistent-cache-tests-' . uniqid('', true);
         @mkdir($this->tmpRoot, 0777, true);
 
-        $cachePath->setValue($this->tmpRoot . '/cache');
-        $modulePath->setValue($this->tmpRoot . '/cache/structure/');
+        $cachePath->setValue(null, $this->tmpRoot . '/cache');
+        $modulePath->setValue(null, $this->tmpRoot . '/cache/structure/');
 
         StaticCache::clear();
         global $__structure_force_write_file_failure;
@@ -71,8 +71,8 @@ class PersistentCacheTest extends StructureTestBase
         $modulePath = $rc->getProperty('module_cache_path');
         \TestReflectionHelper::makePropertyAccessible($cachePath);
         \TestReflectionHelper::makePropertyAccessible($modulePath);
-        $cachePath->setValue($this->origCachePath);
-        $modulePath->setValue($this->origModulePath);
+        $cachePath->setValue(null, $this->origCachePath);
+        $modulePath->setValue(null, $this->origModulePath);
 
         $this->deleteRecursively($this->tmpRoot);
 
@@ -133,8 +133,8 @@ class PersistentCacheTest extends StructureTestBase
         $modulePath = $rc->getProperty('module_cache_path');
         \TestReflectionHelper::makePropertyAccessible($cachePath);
         \TestReflectionHelper::makePropertyAccessible($modulePath);
-        $cachePath->setValue($fileAsPath);
-        $modulePath->setValue($fileAsPath . '/structure/');
+        $cachePath->setValue(null, $fileAsPath);
+        $modulePath->setValue(null, $fileAsPath . '/structure/');
 
         $this->assertFalse(PersistentCache::delete('not-possible'));
     }
@@ -160,8 +160,8 @@ class PersistentCacheTest extends StructureTestBase
         \TestReflectionHelper::makePropertyAccessible($cachePath);
         \TestReflectionHelper::makePropertyAccessible($modulePath);
 
-        $cachePath->setValue($fileAsPath);
-        $modulePath->setValue($fileAsPath . '/structure/');
+        $cachePath->setValue(null, $fileAsPath);
+        $modulePath->setValue(null, $fileAsPath . '/structure/');
 
         $this->assertFalse(PersistentCache::set('k', ['v' => 1]));
         $this->assertFalse(PersistentCache::clear());
@@ -181,8 +181,8 @@ class PersistentCacheTest extends StructureTestBase
         $modulePath = $rc->getProperty('module_cache_path');
         \TestReflectionHelper::makePropertyAccessible($cachePath);
         \TestReflectionHelper::makePropertyAccessible($modulePath);
-        $cachePath->setValue($base);
-        $modulePath->setValue($base . '/structure/');
+        $cachePath->setValue(null, $base);
+        $modulePath->setValue(null, $base . '/structure/');
 
         $this->assertFalse(PersistentCache::set('rw-fail', ['v' => 1]));
         @chmod($base, 0777);
@@ -199,8 +199,8 @@ class PersistentCacheTest extends StructureTestBase
         $modulePath = $rc->getProperty('module_cache_path');
         \TestReflectionHelper::makePropertyAccessible($cachePath);
         \TestReflectionHelper::makePropertyAccessible($modulePath);
-        $cachePath->setValue($base . '/cache');
-        $modulePath->setValue($base . '/cache/not-a-dir/structure/');
+        $cachePath->setValue(null, $base . '/cache');
+        $modulePath->setValue(null, $base . '/cache/not-a-dir/structure/');
 
         $this->assertFalse(PersistentCache::set('module-create-fail', ['v' => 1]));
     }
@@ -216,8 +216,8 @@ class PersistentCacheTest extends StructureTestBase
         $modulePath = $rc->getProperty('module_cache_path');
         \TestReflectionHelper::makePropertyAccessible($cachePath);
         \TestReflectionHelper::makePropertyAccessible($modulePath);
-        $cachePath->setValue($base . '/cache');
-        $modulePath->setValue($base . '/cache/structure/');
+        $cachePath->setValue(null, $base . '/cache');
+        $modulePath->setValue(null, $base . '/cache/structure/');
 
         $this->assertFalse(PersistentCache::set('module-rw-fail', ['v' => 1]));
         @chmod($base . '/cache/structure', 0777);

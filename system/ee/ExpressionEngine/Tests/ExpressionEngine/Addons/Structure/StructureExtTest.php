@@ -184,7 +184,7 @@ class StructureExtTest extends TestCase
 
         ee()->setMock('extensions', (object) ['last_call' => 'override://last']);
         $rm = new ReflectionMethod('Structure_ext', '_redirect_url');
-        $rm->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($rm);
         $this->assertSame('override://last', $rm->invoke($fixture, 17, ['channel_id' => 5], null, false, 'orig://loc', false));
         $this->assertFalse($rm->invoke($fixture, 17, ['channel_id' => 5], null, false, 'orig://loc', true));
 
@@ -316,11 +316,11 @@ class StructureExtTest extends TestCase
         $this->assertCount(1, $db->inserted);
 
         $rm = new ReflectionMethod($real, 'unregisterExtension');
-        $rm->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($rm);
         $this->assertTrue($rm->invoke($real, 'sample_method', null));
 
         $rm = new ReflectionMethod($real, 'updateVersion');
-        $rm->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($rm);
         $this->assertTrue($rm->invoke($real));
         $this->assertNotEmpty($db->deleted);
         $this->assertNotEmpty($db->updated);
@@ -466,6 +466,14 @@ class StructureExtTest extends TestCase
         $fixture->sessions_end($session);
     }
 
+    /**
+     * Cover template routing and private helper behavior with local router stubs.
+     *
+     * @return void
+     *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function testCoreTemplateRouteTemplateParseAndPrivateHelpers()
     {
         ee()->setMock('config', new class {
@@ -709,13 +717,13 @@ class StructureExtTest extends TestCase
         $this->assertFalse($fixture->_is_search());
 
         $rm = new ReflectionMethod('Structure_ext', '_create_global_vars');
-        $rm->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($rm);
         $rm->invoke($fixture, true);
         $this->assertSame(8, ee()->config->_global_vars['structure:page:entry_id']);
         $this->assertSame('20|21', ee()->config->_global_vars['structure:child_ids']);
 
         $clean = new ReflectionMethod('Structure_ext', '_create_clean_structure_segments');
-        $clean->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($clean);
         $fixture->site_pages['uris'][8] = '/alpha';
         $uri->segments = ['alpha', 'P9'];
         $uri->uri_string = 'alpha/P9';

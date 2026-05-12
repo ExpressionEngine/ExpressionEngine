@@ -397,7 +397,7 @@ class RelationshipTreeBuilderTest extends TestCase
 
         $this->assertInstanceOf(\EE_Relationship_data_parser::class, $parser);
         $entriesProperty = new \ReflectionProperty(\EE_Relationship_data_parser::class, '_entries');
-        $entriesProperty->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($entriesProperty);
         $entries = $entriesProperty->getValue($parser);
         $this->assertSame('preview', $entries[1]['title']);
         $this->assertSame('keep', $entries[2]['title']);

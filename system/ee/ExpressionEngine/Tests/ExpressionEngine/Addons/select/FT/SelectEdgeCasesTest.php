@@ -545,8 +545,24 @@ class SelectEdgeCasesTest extends SelectTestBase
             'binary' => 0b11111111
         ];
 
+        $stringifiedNumericTests = array_map(function ($value) {
+            if (is_float($value) && is_nan($value)) {
+                return 'NAN';
+            }
+
+            if ($value === INF) {
+                return 'INF';
+            }
+
+            if ($value === -INF) {
+                return '-INF';
+            }
+
+            return (string) $value;
+        }, $numericTests);
+
         $fieldtype = $this->getMockFieldtypeWithSettings([
-            'field_options' => array_map('strval', $numericTests)
+            'field_options' => $stringifiedNumericTests
         ]);
 
         $data = 'integer';
@@ -593,15 +609,16 @@ class SelectEdgeCasesTest extends SelectTestBase
         ]);
 
         $testCases = [
-            '' => 'Empty Option',
-            null => '', // Mock returns empty string for null input
-            'null' => 'null', // Mock doesn't map 'null' to 'Null Option' in this setup
-            'zero' => 'zero' // Mock doesn't map 'zero' to 'Zero Option' in this setup
+            // Legacy array-key casting behavior collapses null and empty string paths
+            ['input' => '', 'expected' => ''],
+            ['input' => null, 'expected' => ''], // Mock returns empty string for null input
+            ['input' => 'null', 'expected' => 'null'], // Mock doesn't map 'null' to 'Null Option' in this setup
+            ['input' => 'zero', 'expected' => 'zero'], // Mock doesn't map 'zero' to 'Zero Option' in this setup
         ];
 
-        foreach ($testCases as $input => $expected) {
-            $result = $fieldtype->replace_tag($input);
-            $this->assertEquals($expected, $result);
+        foreach ($testCases as $case) {
+            $result = $fieldtype->replace_tag($case['input']);
+            $this->assertEquals($case['expected'], $result);
         }
     }
 

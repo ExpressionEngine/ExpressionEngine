@@ -943,7 +943,7 @@ class RelationshipDataParserTest extends TestCase
     {
         $parser = $this->makeParser();
         $method = new \ReflectionMethod(\EE_Relationship_data_parser::class, '_format_cat_array');
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($method);
 
         $categories = [
             1 => [[
@@ -1065,7 +1065,7 @@ class RelationshipDataParserTest extends TestCase
     private function setParserChannel(\EE_Relationship_data_parser $parser, $channel): void
     {
         $property = new \ReflectionProperty(\EE_Relationship_data_parser::class, '_channel');
-        $property->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($property);
         $property->setValue($parser, $channel);
     }
 }

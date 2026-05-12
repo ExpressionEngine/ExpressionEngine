@@ -49,9 +49,7 @@ class CheckboxesDisplaySettingsTest extends CheckboxesTestBase
                      'settings' => ['mock_settings' => 'data']
                  ]
              ]);
-        @$mock->field_name = $this->mockFieldName;
-        @$mock->field_id = $this->mockFieldId;
-        @$mock->settings = $this->fieldtype->settings;
+        $this->seedFieldtypeIdentity($mock, $this->fieldtype->settings, $this->fieldtype->settings_vars ?? []);
 
         $result = $mock->display_settings($data);
 
@@ -90,9 +88,7 @@ class CheckboxesDisplaySettingsTest extends CheckboxesTestBase
                      'settings' => ['settings_with_data' => 'data']
                  ]
              ]);
-        @$mock->field_name = $this->mockFieldName;
-        @$mock->field_id = $this->mockFieldId;
-        @$mock->settings = $this->fieldtype->settings;
+        $this->seedFieldtypeIdentity($mock, $this->fieldtype->settings, $this->fieldtype->settings_vars ?? []);
 
         $result = $mock->display_settings($data);
 
@@ -133,9 +129,7 @@ class CheckboxesDisplaySettingsTest extends CheckboxesTestBase
                      'settings' => ['value_label_settings' => 'data']
                  ]
              ]);
-        @$mock->field_name = $this->mockFieldName;
-        @$mock->field_id = $this->mockFieldId;
-        @$mock->settings = $this->fieldtype->settings;
+        $this->seedFieldtypeIdentity($mock, $this->fieldtype->settings, $this->fieldtype->settings_vars ?? []);
 
         $result = $mock->display_settings($data);
 
@@ -175,9 +169,7 @@ class CheckboxesDisplaySettingsTest extends CheckboxesTestBase
                      'settings' => ['prepopulate_settings' => 'data']
                  ]
              ]);
-        @$mock->field_name = $this->mockFieldName;
-        @$mock->field_id = $this->mockFieldId;
-        @$mock->settings = $this->fieldtype->settings;
+        $this->seedFieldtypeIdentity($mock, $this->fieldtype->settings, $this->fieldtype->settings_vars ?? []);
 
         $result = $mock->display_settings($data);
 
@@ -213,9 +205,7 @@ class CheckboxesDisplaySettingsTest extends CheckboxesTestBase
                      'settings' => ['test_settings' => 'value']
                  ]
              ]);
-        @$mock->field_name = $this->mockFieldName;
-        @$mock->field_id = $this->mockFieldId;
-        @$mock->settings = $this->fieldtype->settings;
+        $this->seedFieldtypeIdentity($mock, $this->fieldtype->settings, $this->fieldtype->settings_vars ?? []);
 
         $result = $mock->display_settings($data);
 
