@@ -400,8 +400,18 @@ class FileSystemEntity extends ContentModel
             // Manipulations that are generated on-the-fly have unique hashes after the prefix.
             // The md5 hash that is appended is always 32 characters long so we will filter
             // filename based on length to avoid removing other files that share a prefix
-            $dynamicFilePrefix = "{$filesystem->filename($this->file_name)}_{$manipulation}_";
-            $dynamicFilenameLength = strlen("{$dynamicFilePrefix}.{$filesystem->extension($this->file_name)}") + 32;
+            $baseFilename = $filesystem->filename($this->file_name);
+            $baseExtension = $filesystem->extension($this->file_name);
+            $dynamicExtension = $baseExtension;
+            $dynamicFilePrefix = "{$baseFilename}_{$manipulation}_";
+
+            // WebP/AVIF include the source extension in the generated basename.
+            if (in_array($manipulation, ['webp', 'avif'])) {
+                $dynamicFilePrefix = "{$baseFilename}_.{$baseExtension}_{$manipulation}_";
+                $dynamicExtension = $manipulation;
+            }
+
+            $dynamicFilenameLength = strlen("{$dynamicFilePrefix}.{$dynamicExtension}") + 32;
 
             foreach($filesystem->filesMatchingPrefix("{$directory}/{$dynamicFilePrefix}") as $file) {
                 if(strlen("{$file['filename']}.{$file['extension']}") == $dynamicFilenameLength) {
