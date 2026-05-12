@@ -4,6 +4,38 @@ require_once __DIR__ . '/StructureTestBase.php';
 
 class StructureGetChannelsByTypeTest extends StructureTestBase
 {
+	public function testQueriesStructureChannelsTableUsingProvidedTypeFilter()
+	{
+		$rows = [
+			['channel_id' => 15, 'type' => 'asset'],
+		];
+		$db = new class($rows) extends FakeDb {
+			public $rows;
+			public $capturedTable;
+			public $capturedWhere;
+
+			public function __construct($rows)
+			{
+				$this->rows = $rows;
+			}
+
+			public function get_where($table, $where = null, $limit = null, $offset = null)
+			{
+				$this->capturedTable = $table;
+				$this->capturedWhere = $where;
+
+				return new eeDbResultMock($this->rows);
+			}
+		};
+		ee()->setMock('db', $db);
+
+		$result = $this->structure->get_channels_by_type('asset');
+
+		$this->assertSame('exp_structure_channels', $db->capturedTable);
+		$this->assertSame(['type' => 'asset'], $db->capturedWhere);
+		$this->assertSame($rows, $result);
+	}
+
 	public function testReturnsArrayOfRowsForGivenType()
 	{
 		$rows = [
@@ -44,5 +76,4 @@ class StructureGetChannelsByTypeTest extends StructureTestBase
 		$this->assertSame('Page', $result[0]['type']);
 	}
 }
-
 

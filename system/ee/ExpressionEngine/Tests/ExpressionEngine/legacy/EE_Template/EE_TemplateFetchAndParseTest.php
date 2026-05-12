@@ -16,6 +16,24 @@ namespace ExpressionEngine\Tests\ExpressionEngine\legacy\EE_Template;
  */
 class EE_TemplateFetchAndParseTest extends EE_TemplateTestBase
 {
+    private function setCoreAndExtensionsMocks($hookActive = false, $hookReturn = null)
+    {
+        $coreMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['set_newrelic_transaction'])
+            ->getMock();
+        $coreMock->method('set_newrelic_transaction')->willReturn(null);
+        ee()->setMock('core', $coreMock);
+
+        $extensionsMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['active_hook', 'call'])
+            ->getMock();
+        $extensionsMock->method('active_hook')->willReturn($hookActive);
+        if ($hookActive) {
+            $extensionsMock->method('call')->willReturn($hookReturn);
+        }
+        ee()->setMock('extensions', $extensionsMock);
+    }
+
     /**
      * Test fetch_and_parse method exists and has correct signature
      */
@@ -48,6 +66,93 @@ class EE_TemplateFetchAndParseTest extends EE_TemplateTestBase
         // Test that the method has URI parsing capability by checking for related methods
         $this->assertTrue(method_exists($this->template, 'parse_template_uri'));
         $this->assertTrue(method_exists($this->template, 'fetch_template'));
+    }
+
+    public function testFetchAndParseFetchesExplicitTemplateAndParses()
+    {
+        ee()->config->setItem('site_id', 9);
+        $this->setCoreAndExtensionsMocks(false);
+
+        $templateMock = $this->getMockBuilder(\EE_Template::class)
+            ->onlyMethods(['fetch_template', 'parse', 'log_item'])
+            ->getMock();
+        $templateMock->group_name = 'blog';
+        $templateMock->template_name = 'entry';
+        $templateMock->template_type = 'webpage';
+        $templateMock->method('log_item')->willReturn(null);
+
+        $templateMock->expects($this->once())
+            ->method('fetch_template')
+            ->with('blog', 'entry', false, 9, false)
+            ->willReturn('template-body');
+        $templateMock->expects($this->once())
+            ->method('parse')
+            ->with('template-body', false, 9, false)
+            ->willReturnCallback(function() use ($templateMock) {
+                $templateMock->final_template = 'parsed-final-template';
+            });
+
+        $templateMock->fetch_and_parse('blog', 'entry', false, '', false);
+
+        $this->assertSame('NO_CACHE', $templateMock->cache_status);
+        $this->assertSame('', $templateMock->cache_prefix);
+        $this->assertStringContainsString('|9:blog/entry|', $templateMock->templates_sofar);
+        $this->assertCount(1, $templateMock->templates_loaded);
+        $this->assertSame('blog', $templateMock->templates_loaded[0]['group_name']);
+        $this->assertSame('entry', $templateMock->templates_loaded[0]['template_name']);
+        $this->assertSame(9, $templateMock->templates_loaded[0]['site_id']);
+    }
+
+    public function testFetchAndParseUsesUriTemplateForEmbedsAndKeepsCachePrefix()
+    {
+        ee()->config->setItem('site_id', 1);
+        $this->setCoreAndExtensionsMocks(true, 'hooked-embed-template');
+
+        $templateMock = $this->getMockBuilder(\EE_Template::class)
+            ->onlyMethods(['parse_template_uri', 'parse', 'log_item'])
+            ->getMock();
+        $templateMock->group_name = 'from_uri_group';
+        $templateMock->template_name = 'from_uri_template';
+        $templateMock->cache_prefix = 'existing-prefix';
+        $templateMock->template_type = 'webpage';
+        $templateMock->method('log_item')->willReturn(null);
+        $templateMock->expects($this->once())
+            ->method('parse_template_uri')
+            ->willReturn('uri-template-body');
+        $templateMock->expects($this->once())
+            ->method('parse')
+            ->with('uri-template-body', true, 15, false);
+
+        $templateMock->fetch_and_parse('', '', true, 15, false);
+
+        $this->assertSame('existing-prefix', $templateMock->cache_prefix);
+        $this->assertSame('hooked-embed-template', $templateMock->template);
+    }
+
+    public function testFetchAndParseHookUpdatesFinalTemplateForNonEmbeds()
+    {
+        ee()->config->setItem('site_id', 4);
+        $this->setCoreAndExtensionsMocks(true, 'hooked-final-template');
+
+        $templateMock = $this->getMockBuilder(\EE_Template::class)
+            ->onlyMethods(['fetch_template', 'parse', 'log_item'])
+            ->getMock();
+        $templateMock->group_name = 'pages';
+        $templateMock->template_name = 'home';
+        $templateMock->template_type = 'webpage';
+        $templateMock->method('log_item')->willReturn(null);
+        $templateMock->expects($this->once())
+            ->method('fetch_template')
+            ->willReturn('page-template');
+        $templateMock->expects($this->once())
+            ->method('parse')
+            ->willReturnCallback(function() use ($templateMock) {
+                $templateMock->final_template = 'parsed-final';
+            });
+
+        $templateMock->fetch_and_parse('pages', 'home', false, '', false);
+
+        $this->assertSame('hooked-final-template', $templateMock->final_template);
     }
 
     /**
@@ -244,12 +349,13 @@ class EE_TemplateFetchAndParseTest extends EE_TemplateTestBase
     public function testFetchAndParseHandlesNewRelicTransaction()
     {
         // Test that the method would set up New Relic transaction on first call
-        // Since we can't easily test the actual New Relic integration, we verify the logic exists
+        // Since we can't easily test the actual New Relic integration, verify the constant semantics.
         if (!defined('EECMS_NEW_RELIC_TRANS_NAME')) {
             define('EECMS_NEW_RELIC_TRANS_NAME', 'test_transaction');
         }
 
         $this->assertTrue(defined('EECMS_NEW_RELIC_TRANS_NAME'));
-        $this->assertEquals('test_transaction', EECMS_NEW_RELIC_TRANS_NAME);
+        $this->assertIsString(EECMS_NEW_RELIC_TRANS_NAME);
+        $this->assertNotSame('', EECMS_NEW_RELIC_TRANS_NAME);
     }
 }

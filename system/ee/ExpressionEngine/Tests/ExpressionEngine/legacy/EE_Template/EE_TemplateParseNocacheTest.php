@@ -145,6 +145,59 @@ class EE_TemplateParseNocacheTest extends EE_TemplateTestBase
         $this->assertEquals(array('test_var' => 'test_value'), $this->template->var_single);
     }
 
+    public function testParseNocacheAssignsFormParamsWhenTagDataExists()
+    {
+        $this->template->tag_data = [[
+            'params' => [
+                'form_id' => 'comment-form-id',
+                'form_class' => 'comment-form-class',
+            ],
+        ]];
+
+        $securityMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['sanitize_filename'])
+            ->getMock();
+        $securityMock->method('sanitize_filename')->willReturn('comment');
+        ee()->setMock('security', $securityMock);
+
+        $addonMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['get'])
+            ->getMock();
+
+        $moduleMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['getModuleClass'])
+            ->getMock();
+
+        $mockClassName = 'MockCommentClass_' . uniqid();
+        eval("class $mockClassName { public function form(\$return_form = false, \$captcha = '') { return '<form>assigned</form>'; } }");
+
+        $moduleMock->method('getModuleClass')->willReturn($mockClassName);
+        $addonMock->method('get')->willReturn($moduleMock);
+        ee()->setMock('Addon', $addonMock);
+
+        $parserMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['extractVariables', 'parseTagParameters'])
+            ->getMock();
+        $parserMock->method('extractVariables')->willReturn([
+            'var_single' => [],
+            'var_pair' => [],
+        ]);
+        $parserMock->method('parseTagParameters')->willReturn([]);
+        ee()->setMock('Variables/Parser', $parserMock);
+
+        $functionsMock = $this->getMockBuilder('stdClass')
+            ->setMethods(['assign_conditional_variables'])
+            ->getMock();
+        $functionsMock->method('assign_conditional_variables')->willReturn([]);
+        $functionsMock->cached_captcha = '';
+        ee()->setMock('functions', $functionsMock);
+
+        $this->template->parse_nocache('{NOCACHE_comment_FORM=""}content{/NOCACHE_FORM}');
+
+        $this->assertSame('comment-form-id', $this->template->form_id);
+        $this->assertSame('comment-form-class', $this->template->form_class);
+    }
+
     public function testParseNocacheBasicFunctionality()
     {
         // Test that the method can be called and returns a string

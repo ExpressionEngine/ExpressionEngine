@@ -284,7 +284,7 @@ abstract class CacheDatabaseTestBase extends CacheTestBase
     {
         $reflection = new \ReflectionClass($object);
         $method = $reflection->getMethod($method);
-        $method->setAccessible(true);
+        \TestReflectionHelper::makeAccessible($method);
         return $method->invokeArgs($object, $args);
     }
 }

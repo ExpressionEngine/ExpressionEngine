@@ -27,7 +27,18 @@ class StructureCreateFullUriTest extends StructureTestBase
         $uri = $this->structure->create_full_uri('/parent', '');
         $this->assertSame('/parent', $uri);
     }
-}
 
+    public function testCreateFullUriSanitizesListingSlugBeforeJoining()
+    {
+        $uri = $this->structure->create_full_uri('/parent', '__Hello World!__');
+        $this->assertSame('/parent/HelloWorld', $uri);
+    }
+
+    public function testCreateFullUriReturnsRootWhenParentAndSanitizedListingAreEmpty()
+    {
+        $uri = $this->structure->create_full_uri('', '@#$%^&*()');
+        $this->assertSame('/', $uri);
+    }
+}
 
 

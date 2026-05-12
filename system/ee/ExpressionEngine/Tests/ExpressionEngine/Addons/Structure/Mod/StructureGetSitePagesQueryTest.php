@@ -32,8 +32,7 @@ class StructureGetSitePagesQueryTest extends StructureTestBase
 		});
 
 		$result = $this->structure->get_site_pages_query();
-		$this->assertIsArray($result);
-		$this->assertSame('/about/', $result['uris'][10]);
+		$this->assertSame($pages[1], $result);
 	}
 
 	public function testRespectsConfiguredSiteIdForMultiSite()
@@ -62,8 +61,92 @@ class StructureGetSitePagesQueryTest extends StructureTestBase
 		});
 
 		$result = $this->structure->get_site_pages_query();
-		$this->assertIsArray($result);
-		$this->assertSame('/contact/', $result['uris'][20]);
+		$this->assertSame($pages[2], $result);
+	}
+
+	public function testBuildsExpectedQueryLoadsStringHelperAndReadsSitePagesColumn()
+	{
+		ee()->config->items['site_id'] = 7;
+
+		$pages = [
+			7 => [
+				'url' => 'https://example.net/',
+				'uris' => [70 => '/docs/']
+			]
+		];
+		$encoded = base64_encode(serialize($pages));
+		$dbLog = (object) [
+			'select' => [],
+			'where' => [],
+			'get' => [],
+			'row' => [],
+		];
+		$loadLog = (object) [
+			'helpers' => [],
+		];
+
+		ee()->setMock('load', new class($loadLog) {
+			private $log;
+			public function __construct($log) { $this->log = $log; }
+			public function helper($name) { $this->log->helpers[] = $name; }
+		});
+
+		ee()->setMock('db', new class($encoded, $dbLog) extends FakeDb {
+			private $encoded;
+			private $log;
+
+			public function __construct($encoded, $log)
+			{
+				$this->encoded = $encoded;
+				$this->log = $log;
+			}
+
+			public function select($fields = '*')
+			{
+				$this->log->select[] = $fields;
+
+				return $this;
+			}
+
+			public function where($field, $value = null)
+			{
+				$this->log->where[] = [$field, $value];
+
+				return $this;
+			}
+
+			public function get($table = null)
+			{
+				$this->log->get[] = $table;
+
+				return new class($this->encoded, $this->log) {
+					private $encoded;
+					private $log;
+
+					public function __construct($encoded, $log)
+					{
+						$this->encoded = $encoded;
+						$this->log = $log;
+					}
+
+					public function row($column)
+					{
+						$this->log->row[] = $column;
+
+						return $this->encoded;
+					}
+				};
+			}
+		});
+
+		$result = $this->structure->get_site_pages_query();
+
+		$this->assertSame($pages[7], $result);
+		$this->assertSame(['site_pages'], $dbLog->select);
+		$this->assertSame([['site_id', 7]], $dbLog->where);
+		$this->assertSame(['sites'], $dbLog->get);
+		$this->assertSame(['site_pages'], $dbLog->row);
+		$this->assertSame(['string'], $loadLog->helpers);
 	}
 
 	public function testCorruptSerializedValueResultsInErrorOrNullBehavior()
@@ -137,5 +220,4 @@ class StructureGetSitePagesQueryTest extends StructureTestBase
 		}
 	}
 }
-
 

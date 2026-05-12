@@ -49,6 +49,8 @@ class eeSingletonMock
     public $call;
     public $core;
     public $uri;
+    public $channel_form_lib;
+    public $email;
 
     protected $mock;
     protected static $mocks = [];
@@ -69,7 +71,8 @@ class eeSingletonMock
         $this->mock = $mock;
 
         // Override with static mocks if set
-        $overridable = ['db', 'config', 'functions', 'TMPL', 'session', 'load', 'logger', 'dbforge', 'input', 'lang', 'typography', 'extensions', 'core', 'uri', 'Model'];
+        $overridable = ['db', 'config', 'functions', 'TMPL', 'session', 'load', 'logger', 'dbforge', 'input', 'lang', 'typography', 'extensions', 'core', 'uri', 'Model', 'legacy_api', 'channel_form_lib', 'email'];
+
         foreach ($overridable as $prop) {
             if (array_key_exists($prop, self::$mocks)) {
                 @$this->$prop = self::$mocks[$prop];
@@ -104,6 +107,19 @@ class eeSingletonMock
             return call_user_func_array([self::$mocks[$this->mock], $name], $args);
         }
     }
+
+    public function __isset($name)
+    {
+        if (array_key_exists($this->mock, self::$mocks) && isset(self::$mocks[$this->mock]->$name)) {
+            return true;
+        }
+
+        if (array_key_exists($name, self::$mocks) && self::$mocks[$name] !== null) {
+            return true;
+        }
+
+        return isset($this->$name);
+    }
 }
 
 class eeSingletonLoadMock
@@ -135,6 +151,11 @@ class eeSingletonLoadMock
     {
         // Return empty array for testing - no additional package paths needed
         return [];
+    }
+
+    public function is_loaded($class = null)
+    {
+        return false;
     }
 }
 
@@ -326,6 +347,7 @@ class eeDbArMock
 {
     public $rows = [];
     public $dbprefix = '';
+    public $last_query = '';
     private $whereConditions = [];
     private $limitValue = null;
     public $whereInConditions = [];

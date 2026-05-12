@@ -10,6 +10,7 @@ require_once __DIR__ . '/ChannelFormLibTestBase.php';
 abstract class ApiChannelFormChannelEntriesTestBase extends ChannelFormLibTestBase
 {
     protected $apiChannelFormChannelEntries;
+    protected $channel_form;
 
     protected function setUp(): void
     {
@@ -62,7 +63,7 @@ abstract class ApiChannelFormChannelEntriesTestBase extends ChannelFormLibTestBa
         ee()->setMock('channel_form', $channelFormMock);
 
         // Also set it as a direct property for convenience
-        @$this->channel_form = $channelFormMock;
+        $this->channel_form = $channelFormMock;
 
         // Mock API channel categories for parent class
         $this->setupApiChannelCategoriesMock();

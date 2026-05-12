@@ -1,0 +1,67 @@
+<?php
+
+use PHPUnit\Framework\TestCase;
+
+class StructureNavAdvancedRealMethodTest extends TestCase
+{
+    /**
+     * Verify nav_advanced() executes from the real module file and preserves
+     * its observable no-results and parse-variable behavior.
+     *
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function testNavAdvancedUsesRealModuleFileForNoResultsAndParsedBranches()
+    {
+        if (!defined('STRUCTURE_NAV_BASIC_REAL_METHOD_BOOTSTRAP')) {
+            $this->markTestSkipped('Requires the dedicated nav_basic bootstrap to isolate PATH_ADDONS.');
+        }
+
+        require_once rtrim(PATH_ADDONS, '/') . '/structure/mod.structure.php';
+
+        ee()->resetMocks();
+        ee()->setMock('TMPL', new class {
+            public $tagdata = 'ADVANCED_TAGDATA';
+            public $noResultsCalls = 0;
+            public $parseVariablesCalls = 0;
+            public $lastParsedTagdata = null;
+            public $lastParsedVariables = [];
+
+            public function no_results()
+            {
+                $this->noResultsCalls++;
+
+                return 'NO_RESULTS';
+            }
+
+            public function parse_variables($tagdata, $variables)
+            {
+                $this->parseVariablesCalls++;
+                $this->lastParsedTagdata = $tagdata;
+                $this->lastParsedVariables = $variables;
+
+                return 'PARSED:' . count($variables);
+            }
+        });
+
+        $expectedModulePath = realpath(__DIR__ . '/../../../../../Addons/structure/mod.structure.php');
+        $this->assertSame($expectedModulePath, (new ReflectionClass('Structure'))->getFileName());
+
+        $parserClass = 'ExpressionEngine\\Addons\\Structure\\Libraries\\Structure_core_nav_parser';
+        $structure = (new ReflectionClass('Structure'))->newInstanceWithoutConstructor();
+
+        $parserClass::$variables = [];
+        $this->assertSame('NO_RESULTS', $structure->nav_advanced());
+        $this->assertTrue($parserClass::$lastAddEntryVars);
+        $this->assertSame(1, ee()->TMPL->noResultsCalls);
+        $this->assertSame(0, ee()->TMPL->parseVariablesCalls);
+
+        $parserClass::$variables = [['entry_id' => 42]];
+        $this->assertSame('PARSED:1', $structure->nav_advanced());
+        $this->assertTrue($parserClass::$lastAddEntryVars);
+        $this->assertSame(1, ee()->TMPL->noResultsCalls);
+        $this->assertSame(1, ee()->TMPL->parseVariablesCalls);
+        $this->assertSame('ADVANCED_TAGDATA', ee()->TMPL->lastParsedTagdata);
+        $this->assertSame([['entry_id' => 42]], ee()->TMPL->lastParsedVariables);
+    }
+}
