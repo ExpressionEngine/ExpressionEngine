@@ -109,6 +109,73 @@ class TypographyTest extends TestCase
         $this->assertStringContainsString('<a href="https://packagecontrol.io/packages/Marked%20App%20Menu">Marked App Menu</a>', $str);
     }
 
+    public function testMarkdownNormalizesOnlyMatchedInlineLinkUrl()
+    {
+        $originalUrl = 'https://unicode.example/path';
+        $normalizedUrl = 'https://normalized.example/path';
+        $this->typography->decodedUrls[$originalUrl] = $normalizedUrl;
+
+        $markdown = 'Plain parenthetical URL: (' . $originalUrl . '). Linked URL: [site](' . $originalUrl . ').';
+
+        $str = $this->typography->markdown($markdown, array('smartypants' => false));
+
+        $this->assertStringContainsString('Plain parenthetical URL: (' . $originalUrl . ').', $str);
+        $this->assertStringContainsString('<a href="' . $normalizedUrl . '">site</a>', $str);
+        $this->assertStringNotContainsString('Plain parenthetical URL: (' . $normalizedUrl . ').', $str);
+    }
+
+    public function testMarkdownEncodesSpacesInAngleBracketInlineLinkUrl()
+    {
+        $markdown = 'Read [release notes](<https://example.com/release notes?name=big deal> "Release notes").';
+
+        $str = $this->typography->markdown($markdown, array('smartypants' => false));
+
+        $this->assertStringContainsString('<a href="https://example.com/release%20notes?name=big%20deal" title="Release notes">release notes</a>', $str);
+    }
+
+    public function testMarkdownDoesNotNormalizeLinkTextThatLooksLikeUrl()
+    {
+        $label = 'https://label.example';
+        $targetUrl = 'https://target.example/path';
+        $normalizedLabel = 'https://normalized-label.example';
+        $normalizedTargetUrl = 'https://normalized-target.example/path';
+        $this->typography->decodedUrls[$label] = $normalizedLabel;
+        $this->typography->decodedUrls[$targetUrl] = $normalizedTargetUrl;
+
+        $str = $this->typography->markdown('See [' . $label . '](' . $targetUrl . ').', array('smartypants' => false));
+
+        $this->assertStringContainsString('<a href="' . $normalizedTargetUrl . '">' . $label . '</a>', $str);
+        $this->assertStringNotContainsString($normalizedLabel, $str);
+    }
+
+    public function testMarkdownNormalizesUtf8HostsInInlineLinkUrls()
+    {
+        if (! function_exists('idn_to_ascii')) {
+            $this->markTestSkipped('IDN normalization requires the intl extension.');
+        }
+
+        $unicodeHost = 't' . "\xC3\xA4" . 'st.example';
+        $encodedHost = idn_to_ascii($unicodeHost, 0, defined('INTL_IDNA_VARIANT_UTS46') ? INTL_IDNA_VARIANT_UTS46 : INTL_IDNA_VARIANT_2003);
+
+        if ($encodedHost !== 'xn--tst-qla.example') {
+            $this->markTestSkipped('IDN normalization is unavailable in this PHP environment.');
+        }
+
+        $path = 'caf' . "\xC3\xA9";
+        $query = 'na' . "\xC3\xAF" . 've';
+        $unicodeUrl = 'https://' . $unicodeHost . '/' . $path . '?q=' . $query;
+        $expectedUrl = 'https://' . $encodedHost . '/' . $path . '?q=' . $query;
+
+        $str = $this->typography->markdown(
+            'Visit [regular](' . $unicodeUrl . ') and [angle](<' . $unicodeUrl . '>).',
+            array('smartypants' => false)
+        );
+
+        $this->assertStringContainsString('<a href="' . $expectedUrl . '">regular</a>', $str);
+        $this->assertStringContainsString('<a href="' . $expectedUrl . '">angle</a>', $str);
+        $this->assertStringNotContainsString('href="' . $unicodeUrl . '"', $str);
+    }
+
     public function testEmoticonConversionOn()
     {
         ee()->session->setUserdata('parse_smileys', 'y');
@@ -132,9 +199,20 @@ class TypographyTest extends TestCase
 
 class TypographyStub extends EE_Typography
 {
+    public $decodedUrls = array();
+
     public function __construct()
     {
         // Skipping initialize and autoloader
+    }
+
+    public function decodeIDN($url)
+    {
+        if (isset($this->decodedUrls[$url])) {
+            return $this->decodedUrls[$url];
+        }
+
+        return parent::decodeIDN($url);
     }
 }
 
