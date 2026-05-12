@@ -1431,13 +1431,16 @@ class EE_Typography
     {
         if ($link_matches = $this->getMarkdownLinks($str, PREG_SET_ORDER)) {
             foreach ($link_matches as $match) {
-                // It felt too heavy handed to do a global replace of all URLs
-                // that matched, so (for now) we'll only replace the URLs that
-                // the REGEX matched. (that's why the '[]' and '(' are being
-                // concatenated)
-                $str = str_replace('[' . $match[2] . ']', '[' . $this->decodeIDN($match[2]) . ']', $str);
-                $str = str_replace('(' . $match[4], '(' . $this->decodeIDN($match[4]), $str);
-                $str = str_replace($match[4], str_replace(' ', '%20', $match[4]), $str);
+                $url = ! empty($match[3]) ? $match[3] : $match[4];
+                $decoded_url = str_replace(' ', '%20', $this->decodeIDN($url));
+
+                if (! empty($match[3])) {
+                    $new_match = str_replace('<' . $match[3] . '>', '<' . $decoded_url . '>', $match[0]);
+                } else {
+                    $new_match = str_replace('(' . $match[4], '(' . $decoded_url, $match[0]);
+                }
+
+                $str = str_replace($match[0], $new_match, $str);
             }
         }
 
