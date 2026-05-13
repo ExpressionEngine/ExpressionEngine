@@ -112,7 +112,7 @@ abstract class ContentModel extends VariableColumnModel
         if (strpos((string) $name, $this->getCustomFieldPrefix()) !== 0) {
             $default_fields = $this->getDefaultFields();
 
-            return array_key_exists($name, $default_fields);
+            return array_key_exists((string) $name, $default_fields);
         }
 
         $this->usesCustomFields();
@@ -121,7 +121,7 @@ abstract class ContentModel extends VariableColumnModel
             return false;
         }
 
-        return array_key_exists($name, $this->_field_facades);
+        return array_key_exists((string) $name, $this->_field_facades);
     }
 
     /**
@@ -443,7 +443,7 @@ abstract class ContentModel extends VariableColumnModel
             $values = array();
 
             foreach ($field->getColumnNames() as $column) {
-                if (array_key_exists($column, $dirty)) {
+                if (array_key_exists((string) $column, $dirty)) {
                     $values[$column] = $this->$column;
                 }
             }

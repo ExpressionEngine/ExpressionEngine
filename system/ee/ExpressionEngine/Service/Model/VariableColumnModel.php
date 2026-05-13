@@ -109,7 +109,7 @@ abstract class VariableColumnModel extends Model
      */
     protected function getVariableValue($name)
     {
-        if (! array_key_exists($name, $this->_variable_values)) {
+        if (! array_key_exists((string) $name, $this->_variable_values)) {
             return null;
         }
 

@@ -431,7 +431,7 @@ class ChannelEntry extends ContentModel
 
         $value = preg_replace($regex, '', (string) $value);
 
-        if (! (bool) preg_match("/^([-a-z0-9_.-])+$/i", $value)) {
+        if (! (bool) preg_match("/^([-a-z0-9_.-])+$/i", (string) $value)) {
             return 'alpha_dash_period';
         }
 

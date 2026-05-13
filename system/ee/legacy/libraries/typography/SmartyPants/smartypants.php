@@ -342,11 +342,11 @@ class SmartyPants_Parser
         $_ = preg_replace(
             array("/\"'(?=\w)/",    "/'\"(?=\w)/"),
             array('&#8220;&#8216;', '&#8216;&#8220;'),
-            $_
+            (string) $_
         );
 
         # Special case for decade abbreviations (the '80s):
-        $_ = preg_replace("/'(?=\\d{2}s)/", '&#8217;', $_);
+        $_ = preg_replace("/'(?=\\d{2}s)/", '&#8217;', (string) $_);
 
         $close_class = '[^\ \t\r\n\[\{\(\-]';
         $dec_dashes = '&\#8211;|&\#8212;';
@@ -363,7 +363,7 @@ class SmartyPants_Parser
 			)
 			'                   # the quote
 			(?=\\w)              # followed by a word character
-			}x", '\1&#8216;', $_);
+			}x", '\1&#8216;', (string) $_);
         # Single closing quotes:
         $_ = preg_replace("{
 			($close_class)?
@@ -373,7 +373,7 @@ class SmartyPants_Parser
 			)               # char or an 's' at a word ending position. This
 							# is a special case to handle something like:
 							# \"<i>Custer</i>'s Last Stand.\"
-			}xi", '\1&#8217;', $_);
+			}xi", '\1&#8217;', (string) $_);
 
         # Any remaining single quotes should be opening ones:
         $_ = str_replace("'", '&#8216;', $_);
@@ -398,7 +398,7 @@ class SmartyPants_Parser
 			\"
 			(?(1)|(?=\\s))   # If $1 captured, then do nothing;
 							   # if not, then make sure the next char is whitespace.
-			}x", '\1&#8221;', $_);
+			}x", '\1&#8221;', (string) $_);
 
         # Any remaining quotes should be opening ones.
         $_ = str_replace('"', '&#8220;', $_);

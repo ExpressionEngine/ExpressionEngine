@@ -218,7 +218,7 @@ class Pro_variables_type
     public function settings($which = null, $default = null)
     {
         return ($which)
-            ? (array_key_exists($which, $this->settings) ? $this->settings[$which] : $default)
+            ? (array_key_exists((string) $which, $this->settings) ? $this->settings[$which] : $default)
             : $this->settings;
     }
 
@@ -313,7 +313,7 @@ class Pro_variables_type
             // First method: var_x
             if (method_exists($this->_ft, 'var_' . $fn)) {
                 $it = 'var_' . $fn;
-            } elseif (array_key_exists($fn, $this->_map) && method_exists($this->_ft, $this->_map[$fn])) {
+            } elseif (array_key_exists((string) $fn, $this->_map) && method_exists($this->_ft, $this->_map[$fn])) {
                 // Second method: old bridge methods
                 $it = $this->_map[$fn];
             } elseif ($this->call_ft('accepts_content_type', static::CONTENT_TYPE)) {

@@ -34,7 +34,7 @@ if (! function_exists('xml_convert')) {
         $str = preg_replace("/&#(\d+);/", "$temp\\1;", (string) $str);
 
         if ($protect_all === true) {
-            $str = preg_replace("/&(\w+);/", "$temp\\1;", $str);
+            $str = preg_replace("/&(\w+);/", "$temp\\1;", (string) $str);
         }
 
         $str = str_replace(
@@ -47,7 +47,7 @@ if (! function_exists('xml_convert')) {
         $str = preg_replace("/$temp(\d+);/", "&#\\1;", $str);
 
         if ($protect_all === true) {
-            $str = preg_replace("/$temp(\w+);/", "&\\1;", $str);
+            $str = preg_replace("/$temp(\w+);/", "&\\1;", (string) $str);
         }
 
         return $str;

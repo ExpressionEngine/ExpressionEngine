@@ -730,7 +730,7 @@ class UploadDestination extends StructureModel
 
         // Group directories by directory_id
         $directories = array_reduce($directories, function ($carry, $directory) {
-            if (!array_key_exists($directory->directory_id, $carry)) {
+            if (!array_key_exists((string) $directory->directory_id, $carry)) {
                 $carry[$directory->directory_id] = [];
             }
 
@@ -748,7 +748,7 @@ class UploadDestination extends StructureModel
     protected function getDirectoryDropdownChildren($parent_id, $directories, $icon = false, $path = '')
     {
         $items = [];
-        $children = array_key_exists($parent_id, $directories) ? $directories[$parent_id] : [];
+        $children = array_key_exists((string) $parent_id, $directories) ? $directories[$parent_id] : [];
 
         foreach ($children as $directory) {
             $label = (($icon) ? '<i class="fal fa-folder"></i>' : '') . $directory->title;

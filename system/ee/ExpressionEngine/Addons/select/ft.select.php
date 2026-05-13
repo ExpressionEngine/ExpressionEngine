@@ -49,7 +49,7 @@ class Select_ft extends OptionFieldtype
 
         foreach ($field_options as $key => $val) {
             if (is_array($val)) {
-                if (array_key_exists($data, $val)) {
+                if (array_key_exists((string) $data, $val)) {
                     $valid = true;
 
                     break;

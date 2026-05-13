@@ -157,7 +157,7 @@ abstract class Filter
             return true;
         }
 
-        return (array_key_exists($value, $this->options));
+        return (array_key_exists((string) $value, $this->options));
     }
 
     /**
@@ -183,10 +183,10 @@ abstract class Filter
 
         if (is_null($value)) {
             $current_value = $this->value();
-            if ($current_value !== null && array_key_exists($current_value, $this->options)) {
+            if ($current_value !== null && array_key_exists((string) $current_value, $this->options)) {
                 $value = $this->options[$current_value];
             }
-            if ($current_value === null || !array_key_exists($current_value, $this->options)) {
+            if ($current_value === null || !array_key_exists((string) $current_value, $this->options)) {
                 $value = $current_value;
             }
         }

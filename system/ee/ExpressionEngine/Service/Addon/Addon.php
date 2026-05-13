@@ -72,7 +72,7 @@ class Addon
             }
         }
 
-        if (array_key_exists($this->shortname, self::$installed_modules)) {
+        if (array_key_exists((string) $this->shortname, self::$installed_modules)) {
             return true;
         }
 
@@ -87,7 +87,7 @@ class Addon
             }
         }
 
-        if (array_key_exists($this->shortname, self::$installed_extensions)) {
+        if (array_key_exists((string) $this->shortname, self::$installed_extensions)) {
             return true;
         }
 
@@ -106,7 +106,7 @@ class Addon
         foreach ($paths as $path) {
             $shortname = preg_replace('/ft.(.*?).php/', '$1', basename((string) $path));
 
-            if (array_key_exists($shortname, self::$installed_fieldtypes)) {
+            if (array_key_exists((string) $shortname, self::$installed_fieldtypes)) {
                 return true;
             }
         }

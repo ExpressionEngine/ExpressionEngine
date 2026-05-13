@@ -141,7 +141,7 @@ class Template extends Settings
             $results[$template->getPath()] = $template->getPath();
         }
 
-        if ($selected && ! array_key_exists($selected, $results) && ! $search_query) {
+        if ($selected && ! array_key_exists((string) $selected, $results) && ! $search_query) {
             $results[$selected] = $selected;
         }
 

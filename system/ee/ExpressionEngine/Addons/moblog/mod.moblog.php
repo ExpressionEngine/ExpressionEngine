@@ -846,7 +846,7 @@ class Moblog
         $this->moblog_array['moblog_ignore_text'] = $this->remove_newlines($this->moblog_array['moblog_ignore_text'], $this->newline);
 
         // One biggo chunk
-        if ($this->moblog_array['moblog_ignore_text'] != '' && stristr($this->body, $this->moblog_array['moblog_ignore_text']) !== false) {
+        if ($this->moblog_array['moblog_ignore_text'] != '' && stristr((string) $this->body, $this->moblog_array['moblog_ignore_text']) !== false) {
             $this->body = str_replace($this->moblog_array['moblog_ignore_text'], '', $this->body);
         } elseif ($this->moblog_array['moblog_ignore_text'] != '') {
             // By line
@@ -865,7 +865,7 @@ class Moblog
         /** -------------------------------------
         /**  Specified Fields for Email Text
         /** -------------------------------------*/
-        if (preg_match_all("/[\<\{]field\:(.*?)[\}\>](.*?)[\<\{]\/field\:(.*?)[\}\>]/", $this->body, $matches)) {
+        if (preg_match_all("/[\<\{]field\:(.*?)[\}\>](.*?)[\<\{]\/field\:(.*?)[\}\>]/", (string) $this->body, $matches)) {
             ee()->db->select('channel_fields.field_id, channel_fields.field_name, channel_fields.field_label, channel_fields.field_fmt');
             ee()->db->from('channel_fields');
 

@@ -182,7 +182,7 @@ abstract class EE_Fieldtype
 
         // Handle both array and object types
         if (is_array($this->row)) {
-            return array_key_exists($key, $this->row) ? $this->row[$key] : $default;
+            return array_key_exists((string) $key, $this->row) ? $this->row[$key] : $default;
         }
 
         if (is_object($this->row)) {

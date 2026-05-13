@@ -115,7 +115,7 @@ class Access extends Profile
                 ->all();
 
             foreach ($allowed as $perm) {
-                if (! $this->member->isSuperAdmin() && ! array_key_exists($perm->permission, $permissions)) {
+                if (! $this->member->isSuperAdmin() && ! array_key_exists((string) $perm->permission, $permissions)) {
                     $permissions[$perm->permission] = [];
                 }
 
@@ -194,7 +194,7 @@ class Access extends Profile
 
         $permissions = $this->getPermissions();
 
-        if ($this->member->isSuperAdmin() && !array_key_exists($permission, $permissions)) {
+        if ($this->member->isSuperAdmin() && !array_key_exists((string) $permission, $permissions)) {
             $display = ee('Format')->make('Text', 'Super Admin')->convertToEntities();
 
             if (1 == $this->member->role_id) {
@@ -203,7 +203,7 @@ class Access extends Profile
             $permissions[$permission][] = $display;
         }
 
-        if ($this->member->isSuperAdmin() || array_key_exists($permission, $permissions)) {
+        if ($this->member->isSuperAdmin() || array_key_exists((string) $permission, $permissions)) {
             $data['access'] = true;
             $data['granted'] = $permissions[$permission];
         }

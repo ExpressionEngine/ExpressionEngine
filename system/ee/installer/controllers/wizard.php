@@ -1777,7 +1777,7 @@ class Wizard extends CI_Controller
         $inserts = [];
         $install_wide = ee()->config->divination('install');
         foreach (ee()->config->divineAll() as $key) {
-            if (array_key_exists($key, $config)) {
+            if (array_key_exists((string) $key, $config)) {
                 $inserts[] = [
                     'site_id' => (in_array($key, $install_wide)) ? 0 : 1,
                     'key' => $key,

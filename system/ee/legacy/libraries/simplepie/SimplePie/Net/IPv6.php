@@ -142,7 +142,7 @@ class SimplePie_Net_IPv6
         $ip_parts[0] = preg_replace('/(^|:)0+([0-9])/', '\1\2', (string) $ip_parts[0]);
 
         // Find bunches of zeros
-        if (preg_match_all('/(?:^|:)(?:0(?::|$))+/', $ip_parts[0], $matches, PREG_OFFSET_CAPTURE)) {
+        if (preg_match_all('/(?:^|:)(?:0(?::|$))+/', (string) $ip_parts[0], $matches, PREG_OFFSET_CAPTURE)) {
             $max = 0;
             $pos = null;
             foreach ($matches[0] as $match) {

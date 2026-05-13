@@ -61,7 +61,7 @@ class Layout_model extends CI_Model
                             continue;
                         }
 
-                        if (array_key_exists($tab, $layout) !== true) {
+                        if (array_key_exists((string) $tab, $layout) !== true) {
                             $layout[$tab] = $fields;
                         } else {
                             $layout[$tab] = $layout[$tab] + $fields;
@@ -76,7 +76,7 @@ class Layout_model extends CI_Model
                             continue;
                         }
 
-                        if (array_key_exists($tab, $layout) !== true) {
+                        if (array_key_exists((string) $tab, $layout) !== true) {
                             $layout[$tab] = $fields;
                         } else {
                             $layout[$tab] = $layout[$tab] + $fields;
@@ -86,7 +86,7 @@ class Layout_model extends CI_Model
                     foreach ($layout_info as $tab => $fields) {
                         $k_field = (is_array($fields)) ? key($fields) : $fields;
 
-                        if ($action == 'delete_tabs' && array_key_exists($tab, $layout) == true) {
+                        if ($action == 'delete_tabs' && array_key_exists((string) $tab, $layout) == true) {
                             unset($layout[$tab]);
                         }
 

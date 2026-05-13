@@ -234,7 +234,7 @@ class Api_template_structure extends Api
     public function file_extensions($template_type, $engine = null)
     {
         // Check our standard template types for a file extension
-        $engine = ($engine && array_key_exists($engine, $this->template_engines)) ? ".$engine" : null;
+        $engine = ($engine && array_key_exists((string) $engine, $this->template_engines)) ? ".$engine" : null;
 
         // Handle array template_type (take first element)
         if (is_array($template_type)) {
@@ -282,7 +282,7 @@ class Api_template_structure extends Api
 
         foreach ($this->template_engine_file_extensions as $type => $extensions) {
             foreach ($extensions as $extension) {
-                if (!array_key_exists($extension['extension'], $result)) {
+                if (!array_key_exists((string) $extension['extension'], $result)) {
                     $result[$extension['extension']] = [
                         'type' => $type,
                         'engine' => $extension['engine']
@@ -368,7 +368,7 @@ class Api_template_structure extends Api
 
         $default = ee()->config->item('default_template_engine') ?? null;
 
-        return array_key_exists($default, $this->template_engines) ? $default : '';
+        return array_key_exists((string) $default, $this->template_engines) ? $default : '';
     }
 
     /**

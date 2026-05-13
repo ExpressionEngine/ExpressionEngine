@@ -229,7 +229,7 @@ class Pro_variables_ft extends EE_Fieldtype
 
         // Loop through found vars and group by group label
         foreach ($vars as $row) {
-            $group = array_key_exists($row['group_id'], $groups)
+            $group = array_key_exists((string) $row['group_id'], $groups)
                 ? $groups[$row['group_id']]
                 : $groups['0'];
 

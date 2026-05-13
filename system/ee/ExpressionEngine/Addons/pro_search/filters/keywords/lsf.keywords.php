@@ -1012,7 +1012,7 @@ class Pro_search_filter_keywords extends Pro_search_filter
         // If we don't have a dirty variant, bail out
         // --------------------------------------
 
-        if (! array_key_exists($term->clean, $mess)) {
+        if (! array_key_exists((string) $term->clean, $mess)) {
             return array();
         }
 
@@ -1108,7 +1108,7 @@ class Pro_search_filter_keywords extends Pro_search_filter
             // Add row to results only if the entry doesn't exist yet
             // or if existing score is lower than this one
             if (
-                ! array_key_exists($row->entry_id, $results) ||
+                ! array_key_exists((string) $row->entry_id, $results) ||
                 $results[$row->entry_id]['score'] < $score
             ) {
                 $results[$row->entry_id] = array(
@@ -1211,7 +1211,7 @@ class Pro_search_filter_keywords extends Pro_search_filter
 
         foreach ($rows as &$row) {
             // Add {auto_path}
-            $row['auto_path'] = (array_key_exists($row['channel_id'], $this->_urls)
+            $row['auto_path'] = (array_key_exists((string) $row['channel_id'], $this->_urls)
                 ? $this->_urls[$row['channel_id']]
                 : '/') . $row['url_title'];
 
@@ -1356,7 +1356,7 @@ class Pro_search_filter_keywords extends Pro_search_filter
                         $key = $pfx . $key;
                     }
 
-                    if (array_key_exists($key, $cols)) {
+                    if (array_key_exists((string) $key, $cols)) {
                         $cols[$key] = $val;
                     }
                 }

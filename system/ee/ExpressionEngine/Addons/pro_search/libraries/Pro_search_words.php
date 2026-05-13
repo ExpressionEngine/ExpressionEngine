@@ -343,7 +343,7 @@ class Pro_search_words
         }
 
         $str = preg_replace('/\s{2,}/', ' ', (string) $str);
-        $str = trim($str);
+        $str = trim((string) $str);
 
         return $str;
     }

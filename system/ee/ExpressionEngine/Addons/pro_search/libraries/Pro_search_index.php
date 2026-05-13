@@ -700,7 +700,7 @@ class Pro_search_index
             // Get weight
             // --------------------------------------
 
-            $weight = array_key_exists($key, $col['settings'])
+            $weight = array_key_exists((string) $key, $col['settings'])
                 ? $col['settings'][$key]
                 : false;
 

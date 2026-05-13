@@ -647,7 +647,7 @@ class Auth_result
                 ->getDictionary('permission', 'permission_id');
         }
 
-        return (array_key_exists($perm, $this->permissions));
+        return (array_key_exists((string) $perm, $this->permissions));
     }
 
     /**

@@ -268,7 +268,7 @@ if (! function_exists('safe_mailto')) {
         }
 
         for ($i = 0; $i < strlen((string) $email); $i++) {
-            $x[] = "|" . ord(substr((string) $email, $i, 1));
+            $x[] = "|" . ord(substr((string) $email, $i, 1)[0]);
         }
 
         $x[] = '"';
@@ -278,7 +278,7 @@ if (! function_exists('safe_mailto')) {
                 foreach ($attributes as $key => $val) {
                     $x[] = ' ' . $key . '="';
                     for ($i = 0; $i < strlen((string) $val); $i++) {
-                        $x[] = "|" . ord(substr((string) $val, $i, 1));
+                        $x[] = "|" . ord(substr((string) $val, $i, 1)[0]);
                     }
                     $x[] = '"';
                 }

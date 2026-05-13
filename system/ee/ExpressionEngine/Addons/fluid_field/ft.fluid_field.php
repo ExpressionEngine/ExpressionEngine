@@ -598,7 +598,7 @@ class Fluid_field_ft extends EE_Fieldtype
                         $viewData = array_merge($viewData, [
                             'field_group' => $field_group,
                             'field_group_fields' => array_map(function ($field) use ($field_data, $current, $field_group) {
-                                $exists = (array_key_exists($field->getId(), $field_data));
+                                $exists = (array_key_exists((string) $field->getId(), $field_data));
                                 $field = ($exists) ? $field_data[$field->getId()] : $field;
                                 $f = $field->getField();
                                 $f->setName(implode('', [
@@ -691,7 +691,7 @@ class Fluid_field_ft extends EE_Fieldtype
                             $group = ($field_group_id > 0) ? $field_groups[$field_group_id] : null;
                         }
 
-                        if (!array_key_exists($group_key, $rows)) {
+                        if (!array_key_exists((string) $group_key, $rows)) {
                             $rows[$group_key] = [];
                         }
 

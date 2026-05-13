@@ -405,7 +405,7 @@ class Pro_search_mcp
             'fields' => array(
                 'stop_words' => array(
                     'type'  => 'textarea',
-                    'value' => trim($words)
+                    'value' => trim((string) $words)
                 )
             )
         );
@@ -421,7 +421,7 @@ class Pro_search_mcp
             'fields' => array(
                 'ignore_words' => array(
                     'type'  => 'textarea',
-                    'value' => trim($words)
+                    'value' => trim((string) $words)
                 )
             )
         );

@@ -210,7 +210,9 @@ class Captcha
 
         $img = "<img src=\"$img_url$img_name\" width=\"$img_width\" height=\"$img_height\" style=\"border:0;\" alt=\" \" />";
 
-        ImageDestroy($im);
+        if (PHP_VERSION_ID < 80000) {
+            ImageDestroy($im);
+        }
 
         return $img;
     }

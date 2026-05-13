@@ -796,15 +796,15 @@ class Structure_ext
         $final_template = preg_replace_callback("({structure:page_url_for:(\d{1,})})", array(&$this, '_parse_tag_url_for'), (string) $final_template);
 
         // page_uri_for
-        $final_template = preg_replace_callback("({structure:page_uri_for:(\d{1,})})", array(&$this, '_parse_tag_uri_for'), $final_template);
+        $final_template = preg_replace_callback("({structure:page_uri_for:(\d{1,})})", array(&$this, '_parse_tag_uri_for'), (string) $final_template);
 
         // page_title_for
-        $final_template = preg_replace_callback("({structure:page_title_for:(\d{1,})})", array(&$this, '_parse_tag_title_for'), $final_template);
+        $final_template = preg_replace_callback("({structure:page_title_for:(\d{1,})})", array(&$this, '_parse_tag_title_for'), (string) $final_template);
 
         // page_slug_for
-        $final_template = preg_replace_callback("({structure:page_slug_for:(\d{1,})})", array(&$this, '_parse_tag_slug_for'), $final_template);
+        $final_template = preg_replace_callback("({structure:page_slug_for:(\d{1,})})", array(&$this, '_parse_tag_slug_for'), (string) $final_template);
 
-        $final_template = preg_replace_callback("({structure:child_ids_for:(\d{1,})})", array(&$this, '_parse_tag_child_ids_for'), $final_template);
+        $final_template = preg_replace_callback("({structure:child_ids_for:(\d{1,})})", array(&$this, '_parse_tag_child_ids_for'), (string) $final_template);
 
         return $final_template;
     }
@@ -1136,7 +1136,7 @@ class Structure_ext
     {
         $settings = $this->sql->get_settings();
 
-        $url = array_key_exists($m[1], $this->site_pages['uris']) ? Structure_Helper::remove_double_slashes($this->site_pages['url'] . $this->site_pages['uris'][$m[1]]) : '';
+        $url = array_key_exists((string) $m[1], $this->site_pages['uris']) ? Structure_Helper::remove_double_slashes($this->site_pages['url'] . $this->site_pages['uris'][$m[1]]) : '';
 
         // This is to fix an EE bug that is holding us back
         // TODO
@@ -1155,7 +1155,7 @@ class Structure_ext
 
     public function _parse_tag_uri_for($m)
     {
-        $slug = array_key_exists($m[1], $this->site_pages['uris']) ? $this->site_pages['uris'][$m[1]] : null;
+        $slug = array_key_exists((string) $m[1], $this->site_pages['uris']) ? $this->site_pages['uris'][$m[1]] : null;
 
         return $slug;
     }
@@ -1169,7 +1169,7 @@ class Structure_ext
 
     public function _parse_tag_slug_for($m)
     {
-        $slug = array_key_exists($m[1], $this->site_pages['uris']) ? $this->site_pages['uris'][$m[1]] : null;
+        $slug = array_key_exists((string) $m[1], $this->site_pages['uris']) ? $this->site_pages['uris'][$m[1]] : null;
 
         return $this->sql->get_slug($slug);
     }

@@ -1411,7 +1411,9 @@ class Member
         curl_setopt($curl, CURLOPT_URL, 'https://www.google.com/recaptcha/api/siteverify');
         curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
         $response = curl_exec($curl);
-        curl_close($curl);
+        if (PHP_VERSION_ID < 80000) {
+            curl_close($curl);
+        }
 
         return is_string($response) ? json_decode($response, true) : null;
     }
@@ -2251,11 +2253,11 @@ class Member
         // This is here for backward compatibility for people with older templates
         $str = preg_replace_callback("/" . LD . "\s*path=(.*?)" . RD . "/", array(& ee()->functions, 'create_url'), (string) $str);
 
-        if (preg_match_all("#" . LD . "\s*(profile_path\s*=.*?)" . RD . "#", $str, $matches)) {
+        if (preg_match_all("#" . LD . "\s*(profile_path\s*=.*?)" . RD . "#", (string) $str, $matches)) {
             $i = 0;
             foreach ($matches['1'] as $val) {
                 $path = ee()->functions->create_url(ee()->functions->extract_path($val) . '/' . ee()->session->userdata('member_id'));
-                $str = preg_replace("#" . $matches['0'][$i++] . "#", (string) $path, $str, 1);
+                $str = preg_replace("#" . $matches['0'][$i++] . "#", (string) $path, (string) $str, 1);
             }
         }
         // -------
@@ -2263,7 +2265,7 @@ class Member
         $simple = ($this->show_headings == false) ? '/simple' : '';
 
         // Parse {switch="foo|bar"} variables
-        if (preg_match_all("/" . LD . "(switch\s*=.+?)" . RD . "/i", $str, $matches, PREG_SET_ORDER)) {
+        if (preg_match_all("/" . LD . "(switch\s*=.+?)" . RD . "/i", (string) $str, $matches, PREG_SET_ORDER)) {
             foreach ($matches as $match) {
                 $sparam = ee('Variables/Parser')->parseTagParameters($match[1]);
 
@@ -2271,7 +2273,7 @@ class Member
                     $sopt = explode("|", $sparam['switch']);
 
                     $i = 1;
-                    while (($pos = strpos($str, LD . $match[1] . RD)) !== false) {
+                    while (($pos = strpos((string) $str, LD . $match[1] . RD)) !== false) {
                         $str = substr_replace($str, $sopt[($i++ + count($sopt) - 1) % count($sopt)], $pos, strlen(LD . $match[1] . RD));
                     }
                 }
@@ -2351,7 +2353,7 @@ class Member
         if (! is_object(ee()->TMPL)) {
             // cleanup unparsed conditionals and annotations
             $str = preg_replace("/" . LD . "if\s+.*?" . RD . ".*?" . LD . '\/if' . RD . "/s", "", (string) $str);
-            $str = preg_replace("/\{!--.*?--\}/s", '', $str);
+            $str = preg_replace("/\{!--.*?--\}/s", '', (string) $str);
         }
 
         return $str;

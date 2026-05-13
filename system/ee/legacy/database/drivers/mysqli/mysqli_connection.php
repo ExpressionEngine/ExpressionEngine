@@ -77,7 +77,7 @@ class CI_DB_mysqli_connection
 
         $mysql_init_command_attr = (defined('Pdo\\Mysql::ATTR_INIT_COMMAND'))
             ? constant('Pdo\\Mysql::ATTR_INIT_COMMAND')
-            : PDO::MYSQL_ATTR_INIT_COMMAND;
+            : (PHP_VERSION_ID >= 80500 ? constant('Pdo\Mysql::ATTR_INIT_COMMAND') : constant('PDO::MYSQL_ATTR_INIT_COMMAND'));
 
         // only set names and collation if they are set in config
         // and are different from what's default in EE

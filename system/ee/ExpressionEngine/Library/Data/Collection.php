@@ -290,7 +290,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate
     #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
-        return array_key_exists($offset, $this->elements);
+        return array_key_exists((string) $offset, $this->elements);
     }
 
     /**

@@ -231,7 +231,7 @@ class Pro_variables_mcp
                 }
 
                 // Add optional error to attributes
-                if (array_key_exists($obj->id(), $skipped)) {
+                if (array_key_exists((string) $obj->id(), $skipped)) {
                     $attrs['data-error'] = htmlspecialchars((string) lang($skipped[$obj->id()]), ENT_QUOTES);
                     $labels[] = '<li>' . ($var['variable_label'] ?: $var['variable_name']) . '</li>';
                 }
@@ -539,7 +539,7 @@ class Pro_variables_mcp
             );
 
             // Type
-            $type = array_key_exists($var['variable_type'], $types)
+            $type = array_key_exists((string) $var['variable_type'], $types)
                 ? $var['variable_type']
                 : ($var['variable_type'] == 'pro_rte' ? 'rte' : Pro_variables_types::DEFAULT_TYPE);
 
@@ -663,7 +663,7 @@ class Pro_variables_mcp
                 // Delete confirmation should be handled by EE
                 $this->delete($vars);
                 $msg = 'pro_variables_deleted';
-            } elseif (array_key_exists($action, $types)) {
+            } elseif (array_key_exists((string) $action, $types)) {
                 $data['variable_type'] = $action;
             } elseif ($action == 'show') {
                 $data['is_hidden'] = 'n';
@@ -1016,7 +1016,7 @@ class Pro_variables_mcp
         // -------------------------------------
 
         // Determine fallback
-        $type = array_key_exists($var['variable_type'], $types)
+        $type = array_key_exists((string) $var['variable_type'], $types)
             ? $var['variable_type']
             : ($var['variable_type'] == 'pro_rte' ? 'rte' : Pro_variables_types::DEFAULT_TYPE);
 
@@ -2206,7 +2206,7 @@ class Pro_variables_mcp
 
         // Loop through groups and add var count to them
         foreach ($groups as &$g) {
-            $g['var_count'] = array_key_exists($g['group_id'], $counts)
+            $g['var_count'] = array_key_exists((string) $g['group_id'], $counts)
                 ? $counts[$g['group_id']]
                 : 0;
         }

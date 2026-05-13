@@ -29,7 +29,7 @@ class WhenNotEmpty extends ValidationRule
         }
 
         foreach ($this->parameters as $field_name) {
-            if (! array_key_exists($field_name, $this->all_values) || $this->all_values[$field_name] === '' || is_null($this->all_values[$field_name])) {
+            if (! array_key_exists((string) $field_name, $this->all_values) || $this->all_values[$field_name] === '' || is_null($this->all_values[$field_name])) {
                 return $this->skip();
             }
         }

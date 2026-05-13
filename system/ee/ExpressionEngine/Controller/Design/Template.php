@@ -1126,7 +1126,7 @@ class Template extends AbstractDesignController
             ];
         }
 
-        if ($selected_id && ! array_key_exists($selected_id, $results) && ! $search_query) {
+        if ($selected_id && ! array_key_exists((string) $selected_id, $results) && ! $search_query) {
             $template = ee('Model')->get('Template', $selected_id)
                 ->with('TemplateGroup')
                 ->with('Site')

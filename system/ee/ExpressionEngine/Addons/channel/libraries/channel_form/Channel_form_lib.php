@@ -354,7 +354,7 @@ class Channel_form_lib
                 //custom field pair parsing with replace_tag
                 if (preg_match_all('/' . LD . preg_quote((string) $tag_pair_open) . RD . '(.*?)' . LD . '\/' . $tag_name . RD . '/s', (string) ee()->TMPL->tagdata, $matches)) {
                     // Map field short name to field_id_x
-                    if (array_key_exists($tag_name, $this->custom_fields)) {
+                    if (array_key_exists((string) $tag_name, $this->custom_fields)) {
                         $field = $this->custom_fields[$tag_name];
                         $name = 'field_id_' . $field->field_id;
                     }
@@ -482,7 +482,7 @@ class Channel_form_lib
                 } else {
                     $name = $key;
 
-                    if (array_key_exists($key, $this->custom_fields)) {
+                    if (array_key_exists((string) $key, $this->custom_fields)) {
                         $field = $this->custom_fields[$key];
                         $name = 'field_id_' . $field->field_id;
                     }
@@ -625,7 +625,7 @@ class Channel_form_lib
                         $checkbox_fields[] = $field->field_name;
                     }
 
-                    $this->parse_variables['field:' . $field->field_name] = (array_key_exists($field->field_name, $this->custom_fields))
+                    $this->parse_variables['field:' . $field->field_name] = (array_key_exists((string) $field->field_name, $this->custom_fields))
                         ? $this->encode_ee_tags($this->display_field($field->field_name))
                         : '';
                 }
@@ -1086,7 +1086,7 @@ GRID_FALLBACK;
             // fieldtype conditionals
             $custom_field_variables_row[$field->getType()] = 1;
 
-            if (array_key_exists($field->getType(), $this->custom_field_conditional_names)) {
+            if (array_key_exists((string) $field->getType(), $this->custom_field_conditional_names)) {
                 $custom_field_variables_row[$this->custom_field_conditional_names[$field->getType()]] = 1;
             }
 
@@ -1153,7 +1153,7 @@ GRID_FALLBACK;
                 } else {
                     $fieldName = $field;
                 }
-                $label = array_key_exists($fieldName, $this->custom_fields) ? $this->custom_fields[$fieldName]->field_label : lang($field);
+                $label = array_key_exists((string) $fieldName, $this->custom_fields) ? $this->custom_fields[$fieldName]->field_label : lang($field);
 
                 $conditional_errors['field_errors'][$fieldName] = array('field' => $label, 'error' => $error);
             }
@@ -2946,7 +2946,7 @@ GRID_FALLBACK;
 
         $tagdata = preg_replace('/\{if\s+[\042\047]*0[\042\047]*\}(.+?)\{\/if\}/si', '', (string) $tagdata);
 
-        $tagdata = preg_replace('/\{if\s+[\042\047]*1[\042\047]*\}(.+?)\{\/if\}/si', '\\1', $tagdata);
+        $tagdata = preg_replace('/\{if\s+[\042\047]*1[\042\047]*\}(.+?)\{\/if\}/si', '\\1', (string) $tagdata);
 
         return $tagdata;
     }

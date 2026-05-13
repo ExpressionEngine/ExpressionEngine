@@ -79,7 +79,7 @@ class EE_Addons
         // is_package calls this function with a blank key to skip
         // first party - we'll do that right here instead of checking
         // if the folder exists
-        if (! array_key_exists($type, $type_ident)) {
+        if (! array_key_exists((string) $type, $type_ident)) {
             return array();
         }
 
@@ -334,7 +334,7 @@ class EE_Addons
     {
         $this->get_files('');	// blank key lets us skip first party
 
-        return array_key_exists($name, $this->_packages);
+        return array_key_exists((string) $name, $this->_packages);
     }
 
     /**
@@ -348,7 +348,7 @@ class EE_Addons
     {
         $this->get_files($type);	// blank key lets us skip first party
 
-        if (! array_key_exists($name, $this->_packages)) {
+        if (! array_key_exists((string) $name, $this->_packages)) {
             return false;
         }
 

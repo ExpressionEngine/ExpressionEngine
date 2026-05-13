@@ -295,7 +295,7 @@ class EE_relationship_tree_builder
             $is_only_relationship = (substr((string) $relationship_prefix, -1) != ':');
 
             $tag_name = rtrim((string) $relationship_prefix, ':');
-            $in_grid = array_key_exists($relationship_prefix, $this->grid_relationship_ids);
+            $in_grid = array_key_exists((string) $relationship_prefix, $this->grid_relationship_ids);
             $in_fluid_field = (bool) ($this->fluid_field_data_id && $this->fluid_field_data_id > 0);
 
             // We found something in a fluid field that is not a relationship tag, skip it.
@@ -329,7 +329,7 @@ class EE_relationship_tree_builder
 
             // extract the full name and determining relationship
             $last_colon = strrpos($tag_name, ':');
-            $in_grid = array_key_exists($relationship_prefix, $this->grid_relationship_ids);
+            $in_grid = array_key_exists((string) $relationship_prefix, $this->grid_relationship_ids);
 
             if ($last_colon === false || $in_grid) {
                 $parent_node = $open_nodes['__root__'];

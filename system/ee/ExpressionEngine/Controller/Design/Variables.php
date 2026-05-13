@@ -97,7 +97,7 @@ class Variables extends AbstractDesignController
             'variable' => 'variable_name'
         );
 
-        if (! array_key_exists($sort_col, $sort_map)) {
+        if (! array_key_exists((string) $sort_col, $sort_map)) {
             throw new \Exception("Invalid sort column: " . htmlentities((string) $sort_col));
         }
 

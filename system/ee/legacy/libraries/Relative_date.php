@@ -64,7 +64,7 @@ class Relative_date_object
 
     public function __get($name)
     {
-        if (array_key_exists($name, $this->_units)) {
+        if (array_key_exists((string) $name, $this->_units)) {
             return $this->_units[$name];
         }
 

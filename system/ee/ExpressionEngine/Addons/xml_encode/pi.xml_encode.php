@@ -33,7 +33,7 @@ class Xml_encode
 
         // Strip [email] tags
         $str = preg_replace("/\[email=(.*?)\](.*?)\[\/email\]/i", '\\2', (string) $str);
-        $str = preg_replace("/\[email\](.*?)\[\/email\]/i", '\\1', $str);
+        $str = preg_replace("/\[email\](.*?)\[\/email\]/i", '\\1', (string) $str);
 
         $this->return_data = trim(str_replace('&nbsp;', '&#160;', $str));
     }

@@ -569,7 +569,7 @@ class Relationship_ft extends EE_Fieldtype implements ColumnInterface
             'instructions' => $entry->Channel->channel_title,
             'channel_id' => $entry->Channel->getId(),
             'can_edit' => ($entry->author_id == ee()->session->userdata('member_id')) ? ee('Permission')->has('can_edit_self_entries_channel_id_' . $entry->channel_id) : ee('Permission')->has('can_edit_other_entries_channel_id_' . $entry->channel_id),
-            'editable' => (ee('Permission')->isSuperAdmin() || array_key_exists($entry->Channel->getId(), ee()->session->userdata('assigned_channels'))),
+            'editable' => (ee('Permission')->isSuperAdmin() || array_key_exists((string) $entry->Channel->getId(), ee()->session->userdata('assigned_channels'))),
             'status' => $entry->status
         ];
     }

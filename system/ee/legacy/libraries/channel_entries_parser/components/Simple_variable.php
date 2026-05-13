@@ -411,7 +411,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
                         if (isset($content)) {
                             // subsequental runs
                             $content = $this->$method($content, $params);
-                        } elseif (array_key_exists($field['field_name'], $data)) {
+                        } elseif (array_key_exists((string) $field['field_name'], $data)) {
                             // first run
                             $content = $this->$method($data[$field['field_name']], $params);
                         } elseif (method_exists($this, $mismatch_getter)) {
@@ -426,7 +426,7 @@ class EE_Channel_simple_variable_parser implements EE_Channel_parser_component
                         return $tagdata;
                     }
 
-                    if (array_key_exists($field['field_name'], $data)) {
+                    if (array_key_exists((string) $field['field_name'], $data)) {
                         $content = $this->$method($data[$field['field_name']], $field['params']);
                     } elseif (method_exists($this, $mismatch_getter)) {
                         $content = $this->$method($this->$mismatch_getter($data), $field['params']);

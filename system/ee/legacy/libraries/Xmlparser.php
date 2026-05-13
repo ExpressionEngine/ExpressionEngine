@@ -208,12 +208,16 @@ class EE_XMLparser
         $xml = ($entities === false) ? $xml : $this->replace_entities($xml, $entities);
 
         if (xml_parse_into_struct($parser, (string) $xml, $this->tagdata, $this->index) === 0) {
-            xml_parser_free($parser);
+            if (PHP_VERSION_ID < 80000) {
+                xml_parser_free($parser);
+            }
 
             return false;
         }
 
-        xml_parser_free($parser);
+        if (PHP_VERSION_ID < 80000) {
+            xml_parser_free($parser);
+        }
 
         return true;
     }

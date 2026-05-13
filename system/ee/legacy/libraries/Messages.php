@@ -213,10 +213,10 @@ class EE_Messages
             foreach ($this->conditionals as $key => $value) {
                 if ($value == 'y') {
                     $template = preg_replace("/\{if\s+" . $key . "\}(.+?)\{\/if\}/si", "\\1", (string) $template);
-                    $template = preg_replace("/\{if\s+not_" . $key . "\}(.+?)\{\/if\}/si", '', $template);
+                    $template = preg_replace("/\{if\s+not_" . $key . "\}(.+?)\{\/if\}/si", '', (string) $template);
                 } else {
                     $template = preg_replace("/\{if\s+" . $key . "\}.+?\{\/if\}/si", '', (string) $template);
-                    $template = preg_replace("/\{if\s+not_" . $key . "\}(.+?)\{\/if\}/si", "\\1", $template);
+                    $template = preg_replace("/\{if\s+not_" . $key . "\}(.+?)\{\/if\}/si", "\\1", (string) $template);
                 }
             }
         }
@@ -323,7 +323,7 @@ class EE_Messages
         /* -----------------------------------*/
 
         $this->return_data = preg_replace("/" . LD . "\s*path=(.*?)" . RD . "/", '&#123;path=\\1}', (string) $this->return_data);
-        $this->return_data = preg_replace("#" . LD . "\s*(profile_path\s*=.*?)" . RD . "#", '&#123;\\1}', $this->return_data);
+        $this->return_data = preg_replace("#" . LD . "\s*(profile_path\s*=.*?)" . RD . "#", '&#123;\\1}', (string) $this->return_data);
 
         /** -----------------------------------
         /**  Name to ID in Form Switch - Fixeroo

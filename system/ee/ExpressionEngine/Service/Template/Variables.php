@@ -70,7 +70,7 @@ abstract class Variables
     {
         $variables = $this->getTemplateVariables();
 
-        return (array_key_exists($name, $variables)) ? $variables[$name] : false;
+        return (array_key_exists((string) $name, $variables)) ? $variables[$name] : false;
     }
 
     /**

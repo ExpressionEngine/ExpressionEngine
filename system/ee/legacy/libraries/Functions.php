@@ -1653,11 +1653,11 @@ class EE_Functions
     {
         $cond = preg_replace("/^if/", "", (string) $cond);
 
-        if (preg_match("/(\S+)\s*(\!=|==|<=|>=|<>|<|>|%)\s*(.+)/", $cond, $match)) {
+        if (preg_match("/(\S+)\s*(\!=|==|<=|>=|<>|<|>|%)\s*(.+)/", (string) $cond, $match)) {
             $cond = trim($match[1]) . ' ' . trim($match[2]) . ' ' . trim($match[3]);
         }
 
-        $rcond = substr($cond, strpos($cond, ' '));
+        $rcond = substr((string) $cond, strpos((string) $cond, ' '));
         $cond = str_replace($rcond, $rcond, $cond);
 
         // Since we allow the following shorthand condition: {if username}

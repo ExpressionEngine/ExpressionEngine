@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This source file is part of the open source project
  * ExpressionEngine (https://expressionengine.com)
@@ -91,7 +92,7 @@ class Application
      */
     public function setupAddons($path)
     {
-        $folders = new FilesystemIterator($path, FilesystemIterator::UNIX_PATHS);
+        $folders = new FilesystemIterator($path, FilesystemIterator::UNIX_PATHS | \FilesystemIterator::SKIP_DOTS);
 
         foreach ($folders as $item) {
             if ($item->isDir()) {

@@ -459,7 +459,7 @@ abstract class AbstractDesign extends CP_Controller
             'hits' => 'hits', // if they have enabled hit tracking
         ];
 
-        if (! array_key_exists($sort_col, $sort_map)) {
+        if (! array_key_exists((string) $sort_col, $sort_map)) {
             throw new \Exception("Invalid sort column: " . htmlentities((string) $sort_col));
         }
 

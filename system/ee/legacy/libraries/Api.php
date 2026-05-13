@@ -262,7 +262,7 @@ class Api
      */
     public function __get($key)
     {
-        if (array_key_exists($key, $this->dynamic_properties)) {
+        if (array_key_exists((string) $key, $this->dynamic_properties)) {
             return $this->dynamic_properties[$key];
         }
 

@@ -399,7 +399,7 @@ class Structure extends Channel
         // echo $entry_id;
         // Filter out pages not on same level
         foreach ($pages as $key => $page) {
-            if ($entry_id && array_key_exists($entry_id, $pages) && $page['depth'] != $pages[$entry_id]['depth']) {
+            if ($entry_id && array_key_exists((string) $entry_id, $pages) && $page['depth'] != $pages[$entry_id]['depth']) {
                 unset($pages[$key]);
             }
         }
@@ -619,7 +619,7 @@ class Structure extends Channel
         if ($inc_here) {
             // If here_as_title is yes/true then show here as page title
             if ($here_as_title) {
-                $title = $custom_title_fields !== false ? array_key_exists($entry_id, $custom_title_fields) ? $custom_title_fields[$entry_id] : $this->sql->get_entry_title($entry_id) : $this->sql->get_entry_title($entry_id);
+                $title = $custom_title_fields !== false ? array_key_exists((string) $entry_id, $custom_title_fields) ? $custom_title_fields[$entry_id] : $this->sql->get_entry_title($entry_id) : $this->sql->get_entry_title($entry_id);
 
                 if (ee()->TMPL->fetch_param('encode_titles', 'yes') === "yes") {
                     $title = htmlspecialchars((string) $title);
@@ -1385,7 +1385,7 @@ class Structure extends Channel
                     } else {
                         if (isset($site_pages['uris'])) {
                             // @todo - refactor
-                            if (array_key_exists($entry_id, $site_pages['uris']) && $site_pages['uris'][$entry_id] != "/") {
+                            if (array_key_exists((string) $entry_id, $site_pages['uris']) && $site_pages['uris'][$entry_id] != "/") {
                                 $local_tree = $this->nset->getTree($entry_id);
 
                                 $adjusted_tree = array();
@@ -1671,7 +1671,7 @@ class Structure extends Channel
         $uri = preg_replace("#[^a-zA-Z0-9_\-\.]+#i", '', (string) $uri);
 
         // Make sure there are no "_" underscores at the beginning or end
-        return trim($uri, "_");
+        return trim((string) $uri, "_");
     }
 
     // --------------------------------------------------------------------

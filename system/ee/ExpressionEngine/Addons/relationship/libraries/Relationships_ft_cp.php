@@ -104,11 +104,11 @@ class Relationships_ft_cp
 
         $hierarchyGroups = array_reduce($results, function ($carry, $row) {
             // $key = "{$row['group_id']}_{$row['parent_id']}";
-            if (!array_key_exists($row['group_id'], $carry)) {
+            if (!array_key_exists((string) $row['group_id'], $carry)) {
                 $carry[$row['group_id']] = [];
             }
 
-            if (!array_key_exists($row['parent_id'], $carry[$row['group_id']])) {
+            if (!array_key_exists((string) $row['parent_id'], $carry[$row['group_id']])) {
                 $carry[$row['group_id']][$row['parent_id']] = [];
             }
 

@@ -59,7 +59,7 @@ class Radio_ft extends OptionFieldtype
                     $valid = true;
 
                     break;
-                } elseif (array_key_exists($data, $val)) {
+                } elseif (array_key_exists((string) $data, $val)) {
                     $valid = true;
 
                     break;

@@ -168,7 +168,7 @@ class Markdown implements MarkdownInterface
 
         # Standardize line endings:
         #   DOS to Unix and Mac to Unix
-        $text = preg_replace('{\r\n?}', "\n", $text);
+        $text = preg_replace('{\r\n?}', "\n", (string) $text);
 
         # Make sure $text ends with a couple of newlines:
         $text .= "\n\n";
@@ -609,7 +609,7 @@ class Markdown implements MarkdownInterface
 			)
 			}xs',
             array($this, '_doAnchors_inline_callback'),
-            $text
+            (string) $text
         );
 
         #
@@ -626,7 +626,7 @@ class Markdown implements MarkdownInterface
 			)
 			}xs',
             array($this, '_doAnchors_reference_callback'),
-            $text
+            (string) $text
         );
 
         $this->in_anchor = false;
@@ -753,7 +753,7 @@ class Markdown implements MarkdownInterface
 			)
 			}xs',
             array($this, '_doImages_inline_callback'),
-            $text
+            (string) $text
         );
 
         return $text;
@@ -837,7 +837,7 @@ class Markdown implements MarkdownInterface
 				\n+
 			}xm',
             array($this, '_doHeaders_callback_atx'),
-            $text
+            (string) $text
         );
 
         return $text;
@@ -1045,7 +1045,7 @@ class Markdown implements MarkdownInterface
 			(?= \n* (\z | \2 (' . $marker_any_re . ') (?:[ ]+|(?=\n))))
 			}xm',
             array($this, '_processListItems_callback'),
-            $list_str
+            (string) $list_str
         );
 
         $this->list_level--;
@@ -1323,7 +1323,7 @@ class Markdown implements MarkdownInterface
         $bq = preg_replace_callback(
             '{(\s*<pre>.+?</pre>)}sx',
             array($this, '_doBlockQuotes_callback2'),
-            $bq
+            (string) $bq
         );
 
         return "\n" . $this->hashBlock("<blockquote>\n$bq\n</blockquote>") . "\n\n";
@@ -1345,7 +1345,7 @@ class Markdown implements MarkdownInterface
         # Strip leading and trailing lines:
         $text = preg_replace('/\A\n+|\n+\z/', '', (string) $text);
 
-        $grafs = preg_split('/\n{2,}/', $text, -1, PREG_SPLIT_NO_EMPTY);
+        $grafs = preg_split('/\n{2,}/', (string) $text, -1, PREG_SPLIT_NO_EMPTY);
 
         #
         # Wrap <p> tags and unhashify HTML blocks
@@ -1495,7 +1495,7 @@ class Markdown implements MarkdownInterface
 			>
 			}xi',
             array($this, '_doAutoLinks_email_callback'),
-            $text
+            (string) $text
         );
 
         return $text;

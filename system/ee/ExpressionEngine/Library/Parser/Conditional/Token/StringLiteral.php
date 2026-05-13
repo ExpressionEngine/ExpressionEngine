@@ -22,7 +22,7 @@ class StringLiteral extends Token
 
         // if there's a comment in the literal string, it needs to go
         $lexeme = preg_replace('/^\{!--.*?--\}$/', '', (string) $lexeme);
-        $this->value = preg_replace('/\s+/', ' ', $lexeme);
+        $this->value = preg_replace('/\s+/', ' ', (string) $lexeme);
     }
 
     public function canEvaluate()
@@ -31,7 +31,7 @@ class StringLiteral extends Token
         // unparsed variables
         $value = preg_replace('/\{\d+,?\d*\}/', '', (string) $this->value);
 
-        return (stristr($value, LD) === false);
+        return (stristr((string) $value, LD) === false);
     }
 
     public function __toString()

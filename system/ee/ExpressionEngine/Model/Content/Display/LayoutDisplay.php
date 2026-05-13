@@ -55,7 +55,7 @@ class LayoutDisplay
      */
     public function getTab($tab_id)
     {
-        if (! array_key_exists($tab_id, $this->tabs)) {
+        if (! array_key_exists((string) $tab_id, $this->tabs)) {
             throw new InvalidArgumentException("No such tab: '{$tab_id}' on " . get_called_class());
         }
 

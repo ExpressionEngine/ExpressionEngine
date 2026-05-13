@@ -658,11 +658,15 @@ class XML_RPC_Message extends EE_Xmlrpc
             );
             //error_log($errstr);
             $r = new XML_RPC_Response(0, $this->xmlrpcerr['invalid_return'], $this->xmlrpcstr['invalid_return']);
-            xml_parser_free($parser);
+            if (PHP_VERSION_ID < 80000) {
+                xml_parser_free($parser);
+            }
 
             return $r;
         }
-        xml_parser_free($parser);
+        if (PHP_VERSION_ID < 80000) {
+            xml_parser_free($parser);
+        }
 
         // ---------------------------------------
         //  Got Ourselves Some Badness, It Seems

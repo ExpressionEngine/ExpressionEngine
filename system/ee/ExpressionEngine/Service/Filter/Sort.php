@@ -45,7 +45,7 @@ class Sort extends Filter
             $value = implode('|', $values);
         }
 
-        if (empty($value) || ! array_key_exists($value, $this->options)) {
+        if (empty($value) || ! array_key_exists((string) $value, $this->options)) {
             $value = $this->default_value;
         }
 

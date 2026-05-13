@@ -326,7 +326,7 @@ class Parser extends AbstractParser
     {
         $name = $this->value();
 
-        if (array_key_exists($name, $this->variables)) {
+        if (array_key_exists((string) $name, $this->variables)) {
             $value = $this->variables[$name];
 
             // can't do arrays

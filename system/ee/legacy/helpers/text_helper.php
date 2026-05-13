@@ -377,14 +377,14 @@ if (! function_exists('word_wrap')) {
         $str = preg_replace("| +|", " ", (string) $str);
 
         // Standardize newlines
-        if (strpos($str, "\r") !== false) {
+        if (strpos((string) $str, "\r") !== false) {
             $str = str_replace(array("\r\n", "\r"), "\n", $str);
         }
 
         // If the current word is surrounded by {unwrap} tags we'll
         // strip the entire chunk and replace it with a marker.
         $unwrap = array();
-        if (preg_match_all("|(\{unwrap\}.+?\{/unwrap\})|s", $str, $matches)) {
+        if (preg_match_all("|(\{unwrap\}.+?\{/unwrap\})|s", (string) $str, $matches)) {
             for ($i = 0; $i < count($matches['0']); $i++) {
                 $unwrap[] = $matches['1'][$i];
                 $str = str_replace($matches['1'][$i], "{{unwrapped" . $i . "}}", $str);
@@ -394,7 +394,7 @@ if (! function_exists('word_wrap')) {
         // Use PHP's native function to do the initial wordwrap.
         // We set the cut flag to FALSE so that any individual words that are
         // too long get left alone.  In the next step we'll deal with them.
-        $str = wordwrap($str, $charlim, "\n", false);
+        $str = wordwrap((string) $str, $charlim, "\n", false);
 
         // Split the string into individual lines of text and cycle through them
         $output = "";

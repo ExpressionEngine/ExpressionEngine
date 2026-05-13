@@ -71,12 +71,12 @@ class Updater
         unset($password_template_data['template_id']);
 
         foreach ($sites as $site) {
-            if (! array_key_exists($site->site_id, $email_templates)) {
+            if (! array_key_exists((string) $site->site_id, $email_templates)) {
                 $email_template_data['site_id'] = $site->site_id;
                 ee('Model')->make('SpecialtyTemplate', $email_template_data)->save();
             }
 
-            if (! array_key_exists($site->site_id, $password_templates)) {
+            if (! array_key_exists((string) $site->site_id, $password_templates)) {
                 $password_template_data['site_id'] = $site->site_id;
                 ee('Model')->make('SpecialtyTemplate', $password_template_data)->save();
             }

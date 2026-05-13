@@ -15,7 +15,9 @@ $captured = (object) [
     'result_array_calls' => 0,
 ];
 $target = realpath(PATH_ADDONS . 'structure/sql.structure.php');
-$linesToTrack = [164, 165, 166, 168, 169, 170, 174];
+$method = new ReflectionMethod('Sql_structure', 'get_status_colors');
+$methodStartLine = $method->getStartLine();
+$methodEndLine = $method->getEndLine();
 $xdebugAvailable = function_exists('xdebug_start_code_coverage') && function_exists('xdebug_get_code_coverage');
 
 ee()->setMock('db', new class($captured) {
@@ -147,9 +149,19 @@ $fileCoverage = $coverage[$target] ?? ['lines' => [], 'functions' => []];
 $functionCoverage = $fileCoverage['functions']['Sql_structure->get_status_colors'] ?? ['branches' => [], 'paths' => []];
 $coveredLines = [];
 
-foreach ($linesToTrack as $line) {
-    $coveredLines[$line] = (($fileCoverage['lines'][$line] ?? 0) > 0);
+foreach (($fileCoverage['lines'] ?? []) as $line => $hitCount) {
+    if ($line < $methodStartLine || $line > $methodEndLine) {
+        continue;
+    }
+
+    if ($hitCount < 0) {
+        continue;
+    }
+
+    $coveredLines[$line] = ($hitCount > 0);
 }
+
+ksort($coveredLines);
 
 $coveredPaths = [];
 
@@ -172,7 +184,9 @@ file_put_contents($outputFile, json_encode([
     'positive_empty_result' => $positiveEmptyResult,
     'empty_result' => $emptyResult,
     'xdebug_available' => $xdebugAvailable,
-    'lines' => array_intersect_key($fileCoverage['lines'] ?? [], array_flip($linesToTrack)),
+    'lines' => array_intersect_key($fileCoverage['lines'] ?? [], $coveredLines),
+    'method_start_line' => $methodStartLine,
+    'method_end_line' => $methodEndLine,
     'branches' => $functionCoverage['branches'] ?? [],
     'paths' => $functionCoverage['paths'] ?? [],
     'line_percentage' => $linePercentage,

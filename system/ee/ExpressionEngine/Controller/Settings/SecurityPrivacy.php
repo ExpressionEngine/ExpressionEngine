@@ -355,7 +355,7 @@ class SecurityPrivacy extends Settings
             'strong' => 12
         ];
         $policy = ee('Request')->post('password_security_policy');
-        if (array_key_exists($policy, $rules) && $length < $rules[$policy]) {
+        if (array_key_exists((string) $policy, $rules) && $length < $rules[$policy]) {
             ee()->form_validation->set_message('_validatePwLen', sprintf(lang('pw_min_len_does_not_match_policy'), $rules[$policy]));
 
             return false;

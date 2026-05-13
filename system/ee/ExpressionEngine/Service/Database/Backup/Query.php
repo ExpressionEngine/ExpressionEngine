@@ -383,7 +383,7 @@ class Query
             case self::BINARY_TYPE:
                 $hex = '';
                 foreach (str_split($value) as $char) {
-                    $hex .= str_pad(dechex(ord($char)), 2, '0', STR_PAD_LEFT);
+                    $hex .= str_pad(dechex(ord($char[0])), 2, '0', STR_PAD_LEFT);
                 }
 
                 return sprintf("x'%s'", $hex);

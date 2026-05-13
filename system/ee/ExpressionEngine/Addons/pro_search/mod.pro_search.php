@@ -1713,7 +1713,7 @@ class Pro_search
         }
 
         foreach ($this->_trusted_signed_param_keys() as $key) {
-            if (array_key_exists($key, $trusted_params)) {
+            if (array_key_exists((string) $key, $trusted_params)) {
                 continue;
             }
 
@@ -2217,7 +2217,7 @@ class Pro_search
             $url = preg_replace('#/P\d+/?$#', '', (string) $url);
 
             // Make it safe
-            $url = preg_quote($url, '#');
+            $url = preg_quote((string) $url, '#');
 
             // Now find all similar URLs in tagdata without the var next to it
             $tagdata = preg_replace("#(['\"])({$url}(/P\d+)?/?)\\1#", "$1$2{$var}$1", (string) $tagdata);

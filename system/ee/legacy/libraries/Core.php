@@ -755,7 +755,7 @@ class EE_Core
             $this->set_newrelic_transaction(function () {
                 $request = preg_replace('/\/[\d]+$/', '', (string) ee()->uri->uri_string);
 
-                return preg_replace('/search\/.*$/', 'search', $request);
+                return preg_replace('/search\/.*$/', 'search', (string) $request);
             });
 
             $member = new Member();

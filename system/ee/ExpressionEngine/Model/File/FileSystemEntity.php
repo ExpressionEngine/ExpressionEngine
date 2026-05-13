@@ -600,7 +600,7 @@ class FileSystemEntity extends ContentModel
         }, []);
 
         // If we do not have a group for this file system entity we can exit
-        if (!array_key_exists($this->file_id, $grouped)) {
+        if (!array_key_exists((string) $this->file_id, $grouped)) {
             return [];
         }
 

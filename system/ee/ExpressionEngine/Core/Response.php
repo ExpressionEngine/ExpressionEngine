@@ -47,7 +47,7 @@ class Response
 
     public function hasHeader($header)
     {
-        return array_key_exists($header, $this->headers);
+        return array_key_exists((string) $header, $this->headers);
     }
 
     public function getHeader($header)

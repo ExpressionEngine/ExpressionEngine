@@ -200,7 +200,7 @@ class FieldFacade
 
     public function getItem($field)
     {
-        if (array_key_exists($field, $this->metadata)) {
+        if (array_key_exists((string) $field, $this->metadata)) {
             return $this->metadata[$field];
         }
 

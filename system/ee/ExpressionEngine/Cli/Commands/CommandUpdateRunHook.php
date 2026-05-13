@@ -65,7 +65,7 @@ class CommandUpdateRunHook extends Cli
         $this->setHooks();
 
         foreach ($this->arguments as $hook) {
-            if (array_key_exists($hook, $this->hooks)) {
+            if (array_key_exists((string) $hook, $this->hooks)) {
                 $this->info(lang('command_update_run_hook_running') . $hook);
 
                 call_user_func($this->hooks[$hook]);

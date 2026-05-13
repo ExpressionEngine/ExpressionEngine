@@ -146,7 +146,7 @@ class Pro_variables
 
             // Parse vars based on data array
             $it = ee()->TMPL->parse_variables_row($tagdata, $data);
-        } elseif (array_key_exists($var, $this->vars)) {
+        } elseif (array_key_exists((string) $var, $this->vars)) {
             //  We have a single var. Focus on it. Get object from it.
             $row = $this->vars[$var];
             $obj = ee()->pro_variables_types->get($row);

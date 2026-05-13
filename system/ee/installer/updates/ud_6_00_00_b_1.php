@@ -695,7 +695,7 @@ class Updater
 
         $no_access = [];
         foreach (ee()->db->get('status_no_access')->result() as $row) {
-            if (! array_key_exists($row->status_id, $no_access)) {
+            if (! array_key_exists((string) $row->status_id, $no_access)) {
                 $no_access[$row->status_id] = [];
             }
 
@@ -709,7 +709,7 @@ class Updater
         foreach ($statuses as $status) {
             $status_id = $status->status_id;
             foreach ($role_ids as $role_id) {
-                if (! array_key_exists($status_id, $no_access) ||
+                if (! array_key_exists((string) $status_id, $no_access) ||
                      ! in_array($role_id, $no_access[$status_id])) {
                     $insert[] = [
                         'role_id' => $role_id,
@@ -759,7 +759,7 @@ class Updater
 
         $no_access = [];
         foreach (ee()->db->get('template_no_access')->result() as $row) {
-            if (! array_key_exists($row->template_id, $no_access)) {
+            if (! array_key_exists((string) $row->template_id, $no_access)) {
                 $no_access[$row->template_id] = [];
             }
 
@@ -773,7 +773,7 @@ class Updater
         foreach ($templates as $template) {
             $template_id = $template->template_id;
             foreach ($role_ids as $role_id) {
-                if (! array_key_exists($template_id, $no_access) ||
+                if (! array_key_exists((string) $template_id, $no_access) ||
                      ! in_array($role_id, $no_access[$template_id])) {
                     $insert[] = [
                         'role_id' => $role_id,
@@ -823,7 +823,7 @@ class Updater
 
         $no_access = [];
         foreach (ee()->db->get('upload_no_access')->result() as $row) {
-            if (! array_key_exists($row->upload_id, $no_access)) {
+            if (! array_key_exists((string) $row->upload_id, $no_access)) {
                 $no_access[$row->upload_id] = [];
             }
 
@@ -838,7 +838,7 @@ class Updater
         foreach ($upload_prefs as $upload_pref) {
             $upload_pref_id = $upload_pref->id;
             foreach ($role_ids as $role_id) {
-                if (! array_key_exists($upload_pref_id, $no_access) ||
+                if (! array_key_exists((string) $upload_pref_id, $no_access) ||
                      ! in_array($role_id, $no_access[$upload_pref_id])) {
                     $insert[] = [
                         'role_id' => $role_id,

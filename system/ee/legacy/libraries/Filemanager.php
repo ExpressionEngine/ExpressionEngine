@@ -92,7 +92,7 @@ class Filemanager
 
         // clean up the filename
         if ($parameters['convert_spaces'] === true) {
-            $basename = preg_replace("/\s+/", "_", $basename);
+            $basename = preg_replace("/\s+/", "_", (string) $basename);
         }
 
         $basename = ee()->security->sanitize_filename($basename);

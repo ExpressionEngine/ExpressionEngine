@@ -193,7 +193,7 @@ class BooleanExpression
      */
     private function isValidUnaryOperator($value)
     {
-        return array_key_exists($value, $this->unary_operators);
+        return array_key_exists((string) $value, $this->unary_operators);
     }
 
     /**

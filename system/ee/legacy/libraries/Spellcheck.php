@@ -1322,7 +1322,9 @@ EOH;
         curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
 
         $info = curl_exec($ch);
-        curl_close($ch);
+        if (PHP_VERSION_ID < 80000) {
+            curl_close($ch);
+        }
 
         return is_string($info) ? $info : '';
     }

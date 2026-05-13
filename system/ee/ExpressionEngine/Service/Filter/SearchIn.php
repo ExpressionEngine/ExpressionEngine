@@ -39,7 +39,7 @@ class SearchIn extends Filter
 
         $value = $this->display_value;
         if (is_null($value)) {
-            $value = (array_key_exists($this->value(), $this->options)) ?
+            $value = (array_key_exists((string) $this->value(), $this->options)) ?
                 $this->options[$this->value()] :
                 $this->value();
         }

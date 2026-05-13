@@ -254,7 +254,7 @@ class Profile extends CP_Controller
                         $role_ids = array(1, $this->member->role_id);
 
                         $vars['heirs'] = ee('Member')->getAuthors();
-                        if (array_key_exists($this->member->getId(), $vars['heirs'])) {
+                        if (array_key_exists((string) $this->member->getId(), $vars['heirs'])) {
                             unset($vars['heirs'][$this->member->getId()]);
                         }
 

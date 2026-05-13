@@ -111,7 +111,7 @@ class Consent extends Settings
 
             $date = null;
 
-            if (array_key_exists($request->getId(), $consents)) {
+            if (array_key_exists((string) $request->getId(), $consents)) {
                 $consent = $consents[$request->getId()];
                 $date = ee()->localize->human_time($consent->response_date->format('U'));
 

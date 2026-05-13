@@ -97,7 +97,7 @@ class ChannelLayout extends Model implements LayoutInterface
                 $field_id = $field_info['field'];
 
                 // Looking for a field that is not there...skip it for now
-                if (! array_key_exists($field_id, $fields)) {
+                if (! array_key_exists((string) $field_id, $fields)) {
                     continue;
                 }
 

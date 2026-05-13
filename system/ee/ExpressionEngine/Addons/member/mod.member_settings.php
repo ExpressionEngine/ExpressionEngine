@@ -348,7 +348,7 @@ class Member_settings extends Member
             $lcond = substr((string) $cond, 0, strpos((string) $cond, ' '));
             $rcond = substr((string) $cond, strpos((string) $cond, ' '));
 
-            if (array_key_exists($val['3'], $row)) {
+            if (array_key_exists((string) $val['3'], $row)) {
                 $lcond = str_replace($val['3'], "\$row['" . $val['3'] . "']", $lcond);
                 $cond = $lcond . ' ' . $rcond;
                 $cond = str_replace("\|", "|", $cond);
@@ -519,7 +519,7 @@ class Member_settings extends Member
             /** ----------------------------------------*/
 
             // array_key_exists instead of isset since some columns may be NULL
-            if (array_key_exists($val, $row)) {
+            if (array_key_exists((string) $val, $row)) {
                 $content = $this->_var_swap_single($val, strip_tags((string) $row[$val]), $content);
             }
         }
@@ -562,7 +562,7 @@ class Member_settings extends Member
                 $lcond = substr((string) $cond, 0, strpos((string) $cond, ' '));
                 $rcond = substr((string) $cond, strpos((string) $cond, ' '));
 
-                if (array_key_exists($val['3'], $fnames)) {
+                if (array_key_exists((string) $val['3'], $fnames)) {
                     $m_field_id_name = 'm_field_id_' . $fnames[$val['3']]['0'];
 
                     $lcond = str_replace($val['3'], "\$row['" . $m_field_id_name . "']", $lcond);
@@ -673,7 +673,7 @@ class Member_settings extends Member
                         $lcond = substr((string) $cond, 0, strpos((string) $cond, ' '));
                         $rcond = substr((string) $cond, strpos((string) $cond, ' '));
 
-                        if (array_key_exists($val['3'], $field_row)) {
+                        if (array_key_exists((string) $val['3'], $field_row)) {
                             $lcond = str_replace($val['3'], "\$field_row['" . $val['3'] . "']", $lcond);
                             $cond = $lcond . ' ' . $rcond;
                             $cond = str_replace("\|", "|", $cond);

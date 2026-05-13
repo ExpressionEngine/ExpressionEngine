@@ -328,8 +328,8 @@ class Text extends Formatter
                 $this->content = preg_replace("/\{(\/){0,1}exp:(.+?)\}/", "&#123;\\1exp:\\2&#125;", (string) $this->content);
                 $this->content = str_replace(array('{exp:', '{/exp'), array('&#123;exp:', '&#123;\exp'), $this->content);
                 $this->content = preg_replace("/\{embed=(.+?)\}/", "&#123;embed=\\1&#125;", $this->content);
-                $this->content = preg_replace("/\{path:(.+?)\}/", "&#123;path:\\1&#125;", $this->content);
-                $this->content = preg_replace("/\{redirect=(.+?)\}/", "&#123;redirect=\\1&#125;", $this->content);
+                $this->content = preg_replace("/\{path:(.+?)\}/", "&#123;path:\\1&#125;", (string) $this->content);
+                $this->content = preg_replace("/\{redirect=(.+?)\}/", "&#123;redirect=\\1&#125;", (string) $this->content);
                 $this->content = str_replace(array('{if', '{/if'), array('&#123;if', '&#123;/if'), $this->content);
                 $this->content = preg_replace("/\{(\/)?layout:(.+?)\}/", "&#123;\\1layout:\\2&#125;", $this->content);
             }

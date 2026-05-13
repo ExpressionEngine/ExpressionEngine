@@ -103,7 +103,7 @@ class CI_DB_result
             }
 
             // array_key_exists() instead of isset() to allow for MySQL NULL values
-            if (array_key_exists($n, $this->row_data)) {
+            if (array_key_exists((string) $n, $this->row_data)) {
                 return $this->row_data[$n];
             }
             // reset the $n variable if the result was not achieved

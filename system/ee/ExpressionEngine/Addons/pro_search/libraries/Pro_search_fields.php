@@ -306,7 +306,7 @@ class Pro_search_fields
             pro_set_cache(__CLASS__, $table, $cols);
         }
 
-        return array_key_exists($col_name, $cols[$field_id])
+        return array_key_exists((string) $col_name, $cols[$field_id])
             ? $cols[$field_id][$col_name]
             : false;
     }

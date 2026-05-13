@@ -112,7 +112,7 @@ class EE_Channel_custom_field_pair_parser implements EE_Channel_parser_component
 
         foreach ($pfield_chunk as $tag_name => $chunks) {
             $field_name = preg_replace('/^' . $prefix . '/', '', (string) $tag_name);
-            $field_name = substr($field_name, strpos($field_name, ' '));
+            $field_name = substr((string) $field_name, strpos((string) $field_name, ' '));
             $field_id = $cfields[$field_name];
 
             $ft = $ft_api->setup_handler($field_id, true);

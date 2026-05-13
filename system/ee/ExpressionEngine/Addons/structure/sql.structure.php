@@ -284,7 +284,7 @@ class Sql_structure
             $where_exclude = '';
 
             foreach ($exclude as $id) {
-                if ($id != '' && array_key_exists($id, $pages['uris'])) {
+                if ($id != '' && array_key_exists((string) $id, $pages['uris'])) {
                     $where_exclude .= " AND structure.lft NOT BETWEEN (SELECT lft FROM exp_structure WHERE entry_id = '$id') AND (SELECT rgt FROM exp_structure WHERE entry_id = '$id')";
                 }
             }
@@ -506,7 +506,7 @@ class Sql_structure
     public function get_single_path($entry_id)
     {
         $listing_ids = $this->get_listing_entry_ids();
-        if (is_array($listing_ids) && array_key_exists($entry_id, $listing_ids)) {
+        if (is_array($listing_ids) && array_key_exists((string) $entry_id, $listing_ids)) {
             $entry_id = $this->get_parent_id($entry_id);
         }
 
@@ -526,7 +526,7 @@ class Sql_structure
 
         if ($result->num_rows() > 0) {
             foreach ($result->result_array() as $row) {
-                if (array_key_exists($row['entry_id'], $pages['uris'])) {
+                if (array_key_exists((string) $row['entry_id'], $pages['uris'])) {
                     // this is to fix a bug in EE3.4.x. It should not replace anything otherwise
                     $ee_url = ee()->functions->create_page_url($pages['url'], $pages['uris'][$row['entry_id']], false);
                     $url = str_replace("{base_url}/", ee()->config->item('base_url'), $ee_url);
@@ -587,12 +587,12 @@ class Sql_structure
             }
 
             // here class to listing parent
-            if (is_array($listing_ids) && array_key_exists($entry_id, $listing_ids) && $page['entry_id'] == $parent_id) {
+            if (is_array($listing_ids) && array_key_exists((string) $entry_id, $listing_ids) && $page['entry_id'] == $parent_id) {
                 $pages[$parent_id]['classes'][] = $current_class;
             }
 
             // parent-here class
-            if (array_key_exists($page['entry_id'], $path_pages) && $page['entry_id'] != $entry_id && ! array_key_exists('overview', $page)) {
+            if (array_key_exists((string) $page['entry_id'], $path_pages) && $page['entry_id'] != $entry_id && ! array_key_exists('overview', $page)) {
                 if ($mode == "main") {
                     $pages[$key]['classes'][] = $current_class;
                 } else {
@@ -641,7 +641,7 @@ class Sql_structure
                  && (! in_array('first', $pages[$page['entry_id']]['classes']))) #first page
                     || (
                         $page['parent_id'] != 0
-                && array_key_exists($page['parent_id'], $pages)
+                && array_key_exists((string) $page['parent_id'], $pages)
                 && ($page['lft'] - 1) == $pages[$page['parent_id']]['lft']
                 && (! in_array('overview', $pages[$page['parent_id']]['classes']))
                     )
@@ -650,7 +650,7 @@ class Sql_structure
             }
 
             // last class
-            if ($page['parent_id'] != 0 && array_key_exists($page['parent_id'], $pages) && ($page['rgt'] + 1) == $pages[$page['parent_id']]['rgt']) {
+            if ($page['parent_id'] != 0 && array_key_exists((string) $page['parent_id'], $pages) && ($page['rgt'] + 1) == $pages[$page['parent_id']]['rgt']) {
                 // If this is the last but it's set to hidden, we want to go back and set the
                 // previous entry and then remove it from the nav.
                 if ($pages[$key]['hidden'] == "y" && $override_hidden_state != "yes") {
@@ -941,7 +941,7 @@ class Sql_structure
         $c_fields_global = array_key_exists(0, $c_fields['custom_channel_fields']) ? $c_fields['custom_channel_fields'][0] : array();
 
         // Get only the custom channel fields for this site_id
-        $c_fields_site = array_key_exists($this->site_id, $c_fields['custom_channel_fields']) ? $c_fields['custom_channel_fields'][$this->site_id] : array();
+        $c_fields_site = array_key_exists((string) $this->site_id, $c_fields['custom_channel_fields']) ? $c_fields['custom_channel_fields'][$this->site_id] : array();
 
         $c_fields = array_merge($c_fields_global, $c_fields_site);
 
@@ -949,7 +949,7 @@ class Sql_structure
         foreach ($title_fields as $channel_id => $field) {
             // if we dont have custom fields, or if the field is not in the custom fields, continue.
             // This could leave $sql_fields as an empty array, which is okay.
-            if (! is_array($c_fields) or ! array_key_exists($field, $c_fields)) {
+            if (! is_array($c_fields) or ! array_key_exists((string) $field, $c_fields)) {
                 continue;
             }
 
@@ -1011,7 +1011,7 @@ class Sql_structure
 
             // This will determine if the custom title array actually has the data we need in it
             $custom_field_exists = (
-                array_key_exists($channelEntry->channel_id, $sql_fields)    // the channel_id is in the array
+                array_key_exists((string) $channelEntry->channel_id, $sql_fields)    // the channel_id is in the array
                                 && isset($sql_fields[$channelEntry->channel_id]['field_id'])    // The field_id is set
                                 && !empty($sql_fields[$channelEntry->channel_id]['field_id'])   // The field_id is not empty
             );
@@ -1787,7 +1787,7 @@ class Sql_structure
         $uri = preg_replace("#[^a-zA-Z0-9_\-\.]+#i", '', (string) $uri);
 
         // Make sure there are no "_" underscores at the beginning or end
-        return trim($uri, "_");
+        return trim((string) $uri, "_");
     }
 
     /*
@@ -2792,7 +2792,7 @@ class Sql_structure
         $template_defaults = $this->get_structure_channels();
 
         foreach ($uris as $key => $row) {
-            if (! array_key_exists($key, $templates)) {
+            if (! array_key_exists((string) $key, $templates)) {
                 $sql = "SELECT channel_id FROM exp_channel_titles WHERE site_id = '$this->site_id' AND entry_id = '$key'";
                 $query = ee()->db->query($sql);
                 $channel_id = $query->row()->channel_id;
@@ -2821,7 +2821,7 @@ class Sql_structure
         $template_defaults = $this->get_structure_channels();
 
         foreach ($uris as $key => $row) {
-            if (! array_key_exists($key, $templates)) {
+            if (! array_key_exists((string) $key, $templates)) {
                 $sql = "SELECT channel_id FROM exp_channel_titles WHERE site_id = '$this->site_id' AND entry_id = '$key'";
                 $query = ee()->db->query($sql);
                 $channel_id = $query->row()->channel_id;
@@ -3087,11 +3087,11 @@ class structure_leaf
      */
     public function has_ancestor($leaf, $compare_on = 'entry_id')
     {
-        if (! array_key_exists($compare_on, $leaf->row)) {
+        if (! array_key_exists((string) $compare_on, $leaf->row)) {
             return false;
         }
 
-        if (array_key_exists($compare_on, $this->row) && $leaf->row[$compare_on] == $this->row[$compare_on]) {
+        if (array_key_exists((string) $compare_on, $this->row) && $leaf->row[$compare_on] == $this->row[$compare_on]) {
             return true;
         }
 

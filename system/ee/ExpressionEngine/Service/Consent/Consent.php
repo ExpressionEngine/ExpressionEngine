@@ -355,7 +355,7 @@ class Consent
                     $data[$key]['response_date'] = null;
                 }
             } else {
-                if (array_key_exists($request->getId(), $consents)) {
+                if (array_key_exists((string) $request->getId(), $consents)) {
                     $consent = $consents[$request->getId()];
                     $data[$key] = array_merge($consent->getValues(), $data[$key]);
                     unset($data[$key]['consent_given']);

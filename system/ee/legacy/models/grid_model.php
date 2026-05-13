@@ -437,7 +437,7 @@ class Grid_model extends CI_Model
                 $data = reset($data[$fluid_field]['fields'][$sub_field_id]);
             }
 
-            if (array_key_exists($entry_id, $entry_data)
+            if (array_key_exists((string) $entry_id, $entry_data)
                 && isset($data['field_id_' . $field_id])
                 && is_array($data['field_id_' . $field_id])
                 && array_key_exists('rows', $data['field_id_' . $field_id])) {

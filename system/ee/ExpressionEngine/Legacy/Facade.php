@@ -114,7 +114,7 @@ class Facade
             return $this->loaded[$name];
         }
 
-        if (array_key_exists($name, $this->deprecated)) {
+        if (array_key_exists((string) $name, $this->deprecated)) {
             $name = $this->deprecated[$name];
             if ($this->has($name)) {
                 if (method_exists($this->loaded[$name], 'deprecate')) {
@@ -133,7 +133,7 @@ class Facade
      */
     public function has($name)
     {
-        return array_key_exists($name, $this->loaded);
+        return array_key_exists((string) $name, $this->loaded);
     }
 
     /**

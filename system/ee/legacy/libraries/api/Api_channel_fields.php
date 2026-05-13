@@ -56,7 +56,7 @@ class Api_channel_fields extends Api
             $settings['field_name'] = $field_id;
         }
 
-        if (! array_key_exists($settings['field_type'], $this->field_types)) {
+        if (! array_key_exists((string) $settings['field_type'], $this->field_types)) {
             $this->field_types[$settings['field_type']] = $this->include_handler($settings['field_type']);
         }
 
@@ -162,7 +162,7 @@ class Api_channel_fields extends Api
         $tfields = array();
 
         foreach ($query->result_array() as $row) {
-            if (! array_key_exists($row['field_type'], $this->field_types)) {
+            if (! array_key_exists((string) $row['field_type'], $this->field_types)) {
                 $this->field_types[$row['field_type']] = $this->include_handler($row['field_type']);
             }
 
@@ -228,7 +228,7 @@ class Api_channel_fields extends Api
 
         $mfields = array();
         foreach ($query->result_array() as $row) {
-            if (! array_key_exists($row['m_field_type'], $this->field_types)) {
+            if (! array_key_exists((string) $row['m_field_type'], $this->field_types)) {
                 $this->field_types[$row['m_field_type']] = $this->include_handler($row['m_field_type']);
             }
 

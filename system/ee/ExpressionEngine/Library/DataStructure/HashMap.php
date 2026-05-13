@@ -50,7 +50,7 @@ class HashMap
      */
     public function hasKey($key)
     {
-        return array_key_exists($this->hash($key), $this->data);
+        return array_key_exists((string) $this->hash($key), $this->data);
     }
 
     /**
@@ -60,7 +60,7 @@ class HashMap
     {
         $index = $this->hash($key);
 
-        if (array_key_exists($index, $this->data)) {
+        if (array_key_exists((string) $index, $this->data)) {
             return $this->data[$index];
         }
     }

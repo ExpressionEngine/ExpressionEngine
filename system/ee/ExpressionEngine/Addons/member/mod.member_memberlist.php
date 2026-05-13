@@ -559,7 +559,7 @@ class Member_memberlist extends Member
                     /** ----------------------------------------*/
 
                     // array_key_exists instead of isset since columns can be NULL
-                    if (array_key_exists($val['3'], $row)) {
+                    if (array_key_exists((string) $val['3'], $row)) {
                         $lcond = str_replace($val['3'], "\$row['" . $val['3'] . "']", $lcond);
                         $cond = $lcond . ' ' . $rcond;
                         $cond = str_replace("\|", "|", $cond);

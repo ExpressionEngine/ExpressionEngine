@@ -106,7 +106,7 @@ class Result
      */
     public function hasErrors($field)
     {
-        return array_key_exists($field, $this->failed);
+        return array_key_exists((string) $field, $this->failed);
     }
 
     /**

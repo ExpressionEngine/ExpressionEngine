@@ -491,7 +491,7 @@ class Export
             $result->channels = array();
 
             foreach ($settings['channels'] as $id) {
-                if (array_key_exists($id, $this->channels)) {
+                if (array_key_exists((string) $id, $this->channels)) {
                     $channel = $this->channels[$id];
                     $result->channels[] = $channel->channel_title;
                 }

@@ -734,7 +734,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
             $value = $type->set($value);
         }
 
-        if (array_key_exists($name, $this->_foreign_keys)) {
+        if (array_key_exists((string) $name, $this->_foreign_keys)) {
             $assoc = $this->getAssociation($this->_foreign_keys[$name]);
             $assoc->foreignKeyChanged($value);
         }
@@ -744,7 +744,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
 
     public function getTypeFor($name)
     {
-        if (! array_key_exists($name, $this->_property_types)) {
+        if (! array_key_exists((string) $name, $this->_property_types)) {
             $this->_property_types[$name] = $this->createTypeFor($name);
         }
 
@@ -755,7 +755,7 @@ class Model extends SerializableEntity implements Subscriber, ValidationAware
     {
         $columns = $this->getMetadata('typed_columns') ?: array();
 
-        if (! array_key_exists($name, $columns)) {
+        if (! array_key_exists((string) $name, $columns)) {
             return null;
         }
 

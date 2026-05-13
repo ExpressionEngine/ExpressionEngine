@@ -403,7 +403,7 @@ class Members extends CP_Controller
 
         if (!empty($selected)) {
             foreach ($selected as $selectedMemberId) {
-                if (array_key_exists($selectedMemberId, $authors)) {
+                if (array_key_exists((string) $selectedMemberId, $authors)) {
                     unset($authors[$selectedMemberId]);
                 }
             }

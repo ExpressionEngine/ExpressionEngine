@@ -504,9 +504,12 @@ class EE_Image_lib
             }
         }
 
-        //  Kill the file handles
-        imagedestroy($dst_img);
-        imagedestroy($src_img);
+        if (PHP_VERSION_ID < 80000) {
+            imagedestroy($dst_img);
+        }
+        if (PHP_VERSION_ID < 80000) {
+            imagedestroy($src_img);
+        }
 
         // Set the file to 777
         @chmod($this->full_dst_path, FILE_WRITE_MODE);
@@ -729,9 +732,12 @@ class EE_Image_lib
             }
         }
 
-        //  Kill the file handles
-        imagedestroy($dst_img);
-        imagedestroy($src_img);
+        if (PHP_VERSION_ID < 80000) {
+            imagedestroy($dst_img);
+        }
+        if (PHP_VERSION_ID < 80000) {
+            imagedestroy($src_img);
+        }
 
         // Set the file to 777
 
@@ -787,8 +793,9 @@ class EE_Image_lib
             }
         }
 
-        //  Kill the file handles
-        imagedestroy($new_img);
+        if (PHP_VERSION_ID < 80000) {
+            imagedestroy($new_img);
+        }
 
         // Set the file to 777
         @chmod($this->full_dst_path, FILE_WRITE_MODE);
@@ -981,8 +988,12 @@ class EE_Image_lib
             }
         }
 
-        imagedestroy($src_img);
-        imagedestroy($wm_img);
+        if (PHP_VERSION_ID < 80000) {
+            imagedestroy($src_img);
+        }
+        if (PHP_VERSION_ID < 80000) {
+            imagedestroy($wm_img);
+        }
 
         return true;
     }
@@ -1132,7 +1143,9 @@ class EE_Image_lib
             $this->image_save_gd($src_img);
         }
 
-        imagedestroy($src_img);
+        if (PHP_VERSION_ID < 80000) {
+            imagedestroy($src_img);
+        }
 
         return true;
     }

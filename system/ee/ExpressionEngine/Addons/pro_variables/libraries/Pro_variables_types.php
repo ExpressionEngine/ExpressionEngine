@@ -276,7 +276,7 @@ class Pro_variables_types
                 foreach ($types as $type => $key) {
                     $rows = ee()->addons->get_installed($type);
 
-                    if (array_key_exists($package, $rows)) {
+                    if (array_key_exists((string) $package, $rows)) {
                         $installed_version = $rows[$package][$key];
 
                         break;
@@ -305,7 +305,7 @@ class Pro_variables_types
      */
     public function is_type($str)
     {
-        return array_key_exists($str, $this->_types);
+        return array_key_exists((string) $str, $this->_types);
     }
 
     // --------------------------------------------------------------------

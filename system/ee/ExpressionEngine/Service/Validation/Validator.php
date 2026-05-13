@@ -67,7 +67,7 @@ class Validator
      */
     public function addRule($key, $rule_string)
     {
-        if (! array_key_exists($key, $this->rules)) {
+        if (! array_key_exists((string) $key, $this->rules)) {
             $this->rules[$key] = $rule_string;
         } else {
             $this->rules[$key] = $this->rules[$key] . '|' . $rule_string;
@@ -166,7 +166,7 @@ class Validator
         foreach ($this->rules as $key => $rules) {
             $originalValue = null;
 
-            if (array_key_exists($key, $values)) {
+            if (array_key_exists((string) $key, $values)) {
                 $originalValue = $values[$key];
             }
 

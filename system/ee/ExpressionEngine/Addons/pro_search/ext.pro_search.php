@@ -234,7 +234,7 @@ class Pro_search_ext
 
             // Is the field part of a collection's settings?
             // If so, remove it
-            if (array_key_exists($field->field_id, $col['settings'])) {
+            if (array_key_exists((string) $field->field_id, $col['settings'])) {
                 unset($col['settings'][$field->field_id]);
                 $update['settings'] = pro_search_encode($col['settings'], false);
 

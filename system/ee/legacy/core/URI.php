@@ -588,7 +588,7 @@ class EE_URI
 
         if (count($default) > 0) {
             foreach ($default as $val) {
-                if (! array_key_exists($val, $retval)) {
+                if (! array_key_exists((string) $val, $retval)) {
                     $retval[$val] = false;
                 }
             }

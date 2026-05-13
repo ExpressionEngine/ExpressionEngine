@@ -3581,7 +3581,7 @@ class Channel
 
                     // Parse row then concatenate on $return_data
                     $parsed_row = preg_replace($categories_pattern, $categories_parsed, (string) ee()->TMPL->tagdata);
-                    $parsed_row = preg_replace($titles_pattern, $titles_parsed, $parsed_row);
+                    $parsed_row = preg_replace($titles_pattern, $titles_parsed, (string) $parsed_row);
 
                     $return_data .= $parsed_row;
                 }

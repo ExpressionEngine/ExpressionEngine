@@ -1036,7 +1036,7 @@ class EE_Email
         // If the current word is surrounded by {unwrap} tags we'll
         // strip the entire chunk and replace it with a marker.
         $unwrap = array();
-        if (preg_match_all('|(\{unwrap\}.+?\{/unwrap\})|s', $str, $matches)) {
+        if (preg_match_all('|(\{unwrap\}.+?\{/unwrap\})|s', (string) $str, $matches)) {
             for ($i = 0, $c = count($matches[0]); $i < $c; $i++) {
                 $unwrap[] = $matches[1][$i];
                 $str = str_replace($matches[1][$i], '{{unwrapped' . $i . '}}', $str);
@@ -1046,7 +1046,7 @@ class EE_Email
         // Use PHP's native public function to do the initial wordwrap.
         // We set the cut flag to FALSE so that any individual words that are
         // too long get left alone. In the next step we'll deal with them.
-        $str = wordwrap($str, $charlim, "\n", false);
+        $str = wordwrap((string) $str, $charlim, "\n", false);
 
         // Split the string into individual lines of text and cycle through them
         $output = '';
@@ -1341,7 +1341,7 @@ class EE_Email
             for ($i = 0; $i < $length; $i++) {
                 // Grab the next character
                 $char = $line[$i];
-                $ascii = ord($char);
+                $ascii = ord($char[0]);
 
                 // Convert spaces and tabs but only if it's the end of the line
                 if ($i === ($length - 1) && ($ascii === 32 or $ascii === 9)) {

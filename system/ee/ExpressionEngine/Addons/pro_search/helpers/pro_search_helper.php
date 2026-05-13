@@ -225,7 +225,7 @@ if (! function_exists('pro_prep_word_list')) {
     {
         $str = ee()->pro_multibyte->strtolower($str);
         $str = preg_replace('/[^\w\'\s\n]/iu', '', (string) $str);
-        $str = array_unique(array_filter(preg_split('/(\s|\n)/', $str)));
+        $str = array_unique(array_filter(preg_split('/(\s|\n)/', (string) $str)));
         sort($str);
 
         return implode(' ', $str);
@@ -401,7 +401,7 @@ if (! function_exists('pro_associate_results')) {
         $array = array();
 
         foreach ($resultset as $row) {
-            if (array_key_exists($key, $row) && ! array_key_exists($row[$key], $array)) {
+            if (array_key_exists((string) $key, $row) && ! array_key_exists((string) $row[$key], $array)) {
                 $array[$row[$key]] = $row;
             }
         }

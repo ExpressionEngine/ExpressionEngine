@@ -282,13 +282,13 @@ class EE_Typography
 
         // Do the same with braces if necessary
         if ($this->protect_braced_quotes === true) {
-            $str = preg_replace_callback("#\{.+?\}#si", array($this, '_protect_characters'), $str);
+            $str = preg_replace_callback("#\{.+?\}#si", array($this, '_protect_characters'), (string) $str);
         }
 
         // Convert "ignore" tags to temporary marker.  The parser splits out the string at every tag
         // it encounters.  Certain inline tags, like image tags, links, span tags, etc. will be
         // adversely affected if they are split out so we'll convert the opening bracket < temporarily to: {@TAG}
-        $str = preg_replace("#<(/*)(" . $this->inline_elements . ")([ >])#i", "{@TAG}\\1\\2\\3", $str);
+        $str = preg_replace("#<(/*)(" . $this->inline_elements . ")([ >])#i", "{@TAG}\\1\\2\\3", (string) $str);
 
         // Split the string at every tag.  This expression creates an array with this prototype:
         //
@@ -299,7 +299,7 @@ class EE_Typography
         //		[2] = <closing tag>
         //		Etc...
         //	}
-        $chunks = preg_split('/(<(?:[^<>]+(?:"[^"]*"|\'[^\']*\')?)+>)/', $str, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+        $chunks = preg_split('/(<(?:[^<>]+(?:"[^"]*"|\'[^\']*\')?)+>)/', (string) $str, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 
         $chunks = ($chunks === false) ? (array) $str : $chunks;
 
@@ -933,7 +933,7 @@ class EE_Typography
         foreach ($js as $val) {
             if (stristr((string) $str, $val) !== false) {
                 $str = preg_replace("/<img src\s*=(.+?)" . $val . "\s*\=.+?\>/i", "<img src=\\1 />", (string) $str);
-                $str = preg_replace("/<a href\s*=(.+?)" . $val . "\s*\=.+?\>/i", "<a href=\\1>", $str);
+                $str = preg_replace("/<a href\s*=(.+?)" . $val . "\s*\=.+?\>/i", "<a href=\\1>", (string) $str);
             }
         }
 
@@ -947,7 +947,7 @@ class EE_Typography
 
         if (stristr((string) $str, '<p') !== false) {
             $str = preg_replace("#<(/)?pre[^>]*?>#i", "<$1pre>", (string) $str);
-            $str = preg_replace("#<p>|<p(?!re)[^>]*?" . ">|</p>#i", "", preg_replace("#<\/p><p(?!re)[^>]*?" . ">#i", "\n", $str));
+            $str = preg_replace("#<p>|<p(?!re)[^>]*?" . ">|</p>#i", "", (string) preg_replace("#<\/p><p(?!re)[^>]*?" . ">#i", "\n", (string) $str));
         }
 
         // Convert allowed HTML to BBCode
@@ -1984,7 +1984,7 @@ class EE_Typography
 
         // [email]joe@xyz.com[/email]
 
-        $str = preg_replace_callback("/\[email\](.*?)\[\/email\]/is", array($this, "create_mailto"), $str);
+        $str = preg_replace_callback("/\[email\](.*?)\[\/email\]/is", array($this, "create_mailto"), (string) $str);
 
         return $str;
     }
@@ -2036,7 +2036,7 @@ class EE_Typography
     {
         if (strpos((string) $str, '<img') !== false) {
             $str = preg_replace("#<img\s+.*?src\s*=\s*[\"'](.+?)[\"'].*?\>#", "\\1", (string) $str);
-            $str = preg_replace("#<img\s+.*?src\s*=\s*(.+?)\s*\>#", "\\1", $str);
+            $str = preg_replace("#<img\s+.*?src\s*=\s*(.+?)\s*\>#", "\\1", (string) $str);
         }
 
         return $str;
@@ -2170,7 +2170,7 @@ class EE_Typography
         }
 
         $str = preg_replace("/&#(\d+);/", "AMP14TX903DVGHY4QW\\1;", (string) $str);
-        $str = preg_replace("/&(\w+);/", "AMP14TX903DVGHY4QT\\1;", $str);
+        $str = preg_replace("/&(\w+);/", "AMP14TX903DVGHY4QT\\1;", (string) $str);
 
         return str_replace(array("&","AMP14TX903DVGHY4QW","AMP14TX903DVGHY4QT"), array("&amp;", "&#","&"), $str);
     }
@@ -2204,7 +2204,7 @@ class EE_Typography
         }
 
         for ($i = 0; $i < strlen((string) $email); $i++) {
-            $bit[] .= " " . ord(substr((string) $email, $i, 1));
+            $bit[] .= " " . ord(substr((string) $email, $i, 1)[0]);
         }
 
         $temp = array();

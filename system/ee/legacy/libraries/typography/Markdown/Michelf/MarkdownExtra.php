@@ -806,7 +806,7 @@ class MarkdownExtra extends \Michelf\Markdown
 			)
 			}xs',
             array($this, '_doAnchors_inline_callback'),
-            $text
+            (string) $text
         );
 
         #
@@ -823,7 +823,7 @@ class MarkdownExtra extends \Michelf\Markdown
 			)
 			}xs',
             array($this, '_doAnchors_reference_callback'),
-            $text
+            (string) $text
         );
 
         $this->in_anchor = false;
@@ -956,7 +956,7 @@ class MarkdownExtra extends \Michelf\Markdown
 			)
 			}xs',
             array($this, '_doImages_inline_callback'),
-            $text
+            (string) $text
         );
 
         return $text;
@@ -1054,7 +1054,7 @@ class MarkdownExtra extends \Michelf\Markdown
 				\n+
 			}xm',
             array($this, '_doHeaders_callback_atx'),
-            $text
+            (string) $text
         );
 
         return $text;
@@ -1148,7 +1148,7 @@ class MarkdownExtra extends \Michelf\Markdown
 				(?=\n|\Z)					# Stop at final double newline.
 			}xm',
             array($this, '_DoTable_callback'),
-            $text
+            (string) $text
         );
 
         return $text;
@@ -1186,7 +1186,7 @@ class MarkdownExtra extends \Michelf\Markdown
         $content = preg_replace('/[|] *$/m', '', (string) $content);
 
         # Reading alignement from header underline.
-        $separators = preg_split('/ *[|] */', $underline);
+        $separators = preg_split('/ *[|] */', (string) $underline);
         foreach ($separators as $n => $s) {
             if (preg_match('/^ *-+: *$/', $s)) {
                 $attr[$n] = $this->_doTable_makeAlignAttr('right');
@@ -1217,7 +1217,7 @@ class MarkdownExtra extends \Michelf\Markdown
         $text .= "</thead>\n";
 
         # Split content by row.
-        $rows = explode("\n", trim($content, "\n"));
+        $rows = explode("\n", trim((string) $content, "\n"));
 
         $text .= "<tbody>\n";
         foreach ($rows as $row) {
@@ -1325,7 +1325,7 @@ class MarkdownExtra extends \Michelf\Markdown
 											#   with a definition mark.
 			}xm',
             array($this, '_processDefListItems_callback_dt'),
-            $list_str
+            (string) $list_str
         );
 
         # Process actual definitions.
@@ -1345,7 +1345,7 @@ class MarkdownExtra extends \Michelf\Markdown
 			)					
 			}xm',
             array($this, '_processDefListItems_callback_dd'),
-            $list_str
+            (string) $list_str
         );
 
         return $list_str;
@@ -1494,7 +1494,7 @@ class MarkdownExtra extends \Michelf\Markdown
         # Strip leading and trailing lines:
         $text = preg_replace('/\A\n+|\n+\z/', '', (string) $text);
 
-        $grafs = preg_split('/\n{2,}/', $text, -1, PREG_SPLIT_NO_EMPTY);
+        $grafs = preg_split('/\n{2,}/', (string) $text, -1, PREG_SPLIT_NO_EMPTY);
 
         #
         # Wrap <p> tags and unhashify HTML blocks
@@ -1631,8 +1631,8 @@ class MarkdownExtra extends \Michelf\Markdown
                     $backlink .= " <a href=\"#fnref$ref_num:$note_id\"$attr>$backlink_text</a>";
                 }
                 # Add backlink to last paragraph; create new paragraph if needed.
-                if (preg_match('{</p>$}', $footnote)) {
-                    $footnote = substr($footnote, 0, -4) . "&#160;$backlink</p>";
+                if (preg_match('{</p>$}', (string) $footnote)) {
+                    $footnote = substr((string) $footnote, 0, -4) . "&#160;$backlink</p>";
                 } else {
                     $footnote .= "\n\n<p>$backlink</p>";
                 }

@@ -56,7 +56,7 @@ class Structure_tab
     public function renderTableCell($data, $field_id, $entry)
     {
         $site_pages = $this->sql->get_site_pages();
-        $uri = array_key_exists($entry->entry_id, $site_pages['uris']) ? $site_pages['uris'][$entry->entry_id] : '';
+        $uri = array_key_exists((string) $entry->entry_id, $site_pages['uris']) ? $site_pages['uris'][$entry->entry_id] : '';
         if (!empty($uri)) {
             return '<a href="' . Structure_Helper::remove_double_slashes(ee()->functions->fetch_site_index(0, 0) . $uri) . '" target="_blank"><i class="fal fa-link"></i></a>';
         }
@@ -148,7 +148,7 @@ class Structure_tab
         /** -------------------------------------
         /**  Field: Parent ID
         /** -------------------------------------*/
-        if ($channel_type == 'page' && array_key_exists($entry_id, $data) && !empty($data[$entry_id]['parent_id'])) {
+        if ($channel_type == 'page' && array_key_exists((string) $entry_id, $data) && !empty($data[$entry_id]['parent_id'])) {
             $parent_id = $data[$entry_id]['parent_id'];
         } elseif (ee()->input->get_post('parent_id')) {
             $parent_id = ee()->input->get_post('parent_id');
@@ -158,7 +158,7 @@ class Structure_tab
             $parent_id = 0;
         }
 
-        $parent_uri = $channel_type == 'page' && $parent_id && array_key_exists($parent_id, $site_pages['uris']) ? $site_pages['uris'][$parent_id] : null;
+        $parent_uri = $channel_type == 'page' && $parent_id && array_key_exists((string) $parent_id, $site_pages['uris']) ? $site_pages['uris'][$parent_id] : null;
         $selected_parent = array($parent_id);
         $parent_ids = $this->get_parent_fields($entry_id, $data);
 
@@ -171,7 +171,7 @@ class Structure_tab
             StaticCache::set('publish_tabs__get_structure_channels_page', $structure_channels_page);
         }
 
-        if (array_key_exists($channel_id, $structure_channels_page)) {
+        if (array_key_exists((string) $channel_id, $structure_channels_page)) {
             $settings['parent_id'] = array(
                 'field_id'              => 'parent_id',
                 'field_label'           => lang('tab_parent_entry'),
@@ -191,8 +191,8 @@ class Structure_tab
         /** -------------------------------------
         /**  Field: Page URI/Slug
         /** -------------------------------------*/
-        $selected_uri = array_key_exists($entry_id, $site_pages['uris']) ? $site_pages['uris'][$entry_id] : '';
-        $uri = array_key_exists($entry_id, $site_pages['uris']) ? $site_pages['uris'][$entry_id] : '';
+        $selected_uri = array_key_exists((string) $entry_id, $site_pages['uris']) ? $site_pages['uris'][$entry_id] : '';
+        $uri = array_key_exists((string) $entry_id, $site_pages['uris']) ? $site_pages['uris'][$entry_id] : '';
 
         if ($uri == '/') {
             $slug = '/';
@@ -240,7 +240,7 @@ class Structure_tab
             StaticCache::set('publish_tabs__get_structure_channels_channel_id_' . $channel_id, $structure_channels);
         }
 
-        $selected_template = $entry_id != 0 && array_key_exists($entry_id, $site_pages['templates']) ? array($site_pages['templates'][$entry_id]) : array($structure_channels[$channel_id]['template_id']);
+        $selected_template = $entry_id != 0 && array_key_exists((string) $entry_id, $site_pages['templates']) ? array($site_pages['templates'][$entry_id]) : array($structure_channels[$channel_id]['template_id']);
 
         $settings['template_id'] = array(
             'field_id'              => 'template_id',
@@ -283,7 +283,7 @@ class Structure_tab
         /** -------------------------------------
         /**  Field: Listing Channel
         /** -------------------------------------*/
-        $listing_cid = $entry_id != 0 && array_key_exists($entry_id, $data) ? $data[$entry_id]['listing_cid'] : false;
+        $listing_cid = $entry_id != 0 && array_key_exists((string) $entry_id, $data) ? $data[$entry_id]['listing_cid'] : false;
         $listing_channels = $this->get_listing_channels($entry_id, $data, $channel_id);
 
         $result = ee()->db->query("SELECT listing_cid FROM exp_structure WHERE listing_cid != 0");
@@ -297,7 +297,7 @@ class Structure_tab
 
         $listing_channels = array_diff_key($listing_channels, $used_listing_ids);
 
-        if (! array_key_exists($channel_id, $used_listing_ids)) {
+        if (! array_key_exists((string) $channel_id, $used_listing_ids)) {
             $settings['listing_channel'] = array(
                 'field_id'              => 'listing_channel',
                 'field_label'           => lang('listing_channel'),
@@ -462,7 +462,7 @@ class Structure_tab
             // do we have an entry id as well as a template?
             // template checks just confirms it's edited
             // and not new...
-            if (!empty($entry_id) && array_key_exists($entry_id, $site_pages['templates'])) {
+            if (!empty($entry_id) && array_key_exists((string) $entry_id, $site_pages['templates'])) {
                 // get old parent id and set it here
                 $parent_id = $this->sql->get_parent_id($entry_id, null);
             } else {
@@ -492,7 +492,7 @@ class Structure_tab
 
             $structure_channels = $this->structure->get_structure_channels('', $channel_id);
 
-            if (!empty($entry_id) && array_key_exists($entry_id, $site_pages['templates'])) {
+            if (!empty($entry_id) && array_key_exists((string) $entry_id, $site_pages['templates'])) {
                 $template_id = $site_pages['templates'][$entry_id];
             } else {
                 $template_id = (!empty($structure_channels[$channel_id]['template_id']) ? $structure_channels[$channel_id]['template_id'] : 0);
@@ -508,7 +508,7 @@ class Structure_tab
             // do we have an entry id as well as a template?
             // template checks just confirms it's edited
             // and not new...
-            if (!empty($entry_id) && array_key_exists($entry_id, $site_pages['templates'])) {
+            if (!empty($entry_id) && array_key_exists((string) $entry_id, $site_pages['templates'])) {
                 // get old hidden status
                 $hidden = $this->sql->get_hidden_state($entry_id);
             } else {
@@ -528,7 +528,7 @@ class Structure_tab
             // do we have an entry id as well as a template?
             // uris checks just confirms it's edited
             // and not new...
-            if (!empty($entry_id) && array_key_exists($entry_id, $site_pages['uris'])) {
+            if (!empty($entry_id) && array_key_exists((string) $entry_id, $site_pages['uris'])) {
                 // get old uri
                 $site_pages_uri = $site_pages['uris'][$entry_id];
                 $uri_pieces = explode('/', (string) $site_pages_uri);
@@ -746,7 +746,7 @@ class Structure_tab
 
         foreach ($data as $eid => $entry) {
             // If we have an entry then this entry and its descendants cannot used as its own parent
-            if ($entry_id && (array_key_exists($eid, $exclude) || array_key_exists($entry['parent_id'], $exclude))) {
+            if ($entry_id && (array_key_exists((string) $eid, $exclude) || array_key_exists((string) $entry['parent_id'], $exclude))) {
                 $exclude[$eid] = null; // in case we match on parent_id add the entry_id to exclusions
 
                 continue;

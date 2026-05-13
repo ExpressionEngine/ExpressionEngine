@@ -174,7 +174,7 @@ class Stats
 
                 $path = ee()->functions->create_url($member_path . '/' . $k);
 
-                $temp = preg_replace("/" . LD . "member_path=(.+?)" . RD . "/", (string) $path, $temp);
+                $temp = preg_replace("/" . LD . "member_path=(.+?)" . RD . "/", (string) $path, (string) $temp);
 
                 $names .= $temp;
             }
@@ -191,9 +191,9 @@ class Stats
         //  {if member_names}
 
         if ($names != '') {
-            ee()->TMPL->tagdata = preg_replace("/" . LD . 'if member_names' . ".*?" . RD . "(.*?)" . LD . '\/' . 'if' . RD . "/s", "\\1", ee()->TMPL->tagdata);
+            ee()->TMPL->tagdata = preg_replace("/" . LD . 'if member_names' . ".*?" . RD . "(.*?)" . LD . '\/' . 'if' . RD . "/s", "\\1", (string) ee()->TMPL->tagdata);
         } else {
-            ee()->TMPL->tagdata = preg_replace("/" . LD . 'if member_names' . ".*?" . RD . "(.*?)" . LD . '\/' . 'if' . RD . "/s", "", ee()->TMPL->tagdata);
+            ee()->TMPL->tagdata = preg_replace("/" . LD . 'if member_names' . ".*?" . RD . "(.*?)" . LD . '\/' . 'if' . RD . "/s", "", (string) ee()->TMPL->tagdata);
         }
 
         $this->return_data = ee()->TMPL->tagdata;

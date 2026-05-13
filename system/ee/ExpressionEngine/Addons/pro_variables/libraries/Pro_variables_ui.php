@@ -259,7 +259,7 @@ class Pro_variables_ui
         $seps = static::separators();
 
         // If not already a valid separator
-        if (array_key_exists($sep, $seps)) {
+        if (array_key_exists((string) $sep, $seps)) {
             $sep = $seps[$sep];
         }
 
@@ -275,7 +275,7 @@ class Pro_variables_ui
         $seps = static::separators();
 
         // If not already a valid separator
-        if (array_key_exists($sep, $seps)) {
+        if (array_key_exists((string) $sep, $seps)) {
             $sep = $seps[$sep];
         }
 
@@ -386,7 +386,7 @@ class Pro_variables_ui
         // --------------------------------------
 
         foreach ($categories as $cat) {
-            if (! array_key_exists($cat->group_id, $groups)) {
+            if (! array_key_exists((string) $cat->group_id, $groups)) {
                 $groups[$cat->group_id] = array(
                     'id'   => $cat->group_id,
                     'name' => $cat->CategoryGroup->group_name,

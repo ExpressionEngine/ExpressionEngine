@@ -174,7 +174,7 @@ class Fluid_field_parser
             $fields = [];
 
             foreach ($fluid_field_data as $fluid_field) {
-                if (! array_key_exists($fluid_field->field_id, $fields)) {
+                if (! array_key_exists((string) $fluid_field->field_id, $fields)) {
                     $fields[$fluid_field->field_id] = [];
                 }
 
@@ -473,7 +473,7 @@ class Fluid_field_parser
 
                     foreach ($group['fields'] as $field_index => $field) {
                         $name = $field->ChannelField->field_name;
-                        $index = (array_key_exists($name, $fixed_order)) ? $fixed_order[$name] : $count + $field_index;
+                        $index = (array_key_exists((string) $name, $fixed_order)) ? $fixed_order[$name] : $count + $field_index;
                         $fields[$index] = $field;
                     }
                     $group['fields'] = $fields;
